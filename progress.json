@@ -16,7 +16,7 @@
       }
     ]
   },
-  "updatedAt": "2026-09-25T14:20:00Z",
+  "updatedAt": "2026-09-25T13:26:16Z",
   "updatedBy": "lead-coordinator (session 2026-09-25 #3, Opus 5.5)",
   "phase": {
     "id": "P1",
@@ -30,50 +30,49 @@
     "exitCriteria": "scripts/gate.sh green locally and in CI; backend skeleton with Modulith verify + Flyway V1; SPA served same-origin; Playwright smoke at 3 viewports with axe; contract drift check; Testcontainers on rootless Podman or documented fallback (docs/01-product/roadmap.md)."
   },
   "currentTask": {
-    "id": "T-M1.3",
-    "title": "Web skeleton (Vite + React + TS, design tokens, i18n vi/en, CI)",
-    "status": "awaiting_approval",
-    "ownerRole": "FE",
-    "branch": "feature/T-M1.3-web-skeleton",
-    "packet": "docs/tasks/T-M1.3-web-skeleton.md",
-    "pr": "https://github.com/duochou042004/eng-lms/pull/4",
-    "lastCommit": null,
-    "startedAt": "2026-09-25T12:30:54Z",
-    "entryGate": [
-      "T-M1.2 merged — met (ae9ac5d)",
-      "OQ-02 answered — met (DEC-039)",
-      "PO start signal for T-M1.3 — met (DEC-042)"
-    ],
-    "nextSteps": [
-      "Post QA-VERDICT + LC-APPROVED after the final head; merge via merge-gate",
-      "Post-merge: QA report on qa/T-M1.3; UX review on chore/T-M1.3-ux-review; record the merge; write the T-M1.4 packet"
-    ],
-    "trace": [
-      "ADR-0004",
-      "ADR-0013",
-      "ADR-0014",
-      "DEC-029",
-      "DEC-039"
-    ]
-  },
-  "nextTask": {
     "id": "T-M1.4",
     "title": "Local stack + Testcontainers on rootless Podman",
-    "status": "draft",
+    "status": "ready",
     "ownerRole": "BE",
     "branch": "feature/T-M1.4-local-stack",
-    "packet": "docs/tasks/backlog.md#m1--walking-skeleton-and-delivery-pipeline",
+    "packet": "docs/tasks/T-M1.4-local-stack.md",
     "pr": null,
     "lastCommit": null,
     "startedAt": null,
     "entryGate": [
       "T-M1.2 merged — met (ae9ac5d)",
-      "PO approval: persistent user-level podman.socket — met (DEC-044; enabled and verified 2026-09-25)"
+      "PO approval: user podman.socket — met (DEC-044, enabled)",
+      "PO start signal for T-M1.4 — pending"
+    ],
+    "nextSteps": [
+      "PO: start signal for T-M1.4",
+      "Implement per packet (backend-implementer); QA; merge via merge-gate"
+    ],
+    "trace": [
+      "ADR-0012",
+      "R-07",
+      "DEC-044"
+    ]
+  },
+  "nextTask": {
+    "id": "T-M1.5",
+    "title": "Single image + same-origin serving, gate.sh, contract-drift CI",
+    "status": "draft",
+    "ownerRole": "BE",
+    "branch": "feature/T-M1.5-single-image",
+    "packet": "docs/tasks/backlog.md#m1--walking-skeleton-and-delivery-pipeline",
+    "pr": null,
+    "lastCommit": null,
+    "startedAt": null,
+    "entryGate": [
+      "T-M1.2 merged — met",
+      "T-M1.3 merged — met (8b9d938)"
     ],
     "nextSteps": [],
     "trace": [
-      "ADR-0012",
-      "R-07"
+      "ADR-0004",
+      "NFR-SEC-08",
+      "OQ-16"
     ]
   },
   "completed": [
@@ -100,6 +99,14 @@
       "mergeCommit": "ae9ac5d",
       "evidence": "evidence/T-M1.2/summary.md",
       "note": "Merged via scripts/merge-gate.sh (PR #2) at head fbc9689; CI green (docs-check, secrets-scan, backend: 52 tests). QA PASS WITH MINOR (4 × S4): F2 fixed, F1/F3/F4 → T-M1.8 (DEC-041). QA report merged via PR #3 (02b706c). Testcontainers tests run in CI only (Podman socket disabled until T-M1.4)."
+    },
+    {
+      "id": "T-M1.3",
+      "title": "Web skeleton (Vite + React + TS, design tokens, i18n vi/en, CI)",
+      "completedAt": "2026-09-25T13:26:16Z",
+      "mergeCommit": "8b9d938",
+      "evidence": "evidence/T-M1.3/summary.md",
+      "note": "Merged via scripts/merge-gate.sh (PR #4) at head 82db93c; CI green (docs-check, secrets-scan, backend, web). UX round 1 CHANGES REQUESTED → fixed; round 2 APPROVED (the UX record is the PR #4 comments). QA PASS WITH MINOR (3 × S4); the QA report was merged via PR #5 (bb1a6a3). Deferred: T-M1.9 (DEC-043, DEC-045)."
     }
   ],
   "tests": {
@@ -126,23 +133,23 @@
   "gates": {
     "G0": {
       "status": "pass",
-      "note": "T-M1.3 packet G0-complete; dependency T-M1.2 merged (ae9ac5d)"
+      "note": "T-M1.4 packet G0-complete"
     },
     "G1": {
       "status": "pending",
-      "note": "T-M1.3 not started"
+      "note": "T-M1.4 not started"
     },
     "G2": {
-      "status": "pass",
-      "note": "PR #4 CI green (docs-check, secrets-scan, backend, web) at fc0c753/16787bd"
+      "status": "pending",
+      "note": "T-M1.4 not started"
     },
     "G3": {
-      "status": "pass",
-      "note": "UX APPROVED (round 2) + QA PASS WITH MINOR at f113908 (DEC-045)"
+      "status": "pending",
+      "note": "QA-VERDICT required"
     },
     "G4": {
       "status": "pending",
-      "note": "T-M1.3 not started"
+      "note": "merge via merge-gate"
     }
   },
   "blockers": [],
@@ -308,6 +315,11 @@
       "at": "2026-09-25T13:50:00Z",
       "actor": "lead-coordinator",
       "event": "PO approved; user podman.socket enabled; full backend verify (Testcontainers) green locally."
+    },
+    {
+      "at": "2026-09-25T13:26:16Z",
+      "actor": "lead-coordinator",
+      "event": "T-M1.3 merged via merge-gate (PR #4 → 8b9d938); QA report PR #5 → bb1a6a3; T-M1.4 packet written (ready, awaiting PO start)."
     }
   ]
 }
