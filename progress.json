@@ -16,7 +16,7 @@
       }
     ]
   },
-  "updatedAt": "2026-09-25T13:45:00Z",
+  "updatedAt": "2026-09-25T14:20:00Z",
   "updatedBy": "lead-coordinator (session 2026-09-25 #3, Opus 5.5)",
   "phase": {
     "id": "P1",
@@ -32,12 +32,12 @@
   "currentTask": {
     "id": "T-M1.4",
     "title": "Local stack + Testcontainers on rootless Podman",
-    "status": "in_review",
+    "status": "awaiting_approval",
     "ownerRole": "BE",
     "branch": "feature/T-M1.4-local-stack",
     "packet": "docs/tasks/T-M1.4-local-stack.md",
     "pr": "https://github.com/duochou042004/eng-lms/pull/8",
-    "lastCommit": null,
+    "lastCommit": "a196077",
     "startedAt": "2026-09-25T13:25:00Z",
     "entryGate": [
       "T-M1.2 merged — met (ae9ac5d)",
@@ -45,9 +45,8 @@
       "PO start signal for T-M1.4 — met (DEC-046)"
     ],
     "nextSteps": [
-      "Open PR; CI green",
-      "Independent QA → QA-VERDICT; LC-APPROVED; merge-gate; QA report on qa/T-M1.4",
-      "Post-merge: T-M1.5 packet"
+      "Post QA-VERDICT + LC-APPROVED after the final head; merge via merge-gate",
+      "Post-merge: QA report on qa/T-M1.4; record the merge; write the T-M1.5 packet"
     ],
     "trace": [
       "ADR-0012",
@@ -137,16 +136,16 @@
       "note": "T-M1.4 packet G0-complete"
     },
     "G1": {
-      "status": "pending",
-      "note": "T-M1.4 not started"
+      "status": "pass",
+      "note": "T-M1.4 implemented"
     },
     "G2": {
-      "status": "pending",
-      "note": "T-M1.4 not started"
+      "status": "pass",
+      "note": "PR #8 CI green (docs-check, secrets-scan, backend, web)"
     },
     "G3": {
-      "status": "pending",
-      "note": "QA-VERDICT required"
+      "status": "pass",
+      "note": "QA PASS WITH MINOR at a196077 (DEC-047)"
     },
     "G4": {
       "status": "pending",
@@ -157,12 +156,12 @@
   "decisions": {
     "log": "docs/10-governance/decision-log.md",
     "recent": [
-      "DEC-041",
       "DEC-042",
       "DEC-043",
       "DEC-044",
       "DEC-045",
-      "DEC-046"
+      "DEC-046",
+      "DEC-047"
     ],
     "pendingPO": [
       "OQ-03",

@@ -50,8 +50,11 @@ source scripts/env.sh                         # exports DOCKER_HOST=unix://$XDG_
 are removed by JVM shutdown hooks. After a crash, remove leftovers with:
 
 ```bash
-podman ps -a --filter label=org.testcontainers=true -q | xargs -r podman rm -f
+podman ps -a --filter label=org.testcontainers=true -q | xargs -r podman rm -fv   # -v also removes their anonymous volumes
+podman volume prune                                                           # unused anonymous volumes left by earlier crashes (asks first)
 ```
+
+Known issue (T-M1.8): on local Podman runs Surefire force-exits the test JVM 30 s after the tests (a shutdown hook hangs). The build still passes.
 
 CI uses GitHub's Docker and needs none of this. The previous fallback (a `test-external-db` profile) is no longer needed.
 
