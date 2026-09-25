@@ -24,6 +24,10 @@ All notable changes to this project are documented here. Format: [Keep a Changel
 - `web/` generated from the Vite `react-ts` template: React 19, TypeScript strict, pnpm 12. Design tokens with an AA contrast check; eight React Aria `ui/` primitives.
 - i18n: Vietnamese default + English, with a completeness test. Lazy tutor/student shells, a typed API client from `api/openapi.json`, a bundle budget, and `web` CI (required).
 
+### Local stack (T-M1.4)
+- `deploy/compose.dev.yaml` (PostgreSQL 18 pinned by digest, loopback only), `.env.example`, `scripts/dev-up.sh` / `dev-down.sh`, and `scripts/env.sh`
+  (Testcontainers on the rootless Podman user socket; all backend tests run locally).
+
 ### Documentation
 - The README was redesigned: badges, Mermaid architecture and delivery diagrams, roadmap, docs map (DEC-035).
 

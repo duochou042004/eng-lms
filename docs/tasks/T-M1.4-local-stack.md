@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Milestone | M1 |
-| Status | **in_review** (PR #8; G0-complete; T-M1.2 merged `ae9ac5d`; PO approved the user `podman.socket`, which is already enabled, DEC-044) |
+| Status | **done** (merged `294d597`, PR #8; G0-complete; T-M1.2 merged `ae9ac5d`; PO approved the user `podman.socket`, which is already enabled, DEC-044) |
 | Owner role | BE (backend-implementer) |
 | Branch | `feature/T-M1.4-local-stack` (from `develop`) |
 | Depends on | T-M1.2 merged |
