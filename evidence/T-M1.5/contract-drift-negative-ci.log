@@ -1,0 +1,48 @@
+# contract-drift negative demo in CI: throwaway commit 11f7e02 (MetaController /meta -> /meta-info, contract not regenerated)
+# run: https://github.com/duochou042004/eng-lms/actions/runs/36148976036 (conclusion: failure). backend also failed on 11f7e02 (OpenApiContractTest drift), as expected.
+# verbatim tail of 'gh run view 36148976036 --log-failed' (last 45 lines, timestamps kept):
+2026-09-25T14:40:56.5320108Z {"@timestamp":"2026-09-25T14:40:56.439631307Z","log":{"level":"INFO","logger":"org.hibernate.orm.connections.pooling"},"process":{"pid":2469,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"HHH10001005: Database info:\n\tDatabase JDBC URL [jdbc:postgresql://localhost:32769/test?loggerLevel=OFF]\n\tDatabase driver: PostgreSQL JDBC Driver\n\tDatabase dialect: PostgreSQLDialect\n\tDatabase version: 18.6\n\tDefault catalog/schema: test/app\n\tAutocommit mode: undefined/unknown\n\tIsolation level: READ_COMMITTED [default READ_COMMITTED]\n\tJDBC fetch size: none\n\tPool: DataSourceConnectionProvider\n\tMinimum pool size: undefined/unknown\n\tMaximum pool size: undefined/unknown","ecs":{"version":"8.11"}}
+2026-09-25T14:40:57.3356943Z {"@timestamp":"2026-09-25T14:40:57.302180708Z","log":{"level":"INFO","logger":"org.hibernate.orm.core"},"process":{"pid":2469,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)","ecs":{"version":"8.11"}}
+2026-09-25T14:40:57.4333808Z {"@timestamp":"2026-09-25T14:40:57.368918782Z","log":{"level":"INFO","logger":"org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean"},"process":{"pid":2469,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Initialized JPA EntityManagerFactory for persistence unit 'default'","ecs":{"version":"8.11"}}
+2026-09-25T14:40:57.9371299Z {"@timestamp":"2026-09-25T14:40:57.903080776Z","log":{"level":"INFO","logger":"org.springframework.boot.webmvc.autoconfigure.WelcomePageHandlerMapping"},"process":{"pid":2469,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Adding welcome page: class path resource [static/index.html]","ecs":{"version":"8.11"}}
+2026-09-25T14:40:59.3401808Z {"@timestamp":"2026-09-25T14:40:59.289870554Z","log":{"level":"INFO","logger":"org.springframework.boot.test.mock.web.SpringBootMockServletContext"},"process":{"pid":2469,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Initializing Spring TestDispatcherServlet ''","ecs":{"version":"8.11"}}
+2026-09-25T14:40:59.3410571Z {"@timestamp":"2026-09-25T14:40:59.290267815Z","log":{"level":"INFO","logger":"org.springframework.test.web.servlet.TestDispatcherServlet"},"process":{"pid":2469,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Initializing Servlet ''","ecs":{"version":"8.11"}}
+2026-09-25T14:40:59.3442116Z {"@timestamp":"2026-09-25T14:40:59.293192950Z","log":{"level":"INFO","logger":"org.springframework.test.web.servlet.TestDispatcherServlet"},"process":{"pid":2469,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Completed initialization in 3 ms","ecs":{"version":"8.11"}}
+2026-09-25T14:40:59.6409822Z {"@timestamp":"2026-09-25T14:40:59.580624411Z","log":{"level":"INFO","logger":"org.springframework.scheduling.config.TaskSchedulerRouter"},"process":{"pid":2469,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"No TaskScheduler/ScheduledExecutorService bean found for scheduled processing","ecs":{"version":"8.11"}}
+2026-09-25T14:40:59.6413852Z {"@timestamp":"2026-09-25T14:40:59.588901378Z","log":{"level":"INFO","logger":"com.englms.contract.OpenApiContractTest"},"process":{"pid":2469,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Started OpenApiContractTest in 25.974 seconds (process running for 29.913)","ecs":{"version":"8.11"}}
+2026-09-25T14:41:00.3486401Z Mockito is currently self-attaching to enable the inline-mock-maker. This will no longer work in future releases of the JDK. Please add Mockito as an agent to your build as described in Mockito's documentation: https://javadoc.io/doc/org.mockito/mockito-core/latest/org.mockito/org/mockito/Mockito.html#0.3
+2026-09-25T14:41:00.8058788Z OpenJDK 64-Bit Server VM warning: Sharing is only supported for boot loader classes because bootstrap classpath has been appended
+2026-09-25T14:41:00.8515073Z WARNING: A Java agent has been loaded dynamically (/home/runner/.m2/repository/net/bytebuddy/byte-buddy-agent/1.18.11/byte-buddy-agent-1.18.11.jar)
+2026-09-25T14:41:00.8534705Z WARNING: If a serviceability tool is in use, please run with -XX:+EnableDynamicAgentLoading to hide this warning
+2026-09-25T14:41:00.8554606Z WARNING: If a serviceability tool is not in use, please run with -Djdk.instrument.traceUsage for more information
+2026-09-25T14:41:00.8574411Z WARNING: Dynamic loading of agents will be disallowed by default in a future release
+2026-09-25T14:41:01.8566865Z {"@timestamp":"2026-09-25T14:41:01.823018884Z","log":{"level":"INFO","logger":"org.springdoc.api.AbstractOpenApiResource"},"process":{"pid":2469,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Init duration for springdoc-openapi is: 544 ms","requestId":"01a0d903-351d-733f-bf19-ec383f272a76","ecs":{"version":"8.11"}}
+2026-09-25T14:41:01.9576545Z {"@timestamp":"2026-09-25T14:41:01.917581314Z","log":{"level":"INFO","logger":"com.englms.shared.web.RequestIdFilter"},"process":{"pid":2469,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"GET /v3/api-docs -> 200","requestId":"01a0d903-351d-733f-bf19-ec383f272a76","ecs":{"version":"8.11"}}
+2026-09-25T14:41:02.6675829Z $ openapi-typescript ../api/openapi.json -o src/lib/api/schema.d.ts && prettier --write src/lib/api/schema.d.ts
+2026-09-25T14:41:03.1307953Z ✨ openapi-typescript 7.13.0
+2026-09-25T14:41:03.1635841Z 🚀 ../api/openapi.json → src/lib/api/schema.d.ts [35.8ms]
+2026-09-25T14:41:03.3858247Z src/lib/api/schema.d.ts 88ms
+2026-09-25T14:41:03.4060684Z --- api/openapi.json (before)
+2026-09-25T14:41:03.4064865Z +++ api/openapi.json (regenerated)
+2026-09-25T14:41:03.4065591Z @@ -9,7 +9,7 @@
+2026-09-25T14:41:03.4066283Z      "description" : "Same origin"
+2026-09-25T14:41:03.4066919Z    } ],
+2026-09-25T14:41:03.4067472Z    "paths" : {
+2026-09-25T14:41:03.4068145Z -    "/api/v1/meta" : {
+2026-09-25T14:41:03.4068846Z +    "/api/v1/meta-info" : {
+2026-09-25T14:41:03.4069507Z        "get" : {
+2026-09-25T14:41:03.4070133Z          "operationId" : "meta",
+2026-09-25T14:41:03.4070766Z          "responses" : {
+2026-09-25T14:41:03.4077068Z --- web/src/lib/api/schema.d.ts (before)
+2026-09-25T14:41:03.4077884Z +++ web/src/lib/api/schema.d.ts (regenerated)
+2026-09-25T14:41:03.4083589Z contract-drift: FAIL: the API contract or the web types are stale. Review the diff above, then commit the regenerated files.
+2026-09-25T14:41:03.4084800Z @@ -4,7 +4,7 @@
+2026-09-25T14:41:03.4085426Z   */
+2026-09-25T14:41:03.4086039Z  
+2026-09-25T14:41:03.4086586Z  export interface paths {
+2026-09-25T14:41:03.4087252Z -  '/api/v1/meta': {
+2026-09-25T14:41:03.4087885Z +  '/api/v1/meta-info': {
+2026-09-25T14:41:03.4088514Z      parameters: {
+2026-09-25T14:41:03.4089098Z        query?: never
+2026-09-25T14:41:03.4089714Z        header?: never
+2026-09-25T14:41:03.4117586Z ##[error]Process completed with exit code 1.

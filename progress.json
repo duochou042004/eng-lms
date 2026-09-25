@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-09-25T15:00:00Z",
-  "updatedBy": "lead-coordinator (session 2026-09-25 #3, Opus 5.5)",
+  "updatedAt": "2026-09-25T14:45:00Z",
+  "updatedBy": "lead-coordinator (session 2026-09-25 #4, Opus 5.5)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -32,26 +32,33 @@
   "currentTask": {
     "id": "T-M1.5",
     "title": "Single image + same-origin SPA serving, gate.sh, contract-drift CI",
-    "status": "ready",
+    "status": "in_review",
     "ownerRole": "BE",
     "branch": "feature/T-M1.5-single-image",
     "packet": "docs/tasks/T-M1.5-single-image.md",
-    "pr": null,
+    "pr": "https://github.com/duochou042004/eng-lms/pull/10",
     "lastCommit": null,
-    "startedAt": null,
+    "startedAt": "2026-09-25T14:15:00Z",
     "entryGate": [
       "T-M1.2 and T-M1.3 merged — met",
-      "PO start signal for T-M1.5 — met (DEC-048; implement in the next session)"
+      "PO start signal for T-M1.5 — met (DEC-048)"
     ],
     "nextSteps": [
-      "Next session: implement T-M1.5 per its packet; QA; merge via merge-gate"
+      "contract-drift negative demo on CI (throwaway 11f7e02, then revert)",
+      "clean-clone image build evidence",
+      "independent QA (fresh agent), fix S1/S2",
+      "QA-VERDICT + LC-APPROVED after the final head's CI is green; merge via scripts/merge-gate.sh"
     ],
     "trace": [
       "ADR-0004",
       "ADR-0012",
       "ADR-0014",
       "NFR-SEC-08",
-      "OQ-16"
+      "OQ-16",
+      "DEC-049",
+      "DEC-050",
+      "DEC-051",
+      "DEC-052"
     ]
   },
   "nextTask": {
@@ -116,23 +123,28 @@
     }
   ],
   "tests": {
-    "lastRun": "2026-09-25T12:18:43Z",
-    "summary": "Backend: ./mvnw -B verify in CI (52 tests incl. Testcontainers PostgreSQL 18); locally 29 non-container tests. Governance script tests 56. docs-check PASS.",
+    "lastRun": "2026-09-25T14:31:31Z",
+    "summary": "T-M1.5: ./scripts/gate.sh PASS locally (11 steps, 124 s): backend verify 83 tests incl. Testcontainers + JaCoCo report; web 41 tests; governance script tests 80; contract-drift OK.",
     "suites": [
       {
-        "name": "backend (./mvnw -B verify, CI)",
+        "name": "backend (./mvnw -B verify)",
         "result": "pass",
-        "details": "52 tests, 0 skipped at fbc9689 (PR #2 checks)"
+        "details": "83 tests (SpaServingTest 25, ApplicationIntegrationTest 21, ...) at 2d3d6e1; JaCoCo report in target/site/jacoco"
+      },
+      {
+        "name": "web (pnpm test --run)",
+        "result": "pass",
+        "details": "41 tests incl. csp.test.tsx"
       },
       {
         "name": "governance scripts (scripts/tests/run-all.sh)",
         "result": "pass",
-        "details": "37 merge-gate + 12 path-ownership + 7 pre-push"
+        "details": "incl. gate.test.sh 24 and merge-gate 37 (OK_CHECKS has contract-drift)"
       },
       {
-        "name": "docs-check (scripts/check-docs.sh)",
+        "name": "gate.sh",
         "result": "pass",
-        "details": "progress.json valid, links, sources intact"
+        "details": "evidence/T-M1.5/gate-20260925T143131Z.log; fail-fast demo gate-failfast-demo-20260925T143814Z.log"
       }
     ]
   },
@@ -142,12 +154,12 @@
       "note": "T-M1.5 packet G0-complete"
     },
     "G1": {
-      "status": "pending",
-      "note": "T-M1.5 not started"
+      "status": "pass",
+      "note": "T-M1.5 gate.sh green locally"
     },
     "G2": {
       "status": "pending",
-      "note": "T-M1.5 not started"
+      "note": "PR #10 CI"
     },
     "G3": {
       "status": "pending",
@@ -162,12 +174,11 @@
   "decisions": {
     "log": "docs/10-governance/decision-log.md",
     "recent": [
-      "DEC-043",
-      "DEC-044",
-      "DEC-045",
-      "DEC-046",
-      "DEC-047",
-      "DEC-048"
+      "DEC-048",
+      "DEC-049",
+      "DEC-050",
+      "DEC-051",
+      "DEC-052"
     ],
     "pendingPO": [
       "OQ-03",
@@ -181,8 +192,7 @@
       "OQ-11",
       "OQ-12",
       "OQ-13",
-      "OQ-14",
-      "OQ-16"
+      "OQ-14"
     ]
   },
   "risks": {
