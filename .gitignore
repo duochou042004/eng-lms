@@ -1,0 +1,41 @@
+# --- OS / editors ---
+.DS_Store
+Thumbs.db
+*.swp
+*~
+.idea/
+*.iml
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+
+# --- Java / Maven (backend/) ---
+backend/target/
+backend/.mvn/wrapper/maven-wrapper.jar
+*.class
+hs_err_pid*.log
+
+# --- Node / web (web/) ---
+node_modules/
+web/dist/
+web/coverage/
+web/playwright-report/
+web/test-results/
+web/blob-report/
+*.tsbuildinfo
+.vite/
+
+# --- Local runtime data ---
+.data/
+storage/
+*.log
+.env
+.env.*
+!.env.example
+
+# --- Evidence: keep summaries, ignore bulky raw artifacts ---
+evidence/**/raw/
+
+# --- Agent scratch ---
+.claude/settings.local.json
+.claude/scratch/
