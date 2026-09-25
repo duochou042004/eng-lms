@@ -62,12 +62,13 @@ PostgreSQL through a `test-external-db` profile (a separate database per test ru
 | One backend test | `(cd backend && ./mvnw -B -Dtest=ClassName#method test)` |
 | Regenerate the OpenAPI file | `(cd backend && ./mvnw -B -Dtest=OpenApiContractTest -Dcontract.write=true test)` |
 | Regenerate API types | `(cd web && pnpm api:generate)` |
-| Web checks | `(cd web && pnpm lint && pnpm typecheck && pnpm test --run)` |
+| Web checks | `(cd web && pnpm lint && pnpm typecheck && pnpm test --run && pnpm build && pnpm budget && pnpm contrast)` (live, T-M1.3) |
+| Web dev server | `(cd web && pnpm install && pnpm dev)`: http://localhost:5173, proxies `/api` → :8080; component gallery at `/dev/ui` (dev builds only) |
 | E2E (mandatory viewports) | `(cd e2e && pnpm e2e:pr)` |
 | Docs check | `./scripts/check-docs.sh` |
 | Stop the DB | `./scripts/dev-down.sh` |
 
 ## 5. Editor settings
 
-`.editorconfig` is authoritative. Recommended: IntelliJ IDEA (Java 25 language level) and VS Code with the ESLint, Stylelint and Prettier extensions (listed in
+`.editorconfig` is authoritative. Recommended: IntelliJ IDEA (Java 25 language level) and VS Code with the oxc (oxlint), Stylelint and Prettier extensions (listed in
 `.vscode/extensions.json` in M1).

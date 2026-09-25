@@ -1,0 +1,18 @@
+# AC7: bundle budget (NFR-PERF-03) and the /dev/ui production check
+$ pnpm build && pnpm budget
+ok    student   142.2 KB gz ≤ 200 KB  (6 chunks)
+ok    tutor     142.2 KB gz ≤ 300 KB  (6 chunks)
+budget: PASS
+exit=0
+
+# Negative demo: lowered student limit
+$ BUDGET_STUDENT_KB=100 pnpm budget
+FAIL  student   142.2 KB gz ≤ 100 KB  (6 chunks)
+ok    tutor     142.2 KB gz ≤ 300 KB  (6 chunks)
+budget: FAIL
+exit=1
+
+$ grep -c DevUiPage dist/.vite/manifest.json
+0
+$ grep -rl "Component gallery" dist/ | wc -l
+1

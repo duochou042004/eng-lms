@@ -1,0 +1,47 @@
+.page {
+  inline-size: 100%;
+  max-inline-size: var(--size-content-max);
+  margin-inline: auto;
+  padding: var(--space-6) var(--space-4);
+}
+
+.toolbar {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.choices {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+  gap: var(--space-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.choice {
+  display: flex;
+  align-items: center;
+  min-block-size: var(--size-control-lg);
+  padding: var(--space-5) var(--space-4);
+  border: var(--border-width) solid var(--color-border-strong);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-medium);
+  text-decoration: none;
+}
+
+.choice:hover {
+  background: var(--color-accent-subtle);
+  color: var(--color-accent-strong);
+}
+
+.visuallyHidden {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}

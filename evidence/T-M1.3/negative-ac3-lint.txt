@@ -1,0 +1,19 @@
+# AC3 negative demo (throwaway files, not committed):
+#   src/features/settings/components/Leak.tsx imports react-aria-components outside ui/
+#   src/features/settings/api/rawFetch.ts calls fetch outside lib/api
+#   src/features/settings/components/Bad.module.css uses a raw hex colour and px padding
+$ pnpm exec oxlint --deny-warnings
+src/features/settings/api/rawFetch.ts:1:27: error eslint(no-restricted-globals): Unexpected use of 'fetch'. No fetch outside src/lib/api (frontend-architecture §1). Use the API client. help: Use a local variable or function parameter instead of the restricted global.
+src/features/settings/components/Leak.tsx:1:1: error eslint(no-restricted-imports): 'react-aria-components' import is restricted from being used. help: Only src/ui/ may import react-aria-components (frontend-architecture §1, ADR-0013). Use the ui/ components.
+exit=1
+$ pnpm exec stylelint "src/**/*.css"
+src/features/settings/components/Bad.module.css
+  2:10  ✖  Expected "#ff0000" to be "#f00"              color-hex-length
+  2:10  ✖  Disallowed hex color "#ff0000"               color-no-hex
+  3:12  ✖  Disallowed unit "px" for property "padding"  declaration-property-unit-disallowed-list
+✖ 3 problems (3 errors, 0 warnings)
+  1 error potentially fixable with the "--fix" option.
+exit=2
+# After removing the files:
+stylelint: 0 problems
+oxlint: exit 0 (no findings)

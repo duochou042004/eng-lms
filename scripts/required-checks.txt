@@ -1,5 +1,6 @@
 # Required CI checks for merging into develop/master (ci-cd.md §1). One job name per line.
-# Add web/contract-drift/e2e-smoke as their packets create them (T-M1.3 … T-M1.6).
+# Add contract-drift/e2e-smoke as their packets create them (T-M1.5, T-M1.6).
 docs-check
 secrets-scan
 backend
+web

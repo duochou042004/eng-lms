@@ -64,7 +64,7 @@
 | Charts | In-house SVG `Sparkline` and `ScoreLine` (≤ 150 LOC) | Only 2 tiny chart types are needed (SPEC §27: few charts) | Recharts or ECharts (heavy for 2 charts) |
 | Unit/component tests | **Vitest** + Testing Library + **MSW** + vitest-axe | Vite-native | Jest |
 | E2E | **Playwright** (+ `@axe-core/playwright`), projects per viewport and engine | Multi-browser (incl. WebKit), visual snapshots | Cypress (no WebKit) |
-| Lint/format | ESLint (typescript-eslint, react-hooks, jsx-a11y), Prettier, stylelint, `tsc --noEmit` | Standard gates | — |
+| Lint/format | **oxlint** (the Vite 9 template default; react, react-hooks, jsx-a11y, import rules; DEC-042), Prettier, stylelint (token rules), `tsc -b` | Standard gates | — |
 
 ## 4. Delivery and operations
 
@@ -110,4 +110,16 @@ any analytics or tracking script.
 | actions/setup-java | v6.0.1 @ `de7274f081f381c8f8158605e0321c36c376e2e6` | T-M1.2 | 2026-09-25 |
 | actions/upload-artifact | v7.0.1 @ `043fb46d1a93c77aae656e7c1c64a875d1fc6a0a` | T-M1.2 | 2026-09-25 |
 | PostgreSQL image | *(18.x digest)* | T-M1.4 | — |
-| React / Vite / TS | *(at scaffold)* | T-M1.3 | — |
+| Vite / create-vite template | 8.3.1 / create-vite 9.2.1 (`react-ts`) | T-M1.3 | 2026-09-25 |
+| React / React DOM | 19.3.0 | T-M1.3 | 2026-09-25 |
+| TypeScript | 6.0.3 (template line; `strict` + `noUncheckedIndexedAccess`) | T-M1.3 | 2026-09-25 |
+| pnpm (corepack, `packageManager`) | 12.6.0 (default `minimumReleaseAge` policy kept; msw build script denied) | T-M1.3 | 2026-09-25 |
+| React Router | 8.4.0 | T-M1.3 | 2026-09-25 |
+| TanStack Query | 5.103.2 | T-M1.3 | 2026-09-25 |
+| React Aria Components | 1.21.1 | T-M1.3 | 2026-09-25 |
+| i18next / react-i18next | 26.4.2 / 17.0.15 | T-M1.3 | 2026-09-25 |
+| openapi-typescript / openapi-fetch | 7.13.0 / 0.17.0 | T-M1.3 | 2026-09-25 |
+| lucide-react · @fontsource/be-vietnam-pro | 1.48.0 · 5.3.0 | T-M1.3 | 2026-09-25 |
+| Vitest · jsdom · Testing Library (react, user-event, jest-dom) · axe-core · MSW | 5.0.1 (5.0.2 is younger than pnpm's release-age window) · 30.1.1 · 16.3.3, 14.6.7, 7.0.1 · 4.13.0 · 2.15.0 | T-M1.3 | 2026-09-25 |
+| oxlint · stylelint (+ config-standard) · Prettier | 1.85.0 · 17.15.0 (40.0.0) · 3.9.9 | T-M1.3 | 2026-09-25 |
+| actions/setup-node | v7.0.0 @ `820762786026740c76f36085b0efc47a31fe5020` | T-M1.3 | 2026-09-25 |

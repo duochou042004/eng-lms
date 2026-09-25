@@ -1,0 +1,35 @@
+{
+  "title": "Thư viện thành phần",
+  "description": "Các thành phần giao diện và trạng thái của chúng (chỉ có trong bản phát triển).",
+  "sections": {
+    "buttons": "Nút",
+    "fields": "Trường nhập",
+    "alerts": "Thông báo",
+    "loading": "Đang tải",
+    "empty": "Trạng thái trống"
+  },
+  "sample": {
+    "primary": "Lưu",
+    "secondary": "Xem trước",
+    "quiet": "Hủy",
+    "danger": "Xóa",
+    "large": "Bắt đầu",
+    "disabled": "Không khả dụng",
+    "pending": "Đang lưu",
+    "iconLabel": "Thêm",
+    "fieldLabel": "Tên học viên",
+    "fieldHint": "Tên hiển thị cho học viên.",
+    "fieldError": "Hãy nhập tên.",
+    "invalidLabel": "Tên đăng nhập",
+    "disabledLabel": "Mã học viên",
+    "alertInfo": "Mẹo",
+    "alertSuccess": "Đã lưu",
+    "alertWarning": "Chưa lưu thay đổi",
+    "alertDanger": "Không lưu được",
+    "alertBody": "Nội dung chi tiết của thông báo.",
+    "loadingLabel": "Đang tải ví dụ",
+    "emptyTitle": "Chưa có học viên",
+    "emptyDescription": "Thêm học viên đầu tiên để bắt đầu.",
+    "emptyAction": "Thêm học viên"
+  }
+}

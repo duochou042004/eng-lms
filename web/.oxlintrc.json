@@ -1,0 +1,30 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["react", "typescript", "oxc", "jsx-a11y", "import"],
+  "categories": { "correctness": "error" },
+  "rules": {
+    "react/rules-of-hooks": "error",
+    "react/exhaustive-deps": "error",
+    "react/only-export-components": ["warn", { "allowConstantExport": true }],
+    "no-restricted-imports": [
+      "error",
+      {
+        "paths": [
+          {
+            "name": "react-aria-components",
+            "message": "Only src/ui/ may import react-aria-components (frontend-architecture §1, ADR-0013). Use the ui/ components."
+          }
+        ]
+      }
+    ],
+    "no-restricted-globals": [
+      "error",
+      { "name": "fetch", "message": "No fetch outside src/lib/api (frontend-architecture §1). Use the API client." }
+    ]
+  },
+  "overrides": [
+    { "files": ["src/ui/**"], "rules": { "no-restricted-imports": "off" } },
+    { "files": ["src/lib/api/**"], "rules": { "no-restricted-globals": "off" } }
+  ],
+  "ignorePatterns": ["dist", "src/lib/api/schema.d.ts"]
+}

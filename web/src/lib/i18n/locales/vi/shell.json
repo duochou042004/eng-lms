@@ -1,0 +1,15 @@
+{
+  "tutor": {
+    "title": "Không gian gia sư",
+    "navLabel": "Điều hướng gia sư",
+    "emptyTitle": "Chưa có gì ở đây",
+    "emptyDescription": "Các công cụ dạy học sẽ xuất hiện ở đây khi được xây dựng."
+  },
+  "student": {
+    "title": "Trang của học viên",
+    "navLabel": "Điều hướng học viên",
+    "emptyTitle": "Chưa có gì ở đây",
+    "emptyDescription": "Bài học và nhiệm vụ của bạn sẽ xuất hiện ở đây."
+  },
+  "home": "Trang đầu"
+}

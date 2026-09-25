@@ -16,7 +16,7 @@
       }
     ]
   },
-  "updatedAt": "2026-09-25T12:18:43Z",
+  "updatedAt": "2026-09-25T13:10:00Z",
   "updatedBy": "lead-coordinator (session 2026-09-25 #3, Opus 5.5)",
   "phase": {
     "id": "P1",
@@ -32,21 +32,21 @@
   "currentTask": {
     "id": "T-M1.3",
     "title": "Web skeleton (Vite + React + TS, design tokens, i18n vi/en, CI)",
-    "status": "ready",
+    "status": "in_progress",
     "ownerRole": "FE",
     "branch": "feature/T-M1.3-web-skeleton",
     "packet": "docs/tasks/T-M1.3-web-skeleton.md",
     "pr": null,
     "lastCommit": null,
-    "startedAt": null,
+    "startedAt": "2026-09-25T12:30:54Z",
     "entryGate": [
       "T-M1.2 merged — met (ae9ac5d)",
       "OQ-02 answered — met (DEC-039)",
-      "PO start signal for T-M1.3 — pending"
+      "PO start signal for T-M1.3 — met (DEC-042)"
     ],
     "nextSteps": [
-      "PO: give the start signal for T-M1.3 (and, separately, approve the persistent user podman.socket for T-M1.4)",
-      "Implement T-M1.3 per its packet (frontend-implementer role); UX review + independent QA at G3; LC merge via scripts/merge-gate.sh"
+      "Open PR; CI (docs-check, secrets-scan, backend, web)",
+      "G3: UX review + independent QA (fresh-context agents); LC-APPROVED; merge via merge-gate from develop"
     ],
     "trace": [
       "ADR-0004",
@@ -149,12 +149,12 @@
   "decisions": {
     "log": "docs/10-governance/decision-log.md",
     "recent": [
-      "DEC-036",
       "DEC-037",
       "DEC-038",
       "DEC-039",
       "DEC-040",
-      "DEC-041"
+      "DEC-041",
+      "DEC-042"
     ],
     "pendingPO": [
       "OQ-03",
@@ -206,6 +206,13 @@
       "status": "approved",
       "at": "2026-09-25T07:09:34Z",
       "ref": "DEC-035"
+    },
+    {
+      "what": "Start T-M1.3 (web skeleton)",
+      "by": "PO",
+      "status": "approved",
+      "at": "2026-09-25T12:30:00Z",
+      "ref": "DEC-042"
     }
   ],
   "environment": {

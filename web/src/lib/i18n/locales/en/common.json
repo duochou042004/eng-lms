@@ -1,0 +1,33 @@
+{
+  "app": {
+    "name": "Eng-LMS",
+    "skipToContent": "Skip to main content"
+  },
+  "language": {
+    "label": "Language",
+    "vi": "Tiếng Việt",
+    "en": "English"
+  },
+  "landing": {
+    "title": "Teaching workspace",
+    "description": "Choose an area to continue.",
+    "tutor": "Tutor area",
+    "student": "Student area"
+  },
+  "notFound": {
+    "title": "Page not found",
+    "description": "This link does not exist or has moved.",
+    "home": "Go to the start page"
+  },
+  "error": {
+    "title": "Something went wrong",
+    "description": "Reload the page. If the problem continues, include the request ID when you report it.",
+    "requestId": "Request ID: {{requestId}}",
+    "reload": "Reload page"
+  },
+  "meta": {
+    "loading": "Loading workspace information",
+    "error": "Could not load the workspace information",
+    "retry": "Try again"
+  }
+}

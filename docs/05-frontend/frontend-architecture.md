@@ -30,7 +30,7 @@ web/
   e2e/ → lives at repo root /e2e (implementation-owned) ; /qa (QA-owned)
 ```
 
-**Import rules (ESLint `import/no-restricted-paths` + `no-restricted-imports`):** `features/*` may import `ui`, `lib`, `extensions` and their **own** folder only.
+**Import rules (oxlint `no-restricted-imports` + `no-restricted-globals` with per-path overrides, `web/.oxlintrc.json`; DEC-042):** `features/*` may import `ui`, `lib`, `extensions` and their **own** folder only.
 Cross-feature needs go through `lib` or via route composition. `react-aria-components` may be imported only inside `ui/`. No `fetch` outside `lib/api`.
 
 ## 2. Data flow
