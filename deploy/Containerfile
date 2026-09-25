@@ -12,7 +12,8 @@ RUN corepack enable
 COPY web/package.json web/pnpm-lock.yaml web/pnpm-workspace.yaml ./
 RUN --mount=type=cache,target=/root/.local/share/pnpm/store pnpm install --frozen-lockfile
 COPY web/ ./
-RUN pnpm build
+# The Vite manifest only drives the bundle budget; it is not part of the served SPA (T-M1.5 QA F4).
+RUN pnpm build && rm -rf dist/.vite
 
 # --- Stage 2: the Boot jar with the SPA under static/, extracted as layers (Temurin 25 JDK + Maven wrapper) ----------
 FROM docker.io/library/eclipse-temurin:25-jdk@sha256:97014c4b396021f9ddb7d592a7dbedb0c4e4215c29e03dc01c393558aefb71c2 AS app

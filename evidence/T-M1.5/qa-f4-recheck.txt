@@ -1,0 +1,8 @@
+# QA F4 re-check 2026-09-25T14:55:57Z: /.vite/manifest.json must not be served
+GET /.vite/manifest.json -> 404 application/problem+json
+GET /tutor -> 200 text/html
+.
+..
+assets
+favicon.svg
+index.html

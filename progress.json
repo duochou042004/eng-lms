@@ -16,7 +16,7 @@
       }
     ]
   },
-  "updatedAt": "2026-09-25T14:45:00Z",
+  "updatedAt": "2026-09-25T15:00:00Z",
   "updatedBy": "lead-coordinator (session 2026-09-25 #4, Opus 5.5)",
   "phase": {
     "id": "P1",
@@ -32,7 +32,7 @@
   "currentTask": {
     "id": "T-M1.5",
     "title": "Single image + same-origin SPA serving, gate.sh, contract-drift CI",
-    "status": "in_review",
+    "status": "qa",
     "ownerRole": "BE",
     "branch": "feature/T-M1.5-single-image",
     "packet": "docs/tasks/T-M1.5-single-image.md",
@@ -44,10 +44,9 @@
       "PO start signal for T-M1.5 — met (DEC-048)"
     ],
     "nextSteps": [
-      "contract-drift negative demo on CI (throwaway 11f7e02, then revert)",
-      "clean-clone image build evidence",
-      "independent QA (fresh agent), fix S1/S2",
-      "QA-VERDICT + LC-APPROVED after the final head's CI is green; merge via scripts/merge-gate.sh"
+      "QA round 1 FAIL (F1 S2: backend check red on the artifact quota) → fixed (DEC-053); F2→T-M1.8, F3→T-M2.1, F4 fixed (DEC-054)",
+      "CI green on the fix head; QA re-test (fresh agent)",
+      "QA-VERDICT + LC-APPROVED; merge via scripts/merge-gate.sh"
     ],
     "trace": [
       "ADR-0004",
@@ -58,7 +57,9 @@
       "DEC-049",
       "DEC-050",
       "DEC-051",
-      "DEC-052"
+      "DEC-052",
+      "DEC-053",
+      "DEC-054"
     ]
   },
   "nextTask": {
@@ -174,11 +175,12 @@
   "decisions": {
     "log": "docs/10-governance/decision-log.md",
     "recent": [
-      "DEC-048",
       "DEC-049",
       "DEC-050",
       "DEC-051",
-      "DEC-052"
+      "DEC-052",
+      "DEC-053",
+      "DEC-054"
     ],
     "pendingPO": [
       "OQ-03",

@@ -46,7 +46,8 @@ class SpaFallbackFilter extends OncePerRequestFilter {
 		if (!"GET".equals(method) && !"HEAD".equals(method)) {
 			return false;
 		}
-		// Decoded, normalised and without ;path-parameters, as the handler mapping sees it.
+		// Decoded and without ;path-parameters, as the handler mapping sees it. Raw dot-segments ("/./api") are not
+		// resolved here: such a path gets the SPA shell, never a handler (T-M1.5 QA F3); T-M2.1's firewall rejects them.
 		String path = UrlPathHelper.defaultInstance.getPathWithinApplication(request);
 		for (String root : EXCLUDED_ROOTS) {
 			if (path.equals(root) || path.startsWith(root + "/")) {
