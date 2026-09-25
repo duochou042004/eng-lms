@@ -32,6 +32,8 @@
 		<!-- Non-Initializr dependencies (T-M1.2; tech-stack.md §7). -->
 		<springdoc-openapi.version>3.1.1</springdoc-openapi.version>
 		<archunit.version>1.5.1</archunit.version>
+		<!-- Coverage report only, no threshold yet (T-M1.5, OQ-16; floors start with the first domain module). -->
+		<jacoco.version>0.8.15</jacoco.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -186,6 +188,26 @@
 								</path>
 							</annotationProcessorPaths>
 						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>${jacoco.version}</version>
+				<executions>
+					<execution>
+						<id>prepare-agent</id>
+						<goals>
+							<goal>prepare-agent</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>report</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>report</goal>
+						</goals>
 					</execution>
 				</executions>
 			</plugin>
