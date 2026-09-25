@@ -1,0 +1,111 @@
+{
+  "schemaVersion": "1.0",
+  "project": {
+    "name": "Eng-LMS",
+    "description": "Private 1:1 teaching workspace for a single English tutor and their students (flexible LMS; not a school/centre LMS, SaaS, marketplace, booking, payment, chat, conferencing, Drive clone or AI tutor).",
+    "repoLocal": "/home/kali/App_sources/Eng-LMS",
+    "repoRemote": null,
+    "sources": [
+      { "path": "docs/00-sources/personal_english_tutor_teaching_workspace_spec.md", "sha256": "72b023aaaafcf8af2fb3935173e01bc0365656167aade6ea83ffe42fd2ec0e62" },
+      { "path": "docs/00-sources/conversation_with_AI.md", "sha256": "38c908d4de3ecc0159d187f2372ebb4ed0b6732dd3131cc0bf88b93143626472" }
+    ]
+  },
+  "updatedAt": "2026-09-25T06:22:00Z",
+  "updatedBy": "lead-coordinator (session 2026-09-25, Opus 5.5)",
+  "phase": { "id": "P0", "name": "Planning & Harness", "status": "awaiting_approval" },
+  "milestone": {
+    "id": "M0",
+    "name": "Documentation baseline and harness",
+    "status": "awaiting_approval",
+    "exitCriteria": "All docs in docs/README.md exist with valid links; progress.json validates; PO approves the baseline and answers or accepts the defaults for OQ-01..OQ-15 (docs/01-product/roadmap.md)."
+  },
+  "currentTask": {
+    "id": "T-M0.1",
+    "title": "Planning baseline: docs system, ADRs, harness, progress.json",
+    "status": "awaiting_approval",
+    "ownerRole": "LC",
+    "branch": "docs/T-M0.1-planning-baseline",
+    "packet": "docs/tasks/backlog.md#m0--planning-baseline-p0",
+    "pr": null,
+    "lastCommit": null,
+    "startedAt": "2026-09-25T05:30:00Z",
+    "entryGate": [],
+    "nextSteps": [
+      "PO reviews docs/README.md reading path and docs/10-governance/open-questions.md",
+      "PO records PO-APPROVED T-M0.1 (or requests changes) and answers or accepts the defaults for OQ-01, OQ-15 (needed for T-M1.1)",
+      "LC performs the bootstrap merge into develop (DEC-030) and starts T-M1.1"
+    ],
+    "trace": ["PO goal 2026-09-25", "SPEC §52", "SPEC §60"]
+  },
+  "nextTask": {
+    "id": "T-M1.1",
+    "title": "Remote repository bootstrap and governance automation",
+    "status": "draft",
+    "ownerRole": "LC",
+    "branch": "chore/T-M1.1-repo-governance",
+    "packet": "docs/tasks/T-M1.1-repo-bootstrap-governance.md",
+    "pr": null,
+    "lastCommit": null,
+    "startedAt": null,
+    "entryGate": [
+      "PO-APPROVED T-M0.1 recorded in the decision log",
+      "OQ-01 answered (repo name/visibility) or default accepted",
+      "OQ-15 answered (activate .claude/settings.json)",
+      "PO authorises the outward-facing actions: gh repo create + push"
+    ],
+    "nextSteps": [],
+    "trace": ["DEC-020", "DEC-028", "DEC-030", "OQ-01", "OQ-15"]
+  },
+  "completed": [],
+  "tests": {
+    "lastRun": null,
+    "summary": "No product code exists (by design). Planning checks: scripts/check-docs.sh (links, progress schema, handoff prompt length).",
+    "suites": [
+      { "name": "docs-check (scripts/check-docs.sh)", "result": "not_run", "details": "Run at the end of T-M0.1; see evidence/T-M0.1/summary.md" },
+      { "name": "backend", "result": "n/a", "details": "Created in T-M1.2" },
+      { "name": "web", "result": "n/a", "details": "Created in T-M1.3" },
+      { "name": "e2e", "result": "n/a", "details": "Created in T-M1.6" }
+    ]
+  },
+  "gates": {
+    "G0": { "status": "pass", "note": "T-M0.1 was defined by the PO goal directly" },
+    "G1": { "status": "pending", "note": "Local docs check" },
+    "G2": { "status": "n/a", "note": "No remote/CI yet (DEC-028); bootstrap exception DEC-030" },
+    "G3": { "status": "pending", "note": "Docs review + PO approval required (quality-gates.md G3 docs rule)" },
+    "G4": { "status": "pending", "note": "Bootstrap --no-ff merge into develop after PO approval" }
+  },
+  "blockers": [
+    { "id": "B-001", "description": "Implementation may not start until the PO approves the planning baseline (goal step 8; quality-gates G0).", "owner": "PO", "since": "2026-09-25" },
+    { "id": "B-002", "description": "Remote repository creation needs PO authorisation and the OQ-01 answer (outward-facing action).", "owner": "PO", "since": "2026-09-25" }
+  ],
+  "decisions": {
+    "log": "docs/10-governance/decision-log.md",
+    "recent": ["DEC-001", "DEC-004", "DEC-005", "DEC-010", "DEC-013", "DEC-025", "DEC-028", "DEC-029", "DEC-030"],
+    "pendingPO": ["OQ-01", "OQ-02", "OQ-03", "OQ-04", "OQ-05", "OQ-06", "OQ-07", "OQ-08", "OQ-09", "OQ-10", "OQ-11", "OQ-12", "OQ-13", "OQ-14", "OQ-15", "DEC-010", "DEC-029", "DEC-030"]
+  },
+  "risks": {
+    "register": "docs/10-governance/risk-register.md",
+    "top": ["R-01", "R-02", "R-14", "R-04", "R-06", "R-09", "R-12", "R-18"]
+  },
+  "approvals": [
+    { "what": "T-M0.1 planning baseline (docs, ADR-0001..0016, DEC-001..030)", "by": "PO", "status": "pending", "at": null, "ref": "docs/README.md" },
+    { "what": "Outward-facing: create GitHub repo + push (T-M1.1)", "by": "PO", "status": "pending", "at": null, "ref": "docs/tasks/T-M1.1-repo-bootstrap-governance.md" }
+  ],
+  "environment": {
+    "jdk": "Temurin 25.0.4 (SDKMAN; source ~/.sdkman/bin/sdkman-init.sh)",
+    "springBootCli": "4.1.0 (Initializr default Boot 4.1.1)",
+    "buildTool": "Maven Wrapper (no global mvn/gradle installed)",
+    "node": "24.21.0 via nvm (source ~/.nvm/nvm.sh; not on non-interactive PATH)",
+    "pnpm": "12.6.0 (corepack 0.36.0)",
+    "podman": "5.8.6 rootless + podman-compose 1.6.0; user podman.socket disabled (needed for Testcontainers, T-M1.4)",
+    "gh": "2.101.0, authenticated as duochou042004 (scopes: repo, workflow, read:org, gist)",
+    "host": "Kali Linux 7.1.5, 16 cores, 22 GB RAM, 92 GB free",
+    "python": "3.14.7 with jsonschema 4.26.0 (used by scripts/validate_progress.py)"
+  },
+  "history": [
+    { "at": "2026-09-25T05:30:00Z", "actor": "lead-coordinator", "event": "Session start: PO goal set (HoH planning; no product code). Read SPEC (61 sections) and CONV (25 sections) in full." },
+    { "at": "2026-09-25T05:40:00Z", "actor": "lead-coordinator", "event": "Environment inventory: JDK 25.0.4, Boot CLI 4.1.0, Node 24.21 (nvm), pnpm 12.6, Podman 5.8.6, gh authenticated; directory was not a git repo." },
+    { "at": "2026-09-25T05:45:00Z", "actor": "lead-coordinator", "event": "git init: master (initial commit bbef1f2 with immutable sources), develop, docs/T-M0.1-planning-baseline (DEC-028)." },
+    { "at": "2026-09-25T06:22:00Z", "actor": "lead-coordinator", "event": "Documentation baseline written: product, requirements, architecture + 16 ADRs, backend, frontend, quality, operations, plugin store, harness, governance, backlog, T-M1.1 packet." }
+  ]
+}
