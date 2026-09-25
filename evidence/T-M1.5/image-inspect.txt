@@ -1,6 +1,5 @@
-# T-M1.5 image inspect (2026-09-25T14:29:34Z)
-## podman image inspect englms:dev
-Id=710e4a1e36812cdfa0a88639d7ff8594674ca2c46a2716c5b8cbea61b2803bd9
+# T-M1.5 image inspect (2026-09-25T14:42:29Z), image built from 0059392 (the head's Containerfile + web fix)
+Id=8bf8d4a414b080e81ac0f96a4acae025d4fe62a973a1d04acf8ef86f236203a6
 User=10001:10001
 Size=415923605 bytes
 Entrypoint=[java -XX:MaxRAMPercentage=75 -Djava.io.tmpdir=/tmp org.springframework.boot.loader.launch.JarLauncher]
@@ -12,7 +11,7 @@ Layers=11
 0B	/bin/sh -c #(nop) HEALTHCHECK --interval=3...
 0B	/bin/sh -c #(nop) EXPOSE 8080 8081
 0B	/bin/sh -c #(nop) USER 10001:10001
-752kB	/bin/sh -c #(nop) COPY dir:e81bd114b35a238...
+752kB	/bin/sh -c #(nop) COPY dir:389593599283668...
 1.02kB	/bin/sh -c #(nop) COPY dir:5f70bf18a086007...
 489kB	/bin/sh -c #(nop) COPY dir:949fa55193aa5eb...
 65.7MB	/bin/sh -c #(nop) COPY dir:7a805dd3eae7129...
@@ -34,7 +33,7 @@ Layers=11
 0B	umoci config --image /home/buildd/rockcraf...
 0B	umoci config --image /home/buildd/rockcraf...
 112MB	umoci raw add-layer --image /home/buildd/r...
-## base image digests (from deploy/Containerfile)
+## base image digests (deploy/Containerfile)
 docker.io/library/node:24-slim@sha256:0e0ff40c39bc087845bfb27465a0df4ea419520094bc35842ff83dd8cbe6f9b6
 docker.io/library/eclipse-temurin:25-jdk@sha256:97014c4b396021f9ddb7d592a7dbedb0c4e4215c29e03dc01c393558aefb71c2
 docker.io/library/eclipse-temurin:25-jre@sha256:bb036ed6cfdc57e3da7c22634d15f1b840d2caf76183861c80e81ca4b5104abb
@@ -51,19 +50,12 @@ absent: pnpm
 absent: curl
 absent: wget
 java jfr jrunscript jwebserver keytool rmiregistry 
-drwxr-xr-x 1 root root 4096 Sep 25 14:27 /app
-drwxr-xr-x 1 root root 4096 Sep 25 14:27 /app/BOOT-INF
+drwxr-xr-x 1 root root 4096 Sep 25 14:36 /app
+drwxr-xr-x 1 root root 4096 Sep 25 14:36 /app/BOOT-INF
 touch: cannot touch '/app/x': Permission denied
 ## running container (read-only root, tmpfs /tmp)
 ReadonlyRootfs=true Tmpfs=map[/tmp:rprivate,nosuid,nodev,tmpcopyup] Health=healthy User=10001:10001
 uid=10001(englms) gid=10001(englms) groups=10001(englms)
 touch: cannot touch '/app/probe': Read-only file system
 /tmp writable
-hsperfdata_englms
-hsperfdata_root
-probe
-tomcat-docbase.8080.17676280206009400521
-tomcat-docbase.8081.16276921447355653646
-tomcat.8080.17388548219631144670
-tomcat.8081.7823235348577251910
 podman healthcheck run: healthy
