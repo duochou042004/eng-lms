@@ -14,7 +14,7 @@
 | AC4 primitives | `src/ui/`: Button (4 variants, 2 sizes, disabled, pending), IconButton (required label), Field + TextField (label/hint/error, invalid, disabled), InlineAlert (4 tones, status/alert roles), Skeleton, EmptyState, PageHeader, Stack. Tests: `Button.test.tsx`, `TextField.test.tsx`, `Display.test.tsx` (keyboard, states, axe-core clean); all in `/dev/ui` | ✅ |
 | AC5 vi default, en switch, persistence, completeness | `app.test.tsx` (vi default; switch to English changes the headings, skip link and `<html lang>`, stored in localStorage), `initialLocale.test.ts`, `i18n-completeness.test.ts`. Live: `viewports-ac9.md` (still English after a full reload). Negative: `negative-ac5-i18n.txt` (missing en key → failure naming `shell:student.emptyTitle`) | ✅ |
 | AC6 generated client + `/meta` states | `src/lib/api/schema.d.ts` from `api/openapi.json` (`pnpm api:generate`; CI checks for no diff). `app.test.tsx` covers the MSW-backed displayName, the Skeleton loading status and the InlineAlert on a Problem Details 500 with retry. `problem.test.ts` covers the ApiError mapping (code, requestId, unknown code, non-problem body, network error) | ✅ |
-| AC7 split shells, budget, no `/dev/ui` in prod | `budget-ac7.txt`: student 142.2 KB gz ≤ 200, tutor 142.2 KB gz ≤ 300 (separate lazy chunks); `BUDGET_STUDENT_KB=100` → FAIL; `DevUiPage` is absent from the manifest and "Component gallery" from `dist/` | ✅ |
+| AC7 split shells, budget, no `/dev/ui` in prod | `budget-ac7.txt`: student 142.2 KB gz ≤ 200, tutor 142.2 KB gz ≤ 300 (separate lazy chunks); `BUDGET_STUDENT_KB=100` → FAIL; the `DevUiPage` route and component are absent from the manifest. **Correction (QA F-1):** the dev-only `dev` i18n namespace strings (e.g. "Component gallery") still ship in `dist/` (`budget-ac7.txt` shows 1 file); lazy-loading that namespace is deferred to T-M1.9 (DEC-045) | ✅ |
 | AC8 contrast script | `negative-ac8-contrast.txt`: the initial design-system values fail 4 pairs (text-subtle 4.41:1, border-strong 1.75:1). The final tokens pass all 25 pairs. design-system §2 is updated | ✅ |
 | AC9 3 viewports, no horizontal scroll, focus visible | `screenshots/` (landing, tutor, student, 404 × 360×740, 768×1024, 1280×800), `viewports-ac9.md` (0 px overflow at 320 px on 5 routes; 2 px focus ring) | ✅ |
 | AC10 docs, required check, Dependabot, progress | tech-stack §3/§7, development-setup §4, ci-cd (`web` live), design-system §2, frontend-architecture §1, DEC-042; `web` in `scripts/required-checks.txt` + merge-gate fixture (script tests pass); Dependabot `npm` `/web`; `progress.json` | ✅ |
@@ -32,6 +32,7 @@ cd web && pnpm install --frozen-lockfile && pnpm lint && pnpm typecheck && pnpm 
 
 ## Reviews
 - UX round 1 at `16787bd`: CHANGES REQUESTED (F1/F2 S2). F1, F2, F4, F6, F7, F8 and the F9 warning role are fixed. F3/F5 are deferred to T-M1.9 (DEC-043). New screenshots include `tutor-meta-error-phone-small.png` (compact header error state). The full review is in the PR #4 comment.
-- UX round 2 and independent QA: pending (next session).
+- UX round 2 at `f113908`: **APPROVED** (F1/F2/F4/F6–F9 verified; N1–N4 S3/S4 → T-M1.9).
+- Independent QA at `f113908`: **PASS WITH MINOR** (F-1..F-3, all S4). F-3 (a doc row) and the F-1 evidence wording are fixed; F-1 (code) and F-2 → T-M1.9 (DEC-045). The report goes on `qa/T-M1.3`.
 
 UX review and independent QA: see the PR comments. The reports are recorded on non-implementation branches (path ownership).

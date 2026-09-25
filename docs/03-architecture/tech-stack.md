@@ -62,7 +62,7 @@
 | Rich text editor | **TipTap** (ProseMirror): **proposed**, confirmed by an M4 spike | Extensible, outputs HTML that is sanitised on the server | Lexical, Quill |
 | Sanitise on render | **DOMPurify** | Defence in depth (NFR-SEC-09) | — |
 | Charts | In-house SVG `Sparkline` and `ScoreLine` (≤ 150 LOC) | Only 2 tiny chart types are needed (SPEC §27: few charts) | Recharts or ECharts (heavy for 2 charts) |
-| Unit/component tests | **Vitest** + Testing Library + **MSW** + vitest-axe | Vite-native | Jest |
+| Unit/component tests | **Vitest** + Testing Library + **MSW** + **axe-core** (direct, `web/src/test/axe.ts`) | Vite-native | Jest |
 | E2E | **Playwright** (+ `@axe-core/playwright`), projects per viewport and engine | Multi-browser (incl. WebKit), visual snapshots | Cypress (no WebKit) |
 | Lint/format | **oxlint** (the Vite 9 template default; react, react-hooks, jsx-a11y, import rules; DEC-042), Prettier, stylelint (token rules), `tsc -b` | Standard gates | — |
 
