@@ -16,7 +16,7 @@
       }
     ]
   },
-  "updatedAt": "2026-09-25T12:10:00Z",
+  "updatedAt": "2026-09-25T12:45:00Z",
   "updatedBy": "lead-coordinator (session 2026-09-25, Opus 5.5)",
   "phase": {
     "id": "P1",
@@ -32,22 +32,21 @@
   "currentTask": {
     "id": "T-M1.2",
     "title": "Backend skeleton via Spring Boot CLI",
-    "status": "in_progress",
+    "status": "awaiting_approval",
     "ownerRole": "BE",
     "branch": "feature/T-M1.2-backend-skeleton",
     "packet": "docs/tasks/T-M1.2-backend-skeleton.md",
-    "pr": null,
-    "lastCommit": null,
+    "pr": "https://github.com/duochou042004/eng-lms/pull/2",
+    "lastCommit": "e9a974b",
     "startedAt": "2026-09-25T11:50:36Z",
     "entryGate": [
       "T-M1.1 merged — met (f1e3caa)",
       "PO approved start of T-M1.2 (DEC-039), in the next session"
     ],
     "nextSteps": [
-      "Push, open PR, wait for CI (docs-check, secrets-scan, backend)",
-      "AC7 drift demo on a throwaway commit, then revert",
-      "Independent QA (fresh-context agent) → QA-VERDICT; LC-APPROVED; merge via scripts/merge-gate.sh from develop",
-      "Post-merge: record merge commit, QA report on qa/T-M1.2, write T-M1.3 packet"
+      "QA-VERDICT T-M1.2: PASS WITH MINOR (4 × S4; F2 fixed, F1/F3/F4 → T-M1.8 per DEC-041)",
+      "Post QA-VERDICT + LC-APPROVED after the final head commit; merge via scripts/merge-gate.sh from develop",
+      "Post-merge: record merge commit; QA report on qa/T-M1.2; T-M1.3 packet"
     ],
     "trace": [
       "ADR-0001",

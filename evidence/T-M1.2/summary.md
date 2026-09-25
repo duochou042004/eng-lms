@@ -41,4 +41,4 @@ spring init --boot-version=4.1.1 … backend                       # spring-init
 - The Modulith JDBC schema was taken verbatim from `spring-modulith-events-jdbc-2.1.1.jar!/…/schemas/v2/schema-postgresql.sql`.
 
 ## QA
-Independent QA report: `evidence/T-M1.2/qa/report.md` (committed on `qa/T-M1.2`, as path ownership forbids QA paths on feature branches).
+Verdict **PASS WITH MINOR** at `e9a974b` (F1–F4, all S4). F2 was fixed (progress.json). F1/F3/F4 are deferred to T-M1.8 (DEC-041). Independent QA report: `evidence/T-M1.2/qa/report.md` (committed on `qa/T-M1.2`, as path ownership forbids QA paths on feature branches).
