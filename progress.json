@@ -16,7 +16,7 @@
       }
     ]
   },
-  "updatedAt": "2026-09-25T06:28:06Z",
+  "updatedAt": "2026-09-25T07:03:04Z",
   "updatedBy": "lead-coordinator (session 2026-09-25, Opus 5.5)",
   "phase": {
     "id": "P0",
@@ -54,7 +54,7 @@
   "nextTask": {
     "id": "T-M1.1",
     "title": "Remote repository bootstrap and governance automation",
-    "status": "draft",
+    "status": "ready",
     "ownerRole": "LC",
     "branch": "chore/T-M1.1-repo-governance",
     "packet": "docs/tasks/T-M1.1-repo-bootstrap-governance.md",
@@ -62,10 +62,10 @@
     "lastCommit": null,
     "startedAt": null,
     "entryGate": [
-      "PO-APPROVED T-M0.1 recorded in the decision log",
-      "OQ-01 answered (repo name/visibility) or default accepted",
-      "OQ-15 answered (activate .claude/settings.json)",
-      "PO authorises the outward-facing actions: gh repo create + push"
+      "PO-APPROVED T-M0.1 recorded in the decision log — met",
+      "OQ-01 answered (repo name/visibility) or default accepted — met",
+      "OQ-15 answered (activate .claude/settings.json) — met",
+      "PO authorises the outward-facing actions: gh repo create + push — met"
     ],
     "nextSteps": [],
     "trace": [
@@ -73,7 +73,11 @@
       "DEC-028",
       "DEC-030",
       "OQ-01",
-      "OQ-15"
+      "OQ-15",
+      "DEC-032",
+      "DEC-033",
+      "DEC-034",
+      "DEC-035"
     ]
   },
   "completed": [],
@@ -118,43 +122,26 @@
       "note": "No remote/CI yet (DEC-028); bootstrap exception DEC-030"
     },
     "G3": {
-      "status": "pending",
-      "note": "Docs review + PO approval required (quality-gates.md G3 docs rule)"
+      "status": "pass",
+      "note": "PO-APPROVED T-M0.1 (DEC-032) satisfies G3 for the planning baseline"
     },
     "G4": {
       "status": "pending",
       "note": "Bootstrap --no-ff merge into develop after PO approval"
     }
   },
-  "blockers": [
-    {
-      "id": "B-001",
-      "description": "Implementation may not start until the PO approves the planning baseline (goal step 8; quality-gates G0).",
-      "owner": "PO",
-      "since": "2026-09-25"
-    },
-    {
-      "id": "B-002",
-      "description": "Remote repository creation needs PO authorisation and the OQ-01 answer (outward-facing action).",
-      "owner": "PO",
-      "since": "2026-09-25"
-    }
-  ],
+  "blockers": [],
   "decisions": {
     "log": "docs/10-governance/decision-log.md",
     "recent": [
-      "DEC-001",
-      "DEC-004",
-      "DEC-005",
-      "DEC-010",
-      "DEC-013",
-      "DEC-025",
-      "DEC-028",
-      "DEC-029",
-      "DEC-030"
+      "DEC-030",
+      "DEC-031",
+      "DEC-032",
+      "DEC-033",
+      "DEC-034",
+      "DEC-035"
     ],
     "pendingPO": [
-      "OQ-01",
       "OQ-02",
       "OQ-03",
       "OQ-04",
@@ -167,11 +154,7 @@
       "OQ-11",
       "OQ-12",
       "OQ-13",
-      "OQ-14",
-      "OQ-15",
-      "DEC-010",
-      "DEC-029",
-      "DEC-030"
+      "OQ-14"
     ]
   },
   "risks": {
@@ -191,16 +174,16 @@
     {
       "what": "T-M0.1 planning baseline (docs, ADR-0001..0016, DEC-001..030)",
       "by": "PO",
-      "status": "pending",
-      "at": null,
-      "ref": "docs/README.md"
+      "status": "approved",
+      "at": "2026-09-25T07:03:04Z",
+      "ref": "DEC-032"
     },
     {
       "what": "Outward-facing: create GitHub repo + push (T-M1.1)",
       "by": "PO",
-      "status": "pending",
-      "at": null,
-      "ref": "docs/tasks/T-M1.1-repo-bootstrap-governance.md"
+      "status": "approved",
+      "at": "2026-09-25T07:03:04Z",
+      "ref": "DEC-033"
     }
   ],
   "environment": {
@@ -239,6 +222,11 @@
       "at": "2026-09-25T06:28:06Z",
       "actor": "lead-coordinator",
       "event": "T-M0.1 committed (fa12051) on docs/T-M0.1-planning-baseline; docs gate PASS incl. negative test; status awaiting_approval (PO)."
+    },
+    {
+      "at": "2026-09-25T07:03:04Z",
+      "actor": "PO",
+      "event": "PO-APPROVED T-M0.1; OQ-01 and OQ-15 set to their defaults; README refresh requested (DEC-032..035). T-M1.1 is ready."
     }
   ]
 }
