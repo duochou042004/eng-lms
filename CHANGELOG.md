@@ -14,6 +14,12 @@ All notable changes to this project are documented here. Format: [Keep a Changel
 - `scripts/merge-gate.sh`, `scripts/check-path-ownership.sh`, pre-push hook (`scripts/install-hooks.sh`), with 34 tests. Agent permission settings activated.
 - Branch protection is unavailable on this plan, so the harness enforces the rules instead (DEC-031).
 
+### Backend (T-M1.2)
+- `backend/` generated with `spring init`: Spring Boot 4.1.1, Java 25, Spring Modulith 2.1.1; modules `shared` and `settings` (`GET /api/v1/meta`).
+- RFC 9457 Problem Details with a stable `code` and `requestId`; `X-Request-Id`; ECS JSON logs; Actuator `health`/`info` on :8081 only.
+- Flyway V1: `unaccent`, `pg_trgm`, `app.simple_unaccent`, the Modulith JDBC event registry. OpenAPI contract `api/openapi.json`.
+- `backend` CI on every PR (required check) with modularity, ArchUnit, forbidden-identifier, Testcontainers PostgreSQL 18 and contract tests.
+
 ### Documentation
 - The README was redesigned: badges, Mermaid architecture and delivery diagrams, roadmap, docs map (DEC-035).
 
