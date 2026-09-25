@@ -36,7 +36,7 @@ Hierarchy comes from **typography and spacing**, not from boxes, shadows or colo
 Body 1 rem / line-height 1.55. Headings 600 weight, tight line height 1.25. `font-variant-numeric: tabular-nums` for scores, times and counts.
 Use at most **3 sizes per screen region**.
 
-**Spacing:** 4 px grid → `--space-1..10` = 4, 8, 12, 16, 20, 24, 32, 40, 48, 64. **Radii:** `--radius-sm` 6, `--radius-md` 10, `--radius-full`.
+**Spacing:** 4 px grid → `--space-1..10` = 4, 8, 12, 16, 20, 24, 32, 40, 48, 64. **Controls:** `--size-control-md` 44 px (2.75rem; inputs and primary targets), `--size-control-lg` 48 px. **Radii:** `--radius-sm` 6, `--radius-md` 10, `--radius-full`.
 **Elevation:** only `--shadow-overlay` (menus, popovers, sheets). Resting surfaces use borders, not shadows. **Motion:** 120–200 ms ease-out. Honour
 `prefers-reduced-motion` (no movement, fade only). **Z-index:** `--z-sticky`, `--z-overlay`, `--z-toast` only.
 

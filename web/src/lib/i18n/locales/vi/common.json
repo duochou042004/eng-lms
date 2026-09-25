@@ -1,7 +1,8 @@
 {
   "app": {
     "name": "Eng-LMS",
-    "skipToContent": "Bỏ qua, đến nội dung chính"
+    "skipToContent": "Chuyển đến nội dung chính",
+    "loading": "Đang tải trang"
   },
   "language": {
     "label": "Ngôn ngữ",
@@ -20,14 +21,14 @@
     "home": "Về trang đầu"
   },
   "error": {
-    "title": "Đã xảy ra lỗi",
+    "title": "Không hiển thị được trang này",
     "description": "Hãy tải lại trang. Nếu lỗi vẫn còn, hãy gửi kèm mã yêu cầu khi báo lỗi.",
     "requestId": "Mã yêu cầu: {{requestId}}",
     "reload": "Tải lại trang"
   },
   "meta": {
     "loading": "Đang tải thông tin không gian dạy học",
-    "error": "Không tải được thông tin không gian dạy học",
+    "error": "Không tải được tên lớp",
     "retry": "Thử lại"
   }
 }

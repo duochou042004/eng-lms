@@ -16,7 +16,7 @@
       }
     ]
   },
-  "updatedAt": "2026-09-25T13:10:00Z",
+  "updatedAt": "2026-09-25T13:40:00Z",
   "updatedBy": "lead-coordinator (session 2026-09-25 #3, Opus 5.5)",
   "phase": {
     "id": "P1",
@@ -32,11 +32,11 @@
   "currentTask": {
     "id": "T-M1.3",
     "title": "Web skeleton (Vite + React + TS, design tokens, i18n vi/en, CI)",
-    "status": "in_progress",
+    "status": "in_review",
     "ownerRole": "FE",
     "branch": "feature/T-M1.3-web-skeleton",
     "packet": "docs/tasks/T-M1.3-web-skeleton.md",
-    "pr": null,
+    "pr": "https://github.com/duochou042004/eng-lms/pull/4",
     "lastCommit": null,
     "startedAt": "2026-09-25T12:30:54Z",
     "entryGate": [
@@ -45,8 +45,10 @@
       "PO start signal for T-M1.3 — met (DEC-042)"
     ],
     "nextSteps": [
-      "Open PR; CI (docs-check, secrets-scan, backend, web)",
-      "G3: UX review + independent QA (fresh-context agents); LC-APPROVED; merge via merge-gate from develop"
+      "UX re-review round 2 (fresh ux-reviewer agent) at the new head; post UX-REVIEW T-M1.3: APPROVED when S1/S2 are clear",
+      "Independent QA (fresh general-purpose agent per qa-evaluator.md) → QA-VERDICT T-M1.3; fix S1/S2",
+      "Post QA-VERDICT + LC-APPROVED after the final head; merge via scripts/merge-gate.sh from develop",
+      "Post-merge: commit the UX review + QA report (qa/T-M1.3 branch for QA; review/ux.md on a chore/docs branch), record the merge, write the next packet (T-M1.4 if the podman.socket is approved, else T-M1.5)"
     ],
     "trace": [
       "ADR-0004",
@@ -133,12 +135,12 @@
       "note": "T-M1.3 not started"
     },
     "G2": {
-      "status": "pending",
-      "note": "T-M1.3 not started"
+      "status": "pass",
+      "note": "PR #4 CI green (docs-check, secrets-scan, backend, web) at fc0c753/16787bd"
     },
     "G3": {
-      "status": "pending",
-      "note": "T-M1.3: QA-VERDICT + UX review required (UI packet)"
+      "status": "in_progress",
+      "note": "UX round 1 CHANGES REQUESTED → fixed (DEC-043); UX round 2 + QA pending"
     },
     "G4": {
       "status": "pending",
@@ -149,12 +151,12 @@
   "decisions": {
     "log": "docs/10-governance/decision-log.md",
     "recent": [
-      "DEC-037",
       "DEC-038",
       "DEC-039",
       "DEC-040",
       "DEC-041",
-      "DEC-042"
+      "DEC-042",
+      "DEC-043"
     ],
     "pendingPO": [
       "OQ-03",
@@ -291,6 +293,11 @@
       "at": "2026-09-25T12:18:43Z",
       "actor": "lead-coordinator",
       "event": "T-M1.2 merged via merge-gate (PR #2 → ae9ac5d); QA report PR #3 → 02b706c; T-M1.3 packet written (ready, awaiting PO start)."
+    },
+    {
+      "at": "2026-09-25T13:40:00Z",
+      "actor": "lead-coordinator",
+      "event": "T-M1.3 implemented (PR #4, CI green). UX round 1 CHANGES REQUESTED (F1/F2 S2) → fixed; F3/F5 → T-M1.9 (DEC-043). Session handed off at the context budget before UX round 2 + QA."
     }
   ]
 }

@@ -9,11 +9,11 @@ export interface EmptyStateProps {
   /** The next useful action. */
   action?: ReactNode
   /** Heading level inside the page outline. */
-  headingLevel?: 2 | 3
+  headingLevel?: 1 | 2 | 3
 }
 
 export function EmptyState({ title, description, icon, action, headingLevel = 2 }: EmptyStateProps) {
-  const Heading = headingLevel === 2 ? 'h2' : 'h3'
+  const Heading = (['h1', 'h2', 'h3'] as const)[headingLevel - 1]!
   return (
     <section className={styles.empty}>
       {icon ? (

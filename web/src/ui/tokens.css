@@ -69,7 +69,7 @@
   --shadow-overlay: 0 8px 24px rgb(31 29 26 / 14%);
 
   /* Sizes */
-  --size-control-md: 2.5rem;
+  --size-control-md: 2.75rem; /* 44 px: inputs and primary targets (responsive-standards §3.4) */
   --size-control-lg: 3rem;
   --size-icon: 1.25rem;
   --size-content-max: 72rem;

@@ -15,12 +15,11 @@ export interface InlineAlertProps {
   action?: ReactNode
 }
 
-/** Status always pairs colour with an icon and text (design-system §4). Danger/warning are announced assertively. */
+/** Status always pairs colour with an icon and text (design-system §4). Only danger is announced assertively. */
 export function InlineAlert({ tone = 'info', title, children, action }: InlineAlertProps) {
   const Icon = ICONS[tone]
-  const urgent = tone === 'danger' || tone === 'warning'
   return (
-    <div role={urgent ? 'alert' : 'status'} className={cx(styles.alert, styles[tone])}>
+    <div role={tone === 'danger' ? 'alert' : 'status'} className={cx(styles.alert, styles[tone])}>
       <Icon aria-hidden="true" className={styles.icon} />
       <div className={styles.body}>
         <p className={styles.title}>{title}</p>

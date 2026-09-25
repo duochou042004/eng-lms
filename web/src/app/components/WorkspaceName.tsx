@@ -1,8 +1,9 @@
 import { useTranslation } from 'react-i18next'
 import { useMeta } from '../../features/settings/api/useMeta'
-import { Button, InlineAlert, Skeleton } from '../../ui'
+import { Button, Skeleton } from '../../ui'
+import styles from './WorkspaceName.module.css'
 
-/** The workspace display name from `GET /api/v1/meta`, with loading and error states. */
+/** The workspace display name from `GET /api/v1/meta`, with loading and a compact (header-sized) error state. */
 export function WorkspaceName() {
   const { t } = useTranslation()
   const meta = useMeta()
@@ -15,15 +16,12 @@ export function WorkspaceName() {
   }
   if (meta.isError) {
     return (
-      <InlineAlert
-        tone="danger"
-        title={t('meta.error')}
-        action={
-          <Button variant="secondary" onPress={() => void meta.refetch()}>
-            {t('meta.retry')}
-          </Button>
-        }
-      />
+      <div role="alert" className={styles.error}>
+        <span>{t('meta.error')}</span>
+        <Button variant="quiet" onPress={() => void meta.refetch()}>
+          {t('meta.retry')}
+        </Button>
+      </div>
     )
   }
   return <span>{meta.data.displayName}</span>

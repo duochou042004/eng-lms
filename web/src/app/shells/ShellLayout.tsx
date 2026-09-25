@@ -18,9 +18,9 @@ export function ShellLayout({ navLabel, children }: { navLabel: string; children
           <Link to="/" className={styles.homeLink}>
             {t('app.name')}
           </Link>
-          <span className={styles.workspace}>
+          <div className={styles.workspace}>
             <WorkspaceName />
-          </span>
+          </div>
         </nav>
         <LanguageSwitcher />
       </header>

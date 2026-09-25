@@ -1,7 +1,8 @@
 {
   "app": {
     "name": "Eng-LMS",
-    "skipToContent": "Skip to main content"
+    "skipToContent": "Skip to main content",
+    "loading": "Loading the page"
   },
   "language": {
     "label": "Language",
@@ -20,14 +21,14 @@
     "home": "Go to the start page"
   },
   "error": {
-    "title": "Something went wrong",
+    "title": "This page couldn't be displayed",
     "description": "Reload the page. If the problem continues, include the request ID when you report it.",
     "requestId": "Request ID: {{requestId}}",
     "reload": "Reload page"
   },
   "meta": {
     "loading": "Loading workspace information",
-    "error": "Could not load the workspace information",
+    "error": "Couldn't load the class name",
     "retry": "Try again"
   }
 }

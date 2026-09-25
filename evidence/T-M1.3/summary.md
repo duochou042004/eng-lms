@@ -31,4 +31,7 @@ cd web && pnpm install --frozen-lockfile && pnpm lint && pnpm typecheck && pnpm 
 ```
 
 ## Reviews
+- UX round 1 at `16787bd`: CHANGES REQUESTED (F1/F2 S2). F1, F2, F4, F6, F7, F8 and the F9 warning role are fixed. F3/F5 are deferred to T-M1.9 (DEC-043). New screenshots include `tutor-meta-error-phone-small.png` (compact header error state). The full review is in the PR #4 comment.
+- UX round 2 and independent QA: pending (next session).
+
 UX review and independent QA: see the PR comments. The reports are recorded on non-implementation branches (path ownership).

@@ -11,7 +11,7 @@ describe('InlineAlert', () => {
   it.each([
     ['info', 'status'],
     ['success', 'status'],
-    ['warning', 'alert'],
+    ['warning', 'status'],
     ['danger', 'alert'],
   ] as const)('%s uses role=%s, an icon and a text title', async (tone, role) => {
     const { container } = render(

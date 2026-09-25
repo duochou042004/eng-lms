@@ -8,8 +8,8 @@ export function NotFound() {
   const { t } = useTranslation()
   return (
     <main id="main" className={styles.page}>
-      <h1 className={styles.visuallyHidden}>{t('notFound.title')}</h1>
       <EmptyState
+        headingLevel={1}
         icon={<SearchX />}
         title={t('notFound.title')}
         description={t('notFound.description')}

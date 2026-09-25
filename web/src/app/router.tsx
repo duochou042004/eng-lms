@@ -1,5 +1,6 @@
 import { createBrowserRouter, createMemoryRouter, type RouteObject } from 'react-router'
 import { RouteError } from './routes/RouteError'
+import { RouteLoading } from './routes/RouteLoading'
 
 /**
  * Lazy route modules: the tutor and student shells are separate chunks, so a student never downloads tutor code
@@ -8,6 +9,7 @@ import { RouteError } from './routes/RouteError'
 export const routes: RouteObject[] = [
   {
     errorElement: <RouteError />,
+    hydrateFallbackElement: <RouteLoading />,
     children: [
       { index: true, lazy: async () => ({ Component: (await import('./routes/Landing')).Landing }) },
       { path: 'tutor/*', lazy: async () => ({ Component: (await import('./shells/TutorShell')).TutorShell }) },
