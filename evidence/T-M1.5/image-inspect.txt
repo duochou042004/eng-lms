@@ -1,0 +1,69 @@
+# T-M1.5 image inspect (2026-09-25T14:29:34Z)
+## podman image inspect englms:dev
+Id=710e4a1e36812cdfa0a88639d7ff8594674ca2c46a2716c5b8cbea61b2803bd9
+User=10001:10001
+Size=415923605 bytes
+Entrypoint=[java -XX:MaxRAMPercentage=75 -Djava.io.tmpdir=/tmp org.springframework.boot.loader.launch.JarLauncher]
+ExposedPorts=map[8080/tcp:{} 8081/tcp:{}]
+Healthcheck={[CMD bash -c exec 3<>/dev/tcp/127.0.0.1/8081 && printf 'GET /actuator/health/liveness HTTP/1.0\r\nHost: localhost\r\n\r\n' >&3 && head -n 1 <&3 | grep -q ' 200 '] 1m0s 0s 30s 5s 3}
+Layers=11
+## podman history
+0B	/bin/sh -c #(nop) ENTRYPOINT ["java", "-XX...
+0B	/bin/sh -c #(nop) HEALTHCHECK --interval=3...
+0B	/bin/sh -c #(nop) EXPOSE 8080 8081
+0B	/bin/sh -c #(nop) USER 10001:10001
+752kB	/bin/sh -c #(nop) COPY dir:e81bd114b35a238...
+1.02kB	/bin/sh -c #(nop) COPY dir:5f70bf18a086007...
+489kB	/bin/sh -c #(nop) COPY dir:949fa55193aa5eb...
+65.7MB	/bin/sh -c #(nop) COPY dir:7a805dd3eae7129...
+0B	/bin/sh -c #(nop) WORKDIR /app
+13.3kB	/bin/sh -c groupadd --system --gid 10001 e...
+0B	ENTRYPOINT ["/__cacert_entrypoint.sh"]
+7.68kB	COPY --chmod=755 entrypoint.sh /__cacert_e...
+1.02kB	RUN /bin/sh -c set -eux;     echo "Verifyi...
+201MB	RUN /bin/sh -c set -eux;     ARCH="$(dpkg ...
+0B	ENV JAVA_VERSION=jdk-25.0.4+7
+36.7MB	RUN /bin/sh -c set -eux;     apt-get updat...
+0B	ENV LANG=en_US.UTF-8 LANGUAGE=en_US:en LC_...
+0B	ENV PATH=/opt/java/openjdk/bin:/usr/local/...
+0B	ENV JAVA_HOME=/opt/java/openjdk
+10.2kB	umoci raw add-layer --image /home/buildd/r...
+0B	umoci config --image /home/buildd/rockcraf...
+0B	umoci config --image /home/buildd/rockcraf...
+0B	umoci config --image /home/buildd/rockcraf...
+0B	umoci config --image /home/buildd/rockcraf...
+0B	umoci config --image /home/buildd/rockcraf...
+112MB	umoci raw add-layer --image /home/buildd/r...
+## base image digests (from deploy/Containerfile)
+docker.io/library/node:24-slim@sha256:0e0ff40c39bc087845bfb27465a0df4ea419520094bc35842ff83dd8cbe6f9b6
+docker.io/library/eclipse-temurin:25-jdk@sha256:97014c4b396021f9ddb7d592a7dbedb0c4e4215c29e03dc01c393558aefb71c2
+docker.io/library/eclipse-temurin:25-jre@sha256:bb036ed6cfdc57e3da7c22634d15f1b840d2caf76183861c80e81ca4b5104abb
+## runtime checks inside the image
+id: uid=10001(englms) gid=10001(englms) groups=10001(englms)
+openjdk version "25.0.4" 2026-07-21 LTS
+OpenJDK Runtime Environment Temurin-25.0.4+7 (build 25.0.4+7-LTS)
+absent: javac
+absent: jshell
+absent: jar
+absent: node
+absent: npm
+absent: pnpm
+absent: curl
+absent: wget
+java jfr jrunscript jwebserver keytool rmiregistry 
+drwxr-xr-x 1 root root 4096 Sep 25 14:27 /app
+drwxr-xr-x 1 root root 4096 Sep 25 14:27 /app/BOOT-INF
+touch: cannot touch '/app/x': Permission denied
+## running container (read-only root, tmpfs /tmp)
+ReadonlyRootfs=true Tmpfs=map[/tmp:rprivate,nosuid,nodev,tmpcopyup] Health=healthy User=10001:10001
+uid=10001(englms) gid=10001(englms) groups=10001(englms)
+touch: cannot touch '/app/probe': Read-only file system
+/tmp writable
+hsperfdata_englms
+hsperfdata_root
+probe
+tomcat-docbase.8080.17676280206009400521
+tomcat-docbase.8081.16276921447355653646
+tomcat.8080.17388548219631144670
+tomcat.8081.7823235348577251910
+podman healthcheck run: healthy

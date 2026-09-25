@@ -1,0 +1,209 @@
+# probe.sh 2026-09-25T14:29:21Z base=http://localhost:8080
+================ GET http://localhost:8080/ [Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8]
+HTTP/1.1 200 
+X-Request-Id: 01a0d8f8-89a1-7057-871d-e30f087136cc
+Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; media-src 'self' blob:; font-src 'self'; connect-src 'self'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'
+X-Content-Type-Options: nosniff
+Referrer-Policy: strict-origin-when-cross-origin
+Permissions-Policy: microphone=(self), camera=(), geolocation=(), payment=()
+Cross-Origin-Opener-Policy: same-origin
+Cache-Control: no-cache
+Last-Modified: Fri, 25 Sep 2026 14:27:48 GMT
+Accept-Ranges: bytes
+Content-Type: text/html
+Content-Length: 688
+Date: Fri, 25 Sep 2026 14:29:21 GMT
+
+--- body (first 200 bytes):
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-s
+================ GET http://localhost:8080/tutor [Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8]
+HTTP/1.1 200 
+X-Request-Id: 01a0d8f8-89af-7084-b5bf-fa72e409935b
+Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; media-src 'self' blob:; font-src 'self'; connect-src 'self'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'
+X-Content-Type-Options: nosniff
+Referrer-Policy: strict-origin-when-cross-origin
+Permissions-Policy: microphone=(self), camera=(), geolocation=(), payment=()
+Cross-Origin-Opener-Policy: same-origin
+Cache-Control: no-cache
+Last-Modified: Fri, 25 Sep 2026 14:27:48 GMT
+Accept-Ranges: bytes
+Content-Type: text/html
+Content-Length: 688
+Date: Fri, 25 Sep 2026 14:29:21 GMT
+
+--- body (first 200 bytes):
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-s
+================ GET http://localhost:8080/student/x [Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8]
+HTTP/1.1 200 
+X-Request-Id: 01a0d8f8-89ba-73bb-99b6-fe113a919859
+Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; media-src 'self' blob:; font-src 'self'; connect-src 'self'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'
+X-Content-Type-Options: nosniff
+Referrer-Policy: strict-origin-when-cross-origin
+Permissions-Policy: microphone=(self), camera=(), geolocation=(), payment=()
+Cross-Origin-Opener-Policy: same-origin
+Cache-Control: no-cache
+Last-Modified: Fri, 25 Sep 2026 14:27:48 GMT
+Accept-Ranges: bytes
+Content-Type: text/html
+Content-Length: 688
+Date: Fri, 25 Sep 2026 14:29:21 GMT
+
+--- body (first 200 bytes):
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-s
+================ HEAD http://localhost:8080/tutor [Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8]
+HTTP/1.1 200 
+X-Request-Id: 01a0d8f8-89c6-778e-9635-8c056bd805bb
+Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; media-src 'self' blob:; font-src 'self'; connect-src 'self'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'
+X-Content-Type-Options: nosniff
+Referrer-Policy: strict-origin-when-cross-origin
+Permissions-Policy: microphone=(self), camera=(), geolocation=(), payment=()
+Cross-Origin-Opener-Policy: same-origin
+Cache-Control: no-cache
+Last-Modified: Fri, 25 Sep 2026 14:27:48 GMT
+Accept-Ranges: bytes
+Content-Type: text/html
+Content-Length: 688
+Date: Fri, 25 Sep 2026 14:29:21 GMT
+
+================ GET http://localhost:8080/assets/index-BjkPPCD1.js 
+HTTP/1.1 200 
+X-Request-Id: 01a0d8f8-89d0-7c5a-8021-6a659ac8a096
+Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; media-src 'self' blob:; font-src 'self'; connect-src 'self'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'
+X-Content-Type-Options: nosniff
+Referrer-Policy: strict-origin-when-cross-origin
+Permissions-Policy: microphone=(self), camera=(), geolocation=(), payment=()
+Cross-Origin-Opener-Policy: same-origin
+Cache-Control: max-age=31536000, public, immutable
+Last-Modified: Fri, 25 Sep 2026 14:27:48 GMT
+Accept-Ranges: bytes
+Content-Type: text/javascript
+Content-Length: 290752
+Date: Fri, 25 Sep 2026 14:29:22 GMT
+
+--- body (first 200 bytes):
+const __vite__mapDeps=(i,m=__vite__mapDeps,d=(m.f||(m.f=["assets/Landing-ARUViXSI.js","assets/ui-D4g1k-hO.js","assets/rolldown-runtime-CbXtAM7H.js","assets/ui-DGhkCPZe.css","assets/LanguageSwitcher-Ce
+================ GET http://localhost:8080/favicon.svg 
+HTTP/1.1 200 
+X-Request-Id: 01a0d8f8-89dc-7851-8704-aabc1feb17ce
+Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; media-src 'self' blob:; font-src 'self'; connect-src 'self'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'
+X-Content-Type-Options: nosniff
+Referrer-Policy: strict-origin-when-cross-origin
+Permissions-Policy: microphone=(self), camera=(), geolocation=(), payment=()
+Cross-Origin-Opener-Policy: same-origin
+Cache-Control: no-cache
+Last-Modified: Fri, 25 Sep 2026 14:27:48 GMT
+Accept-Ranges: bytes
+Content-Type: image/svg+xml
+Content-Length: 210
+Date: Fri, 25 Sep 2026 14:29:22 GMT
+
+--- body (first 200 bytes):
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" rx="6" fill="#2F5D8C"/><path d="M9 9h14M9 16h14M9 23h9" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round
+================ GET http://localhost:8080/api/v1/meta [Accept: application/json]
+HTTP/1.1 200 
+X-Request-Id: 01a0d8f8-89ec-7585-a17a-aa74af5829c9
+Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; media-src 'self' blob:; font-src 'self'; connect-src 'self'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'
+X-Content-Type-Options: nosniff
+Referrer-Policy: strict-origin-when-cross-origin
+Permissions-Policy: microphone=(self), camera=(), geolocation=(), payment=()
+Cross-Origin-Opener-Policy: same-origin
+Content-Type: application/json
+Content-Length: 90
+Date: Fri, 25 Sep 2026 14:29:22 GMT
+
+--- body (first 200 bytes):
+{"name":"englms","version":"0.0.1-SNAPSHOT","locales":["vi","en"],"displayName":"Eng-LMS"}
+================ GET http://localhost:8080/api/v1/x [Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8]
+HTTP/1.1 404 
+X-Request-Id: 01a0d8f8-89f8-74a3-bb3b-c7a11b7fc77e
+Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; media-src 'self' blob:; font-src 'self'; connect-src 'self'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'
+X-Content-Type-Options: nosniff
+Referrer-Policy: strict-origin-when-cross-origin
+Permissions-Policy: microphone=(self), camera=(), geolocation=(), payment=()
+Cross-Origin-Opener-Policy: same-origin
+Content-Type: application/problem+json
+Transfer-Encoding: chunked
+Date: Fri, 25 Sep 2026 14:29:22 GMT
+
+--- body (first 200 bytes):
+{"instance":"/api/v1/x","status":404,"title":"Not Found","type":"https://englms.local/problems/not-found","code":"NOT_FOUND","requestId":"01a0d8f8-89f8-74a3-bb3b-c7a11b7fc77e"}
+================ GET http://localhost:8080/actuator/health 
+HTTP/1.1 404 
+X-Request-Id: 01a0d8f8-8a05-7a86-9466-aa8b225fdd7d
+Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; media-src 'self' blob:; font-src 'self'; connect-src 'self'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'
+X-Content-Type-Options: nosniff
+Referrer-Policy: strict-origin-when-cross-origin
+Permissions-Policy: microphone=(self), camera=(), geolocation=(), payment=()
+Cross-Origin-Opener-Policy: same-origin
+Content-Type: application/problem+json
+Transfer-Encoding: chunked
+Date: Fri, 25 Sep 2026 14:29:22 GMT
+
+--- body (first 200 bytes):
+{"instance":"/actuator/health","status":404,"title":"Not Found","type":"https://englms.local/problems/not-found","code":"NOT_FOUND","requestId":"01a0d8f8-8a05-7a86-9466-aa8b225fdd7d"}
+================ GET http://localhost:8080/tutor [Accept: application/json]
+HTTP/1.1 404 
+X-Request-Id: 01a0d8f8-8a12-773a-a0bf-0e60639b01ed
+Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; media-src 'self' blob:; font-src 'self'; connect-src 'self'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'
+X-Content-Type-Options: nosniff
+Referrer-Policy: strict-origin-when-cross-origin
+Permissions-Policy: microphone=(self), camera=(), geolocation=(), payment=()
+Cross-Origin-Opener-Policy: same-origin
+Content-Type: application/problem+json
+Transfer-Encoding: chunked
+Date: Fri, 25 Sep 2026 14:29:22 GMT
+
+--- body (first 200 bytes):
+{"instance":"/tutor","status":404,"title":"Not Found","type":"https://englms.local/problems/not-found","code":"NOT_FOUND","requestId":"01a0d8f8-8a12-773a-a0bf-0e60639b01ed"}
+================ GET http://localhost:8080/missing.png [Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8]
+HTTP/1.1 404 
+X-Request-Id: 01a0d8f8-8a1e-72e9-91c5-adc5215f1520
+Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; media-src 'self' blob:; font-src 'self'; connect-src 'self'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'
+X-Content-Type-Options: nosniff
+Referrer-Policy: strict-origin-when-cross-origin
+Permissions-Policy: microphone=(self), camera=(), geolocation=(), payment=()
+Cross-Origin-Opener-Policy: same-origin
+Content-Type: application/problem+json
+Transfer-Encoding: chunked
+Date: Fri, 25 Sep 2026 14:29:22 GMT
+
+--- body (first 200 bytes):
+{"instance":"/missing.png","status":404,"title":"Not Found","type":"https://englms.local/problems/not-found","code":"NOT_FOUND","requestId":"01a0d8f8-8a1e-72e9-91c5-adc5215f1520"}
+================ GET http://localhost:8080/assets/missing-00000000.js 
+HTTP/1.1 404 
+X-Request-Id: 01a0d8f8-8a2a-7e97-af2a-16cd56356881
+Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; media-src 'self' blob:; font-src 'self'; connect-src 'self'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'
+X-Content-Type-Options: nosniff
+Referrer-Policy: strict-origin-when-cross-origin
+Permissions-Policy: microphone=(self), camera=(), geolocation=(), payment=()
+Cross-Origin-Opener-Policy: same-origin
+Content-Disposition: inline;filename=f.txt
+Content-Type: application/problem+json
+Transfer-Encoding: chunked
+Date: Fri, 25 Sep 2026 14:29:22 GMT
+
+--- body (first 200 bytes):
+{"instance":"/assets/missing-00000000.js","status":404,"title":"Not Found","type":"https://englms.local/problems/not-found","code":"NOT_FOUND","requestId":"01a0d8f8-8a2a-7e97-af2a-16cd56356881"}
+================ GET http://localhost:8081/actuator/health/liveness
+HTTP/1.1 200 
+Content-Type: application/vnd.spring-boot.actuator.v3+json
+Transfer-Encoding: chunked
+Date: Fri, 25 Sep 2026 14:29:22 GMT
+
+{"status":"UP"}
+================ GET http://localhost:8081/actuator/env -> 404

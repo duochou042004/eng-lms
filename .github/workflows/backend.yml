@@ -34,6 +34,15 @@ jobs:
       # Unit, architecture, modularity, forbidden-identifier, Flyway (Testcontainers PostgreSQL 18) and contract tests.
       - name: Verify
         run: ./mvnw -B -ntp verify
+      # JaCoCo report from `verify` (T-M1.5, OQ-16). No coverage threshold yet: the floors start with the first domain module.
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: backend-coverage
+          path: backend/target/site/jacoco/
+          retention-days: 14
+          if-no-files-found: warn
       - name: Upload test reports
         if: failure()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1

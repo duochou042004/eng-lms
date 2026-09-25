@@ -1,0 +1,609 @@
+[1/3] STEP 1/8: FROM docker.io/library/node:24-slim@sha256:0e0ff40c39bc087845bfb27465a0df4ea419520094bc35842ff83dd8cbe6f9b6 AS web
+[1/3] STEP 2/8: ENV COREPACK_ENABLE_DOWNLOAD_PROMPT=0 CI=true
+--> 114b704d3cbf
+[1/3] STEP 3/8: WORKDIR /src/web
+--> f4cb11cd1571
+[1/3] STEP 4/8: RUN corepack enable
+--> fa6fb54cb840
+[1/3] STEP 5/8: COPY web/package.json web/pnpm-lock.yaml web/pnpm-workspace.yaml ./
+--> 6871809e20df
+[1/3] STEP 6/8: RUN --mount=type=cache,target=/root/.local/share/pnpm/store pnpm install --frozen-lockfile
+Downloading the pnpm 12.6.0 binary for linux-x64...
+? Verifying lockfile against supply-chain policies (341 entries)...
+Packages are copied from the content-addressable store to the virtual store.
+  Content-addressable store is at: /root/.local/share/pnpm/store/v11
+  Virtual store is at:             node_modules/.pnpm
+Downloading @rolldown/binding-linux-x64-gnu@1.2.10: 0.00 B/7.93 MB
+Progress: resolved 298, reused 0, downloaded 255, added 224
+Downloading @oxlint/binding-linux-x64-gnu@1.85.0: 0.00 B/6.53 MB
+✓ Lockfile passes supply-chain policies (341 entries in 3.1s)
+Lockfile is up to date, resolution step is skipped
+Packages: +298
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Progress: resolved 298, reused 0, downloaded 298, added 298, done
+
+dependencies:
++ @fontsource/be-vietnam-pro 5.3.0
++ @tanstack/react-query 5.103.2
++ i18next 26.4.2
++ lucide-react 1.48.0
++ openapi-fetch 0.17.0
++ react 19.3.0
++ react-aria-components 1.21.1
++ react-dom 19.3.0
++ react-i18next 17.0.15
++ react-router 8.4.0
+
+devDependencies:
++ @testing-library/jest-dom 7.0.1
++ @testing-library/react 16.3.3
++ @testing-library/user-event 14.6.7
++ @types/node 24.13.6
++ @types/react 19.3.0
++ @types/react-dom 19.3.0
++ @vitejs/plugin-react 6.1.1
++ axe-core 4.13.0
++ jsdom 30.1.1
++ msw 2.15.0
++ openapi-typescript 7.13.0
++ oxlint 1.85.0
++ prettier 3.9.9
++ stylelint 17.15.0
++ stylelint-config-standard 40.0.0
++ typescript 6.0.3
++ vite 8.3.1
++ vitest 5.0.1
+
+Done in 3.5s using pnpm v12.6.0
+--> 740d076935ec
+[1/3] STEP 7/8: COPY web/ ./
+--> ec21ff9714c8
+[1/3] STEP 8/8: RUN pnpm build
+$ tsc -b && vite build
+[36mvite v8.3.1 [32mbuilding client environment for production...[36m[39m
+transforming...
+✓ 3389 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                                                    0.68 kB │ gzip:  0.35 kB
+dist/assets/be-vietnam-pro-vietnamese-400-normal-BuGn0gnm.woff     6.56 kB
+dist/assets/be-vietnam-pro-vietnamese-600-normal-DkpCIyan.woff     6.88 kB
+dist/assets/be-vietnam-pro-vietnamese-500-normal-CfdwVo8-.woff     6.88 kB
+dist/.vite/manifest.json                                           8.36 kB │ gzip:  0.98 kB
+dist/assets/be-vietnam-pro-vietnamese-400-normal-CRcqvyg1.woff2   11.53 kB
+dist/assets/be-vietnam-pro-vietnamese-500-normal-DREgrEoJ.woff2   12.17 kB
+dist/assets/be-vietnam-pro-vietnamese-600-normal-nyU-ZL2p.woff2   12.17 kB
+dist/assets/be-vietnam-pro-latin-400-normal-bXgqVju9.woff         16.43 kB
+dist/assets/be-vietnam-pro-latin-500-normal-BJkVuMHw.woff         16.99 kB
+dist/assets/be-vietnam-pro-latin-600-normal-5IO4e7bK.woff         17.01 kB
+dist/assets/be-vietnam-pro-latin-400-normal-PpnXBOrz.woff2        21.16 kB
+dist/assets/be-vietnam-pro-latin-500-normal-B6LVzGNe.woff2        21.89 kB
+dist/assets/be-vietnam-pro-latin-600-normal-BZDkUTrt.woff2        22.03 kB
+dist/assets/LanguageSwitcher-CetFZ35N.css                          0.24 kB │ gzip:  0.19 kB
+dist/assets/ShellLayout-Bp2zHVtQ.css                               1.17 kB │ gzip:  0.49 kB
+dist/assets/ui-DGhkCPZe.css                                        3.56 kB │ gzip:  1.05 kB
+dist/assets/index-tC2GS6ih.css                                     4.42 kB │ gzip:  1.37 kB
+dist/assets/LanguageSwitcher-Ce5kILHp.js                           0.50 kB │ gzip:  0.33 kB
+dist/assets/rolldown-runtime-CbXtAM7H.js                           0.58 kB │ gzip:  0.36 kB
+dist/assets/NotFound-D0YFCSr2.js                                   0.66 kB │ gzip:  0.41 kB
+dist/assets/Landing-ARUViXSI.js                                    0.70 kB │ gzip:  0.34 kB
+dist/assets/StudentShell-DzOiWWOJ.js                               0.73 kB │ gzip:  0.44 kB
+dist/assets/TutorShell-DOvUwP1B.js                                 0.90 kB │ gzip:  0.50 kB
+dist/assets/createLucideIcon-DIoloFqZ.js                           3.13 kB │ gzip:  1.51 kB
+dist/assets/ShellLayout-4JvZmGz0.js                                9.37 kB │ gzip:  3.54 kB
+dist/assets/ui-D4g1k-hO.js                                       149.93 kB │ gzip: 49.42 kB
+dist/assets/index-BjkPPCD1.js                                    290.75 kB │ gzip: 91.32 kB
+
+[32m✓ built in 421ms[39m
+--> 8aba017ed1ce
+[2/3] STEP 1/8: FROM docker.io/library/eclipse-temurin:25-jdk@sha256:97014c4b396021f9ddb7d592a7dbedb0c4e4215c29e03dc01c393558aefb71c2 AS app
+[2/3] STEP 2/8: WORKDIR /src/backend
+--> 822c9aee352e
+[2/3] STEP 3/8: COPY backend/.mvn/ .mvn/
+--> 79d2e72743bf
+[2/3] STEP 4/8: COPY backend/mvnw backend/pom.xml ./
+--> 05f054f4812d
+[2/3] STEP 5/8: RUN --mount=type=cache,target=/root/.m2 ./mvnw -B -ntp dependency:go-offline
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] -------------------------< com.englms:englms >--------------------------
+[INFO] Building englms 0.0.1-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- dependency:3.10.0:go-offline (default-cli) @ englms ---
+[INFO] Resolved plugin: maven-compiler-plugin-3.15.0.jar
+[INFO] Resolved plugin dependency:
+[INFO]       maven-compiler-plugin-3.15.0.jar
+[INFO]       asm-9.9.1.jar
+[INFO]       maven-shared-utils-3.4.2.jar
+[INFO]       slf4j-api-1.7.36.jar
+[INFO]       commons-io-2.11.0.jar
+[INFO]       maven-shared-incremental-1.1.jar
+[INFO]       plexus-java-1.5.2.jar
+[INFO]       qdox-2.2.0.jar
+[INFO]       plexus-compiler-api-2.16.2.jar
+[INFO]       plexus-compiler-manager-2.16.2.jar
+[INFO]       javax.inject-1.jar
+[INFO]       plexus-xml-3.0.1.jar
+[INFO]       plexus-compiler-javac-2.16.2.jar
+[INFO]       plexus-utils-4.0.2.jar
+[INFO] Resolved plugin: maven-surefire-plugin-3.5.6.jar
+[INFO] Resolved plugin dependency:
+[INFO]       maven-surefire-plugin-3.5.6.jar
+[INFO]       surefire-api-3.5.6.jar
+[INFO]       surefire-logger-api-3.5.6.jar
+[INFO]       surefire-shared-utils-3.5.6.jar
+[INFO]       surefire-extensions-api-3.5.6.jar
+[INFO]       maven-surefire-common-3.5.6.jar
+[INFO]       surefire-booter-3.5.6.jar
+[INFO]       surefire-extensions-spi-3.5.6.jar
+[INFO]       maven-resolver-util-1.4.1.jar
+[INFO]       maven-resolver-api-1.4.1.jar
+[INFO]       maven-common-artifact-filters-3.4.0.jar
+[INFO]       slf4j-api-1.7.36.jar
+[INFO]       plexus-java-1.5.2.jar
+[INFO]       asm-9.9.1.jar
+[INFO]       qdox-2.2.0.jar
+[INFO] Resolved plugin: maven-jar-plugin-3.5.1.jar
+[INFO] Resolved plugin dependency:
+[INFO]       maven-jar-plugin-3.5.1.jar
+[INFO]       file-management-3.2.0.jar
+[INFO]       plexus-utils-4.0.3.jar
+[INFO]       maven-archiver-3.6.6.jar
+[INFO]       plexus-interpolation-1.29.jar
+[INFO]       plexus-xml-3.0.1.jar
+[INFO]       plexus-archiver-4.12.0.jar
+[INFO]       plexus-io-3.6.0.jar
+[INFO]       commons-compress-1.28.0.jar
+[INFO]       commons-codec-1.19.0.jar
+[INFO]       commons-lang3-3.18.0.jar
+[INFO]       xz-1.12.jar
+[INFO]       zstd-jni-1.5.7-9.jar
+[INFO]       javax.inject-1.jar
+[INFO]       slf4j-api-1.7.36.jar
+[INFO]       commons-io-2.22.0.jar
+[INFO] Resolved plugin: maven-clean-plugin-3.5.0.jar
+[INFO] Resolved plugin dependency:
+[INFO]       maven-clean-plugin-3.5.0.jar
+[INFO]       plexus-utils-4.0.2.jar
+[INFO] Resolved plugin: maven-install-plugin-3.1.4.jar
+[INFO] Resolved plugin dependency:
+[INFO]       maven-install-plugin-3.1.4.jar
+[INFO]       maven-resolver-util-1.9.22.jar
+[INFO]       maven-resolver-api-1.9.22.jar
+[INFO]       plexus-utils-4.0.1.jar
+[INFO]       plexus-xml-3.0.1.jar
+[INFO] Resolved plugin: maven-site-plugin-3.12.1.jar
+[INFO] Resolved plugin dependency:
+[INFO]       maven-site-plugin-3.12.1.jar
+[INFO]       maven-reporting-api-3.1.1.jar
+[INFO]       maven-reporting-exec-1.6.0.jar
+[INFO]       maven-artifact-3.2.5.jar
+[INFO]       maven-core-3.2.5.jar
+[INFO]       maven-repository-metadata-3.2.5.jar
+[INFO]       maven-model-builder-3.2.5.jar
+[INFO]       maven-aether-provider-3.2.5.jar
+[INFO]       aether-spi-1.0.0.v20140518.jar
+[INFO]       aether-impl-1.0.0.v20140518.jar
+[INFO]       aether-api-1.0.0.v20140518.jar
+[INFO]       org.eclipse.sisu.plexus-0.3.5.jar
+[INFO]       javax.annotation-api-1.2.jar
+[INFO]       cdi-api-1.2.jar
+[INFO]       org.eclipse.sisu.inject-0.3.5.jar
+[INFO]       sisu-guice-3.2.3-no_aop.jar
+[INFO]       javax.inject-1.jar
+[INFO]       aopalliance-1.0.jar
+[INFO]       guava-16.0.1.jar
+[INFO]       plexus-classworlds-2.5.2.jar
+[INFO]       plexus-sec-dispatcher-1.3.jar
+[INFO]       plexus-cipher-1.4.jar
+[INFO]       maven-model-3.2.5.jar
+[INFO]       maven-plugin-api-3.2.5.jar
+[INFO]       maven-settings-3.2.5.jar
+[INFO]       maven-settings-builder-3.2.5.jar
+[INFO]       aether-util-1.0.0.v20140518.jar
+[INFO]       maven-shared-utils-3.3.4.jar
+[INFO]       commons-io-2.6.jar
+[INFO]       maven-archiver-3.5.2.jar
+[INFO]       commons-compress-1.20.jar
+[INFO]       plexus-interpolation-1.26.jar
+[INFO]       plexus-archiver-4.2.7.jar
+[INFO]       plexus-io-3.2.0.jar
+[INFO]       snappy-0.4.jar
+[INFO]       xz-1.9.jar
+[INFO]       plexus-i18n-1.0-beta-10.jar
+[INFO]       plexus-utils-3.4.2.jar
+[INFO]       doxia-sink-api-1.11.1.jar
+[INFO]       doxia-logging-api-1.11.1.jar
+[INFO]       doxia-core-1.11.1.jar
+[INFO]       plexus-container-default-2.1.0.jar
+[INFO]       xbean-reflect-3.7.jar
+[INFO]       google-collections-1.0.jar
+[INFO]       plexus-component-annotations-2.1.1.jar
+[INFO]       commons-lang3-3.8.1.jar
+[INFO]       commons-text-1.3.jar
+[INFO]       httpclient-4.5.13.jar
+[INFO]       commons-logging-1.2.jar
+[INFO]       commons-codec-1.11.jar
+[INFO]       httpcore-4.4.14.jar
+[INFO]       doxia-module-xhtml-1.11.1.jar
+[INFO]       doxia-module-xhtml5-1.11.1.jar
+[INFO]       doxia-module-apt-1.11.1.jar
+[INFO]       doxia-module-xdoc-1.11.1.jar
+[INFO]       doxia-module-fml-1.11.1.jar
+[INFO]       doxia-module-markdown-1.11.1.jar
+[INFO]       flexmark-all-0.42.14.jar
+[INFO]       flexmark-0.42.14.jar
+[INFO]       flexmark-ext-abbreviation-0.42.14.jar
+[INFO]       flexmark-ext-admonition-0.42.14.jar
+[INFO]       flexmark-ext-anchorlink-0.42.14.jar
+[INFO]       flexmark-ext-aside-0.42.14.jar
+[INFO]       flexmark-ext-attributes-0.42.14.jar
+[INFO]       flexmark-ext-autolink-0.42.14.jar
+[INFO]       autolink-0.6.0.jar
+[INFO]       flexmark-ext-definition-0.42.14.jar
+[INFO]       flexmark-ext-emoji-0.42.14.jar
+[INFO]       flexmark-ext-enumerated-reference-0.42.14.jar
+[INFO]       flexmark-ext-escaped-character-0.42.14.jar
+[INFO]       flexmark-ext-footnotes-0.42.14.jar
+[INFO]       flexmark-ext-gfm-issues-0.42.14.jar
+[INFO]       flexmark-ext-gfm-strikethrough-0.42.14.jar
+[INFO]       flexmark-ext-gfm-tables-0.42.14.jar
+[INFO]       flexmark-ext-gfm-tasklist-0.42.14.jar
+[INFO]       flexmark-ext-gfm-users-0.42.14.jar
+[INFO]       flexmark-ext-gitlab-0.42.14.jar
+[INFO]       flexmark-ext-jekyll-front-matter-0.42.14.jar
+[INFO]       flexmark-ext-jekyll-tag-0.42.14.jar
+[INFO]       flexmark-ext-media-tags-0.42.14.jar
+[INFO]       flexmark-ext-macros-0.42.14.jar
+[INFO]       flexmark-ext-ins-0.42.14.jar
+[INFO]       flexmark-ext-xwiki-macros-0.42.14.jar
+[INFO]       flexmark-ext-superscript-0.42.14.jar
+[INFO]       flexmark-ext-tables-0.42.14.jar
+[INFO]       flexmark-ext-toc-0.42.14.jar
+[INFO]       flexmark-ext-typographic-0.42.14.jar
+[INFO]       flexmark-ext-wikilink-0.42.14.jar
+[INFO]       flexmark-ext-yaml-front-matter-0.42.14.jar
+[INFO]       flexmark-ext-youtube-embedded-0.42.14.jar
+[INFO]       flexmark-formatter-0.42.14.jar
+[INFO]       flexmark-html-parser-0.42.14.jar
+[INFO]       jsoup-1.10.2.jar
+[INFO]       flexmark-jira-converter-0.42.14.jar
+[INFO]       flexmark-profile-pegdown-0.42.14.jar
+[INFO]       flexmark-util-0.42.14.jar
+[INFO]       flexmark-youtrack-converter-0.42.14.jar
+[INFO]       doxia-module-confluence-1.11.1.jar
+[INFO]       doxia-module-docbook-simple-1.11.1.jar
+[INFO]       doxia-module-twiki-1.11.1.jar
+[INFO]       doxia-decoration-model-1.11.1.jar
+[INFO]       doxia-site-renderer-1.11.1.jar
+[INFO]       doxia-skin-model-1.11.1.jar
+[INFO]       plexus-velocity-1.2.jar
+[INFO]       velocity-1.7.jar
+[INFO]       commons-lang-2.4.jar
+[INFO]       velocity-tools-2.0.jar
+[INFO]       commons-beanutils-1.7.0.jar
+[INFO]       commons-digester-1.8.jar
+[INFO]       commons-chain-1.1.jar
+[INFO]       dom4j-1.1.jar
+[INFO]       oro-2.0.8.jar
+[INFO]       commons-collections-3.2.2.jar
+[INFO]       doxia-integration-tools-1.11.1.jar
+[INFO]       jetty-server-9.4.46.v20220331.jar
+[INFO]       javax.servlet-api-3.1.0.jar
+[INFO]       jetty-http-9.4.46.v20220331.jar
+[INFO]       jetty-io-9.4.46.v20220331.jar
+[INFO]       jetty-servlet-9.4.46.v20220331.jar
+[INFO]       jetty-security-9.4.46.v20220331.jar
+[INFO]       jetty-util-ajax-9.4.46.v20220331.jar
+[INFO]       jetty-webapp-9.4.46.v20220331.jar
+[INFO]       jetty-xml-9.4.46.v20220331.jar
+[INFO]       jetty-util-9.4.46.v20220331.jar
+[INFO] Resolved plugin: maven-resources-plugin-3.5.0.jar
+[INFO] Resolved plugin dependency:
+[INFO]       maven-resources-plugin-3.5.0.jar
+[INFO]       maven-filtering-3.5.0.jar
+[INFO]       slf4j-api-1.7.36.jar
+[INFO]       plexus-build-api-1.2.0.jar
+[INFO]       javax.inject-1.jar
+[INFO]       plexus-build-api-0.0.7.jar
+[INFO]       org.eclipse.sisu.plexus-0.9.0.M4.jar
+[INFO]       plexus-interpolation-1.29.jar
+[INFO]       plexus-utils-3.6.0.jar
+[INFO] Resolved plugin: spring-boot-maven-plugin-4.1.1.jar
+[INFO] Resolved plugin dependency:
+[INFO]       spring-boot-maven-plugin-4.1.1.jar
+[INFO]       spring-boot-buildpack-platform-4.1.1.jar
+[INFO]       jna-platform-5.17.0.jar
+[INFO]       jna-5.17.0.jar
+[INFO]       commons-compress-1.27.1.jar
+[INFO]       commons-codec-1.17.1.jar
+[INFO]       commons-lang3-3.16.0.jar
+[INFO]       httpclient5-5.6.4.jar
+[INFO]       httpcore5-5.4.3.jar
+[INFO]       httpcore5-h2-5.4.3.jar
+[INFO]       tomlj-1.0.0.jar
+[INFO]       antlr4-runtime-4.7.2.jar
+[INFO]       jsr305-3.0.2.jar
+[INFO]       jackson-databind-3.1.5.jar
+[INFO]       jackson-annotations-2.21.jar
+[INFO]       jackson-core-3.1.5.jar
+[INFO]       spring-boot-loader-tools-4.1.1.jar
+[INFO]       maven-common-artifact-filters-3.4.0.jar
+[INFO]       slf4j-api-1.7.36.jar
+[INFO]       maven-resolver-util-1.4.1.jar
+[INFO]       maven-resolver-api-1.4.1.jar
+[INFO]       plexus-build-api-0.0.7.jar
+[INFO]       spring-core-7.0.9.jar
+[INFO]       commons-logging-1.3.5.jar
+[INFO]       jspecify-1.0.0.jar
+[INFO]       spring-context-7.0.9.jar
+[INFO]       spring-aop-7.0.9.jar
+[INFO]       spring-beans-7.0.9.jar
+[INFO]       spring-expression-7.0.9.jar
+[INFO]       micrometer-observation-1.16.7.jar
+[INFO]       micrometer-commons-1.16.7.jar
+[INFO]       maven-shade-plugin-3.6.0.jar
+[INFO]       plexus-utils-3.5.1.jar
+[INFO]       asm-9.7.jar
+[INFO]       asm-commons-9.7.jar
+[INFO]       asm-tree-9.7.jar
+[INFO]       jdom2-2.0.6.1.jar
+[INFO]       commons-io-2.16.1.jar
+[INFO]       jdependency-2.10.jar
+[INFO] Resolved plugin: maven-deploy-plugin-3.1.4.jar
+[INFO] Resolved plugin dependency:
+[INFO]       maven-deploy-plugin-3.1.4.jar
+[INFO]       plexus-utils-4.0.1.jar
+[INFO]       plexus-xml-3.0.1.jar
+[INFO]       maven-resolver-util-1.9.22.jar
+[INFO]       maven-resolver-api-1.9.22.jar
+[INFO] Resolved plugin: jacoco-maven-plugin-0.8.15.jar
+[INFO] Resolved plugin dependency:
+[INFO]       jacoco-maven-plugin-0.8.15.jar
+[INFO]       plexus-utils-3.0.24.jar
+[INFO]       file-management-3.2.0.jar
+[INFO]       slf4j-api-1.7.36.jar
+[INFO]       commons-io-2.19.0.jar
+[INFO]       maven-reporting-api-3.0.jar
+[INFO]       doxia-sink-api-1.0.jar
+[INFO]       org.jacoco.agent-0.8.15-runtime.jar
+[INFO]       org.jacoco.core-0.8.15.jar
+[INFO]       asm-9.10.1.jar
+[INFO]       asm-commons-9.10.1.jar
+[INFO]       asm-tree-9.10.1.jar
+[INFO]       org.jacoco.report-0.8.15.jar
+[INFO] Resolved dependency: testcontainers-junit-jupiter-2.0.5.jar
+[INFO] Resolved dependency: testcontainers-2.0.5.jar
+[INFO] Resolved dependency: slf4j-api-2.0.18.jar
+[INFO] Resolved dependency: commons-compress-1.28.0.jar
+[INFO] Resolved dependency: commons-codec-1.21.0.jar
+[INFO] Resolved dependency: commons-io-2.20.0.jar
+[INFO] Resolved dependency: commons-lang3-3.20.0.jar
+[INFO] Resolved dependency: duct-tape-1.0.8.jar
+[INFO] Resolved dependency: annotations-17.0.0.jar
+[INFO] Resolved dependency: docker-java-api-3.7.1.jar
+[INFO] Resolved dependency: jackson-annotations-2.21.jar
+[INFO] Resolved dependency: docker-java-transport-zerodep-3.7.1.jar
+[INFO] Resolved dependency: docker-java-transport-3.7.1.jar
+[INFO] Resolved dependency: jna-5.18.1.jar
+[INFO] Resolved dependency: spring-boot-starter-actuator-4.1.1.jar
+[INFO] Resolved dependency: spring-boot-starter-4.1.1.jar
+[INFO] Resolved dependency: spring-boot-starter-logging-4.1.1.jar
+[INFO] Resolved dependency: logback-classic-1.5.38.jar
+[INFO] Resolved dependency: logback-core-1.5.38.jar
+[INFO] Resolved dependency: log4j-to-slf4j-2.25.5.jar
+[INFO] Resolved dependency: log4j-api-2.25.5.jar
+[INFO] Resolved dependency: jul-to-slf4j-2.0.18.jar
+[INFO] Resolved dependency: jakarta.annotation-api-3.0.0.jar
+[INFO] Resolved dependency: snakeyaml-2.6.jar
+[INFO] Resolved dependency: spring-boot-starter-micrometer-metrics-4.1.1.jar
+[INFO] Resolved dependency: spring-boot-micrometer-metrics-4.1.1.jar
+[INFO] Resolved dependency: spring-boot-micrometer-observation-4.1.1.jar
+[INFO] Resolved dependency: spring-boot-actuator-autoconfigure-4.1.1.jar
+[INFO] Resolved dependency: spring-boot-health-4.1.1.jar
+[INFO] Resolved dependency: spring-boot-4.1.1.jar
+[INFO] Resolved dependency: micrometer-observation-1.17.1.jar
+[INFO] Resolved dependency: micrometer-commons-1.17.1.jar
+[INFO] Resolved dependency: micrometer-jakarta9-1.17.1.jar
+[INFO] Resolved dependency: spring-modulith-starter-jdbc-2.1.1.jar
+[INFO] Resolved dependency: spring-modulith-events-api-2.1.1.jar
+[INFO] Resolved dependency: spring-context-7.0.9.jar
+[INFO] Resolved dependency: spring-beans-7.0.9.jar
+[INFO] Resolved dependency: spring-expression-7.0.9.jar
+[INFO] Resolved dependency: spring-tx-7.0.9.jar
+[INFO] Resolved dependency: spring-modulith-events-core-2.1.1.jar
+[INFO] Resolved dependency: spring-aop-7.0.9.jar
+[INFO] Resolved dependency: jcl-over-slf4j-2.0.18.jar
+[INFO] Resolved dependency: spring-modulith-events-jackson-2.1.1.jar
+[INFO] Resolved dependency: jackson-databind-3.1.5.jar
+[INFO] Resolved dependency: jackson-core-3.1.5.jar
+[INFO] Resolved dependency: spring-modulith-events-jdbc-2.1.1.jar
+[INFO] Resolved dependency: spring-jdbc-7.0.9.jar
+[INFO] Resolved dependency: spring-boot-sql-4.1.1.jar
+[INFO] Resolved dependency: flyway-database-postgresql-12.4.0.jar
+[INFO] Resolved dependency: flyway-core-12.4.0.jar
+[INFO] Resolved dependency: spring-boot-testcontainers-4.1.1.jar
+[INFO] Resolved dependency: spring-boot-autoconfigure-4.1.1.jar
+[INFO] Resolved dependency: spring-boot-starter-webmvc-test-4.1.1.jar
+[INFO] Resolved dependency: spring-boot-starter-jackson-test-4.1.1.jar
+[INFO] Resolved dependency: spring-boot-starter-test-4.1.1.jar
+[INFO] Resolved dependency: spring-boot-test-4.1.1.jar
+[INFO] Resolved dependency: spring-boot-test-autoconfigure-4.1.1.jar
+[INFO] Resolved dependency: json-path-2.10.0.jar
+[INFO] Resolved dependency: jakarta.xml.bind-api-4.0.5.jar
+[INFO] Resolved dependency: jakarta.activation-api-2.1.4.jar
+[INFO] Resolved dependency: json-smart-2.6.0.jar
+[INFO] Resolved dependency: accessors-smart-2.6.0.jar
+[INFO] Resolved dependency: asm-9.7.1.jar
+[INFO] Resolved dependency: assertj-core-3.27.7.jar
+[INFO] Resolved dependency: byte-buddy-1.18.11.jar
+[INFO] Resolved dependency: hamcrest-3.0.jar
+[INFO] Resolved dependency: junit-jupiter-6.0.3.jar
+[INFO] Resolved dependency: junit-jupiter-api-6.0.3.jar
+[INFO] Resolved dependency: opentest4j-1.3.0.jar
+[INFO] Resolved dependency: junit-platform-commons-6.0.3.jar
+[INFO] Resolved dependency: apiguardian-api-1.1.2.jar
+[INFO] Resolved dependency: junit-jupiter-params-6.0.3.jar
+[INFO] Resolved dependency: junit-jupiter-engine-6.0.3.jar
+[INFO] Resolved dependency: mockito-core-5.23.0.jar
+[INFO] Resolved dependency: byte-buddy-agent-1.18.11.jar
+[INFO] Resolved dependency: objenesis-3.3.jar
+[INFO] Resolved dependency: mockito-junit-jupiter-5.23.0.jar
+[INFO] Resolved dependency: jsonassert-1.5.3.jar
+[INFO] Resolved dependency: android-json-0.0.20131108.vaadin1.jar
+[INFO] Resolved dependency: spring-core-7.0.9.jar
+[INFO] Resolved dependency: commons-logging-1.3.6.jar
+[INFO] Resolved dependency: spring-test-7.0.9.jar
+[INFO] Resolved dependency: xmlunit-core-2.11.0.jar
+[INFO] Resolved dependency: spring-boot-webmvc-test-4.1.1.jar
+[INFO] Resolved dependency: spring-boot-resttestclient-4.1.1.jar
+[INFO] Resolved dependency: spring-web-7.0.9.jar
+[INFO] Resolved dependency: testcontainers-postgresql-2.0.5.jar
+[INFO] Resolved dependency: testcontainers-jdbc-2.0.5.jar
+[INFO] Resolved dependency: testcontainers-database-commons-2.0.5.jar
+[INFO] Resolved dependency: spring-modulith-starter-test-2.1.1.jar
+[INFO] Resolved dependency: spring-modulith-test-2.1.1.jar
+[INFO] Resolved dependency: spring-modulith-docs-2.1.1.jar
+[INFO] Resolved dependency: structurizr-core-5.0.3.jar
+[INFO] Resolved dependency: jsr305-3.0.2.jar
+[INFO] Resolved dependency: structurizr-export-5.0.3.jar
+[INFO] Resolved dependency: awaitility-4.3.0.jar
+[INFO] Resolved dependency: archunit-junit5-1.5.1.jar
+[INFO] Resolved dependency: archunit-junit5-api-1.5.1.jar
+[INFO] Resolved dependency: archunit-junit5-engine-1.5.1.jar
+[INFO] Resolved dependency: archunit-junit5-engine-api-1.5.1.jar
+[INFO] Resolved dependency: junit-platform-engine-6.0.3.jar
+[INFO] Resolved dependency: spring-modulith-observability-api-2.1.1.jar
+[INFO] Resolved dependency: jspecify-1.0.1.jar
+[INFO] Resolved dependency: micrometer-core-1.17.1.jar
+[INFO] Resolved dependency: HdrHistogram-2.2.2.jar
+[INFO] Resolved dependency: spring-modulith-actuator-2.1.1.jar
+[INFO] Resolved dependency: spring-boot-actuator-4.1.1.jar
+[INFO] Resolved dependency: spring-boot-starter-webmvc-4.1.1.jar
+[INFO] Resolved dependency: spring-boot-starter-jackson-4.1.1.jar
+[INFO] Resolved dependency: spring-boot-jackson-4.1.1.jar
+[INFO] Resolved dependency: spring-boot-starter-tomcat-4.1.1.jar
+[INFO] Resolved dependency: spring-boot-starter-tomcat-runtime-4.1.1.jar
+[INFO] Resolved dependency: tomcat-embed-core-11.0.24.jar
+[INFO] Resolved dependency: tomcat-embed-websocket-11.0.24.jar
+[INFO] Resolved dependency: spring-boot-tomcat-4.1.1.jar
+[INFO] Resolved dependency: spring-boot-http-converter-4.1.1.jar
+[INFO] Resolved dependency: spring-boot-webmvc-4.1.1.jar
+[INFO] Resolved dependency: spring-boot-servlet-4.1.1.jar
+[INFO] Resolved dependency: spring-webmvc-7.0.9.jar
+[INFO] Resolved dependency: spring-boot-starter-actuator-test-4.1.1.jar
+[INFO] Resolved dependency: spring-boot-starter-micrometer-metrics-test-4.1.1.jar
+[INFO] Resolved dependency: spring-boot-micrometer-metrics-test-4.1.1.jar
+[INFO] Resolved dependency: micrometer-observation-test-1.17.1.jar
+[INFO] Resolved dependency: postgresql-42.7.13.jar
+[INFO] Resolved dependency: checker-qual-3.55.1.jar
+[INFO] Resolved dependency: spring-boot-starter-validation-test-4.1.1.jar
+[INFO] Resolved dependency: spring-boot-starter-data-jpa-test-4.1.1.jar
+[INFO] Resolved dependency: spring-boot-starter-jdbc-test-4.1.1.jar
+[INFO] Resolved dependency: spring-boot-jdbc-test-4.1.1.jar
+[INFO] Resolved dependency: spring-boot-data-jpa-test-4.1.1.jar
+[INFO] Resolved dependency: spring-boot-jpa-test-4.1.1.jar
+[INFO] Resolved dependency: spring-boot-jpa-4.1.1.jar
+[INFO] Resolved dependency: jakarta.persistence-api-3.2.0.jar
+[INFO] Resolved dependency: springdoc-openapi-starter-webmvc-api-3.1.1.jar
+[INFO] Resolved dependency: springdoc-openapi-starter-common-3.1.1.jar
+[INFO] Resolved dependency: swagger-core-jakarta-2.2.55.jar
+[INFO] Resolved dependency: swagger-annotations-jakarta-2.2.55.jar
+[INFO] Resolved dependency: swagger-models-jakarta-2.2.55.jar
+[INFO] Resolved dependency: jakarta.validation-api-3.1.1.jar
+[INFO] Resolved dependency: jackson-databind-2.21.5.jar
+[INFO] Resolved dependency: jackson-core-2.21.5.jar
+[INFO] Resolved dependency: jackson-dataformat-yaml-2.21.5.jar
+[INFO] Resolved dependency: jackson-datatype-jsr310-2.21.5.jar
+[INFO] Resolved dependency: spring-boot-web-server-4.1.1.jar
+[INFO] Resolved dependency: spring-modulith-runtime-2.1.1.jar
+[INFO] Resolved dependency: spring-modulith-core-2.1.1.jar
+[INFO] Resolved dependency: archunit-1.4.2.jar
+[INFO] Resolved dependency: spring-modulith-starter-core-2.1.1.jar
+[INFO] Resolved dependency: spring-modulith-api-2.1.1.jar
+[INFO] Resolved dependency: spring-modulith-apt-2.1.1.jar
+[INFO] Resolved dependency: spring-modulith-moments-2.1.1.jar
+[INFO] Resolved dependency: jmolecules-events-2.0.1.jar
+[INFO] Resolved dependency: jstereotype-2.0.1.jar
+[INFO] Resolved dependency: spring-modulith-observability-core-2.1.1.jar
+[INFO] Resolved dependency: micrometer-tracing-1.7.1.jar
+[INFO] Resolved dependency: context-propagation-1.2.1.jar
+[INFO] Resolved dependency: aopalliance-1.0.jar
+[INFO] Resolved dependency: spring-boot-starter-validation-4.1.1.jar
+[INFO] Resolved dependency: spring-boot-validation-4.1.1.jar
+[INFO] Resolved dependency: tomcat-embed-el-11.0.24.jar
+[INFO] Resolved dependency: hibernate-validator-9.1.3.Final.jar
+[INFO] Resolved dependency: jboss-logging-3.6.3.Final.jar
+[INFO] Resolved dependency: classmate-1.7.3.jar
+[INFO] Resolved dependency: spring-boot-starter-flyway-test-4.1.1.jar
+[INFO] Resolved dependency: spring-boot-starter-flyway-4.1.1.jar
+[INFO] Resolved dependency: spring-boot-starter-jdbc-4.1.1.jar
+[INFO] Resolved dependency: HikariCP-7.0.2.jar
+[INFO] Resolved dependency: spring-boot-flyway-4.1.1.jar
+[INFO] Resolved dependency: spring-boot-jdbc-4.1.1.jar
+[INFO] Resolved dependency: spring-boot-transaction-4.1.1.jar
+[INFO] Resolved dependency: spring-boot-persistence-4.1.1.jar
+[INFO] Resolved dependency: spring-boot-starter-data-jpa-4.1.1.jar
+[INFO] Resolved dependency: spring-boot-data-jpa-4.1.1.jar
+[INFO] Resolved dependency: spring-boot-data-commons-4.1.1.jar
+[INFO] Resolved dependency: spring-data-commons-4.1.1.jar
+[INFO] Resolved dependency: spring-boot-hibernate-4.1.1.jar
+[INFO] Resolved dependency: hibernate-core-7.4.5.Final.jar
+[INFO] Resolved dependency: jakarta.transaction-api-2.0.1.jar
+[INFO] Resolved dependency: hibernate-models-1.1.1.jar
+[INFO] Resolved dependency: jaxb-runtime-4.0.9.jar
+[INFO] Resolved dependency: jaxb-core-4.0.9.jar
+[INFO] Resolved dependency: angus-activation-2.0.3.jar
+[INFO] Resolved dependency: txw2-4.0.9.jar
+[INFO] Resolved dependency: istack-commons-runtime-4.1.2.jar
+[INFO] Resolved dependency: jakarta.inject-api-2.0.1.jar
+[INFO] Resolved dependency: spring-orm-7.0.9.jar
+[INFO] Resolved dependency: spring-data-jpa-4.1.1.jar
+[INFO] Resolved dependency: antlr4-runtime-4.13.2.jar
+[INFO] Resolved dependency: spring-aspects-7.0.9.jar
+[INFO] Resolved dependency: aspectjweaver-1.9.25.1.jar
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  01:41 min
+[INFO] Finished at: 2026-09-25T14:27:06Z
+[INFO] ------------------------------------------------------------------------
+--> 8ade29f40909
+[2/3] STEP 6/8: COPY backend/src/main/ src/main/
+--> 2bb8246dc257
+[2/3] STEP 7/8: COPY --from=web /src/web/dist/ src/main/resources/static/
+--> 140e905669d3
+[2/3] STEP 8/8: RUN --mount=type=cache,target=/root/.m2 ./mvnw -B -ntp -o package -Dmaven.test.skip=true  && java -Djarmode=tools -jar target/englms-*.jar extract --layers --launcher --destination /layers
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] -------------------------< com.englms:englms >--------------------------
+[INFO] Building englms 0.0.1-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- jacoco:0.8.15:prepare-agent (prepare-agent) @ englms ---
+[INFO] argLine set to -javaagent:/root/.m2/repository/org/jacoco/org.jacoco.agent/0.8.15/org.jacoco.agent-0.8.15-runtime.jar=destfile=/src/backend/target/jacoco.exec
+[INFO] 
+[INFO] --- resources:3.5.0:resources (default-resources) @ englms ---
+[INFO] Copying 1 resource from src/main/resources to target/classes
+[INFO] Copying 30 resources from src/main/resources to target/classes
+[INFO] 
+[INFO] --- compiler:3.15.0:compile (default-compile) @ englms ---
+[WARNING] The POM for org.springframework.boot:spring-boot-configuration-processor:jar:4.1.1 is missing, no dependency information available
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  1.236 s
+[INFO] Finished at: 2026-09-25T14:27:09Z
+[INFO] ------------------------------------------------------------------------
+[ERROR] Failed to execute goal org.apache.maven.plugins:maven-compiler-plugin:3.15.0:compile (default-compile) on project englms: Resolution of annotationProcessorPath dependencies failed: The following artifacts could not be resolved: org.springframework.boot:spring-boot-configuration-processor:jar:4.1.1 (absent): Cannot access central (https://repo.maven.apache.org/maven2) in offline mode and the artifact org.springframework.boot:spring-boot-configuration-processor:jar:4.1.1 has not been downloaded from it before. -> [Help 1]
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR] 
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoExecutionException
+Error: building at STEP "RUN --mount=type=cache,target=/root/.m2 ./mvnw -B -ntp -o package -Dmaven.test.skip=true  && java -Djarmode=tools -jar target/englms-*.jar extract --layers --launcher --destination /layers": while running runtime: exit status 1
+podman build --format docker -f deploy/Containerfile -t englms:dev .  54.92s user 20.79s system 55% cpu 2:16.31 total

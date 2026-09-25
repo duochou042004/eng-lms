@@ -1,0 +1,33 @@
+name: container
+
+# Build-only check of deploy/Containerfile on every PR (T-M1.5). Nothing is pushed: registry publishing, Trivy and
+# releases are M8 (ci-cd.md). Not a required check; the same command as locally (development-setup §4).
+on:
+  pull_request:
+  push:
+    branches: [develop, master]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: container-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  container-build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Build the image (rootless Podman, no push)
+        run: |
+          podman --version
+          podman build --format docker -f deploy/Containerfile -t localhost/englms:ci .
+      - name: Runtime image facts (non-root, JRE only, healthcheck)
+        run: |
+          podman image inspect localhost/englms:ci --format 'user={{.Config.User}} size={{.Size}} healthcheck={{.Config.Healthcheck.Test}}'
+          test "$(podman image inspect localhost/englms:ci --format '{{.Config.User}}')" = "10001:10001"
+          podman run --rm --entrypoint bash localhost/englms:ci -c '! command -v javac && ! command -v node && id -u | grep -qx 10001'

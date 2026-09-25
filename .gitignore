@@ -11,6 +11,7 @@ Thumbs.db
 
 # --- Java / Maven (backend/) ---
 backend/target/
+backend/src/main/resources/static/
 backend/.mvn/wrapper/maven-wrapper.jar
 *.class
 hs_err_pid*.log
