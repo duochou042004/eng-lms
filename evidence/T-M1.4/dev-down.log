@@ -1,0 +1,15 @@
+$ ./scripts/dev-down.sh
+englms-dev_default
+dev-down: stopped (data volume englms-dev-pgdata kept; use --purge to delete it)
+$ podman volume ls --filter name=englms-dev-pgdata --format "{{.Name}}"
+englms-dev-pgdata
+$ ./scripts/dev-up.sh  # data volume reused
+dev-up: englms-dev-db is healthy on 127.0.0.1:5432
+$ podman exec englms-dev-db psql -U englms -d englms -Atc "select count(*) from app.flyway_schema_history"  # V1 from the earlier boot survived
+2
+$ ./scripts/dev-down.sh --purge
+dev-down: stopped and removed the englms-dev-pgdata volume
+$ podman volume ls --filter name=englms-dev-pgdata -q | wc -l
+0
+$ podman ps -a --filter name=englms-dev -q | wc -l
+0

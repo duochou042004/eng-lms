@@ -16,7 +16,7 @@
       }
     ]
   },
-  "updatedAt": "2026-09-25T13:26:16Z",
+  "updatedAt": "2026-09-25T13:45:00Z",
   "updatedBy": "lead-coordinator (session 2026-09-25 #3, Opus 5.5)",
   "phase": {
     "id": "P1",
@@ -32,21 +32,22 @@
   "currentTask": {
     "id": "T-M1.4",
     "title": "Local stack + Testcontainers on rootless Podman",
-    "status": "ready",
+    "status": "in_progress",
     "ownerRole": "BE",
     "branch": "feature/T-M1.4-local-stack",
     "packet": "docs/tasks/T-M1.4-local-stack.md",
     "pr": null,
     "lastCommit": null,
-    "startedAt": null,
+    "startedAt": "2026-09-25T13:25:00Z",
     "entryGate": [
       "T-M1.2 merged — met (ae9ac5d)",
       "PO approval: user podman.socket — met (DEC-044, enabled)",
-      "PO start signal for T-M1.4 — pending"
+      "PO start signal for T-M1.4 — met (DEC-046)"
     ],
     "nextSteps": [
-      "PO: start signal for T-M1.4",
-      "Implement per packet (backend-implementer); QA; merge via merge-gate"
+      "Open PR; CI green",
+      "Independent QA → QA-VERDICT; LC-APPROVED; merge-gate; QA report on qa/T-M1.4",
+      "Post-merge: T-M1.5 packet"
     ],
     "trace": [
       "ADR-0012",
@@ -156,12 +157,12 @@
   "decisions": {
     "log": "docs/10-governance/decision-log.md",
     "recent": [
-      "DEC-040",
       "DEC-041",
       "DEC-042",
       "DEC-043",
       "DEC-044",
-      "DEC-045"
+      "DEC-045",
+      "DEC-046"
     ],
     "pendingPO": [
       "OQ-03",
@@ -227,6 +228,13 @@
       "status": "approved",
       "at": "2026-09-25T13:50:00Z",
       "ref": "DEC-044"
+    },
+    {
+      "what": "Start T-M1.4 (local stack)",
+      "by": "PO",
+      "status": "approved",
+      "at": "2026-09-25T13:25:00Z",
+      "ref": "DEC-046"
     }
   ],
   "environment": {
