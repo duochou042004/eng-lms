@@ -109,7 +109,8 @@ any analytics or tracking script.
 | Maven (wrapper) | 3.9.16 (wrapper 3.3.4) | T-M1.2 | 2026-09-25 |
 | actions/setup-java | v6.0.1 @ `de7274f081f381c8f8158605e0321c36c376e2e6` | T-M1.2 | 2026-09-25 |
 | actions/upload-artifact | v7.0.1 @ `043fb46d1a93c77aae656e7c1c64a875d1fc6a0a` | T-M1.2 | 2026-09-25 |
-| PostgreSQL image | *(18.x digest)* | T-M1.4 | — |
+| PostgreSQL image (dev) | `docker.io/library/postgres:18@sha256:5a5a84b19854a9ffaa54082c166ff4ec27473a361e496e5ea167f298f2da9722` (multi-arch index, PostgreSQL 18.6); Testcontainers uses the `postgres:18` tag | T-M1.4 | 2026-09-25 |
+| podman-compose (via `podman compose`) | 1.6.0 | T-M1.4 | 2026-09-25 |
 | Vite / create-vite template | 8.3.1 / create-vite 9.2.1 (`react-ts`) | T-M1.3 | 2026-09-25 |
 | React / React DOM | 19.3.0 | T-M1.3 | 2026-09-25 |
 | TypeScript | 6.0.3 (template line; `strict` + `noUncheckedIndexedAccess`) | T-M1.3 | 2026-09-25 |

@@ -21,44 +21,50 @@ Agents: every `Bash` call is a fresh shell. Prefix toolchain commands with the `
 
 ## 2. Repository bootstrap *(M1)*
 
-Available now (T-M1.2). The backend reads `SPRING_DATASOURCE_URL` (default `jdbc:postgresql://localhost:5432/englms`), `SPRING_DATASOURCE_USERNAME`
-(default `englms`) and `SPRING_DATASOURCE_PASSWORD` (no default). Until `dev-up.sh` exists (T-M1.4), a throwaway database works without the Podman socket:
+Live since T-M1.4. The dev database is PostgreSQL 18 from `deploy/compose.dev.yaml` (pinned by digest, `127.0.0.1:5432` only, volume `englms-dev-pgdata`).
+The backend reads `SPRING_DATASOURCE_URL`, `SPRING_DATASOURCE_USERNAME` and `SPRING_DATASOURCE_PASSWORD` (no default).
 
 ```bash
-podman run -d --rm --name englms-dev-pg -e POSTGRES_DB=englms -e POSTGRES_USER=englms -e POSTGRES_PASSWORD=devonly \
-  -p 127.0.0.1:5432:5432 docker.io/library/postgres:18
-(cd backend && SPRING_DATASOURCE_PASSWORD=devonly ./mvnw spring-boot:run)   # API :8080 (GET /api/v1/meta) ; actuator :8081 (health, info)
+cp .env.example .env                          # dev-only values; .env is git-ignored
+./scripts/dev-up.sh                           # podman compose up -d, then waits for the healthcheck (idempotent)
+set -a; source .env; set +a                   # export the SPRING_DATASOURCE_* values
+(cd backend && ./mvnw spring-boot:run)        # API :8080 (GET /api/v1/meta) ; actuator :8081 (health, info)
+(cd web && pnpm install && pnpm dev)          # http://localhost:5173 (proxies /api → :8080)
+./scripts/dev-down.sh                         # stop; keeps the data volume
+./scripts/dev-down.sh --purge                 # stop and delete the data volume
 ```
 
-Planned (the scripts arrive with T-M1.3 … T-M1.5):
-
-```bash
-./scripts/dev-up.sh          # podman compose -f deploy/compose.dev.yaml up -d  (PostgreSQL 18 on 127.0.0.1:5432, volume englms-dev-pgdata)
-cp .env.example .env         # dev-only values; .env is git-ignored
-(cd backend && ./mvnw spring-boot:run -Dspring-boot.run.profiles=dev)   # http://localhost:8080 ; actuator :8081
-(cd web && pnpm install && pnpm dev)                                     # http://localhost:5173 (proxies /api → :8080)
-./scripts/seed-dev.sh        # dev tutor + sample students (dev profile only; not domain seed data)
-```
-
-The dev tutor credentials are printed by `seed-dev.sh` (random each time, stored in the git-ignored `.data/dev-credentials.txt`).
+Planned: `./scripts/seed-dev.sh` (dev tutor + sample students, dev profile only, not domain seed data) arrives with auth in M2. It will print the dev tutor
+credentials (random each time, stored in the git-ignored `.data/dev-credentials.txt`).
 
 ## 3. Testcontainers on rootless Podman
 
+The user-level socket is enabled once per machine: `systemctl --user enable --now podman.socket` (PO-approved, DEC-044). Then, per shell:
+
 ```bash
-export DOCKER_HOST="unix://${XDG_RUNTIME_DIR}/podman/podman.sock"
-export TESTCONTAINERS_RYUK_DISABLED=true        # Ryuk needs privileged mode under rootless Podman; cleanup via podman label prune instead
+source scripts/env.sh                         # exports DOCKER_HOST=unix://$XDG_RUNTIME_DIR/podman/podman.sock and TESTCONTAINERS_RYUK_DISABLED=true
+(cd backend && ./mvnw -B verify)              # all tests, including the `container`-tagged ones (verified in T-M1.4: 52/52)
 ```
 
-`scripts/env.sh` sets both. **T-M1.4** verifies this works and records the evidence. If it fails, the documented fallback is: tests connect to the compose
-PostgreSQL through a `test-external-db` profile (a separate database per test run, dropped afterwards). The fallback is local only; CI uses GitHub's Docker.
+`env.sh` stops with a clear message when the socket is inactive. Ryuk is disabled because it needs privileged mode under rootless Podman. Test containers
+are removed by JVM shutdown hooks. After a crash, remove leftovers with:
+
+```bash
+podman ps -a --filter label=org.testcontainers=true -q | xargs -r podman rm -fv   # -v also removes their anonymous volumes
+podman volume prune                                                           # unused anonymous volumes left by earlier crashes (asks first)
+```
+
+Known issue (T-M1.8): on local Podman runs Surefire force-exits the test JVM 30 s after the tests (a shutdown hook hangs). The build still passes.
+
+CI uses GitHub's Docker and needs none of this. The previous fallback (a `test-external-db` profile) is no longer needed.
 
 ## 4. Useful commands *(M1+)*
 
 | Task | Command |
 |---|---|
 | All local gates | `./scripts/gate.sh` |
-| Backend tests only | `(cd backend && ./mvnw -B verify)` (needs a Docker-compatible socket for the `container`-tagged tests) |
-| Backend tests without containers | `(cd backend && ./mvnw -B verify -DexcludedGroups=container)` (until T-M1.4 enables the Podman socket; CI runs everything) |
+| Backend tests only | `source scripts/env.sh && (cd backend && ./mvnw -B verify)` (all tests, including `container`) |
+| Backend tests without containers | `(cd backend && ./mvnw -B verify -DexcludedGroups=container)` (quick run) |
 | One backend test | `(cd backend && ./mvnw -B -Dtest=ClassName#method test)` |
 | Regenerate the OpenAPI file | `(cd backend && ./mvnw -B -Dtest=OpenApiContractTest -Dcontract.write=true test)` |
 | Regenerate API types | `(cd web && pnpm api:generate)` |

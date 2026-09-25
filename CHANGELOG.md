@@ -20,6 +20,10 @@ All notable changes to this project are documented here. Format: [Keep a Changel
 - Flyway V1: `unaccent`, `pg_trgm`, `app.simple_unaccent`, the Modulith JDBC event registry. OpenAPI contract `api/openapi.json`.
 - `backend` CI on every PR (required check) with modularity, ArchUnit, forbidden-identifier, Testcontainers PostgreSQL 18 and contract tests.
 
+### Web (T-M1.3)
+- `web/` generated from the Vite `react-ts` template: React 19, TypeScript strict, pnpm 12. Design tokens with an AA contrast check; eight React Aria `ui/` primitives.
+- i18n: Vietnamese default + English, with a completeness test. Lazy tutor/student shells, a typed API client from `api/openapi.json`, a bundle budget, and `web` CI (required).
+
 ### Documentation
 - The README was redesigned: badges, Mermaid architecture and delivery diagrams, roadmap, docs map (DEC-035).
 

@@ -1,0 +1,13 @@
+# 2026-09-25T13:38:22Z
+$ source scripts/env.sh
+env.sh: DOCKER_HOST=unix:///run/user/1000/podman/podman.sock TESTCONTAINERS_RYUK_DISABLED=true
+$ (cd backend && ./mvnw -B -ntp verify)
+exit=0
+[INFO] Tests run: 16, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 12.85 s -- in com.englms.ApplicationIntegrationTest
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.527 s -- in com.englms.persistence.FlywayMigrationTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.929 s -- in com.englms.contract.OpenApiContractTest
+[INFO] Tests run: 52, Failures: 0, Errors: 0, Skipped: 0
+[INFO] BUILD SUCCESS
+"message":"Container docker.io/library/postgres:18 is starting: 92e184aab734f54badcbab002c2f12b1e6ecbaa8242c91055d0fdf225f7ecd8c"
+$ podman ps -a --filter label=org.testcontainers=true --format "{{.ID}} {{.Image}}" | wc -l
+0

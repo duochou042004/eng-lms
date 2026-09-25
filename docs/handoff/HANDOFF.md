@@ -1,32 +1,29 @@
-# Handoff — 2026-09-25 13:40 UTC (T-M1.3 in review; UX round 1 fixed)
+# Handoff — 2026-09-25 14:40 UTC (T-M1.3 merged; T-M1.4 ready)
 
-Phase/Milestone: P1 / M1 · Current task: **T-M1.3 (in_review)** · Branch: `feature/T-M1.3-web-skeleton` · PR: https://github.com/duochou042004/eng-lms/pull/4
+Phase/Milestone: P1 / M1 · Current task: **T-M1.4 (ready; waiting for the PO start signal)** · Branch: `feature/T-M1.4-local-stack` · Remote: https://github.com/duochou042004/eng-lms
 
 ## Where we are
-- T-M1.2 is merged (`ae9ac5d`), and its QA report is merged too (PR #3). The PO approved starting T-M1.3 (DEC-042).
-- **T-M1.3 is implemented.** `web/` came from the Vite 9 `react-ts` template (pnpm 12, Node 24, TS strict) and has tokens + a contrast script, 8 `ui/` primitives with unit/axe tests,
-  `/dev/ui` (dev only), i18next vi default + en with a completeness test, lazy tutor/student shells, an openapi-fetch client, a bundle budget (142 KB gz), and `web` CI (required check).
-  CI was green on the first push. The evidence is in `evidence/T-M1.3/` (summary, negative demos for AC3/5/7/8, gate log, 13 screenshots, live viewport checks).
-- **UX round 1: CHANGES REQUESTED** (F1 40 px controls, F2 "Something went wrong"). The full review is a PR #4 comment. F1, F2, F4, F6, F7, F8 and the F9 warning role
-  are fixed in the latest commit. F3 (route focus/titles) and F5 (segmented language control) are deferred to **T-M1.9** (DEC-043).
-- DEC-042: kept the template's **oxlint** instead of ESLint; pnpm's release-age policy pins Vitest to 5.0.1.
+- **M1 progress:** T-M1.1 (`f1e3caa`), T-M1.2 (`ae9ac5d`) and **T-M1.3 (`8b9d938`)** are merged through merge-gate. The QA reports are merged (PR #3, PR #5).
+- **T-M1.3:** `web/` (Vite 9 template, React 19, TS strict, pnpm 12). Tokens + contrast check, 8 `ui/` primitives, i18n vi default + en, lazy shells, an openapi-fetch client,
+  a bundle budget, and `web` CI (required). UX: round 1 CHANGES REQUESTED → fixed; round 2 **APPROVED**. The UX record is the PR #4 comments (see Gotchas). QA **PASS WITH MINOR**.
+- **Deferred to T-M1.9** (DEC-043, DEC-045): route focus/titles, a segmented language control, 44 px link targets, `RouteLoading` layout, error copy without a request ID,
+  the dev i18n namespace in the production bundle, and the `window.fetch` lint gap. **T-M1.9 must land before the M2 routes.**
+- The user `podman.socket` is **enabled** (PO-approved, DEC-044). Local `./mvnw -B verify` with `DOCKER_HOST` + `TESTCONTAINERS_RYUK_DISABLED=true` passes 52/52.
+- The T-M1.4 packet (`docs/tasks/T-M1.4-local-stack.md`) is G0-complete: compose.dev (digest-pinned postgres:18), env.sh, dev-up/down, the Testcontainers proof.
 
 ## Next steps
-1. Wait for PR #4 CI on the new head. Run **UX round 2**: a fresh `ux-reviewer` agent at the new head, on a stack you start (podman postgres:18 + backend jar with `ENGLMS_META_DISPLAY_NAME` + `pnpm dev`). Post `UX-REVIEW T-M1.3: APPROVED` as the first line.
-2. **QA**: one fresh general-purpose agent following `.claude/agents/qa-evaluator.md` (run it after UX; they share the browser pane and ports). Fix S1/S2.
-3. After the final head commit: `QA-VERDICT T-M1.3: …`, then `LC-APPROVED T-M1.3`; `./scripts/merge-gate.sh --dry-run 4`, then merge, from an up-to-date `develop`.
-4. Post-merge: the QA report goes on `qa/T-M1.3` (PR + LC-APPROVED). The UX review file (`evidence/T-M1.3/review/ux.md`) needs a docs/chore branch (feature branches may not write reviewer evidence). Record the merge; write the next packet.
+1. The PO gives the start signal for T-M1.4. Implement it (backend-implementer), then QA, LC-APPROVED and merge-gate.
+2. Then T-M1.5 (Containerfile, SPA serving, `gate.sh`, contract-drift; OQ-16 JaCoCo default), T-M1.6 (E2E), T-M1.7, T-M1.8 and T-M1.9 (hardening and follow-ups).
 
 ## Pending PO decisions
-None for T-M1.4: the user `podman.socket` is **approved and enabled** (DEC-044). Local `./mvnw -B verify` (with `DOCKER_HOST` + `TESTCONTAINERS_RYUK_DISABLED=true`) now passes 52/52. OQ-03..OQ-14 and OQ-16 (defaults documented).
+The T-M1.4 start signal. OQ-03..OQ-14 and OQ-16 (defaults documented).
 
 ## Gotchas
-- Subagents can't write files: record their reports verbatim (a PR comment and/or a commit on the right branch kind).
-- pnpm 12: `pnpm -s` is invalid. Scripts fail on unreviewed build scripts (`allowBuilds` in `web/pnpm-workspace.yaml`) and on releases younger than a day.
-- openapi-fetch captures `fetch` at creation, so the client passes `fetch: (r) => globalThis.fetch(r)` (for MSW).
-- zsh does not word-split `$var`: use `${=var}`. Kill by PID, not `pkill -f` (it matches your own shell).
-- Screenshots: `chromium --headless=new --window-size=W,H --virtual-time-budget=4000 --screenshot=…`.
-- Adding a required check means also updating `OK_CHECKS` in `scripts/tests/merge-gate.test.sh`.
+- Reviewer evidence (`evidence/*/review/`) can't be committed on feature branches. A docs/chore PR needs its own DOCS-REVIEW (don't re-use another PR's verdict).
+  For T-M1.3 the UX record of truth is the two PR #4 comments. QA reports go on `qa/<task>` with `LC-APPROVED <task>`.
+- Subagents can't write files: record their text. Run the UX and QA agents one after the other (they share the browser pane and ports).
+- pnpm 12: no `-s`. Release-age policy (1 day). `allowBuilds` in `web/pnpm-workspace.yaml`. zsh: `${=var}`. Kill by PID. Foreground `sleep` chains are blocked: use until-loops.
+- Adding a required check means updating `OK_CHECKS` in `scripts/tests/merge-gate.test.sh`.
 
 ## Files to read first
-`CLAUDE.md` → `progress.json` → this file → `docs/tasks/T-M1.3-web-skeleton.md` → the PR #4 comments.
+`CLAUDE.md` → `progress.json` → this file → `docs/tasks/T-M1.4-local-stack.md`.

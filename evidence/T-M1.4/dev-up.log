@@ -1,0 +1,20 @@
+$ ./scripts/dev-up.sh   # first run
+662db3da228c2ea2649b3ae04db4b4479e85fea5979f6a917a7f6d5cb1e7ec39
+5465d242e2145a179993a61d2cb7887af803e38804f86c4b9de81ad424d7249f
+69024dcdcc16e74197878d9d020531076dc8b0c5ed6ee3e3ed0254d2a7e86438
+englms-dev-db
+dev-up: englms-dev-db is healthy on 127.0.0.1:5432
+exit=0
+
+$ ./scripts/dev-up.sh   # second run (idempotent)
+662db3da228c2ea2649b3ae04db4b4479e85fea5979f6a917a7f6d5cb1e7ec39
+englms-dev-db
+dev-up: englms-dev-db is healthy on 127.0.0.1:5432
+exit=0
+
+$ podman ps --filter name=englms-dev-db --format "{{.Image}} {{.Ports}} {{.Status}}"
+docker.io/library/postgres@sha256:5a5a84b19854a9ffaa54082c166ff4ec27473a361e496e5ea167f298f2da9722 127.0.0.1:5432->5432/tcp Up 4 seconds (healthy)
+$ podman exec englms-dev-db postgres --version
+postgres (PostgreSQL) 18.6 (Debian 18.6-1.pgdg13+2)
+$ ss -ltn | grep :5432
+LISTEN 0      4096       127.0.0.1:5432      0.0.0.0:*

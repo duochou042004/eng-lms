@@ -1,0 +1,8 @@
+$ set -a; source .env; set +a; (cd backend && ./mvnw -B spring-boot:run)
+"message":"Migrating schema \"
+"message":"Successfully applied 1 migration to schema \"
+"message":"Started EnglmsApplication in 4.503 seconds (process running for 4.733)"
+$ curl -s localhost:8080/api/v1/meta
+{"name":"englms","version":"0.0.1-SNAPSHOT","locales":["vi","en"],"displayName":"Eng-LMS"}
+$ curl -s localhost:8081/actuator/health/readiness
+{"status":"UP"}
