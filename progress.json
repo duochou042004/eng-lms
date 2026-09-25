@@ -16,7 +16,7 @@
       }
     ]
   },
-  "updatedAt": "2026-09-25T13:40:00Z",
+  "updatedAt": "2026-09-25T13:50:00Z",
   "updatedBy": "lead-coordinator (session 2026-09-25 #3, Opus 5.5)",
   "phase": {
     "id": "P1",
@@ -70,7 +70,7 @@
     "startedAt": null,
     "entryGate": [
       "T-M1.2 merged — met (ae9ac5d)",
-      "PO approval: persistent user-level podman.socket — pending"
+      "PO approval: persistent user-level podman.socket — met (DEC-044; enabled and verified 2026-09-25)"
     ],
     "nextSteps": [],
     "trace": [
@@ -151,12 +151,12 @@
   "decisions": {
     "log": "docs/10-governance/decision-log.md",
     "recent": [
-      "DEC-038",
       "DEC-039",
       "DEC-040",
       "DEC-041",
       "DEC-042",
-      "DEC-043"
+      "DEC-043",
+      "DEC-044"
     ],
     "pendingPO": [
       "OQ-03",
@@ -215,6 +215,13 @@
       "status": "approved",
       "at": "2026-09-25T12:30:00Z",
       "ref": "DEC-042"
+    },
+    {
+      "what": "Enable the persistent user-level podman.socket (T-M1.4)",
+      "by": "PO",
+      "status": "approved",
+      "at": "2026-09-25T13:50:00Z",
+      "ref": "DEC-044"
     }
   ],
   "environment": {
@@ -223,7 +230,7 @@
     "buildTool": "Maven Wrapper (no global mvn/gradle installed)",
     "node": "24.21.0 via nvm (source ~/.nvm/nvm.sh; not on non-interactive PATH)",
     "pnpm": "12.6.0 (corepack 0.36.0)",
-    "podman": "5.8.6 rootless + podman-compose 1.6.0; user podman.socket disabled (needed for Testcontainers, T-M1.4)",
+    "podman": "5.8.6 rootless; the user podman.socket is ENABLED (DEC-044). Testcontainers works with DOCKER_HOST=unix://$XDG_RUNTIME_DIR/podman/podman.sock and TESTCONTAINERS_RYUK_DISABLED=true (52/52 backend tests locally)",
     "gh": "2.101.0, authenticated as duochou042004 (scopes: repo, workflow, read:org, gist)",
     "host": "Kali Linux 7.1.5, 16 cores, 22 GB RAM, 92 GB free",
     "python": "3.14.7 with jsonschema 4.26.0 (used by scripts/check_docs.py)"
@@ -298,6 +305,11 @@
       "at": "2026-09-25T13:40:00Z",
       "actor": "lead-coordinator",
       "event": "T-M1.3 implemented (PR #4, CI green). UX round 1 CHANGES REQUESTED (F1/F2 S2) → fixed; F3/F5 → T-M1.9 (DEC-043). Session handed off at the context budget before UX round 2 + QA."
+    },
+    {
+      "at": "2026-09-25T13:50:00Z",
+      "actor": "lead-coordinator",
+      "event": "PO approved; user podman.socket enabled; full backend verify (Testcontainers) green locally."
     }
   ]
 }

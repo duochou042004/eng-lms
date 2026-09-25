@@ -18,7 +18,7 @@ Phase/Milestone: P1 / M1 · Current task: **T-M1.3 (in_review)** · Branch: `fea
 4. Post-merge: the QA report goes on `qa/T-M1.3` (PR + LC-APPROVED). The UX review file (`evidence/T-M1.3/review/ux.md`) needs a docs/chore branch (feature branches may not write reviewer evidence). Record the merge; write the next packet.
 
 ## Pending PO decisions
-The T-M1.4 persistent user-level `podman.socket`. OQ-03..OQ-14 and OQ-16 (defaults documented).
+None for T-M1.4: the user `podman.socket` is **approved and enabled** (DEC-044). Local `./mvnw -B verify` (with `DOCKER_HOST` + `TESTCONTAINERS_RYUK_DISABLED=true`) now passes 52/52. OQ-03..OQ-14 and OQ-16 (defaults documented).
 
 ## Gotchas
 - Subagents can't write files: record their reports verbatim (a PR comment and/or a commit on the right branch kind).
