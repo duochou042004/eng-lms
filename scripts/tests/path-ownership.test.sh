@@ -14,6 +14,8 @@ expect_exit 0 "feature/ branch with backend, web, impl evidence passes" -- run f
 expect_exit 1 "any branch touching docs/00-sources fails"     -- run docs/T-M9.9-x docs/00-sources/personal_english_tutor_teaching_workspace_spec.md
 expect_exit 0 "chore/ branch with docs and scripts passes"    -- run chore/T-M1.1-repo-governance docs/README.md scripts/merge-gate.sh .github/workflows/docs-check.yml
 expect_exit 1 "unknown branch kind fails"                     -- run random/thing README.md
+expect_exit 1 "R2-1: dependabot branch touching source code fails"   -- run dependabot/maven/backend/x backend/pom.xml backend/src/main/A.java
+expect_exit 0 "dependabot branch touching manifests/workflows passes" -- run dependabot/npm_and_yarn/web/x web/package.json web/pnpm-lock.yaml .github/workflows/web.yml
 expect_exit 2 "F5: an empty change list fails (no silent PASS)" -- run chore/T-M1.1-x ""
 expect_exit 2 "F5: an unknown base ref fails (no silent PASS)" -- env -u FILES_FROM "$ROOT/scripts/check-path-ownership.sh" chore/T-M1.1-x origin/does-not-exist
 finish

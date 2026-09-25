@@ -51,3 +51,52 @@
 - T-M1.2 packet. It has every template section: goal, trace, scope, out of scope, guardrails, design notes, 9 ACs, test plan, evidence, docs, risks and commands, with an estimate ≤ 2 days. All trace IDs resolve. Remaining issues are F7 and F12.
 
 DOCS-REVIEW T-M1.1: CHANGES REQUESTED
+
+## Re-test (round 2)
+
+- Scope: fix commit `0319c8c` on `chore/T-M1.1-repo-governance` (head `0319c8c`, 23 files). I re-tested independently. The verdict line above is the round-1 verdict and is kept for history. The last line of this file is the current verdict.
+- Checks:
+  - `./scripts/check-docs.sh` → PASS (94 markdown files), exit 0.
+  - `./scripts/tests/run-all.sh` → 48/48 (merge-gate 31, path-ownership 10, pre-push 7), exit 0.
+  - `gh pr checks 1` on the new head: both checks pass (`docs-check` run 36107143879, `secrets-scan` run 36107143915).
+  - Real `./scripts/merge-gate.sh --dry-run 1` → REFUSED, only because the fresh `LC-APPROVED T-M1.1` and `DOCS-REVIEW T-M1.1: PASS` are missing. This is the expected state.
+  - `gh` returns both `committedDate` and `createdAt` in UTC `…Z` format (checked on PR #1), so the string comparison on timestamps is valid.
+  - `.claude/settings.json` still equals `claude-settings.proposed.json` minus `$comment`.
+- Adversarial probes: 41 mock-`gh` cases (script kept in my scratchpad; results summarised below).
+
+### Round-1 findings
+
+| ID | Fixed? | Evidence |
+|---|---|---|
+| F1 (S2) | **Yes** | All four round-1 bypass strings are now refused: "CHANGES REQUESTED (previous verdict: PASS)", the placeholder "PASS \| CHANGES REQUESTED", "FAIL (AC1: PASS, AC4: FAIL)", and "SEC-REVIEW …: APPROVED? no - …". Also refused: a verdict or LC approval for another ID (`T-M9.99`, `T-M1.1`, the `T-M9X9` dot wildcard, `1x0x0`); lowercase prefix or token; a zero-width character after PASS; NBSP in the prefix; leading spaces; a `>` quote; and a later CHANGES REQUESTED after a PASS. Accepted, harmlessly: `:PASS` with no space, trailing tab or NBSP, CRLF or CR line endings, and a padded `LC-APPROVED` line. One remaining edge case is R2-5. |
+| F2 (S2) | **Yes** | `progress.json`: T-M1.1 is `done`, with `pr` set to the PR #1 URL and a `completed[]` entry (`mergeCommit: null`, recorded after merge, per G4). The schema check passes. Summary AC9 now matches. HANDOFF is stale (R2-6, S4). |
+| F3 (S3) | Partly | `--match-head-commit` was added, and verdicts posted before the head commit's date are rejected (tests plus my probe). But freshness is measured against the committer-controlled `committedDate` rather than the review → push order (R2-2). |
+| F4 (S3) | Yes, but introduced R2-1 | Release and hotfix paths work (QA + PO + LC, base `master`; `hotfix → develop` refused). The back-merge goes through a `chore/<task>-backmerge-x.y.z` PR (git-governance §4). The Dependabot path trusts the branch name alone (R2-1). |
+| F5 (S3) | **Yes** | An unknown base ref → exit 2, and an empty file list → exit 2 (tests plus my manual run). agent-roles §3 now states exactly what the script enforces and what review covers. A minor stderr-capture issue remains (R2-8). |
+| F6 (S3) | Yes (residual accepted) | The extra deny rules are present, and R-08 and DEC-031 now list the residual risks (prefix-based rules, one shared `gh` account). A side effect is R2-3. |
+| F7 (S3) | **Yes** | The T-M1.2 packet says `backend` runs on every PR with no path filter. ci-cd §1 does the same for `backend` and `web`. |
+| F8 (S3) | **Yes** | DEC-036 (`Accepted`, within LC authority per the decision-log legend) moves the session and `persistent_logins` tables to T-M2.1. data-model §4 and the backlog rows for T-M1.2 and T-M2.1 are updated. |
+| F9 (S3) | **Yes** | The dry-run log is committed and cited in AC4. The CI run URLs are recorded in AC3 and the "CI" section, and I verified them. |
+| F10 (S4) | Yes | ci-cd now says Dependabot covers only GitHub Actions for now. git-governance §4 no longer permits local merges. |
+| F11 (S4) | Yes | `persist-credentials: false` is set on both checkouts. The pip hash pin was not adopted (optional). |
+| F12 (S4) | Yes | T-M1.2 status wording is fixed, and the T-M1.1 test plan now says AC1–AC10. AC10 is still listed before AC9 (cosmetic). |
+| F13 (S4) | Yes | The README now says "will be … (from M2)" and "to be verified in CI". |
+
+### New findings (round 2)
+
+| ID | Sev | File:line | Issue | Concrete failure scenario | Suggested fix |
+|---|---|---|---|---|---|
+| R2-1 | **S2** | `scripts/merge-gate.sh:52-54`; `scripts/check-path-ownership.sh:43`; `docs/09-harness/git-governance.md` §4 | *Regression from the F4 fix.* The `dependabot` merge path is chosen by the **head branch name** alone. It needs only `LC-APPROVED PR-<n>` and green checks: no QA or DOCS verdict, and no `progress.json` change. Path ownership also lets the `dependabot` kind touch any path. Anyone who can push can create a `dependabot/…` branch; the pre-push hook allows it. | Reproduced: a hand-made `dependabot/github_actions/x` PR changing `backend/src/Evil.java` and `scripts/merge-gate.sh`, with only `LC-APPROVED PR-7`, gives "all gates passed" (rc=0). The G3 independent evaluation, which the gate exists to enforce (DEC-031), is skipped because of a branch name. | Add `author` to the `gh pr view --json` fields and require `.author.login == "app/dependabot"` (and `is_bot`) for this path. Optionally restrict the changed files to dependency manifests, lockfiles and `.github/workflows/**`. Apply the same author/file rule to `dependabot` in `check-path-ownership.sh`. Add a negative test for a hand-made `dependabot/` branch. |
+| R2-2 | S3 | `scripts/merge-gate.sh:37`; `docs/09-harness/git-governance.md:51` | Freshness uses `max(committedDate)`, which the committer controls. A commit **created** before the review but **pushed** after it counts as reviewed. `--match-head-commit` pins the head the *gate* saw, not the head the *reviewer* saw. git-governance says the merge "is pinned to the reviewed head SHA", which overstates this. Also, every update from the base (including `gh pr update-branch`) makes all verdicts stale, so each catch-up means a full re-review. | Reproduced: the verdict was posted after the latest `committedDate` but refers to an older head, and the gate passes. Scenario: the implementer commits locally at 09:00, QA passes the pushed head at 09:30, and the implementer pushes the 09:00 commit at 10:00. That commit is treated as reviewed. | Bind verdicts to a SHA (for example `QA-VERDICT T-M2.3: PASS @<sha7>`, required to equal `headRefOid[0:7]`). Alternatively use the PR timeline push time, and optionally treat pure base-merge commits as not invalidating. Correct the wording in git-governance. |
+| R2-3 | S3 | `.claude/settings.json:45`; git-governance §4 | The new `Bash(git merge:*)` deny rule blocks the usual way to bring a branch up to date. Merge-gate requires 0 commits behind, rebase + force push is denied, and no doc says how to update a branch that is behind (e.g. `gh pr update-branch <n>`). `git pull origin develop`, which also merges, is still allowed, so the rule is inconsistent. The `git push -n:*` deny rule blocks a harmless dry run. | An implementer whose PR falls behind `develop` has no documented, permitted way to update it and may improvise. | Document `gh pr update-branch <n>` as the update path (together with the staleness rule in R2-2). Either also deny `git pull` or scope `git merge` more narrowly (e.g. `git merge --no-ff:*` on develop). Drop `git push -n`. |
+| R2-4 | S3 | `scripts/merge-gate.sh:96` | On docs/chore PRs, `QA-VERDICT PASS` overrides an explicit latest `DOCS-REVIEW …: CHANGES REQUESTED`. This behaviour predates the fix but still exists, although SEC and UX already treat any non-APPROVED verdict as blocking. | Reproduced: DOCS CHANGES REQUESTED followed by QA PASS → rc=0. | Treat a present, non-PASS `DOCS-REVIEW` as blocking (as for SEC/UX), and use QA only as a fallback when no DOCS-REVIEW exists. |
+| R2-5 | S4 | `scripts/merge-gate.sh:79-84` | Lines inside a fenced code block count. A CHANGES REQUESTED comment that shows the expected line (```` ``` DOCS-REVIEW T-M9.9: PASS ``` ````) becomes the latest verdict. | Reproduced: rc=0. This is unlikely, but it is exactly the kind of example a reviewer might paste. | Ignore lines inside fenced code, or use only the first verdict line of each comment. |
+| R2-6 | S4 | `docs/handoff/HANDOFF.md:1,3,8` | The handoff still says "T-M1.1 in review" and "34 script tests", while `progress.json` says `done` and 48 tests. | A resuming agent sees conflicting states. | Update the handoff in the final pre-merge commit. |
+| R2-7 | S4 | `scripts/merge-gate.sh:37` | If `commits` is empty, `head_time` is `""`, so every comment counts as fresh (fails open). This can't happen for a real PR. | Probe: rc=0 with `commits: []`. | Refuse when `head_time` is empty. |
+| R2-8 | S4 | `scripts/check-path-ownership.sh:13` | `2>&1` merges git's stderr (for example rename-detection warnings) into the file list, where warnings become fake paths. | A warning line on a `qa/` branch → a false path violation (fails closed). | Capture stderr separately (`2>"$errf"`). |
+
+### Summary
+
+F1 and F2, the round-1 blockers, are fixed and verified, along with F5, F7, F8, F9 and F10–F13. F3, F4 and F6 are fixed with residuals noted. No scope was added: DEC-036 is a resequencing within delegated authority. The fix commit introduces one **S2 regression (R2-1)**: the new Dependabot merge path lets any branch named `dependabot/…` skip independent evaluation, and the fix is a one-line author check plus a test. R2-2 to R2-4 (S3) and R2-5 to R2-8 (S4) may be deferred with follow-ups.
+
+DOCS-REVIEW T-M1.1: CHANGES REQUESTED

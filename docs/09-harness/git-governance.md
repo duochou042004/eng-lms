@@ -48,7 +48,12 @@ Trailers: `Task: T-M2.3`, `Refs: FR-STU-01, DEC-012`, and the co-author attribut
   `chore/<task-id>-backmerge-x.y.z` branch created from `master` and a normal PR.
 - **Merge paths** (implemented in `merge-gate.sh`): feature/fix → QA-VERDICT; docs/chore → DOCS-REVIEW (or QA); qa/ → LC only; release/hotfix → master with
   QA-VERDICT + PO-APPROVED + LC-APPROVED `<x.y.z>`; dependabot/* → `LC-APPROVED PR-<n>`. Verdicts count only if they are the **exact** token and were posted **after** the head commit,
-  and the merge is pinned to the reviewed head SHA (`--match-head-commit`).
+  and the merge is pinned to the head SHA seen at gate time (`--match-head-commit`), so nothing pushed after the gate check can be merged.
+  **Known limitation (R2-2, DEC-037):** "fresh" is judged against the head commit's `committedDate`, which the committer controls, so a commit authored before a review but pushed after it
+  counts as reviewed. The LC checks the PR timeline before approving. Hardening is tracked as T-M1.7. Dependabot PRs also require the PR author to be the Dependabot app,
+  and they may only change manifests, lockfiles and workflows (R2-1).
+- **Catching up with `develop`:** agents may not run `git merge` (deny rule). Use `gh pr update-branch <n>`, which creates the merge commit on GitHub, or ask the LC.
+  The update is a new head commit, so every verdict and approval must be re-posted afterwards.
 
 ## 5. Releases and tags
 

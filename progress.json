@@ -16,7 +16,7 @@
       }
     ]
   },
-  "updatedAt": "2026-09-25T07:20:01Z",
+  "updatedAt": "2026-09-25T07:34:22Z",
   "updatedBy": "lead-coordinator (session 2026-09-25, Opus 5.5)",
   "phase": {
     "id": "P1",
@@ -111,7 +111,7 @@
       {
         "name": "governance script tests (scripts/tests/run-all.sh)",
         "result": "pass",
-        "details": "48/48: merge-gate 31 (incl. review F1/F3/F4 bypass cases), path-ownership 10 (incl. F5), pre-push 7",
+        "details": "56/56: merge-gate 37 (incl. review F1/F3/F4/R2-1/R2-4/R2-5/R2-7 cases), path-ownership 12 (incl. F5, R2-1), pre-push 7",
         "evidence": "evidence/T-M1.1/script-tests.log"
       },
       {
@@ -152,7 +152,7 @@
     },
     "G3": {
       "status": "pending",
-      "note": "DOCS-REVIEW round 1: CHANGES REQUESTED (F1, F2 S2 + 11 S3/S4); fixes pushed; re-review pending"
+      "note": "DOCS-REVIEW round 2: CHANGES REQUESTED (R2-1 S2); fixed; round 3 re-test pending"
     },
     "G4": {
       "status": "pending",
@@ -164,11 +164,11 @@
     "log": "docs/10-governance/decision-log.md",
     "recent": [
       "DEC-031",
-      "DEC-032",
       "DEC-033",
       "DEC-034",
       "DEC-035",
-      "DEC-036"
+      "DEC-036",
+      "DEC-037"
     ],
     "pendingPO": [
       "OQ-02",
@@ -273,6 +273,11 @@
       "at": "2026-09-25T07:20:01Z",
       "actor": "lead-coordinator",
       "event": "PR #1 CI green. Independent DOCS-REVIEW round 1: CHANGES REQUESTED (F1 verdict-regex bypass, F2 bookkeeping + 11 minor). Fixed: exact verdict tokens, stale-verdict rejection, --match-head-commit, dependabot/release paths, path-ownership fail-closed, deny rules, DEC-036, docs."
+    },
+    {
+      "at": "2026-09-25T07:34:22Z",
+      "actor": "lead-coordinator",
+      "event": "DOCS-REVIEW round 2: CHANGES REQUESTED (R2-1 forged dependabot branch, S2). Fixed R2-1, R2-3..8; R2-2 deferred to T-M1.7 (DEC-037). Tests 56/56."
     }
   ]
 }

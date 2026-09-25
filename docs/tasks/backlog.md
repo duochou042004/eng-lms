@@ -16,6 +16,7 @@
 | T-M1.3 | Web skeleton: Vite + React + TS strict, pnpm, ESLint, Prettier, stylelint (tokens), `tokens.css`, first `ui/` primitives, i18n vi/en + completeness test, router + shells (placeholders), API client generation, Vitest + axe, bundle budget, contrast check, `/dev/ui`, `web` CI | FE | ADR-0004/13/14, DEC-029 | T-M1.1 |
 | T-M1.4 | Local stack + Testcontainers on rootless Podman: `compose.dev.yaml` (pinned postgres:18), `scripts/env.sh`, `dev-up/down`, user-level podman.socket (**PO approval: persistent user service**), Testcontainers proof or the fallback profile | BE | ADR-0012, R-07 | T-M1.2 |
 | T-M1.5 | Single image + same-origin serving: Containerfile (multi-stage), SPA fallback controller, cache and security headers baseline, a complete `scripts/gate.sh`, `contract-drift` CI | BE (+FE) | ADR-0004, NFR-SEC-08 | T-M1.2, T-M1.3 |
+| T-M1.7 | Merge-gate hardening: judge verdict freshness by the head-commit **push time** (PR timeline `HeadRefForcePushed`/`PullRequestCommit` events or the check-run start), not by `committedDate` (review R2-2, DEC-037) | LC | DEC-037, R-08 | T-M1.1 |
 | T-M1.6 | E2E harness: `/e2e` Playwright (6 viewport projects), helpers (axe, no-horizontal-scroll, step counter, screenshots), smoke test, `e2e-smoke` CI; `/qa` skeleton + README | FE | NFR-RESP-01, qa-protocol | T-M1.5 |
 
 ## M2 — Identity and students

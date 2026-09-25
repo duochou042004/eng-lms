@@ -12,7 +12,7 @@
 #   docs|chore/<task>-*    → develop : DOCS-REVIEW <task>: PASS (or QA-VERDICT PASS) + LC-APPROVED <task> + progress.json changed
 #   qa/<task>              → develop : LC-APPROVED <task>
 #   release|hotfix/<x.y.z> → master  : QA-VERDICT <x.y.z>: PASS + PO-APPROVED <x.y.z> + LC-APPROVED <x.y.z>
-#   dependabot/*           → develop : LC-APPROVED PR-<n>
+#   dependabot/*           → develop : LC-APPROVED PR-<n>; PR author must be the Dependabot app; only manifests/lockfiles/workflows may change
 # In every case: required checks pass, no check fails, branch 0 behind base, no conflicts,
 # and every verdict comment must be posted AFTER the PR's head commit (stale verdicts don't count).
 set -euo pipefail
@@ -27,7 +27,7 @@ REQUIRED_CHECKS_FILE=${REQUIRED_CHECKS_FILE:-$SCRIPT_DIR/required-checks.txt}
 problems=()
 fail() { problems+=("$1"); }
 
-pr_json=$($GH pr view "$PR" --json number,state,isDraft,baseRefName,headRefName,headRefOid,mergeStateStatus,comments,files,commits)
+pr_json=$($GH pr view "$PR" --json number,state,isDraft,author,baseRefName,headRefName,headRefOid,mergeStateStatus,comments,files,commits)
 state=$(jq -r .state <<<"$pr_json")
 draft=$(jq -r .isDraft <<<"$pr_json")
 base=$(jq -r .baseRefName <<<"$pr_json")
@@ -35,6 +35,8 @@ head=$(jq -r .headRefName <<<"$pr_json")
 head_oid=$(jq -r .headRefOid <<<"$pr_json")
 mss=$(jq -r .mergeStateStatus <<<"$pr_json")
 head_time=$(jq -r '[.commits[] | .committedDate] | max // ""' <<<"$pr_json")
+author=$(jq -r '.author.login // ""' <<<"$pr_json")
+[[ -n "$head_time" ]] || fail "cannot determine the head commit time (empty commit list)"
 
 # 1. PR shape and verdict id
 [[ "$state" == "OPEN" ]] || fail "PR is not open (state=$state)"
@@ -51,6 +53,10 @@ case "$kind" in
     [[ "$base" == "master" ]] || fail "$kind branches merge into master (base=$base)";;
   dependabot)
     id="PR-$PR"
+    # The branch name is not proof: only PRs actually opened by the Dependabot app use this path (review R2-1).
+    [[ "$author" == "app/dependabot" || "$author" == "dependabot[bot]" ]] || fail "dependabot/* branch not authored by Dependabot (author=$author)"
+    bad_dep=$(jq -r '[.files[].path | select(test("^(\\.github/workflows/[^/]+\\.ya?ml|(.*/)?pom\\.xml|\\.mvn/.*|(.*/)?package\\.json|(.*/)?pnpm-lock\\.yaml)$") | not)] | join(", ")' <<<"$pr_json")
+    [[ -z "$bad_dep" ]] || fail "dependabot PR changes files outside dependency manifests: $bad_dep"
     [[ "$base" == "develop" ]] || fail "dependabot PRs target develop (base=$base)";;
   *) id=""; fail "branch kind '$kind' has no merge path (see git-governance.md §4)";;
 esac
@@ -74,17 +80,18 @@ done <"$REQUIRED_CHECKS_FILE"
 bad=$(jq -r '[.[] | select(.bucket == "fail" or .bucket == "pending" or .bucket == "cancel") | "\(.name)=\(.bucket)"] | join(", ")' <<<"$checks_json")
 [[ -z "$bad" ]] || fail "non-passing checks: $bad"
 
-# 4. Verdicts: exact tokens only, latest line of each type wins, only comments posted after the head commit count
-# verdict <TYPE>  → prints the exact verdict token of the latest fresh "<TYPE> <id>: <TOKEN>" line ("" if none)
+# 4. Verdicts: exact tokens only; the latest fresh comment of each type wins
+# A verdict/approval is the FIRST line of a comment (so quoted or code-block text never counts), posted after the head commit.
+# verdict <TYPE>  → prints the exact verdict token of the latest fresh "<TYPE> <id>: <TOKEN>" comment ("" if none)
 verdict() {
   jq -r --arg type "$1" --arg id "$id" --arg since "$head_time" '
-    [ .comments[] | select(.createdAt >= $since) | .body | gsub("\r"; "") | split("\n")[]
+    [ .comments[] | select(.createdAt >= $since) | .body | gsub("\r"; "") | split("\n")[0] | gsub("^\\s+|\\s+$"; "")
       | select(startswith($type + " " + $id + ":")) | ltrimstr($type + " " + $id + ":") | gsub("^\\s+|\\s+$"; "") ]
     | last // ""' <<<"$pr_json"
 }
-approval_present() { # <TYPE> → exact "<TYPE> <id>" line posted after the head commit
+approval_present() { # <TYPE> → a fresh comment whose first line is exactly "<TYPE> <id>"
   jq -e --arg line "$1 $id" --arg since "$head_time" '
-    [ .comments[] | select(.createdAt >= $since) | .body | gsub("\r"; "") | split("\n")[] | gsub("^\\s+|\\s+$"; "")
+    [ .comments[] | select(.createdAt >= $since) | .body | gsub("\r"; "") | split("\n")[0] | gsub("^\\s+|\\s+$"; "")
       | select(. == $line) ] | length > 0' <<<"$pr_json" >/dev/null
 }
 if [[ -n "$id" ]]; then
@@ -93,7 +100,8 @@ if [[ -n "$id" ]]; then
   qa_pass=0; [[ "$qa" == "PASS" || "$qa" == "PASS WITH MINOR" ]] && qa_pass=1
   case "$kind" in
     feature|fix)    ((qa_pass)) || fail "needs a fresh 'QA-VERDICT $id: PASS' (latest: '${qa:-none}')";;
-    docs|chore)     [[ "$docs" == "PASS" ]] || ((qa_pass)) || fail "needs a fresh 'DOCS-REVIEW $id: PASS' (latest: '${docs:-none}')";;
+    docs|chore)     if [[ -n "$docs" ]]; then [[ "$docs" == "PASS" ]] || fail "latest DOCS-REVIEW is '$docs', not PASS"
+                    else ((qa_pass)) || fail "needs a fresh 'DOCS-REVIEW $id: PASS' (latest: none)"; fi;;
     release|hotfix) ((qa_pass)) || fail "needs a fresh 'QA-VERDICT $id: PASS' (latest: '${qa:-none}')"
                     approval_present PO-APPROVED || fail "missing fresh 'PO-APPROVED $id' comment";;
   esac

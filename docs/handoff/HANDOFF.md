@@ -1,16 +1,16 @@
-# Handoff — 2026-09-25 (T-M1.1 in review)
+# Handoff — 2026-09-25 (T-M1.1 in review, round 3)
 
-Phase/Milestone: P1 / M1 · Task: **T-M1.1 (in_review)** · Branch: `chore/T-M1.1-repo-governance` · Remote: https://github.com/duochou042004/eng-lms (private)
+Phase/Milestone: P1 / M1 · Task: **T-M1.1 (review round 3; marked done in-branch, per G4)** · Branch: `chore/T-M1.1-repo-governance` · Remote: https://github.com/duochou042004/eng-lms (private)
 
 ## Where we are
 - **PO-APPROVED T-M0.1** (DEC-032). The baseline is merged into `develop` (`a14caae`, a one-time bootstrap `--no-ff`, DEC-030). OQ-01 and OQ-15 use their defaults (DEC-033, DEC-034).
 - The private repo exists with default branch `develop` and merge commits only. **Branch protection is unavailable** (403, free plan) → harness enforcement (DEC-031).
-- T-M1.1 is implemented: `docs-check` + `secrets-scan` workflows, `merge-gate.sh`, `check-path-ownership.sh`, the pre-push hook, 34 script tests, `.claude/settings.json`,
+- T-M1.1 is implemented: `docs-check` + `secrets-scan` workflows, `merge-gate.sh`, `check-path-ownership.sh`, the pre-push hook, 56 script tests, `.claude/settings.json`,
   and the README redesign (DEC-035). PR #1 is open (see `progress.json`).
 - The T-M1.2 packet (backend skeleton) is written and `ready`.
 
 ## In flight
-PR #1: waiting on CI, then DOCS-REVIEW, then LC-APPROVED, then `./scripts/merge-gate.sh <pr>`.
+PR #1: rounds 1 and 2 of the independent DOCS-REVIEW requested changes (all fixed; R2-2 deferred to T-M1.7). Waiting for the round 3 verdict, then a fresh LC-APPROVED, then `./scripts/merge-gate.sh 1` from a `develop` checkout.
 
 ## Next steps (in order)
 1. Finish PR #1 via merge-gate. Record the merge commit and CI run URLs (evidence/T-M1.1/summary.md "CI"; progress.json completed[]).

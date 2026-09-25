@@ -27,10 +27,16 @@ merge-gate.sh
   ok   - refuses when progress.json is not updated
   ok   - refuses a branch kind without a merge path
   ok   - refuses a task branch targeting master
-  ok   - F4: dependabot PR merges with checks + 'LC-APPROVED PR-<n>'
+  ok   - F4: dependabot PR (by the Dependabot app) merges with checks + 'LC-APPROVED PR-<n>'
+  ok   - R2-1: a hand-made dependabot/* branch (human author) is refused
+  ok   - explains the author check
+  ok   - R2-1: a dependabot PR touching non-manifest files is refused
+  ok   - R2-4: an explicit DOCS-REVIEW CHANGES REQUESTED is not overridden by QA PASS
+  ok   - R2-5: a verdict that is not the comment's first line (e.g. in a code block) does not count
+  ok   - R2-7: an empty commit list is refused (no freshness baseline)
   ok   - F4: release PR needs PO-APPROVED
   ok   - F4: release PR merges into master with QA + PO + LC
-  -> 31 passed, 0 failed
+  -> 37 passed, 0 failed
 check-path-ownership.sh
   ok   - qa/ branch touching backend/ fails
   ok   - qa/ branch touching qa/ and qa evidence passes
@@ -40,9 +46,11 @@ check-path-ownership.sh
   ok   - any branch touching docs/00-sources fails
   ok   - chore/ branch with docs and scripts passes
   ok   - unknown branch kind fails
+  ok   - R2-1: dependabot branch touching source code fails
+  ok   - dependabot branch touching manifests/workflows passes
   ok   - F5: an empty change list fails (no silent PASS)
   ok   - F5: an unknown base ref fails (no silent PASS)
-  -> 10 passed, 0 failed
+  -> 12 passed, 0 failed
 pre-push hook
   ok   - blocks a direct push to develop
   ok   - explains the develop block

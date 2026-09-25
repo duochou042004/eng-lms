@@ -51,6 +51,14 @@ All were addressed in the follow-up commit: exact-token verdicts plus a verdict-
 path ownership fails closed and the docs claim is narrowed (F5); extra deny rules and the residual risk in R-08 (F6); T-M1.2's backend job runs on every PR (F7); DEC-036 for the session tables (F8);
 this evidence (F9); stale text (F10); `persist-credentials: false` (F11); packet wording (F12); README tense (F13).
 
+## Review round 2 → fixes
+
+DOCS-REVIEW T-M1.1 round 2: **CHANGES REQUESTED**. All round-1 findings were verified fixed, but the F4 fix introduced **R2-1 (S2)**: any branch named `dependabot/*` could merge with only
+`LC-APPROVED PR-<n>`. Fixed: the PR author must be the Dependabot app, and dependabot PRs may change only manifests, lockfiles and workflows (in both merge-gate and path ownership).
+Also fixed: R2-4 (an explicit DOCS-REVIEW CHANGES REQUESTED can't be overridden by QA PASS), R2-5 (only a comment's first line counts as a verdict), R2-7 (an empty commit list is refused), R2-8 (git stderr is
+kept out of the file list), R2-3 (the `gh pr update-branch` catch-up is documented), R2-6 (handoff). **Deferred:** R2-2 (S3) → T-M1.7 (DEC-037).
+Script tests: 56/56 (merge-gate 37, path ownership 12, pre-push 7).
+
 ## Reviews
 - DOCS-REVIEW T-M1.1: see `review/docs.md`
 - LC-APPROVED T-M1.1: PR comment

@@ -10,8 +10,9 @@ base=${2:-origin/develop}
 if [[ -n "${FILES_FROM:-}" ]]; then
   mapfile -t files <"$FILES_FROM"
 else
-  if ! diff_out=$(git diff --name-only "${base}...HEAD" 2>&1); then
-    echo "path-ownership: FAIL — cannot diff against '$base': $diff_out" >&2
+  errf=$(mktemp); trap 'rm -f "$errf"' EXIT
+  if ! diff_out=$(git diff --name-only "${base}...HEAD" 2>"$errf"); then
+    echo "path-ownership: FAIL — cannot diff against '$base': $(cat "$errf")" >&2
     exit 2
   fi
   mapfile -t files <<<"$diff_out"
@@ -40,7 +41,10 @@ for f in "${files[@]}"; do
       ((is_review)) && violations+=("$f: implementation branches must not write reviewer evidence");;
     docs|chore)
       ((is_qa)) && violations+=("$f: docs/chore branches must not change QA-owned paths");;
-    release|hotfix|dependabot) : ;;
+    dependabot)
+      [[ "$f" =~ ^(\.github/workflows/[^/]+\.ya?ml|(.*/)?pom\.xml|\.mvn/.*|(.*/)?package\.json|(.*/)?pnpm-lock\.yaml)$ ]] \
+        || violations+=("$f: dependabot branches may only change dependency manifests and workflow files");;
+    release|hotfix) : ;;
     *) violations+=("$f: unknown branch kind '$kind' (use feature|fix|docs|chore|qa|release|hotfix)");;
   esac
 done
