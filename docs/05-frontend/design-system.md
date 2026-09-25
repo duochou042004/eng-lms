@@ -20,22 +20,23 @@ Hierarchy comes from **typography and spacing**, not from boxes, shadows or colo
 
 **Colour (light theme, MVP):**
 
-| Token | Role | Value (initial; tuned in T-M1.3 with contrast checks) |
+| Token | Role | Value (final after the T-M1.3 contrast check, `web/src/ui/tokens.css`) |
 |---|---|---|
 | `--color-bg` | App background (paper) | `#FAF9F7` |
 | `--color-surface` | Panels, sheets | `#FFFFFF` |
 | `--color-surface-sunken` | Wells, table headers | `#F3F1ED` |
-| `--color-border` / `--color-border-strong` | Hairlines / inputs | `#E4E0D8` / `#C9C3B8` |
-| `--color-text` / `--color-text-muted` / `--color-text-subtle` | Text | `#1F1D1A` / `#57524A` / `#7A7469` (≥ 4.5:1 on bg for text) |
+| `--color-border` / `--color-border-strong` | Hairlines / inputs | `#E4E0D8` / `#8F887C` (was `#C9C3B8`: 1.75:1, below the 3:1 needed for input boundaries) |
+| `--color-text` / `--color-text-muted` / `--color-text-subtle` | Text | `#1F1D1A` / `#57524A` / `#6B655B` (was `#7A7469`: 4.41:1 on bg; all ≥ 4.5:1 on bg, surface and sunken) |
 | `--color-accent` / `--color-accent-strong` / `--color-accent-subtle` | Ink blue: primary actions, links, focus | `#2F5D8C` / `#234A70` / `#E6EEF6` |
-| `--color-success|warning|danger|info` (+ `-subtle`, `-text`) | Status only, always paired with icon and text | green `#2E7D4F`, amber `#9A6700`, red `#B3261E`, blue `#2F5D8C` |
+| `--color-success|warning|danger|info` (+ `-subtle`, `-text`) | Status only, always paired with icon and text | success `#2E7D4F` / `#E7F3EC` / `#1F5C39` · warning `#9A6700` / `#FBF1DC` / `#6B4800` · danger `#B3261E` / `#FBE9E7` / `#8C1D18` (+ `--color-danger-strong` `#8C1D18`) · info `#2F5D8C` / `#E6EEF6` / `#234A70` |
+| `--color-on-accent` · `--color-skeleton` | Label on accent/danger fills · loading placeholder | `#FFFFFF` · `#E9E5DE` |
 | `--color-focus` | Focus ring | `#2F5D8C` (2 px ring + 2 px offset) |
 
 **Typography:** `Be Vietnam Pro` (400, 500, 600) with fallback `system-ui`. Scale (rem @ 16 px): 0.75 · 0.875 · 1 · 1.125 · 1.25 · 1.5 · 1.875.
 Body 1 rem / line-height 1.55. Headings 600 weight, tight line height 1.25. `font-variant-numeric: tabular-nums` for scores, times and counts.
 Use at most **3 sizes per screen region**.
 
-**Spacing:** 4 px grid → `--space-1..10` = 4, 8, 12, 16, 20, 24, 32, 40, 48, 64. **Radii:** `--radius-sm` 6, `--radius-md` 10, `--radius-full`.
+**Spacing:** 4 px grid → `--space-1..10` = 4, 8, 12, 16, 20, 24, 32, 40, 48, 64. **Controls:** `--size-control-md` 44 px (2.75rem; inputs and primary targets), `--size-control-lg` 48 px. **Radii:** `--radius-sm` 6, `--radius-md` 10, `--radius-full`.
 **Elevation:** only `--shadow-overlay` (menus, popovers, sheets). Resting surfaces use borders, not shadows. **Motion:** 120–200 ms ease-out. Honour
 `prefers-reduced-motion` (no movement, fade only). **Z-index:** `--z-sticky`, `--z-overlay`, `--z-toast` only.
 

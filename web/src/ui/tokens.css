@@ -1,0 +1,91 @@
+/*
+ * Design tokens: "The Teacher's Desk" (design-system.md §2). The ONLY place with raw visual values (enforced by stylelint).
+ * Text/background pairs are verified by scripts/contrast-check.mjs (WCAG 2.2 AA).
+ */
+:root {
+  /* Colour: light theme (MVP) */
+  --color-bg: #faf9f7;
+  --color-surface: #fff;
+  --color-surface-sunken: #f3f1ed;
+  --color-border: #e4e0d8;
+  --color-border-strong: #8f887c;
+  --color-text: #1f1d1a;
+  --color-text-muted: #57524a;
+  --color-text-subtle: #6b655b;
+  --color-accent: #2f5d8c;
+  --color-accent-strong: #234a70;
+  --color-accent-subtle: #e6eef6;
+  --color-on-accent: #fff;
+  --color-success: #2e7d4f;
+  --color-success-subtle: #e7f3ec;
+  --color-success-text: #1f5c39;
+  --color-warning: #9a6700;
+  --color-warning-subtle: #fbf1dc;
+  --color-warning-text: #6b4800;
+  --color-danger: #b3261e;
+  --color-danger-strong: #8c1d18;
+  --color-danger-subtle: #fbe9e7;
+  --color-danger-text: #8c1d18;
+  --color-info: #2f5d8c;
+  --color-info-subtle: #e6eef6;
+  --color-info-text: #234a70;
+  --color-focus: #2f5d8c;
+  --color-skeleton: #e9e5de;
+
+  /* Typography */
+  --font-family: 'Be Vietnam Pro', system-ui, sans-serif;
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+  --font-size-md: 1rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.25rem;
+  --font-size-2xl: 1.5rem;
+  --font-size-3xl: 1.875rem;
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --line-height-body: 1.55;
+  --line-height-heading: 1.25;
+
+  /* Spacing: 4 px grid */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-7: 2rem;
+  --space-8: 2.5rem;
+  --space-9: 3rem;
+  --space-10: 4rem;
+
+  /* Radii, borders, elevation */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-full: 9999px;
+  --border-width: 1px;
+  --focus-ring-width: 2px;
+  --focus-ring-offset: 2px;
+  --shadow-overlay: 0 8px 24px rgb(31 29 26 / 14%);
+
+  /* Sizes */
+  --size-control-md: 2.75rem; /* 44 px: inputs and primary targets (responsive-standards §3.4) */
+  --size-control-lg: 3rem;
+  --size-icon: 1.25rem;
+  --size-content-max: 72rem;
+
+  /* Motion */
+  --motion-duration: 160ms;
+  --motion-easing: ease-out;
+
+  /* Z-index */
+  --z-sticky: 100;
+  --z-overlay: 200;
+  --z-toast: 300;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --motion-duration: 0ms;
+  }
+}

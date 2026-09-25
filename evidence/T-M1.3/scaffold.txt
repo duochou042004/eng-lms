@@ -1,0 +1,22 @@
+$ pnpm create vite@9.2.1 web --template react-ts --no-interactive
+# run 2026-09-25T12:30:59Z, node v24.21.0, pnpm 12.6.0
+.../mugxw01o-1evg                        | Progress: resolved 1, reused 0, downloaded 0, added 0
+Packages are hard linked from the content-addressable store to the virtual store.
+  Content-addressable store is at: /home/kali/.local/share/pnpm/store/v11
+  Virtual store is at:             ../../.cache/pnpm/dlx/3f046b827e74e52b6de292bfcb6fecc5/mugxw01o-1evg/node_modules/.pacquet
+.../mugxw01o-1evg                        | Progress: resolved 1, reused 0, downloaded 1, added 1, done
+
+dependencies:
++ create-vite 9.2.1
+
+│
+◇  Scaffolding project in /home/kali/App_sources/Eng-LMS/web...
+│
+└  Done. Now run:
+
+  cd web
+  pnpm install
+  pnpm dev
+
+Done in 606ms using pnpm v12.6.0
+exit=0

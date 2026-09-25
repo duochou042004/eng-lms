@@ -1,6 +1,6 @@
 version: 2
 updates:
-  # npm (web/, e2e/) entries are added by T-M1.3 / T-M1.6.
+  # The npm entry for e2e/ is added by T-M1.6.
   - package-ecosystem: github-actions
     directory: /
     target-branch: develop
@@ -19,5 +19,17 @@ updates:
     groups:
       spring:
         patterns: ["org.springframework*"]
+    commit-message:
+      prefix: "build"
+  - package-ecosystem: npm
+    directory: /web
+    target-branch: develop
+    schedule:
+      interval: weekly
+    groups:
+      react:
+        patterns: ["react", "react-dom", "@types/react*", "react-aria-components", "react-router"]
+      tooling:
+        patterns: ["vite", "vitest", "@vitejs/*", "typescript", "oxlint", "stylelint*", "prettier"]
     commit-message:
       prefix: "build"

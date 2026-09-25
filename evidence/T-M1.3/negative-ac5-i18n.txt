@@ -1,0 +1,15 @@
+# AC5 negative demo (throwaway, not committed): removed shell:student.emptyTitle from locales/en/shell.json
+$ pnpm test --run src/lib/i18n
+     × vi and en have exactly the same keys 7ms
+     × detects a key missing from en (fixture) 1ms
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+- Expected
++ Received
++ [
++   "shell:student.emptyTitle",
++ ]
+- Expected
++ Received
++   "shell:student.emptyTitle",
+      Tests  2 failed | 3 passed (5)
+# Restored: all tests pass again.

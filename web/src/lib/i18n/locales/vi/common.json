@@ -1,0 +1,34 @@
+{
+  "app": {
+    "name": "Eng-LMS",
+    "skipToContent": "Chuyển đến nội dung chính",
+    "loading": "Đang tải trang"
+  },
+  "language": {
+    "label": "Ngôn ngữ",
+    "vi": "Tiếng Việt",
+    "en": "English"
+  },
+  "landing": {
+    "title": "Không gian dạy học",
+    "description": "Chọn khu vực để tiếp tục.",
+    "tutor": "Khu vực gia sư",
+    "student": "Khu vực học viên"
+  },
+  "notFound": {
+    "title": "Không tìm thấy trang",
+    "description": "Đường dẫn này không tồn tại hoặc đã được di chuyển.",
+    "home": "Về trang đầu"
+  },
+  "error": {
+    "title": "Không hiển thị được trang này",
+    "description": "Hãy tải lại trang. Nếu lỗi vẫn còn, hãy gửi kèm mã yêu cầu khi báo lỗi.",
+    "requestId": "Mã yêu cầu: {{requestId}}",
+    "reload": "Tải lại trang"
+  },
+  "meta": {
+    "loading": "Đang tải thông tin không gian dạy học",
+    "error": "Không tải được tên lớp",
+    "retry": "Thử lại"
+  }
+}

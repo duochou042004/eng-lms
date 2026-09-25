@@ -1,0 +1,62 @@
+.shell {
+  display: flex;
+  flex-direction: column;
+  min-block-size: 100vh;
+}
+
+.skipLink {
+  position: absolute;
+  inset-block-start: var(--space-2);
+  inset-inline-start: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  transform: translateY(-200%);
+}
+
+.skipLink:focus {
+  transform: none;
+  z-index: var(--z-overlay);
+}
+
+.topBar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-block-end: var(--border-width) solid var(--color-border);
+  background: var(--color-surface);
+}
+
+.brand {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+  min-inline-size: 0;
+}
+
+.homeLink {
+  font-weight: var(--font-weight-semibold);
+  text-decoration: none;
+}
+
+.workspace {
+  color: var(--color-text-muted);
+  min-inline-size: 0;
+  overflow-wrap: anywhere;
+}
+
+.main {
+  flex: 1;
+  inline-size: 100%;
+  max-inline-size: var(--size-content-max);
+  margin-inline: auto;
+  padding: var(--space-6) var(--space-4);
+}
+
+.main:focus {
+  outline: none;
+}

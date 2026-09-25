@@ -1,0 +1,35 @@
+{
+  "title": "Component gallery",
+  "description": "UI components and their states (development builds only).",
+  "sections": {
+    "buttons": "Buttons",
+    "fields": "Fields",
+    "alerts": "Alerts",
+    "loading": "Loading",
+    "empty": "Empty state"
+  },
+  "sample": {
+    "primary": "Save",
+    "secondary": "Preview",
+    "quiet": "Cancel",
+    "danger": "Delete",
+    "large": "Start",
+    "disabled": "Unavailable",
+    "pending": "Saving…",
+    "iconLabel": "Add",
+    "fieldLabel": "Student name",
+    "fieldHint": "The name shown to the student.",
+    "fieldError": "Enter a username.",
+    "invalidLabel": "Username",
+    "disabledLabel": "Student ID",
+    "alertInfo": "Tip",
+    "alertSuccess": "Saved",
+    "alertWarning": "Unsaved changes",
+    "alertDanger": "Could not save",
+    "alertBody": "The details of the message.",
+    "loadingLabel": "Loading example",
+    "emptyTitle": "No students yet",
+    "emptyDescription": "Add your first student to get started.",
+    "emptyAction": "Add student"
+  }
+}

@@ -1,29 +1,32 @@
-# Handoff — 2026-09-25 07:40 UTC (T-M1.1 merged; T-M1.2 ready)
+# Handoff — 2026-09-25 13:40 UTC (T-M1.3 in review; UX round 1 fixed)
 
-Phase/Milestone: P1 / M1 · Current task: **T-M1.2 (ready, not started)** · Branch: `feature/T-M1.2-backend-skeleton` · Remote: https://github.com/duochou042004/eng-lms
+Phase/Milestone: P1 / M1 · Current task: **T-M1.3 (in_review)** · Branch: `feature/T-M1.3-web-skeleton` · PR: https://github.com/duochou042004/eng-lms/pull/4
 
 ## Where we are
-- M0 is done (PO-APPROVED, DEC-032). **T-M1.1 is done**: PR #1 was merged through `scripts/merge-gate.sh` as `f1e3caa`, after 3 independent docs-review rounds (the final PASS was at `4219701`).
-- Governance is live: CI `docs-check` + `secrets-scan` (green on develop), the merge gate (56 script tests), the pre-push hook, path ownership, agent deny rules.
-  Branch protection is unavailable on this plan (DEC-031). Residual risks are in R-08. The follow-up hardening is **T-M1.7** (DEC-037, DEC-038).
-- The README was redesigned (badges, Mermaid diagrams, roadmap), as requested by the PO (DEC-035).
-- No product code yet. T-M1.2 (backend skeleton) is the next packet.
-
-## In flight
-Nothing. This branch only has the post-merge bookkeeping commit.
+- T-M1.2 is merged (`ae9ac5d`), and its QA report is merged too (PR #3). The PO approved starting T-M1.3 (DEC-042).
+- **T-M1.3 is implemented.** `web/` came from the Vite 9 `react-ts` template (pnpm 12, Node 24, TS strict) and has tokens + a contrast script, 8 `ui/` primitives with unit/axe tests,
+  `/dev/ui` (dev only), i18next vi default + en with a completeness test, lazy tutor/student shells, an openapi-fetch client, a bundle budget (142 KB gz), and `web` CI (required check).
+  CI was green on the first push. The evidence is in `evidence/T-M1.3/` (summary, negative demos for AC3/5/7/8, gate log, 13 screenshots, live viewport checks).
+- **UX round 1: CHANGES REQUESTED** (F1 40 px controls, F2 "Something went wrong"). The full review is a PR #4 comment. F1, F2, F4, F6, F7, F8 and the F9 warning role
+  are fixed in the latest commit. F3 (route focus/titles) and F5 (segmented language control) are deferred to **T-M1.9** (DEC-043).
+- DEC-042: kept the template's **oxlint** instead of ESLint; pnpm's release-age policy pins Vitest to 5.0.1.
 
 ## Next steps
-1. Execute T-M1.2 on this branch (backend-implementer role; the packet has the `spring init` command and AC1–AC9). Then open a PR, get an independent QA-VERDICT, and have the LC merge through merge-gate (run from `develop`).
-2. Write the T-M1.3 packet (OQ-02 answered: vi default + en, DEC-039).
-3. Ask the PO to approve enabling the user-level `podman.socket` (T-M1.4). Schedule T-M1.7 (merge-gate hardening) early in M1.
+1. Wait for PR #4 CI on the new head. Run **UX round 2**: a fresh `ux-reviewer` agent at the new head, on a stack you start (podman postgres:18 + backend jar with `ENGLMS_META_DISPLAY_NAME` + `pnpm dev`). Post `UX-REVIEW T-M1.3: APPROVED` as the first line.
+2. **QA**: one fresh general-purpose agent following `.claude/agents/qa-evaluator.md` (run it after UX; they share the browser pane and ports). Fix S1/S2.
+3. After the final head commit: `QA-VERDICT T-M1.3: …`, then `LC-APPROVED T-M1.3`; `./scripts/merge-gate.sh --dry-run 4`, then merge, from an up-to-date `develop`.
+4. Post-merge: the QA report goes on `qa/T-M1.3` (PR + LC-APPROVED). The UX review file (`evidence/T-M1.3/review/ux.md`) needs a docs/chore branch (feature branches may not write reviewer evidence). Record the merge; write the next packet.
 
 ## Pending PO decisions
-OQ-02 is ANSWERED (vi default + en, DEC-039). The PO approved starting T-M1.2 in the next session. OQ-03..OQ-14 are still open (defaults documented). T-M1.4 needs approval for the persistent user service.
+None for T-M1.4: the user `podman.socket` is **approved and enabled** (DEC-044). Local `./mvnw -B verify` (with `DOCKER_HOST` + `TESTCONTAINERS_RYUK_DISABLED=true`) now passes 52/52. OQ-03..OQ-14 and OQ-16 (defaults documented).
 
 ## Gotchas
-- Run `./scripts/install-hooks.sh` per clone. Never push `develop` or `master` directly. Agents can't run `git merge` or `gh pr merge`: use `gh pr update-branch <n>` to catch up (then re-post the verdicts).
-- Verdict comments count only if the verdict is the comment's **first line**, the token is exact, and the comment was posted after the head commit.
-- Private-repo Actions badges render only for signed-in collaborators.
+- Subagents can't write files: record their reports verbatim (a PR comment and/or a commit on the right branch kind).
+- pnpm 12: `pnpm -s` is invalid. Scripts fail on unreviewed build scripts (`allowBuilds` in `web/pnpm-workspace.yaml`) and on releases younger than a day.
+- openapi-fetch captures `fetch` at creation, so the client passes `fetch: (r) => globalThis.fetch(r)` (for MSW).
+- zsh does not word-split `$var`: use `${=var}`. Kill by PID, not `pkill -f` (it matches your own shell).
+- Screenshots: `chromium --headless=new --window-size=W,H --virtual-time-budget=4000 --screenshot=…`.
+- Adding a required check means also updating `OK_CHECKS` in `scripts/tests/merge-gate.test.sh`.
 
 ## Files to read first
-`CLAUDE.md` → `progress.json` → this file → `docs/tasks/T-M1.2-backend-skeleton.md`.
+`CLAUDE.md` → `progress.json` → this file → `docs/tasks/T-M1.3-web-skeleton.md` → the PR #4 comments.

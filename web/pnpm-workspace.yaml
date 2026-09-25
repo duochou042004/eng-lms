@@ -1,0 +1,3 @@
+# Dependency build scripts are denied unless reviewed. msw: its postinstall only copies the browser worker, unused here (tests use msw/node).
+allowBuilds:
+  msw: false

@@ -1,0 +1,15 @@
+{
+  "tutor": {
+    "title": "Tutor workspace",
+    "navLabel": "Tutor navigation",
+    "emptyTitle": "Nothing here yet",
+    "emptyDescription": "Your teaching tools will appear here."
+  },
+  "student": {
+    "title": "Student home",
+    "navLabel": "Student navigation",
+    "emptyTitle": "Nothing here yet",
+    "emptyDescription": "Your lessons and tasks will appear here."
+  },
+  "home": "Start page"
+}
