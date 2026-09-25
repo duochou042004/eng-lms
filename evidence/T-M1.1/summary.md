@@ -59,6 +59,11 @@ Also fixed: R2-4 (an explicit DOCS-REVIEW CHANGES REQUESTED can't be overridden 
 kept out of the file list), R2-3 (the `gh pr update-branch` catch-up is documented), R2-6 (handoff). **Deferred:** R2-2 (S3) → T-M1.7 (DEC-037).
 Script tests: 56/56 (merge-gate 37, path ownership 12, pre-push 7).
 
+## Review round 3
+
+DOCS-REVIEW T-M1.1 round 3: **PASS** at head `4219701` (CI runs 36108332593 and 36108332605 green; 56/56 script tests). Deferred S3/S4: R3-1, R3-2, R3-3 → T-M1.7 (DEC-038); R3-4 fixed (roadmap count).
+The final commit after the review is bookkeeping only (DEC-038, backlog, roadmap count, the committed review file, progress/evidence). No script or workflow changes.
+
 ## Reviews
-- DOCS-REVIEW T-M1.1: see `review/docs.md`
+- DOCS-REVIEW T-M1.1: **PASS** (round 3), in `review/docs.md` (rounds 1 and 2 CHANGES REQUESTED, all addressed)
 - LC-APPROVED T-M1.1: PR comment

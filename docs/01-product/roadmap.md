@@ -14,7 +14,7 @@ P0 Planning & Harness ──► P1 Foundation ──► P2 Core teaching loop (M
 | Milestone | Theme | Outcome (user-visible) | Packets | Depends on |
 |---|---|---|---|---|
 | **M0** | Planning baseline and harness | Docs system, ADRs, harness, progress.json. *No product code* | 1 | — |
-| **M1** | Walking skeleton and delivery pipeline | App boots on the chosen stack with an empty shell. CI, gates, E2E harness and a Podman stack all work | 6 | M0 approved |
+| **M1** | Walking skeleton and delivery pipeline | App boots on the chosen stack with an empty shell. CI, gates, E2E harness and a Podman stack all work | 7 | M0 approved |
 | **M2** | Identity and student management | Tutor logs in, adds a student (credentials card), student logs in and sees an empty Home | 7 | M1 |
 | **M3** | Schedule, lessons and private notes | Tutor schedules lessons, sees Today; student sees upcoming lessons; private notes | 6 | M2 |
 | **M4** | Library and files | Folders, materials (file, rich text, link, embed), lesson templates, sharing with a student | 6 | M2 (M3 for attaching to lessons) |

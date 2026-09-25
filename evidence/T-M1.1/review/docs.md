@@ -100,3 +100,46 @@ DOCS-REVIEW T-M1.1: CHANGES REQUESTED
 F1 and F2, the round-1 blockers, are fixed and verified, along with F5, F7, F8, F9 and F10–F13. F3, F4 and F6 are fixed with residuals noted. No scope was added: DEC-036 is a resequencing within delegated authority. The fix commit introduces one **S2 regression (R2-1)**: the new Dependabot merge path lets any branch named `dependabot/…` skip independent evaluation, and the fix is a one-line author check plus a test. R2-2 to R2-4 (S3) and R2-5 to R2-8 (S4) may be deferred with follow-ups.
 
 DOCS-REVIEW T-M1.1: CHANGES REQUESTED
+
+## Re-test (round 3)
+
+- Scope: fix commit `4219701` (head `4219701`, 12 files). I re-tested independently. The verdict lines above belong to rounds 1 and 2 and are kept for history. The last line of this file is the current verdict.
+- Checks:
+  - `./scripts/check-docs.sh` → PASS (94 markdown files), exit 0.
+  - `./scripts/tests/run-all.sh` → 56/56 (merge-gate 37, path-ownership 12, pre-push 7), exit 0.
+  - `gh pr checks 1` on `4219701`: both checks pass (`docs-check` run 36108332593, `secrets-scan` run 36108332605).
+  - Real `./scripts/merge-gate.sh --dry-run 1` → REFUSED, only for the missing fresh `LC-APPROVED T-M1.1` and `DOCS-REVIEW T-M1.1: PASS`. This is expected.
+  - The committed round-2 section of this file matches what I wrote.
+- Adversarial probes: 37 mock-`gh` cases (script in my scratchpad).
+
+### Round-2 findings
+
+| ID | Fixed? | Evidence |
+|---|---|---|
+| R2-1 (S2) | **Yes** | My round-2 reproduction (a human-authored `dependabot/…` PR changing `backend/src/Evil.java` + `scripts/merge-gate.sh`) is now refused, both for the author and for the files. Also refused: author `duochou042004` with only a workflow change; the lookalike logins `dependabot`, `app/dependabot-preview` and `App/Dependabot`; a null author; a real bot PR touching a `.java` file; a workflow in a subdirectory; a newline smuggled into a path; and a stale `LC-APPROVED PR-7`. A legitimate `app/dependabot` workflow-only PR passes. The path-ownership script applies the same allowlist, with 2 new tests. Human logins can't contain `/` or `[`, so `app/dependabot` and `dependabot[bot]` can't be spoofed through the author field. The remaining gap (commits added to a real Dependabot PR) is R3-1. |
+| R2-2 (S3) | **Deferred, properly recorded** | DEC-037 (`Accepted`, LC; it cites the G3 rule that S3 may merge with a follow-up) defers it to **T-M1.7**. The backlog T-M1.7 row names a concrete remedy (push or timeline time). git-governance §4 now carries the "Known limitation (R2-2, DEC-037)" text and an interim control (the LC checks the PR timeline). The overstated "reviewed head SHA" wording is corrected to "head SHA seen at gate time". |
+| R2-3 (S3) | Yes | git-governance §4 documents `gh pr update-branch <n>` (not denied) and says verdicts must be re-posted afterwards. The `git pull` and `git push -n` notes from round 2 weren't acted on (S4, acceptable). |
+| R2-4 (S3) | Partly | A present, fresh, non-PASS `DOCS-REVIEW` now blocks docs/chore PRs even with a QA PASS (reproduced as refused). The reverse cases still pass (R3-2). |
+| R2-5 (S4) | Yes | Only a comment's first line counts. My round-2 code-block reproduction is now refused ("latest DOCS-REVIEW is 'CHANGES REQUESTED'"). A fence or inline code on the first line, an empty first line, and a verdict on line 2 are all refused, which errs on the safe side. Bare `\r` and U+2028 tricks produce non-exact tokens and are refused. |
+| R2-6 (S4) | Yes | HANDOFF says "review round 3" and 56 tests. |
+| R2-7 (S4) | Yes | An empty commit list is refused (test plus probe). |
+| R2-8 (S4) | Yes | stderr goes to a temp file. An unknown base still gives exit 2 with the git message. |
+
+No regressions. All earlier probes (the F1 strings, other IDs, stale LC, release path, unknown kind) behave as in round 2.
+
+### New findings (round 3)
+
+| ID | Sev | File:line | Issue | Concrete failure scenario | Suggested fix |
+|---|---|---|---|---|---|
+| R3-1 | S3 | `scripts/merge-gate.sh:57-59`; `scripts/check-path-ownership.sh:44-46` | The Dependabot check trusts the **PR author**, not the **commits**. Anyone who can push can add commits to a real Dependabot branch; the pre-push hook allows it. The allowlist is broad: `(.*/)?pom.xml`, `(.*/)?package.json` at any depth, anything under root `.mvn/`, and every workflow file. Probes: a bot-authored PR changing `scripts/pom.xml`, `evil/package.json` or `.mvn/anything` passes. | An agent pushes a commit to an open Dependabot PR that edits `.github/workflows/docs-check.yml` (e.g. drops the path-ownership step) or adds a `postinstall` script to `web/package.json`. It merges with only `LC-APPROVED PR-<n>`, with no QA or DOCS verdict. | Also require every commit to be authored by Dependabot (`commits[].authors[].login` is `dependabot[bot]`, or the committer is GitHub). Tighten the allowlist to the actual manifest locations (`backend/pom.xml`, `backend/.mvn/wrapper/maven-wrapper.properties`, `web/`/`e2e/` `package.json` + `pnpm-lock.yaml`, `.github/workflows/*.yml`). Add these to T-M1.7/DEC-037 if deferred. |
+| R3-2 | S3 | `scripts/merge-gate.sh:101-104` | R2-4 was fixed in one direction only. An explicit negative verdict of the *other* type is still ignored. On a chore PR, `QA-VERDICT FAIL` + `DOCS-REVIEW PASS` passes. On a feature PR, `QA-VERDICT PASS` + `DOCS-REVIEW CHANGES REQUESTED` passes. Both reproduced with rc=0. SEC and UX already block on any non-APPROVED verdict. | A QA evaluator who was asked to check a chore PR posts FAIL, and the PR still merges on the DOCS PASS. | Apply the SEC/UX rule to all verdict types: any fresh, present QA/DOCS verdict that isn't a pass blocks. Then check that the required type for the kind passes. |
+| R3-3 | S4 | `scripts/merge-gate.sh:58`; `check-path-ownership.sh:45` | Real Dependabot Maven-wrapper updates (`backend/.mvn/wrapper/maven-wrapper.properties`) are refused, because the `.mvn/` pattern has no directory prefix, unlike `pom.xml`. The same pattern is too broad at the root (see R3-1). | A legitimate Dependabot PR can't merge through the gate; it's refused, which is safe. | Use `backend/\.mvn/wrapper/maven-wrapper\.properties` (see the R3-1 allowlist). |
+| R3-4 | S4 | `docs/01-product/roadmap.md:17` | The roadmap still says M1 has 6 packets, but the backlog now has 7 (T-M1.7 was added by DEC-037). | A minor planning inconsistency. | Update the count to 7 (or note T-M1.7 as a follow-up). |
+
+### Summary
+
+Every S2 is resolved: F1 and F2 in round 2, and R2-1 in this round, verified with its original reproduction plus 7 more bypass attempts on author and files. R2-3 and R2-5 to R2-8 are fixed. R2-4 is partly fixed (the rest is R3-2). R2-2 is deferred correctly (DEC-037 → T-M1.7, with the limitation documented in git-governance §4). I found no regressions and no scope creep: this commit touches only governance scripts, tests and docs.
+
+Four findings remain open: R3-1 and R3-2 (S3), and R3-3 and R3-4 (S4). Under quality-gates G3, the LC must resolve them or defer them through a DEC entry with a follow-up task ID before merging. The natural place is DEC-037 / T-M1.7. None of them blocks this review.
+
+DOCS-REVIEW T-M1.1: PASS

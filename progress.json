@@ -16,7 +16,7 @@
       }
     ]
   },
-  "updatedAt": "2026-09-25T07:34:22Z",
+  "updatedAt": "2026-09-25T07:37:14Z",
   "updatedBy": "lead-coordinator (session 2026-09-25, Opus 5.5)",
   "phase": {
     "id": "P1",
@@ -151,8 +151,8 @@
       "note": "docs-check run 36106314080, secrets-scan run 36106314347 (first push); re-run after fixes"
     },
     "G3": {
-      "status": "pending",
-      "note": "DOCS-REVIEW round 2: CHANGES REQUESTED (R2-1 S2); fixed; round 3 re-test pending"
+      "status": "pass",
+      "note": "DOCS-REVIEW T-M1.1 round 3 PASS at 4219701; S3/S4 deferred to T-M1.7 (DEC-037, DEC-038)"
     },
     "G4": {
       "status": "pending",
@@ -163,12 +163,12 @@
   "decisions": {
     "log": "docs/10-governance/decision-log.md",
     "recent": [
-      "DEC-031",
       "DEC-033",
       "DEC-034",
       "DEC-035",
       "DEC-036",
-      "DEC-037"
+      "DEC-037",
+      "DEC-038"
     ],
     "pendingPO": [
       "OQ-02",
@@ -278,6 +278,11 @@
       "at": "2026-09-25T07:34:22Z",
       "actor": "lead-coordinator",
       "event": "DOCS-REVIEW round 2: CHANGES REQUESTED (R2-1 forged dependabot branch, S2). Fixed R2-1, R2-3..8; R2-2 deferred to T-M1.7 (DEC-037). Tests 56/56."
+    },
+    {
+      "at": "2026-09-25T07:37:14Z",
+      "actor": "docs-reviewer (independent)",
+      "event": "DOCS-REVIEW T-M1.1 round 3: PASS at 4219701. R3-1/R3-2/R3-3 deferred to T-M1.7 (DEC-038); R3-4 fixed."
     }
   ]
 }
