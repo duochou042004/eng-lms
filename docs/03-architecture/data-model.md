@@ -218,7 +218,7 @@ event_publication (Spring Modulith JDBC registry; schema as shipped)
 
 ## 4. Migration and seed policy
 
-- `V1` (M1): extensions, the text search config, the Spring Modulith event registry and Spring Session tables. Tables arrive with their milestone.
+- `V1` (T-M1.2): extensions, the text-search config and the Spring Modulith event registry (if its starter doesn't create it). The Spring Session and `persistent_logins` tables arrive with T-M2.1 (DEC-036). Every other table arrives with its milestone.
 - **No domain seed data** in migrations: no folders, no metrics, no tags. Dev/test fixtures live in `backend/src/test/resources/fixtures` and `scripts/seed-dev`.
 - Applied migrations are never edited. Destructive changes use expand → migrate → contract across two releases.
 - A snapshot schema change bumps `snapshot_schema_version`. Readers must support every version ever written (with an upcaster in `activities.internal.domain.snapshot`).

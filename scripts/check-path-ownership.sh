@@ -10,7 +10,16 @@ base=${2:-origin/develop}
 if [[ -n "${FILES_FROM:-}" ]]; then
   mapfile -t files <"$FILES_FROM"
 else
-  mapfile -t files < <(git diff --name-only "${base}...HEAD")
+  if ! diff_out=$(git diff --name-only "${base}...HEAD" 2>&1); then
+    echo "path-ownership: FAIL — cannot diff against '$base': $diff_out" >&2
+    exit 2
+  fi
+  mapfile -t files <<<"$diff_out"
+fi
+nonempty=0; for f in "${files[@]}"; do [[ -n "$f" ]] && nonempty=$((nonempty + 1)); done
+if ((nonempty == 0)); then
+  echo "path-ownership: FAIL — no changed files found (wrong base ref?)" >&2
+  exit 2
 fi
 
 kind=${branch%%/*}
@@ -41,4 +50,4 @@ if ((${#violations[@]})); then
   printf '  - %s\n' "${violations[@]}" >&2
   exit 1
 fi
-echo "path-ownership: PASS for branch '$branch' (${#files[@]} file(s))"
+echo "path-ownership: PASS for branch '$branch' ($nonempty file(s))"

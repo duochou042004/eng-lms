@@ -84,7 +84,7 @@ Full scope, including the explicit non-goals: [`docs/01-product/scope.md`](docs/
 <tr>
 <td width="25%" valign="top"><b>Student workspace first</b><br><sub>Profile, goals, learning plan, lessons, work, materials, progress and private notes, per student. Nothing is mandatory to set up.</sub></td>
 <td width="25%" valign="top"><b>Generic engine, your content</b><br><sub>One activity engine powers homework, quizzes and mock tests. Question types are plug-ins. Metrics and goals are tutor-defined.</sub></td>
-<td width="25%" valign="top"><b>Private by design</b><br><sub>Student A never sees Student B. Tutor notes never reach students. Isolation is structural and tested on every build.</sub></td>
+<td width="25%" valign="top"><b>Private by design</b><br><sub>Student A never sees Student B. Tutor notes never reach students. Isolation will be structural and tested on every build (from M2).</sub></td>
 <td width="25%" valign="top"><b>Few clicks</b><br><sub>Critical flows have step budgets, e.g. the after-lesson wrap-up takes ≤ 7 steps on phone, tablet and laptop.</sub></td>
 </tr>
 </table>
@@ -117,7 +117,7 @@ flowchart LR
 
 | ADR | Decision |
 |---|---|
-| [0001](docs/03-architecture/adr/ADR-0001-modular-monolith-spring-modulith.md) | Modular monolith with Spring Modulith, with boundaries verified in CI |
+| [0001](docs/03-architecture/adr/ADR-0001-modular-monolith-spring-modulith.md) | Modular monolith with Spring Modulith, with boundaries to be verified in CI |
 | [0005](docs/03-architecture/adr/ADR-0005-session-cookie-auth.md) | Server-side session cookies (Spring Session JDBC); no JWT |
 | [0007](docs/03-architecture/adr/ADR-0007-unified-activity-engine.md) | One activity engine for assignments and assessments |
 | [0008](docs/03-architecture/adr/ADR-0008-snapshot-on-assign.md) | Immutable snapshot when work is assigned, so grades stay reproducible |
@@ -183,7 +183,7 @@ git clone https://github.com/duochou042004/eng-lms.git && cd eng-lms
 | Tool | Version | Notes |
 |---|---|---|
 | JDK | Temurin 25.0.4 | via SDKMAN (`.sdkmanrc`) |
-| Spring Boot CLI | 4.1.0 | project generated with `spring init` |
+| Spring Boot CLI | 4.1.0 | the backend will be generated with `spring init` (T-M1.2) |
 | Node.js | 24.21.0 | via nvm (`.nvmrc`); pnpm through corepack |
 | Podman | 5.8.6 (rootless) | podman-compose for the dev database; Quadlet in production |
 | GitHub CLI | 2.101 | PRs, checks, merge gate |

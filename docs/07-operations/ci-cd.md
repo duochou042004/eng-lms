@@ -10,15 +10,15 @@
 |---|---|---|---|
 | `docs-check` | PR, push to develop/master | `scripts/check-docs.sh` (progress.json schema, relative links, ID references, source checksums, prompt ≤ 4,000 chars) + `scripts/tests/run-all.sh` (governance script tests) + `check-path-ownership.sh` on PRs | develop, master |
 | `secrets-scan` | PR, push | gitleaks CLI 8.30.1 (MIT), downloaded with a pinned SHA-256; scans the full git history. The EULA-licensed gitleaks-action is deliberately not used | develop, master |
-| `backend` | PR, push (paths: backend/**, api/**) | setup-java Temurin 25 → `./mvnw -B verify` (Testcontainers uses the runner's Docker) → JaCoCo summary → upload surefire reports | develop, master |
+| `backend` | every PR (no path filter: required checks must always report), push | setup-java Temurin 25 → `./mvnw -B verify` (Testcontainers uses the runner's Docker) → JaCoCo summary → upload surefire reports | develop, master |
 | `contract-drift` | PR (backend or web) | Regenerate `api/openapi.json` + web types; `git diff --exit-code` | develop, master |
-| `web` | PR, push (paths: web/**) | Node 24 + pnpm (frozen lockfile) → lint → typecheck → test → build → bundle budget → i18n completeness → contrast check | develop, master |
+| `web` | every PR (no path filter, as for backend), push | Node 24 + pnpm (frozen lockfile) → lint → typecheck → test → build → bundle budget → i18n completeness → contrast check | develop, master |
 | `e2e-smoke` | PR | Build the jar with the SPA → start PostgreSQL as a service → run the app (e2e profile) → Playwright mandatory viewports (Chromium) → upload the report on failure | develop, master |
 | `e2e-nightly` | schedule (daily) | All 6 viewports × Chromium + smoke on Firefox and WebKit; PIT mutation (grading) | — (reported) |
 | `release` | tag `v*` | Build the image → Trivy scan (fail on CRITICAL) → push to GHCR → attach the SBOM → draft the GitHub release | master |
 
-Actions are pinned by commit SHA. Workflow `permissions:` are minimal (read by default, `packages: write` only in release). Dependabot is enabled for Maven, npm
-and GitHub Actions (weekly, grouped).
+Actions are pinned by commit SHA. Workflow `permissions:` are minimal (read by default, `packages: write` only in release). Dependabot is enabled for GitHub Actions
+(weekly, grouped). Maven and npm entries are added by T-M1.2, T-M1.3 and T-M1.6. Dependabot PRs merge through merge-gate with `LC-APPROVED PR-<n>` (git-governance §4).
 
 ## 2. Branch protection (target configuration)
 

@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Milestone | M1 |
-| Status | **ready** (G0 passed 2026-09-25; starts after T-M1.1 merges) |
+| Status | **ready**. The packet is G0-complete; its dependency is T-M1.1, and the task starts only once that is merged |
 | Owner role | BE (backend-implementer) |
 | Branch | `feature/T-M1.2-backend-skeleton` (from `develop`) |
 | Depends on | T-M1.1 merged |
@@ -29,7 +29,8 @@ boundary verification, the first migration, the OpenAPI contract pipeline and th
      `MetaControllerTest` (200 + JSON shape + Problem Details for an unknown `/api/v1/**` path), a `FlywayMigrationTest` on Testcontainers PostgreSQL 18
      (`docker.io/library/postgres:18`), and `OpenApiContractTest` writing or verifying `api/openapi.json` (`-Dcontract.write=true` regenerates it).
   6. CI: `.github/workflows/backend.yml` (Temurin 25 via `actions/setup-java` pinned by SHA; `./mvnw -B verify`; upload the surefire reports on failure).
-     Add `backend` to `scripts/required-checks.txt`. Dependabot `maven` entry for `/backend`.
+     Run it on **every** PR (no `paths:` filter): `backend` becomes a required check in `scripts/required-checks.txt`, and a path-filtered required check would
+     never report on docs or web PRs, so merge-gate would refuse them (docs review F7). `persist-credentials: false` on checkout. Dependabot `maven` entry for `/backend`.
   7. Docs: tech-stack §7 pinned versions (Boot, Modulith, springdoc, ArchUnit, Testcontainers), data-model §4 (V1 contents), api-catalog (`/meta` confirmed),
      development-setup (real commands).
 - Out of scope: security (Spring Security arrives in T-M2.1, so `/meta` is public by default here), any domain module, the web app, Containerfile

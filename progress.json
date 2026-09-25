@@ -16,7 +16,7 @@
       }
     ]
   },
-  "updatedAt": "2026-09-25T07:09:34Z",
+  "updatedAt": "2026-09-25T07:20:01Z",
   "updatedBy": "lead-coordinator (session 2026-09-25, Opus 5.5)",
   "phase": {
     "id": "P1",
@@ -32,20 +32,19 @@
   "currentTask": {
     "id": "T-M1.1",
     "title": "Remote repository bootstrap and governance automation",
-    "status": "in_review",
+    "status": "done",
     "ownerRole": "LC",
     "branch": "chore/T-M1.1-repo-governance",
     "packet": "docs/tasks/T-M1.1-repo-bootstrap-governance.md",
-    "pr": null,
+    "pr": "https://github.com/duochou042004/eng-lms/pull/1",
     "lastCommit": null,
     "startedAt": "2026-09-25T07:09:34Z",
     "entryGate": [],
     "nextSteps": [
-      "CI green on PR #1 (docs-check, secrets-scan)",
-      "Fresh-context docs review -> DOCS-REVIEW T-M1.1",
-      "LC-APPROVED T-M1.1 comment",
-      "./scripts/merge-gate.sh --dry-run <pr> then ./scripts/merge-gate.sh <pr>",
-      "Post-merge: record merge commit on feature/T-M1.2-backend-skeleton"
+      "DOCS-REVIEW T-M1.1 re-review of the fixes (F1–F13)",
+      "LC-APPROVED T-M1.1, posted after the final head commit",
+      "merge via ./scripts/merge-gate.sh 1 from a develop checkout",
+      "record the merge commit on feature/T-M1.2-backend-skeleton"
     ],
     "trace": [
       "DEC-020",
@@ -89,6 +88,14 @@
       "mergeCommit": "a14caae",
       "evidence": "evidence/T-M0.1/summary.md",
       "note": "PO-APPROVED (DEC-032); bootstrap --no-ff merge (DEC-030)"
+    },
+    {
+      "id": "T-M1.1",
+      "title": "Remote repository bootstrap and governance automation",
+      "completedAt": "2026-09-25T07:20:01Z",
+      "mergeCommit": null,
+      "evidence": "evidence/T-M1.1/summary.md",
+      "note": "Marked done inside PR #1 per quality-gates G4 ('done arrives with the branch'). The merge commit is recorded post-merge on the T-M1.2 branch. Status 'done' is conditional on merge-gate succeeding."
     }
   ],
   "tests": {
@@ -104,7 +111,7 @@
       {
         "name": "governance script tests (scripts/tests/run-all.sh)",
         "result": "pass",
-        "details": "34/34: merge-gate 19, path-ownership 8, pre-push 7; mutation check caught 2/2 disabled rules",
+        "details": "48/48: merge-gate 31 (incl. review F1/F3/F4 bypass cases), path-ownership 10 (incl. F5), pre-push 7",
         "evidence": "evidence/T-M1.1/script-tests.log"
       },
       {
@@ -140,12 +147,12 @@
       "note": "check-docs + script tests PASS locally"
     },
     "G2": {
-      "status": "pending",
-      "note": "PR #1 CI"
+      "status": "pass",
+      "note": "docs-check run 36106314080, secrets-scan run 36106314347 (first push); re-run after fixes"
     },
     "G3": {
       "status": "pending",
-      "note": "DOCS-REVIEW T-M1.1 (fresh context)"
+      "note": "DOCS-REVIEW round 1: CHANGES REQUESTED (F1, F2 S2 + 11 S3/S4); fixes pushed; re-review pending"
     },
     "G4": {
       "status": "pending",
@@ -156,12 +163,12 @@
   "decisions": {
     "log": "docs/10-governance/decision-log.md",
     "recent": [
-      "DEC-030",
       "DEC-031",
       "DEC-032",
       "DEC-033",
       "DEC-034",
-      "DEC-035"
+      "DEC-035",
+      "DEC-036"
     ],
     "pendingPO": [
       "OQ-02",
@@ -261,6 +268,11 @@
       "at": "2026-09-25T07:09:34Z",
       "actor": "lead-coordinator",
       "event": "Bootstrap merge a14caae; private repo duochou042004/eng-lms created, master+develop pushed; branch protection 403 -> DEC-031 harness fallback; T-M1.1 implemented (CI workflows, merge gate, hooks, path ownership, settings, README); PR #1 opening."
+    },
+    {
+      "at": "2026-09-25T07:20:01Z",
+      "actor": "lead-coordinator",
+      "event": "PR #1 CI green. Independent DOCS-REVIEW round 1: CHANGES REQUESTED (F1 verdict-regex bypass, F2 bookkeeping + 11 minor). Fixed: exact verdict tokens, stale-verdict rejection, --match-head-commit, dependabot/release paths, path-ownership fail-closed, deny rules, DEC-036, docs."
     }
   ]
 }

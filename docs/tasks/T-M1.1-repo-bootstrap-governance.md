@@ -54,12 +54,12 @@ with the rules enforced by tooling rather than memory.
 - **AC6:** `check-path-ownership.sh` fails for a `qa/T-X` diff touching `backend/`, and for a `feature/T-X` diff touching `qa/`. It passes for valid diffs. (Evidence: test output.)
 - **AC7:** PR #1 is merged with a merge commit via `merge-gate.sh`, and the branch is deleted. (Evidence: PR URL, `git log --graph`.)
 - **AC8:** Branch protection is configured (evidence: `gh api repos/{owner}/{repo}/branches/develop/protection`), **or** DEC-031 documents the fallback, with the API error as evidence.
-- **AC10 (DEC-035):** The README renders the badges (every shields.io URL returns HTTP 200, and the requested logos load), two Mermaid diagrams, a roadmap and a docs map. Its relative links pass `check-docs.sh`.
 - **AC9:** `progress.json` (T-M1.1 done; T-M1.2 packet written and `ready`), `docs/handoff/*` and `evidence/T-M1.1/summary.md` are updated. `scripts/check-docs.sh` passes.
+- **AC10 (DEC-035):** The README renders the badges (every shields.io URL returns HTTP 200, and the requested logos load), two Mermaid diagrams, a roadmap and a docs map. Its relative links pass `check-docs.sh`.
 
 ## Test plan
 - Implementation: plain-bash test scripts in `scripts/tests/*.sh` (no new dependencies) with fixture diffs and a mocked `gh` binary (`GH_BIN` override), run by `docs-check` in CI.
-- Independent check (docs/chore packet, quality-gates G3): a fresh-context reviewer re-runs the evidence commands and checks AC1–AC9.
+- Independent check (docs/chore packet, quality-gates G3): a fresh-context reviewer re-runs the evidence commands and checks AC1–AC10.
 
 ## Evidence required
 `evidence/T-M1.1/summary.md` · local check-docs log (bootstrap merge) · `gh` outputs (repo view, protection API) · workflow run links · script test logs · hook demo output.

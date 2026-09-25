@@ -42,7 +42,13 @@ Enforcement: (1) subagent `tools` allow-lists in `.claude/agents/*.md`; (2) path
 prefix touches forbidden paths (`qa/*` branches → only `qa/**` and `evidence/**/qa/**`; `feature/*` branches → not `qa/**`); (3) the `pre-push` hook; (4) branch
 protection or `merge-gate.sh` (ci-cd.md §2). A proposed Claude Code permission configuration is in `claude-settings.proposed.json`. Activating it is a PO decision (OQ-15).
 
-## 3. Path ownership (checked by `scripts/check-path-ownership.sh`, created in T-M1.1)
+## 3. Path ownership
+
+`scripts/check-path-ownership.sh` (CI, every PR) **mechanically enforces** only these rules: QA-owned paths (`qa/**`, `evidence/*/qa/**`) and reviewer evidence
+(`evidence/*/review/**`) are off-limits to implementation branches; `qa/` branches may touch only QA paths; `docs/00-sources/**` is immutable; the branch
+kind must be known. It fails on an empty or failing diff. The rest of the table below is enforced by **review** (LC at G4; the scope and ownership checks in the
+PR template). CI runs the PR's own copy of the script, so the LC runs `merge-gate.sh` from an up-to-date `develop` checkout and reviews any change to `scripts/**`,
+`.github/**` or `.claude/**` as a governance change (residual risk R-08).
 
 | Path | Owner role | Others |
 |---|---|---|
