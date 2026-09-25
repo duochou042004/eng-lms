@@ -3,12 +3,12 @@
 | Field | Value |
 |---|---|
 | Milestone | M1 (first gated task after planning) |
-| Status | **draft**. Becomes `ready` when the entry gate passes |
+| Status | **in_review** (entry gate met 2026-09-25: DEC-032..035) |
 | Owner role | Lead Coordinator (LC) |
 | Branch | `chore/T-M1.1-repo-governance` (from `develop`, after the baseline merge in step 1) |
 | Depends on | T-M0.1 approved by the PO |
 | Estimate | 0.5–1 agent-day |
-| Trace | PO goal (git governance, gh CLI), DEC-020, DEC-028, DEC-030, ci-cd.md, git-governance.md, OQ-01, OQ-15, R-08 |
+| Trace | PO goal (git governance, gh CLI), DEC-020, DEC-028, DEC-030, DEC-031, DEC-033, DEC-034, DEC-035, ci-cd.md, git-governance.md, OQ-01, OQ-15, R-08 |
 
 ## Entry gate (G0; all required)
 1. **PO approval of the planning baseline T-M0.1** (`PO-APPROVED T-M0.1`), recorded in the decision log (baseline DEC-001..029 → "Approved by PO").
@@ -37,6 +37,8 @@ with the rules enforced by tooling rather than memory.
      Merge **through `scripts/merge-gate.sh`**, its first real use.
   5. Branch protection on `master` and `develop` via `gh api` **if the plan supports it** (required checks: `docs-check`, `secrets-scan`; PR required;
      no force-push). Otherwise record **DEC-031** (harness enforcement only) with the API response as evidence.
+  6. **PO request (DEC-035):** refresh the root `README.md` with shields.io badges (static; dynamic shields can't read a private repo), native
+     GitHub Actions status badges, Mermaid diagrams (architecture, delivery loop), a roadmap table, callouts and collapsible sections. All links must pass `check-docs.sh`.
 - Out of scope: backend or web code; CI jobs for backend and web (T-M1.2 and T-M1.3); deployment; product doc changes other than bookkeeping.
 
 ## Guardrail answers
@@ -53,10 +55,11 @@ with the rules enforced by tooling rather than memory.
 - **AC7:** PR #1 is merged with a merge commit via `merge-gate.sh`, and the branch is deleted. (Evidence: PR URL, `git log --graph`.)
 - **AC8:** Branch protection is configured (evidence: `gh api repos/{owner}/{repo}/branches/develop/protection`), **or** DEC-031 documents the fallback, with the API error as evidence.
 - **AC9:** `progress.json` (T-M1.1 done; T-M1.2 packet written and `ready`), `docs/handoff/*` and `evidence/T-M1.1/summary.md` are updated. `scripts/check-docs.sh` passes.
+- **AC10 (DEC-035):** The README renders the badges (every shields.io URL returns HTTP 200, and the requested logos load), two Mermaid diagrams, a roadmap and a docs map. Its relative links pass `check-docs.sh`.
 
 ## Test plan
 - Implementation: plain-bash test scripts in `scripts/tests/*.sh` (no new dependencies) with fixture diffs and a mocked `gh` binary (`GH_BIN` override), run by `docs-check` in CI.
-- Independent check (docs/chore packet, quality-gates G3): a fresh-context reviewer re-runs the evidence commands and checks AC1–AC9.
+- Independent check (docs/chore packet, quality-gates G3): a fresh-context reviewer re-runs the evidence commands and checks AC1–AC10.
 
 ## Evidence required
 `evidence/T-M1.1/summary.md` · local check-docs log (bootstrap merge) · `gh` outputs (repo view, protection API) · workflow run links · script test logs · hook demo output.

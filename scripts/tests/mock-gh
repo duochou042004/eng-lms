@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+# Fake `gh` for merge-gate tests. Reads fixtures from $MOCK_DIR:
+#   pr.json (pr view), checks.json (pr checks), behind.txt (compare behind_by); records merges in merged.txt
+set -euo pipefail
+case "$1 $2" in
+  "pr view")   cat "$MOCK_DIR/pr.json" ;;
+  "pr checks") cat "$MOCK_DIR/checks.json" ;;
+  "pr merge")  echo "$*" >>"$MOCK_DIR/merged.txt"; echo "merged" ;;
+  "api "*)     cat "$MOCK_DIR/behind.txt" ;;
+  *) echo "mock-gh: unsupported: $*" >&2; exit 2 ;;
+esac

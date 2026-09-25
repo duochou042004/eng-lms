@@ -1,0 +1,8 @@
+$ gh repo view duochou042004/eng-lms --json …
+{"defaultBranchRef":{"name":"develop"},"deleteBranchOnMerge":true,"mergeCommitAllowed":true,"name":"eng-lms","rebaseMergeAllowed":false,"squashMergeAllowed":false,"url":"https://github.com/duochou042004/eng-lms","visibility":"PRIVATE"}
+
+$ gh api -X PUT repos/duochou042004/eng-lms/branches/develop/protection …
+{"message":"Upgrade to GitHub Pro or make this repository public to enable this feature.","documentation_url":"https://docs.github.com/rest/branches/branch-protection#update-branch-protection","status":"403"}gh: Upgrade to GitHub Pro or make this repository public to enable this feature. (HTTP 403)
+
+$ gh api repos/duochou042004/eng-lms/rulesets
+{"message":"Upgrade to GitHub Pro or make this repository public to enable this feature.","status":"403"}

@@ -1,23 +1,24 @@
 # CI/CD
 
-> GitHub Actions. Workflows live in `.github/workflows/`. Created incrementally: `docs-check` + `secrets-scan` in **T-M1.1**, `backend` in T-M1.2,
-> `web` in T-M1.3, `e2e-smoke` in T-M1.6, release in M8.
+> GitHub Actions. Workflows live in `.github/workflows/`. Created incrementally: `docs-check` + `secrets-scan` in **T-M1.1** (live), `backend` in T-M1.2,
+> `web` in T-M1.3, `e2e-smoke` in T-M1.6, release in M8. The required checks for `merge-gate.sh` are listed in `scripts/required-checks.txt`.
+> Repository: https://github.com/duochou042004/eng-lms (private; default branch `develop`; merge commits only; branches deleted on merge).
 
 ## 1. Workflows and required checks
 
 | Workflow (job name = required check) | Trigger | Steps | Required on |
 |---|---|---|---|
-| `docs-check` | PR, push to develop/master | `scripts/check-docs.sh`: markdown relative-link check, `progress.json` schema validation, next-session prompt ≤ 4,000 chars, no untracked OQ references | develop, master |
-| `secrets-scan` | PR, push | gitleaks (pinned action by SHA) | develop, master |
-| `backend` | PR, push (paths: backend/**, api/**) | setup-java Temurin 25 → `./mvnw -B verify` (Testcontainers uses the runner's Docker) → JaCoCo summary → upload surefire reports | develop, master |
+| `docs-check` | PR, push to develop/master | `scripts/check-docs.sh` (progress.json schema, relative links, ID references, source checksums, prompt ≤ 4,000 chars) + `scripts/tests/run-all.sh` (governance script tests) + `check-path-ownership.sh` on PRs | develop, master |
+| `secrets-scan` | PR, push | gitleaks CLI 8.30.1 (MIT), downloaded with a pinned SHA-256; scans the full git history. The EULA-licensed gitleaks-action is deliberately not used | develop, master |
+| `backend` | every PR (no path filter: required checks must always report), push | setup-java Temurin 25 → `./mvnw -B verify` (Testcontainers uses the runner's Docker) → JaCoCo summary → upload surefire reports | develop, master |
 | `contract-drift` | PR (backend or web) | Regenerate `api/openapi.json` + web types; `git diff --exit-code` | develop, master |
-| `web` | PR, push (paths: web/**) | Node 24 + pnpm (frozen lockfile) → lint → typecheck → test → build → bundle budget → i18n completeness → contrast check | develop, master |
+| `web` | every PR (no path filter, as for backend), push | Node 24 + pnpm (frozen lockfile) → lint → typecheck → test → build → bundle budget → i18n completeness → contrast check | develop, master |
 | `e2e-smoke` | PR | Build the jar with the SPA → start PostgreSQL as a service → run the app (e2e profile) → Playwright mandatory viewports (Chromium) → upload the report on failure | develop, master |
 | `e2e-nightly` | schedule (daily) | All 6 viewports × Chromium + smoke on Firefox and WebKit; PIT mutation (grading) | — (reported) |
 | `release` | tag `v*` | Build the image → Trivy scan (fail on CRITICAL) → push to GHCR → attach the SBOM → draft the GitHub release | master |
 
-Actions are pinned by commit SHA. Workflow `permissions:` are minimal (read by default, `packages: write` only in release). Dependabot is enabled for Maven, npm
-and GitHub Actions (weekly, grouped).
+Actions are pinned by commit SHA. Workflow `permissions:` are minimal (read by default, `packages: write` only in release). Dependabot is enabled for GitHub Actions
+(weekly, grouped). Maven and npm entries are added by T-M1.2, T-M1.3 and T-M1.6. Dependabot PRs merge through merge-gate with `LC-APPROVED PR-<n>` (git-governance §4).
 
 ## 2. Branch protection (target configuration)
 
@@ -26,11 +27,14 @@ and GitHub Actions (weekly, grouped).
 | `master` | PR required; required checks: all of the above; linear history **off** (merge commits); no force push; no deletion; tags `v*` protected |
 | `develop` | PR required; required checks: docs-check, secrets-scan, backend, web, contract-drift, e2e-smoke (as they come into existence); no force push |
 
-**Caveat (R-08):** GitHub branch protection and rulesets on **private** repositories need a paid plan (Pro or Team) for personal accounts. If the repository is
-private on a free plan (OQ-01), the enforcement moves into the harness:
-- `scripts/merge-gate.sh <pr>` (created in T-M1.1): refuses to merge unless `gh pr checks` are all green, the PR has the `LC-APPROVED` comment and
-  a `QA-VERDICT … PASS` comment, and the branch is up to date. The LC merges **only** through this script.
-- A local `pre-push` hook (installed by `scripts/install-hooks.sh`) blocks direct pushes to `master` and `develop`.
+**Result (R-08, DEC-031): branch protection is NOT available.** The API returned 403 on 2026-09-25 (private repo, free plan), so the target configuration above
+is not applied, and the enforcement lives in the harness:
+- `scripts/merge-gate.sh [--dry-run] <pr>`: refuses unless every required check in `scripts/required-checks.txt` passes and no other check fails; `LC-APPROVED <task>`
+  is present; the latest `QA-VERDICT` (feature/fix/release) or `DOCS-REVIEW` (docs/chore) says PASS; no SEC/UX review requests changes; the branch is 0 commits behind its base
+  and has no conflicts; and `progress.json` changed. It then runs `gh pr merge --merge --delete-branch`. The LC merges **only** through this script.
+- A `pre-push` hook (`scripts/install-hooks.sh` sets `core.hooksPath=scripts/hooks`) blocks direct pushes to `master`/`develop` and non-fast-forward pushes.
+- `check-path-ownership.sh` runs in `docs-check` on every PR. `.claude/settings.json` denies `gh pr merge`, force pushes and direct pushes for agents.
+- All of these are covered by `scripts/tests/*.test.sh` (34 cases) in CI.
 
 ## 3. Versioning and release
 

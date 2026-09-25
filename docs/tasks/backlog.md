@@ -6,22 +6,23 @@
 ## M0 — Planning baseline (P0)
 | ID | Title | Owner | Trace | Deps | Status |
 |---|---|---|---|---|---|
-| T-M0.1 | Planning baseline: docs system, ADRs, harness, progress.json | LC | PO goal, SPEC §52, §60 | — | awaiting PO approval |
+| T-M0.1 | Planning baseline: docs system, ADRs, harness, progress.json | LC | PO goal, SPEC §52, §60 | — | done (PO-APPROVED, merge a14caae) |
 
 ## M1 — Walking skeleton and delivery pipeline
 | ID | Title | Owner | Trace | Deps |
 |---|---|---|---|---|
 | **T-M1.1** | **Remote repository bootstrap and governance automation** (full packet: [T-M1.1](T-M1.1-repo-bootstrap-governance.md)) | LC | DEC-020, DEC-028, OQ-01, OQ-15 | T-M0.1 approved |
-| T-M1.2 | Backend skeleton via `spring init` (Boot 4.1, Java 25, Maven): Modulith, `shared` + `meta` endpoint, Flyway V1 (extensions, event registry, session tables), Actuator :8081, JSON logs, ModularityTests, ArchUnit base + forbidden-identifier scan, OpenAPI contract test, `backend` CI | BE | ADR-0001/2/3/14 | T-M1.1 |
+| T-M1.2 | ([packet](T-M1.2-backend-skeleton.md)) Backend skeleton via `spring init` (Boot 4.1, Java 25, Maven): Modulith, `shared` + `meta` endpoint, Flyway V1 (extensions + text-search config + Modulith event registry; the session tables move to T-M2.1, DEC-036), Actuator :8081, JSON logs, ModularityTests, ArchUnit base + forbidden-identifier scan, OpenAPI contract test, `backend` CI | BE | ADR-0001/2/3/14 | T-M1.1 |
 | T-M1.3 | Web skeleton: Vite + React + TS strict, pnpm, ESLint, Prettier, stylelint (tokens), `tokens.css`, first `ui/` primitives, i18n vi/en + completeness test, router + shells (placeholders), API client generation, Vitest + axe, bundle budget, contrast check, `/dev/ui`, `web` CI | FE | ADR-0004/13/14, DEC-029 | T-M1.1 |
 | T-M1.4 | Local stack + Testcontainers on rootless Podman: `compose.dev.yaml` (pinned postgres:18), `scripts/env.sh`, `dev-up/down`, user-level podman.socket (**PO approval: persistent user service**), Testcontainers proof or the fallback profile | BE | ADR-0012, R-07 | T-M1.2 |
 | T-M1.5 | Single image + same-origin serving: Containerfile (multi-stage), SPA fallback controller, cache and security headers baseline, a complete `scripts/gate.sh`, `contract-drift` CI | BE (+FE) | ADR-0004, NFR-SEC-08 | T-M1.2, T-M1.3 |
+| T-M1.7 | Merge-gate hardening: judge verdict freshness by the head-commit **push time** (PR timeline `HeadRefForcePushed`/`PullRequestCommit` events or the check-run start), not by `committedDate` (review R2-2, DEC-037). Also: every explicit negative verdict of any type blocks (R3-2); dependabot PRs require all commits to be authored by Dependabot, with a narrower allow-list (R3-1); allow `.mvn/wrapper/maven-wrapper.properties` (R3-3) (DEC-038) | LC | DEC-037, DEC-038, R-08 | T-M1.1 |
 | T-M1.6 | E2E harness: `/e2e` Playwright (6 viewport projects), helpers (axe, no-horizontal-scroll, step counter, screenshots), smoke test, `e2e-smoke` CI; `/qa` skeleton + README | FE | NFR-RESP-01, qa-protocol | T-M1.5 |
 
 ## M2 — Identity and students
 | ID | Title | Owner | Trace | Deps |
 |---|---|---|---|---|
-| T-M2.1 | Identity core: accounts, tutor bootstrap, login/logout/session (Spring Session JDBC), CSRF SPA, lockout + IP throttle, must-change gate, audit module v1 | BE | FR-AUTH-01..06, 09, 10; ADR-0005 | M1 |
+| T-M2.1 | Identity core: accounts, tutor bootstrap, login/logout/session (Spring Session JDBC tables + `persistent_logins` migration, DEC-036), CSRF SPA, lockout + IP throttle, must-change gate, audit module v1 | BE | FR-AUTH-01..06, 09, 10; ADR-0005 | M1 |
 | T-M2.2 | Authz matrix + isolation harness: `@Audience`, policy registry + verifier, matrix test, fixture world, secret scan, ArchUnit student rules | BE (+SEC) | NFR-SEC-01..03, ADR-0016 | T-M2.1 |
 | T-M2.3 | Students backend: student, guardians, learning profile, create-with-account, username suggestion and availability, status, password reset, accent-insensitive search | BE | FR-STU-01..05, FR-AUTH-07 | T-M2.2 |
 | T-M2.4 | Auth UI + shells: login, forgot info, forced and voluntary password change, role redirect, tutor sidebar/drawer, student bottom tabs | FE | FR-AUTH-03..08, IA §1–4 | T-M2.1 |

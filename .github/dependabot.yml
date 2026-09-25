@@ -1,0 +1,13 @@
+version: 2
+updates:
+  # Maven (backend/) and npm (web/, e2e/) entries are added by T-M1.2 / T-M1.3 / T-M1.6.
+  - package-ecosystem: github-actions
+    directory: /
+    target-branch: develop
+    schedule:
+      interval: weekly
+    groups:
+      actions:
+        patterns: ["*"]
+    commit-message:
+      prefix: "ci"

@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+# pre-push hook (installed via scripts/install-hooks.sh → core.hooksPath=scripts/hooks).
+# Blocks direct pushes to master/develop and any non-fast-forward (force) push (git-governance.md §1, §4; DEC-031).
+set -euo pipefail
+zero=0000000000000000000000000000000000000000
+while read -r local_ref local_sha remote_ref remote_sha; do
+  case "$remote_ref" in
+    refs/heads/master|refs/heads/develop)
+      echo "pre-push: direct push to '${remote_ref#refs/heads/}' is blocked. Open a PR and merge with scripts/merge-gate.sh." >&2
+      exit 1;;
+  esac
+  [[ "$local_sha" == "$zero" ]] && continue          # branch deletion (non-protected) is allowed
+  if [[ "$remote_sha" != "$zero" ]] && ! git merge-base --is-ancestor "$remote_sha" "$local_sha" 2>/dev/null; then
+    echo "pre-push: non-fast-forward (force) push to '$remote_ref' is blocked." >&2
+    exit 1
+  fi
+done
+exit 0

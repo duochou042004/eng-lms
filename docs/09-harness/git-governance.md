@@ -44,7 +44,16 @@ Trailers: `Task: T-M2.3`, `Refs: FR-STU-01, DEC-012`, and the co-author attribut
   the branch is up to date with its base, and `progress.json` changed in the PR. Then it runs `gh pr merge <n> --merge --delete-branch`.
 - The merge method is a **merge commit** (the `--no-ff` equivalent): task history stays grouped, and reverting a task is one `git revert -m 1`.
 - Squash merges are not used (they lose the per-step history the evidence refers to). Rebase-merging onto develop is not used.
-- A local no-ff merge (e.g. release branches before the remote exists) uses `git merge --no-ff`.
+- There are no local merges into `develop` or `master`. The only exception ever made was the one-time bootstrap merge (DEC-030). Back-merges from `master` into `develop` go through a
+  `chore/<task-id>-backmerge-x.y.z` branch created from `master` and a normal PR.
+- **Merge paths** (implemented in `merge-gate.sh`): feature/fix → QA-VERDICT; docs/chore → DOCS-REVIEW (or QA); qa/ → LC only; release/hotfix → master with
+  QA-VERDICT + PO-APPROVED + LC-APPROVED `<x.y.z>`; dependabot/* → `LC-APPROVED PR-<n>`. Verdicts count only if they are the **exact** token and were posted **after** the head commit,
+  and the merge is pinned to the head SHA seen at gate time (`--match-head-commit`), so nothing pushed after the gate check can be merged.
+  **Known limitation (R2-2, DEC-037):** "fresh" is judged against the head commit's `committedDate`, which the committer controls, so a commit authored before a review but pushed after it
+  counts as reviewed. The LC checks the PR timeline before approving. Hardening is tracked as T-M1.7. Dependabot PRs also require the PR author to be the Dependabot app,
+  and they may only change manifests, lockfiles and workflows (R2-1).
+- **Catching up with `develop`:** agents may not run `git merge` (deny rule). Use `gh pr update-branch <n>`, which creates the merge commit on GitHub, or ask the LC.
+  The update is a new head commit, so every verdict and approval must be re-posted afterwards.
 
 ## 5. Releases and tags
 
@@ -59,5 +68,7 @@ deploy. Tags are never moved or deleted.
 ## 7. Repository bootstrap state (T-M0.1)
 
 The local repository was initialised on 2026-09-25 with `master` (initial commit: sources + hygiene files), `develop` (from master) and
-`docs/T-M0.1-planning-baseline` (this baseline). **There is no remote yet.** Creating the GitHub repository, pushing and configuring protection is the
-first gated task **T-M1.1**, pending PO approval and OQ-01.
+`docs/T-M0.1-planning-baseline`. After `PO-APPROVED T-M0.1` (DEC-032), the baseline was merged into `develop` with `--no-ff` as a one-time bootstrap
+(DEC-030, merge `a14caae`). The remote **https://github.com/duochou042004/eng-lms** (private, DEC-033) was then created, with default branch `develop`, merge commits only
+and delete-on-merge. Branch protection is unavailable on this plan, so the harness enforces the rules (DEC-031, ci-cd.md §2).
+Every clone must run `./scripts/install-hooks.sh`.

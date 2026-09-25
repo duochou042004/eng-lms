@@ -1,0 +1,3 @@
+merge-gate: REFUSED PR #1 (chore/T-M1.1-repo-governance → develop)
+  - missing 'LC-APPROVED T-M1.1' comment
+  - missing 'DOCS-REVIEW T-M1.1: PASS' (or QA-VERDICT PASS)

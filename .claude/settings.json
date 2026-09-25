@@ -1,0 +1,48 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(./scripts/check-docs.sh)",
+      "Bash(./scripts/gate.sh:*)",
+      "Bash(./mvnw:*)",
+      "Bash(pnpm:*)",
+      "Bash(podman ps:*)",
+      "Bash(podman compose:*)",
+      "Bash(git status:*)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)",
+      "Bash(gh pr view:*)",
+      "Bash(gh pr checks:*)"
+    ],
+    "deny": [
+      "Bash(git push --force:*)",
+      "Bash(git push -f:*)",
+      "Bash(git push origin master:*)",
+      "Bash(git push origin develop:*)",
+      "Bash(git push origin HEAD:master:*)",
+      "Bash(git push origin HEAD:develop:*)",
+      "Bash(git reset --hard origin/master:*)",
+      "Bash(gh repo delete:*)",
+      "Bash(gh pr merge:*)",
+      "Bash(gh release delete:*)",
+      "Bash(podman volume rm englms-pgdata:*)",
+      "Bash(podman volume rm englms-files:*)",
+      "Bash(sudo:*)",
+      "Read(./.env)",
+      "Read(./.env.*)",
+      "Read(./.data/**)",
+      "Edit(./docs/00-sources/**)",
+      "Write(./docs/00-sources/**)",
+      "Bash(git push --no-verify:*)",
+      "Bash(git push -n:*)",
+      "Bash(git push -u origin master:*)",
+      "Bash(git push -u origin develop:*)",
+      "Bash(git push --set-upstream origin master:*)",
+      "Bash(git push --set-upstream origin develop:*)",
+      "Bash(git push origin +:*)",
+      "Bash(git push --force-with-lease:*)",
+      "Bash(git -c core.hooksPath:*)",
+      "Bash(git config core.hooksPath:*)",
+      "Bash(git merge:*)"
+    ]
+  }
+}
