@@ -21,3 +21,4 @@
 | OQ-13 | Add a "Duplicate lesson to next week" quick action in the MVP (not full recurrence)? | yes · no (wait for P2 recurrence) | **Yes** (small; big daily saving) | M3 | FR-LES scope |
 | OQ-14 | Dark theme? | MVP · P2 · never | **P2** (tokens make it cheap later) | — | — |
 | OQ-15 | Activate the proposed Claude Code permission settings (`docs/09-harness/claude-settings.proposed.json` → `.claude/settings.json`)? | yes · adjust · no | **ANSWERED: yes** (DEC-034) | T-M1.1 | — |
+| OQ-16 | When should JaCoCo coverage (test-strategy.md §5 floors) be wired into `backend` CI? T-M1.2's packet did not include it | with T-M1.5 (`gate.sh`) · with the first domain module (M2) · now | **With T-M1.5** (gate.sh aggregates the reports) | T-M1.5 | test-strategy §5, ci-cd §1 |

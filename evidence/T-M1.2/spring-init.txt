@@ -1,0 +1,5 @@
+$ spring init --boot-version=4.1.1 --java-version=25 --build=maven --type=maven-project --group-id=com.englms --artifact-id=englms --name=englms --package-name=com.englms --dependencies=web,data-jpa,flyway,postgresql,validation,actuator,modulith,testcontainers,configuration-processor backend
+# run 2026-09-25T11:50:36Z, Spring CLI Spring CLI v4.1.0
+Using service at https://start.spring.io
+Project extracted to '/home/kali/App_sources/Eng-LMS/backend'
+exit=0

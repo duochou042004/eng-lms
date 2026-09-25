@@ -16,7 +16,7 @@
       }
     ]
   },
-  "updatedAt": "2026-09-25T08:02:01Z",
+  "updatedAt": "2026-09-25T12:10:00Z",
   "updatedBy": "lead-coordinator (session 2026-09-25, Opus 5.5)",
   "phase": {
     "id": "P1",
@@ -32,21 +32,22 @@
   "currentTask": {
     "id": "T-M1.2",
     "title": "Backend skeleton via Spring Boot CLI",
-    "status": "ready",
+    "status": "in_progress",
     "ownerRole": "BE",
     "branch": "feature/T-M1.2-backend-skeleton",
     "packet": "docs/tasks/T-M1.2-backend-skeleton.md",
     "pr": null,
     "lastCommit": null,
-    "startedAt": null,
+    "startedAt": "2026-09-25T11:50:36Z",
     "entryGate": [
       "T-M1.1 merged — met (f1e3caa)",
       "PO approved start of T-M1.2 (DEC-039), in the next session"
     ],
     "nextSteps": [
-      "Next session: implement T-M1.2 per its packet (backend-implementer role)",
-      "Open PR; independent QA-VERDICT (fresh-context agent); LC merge via scripts/merge-gate.sh run from a develop checkout",
-      "Then write the T-M1.3 packet (OQ-02 answered: vi default + en)"
+      "Push, open PR, wait for CI (docs-check, secrets-scan, backend)",
+      "AC7 drift demo on a throwaway commit, then revert",
+      "Independent QA (fresh-context agent) → QA-VERDICT; LC-APPROVED; merge via scripts/merge-gate.sh from develop",
+      "Post-merge: record merge commit, QA report on qa/T-M1.2, write T-M1.3 packet"
     ],
     "trace": [
       "ADR-0001",

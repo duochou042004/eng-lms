@@ -22,7 +22,7 @@ write_fixture() { # <head> <base> <mergeState> <comments-json-array> <files-json
   rm -f "$MOCK_DIR/merged.txt"
 }
 gate() { "$ROOT/scripts/merge-gate.sh" "$@"; }
-OK_CHECKS='[{"name":"docs-check","bucket":"pass"},{"name":"secrets-scan","bucket":"pass"}]'
+OK_CHECKS='[{"name":"docs-check","bucket":"pass"},{"name":"secrets-scan","bucket":"pass"},{"name":"backend","bucket":"pass"}]'
 FILES='[{"path":"progress.json"},{"path":"docs/README.md"}]'
 GOOD=$(cs "$(c $'DOCS-REVIEW T-M9.9: PASS\nall good')" "$(c 'LC-APPROVED T-M9.9')")
 
