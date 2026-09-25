@@ -1,0 +1,36 @@
+# Local smoke (AC5, AC8): packaged jar against podman-run docker.io/library/postgres:18 (no socket needed), 2026-09-25T12:01:58Z
+$ curl -si localhost:8080/api/v1/meta
+HTTP/1.1 200 
+X-Request-Id: 01a0d871-96aa-7bf6-b7f8-aa9d59394bc2
+Content-Type: application/json
+Content-Length: 90
+Date: Fri, 25 Sep 2026 12:01:57 GMT
+
+{"name":"englms","version":"0.0.1-SNAPSHOT","locales":["vi","en"],"displayName":"Eng-LMS"}
+$ curl -si localhost:8080/api/v1/x
+HTTP/1.1 404 
+X-Request-Id: 01a0d871-96c4-7106-aba1-3fc1440260f4
+Content-Type: application/problem+json
+Transfer-Encoding: chunked
+Date: Fri, 25 Sep 2026 12:01:57 GMT
+
+{"instance":"/api/v1/x","status":404,"title":"Not Found","type":"https://englms.local/problems/not-found","code":"NOT_FOUND","requestId":"01a0d871-96c4-7106-aba1-3fc1440260f4"}
+$ curl -s -o /dev/null -w '%{http_code}' localhost:8081/actuator/health
+200
+$ curl -s -o /dev/null -w '%{http_code}' localhost:8081/actuator/health/liveness
+200
+$ curl -s -o /dev/null -w '%{http_code}' localhost:8081/actuator/health/readiness
+200
+$ curl -s -o /dev/null -w '%{http_code}' localhost:8081/actuator/info
+200
+$ curl -s -o /dev/null -w '%{http_code}' localhost:8081/actuator/env
+404
+$ curl -s -o /dev/null -w '%{http_code}' localhost:8081/actuator/modulith
+404
+$ curl -s -o /dev/null -w '%{http_code}' localhost:8080/actuator/health
+404
+
+# JSON log lines (excerpt, AC8)
+{"@timestamp":"2026-09-25T12:01:57.946070861Z","log":{"level":"INFO","logger":"com.englms.shared.web.RequestIdFilter"},"process":{"pid":27930,"thread":{"name":"tomcat-handler-0"}},"service":{"name":"englms","version":"0.0.1-SNAPSHOT","node":{}},"message":"GET /api/v1/meta -> 200","requestId":"01a0d871-96aa-7bf6-b7f8-aa9d59394bc2","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-09-25T12:01:57.999278664Z","log":{"level":"INFO","logger":"com.englms.shared.web.RequestIdFilter"},"process":{"pid":27930,"thread":{"name":"tomcat-handler-2"}},"service":{"name":"englms","version":"0.0.1-SNAPSHOT","node":{}},"message":"GET /api/v1/x -> 404","requestId":"01a0d871-96c4-7106-aba1-3fc1440260f4","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-09-25T12:01:58.077415360Z","log":{"level":"INFO","logger":"com.englms.shared.web.RequestIdFilter"},"process":{"pid":27930,"thread":{"name":"tomcat-handler-3"}},"service":{"name":"englms","version":"0.0.1-SNAPSHOT","node":{}},"message":"GET /actuator/health -> 404","requestId":"01a0d871-973a-7cbd-bd85-64ef8fabfdb0","ecs":{"version":"8.11"}}

@@ -7,7 +7,7 @@
 
 | Method | Path | Aud | Purpose | FR | M |
 |---|---|---|---|---|---|
-| GET | `/meta` | P | Version, locales, display name | — | M1 |
+| GET | `/meta` | P | `{name, version, locales, displayName}` from `englms.meta.*` config; locales `["vi","en"]` (DEC-039). **Live** (T-M1.2, `api/openapi.json`) | — | M1 |
 | GET | `/auth/session` | P | Current user or 401. Also primes the CSRF cookie | FR-AUTH-03 | M2 |
 | POST | `/auth/login` | P | `{username, password, rememberMe}` | FR-AUTH-03 | M2 |
 | POST | `/auth/logout` | A | End session | FR-AUTH-04 | M2 |

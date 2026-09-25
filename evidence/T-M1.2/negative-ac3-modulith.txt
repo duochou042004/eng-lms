@@ -1,0 +1,19 @@
+# AC3 negative demo (throwaway, not committed): added src/main/java/com/englms/shared/IllegalDemo.java
+# which references com.englms.settings.internal.MetaProperties (another module's internal type).
+$ ./mvnw -B test -Dtest='ModularityTests,ArchitectureRulesTest'
+[ERROR] Tests run: 2, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 1.544 s <<< FAILURE! -- in com.englms.ModularityTests
+org.springframework.modulith.core.Violations: 
+- Module 'shared' depends on non-exposed type com.englms.settings.internal.MetaProperties within module 'settings'!
+Field <com.englms.shared.IllegalDemo.leak> has type <com.englms.settings.internal.MetaProperties> in (IllegalDemo.java:0)
+[ERROR] Tests run: 6, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 0.324 s <<< FAILURE! -- in com.englms.architecture.ArchitectureRulesTest
+[ERROR] com.englms.architecture.ArchitectureRulesTest.noAccessToAnotherModulesInternals -- Time elapsed: 0.007 s <<< FAILURE!
+Architecture Violation [Priority: MEDIUM] - Rule 'no classes should access another module's internal package' was violated (1 times):
+Field <com.englms.shared.IllegalDemo.leak> has type <com.englms.settings.internal.MetaProperties> in (IllegalDemo.java:0)
+[ERROR]   ArchitectureRulesTest.noAccessToAnotherModulesInternals Architecture Violation [Priority: MEDIUM] - Rule 'no classes should access another module's internal package' was violated (1 times):
+Field <com.englms.shared.IllegalDemo.leak> has type <com.englms.settings.internal.MetaProperties> in (IllegalDemo.java:0)
+[ERROR]   ModularityTests.verifiesModuleBoundaries:14 » Violations - Module 'shared' depends on non-exposed type com.englms.settings.internal.MetaProperties within module 'settings'!
+Field <com.englms.shared.IllegalDemo.leak> has type <com.englms.settings.internal.MetaProperties> in (IllegalDemo.java:0)
+[ERROR] Tests run: 8, Failures: 1, Errors: 1, Skipped: 0
+[INFO] BUILD FAILURE
+
+# The fixture-based permanent regression test: ModularityViolationTest (src/test/java/fixture/modulith/illegal).

@@ -1,6 +1,6 @@
 # CI/CD
 
-> GitHub Actions. Workflows live in `.github/workflows/`. Created incrementally: `docs-check` + `secrets-scan` in **T-M1.1** (live), `backend` in T-M1.2,
+> GitHub Actions. Workflows live in `.github/workflows/`. Created incrementally: `docs-check` + `secrets-scan` in **T-M1.1** (live), `backend` in **T-M1.2** (live),
 > `web` in T-M1.3, `e2e-smoke` in T-M1.6, release in M8. The required checks for `merge-gate.sh` are listed in `scripts/required-checks.txt`.
 > Repository: https://github.com/duochou042004/eng-lms (private; default branch `develop`; merge commits only; branches deleted on merge).
 
@@ -10,7 +10,7 @@
 |---|---|---|---|
 | `docs-check` | PR, push to develop/master | `scripts/check-docs.sh` (progress.json schema, relative links, ID references, source checksums, prompt ≤ 4,000 chars) + `scripts/tests/run-all.sh` (governance script tests) + `check-path-ownership.sh` on PRs | develop, master |
 | `secrets-scan` | PR, push | gitleaks CLI 8.30.1 (MIT), downloaded with a pinned SHA-256; scans the full git history. The EULA-licensed gitleaks-action is deliberately not used | develop, master |
-| `backend` | every PR (no path filter: required checks must always report), push | setup-java Temurin 25 → `./mvnw -B verify` (Testcontainers uses the runner's Docker) → JaCoCo summary → upload surefire reports | develop, master |
+| `backend` | every PR (no path filter: required checks must always report), push | `.github/workflows/backend.yml` (live, T-M1.2): checkout (`persist-credentials: false`) → setup-java Temurin 25 (Maven cache) → `./mvnw -B -ntp verify` (Testcontainers uses the runner's Docker; includes the modularity, ArchUnit, forbidden-identifier, Flyway and OpenAPI contract tests) → upload surefire reports on failure. JaCoCo reporting is not wired yet (OQ-16) | develop, master |
 | `contract-drift` | PR (backend or web) | Regenerate `api/openapi.json` + web types; `git diff --exit-code` | develop, master |
 | `web` | every PR (no path filter, as for backend), push | Node 24 + pnpm (frozen lockfile) → lint → typecheck → test → build → bundle budget → i18n completeness → contrast check | develop, master |
 | `e2e-smoke` | PR | Build the jar with the SPA → start PostgreSQL as a service → run the app (e2e profile) → Playwright mandatory viewports (Chromium) → upload the report on failure | develop, master |

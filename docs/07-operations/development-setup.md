@@ -21,6 +21,17 @@ Agents: every `Bash` call is a fresh shell. Prefix toolchain commands with the `
 
 ## 2. Repository bootstrap *(M1)*
 
+Available now (T-M1.2). The backend reads `SPRING_DATASOURCE_URL` (default `jdbc:postgresql://localhost:5432/englms`), `SPRING_DATASOURCE_USERNAME`
+(default `englms`) and `SPRING_DATASOURCE_PASSWORD` (no default). Until `dev-up.sh` exists (T-M1.4), a throwaway database works without the Podman socket:
+
+```bash
+podman run -d --rm --name englms-dev-pg -e POSTGRES_DB=englms -e POSTGRES_USER=englms -e POSTGRES_PASSWORD=devonly \
+  -p 127.0.0.1:5432:5432 docker.io/library/postgres:18
+(cd backend && SPRING_DATASOURCE_PASSWORD=devonly ./mvnw spring-boot:run)   # API :8080 (GET /api/v1/meta) ; actuator :8081 (health, info)
+```
+
+Planned (the scripts arrive with T-M1.3 … T-M1.5):
+
 ```bash
 ./scripts/dev-up.sh          # podman compose -f deploy/compose.dev.yaml up -d  (PostgreSQL 18 on 127.0.0.1:5432, volume englms-dev-pgdata)
 cp .env.example .env         # dev-only values; .env is git-ignored
@@ -46,7 +57,8 @@ PostgreSQL through a `test-external-db` profile (a separate database per test ru
 | Task | Command |
 |---|---|
 | All local gates | `./scripts/gate.sh` |
-| Backend tests only | `(cd backend && ./mvnw -B verify)` |
+| Backend tests only | `(cd backend && ./mvnw -B verify)` (needs a Docker-compatible socket for the `container`-tagged tests) |
+| Backend tests without containers | `(cd backend && ./mvnw -B verify -DexcludedGroups=container)` (until T-M1.4 enables the Podman socket; CI runs everything) |
 | One backend test | `(cd backend && ./mvnw -B -Dtest=ClassName#method test)` |
 | Regenerate the OpenAPI file | `(cd backend && ./mvnw -B -Dtest=OpenApiContractTest -Dcontract.write=true test)` |
 | Regenerate API types | `(cd web && pnpm api:generate)` |

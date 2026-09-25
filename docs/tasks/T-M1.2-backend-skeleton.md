@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Milestone | M1 |
-| Status | **ready**. The packet is G0-complete; its dependency is T-M1.1, and the task starts only once that is merged |
+| Status | **ready** (G0-complete; dependency T-M1.1 merged at `f1e3caa`) |
 | Owner role | BE (backend-implementer) |
 | Branch | `feature/T-M1.2-backend-skeleton` (from `develop`) |
 | Depends on | T-M1.1 merged |

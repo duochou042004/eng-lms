@@ -16,7 +16,7 @@
       }
     ]
   },
-  "updatedAt": "2026-09-25T07:37:14Z",
+  "updatedAt": "2026-09-25T12:45:00Z",
   "updatedBy": "lead-coordinator (session 2026-09-25, Opus 5.5)",
   "phase": {
     "id": "P1",
@@ -30,54 +30,51 @@
     "exitCriteria": "scripts/gate.sh green locally and in CI; backend skeleton with Modulith verify + Flyway V1; SPA served same-origin; Playwright smoke at 3 viewports with axe; contract drift check; Testcontainers on rootless Podman or documented fallback (docs/01-product/roadmap.md)."
   },
   "currentTask": {
-    "id": "T-M1.1",
-    "title": "Remote repository bootstrap and governance automation",
-    "status": "done",
-    "ownerRole": "LC",
-    "branch": "chore/T-M1.1-repo-governance",
-    "packet": "docs/tasks/T-M1.1-repo-bootstrap-governance.md",
-    "pr": "https://github.com/duochou042004/eng-lms/pull/1",
-    "lastCommit": null,
-    "startedAt": "2026-09-25T07:09:34Z",
-    "entryGate": [],
-    "nextSteps": [
-      "DOCS-REVIEW T-M1.1 re-review of the fixes (F1–F13)",
-      "LC-APPROVED T-M1.1, posted after the final head commit",
-      "merge via ./scripts/merge-gate.sh 1 from a develop checkout",
-      "record the merge commit on feature/T-M1.2-backend-skeleton"
-    ],
-    "trace": [
-      "DEC-020",
-      "DEC-028",
-      "DEC-030",
-      "OQ-01",
-      "OQ-15",
-      "DEC-032",
-      "DEC-033",
-      "DEC-034",
-      "DEC-035",
-      "DEC-031"
-    ]
-  },
-  "nextTask": {
     "id": "T-M1.2",
     "title": "Backend skeleton via Spring Boot CLI",
-    "status": "ready",
+    "status": "awaiting_approval",
     "ownerRole": "BE",
     "branch": "feature/T-M1.2-backend-skeleton",
     "packet": "docs/tasks/T-M1.2-backend-skeleton.md",
-    "pr": null,
-    "lastCommit": null,
-    "startedAt": null,
+    "pr": "https://github.com/duochou042004/eng-lms/pull/2",
+    "lastCommit": "e9a974b",
+    "startedAt": "2026-09-25T11:50:36Z",
     "entryGate": [
-      "T-M1.1 merged"
+      "T-M1.1 merged — met (f1e3caa)",
+      "PO approved start of T-M1.2 (DEC-039), in the next session"
     ],
-    "nextSteps": [],
+    "nextSteps": [
+      "QA-VERDICT T-M1.2: PASS WITH MINOR (4 × S4; F2 fixed, F1/F3/F4 → T-M1.8 per DEC-041)",
+      "Post QA-VERDICT + LC-APPROVED after the final head commit; merge via scripts/merge-gate.sh from develop",
+      "Post-merge: record merge commit; QA report on qa/T-M1.2; T-M1.3 packet"
+    ],
     "trace": [
       "ADR-0001",
       "ADR-0002",
       "ADR-0003",
       "ADR-0014"
+    ]
+  },
+  "nextTask": {
+    "id": "T-M1.3",
+    "title": "Web skeleton (Vite + React + TS, design tokens, i18n, CI)",
+    "status": "draft",
+    "ownerRole": "FE",
+    "branch": "feature/T-M1.3-web-skeleton",
+    "packet": "docs/tasks/backlog.md#m1--walking-skeleton-and-delivery-pipeline",
+    "pr": null,
+    "lastCommit": null,
+    "startedAt": null,
+    "entryGate": [
+      "T-M1.2 merged",
+      "OQ-02 answered — met (DEC-039)"
+    ],
+    "nextSteps": [],
+    "trace": [
+      "ADR-0004",
+      "ADR-0013",
+      "ADR-0014",
+      "DEC-029"
     ]
   },
   "completed": [
@@ -92,10 +89,10 @@
     {
       "id": "T-M1.1",
       "title": "Remote repository bootstrap and governance automation",
-      "completedAt": "2026-09-25T07:20:01Z",
-      "mergeCommit": null,
+      "completedAt": "2026-09-25T07:38:06Z",
+      "mergeCommit": "f1e3caa",
       "evidence": "evidence/T-M1.1/summary.md",
-      "note": "Marked done inside PR #1 per quality-gates G4 ('done arrives with the branch'). The merge commit is recorded post-merge on the T-M1.2 branch. Status 'done' is conditional on merge-gate succeeding."
+      "note": "Merged via scripts/merge-gate.sh (PR #1) after 3 independent docs-review rounds (final PASS at 4219701). develop CI green on f1e3caa. Deferred: T-M1.7 (DEC-037/038)."
     }
   ],
   "tests": {
@@ -140,38 +137,37 @@
   "gates": {
     "G0": {
       "status": "pass",
-      "note": "T-M1.1 entry gate met (DEC-032..035)"
+      "note": "T-M1.2 packet G0-complete; dependency T-M1.1 merged"
     },
     "G1": {
-      "status": "pass",
-      "note": "check-docs + script tests PASS locally"
+      "status": "pending",
+      "note": "not started"
     },
     "G2": {
-      "status": "pass",
-      "note": "docs-check run 36106314080, secrets-scan run 36106314347 (first push); re-run after fixes"
+      "status": "pending",
+      "note": "not started"
     },
     "G3": {
-      "status": "pass",
-      "note": "DOCS-REVIEW T-M1.1 round 3 PASS at 4219701; S3/S4 deferred to T-M1.7 (DEC-037, DEC-038)"
+      "status": "pending",
+      "note": "QA-VERDICT required (feature packet)"
     },
     "G4": {
       "status": "pending",
-      "note": "merge-gate.sh"
+      "note": "merge-gate"
     }
   },
   "blockers": [],
   "decisions": {
     "log": "docs/10-governance/decision-log.md",
     "recent": [
-      "DEC-033",
       "DEC-034",
       "DEC-035",
       "DEC-036",
       "DEC-037",
-      "DEC-038"
+      "DEC-038",
+      "DEC-039"
     ],
     "pendingPO": [
-      "OQ-02",
       "OQ-03",
       "OQ-04",
       "OQ-05",
@@ -283,6 +279,16 @@
       "at": "2026-09-25T07:37:14Z",
       "actor": "docs-reviewer (independent)",
       "event": "DOCS-REVIEW T-M1.1 round 3: PASS at 4219701. R3-1/R3-2/R3-3 deferred to T-M1.7 (DEC-038); R3-4 fixed."
+    },
+    {
+      "at": "2026-09-25T07:39:31Z",
+      "actor": "lead-coordinator",
+      "event": "PR #1 merged via merge-gate (f1e3caa, 2026-09-25T07:38:06Z); develop CI green (docs-check 36108643040, secrets-scan 36108643020). T-M1.1 done. T-M1.2 ready on feature/T-M1.2-backend-skeleton (not started)."
+    },
+    {
+      "at": "2026-09-25T08:02:01Z",
+      "actor": "PO",
+      "event": "PO: go ahead with T-M1.2 in the NEXT session; OQ-02 = default (DEC-039). Session closed for context size; goal-mode handoff prompt written to docs/handoff/next-session-prompt.md."
     }
   ]
 }

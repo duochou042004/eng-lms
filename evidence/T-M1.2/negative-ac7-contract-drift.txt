@@ -1,0 +1,19 @@
+# AC7 negative demo: contract drift fails CI
+Throwaway commit 8e79261 renamed MetaController#meta -> workspaceMeta without regenerating api/openapi.json.
+CI run: https://github.com/duochou042004/eng-lms/actions/runs/36133152398 (backend: failure). Reverted by 9f346cb.
+
+$ gh run view 36133152398 --log-failed | grep …
+[INFO] Tests run: 16, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 27.49 s -- in com.englms.ApplicationIntegrationTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.363 s -- in com.englms.ModularityTests
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.018 s -- in com.englms.shared.IdsTest
+operationId" : "workspaceMeta",
+[ERROR] Tests run: 1, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 3.953 s <<< FAILURE! -- in com.englms.contract.OpenApiContractTest
+API contract drift: review the change, then regenerate api/openapi.json with -Dcontract.write=true] 
+operationId" : "meta",
+operationId" : "workspaceMeta",
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.418 s -- in com.englms.settings.internal.web.MetaControllerTest
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.761 s -- in com.englms.persistence.FlywayMigrationTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.228 s -- in com.englms.architecture.ModularityViolationTest
+[INFO] Tests run: 12, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.107 s -- in com.englms.architecture.ForbiddenIdentifiersTest
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.492 s -- in com.englms.architecture.ArchitectureRulesTest
+API contract drift: review the change, then regenerate api/openapi.json with -Dcontract.write=true] 

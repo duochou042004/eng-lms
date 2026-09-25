@@ -1,0 +1,88 @@
+{
+  "openapi" : "3.1.0",
+  "info" : {
+    "title" : "Eng-LMS API",
+    "version" : "v1"
+  },
+  "servers" : [ {
+    "url" : "/",
+    "description" : "Same origin"
+  } ],
+  "paths" : {
+    "/api/v1/meta" : {
+      "get" : {
+        "operationId" : "meta",
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/MetaResponse"
+                }
+              }
+            },
+            "description" : "OK"
+          }
+        },
+        "tags" : [ "meta" ]
+      }
+    }
+  },
+  "components" : {
+    "schemas" : {
+      "MetaResponse" : {
+        "type" : "object",
+        "properties" : {
+          "displayName" : {
+            "type" : "string"
+          },
+          "locales" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "version" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "displayName", "locales", "name", "version" ]
+      },
+      "Problem" : {
+        "type" : "object",
+        "description" : "RFC 9457 Problem Details (api-conventions.md §5)",
+        "properties" : {
+          "code" : {
+            "$ref" : "#/components/schemas/ProblemCode"
+          },
+          "instance" : {
+            "type" : "string",
+            "format" : "uri"
+          },
+          "requestId" : {
+            "type" : "string"
+          },
+          "status" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "title" : {
+            "type" : "string"
+          },
+          "type" : {
+            "type" : "string",
+            "format" : "uri"
+          }
+        },
+        "required" : [ "code", "requestId", "status", "title", "type" ]
+      },
+      "ProblemCode" : {
+        "type" : "string",
+        "enum" : [ "MALFORMED_REQUEST", "NOT_FOUND", "METHOD_NOT_ALLOWED", "UNSUPPORTED_MEDIA_TYPE", "NOT_ACCEPTABLE", "VALIDATION_FAILED", "INTERNAL_ERROR" ]
+      }
+    }
+  }
+}

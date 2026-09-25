@@ -1,0 +1,15 @@
+# AC4 negative demo (throwaway, not committed): added src/main/java/com/englms/settings/ExamDemo.java containing "TOEIC".
+$ ./mvnw -B test -Dtest=ForbiddenIdentifiersTest
+[ERROR] Tests run: 12, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 0.257 s <<< FAILURE! -- in com.englms.architecture.ForbiddenIdentifiersTest
+[ERROR] com.englms.architecture.ForbiddenIdentifiersTest.productionSourcesContainNoForbiddenIdentifiers -- Time elapsed: 0.019 s <<< FAILURE!
+Expecting empty but was: ["src/main/java/com/englms/settings/ExamDemo.java:5: contains 'TOEIC'"]
+Expecting empty but was: ["src/main/java/com/englms/settings/ExamDemo.java:5: contains 'TOEIC'"]
+[ERROR] Tests run: 12, Failures: 1, Errors: 0, Skipped: 0
+[INFO] BUILD FAILURE
+
+# After removing the file:
+[INFO] Tests run: 12, Failures: 0, Errors: 0, Skipped: 0
+[INFO] BUILD SUCCESS
+
+# Permanent parameterised fixture tests (temp dirs, one per forbidden identifier + file-name case):
+[INFO] Tests run: 12, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.222 s -- in com.englms.architecture.ForbiddenIdentifiersTest
