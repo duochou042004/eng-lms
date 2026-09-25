@@ -26,7 +26,7 @@ class MetaController {
 	}
 
 	@GetMapping("/meta")
-	MetaResponse workspaceMeta() {
+	MetaResponse meta() {
 		return new MetaResponse(properties.name(), properties.version(), List.copyOf(properties.locales()),
 				properties.displayName());
 	}
