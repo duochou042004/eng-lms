@@ -25,7 +25,7 @@ class MetaController {
 		this.properties = properties;
 	}
 
-	@GetMapping("/meta-info")
+	@GetMapping("/meta")
 	MetaResponse meta() {
 		return new MetaResponse(properties.name(), properties.version(), List.copyOf(properties.locales()),
 				properties.displayName());
