@@ -5,6 +5,8 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Eng-LMS</title>
+    <!-- CSP style-src 'self' blocks React Aria's injected <style>; this id makes it skip that. The rule is in src/ui/global.css (DEC-052). -->
+    <template id="react-aria-pressable-style"></template>
   </head>
   <body>
     <div id="root"></div>

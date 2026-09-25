@@ -62,7 +62,10 @@ CI uses GitHub's Docker and needs none of this. The previous fallback (a `test-e
 
 | Task | Command |
 |---|---|
-| All local gates | `./scripts/gate.sh` |
+| All local gates | `./scripts/gate.sh` (live, T-M1.5): fail-fast, in CI order: docs → script tests → backend `verify` (sources `scripts/env.sh`) → web install/lint/typecheck/test/build/budget/contrast → contract-drift. `--list` shows the steps, `--from <step>` resumes. `ENGLMS_TASK=T-Mx.y ./scripts/gate.sh` also writes `evidence/<task>/gate-<UTC>.log` |
+| Contract drift | `./scripts/contract-drift.sh` (regenerates the contract and the web types, fails on a diff, leaves the regenerated files for review) |
+| Build the image | `podman build --format docker -f deploy/Containerfile -t englms:dev .` (`--format docker` keeps the HEALTHCHECK) |
+| Run the image | `./scripts/dev-up.sh && podman run --rm --read-only --tmpfs /tmp --network host --env-file .env englms:dev` (app :8080, management :8081) |
 | Backend tests only | `source scripts/env.sh && (cd backend && ./mvnw -B verify)` (all tests, including `container`) |
 | Backend tests without containers | `(cd backend && ./mvnw -B verify -DexcludedGroups=container)` (quick run) |
 | One backend test | `(cd backend && ./mvnw -B -Dtest=ClassName#method test)` |

@@ -14,9 +14,17 @@ Secrets (podman secret): englms-db-password, englms-bootstrap-tutor-password (fi
 
 ## 2. Image
 
-- `deploy/Containerfile` (multi-stage): (1) Node 24 + pnpm → `web/dist`; (2) Temurin 25 JDK + Maven wrapper → `app.jar` with `static/` from stage 1,
-  using Spring Boot layered jars; (3) Temurin 25 **JRE** runtime, non-root user `englms` (uid 10001), read-only root filesystem, `HEALTHCHECK` on
-  `:8081/actuator/health/liveness`.
+- `deploy/Containerfile` (multi-stage, live since T-M1.5): (1) Node 24 + pnpm (corepack) → `web/dist`; (2) Temurin 25 JDK + Maven wrapper → the jar with
+  `static/` from stage 1 (tests are not run in the build: `gate.sh` and CI run them), extracted as Spring Boot layers (`-Djarmode=tools extract --layers --launcher`);
+  (3) Temurin 25 **JRE** runtime (no JDK tools, no Node), non-root user `englms` (uid/gid 10001), app files root-owned, `HEALTHCHECK` on
+  `:8081/actuator/health/liveness` (bash `/dev/tcp`, as the JRE image has no curl/wget). It runs with a **read-only root filesystem** and a tmpfs `/tmp`.
+- Base images (fully qualified, pinned by multi-arch **index** digest; refresh deliberately, tech-stack §7):
+  `docker.io/library/node:24-slim@sha256:0e0ff40c39bc087845bfb27465a0df4ea419520094bc35842ff83dd8cbe6f9b6`,
+  `docker.io/library/eclipse-temurin:25-jdk@sha256:97014c4b396021f9ddb7d592a7dbedb0c4e4215c29e03dc01c393558aefb71c2`,
+  `docker.io/library/eclipse-temurin:25-jre@sha256:bb036ed6cfdc57e3da7c22634d15f1b840d2caf76183861c80e81ca4b5104abb` (Ubuntu 26.04, glibc; image ≈ 416 MB).
+- Build: `podman build --format docker -f deploy/Containerfile -t englms:dev .` (Podman's default OCI format drops `HEALTHCHECK`, DEC-050).
+  Run: `podman run --read-only --tmpfs /tmp --env-file .env -p 127.0.0.1:8080:8080 englms:dev` (or `--network host` against `dev-up.sh`).
+  The CI `container` workflow builds it on every PR without pushing.
 - Built in CI on tags or release branches, scanned with Trivy, pushed to `ghcr.io/<owner>/englms:<version>` (private) and referenced by digest in the Quadlet units.
 
 ## 3. Configuration (12-factor; defaults in `application.yml`, overrides via env)

@@ -124,3 +124,8 @@ any analytics or tracking script.
 | Vitest · jsdom · Testing Library (react, user-event, jest-dom) · axe-core · MSW | 5.0.1 (5.0.2 is younger than pnpm's release-age window) · 30.1.1 · 16.3.3, 14.6.7, 7.0.1 · 4.13.0 · 2.15.0 | T-M1.3 | 2026-09-25 |
 | oxlint · stylelint (+ config-standard) · Prettier | 1.85.0 · 17.15.0 (40.0.0) · 3.9.9 | T-M1.3 | 2026-09-25 |
 | actions/setup-node | v7.0.0 @ `820762786026740c76f36085b0efc47a31fe5020` | T-M1.3 | 2026-09-25 |
+| Image build: Node base | `docker.io/library/node:24-slim@sha256:0e0ff40c39bc087845bfb27465a0df4ea419520094bc35842ff83dd8cbe6f9b6` (multi-arch index; Node 24.21.0, corepack 0.36.0) | T-M1.5 | 2026-09-25 |
+| Image build: JDK base | `docker.io/library/eclipse-temurin:25-jdk@sha256:97014c4b396021f9ddb7d592a7dbedb0c4e4215c29e03dc01c393558aefb71c2` (multi-arch index; Temurin 25.0.4+7) | T-M1.5 | 2026-09-25 |
+| Image runtime: JRE base | `docker.io/library/eclipse-temurin:25-jre@sha256:bb036ed6cfdc57e3da7c22634d15f1b840d2caf76183861c80e81ca4b5104abb` (multi-arch index; Temurin 25.0.4+7 JRE, Ubuntu 26.04) | T-M1.5 | 2026-09-25 |
+| JaCoCo (`jacoco-maven-plugin`) | 0.8.15 (report in `verify`, no threshold yet; EPL-2.0) | T-M1.5 | 2026-09-25 |
+| Podman (local image build) | 5.8.6 (CI: the runner's preinstalled Podman) | T-M1.5 | 2026-09-25 |
