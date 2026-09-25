@@ -11,7 +11,7 @@
 ## M1 — Walking skeleton and delivery pipeline
 | ID | Title | Owner | Trace | Deps |
 |---|---|---|---|---|
-| **T-M1.1** | **Remote repository bootstrap and governance automation** (full packet: [T-M1.1](T-M1.1-repo-bootstrap-governance.md)) | LC | DEC-020, DEC-028, OQ-01, OQ-15 | T-M0.1 approved |
+| **T-M1.1** ✅ | **Remote repository bootstrap and governance automation** (done, `f1e3caa`) (full packet: [T-M1.1](T-M1.1-repo-bootstrap-governance.md)) | LC | DEC-020, DEC-028, OQ-01, OQ-15 | T-M0.1 approved |
 | T-M1.2 | ([packet](T-M1.2-backend-skeleton.md)) Backend skeleton via `spring init` (Boot 4.1, Java 25, Maven): Modulith, `shared` + `meta` endpoint, Flyway V1 (extensions + text-search config + Modulith event registry; the session tables move to T-M2.1, DEC-036), Actuator :8081, JSON logs, ModularityTests, ArchUnit base + forbidden-identifier scan, OpenAPI contract test, `backend` CI | BE | ADR-0001/2/3/14 | T-M1.1 |
 | T-M1.3 | Web skeleton: Vite + React + TS strict, pnpm, ESLint, Prettier, stylelint (tokens), `tokens.css`, first `ui/` primitives, i18n vi/en + completeness test, router + shells (placeholders), API client generation, Vitest + axe, bundle budget, contrast check, `/dev/ui`, `web` CI | FE | ADR-0004/13/14, DEC-029 | T-M1.1 |
 | T-M1.4 | Local stack + Testcontainers on rootless Podman: `compose.dev.yaml` (pinned postgres:18), `scripts/env.sh`, `dev-up/down`, user-level podman.socket (**PO approval: persistent user service**), Testcontainers proof or the fallback profile | BE | ADR-0012, R-07 | T-M1.2 |

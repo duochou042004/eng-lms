@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Milestone | M1 (first gated task after planning) |
-| Status | **in_review** (entry gate met 2026-09-25: DEC-032..035) |
+| Status | **done**: merged `f1e3caa` via merge-gate (PR #1), 2026-09-25 |
 | Owner role | Lead Coordinator (LC) |
 | Branch | `chore/T-M1.1-repo-governance` (from `develop`, after the baseline merge in step 1) |
 | Depends on | T-M0.1 approved by the PO |
