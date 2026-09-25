@@ -2,7 +2,7 @@ Resume Eng-LMS as Lead Coordinator in /home/kali/App_sources/Eng-LMS (private re
 
 PRODUCT: a private 1:1 teaching workspace for ONE English tutor and their students. Flexible LMS, NOT a school/centre LMS, SaaS, marketplace, booking, payment, chat, conferencing, Drive clone or AI tutor. No hard-coded TOEIC/IELTS curricula. Source of truth: docs/00-sources/ (immutable).
 
-START: read CLAUDE.md, progress.json, docs/handoff/HANDOFF.md, then docs/tasks/T-M1.5-single-image.md and the docs it lists (deployment.md §2, security.md §5, ci-cd.md, ADR-0004). Branch feature/T-M1.5-single-image (bookkeeping only so far; if develop moved: gh pr update-branch, never a local git merge). T-M1.5 needs the PO start signal: confirm it if this prompt doesn't carry it.
+START: read CLAUDE.md, progress.json, docs/handoff/HANDOFF.md, then docs/tasks/T-M1.5-single-image.md and the docs it lists (deployment.md §2, security.md §5, ci-cd.md, ADR-0004). Branch feature/T-M1.5-single-image (bookkeeping only so far; if develop moved: gh pr update-branch, never a local git merge). The PO APPROVED starting T-M1.5 (DEC-048): begin implementing immediately.
 
 STATE: M1: T-M1.1..T-M1.4 are merged (latest 294d597). Required CI: docs-check, secrets-scan, backend, web. Local stack: cp .env.example .env; ./scripts/dev-up.sh; source scripts/env.sh for Testcontainers (52/52 locally; there's a known 30 s Surefire fork kill, T-M1.8). Follow-ups: T-M1.7, T-M1.8, T-M1.9 (before M2). Dependabot PRs #6 (web check failing) and #7 need triage; don't merge #6 as is.
 

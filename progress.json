@@ -16,7 +16,7 @@
       }
     ]
   },
-  "updatedAt": "2026-09-25T13:50:08Z",
+  "updatedAt": "2026-09-25T15:00:00Z",
   "updatedBy": "lead-coordinator (session 2026-09-25 #3, Opus 5.5)",
   "phase": {
     "id": "P1",
@@ -41,11 +41,10 @@
     "startedAt": null,
     "entryGate": [
       "T-M1.2 and T-M1.3 merged — met",
-      "PO start signal for T-M1.5 — pending"
+      "PO start signal for T-M1.5 — met (DEC-048; implement in the next session)"
     ],
     "nextSteps": [
-      "PO: start signal for T-M1.5",
-      "Implement per packet; QA; merge via merge-gate"
+      "Next session: implement T-M1.5 per its packet; QA; merge via merge-gate"
     ],
     "trace": [
       "ADR-0004",
@@ -163,12 +162,12 @@
   "decisions": {
     "log": "docs/10-governance/decision-log.md",
     "recent": [
-      "DEC-042",
       "DEC-043",
       "DEC-044",
       "DEC-045",
       "DEC-046",
-      "DEC-047"
+      "DEC-047",
+      "DEC-048"
     ],
     "pendingPO": [
       "OQ-03",
@@ -241,6 +240,13 @@
       "status": "approved",
       "at": "2026-09-25T13:25:00Z",
       "ref": "DEC-046"
+    },
+    {
+      "what": "Start T-M1.5 (next session)",
+      "by": "PO",
+      "status": "approved",
+      "at": "2026-09-25T15:00:00Z",
+      "ref": "DEC-048"
     }
   ],
   "environment": {

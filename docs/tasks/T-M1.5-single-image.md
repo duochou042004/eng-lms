@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Milestone | M1 |
-| Status | **ready** (G0-complete; T-M1.2 `ae9ac5d`, T-M1.3 `8b9d938` and T-M1.4 `294d597` merged; the PO gives the start signal) |
+| Status | **ready** (G0-complete; T-M1.2 `ae9ac5d`, T-M1.3 `8b9d938` and T-M1.4 `294d597` merged; PO approved the start, DEC-048) |
 | Owner role | BE (+FE for the web build integration) |
 | Branch | `feature/T-M1.5-single-image` (from `develop`) |
 | Depends on | T-M1.2, T-M1.3 merged |
