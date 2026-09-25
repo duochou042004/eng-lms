@@ -32,11 +32,11 @@
   "currentTask": {
     "id": "T-M1.4",
     "title": "Local stack + Testcontainers on rootless Podman",
-    "status": "in_progress",
+    "status": "in_review",
     "ownerRole": "BE",
     "branch": "feature/T-M1.4-local-stack",
     "packet": "docs/tasks/T-M1.4-local-stack.md",
-    "pr": null,
+    "pr": "https://github.com/duochou042004/eng-lms/pull/8",
     "lastCommit": null,
     "startedAt": "2026-09-25T13:25:00Z",
     "entryGate": [
