@@ -1,0 +1,107 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://englms.local/schemas/progress.schema.json",
+  "title": "Eng-LMS progress state",
+  "description": "Machine-readable project state. Updated at every task status change and at session end (session-handoff-protocol.md).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "project", "updatedAt", "updatedBy", "phase", "milestone", "currentTask", "nextTask",
+               "completed", "tests", "gates", "blockers", "decisions", "risks", "approvals", "environment", "history"],
+  "$defs": {
+    "taskStatus": { "enum": ["draft", "ready", "in_progress", "in_review", "qa", "awaiting_approval", "done", "blocked", "cancelled"] },
+    "isoTime": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}(:\\d{2})?(\\.\\d+)?Z$" },
+    "taskId": { "type": "string", "pattern": "^T-M\\d+\\.\\d+$" },
+    "task": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "title", "status", "ownerRole"],
+      "properties": {
+        "id": { "$ref": "#/$defs/taskId" },
+        "title": { "type": "string", "minLength": 3 },
+        "status": { "$ref": "#/$defs/taskStatus" },
+        "ownerRole": { "enum": ["LC", "BE", "FE", "QA", "SEC", "UX", "BE+FE", "PO"] },
+        "branch": { "type": ["string", "null"] },
+        "packet": { "type": ["string", "null"] },
+        "pr": { "type": ["string", "null"] },
+        "lastCommit": { "type": ["string", "null"] },
+        "startedAt": { "oneOf": [{ "$ref": "#/$defs/isoTime" }, { "type": "null" }] },
+        "entryGate": { "type": "array", "items": { "type": "string" } },
+        "nextSteps": { "type": "array", "items": { "type": "string" } },
+        "trace": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "completedTask": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "title", "completedAt", "evidence"],
+      "properties": {
+        "id": { "$ref": "#/$defs/taskId" },
+        "title": { "type": "string" },
+        "completedAt": { "$ref": "#/$defs/isoTime" },
+        "mergeCommit": { "type": ["string", "null"] },
+        "evidence": { "type": "string" },
+        "note": { "type": "string" }
+      }
+    }
+  },
+  "properties": {
+    "schemaVersion": { "const": "1.0" },
+    "project": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "description", "repoLocal", "repoRemote", "sources"],
+      "properties": {
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "repoLocal": { "type": "string" },
+        "repoRemote": { "type": ["string", "null"] },
+        "sources": { "type": "array", "items": { "type": "object", "required": ["path", "sha256"], "properties": { "path": { "type": "string" }, "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" } }, "additionalProperties": false } }
+      }
+    },
+    "updatedAt": { "$ref": "#/$defs/isoTime" },
+    "updatedBy": { "type": "string" },
+    "phase": {
+      "type": "object", "additionalProperties": false, "required": ["id", "name", "status"],
+      "properties": { "id": { "pattern": "^P[0-4]$", "type": "string" }, "name": { "type": "string" }, "status": { "enum": ["not_started", "in_progress", "in_review", "awaiting_approval", "done"] } }
+    },
+    "milestone": {
+      "type": "object", "additionalProperties": false, "required": ["id", "name", "status", "exitCriteria"],
+      "properties": { "id": { "type": "string", "pattern": "^M\\d+$" }, "name": { "type": "string" }, "status": { "enum": ["not_started", "in_progress", "in_review", "awaiting_approval", "done"] }, "exitCriteria": { "type": "string" } }
+    },
+    "currentTask": { "oneOf": [{ "$ref": "#/$defs/task" }, { "type": "null" }] },
+    "nextTask": { "oneOf": [{ "$ref": "#/$defs/task" }, { "type": "null" }] },
+    "completed": { "type": "array", "items": { "$ref": "#/$defs/completedTask" } },
+    "tests": {
+      "type": "object", "additionalProperties": false, "required": ["lastRun", "summary", "suites"],
+      "properties": {
+        "lastRun": { "oneOf": [{ "$ref": "#/$defs/isoTime" }, { "type": "null" }] },
+        "summary": { "type": "string" },
+        "suites": { "type": "array", "items": { "type": "object", "required": ["name", "result"], "additionalProperties": false,
+          "properties": { "name": { "type": "string" }, "result": { "enum": ["pass", "fail", "not_run", "n/a"] }, "details": { "type": "string" }, "evidence": { "type": "string" } } } }
+      }
+    },
+    "gates": {
+      "type": "object", "additionalProperties": false,
+      "patternProperties": { "^G[0-6]$": { "type": "object", "required": ["status"], "additionalProperties": false,
+        "properties": { "status": { "enum": ["n/a", "pending", "pass", "fail"] }, "note": { "type": "string" } } } }
+    },
+    "blockers": { "type": "array", "items": { "type": "object", "required": ["id", "description", "owner"], "additionalProperties": false,
+      "properties": { "id": { "type": "string" }, "description": { "type": "string" }, "owner": { "type": "string" }, "since": { "type": "string" } } } },
+    "decisions": {
+      "type": "object", "additionalProperties": false, "required": ["log", "recent", "pendingPO"],
+      "properties": { "log": { "type": "string" }, "recent": { "type": "array", "items": { "type": "string", "pattern": "^DEC-\\d{3}$" } },
+        "pendingPO": { "type": "array", "items": { "type": "string", "pattern": "^(OQ-\\d{2}|DEC-\\d{3})$" } } }
+    },
+    "risks": {
+      "type": "object", "additionalProperties": false, "required": ["register", "top"],
+      "properties": { "register": { "type": "string" }, "top": { "type": "array", "items": { "type": "string", "pattern": "^R-\\d{2}$" } } }
+    },
+    "approvals": { "type": "array", "items": { "type": "object", "required": ["what", "by", "status"], "additionalProperties": false,
+      "properties": { "what": { "type": "string" }, "by": { "enum": ["PO", "LC", "QA", "SEC", "UX"] }, "status": { "enum": ["pending", "approved", "rejected"] }, "at": { "type": ["string", "null"] }, "ref": { "type": "string" } } } },
+    "environment": {
+      "type": "object", "additionalProperties": { "type": "string" }
+    },
+    "history": { "type": "array", "minItems": 1, "items": { "type": "object", "required": ["at", "actor", "event"], "additionalProperties": false,
+      "properties": { "at": { "$ref": "#/$defs/isoTime" }, "actor": { "type": "string" }, "event": { "type": "string" } } } }
+  }
+}
