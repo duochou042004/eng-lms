@@ -16,7 +16,7 @@
       }
     ]
   },
-  "updatedAt": "2026-09-25T07:39:31Z",
+  "updatedAt": "2026-09-25T08:02:01Z",
   "updatedBy": "lead-coordinator (session 2026-09-25, Opus 5.5)",
   "phase": {
     "id": "P1",
@@ -40,11 +40,13 @@
     "lastCommit": null,
     "startedAt": null,
     "entryGate": [
-      "T-M1.1 merged — met (f1e3caa)"
+      "T-M1.1 merged — met (f1e3caa)",
+      "PO approved start of T-M1.2 (DEC-039), in the next session"
     ],
     "nextSteps": [
-      "Implement per docs/tasks/T-M1.2-backend-skeleton.md as backend-implementer",
-      "Open PR, independent QA-VERDICT, LC merge via merge-gate"
+      "Next session: implement T-M1.2 per its packet (backend-implementer role)",
+      "Open PR; independent QA-VERDICT (fresh-context agent); LC merge via scripts/merge-gate.sh run from a develop checkout",
+      "Then write the T-M1.3 packet (OQ-02 answered: vi default + en)"
     ],
     "trace": [
       "ADR-0001",
@@ -64,8 +66,8 @@
     "lastCommit": null,
     "startedAt": null,
     "entryGate": [
-      "T-M1.1 merged",
-      "OQ-02 (UI default language) answered or default accepted"
+      "T-M1.2 merged",
+      "OQ-02 answered — met (DEC-039)"
     ],
     "nextSteps": [],
     "trace": [
@@ -158,15 +160,14 @@
   "decisions": {
     "log": "docs/10-governance/decision-log.md",
     "recent": [
-      "DEC-033",
       "DEC-034",
       "DEC-035",
       "DEC-036",
       "DEC-037",
-      "DEC-038"
+      "DEC-038",
+      "DEC-039"
     ],
     "pendingPO": [
-      "OQ-02",
       "OQ-03",
       "OQ-04",
       "OQ-05",
@@ -283,6 +284,11 @@
       "at": "2026-09-25T07:39:31Z",
       "actor": "lead-coordinator",
       "event": "PR #1 merged via merge-gate (f1e3caa, 2026-09-25T07:38:06Z); develop CI green (docs-check 36108643040, secrets-scan 36108643020). T-M1.1 done. T-M1.2 ready on feature/T-M1.2-backend-skeleton (not started)."
+    },
+    {
+      "at": "2026-09-25T08:02:01Z",
+      "actor": "PO",
+      "event": "PO: go ahead with T-M1.2 in the NEXT session; OQ-02 = default (DEC-039). Session closed for context size; goal-mode handoff prompt written to docs/handoff/next-session-prompt.md."
     }
   ]
 }

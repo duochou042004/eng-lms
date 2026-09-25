@@ -14,11 +14,11 @@ Nothing. This branch only has the post-merge bookkeeping commit.
 
 ## Next steps
 1. Execute T-M1.2 on this branch (backend-implementer role; the packet has the `spring init` command and AC1–AC9). Then open a PR, get an independent QA-VERDICT, and have the LC merge through merge-gate (run from `develop`).
-2. Write the T-M1.3 packet. OQ-02 (default UI language) is needed first; the default is vi + en.
+2. Write the T-M1.3 packet (OQ-02 answered: vi default + en, DEC-039).
 3. Ask the PO to approve enabling the user-level `podman.socket` (T-M1.4). Schedule T-M1.7 (merge-gate hardening) early in M1.
 
 ## Pending PO decisions
-OQ-02..OQ-14 (defaults documented). T-M1.4 needs approval for the persistent user service.
+OQ-02 is ANSWERED (vi default + en, DEC-039). The PO approved starting T-M1.2 in the next session. OQ-03..OQ-14 are still open (defaults documented). T-M1.4 needs approval for the persistent user service.
 
 ## Gotchas
 - Run `./scripts/install-hooks.sh` per clone. Never push `develop` or `master` directly. Agents can't run `git merge` or `gh pr merge`: use `gh pr update-branch <n>` to catch up (then re-post the verdicts).

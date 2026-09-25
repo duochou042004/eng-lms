@@ -1,13 +1,13 @@
 # Open Questions — Product Owner decisions needed
 
-> **Answered:** OQ-01 (DEC-033), OQ-15 (DEC-034). The others are still open, with their defaults.
+> **Answered:** OQ-01 (DEC-033), OQ-02 (DEC-039), OQ-15 (DEC-034). The others are still open, with their defaults.
 > Every question has a **recommended default**. If the PO does not answer, the default is used once the planning baseline is approved,
 > and it is recorded as a DEC entry. The "Needed by" column is the latest point at which the answer changes the work.
 
 | ID | Question | Options | Recommended default | Needed by | Blocks |
 |---|---|---|---|---|---|
 | **OQ-01** | GitHub repository: name and visibility? | (a) private `eng-lms` (free plan, branch protection enforced by the harness scripts) · (b) public · (c) private on a Pro plan (real branch protection) | **ANSWERED: default (a)** `duochou042004/eng-lms`, private (DEC-033) | T-M1.1 | — |
-| OQ-02 | Default UI language, and are both vi and en needed in the MVP? | vi default + en · vi only · en only | **vi default + en available** (i18n from M1) | T-M1.3 | copy work from M2 |
+| OQ-02 | Default UI language, and are both vi and en needed in the MVP? | vi default + en · vi only · en only | **ANSWERED: vi default + en** (DEC-039) | T-M1.3 | — |
 | OQ-03 | Hosting target, domain and off-site backup location? | VPS (region SG/VN) · home server · PaaS; backup target: second VPS, object storage, the tutor's cloud drive | **Small VPS in Singapore + object-storage backups** | M8 (and T-M8.x) | deployment |
 | OQ-04 | Learning plan templates: keep them in Phase 2, or add a minimal version (create from template, save as template) in Release 1.1? | P2 as in the SPEC · Release 1.1 · MVP | **Release 1.1** (right after 1.0) | End of M7 | — |
 | OQ-05 | Confirm the MVP question types (8 types; matching and ordering in P2) | as proposed · add matching/ordering to the MVP | **As proposed** | M6 | M6 scope |
