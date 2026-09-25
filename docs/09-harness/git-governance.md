@@ -59,5 +59,7 @@ deploy. Tags are never moved or deleted.
 ## 7. Repository bootstrap state (T-M0.1)
 
 The local repository was initialised on 2026-09-25 with `master` (initial commit: sources + hygiene files), `develop` (from master) and
-`docs/T-M0.1-planning-baseline` (this baseline). **There is no remote yet.** Creating the GitHub repository, pushing and configuring protection is the
-first gated task **T-M1.1**, pending PO approval and OQ-01.
+`docs/T-M0.1-planning-baseline`. After `PO-APPROVED T-M0.1` (DEC-032), the baseline was merged into `develop` with `--no-ff` as a one-time bootstrap
+(DEC-030, merge `a14caae`). The remote **https://github.com/duochou042004/eng-lms** (private, DEC-033) was then created, with default branch `develop`, merge commits only
+and delete-on-merge. Branch protection is unavailable on this plan, so the harness enforces the rules (DEC-031, ci-cd.md §2).
+Every clone must run `./scripts/install-hooks.sh`.

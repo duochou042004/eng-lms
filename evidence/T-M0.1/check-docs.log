@@ -1,0 +1,8 @@
+# check-docs log — T-M0.1 — 2026-09-25T06:27:48Z
+$ ./scripts/check-docs.sh
+docs-check: PASS (90 markdown files, progress.json valid, sources intact, prompt within limit)
+exit=0
+
+# negative test (scratch copy with 5 injected fault types) — expected FAIL with 8 problems
+faults: broken link, undefined OQ/DEC/FR refs, invalid progress.json (bad enum + missing history), tampered source, 4001-char prompt
+observed: docs-check: FAIL (8 problem(s)) exit=1 — all injected faults detected

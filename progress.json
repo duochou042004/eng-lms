@@ -4,7 +4,7 @@
     "name": "Eng-LMS",
     "description": "Private 1:1 teaching workspace for a single English tutor and their students (flexible LMS; not a school/centre LMS, SaaS, marketplace, booking, payment, chat, conferencing, Drive clone or AI tutor).",
     "repoLocal": "/home/kali/App_sources/Eng-LMS",
-    "repoRemote": null,
+    "repoRemote": "https://github.com/duochou042004/eng-lms",
     "sources": [
       {
         "path": "docs/00-sources/personal_english_tutor_teaching_workspace_spec.md",
@@ -16,58 +16,37 @@
       }
     ]
   },
-  "updatedAt": "2026-09-25T07:03:04Z",
+  "updatedAt": "2026-09-25T07:09:34Z",
   "updatedBy": "lead-coordinator (session 2026-09-25, Opus 5.5)",
   "phase": {
-    "id": "P0",
-    "name": "Planning & Harness",
-    "status": "awaiting_approval"
+    "id": "P1",
+    "name": "Foundation",
+    "status": "in_progress"
   },
   "milestone": {
-    "id": "M0",
-    "name": "Documentation baseline and harness",
-    "status": "awaiting_approval",
-    "exitCriteria": "All docs in docs/README.md exist with valid links; progress.json validates; PO approves the baseline and answers or accepts the defaults for OQ-01..OQ-15 (docs/01-product/roadmap.md)."
+    "id": "M1",
+    "name": "Walking skeleton and delivery pipeline",
+    "status": "in_progress",
+    "exitCriteria": "scripts/gate.sh green locally and in CI; backend skeleton with Modulith verify + Flyway V1; SPA served same-origin; Playwright smoke at 3 viewports with axe; contract drift check; Testcontainers on rootless Podman or documented fallback (docs/01-product/roadmap.md)."
   },
   "currentTask": {
-    "id": "T-M0.1",
-    "title": "Planning baseline: docs system, ADRs, harness, progress.json",
-    "status": "awaiting_approval",
-    "ownerRole": "LC",
-    "branch": "docs/T-M0.1-planning-baseline",
-    "packet": "docs/tasks/backlog.md#m0--planning-baseline-p0",
-    "pr": null,
-    "lastCommit": "fa12051",
-    "startedAt": "2026-09-25T05:30:00Z",
-    "entryGate": [],
-    "nextSteps": [
-      "PO reviews docs/README.md reading path and docs/10-governance/open-questions.md",
-      "PO records PO-APPROVED T-M0.1 (or requests changes) and answers or accepts the defaults for OQ-01, OQ-15 (needed for T-M1.1)",
-      "LC performs the bootstrap merge into develop (DEC-030) and starts T-M1.1"
-    ],
-    "trace": [
-      "PO goal 2026-09-25",
-      "SPEC §52",
-      "SPEC §60"
-    ]
-  },
-  "nextTask": {
     "id": "T-M1.1",
     "title": "Remote repository bootstrap and governance automation",
-    "status": "ready",
+    "status": "in_review",
     "ownerRole": "LC",
     "branch": "chore/T-M1.1-repo-governance",
     "packet": "docs/tasks/T-M1.1-repo-bootstrap-governance.md",
     "pr": null,
     "lastCommit": null,
-    "startedAt": null,
-    "entryGate": [
-      "PO-APPROVED T-M0.1 recorded in the decision log — met",
-      "OQ-01 answered (repo name/visibility) or default accepted — met",
-      "OQ-15 answered (activate .claude/settings.json) — met",
-      "PO authorises the outward-facing actions: gh repo create + push — met"
+    "startedAt": "2026-09-25T07:09:34Z",
+    "entryGate": [],
+    "nextSteps": [
+      "CI green on PR #1 (docs-check, secrets-scan)",
+      "Fresh-context docs review -> DOCS-REVIEW T-M1.1",
+      "LC-APPROVED T-M1.1 comment",
+      "./scripts/merge-gate.sh --dry-run <pr> then ./scripts/merge-gate.sh <pr>",
+      "Post-merge: record merge commit on feature/T-M1.2-backend-skeleton"
     ],
-    "nextSteps": [],
     "trace": [
       "DEC-020",
       "DEC-028",
@@ -77,12 +56,43 @@
       "DEC-032",
       "DEC-033",
       "DEC-034",
-      "DEC-035"
+      "DEC-035",
+      "DEC-031"
     ]
   },
-  "completed": [],
+  "nextTask": {
+    "id": "T-M1.2",
+    "title": "Backend skeleton via Spring Boot CLI",
+    "status": "ready",
+    "ownerRole": "BE",
+    "branch": "feature/T-M1.2-backend-skeleton",
+    "packet": "docs/tasks/T-M1.2-backend-skeleton.md",
+    "pr": null,
+    "lastCommit": null,
+    "startedAt": null,
+    "entryGate": [
+      "T-M1.1 merged"
+    ],
+    "nextSteps": [],
+    "trace": [
+      "ADR-0001",
+      "ADR-0002",
+      "ADR-0003",
+      "ADR-0014"
+    ]
+  },
+  "completed": [
+    {
+      "id": "T-M0.1",
+      "title": "Planning baseline: docs system, ADRs, harness, progress.json",
+      "completedAt": "2026-09-25T07:09:34Z",
+      "mergeCommit": "a14caae",
+      "evidence": "evidence/T-M0.1/summary.md",
+      "note": "PO-APPROVED (DEC-032); bootstrap --no-ff merge (DEC-030)"
+    }
+  ],
   "tests": {
-    "lastRun": "2026-09-25T06:28:06Z",
+    "lastRun": "2026-09-25T07:09:34Z",
     "summary": "No product code exists (by design). Planning checks: scripts/check-docs.sh (links, progress schema, handoff prompt length).",
     "suites": [
       {
@@ -90,6 +100,18 @@
         "result": "pass",
         "details": "90 markdown files; progress.json valid; sources intact; prompt 2428/4000 chars. Negative test: 5 injected fault types -> 8 problems detected (exit 1).",
         "evidence": "evidence/T-M0.1/check-docs.log"
+      },
+      {
+        "name": "governance script tests (scripts/tests/run-all.sh)",
+        "result": "pass",
+        "details": "34/34: merge-gate 19, path-ownership 8, pre-push 7; mutation check caught 2/2 disabled rules",
+        "evidence": "evidence/T-M1.1/script-tests.log"
+      },
+      {
+        "name": "secrets-scan (gitleaks 8.30.1, local)",
+        "result": "pass",
+        "details": "history (5 commits) + working tree: no leaks",
+        "evidence": "evidence/T-M1.1/summary.md"
       },
       {
         "name": "backend",
@@ -111,23 +133,23 @@
   "gates": {
     "G0": {
       "status": "pass",
-      "note": "T-M0.1 was defined by the PO goal directly"
+      "note": "T-M1.1 entry gate met (DEC-032..035)"
     },
     "G1": {
       "status": "pass",
-      "note": "scripts/check-docs.sh PASS at fa12051 (evidence/T-M0.1/check-docs.log)"
+      "note": "check-docs + script tests PASS locally"
     },
     "G2": {
-      "status": "n/a",
-      "note": "No remote/CI yet (DEC-028); bootstrap exception DEC-030"
+      "status": "pending",
+      "note": "PR #1 CI"
     },
     "G3": {
-      "status": "pass",
-      "note": "PO-APPROVED T-M0.1 (DEC-032) satisfies G3 for the planning baseline"
+      "status": "pending",
+      "note": "DOCS-REVIEW T-M1.1 (fresh context)"
     },
     "G4": {
       "status": "pending",
-      "note": "Bootstrap --no-ff merge into develop after PO approval"
+      "note": "merge-gate.sh"
     }
   },
   "blockers": [],
@@ -184,6 +206,13 @@
       "status": "approved",
       "at": "2026-09-25T07:03:04Z",
       "ref": "DEC-033"
+    },
+    {
+      "what": "README refresh added to T-M1.1 scope",
+      "by": "PO",
+      "status": "approved",
+      "at": "2026-09-25T07:09:34Z",
+      "ref": "DEC-035"
     }
   ],
   "environment": {
@@ -227,6 +256,11 @@
       "at": "2026-09-25T07:03:04Z",
       "actor": "PO",
       "event": "PO-APPROVED T-M0.1; OQ-01 and OQ-15 set to their defaults; README refresh requested (DEC-032..035). T-M1.1 is ready."
+    },
+    {
+      "at": "2026-09-25T07:09:34Z",
+      "actor": "lead-coordinator",
+      "event": "Bootstrap merge a14caae; private repo duochou042004/eng-lms created, master+develop pushed; branch protection 403 -> DEC-031 harness fallback; T-M1.1 implemented (CI workflows, merge gate, hooks, path ownership, settings, README); PR #1 opening."
     }
   ]
 }

@@ -1,0 +1,8 @@
+*   a14caae Merge T-M0.1 planning baseline into develop (bootstrap, DEC-030)
+|\  
+| * 115e1ae docs(governance): record PO approval of T-M0.1 and OQ-01/OQ-15 answers
+| * a843e3d docs(progress): fix checker script reference
+| * 4c69690 docs(progress): record T-M0.1 baseline commit and docs-gate result
+| * fa12051 docs: planning baseline, architecture, harness and progress state
+|/  
+* bbef1f2 chore: initialize repository with immutable product source documents

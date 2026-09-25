@@ -1,0 +1,41 @@
+merge-gate.sh
+  ok   - passes when all gates hold (dry run)
+  ok   - dry run does not merge
+  ok   - merges with a merge commit when not dry run
+  ok   - uses --merge --delete-branch
+  ok   - (a) refuses when a required check fails
+  ok   - reports the failing check
+  ok   - (a) refuses when a required check is pending
+  ok   - (a) refuses when a required check is missing
+  ok   - (b) refuses without LC-APPROVED
+  ok   - reports missing LC approval
+  ok   - (c) refuses a chore PR without DOCS-REVIEW PASS
+  ok   - (c) refuses a feature PR whose latest QA verdict is FAIL
+  ok   - (c) refuses when the latest SEC-REVIEW requests changes
+  ok   - accepts a feature PR with QA PASS WITH MINOR
+  ok   - (d) refuses when the branch is behind its base
+  ok   - reports how far behind
+  ok   - refuses on merge conflicts
+  ok   - refuses when progress.json is not updated
+  ok   - refuses a branch without a task id
+  -> 19 passed, 0 failed
+check-path-ownership.sh
+  ok   - qa/ branch touching backend/ fails
+  ok   - qa/ branch touching qa/ and qa evidence passes
+  ok   - feature/ branch touching qa/ fails
+  ok   - feature/ branch writing reviewer evidence fails
+  ok   - feature/ branch with backend, web, impl evidence passes
+  ok   - any branch touching docs/00-sources fails
+  ok   - chore/ branch with docs and scripts passes
+  ok   - unknown branch kind fails
+  -> 8 passed, 0 failed
+pre-push hook
+  ok   - blocks a direct push to develop
+  ok   - explains the develop block
+  ok   - blocks a direct push to master
+  ok   - allows pushing a feature branch
+  ok   - blocks a force push that rewrites history
+  ok   - explains the force-push block
+  ok   - allows a normal fast-forward push
+  -> 7 passed, 0 failed
+script tests: PASS

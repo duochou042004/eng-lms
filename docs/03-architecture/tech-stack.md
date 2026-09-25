@@ -16,7 +16,7 @@
 | pnpm / corepack | pnpm 12.6.0, corepack 0.36.0 | Version pinned in `web/package.json#packageManager` |
 | Podman | **5.8.6**, rootless; podman-compose 1.6.0 | The user socket is **disabled**. Testcontainers needs `systemctl --user enable --now podman.socket` (T-M1.4) |
 | Registries | no unqualified search registries | Always use fully qualified images (`docker.io/library/postgres:18`) |
-| GitHub CLI | 2.101.0, authenticated (scopes: repo, workflow) | Remote repo not created yet (OQ-01) |
+| GitHub CLI | 2.101.0, authenticated (scopes: repo, workflow) | Remote: `duochou042004/eng-lms` (private; created in T-M1.1) |
 | PostgreSQL client | `psql` present | |
 | Host | 16 cores, 22 GB RAM, 92 GB free | |
 
@@ -75,7 +75,7 @@
 | Production | **Quadlet** systemd units (app, db, caddy) on one host (ADR-0012) | systemd restarts, logs and auto-update; no orchestrator |
 | TLS / proxy | **Caddy** | Automatic HTTPS with minimal configuration |
 | CI | **GitHub Actions** | gh is available; free for this scale |
-| Security scanning | gitleaks (secrets), Dependabot (dependencies), Trivy (image, release gate), `pnpm audit` | NFR-SEC-12/13 |
+| Security scanning | gitleaks CLI (secrets; MIT, checksum-pinned, not the EULA-licensed action), Dependabot (dependencies), Trivy (image, release gate), `pnpm audit` | NFR-SEC-12/13 |
 | Backups | `pg_dump` + file-volume archive, encrypted off-site copy. The tool (restic vs. plain `age` + rsync) is decided in M8 (OQ-03) | NFR-OPS-02 |
 
 ## 5. Explicitly NOT used (without a new ADR backed by evidence)
@@ -97,6 +97,10 @@ any analytics or tracking script.
 |---|---|---|---|
 | JDK | 25.0.4-tem | T-M0.1 (env) | 2026-09-25 |
 | Node.js | 24.21.0 | T-M0.1 (env) | 2026-09-25 |
+| actions/checkout | v7.0.1 @ `3d3c42e5aac5ba805825da76410c181273ba90b1` | T-M1.1 | 2026-09-25 |
+| actions/setup-python | v7.0.0 @ `5fda3b95a4ea91299a34e894583c3862153e4b97` | T-M1.1 | 2026-09-25 |
+| gitleaks CLI (MIT) | 8.30.1, linux_x64 sha256 `551f6fc8…2470eb` | T-M1.1 | 2026-09-25 |
+| jsonschema (Python, CI docs gate) | 4.26.0 | T-M1.1 | 2026-09-25 |
 | Spring Boot | *(4.1.x at scaffold)* | T-M1.2 | — |
 | PostgreSQL image | *(18.x digest)* | T-M1.4 | — |
 | React / Vite / TS | *(at scaffold)* | T-M1.3 | — |

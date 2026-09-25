@@ -1,34 +1,30 @@
-# Handoff — 2026-09-25 (end of the planning session)
+# Handoff — 2026-09-25 (T-M1.1 in review)
 
-Phase/Milestone: P0 / M0 · Task: **T-M0.1 (awaiting_approval)** · Branch: `docs/T-M0.1-planning-baseline` · Last commit: see `progress.json`
+Phase/Milestone: P1 / M1 · Task: **T-M1.1 (in_review)** · Branch: `chore/T-M1.1-repo-governance` · Remote: https://github.com/duochou042004/eng-lms (private)
 
 ## Where we are
-- Both project specs were read in full. SPEC = the source of truth (immutable, in `docs/00-sources/`). CONV = context only.
-- The complete documentation baseline exists (see `docs/README.md`): scope, 60+ FRs with ACs, NFRs, traceability, architecture + 16 ADRs, backend, frontend and security specs, quality gates,
-  operations, plugin-store spec, harness (roles, skills, rules, handoff), governance (30 decisions, 20 risks, 15 open questions).
-- There is a local git repo with `master` → `develop` → this docs branch. **No remote** (outward-facing; needs PO approval).
-- **No product code has been written, by design.**
+- **PO-APPROVED T-M0.1** (DEC-032). The baseline is merged into `develop` (`a14caae`, a one-time bootstrap `--no-ff`, DEC-030). OQ-01 and OQ-15 use their defaults (DEC-033, DEC-034).
+- The private repo exists with default branch `develop` and merge commits only. **Branch protection is unavailable** (403, free plan) → harness enforcement (DEC-031).
+- T-M1.1 is implemented: `docs-check` + `secrets-scan` workflows, `merge-gate.sh`, `check-path-ownership.sh`, the pre-push hook, 34 script tests, `.claude/settings.json`,
+  and the README redesign (DEC-035). PR #1 is open (see `progress.json`).
+- The T-M1.2 packet (backend skeleton) is written and `ready`.
 
-## In flight / uncommitted
-None (everything is committed on the docs branch).
+## In flight
+PR #1: waiting on CI, then DOCS-REVIEW, then LC-APPROVED, then `./scripts/merge-gate.sh <pr>`.
 
 ## Next steps (in order)
-1. **PO:** review the baseline (reading path in `docs/README.md`). Answer or accept the defaults for `docs/10-governance/open-questions.md`. Minimum for proceeding: **OQ-01, OQ-15**.
-2. **PO:** record `PO-APPROVED T-M0.1` and authorise T-M1.1's outward actions (`gh repo create`, push).
-3. **LC:** optionally run the `docs-reviewer` subagent → `evidence/T-M0.1/review/docs.md`.
-4. **LC:** the bootstrap merge into `develop` (DEC-030), then execute **T-M1.1** (`docs/tasks/T-M1.1-repo-bootstrap-governance.md`).
-5. **LC:** write the T-M1.2 packet (backend skeleton via `spring init`) and set it to ready.
+1. Finish PR #1 via merge-gate. Record the merge commit and CI run URLs (evidence/T-M1.1/summary.md "CI"; progress.json completed[]).
+2. `git checkout develop && git pull && git checkout -b feature/T-M1.2-backend-skeleton` → execute T-M1.2 as BE (backend-implementer).
+3. Ask the PO about T-M1.4's persistent user service (`systemctl --user enable --now podman.socket`) before that task starts.
 
 ## Blockers and pending PO decisions
-B-001 (baseline approval), B-002 (remote creation). OQ-01..OQ-15 (defaults documented). DEC-010, DEC-029 and DEC-030 are proposed.
+None blocking. OQ-02..OQ-14 are open, with defaults (needed from M1.3 onwards: OQ-02 language).
 
-## Gotchas learned this session
-- The working directory path is `/home/kali/App_sources/Eng-LMS` (underscore, not a slash).
-- Non-interactive shells: `source ~/.sdkman/bin/sdkman-init.sh` and `source ~/.nvm/nvm.sh`. Node is not on the default PATH.
-- There is no global Maven or Gradle: use the wrapper. Podman is rootless, and its user socket is **disabled** (Testcontainers needs it; T-M1.4).
-- Podman has no unqualified-search registries: always use full image names.
-- Initializr defaults to Boot 4.1.1 and offers Java 25 (and 27). Use 25 (PO directive; LTS).
-- Branch protection may be unavailable on a private free-plan repo (R-08). The harness fallback is designed (ci-cd.md §2).
+## Gotchas
+- Run `./scripts/install-hooks.sh` in every clone. **Never** push `develop` or `master` directly. Merge only through `merge-gate.sh` (`gh pr merge` is denied for agents).
+- `.claude/settings.json` is active: it denies force pushes, direct pushes, `gh pr merge` and `sudo`.
+- zsh globbing: quote `gh api 'repos/...?ref=x'` URLs that contain `?`.
+- Private-repo Actions badges render only for signed-in collaborators.
 
 ## Files to read first
-`CLAUDE.md` → `progress.json` → this file → `docs/tasks/T-M1.1-repo-bootstrap-governance.md` → `docs/10-governance/open-questions.md`.
+`CLAUDE.md` → `progress.json` → this file → `docs/tasks/T-M1.2-backend-skeleton.md`.

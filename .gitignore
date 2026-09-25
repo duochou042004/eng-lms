@@ -29,6 +29,7 @@ web/blob-report/
 .data/
 storage/
 *.log
+!evidence/**/*.log
 .env
 .env.*
 !.env.example
