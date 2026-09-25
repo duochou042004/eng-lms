@@ -212,7 +212,7 @@
     "podman": "5.8.6 rootless + podman-compose 1.6.0; user podman.socket disabled (needed for Testcontainers, T-M1.4)",
     "gh": "2.101.0, authenticated as duochou042004 (scopes: repo, workflow, read:org, gist)",
     "host": "Kali Linux 7.1.5, 16 cores, 22 GB RAM, 92 GB free",
-    "python": "3.14.7 with jsonschema 4.26.0 (used by scripts/validate_progress.py)"
+    "python": "3.14.7 with jsonschema 4.26.0 (used by scripts/check_docs.py)"
   },
   "history": [
     {
