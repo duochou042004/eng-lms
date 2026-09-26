@@ -32,7 +32,7 @@
   "currentTask": {
     "id": "T-M1.6",
     "title": "E2E harness: Playwright (6 viewports), helpers, smoke, e2e-smoke CI; /qa skeleton",
-    "status": "qa",
+    "status": "awaiting_approval",
     "ownerRole": "FE",
     "branch": "feature/T-M1.6-e2e-harness",
     "packet": "docs/tasks/T-M1.6-e2e-harness.md",
@@ -44,8 +44,8 @@
       "PO start signal for T-M1.6 — met (DEC-056)"
     ],
     "nextSteps": [
-      "QA round 1 FAIL (F1 S2 overflow guard blind under isMobile) fixed (DEC-058); CI green on the fix head; QA re-test via SendMessage",
-      "QA-VERDICT + LC-APPROVED; merge-gate; then qa/T-M1.6 (skeleton + report)"
+      "QA round 2 PASS WITH MINOR at e321675 (DEC-059)",
+      "CI green on the final head; QA-VERDICT + LC-APPROVED; merge-gate #12; then the qa/T-M1.6 PR (skeleton + report)"
     ],
     "trace": [
       "NFR-RESP-01",
@@ -55,7 +55,8 @@
       "DEC-053",
       "DEC-056",
       "DEC-057",
-      "DEC-058"
+      "DEC-058",
+      "DEC-059"
     ]
   },
   "nextTask": {
@@ -164,12 +165,12 @@
       "note": "gate.sh 12 steps PASS (evidence/T-M1.6/gate-20260926T025016Z.log)"
     },
     "G2": {
-      "status": "pending",
-      "note": "T-M1.6 not started"
+      "status": "pass",
+      "note": "PR #12 CI green (7 checks incl. e2e-smoke)"
     },
     "G3": {
-      "status": "pending",
-      "note": "QA-VERDICT required"
+      "status": "pass",
+      "note": "QA round 2 PASS WITH MINOR (round 1 FAIL F1 fixed, DEC-058)"
     },
     "G4": {
       "status": "pending",
@@ -180,12 +181,12 @@
   "decisions": {
     "log": "docs/10-governance/decision-log.md",
     "recent": [
-      "DEC-053",
       "DEC-054",
       "DEC-055",
       "DEC-056",
       "DEC-057",
-      "DEC-058"
+      "DEC-058",
+      "DEC-059"
     ],
     "pendingPO": [
       "OQ-03",
