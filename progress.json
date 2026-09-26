@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-09-26T00:00:00Z",
-  "updatedBy": "lead-coordinator (session 2026-09-25 #4, Opus 5.5)",
+  "updatedAt": "2026-09-26T00:25:00Z",
+  "updatedBy": "lead-coordinator (session 2026-09-25/26 #4, Opus 5.5)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -30,56 +30,49 @@
     "exitCriteria": "scripts/gate.sh green locally and in CI; backend skeleton with Modulith verify + Flyway V1; SPA served same-origin; Playwright smoke at 3 viewports with axe; contract drift check; Testcontainers on rootless Podman or documented fallback (docs/01-product/roadmap.md)."
   },
   "currentTask": {
-    "id": "T-M1.5",
-    "title": "Single image + same-origin SPA serving, gate.sh, contract-drift CI",
-    "status": "awaiting_approval",
-    "ownerRole": "BE",
-    "branch": "feature/T-M1.5-single-image",
-    "packet": "docs/tasks/T-M1.5-single-image.md",
-    "pr": "https://github.com/duochou042004/eng-lms/pull/10",
+    "id": "T-M1.6",
+    "title": "E2E harness: Playwright (6 viewports), helpers, smoke, e2e-smoke CI; /qa skeleton",
+    "status": "ready",
+    "ownerRole": "FE",
+    "branch": "feature/T-M1.6-e2e-harness",
+    "packet": "docs/tasks/T-M1.6-e2e-harness.md",
+    "pr": null,
     "lastCommit": null,
-    "startedAt": "2026-09-25T14:15:00Z",
+    "startedAt": null,
     "entryGate": [
-      "T-M1.2 and T-M1.3 merged — met",
-      "PO start signal for T-M1.5 — met (DEC-048)"
+      "T-M1.5 merged — met (a96dcf7)",
+      "PO start signal for T-M1.6 — pending"
     ],
     "nextSteps": [
-      "QA round 2 PASS WITH MINOR at 72da8a9 (DEC-055: R2-1/R2-3 → T-M1.8, R2-2 amended)",
-      "CI green on the final head; post QA-VERDICT + LC-APPROVED; merge via scripts/merge-gate.sh (--dry-run first)",
-      "commit the QA report on qa/T-M1.5"
+      "Ask the PO for the T-M1.6 start signal",
+      "Then implement per the packet; QA; merge via merge-gate"
     ],
     "trace": [
-      "ADR-0004",
-      "ADR-0012",
-      "ADR-0014",
-      "NFR-SEC-08",
-      "OQ-16",
-      "DEC-049",
-      "DEC-050",
-      "DEC-051",
+      "NFR-RESP-01",
+      "qa-protocol",
+      "ci-cd §1",
       "DEC-052",
-      "DEC-053",
-      "DEC-054",
-      "DEC-055"
+      "DEC-053"
     ]
   },
   "nextTask": {
-    "id": "T-M1.6",
-    "title": "E2E harness: Playwright (6 viewports), helpers, smoke, e2e-smoke CI; /qa skeleton",
+    "id": "T-M1.7",
+    "title": "Merge-gate hardening (push-time freshness, negative verdicts, dependabot rules)",
     "status": "draft",
-    "ownerRole": "FE",
-    "branch": "feature/T-M1.6-e2e-harness",
+    "ownerRole": "LC",
+    "branch": "chore/T-M1.7-merge-gate-hardening",
     "packet": "docs/tasks/backlog.md#m1--walking-skeleton-and-delivery-pipeline",
     "pr": null,
     "lastCommit": null,
     "startedAt": null,
     "entryGate": [
-      "T-M1.5 merged"
+      "T-M1.6 merged"
     ],
     "nextSteps": [],
     "trace": [
-      "NFR-RESP-01",
-      "qa-protocol"
+      "DEC-037",
+      "DEC-038",
+      "R-08"
     ]
   },
   "completed": [
@@ -122,11 +115,19 @@
       "mergeCommit": "294d597",
       "evidence": "evidence/T-M1.4/summary.md",
       "note": "Merged via scripts/merge-gate.sh (PR #8) at head 3146cf3; CI green. QA PASS WITH MINOR; report merged via PR #9 (23eeb00). Deferred: F1 (local JVM 30 s shutdown kill) and F2 → T-M1.8 (DEC-047)."
+    },
+    {
+      "id": "T-M1.5",
+      "title": "Single image + same-origin SPA serving, gate.sh, contract-drift CI",
+      "completedAt": "2026-09-26T00:20:00Z",
+      "mergeCommit": "a96dcf7",
+      "evidence": "evidence/T-M1.5/summary.md",
+      "note": "Merged via scripts/merge-gate.sh (PR #10) at head ca92d19; CI green (6 checks incl. contract-drift). QA round 1 FAIL (F1: backend red on the account artifact quota) fixed (DEC-053); round 2 PASS WITH MINOR; report PR #11 → afd6a9b. Deferred: F2, R2-1, R2-3 → T-M1.8; F3 → T-M2.1 (DEC-054, DEC-055)."
     }
   ],
   "tests": {
     "lastRun": "2026-09-25T14:31:31Z",
-    "summary": "T-M1.5: ./scripts/gate.sh PASS locally (11 steps, 124 s): backend verify 83 tests incl. Testcontainers + JaCoCo report; web 41 tests; governance script tests 80; contract-drift OK.",
+    "summary": "At T-M1.5 merge (a96dcf7): gate.sh PASS (11 steps); backend 83 tests + JaCoCo (lines 90.3%, branches 79.5%, no threshold); web 41; governance script tests incl. gate 24 + merge-gate 37; CI 6 checks green.",
     "suites": [
       {
         "name": "backend (./mvnw -B verify)",
@@ -153,19 +154,19 @@
   "gates": {
     "G0": {
       "status": "pass",
-      "note": "T-M1.5 packet G0-complete"
+      "note": "T-M1.6 packet G0-complete"
     },
     "G1": {
-      "status": "pass",
-      "note": "T-M1.5 gate.sh green locally"
+      "status": "pending",
+      "note": "T-M1.6 not started"
     },
     "G2": {
-      "status": "pass",
-      "note": "PR #10 CI green (all 6 on 98a2bd3/72da8a9)"
+      "status": "pending",
+      "note": "T-M1.6 not started"
     },
     "G3": {
-      "status": "pass",
-      "note": "QA round 2 PASS WITH MINOR (round 1 FAIL F1 fixed, DEC-053)"
+      "status": "pending",
+      "note": "QA-VERDICT required"
     },
     "G4": {
       "status": "pending",
@@ -268,10 +269,11 @@
     "buildTool": "Maven Wrapper (no global mvn/gradle installed)",
     "node": "24.21.0 via nvm (source ~/.nvm/nvm.sh; not on non-interactive PATH)",
     "pnpm": "12.6.0 (corepack 0.36.0)",
-    "podman": "5.8.6 rootless; the user podman.socket is ENABLED (DEC-044). Testcontainers works with DOCKER_HOST=unix://$XDG_RUNTIME_DIR/podman/podman.sock and TESTCONTAINERS_RYUK_DISABLED=true (52/52 backend tests locally)",
+    "podman": "5.8.6 rootless; the user podman.socket is ENABLED (DEC-044). Testcontainers works with DOCKER_HOST=unix://$XDG_RUNTIME_DIR/podman/podman.sock and TESTCONTAINERS_RYUK_DISABLED=true (83/83 backend tests locally at T-M1.5). Images: podman build --format docker -f deploy/Containerfile",
     "gh": "2.101.0, authenticated as duochou042004 (scopes: repo, workflow, read:org, gist)",
     "host": "Kali Linux 7.1.5, 16 cores, 22 GB RAM, 92 GB free",
-    "python": "3.14.7 with jsonschema 4.26.0 (used by scripts/check_docs.py)"
+    "python": "3.14.7 with jsonschema 4.26.0 (used by scripts/check_docs.py)",
+    "githubActionsStorage": "Account-wide artifact storage quota exhausted on 2026-09-25 (DEC-053): uploads fail (non-blocking). Freeing it is a PO action."
   },
   "history": [
     {
@@ -358,6 +360,11 @@
       "at": "2026-09-25T13:50:08Z",
       "actor": "lead-coordinator",
       "event": "T-M1.4 merged via merge-gate (PR #8 → 294d597); QA report PR #9 → 23eeb00; T-M1.5 packet written (ready, awaiting PO start)."
+    },
+    {
+      "at": "2026-09-26T00:20:00Z",
+      "actor": "lead-coordinator",
+      "event": "T-M1.5 merged via merge-gate (PR #10 → a96dcf7); QA report PR #11 → afd6a9b; T-M1.6 packet written (ready, awaiting PO start)."
     }
   ]
 }

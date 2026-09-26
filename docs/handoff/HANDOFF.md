@@ -1,29 +1,39 @@
-# Handoff — 2026-09-25 (T-M1.4 merged; T-M1.5 ready)
+# Handoff — 2026-09-26 (T-M1.5 merged; T-M1.6 ready)
 
-Phase/Milestone: P1 / M1 · Current task: **T-M1.5 (ready; PO-approved to start, DEC-048)** · Branch: `feature/T-M1.5-single-image` · Remote: https://github.com/duochou042004/eng-lms
+Phase/Milestone: P1 / M1 · Current task: **T-M1.6 (ready; awaiting the PO start signal)** · Branch: `feature/T-M1.6-e2e-harness` · Remote: https://github.com/duochou042004/eng-lms
 
 ## Where we are
-- **M1 progress:** T-M1.1 (`f1e3caa`), T-M1.2 (`ae9ac5d`), T-M1.3 (`8b9d938`) and **T-M1.4 (`294d597`)** are merged through merge-gate. QA reports: PR #3, #5 and #9.
-  Required CI: docs-check, secrets-scan, backend, web.
-- **T-M1.4:** `deploy/compose.dev.yaml` (postgres:18 pinned by index digest, loopback only), `.env.example`, `scripts/env.sh` (source it for local Testcontainers),
-  `scripts/dev-up.sh` / `dev-down.sh [--purge]`, and 12 script tests. Local `verify` passes 52/52 with no leftover containers. QA **PASS WITH MINOR**.
-- **Known local issue** (T-M1.8, DEC-047): Surefire force-kills the test JVM 30 s after the tests on local Podman runs. The build passes, and CI is unaffected.
-- The PO asked that merged branches be deleted: every merged PR branch is already gone locally and on GitHub (merge-gate deletes them; verified, DEC-046).
-- The T-M1.5 packet (`docs/tasks/T-M1.5-single-image.md`) is G0-complete: Containerfile, SPA fallback + cache and security headers, `gate.sh`, `contract-drift` CI, JaCoCo (OQ-16).
+- **M1 progress:** T-M1.1 (`f1e3caa`), T-M1.2 (`ae9ac5d`), T-M1.3 (`8b9d938`), T-M1.4 (`294d597`) and **T-M1.5 (`a96dcf7`, PR #10)** are merged through merge-gate.
+  The QA report for T-M1.5 is PR #11 (`afd6a9b`). The required CI checks are now: docs-check, secrets-scan, backend, web and **contract-drift**. `container` (a build-only image check) runs on every PR but isn't required.
+- **What T-M1.5 delivered:**
+  - `deploy/Containerfile`: 3 stages, digest-pinned bases, a JRE runtime running as uid 10001, a read-only root + tmpfs `/tmp`, and a HEALTHCHECK. Build it with `--format docker`.
+  - `shared.web`: the SPA fallback, cache headers and the security.md §5 headers.
+  - `scripts/gate.sh` (fail-fast; `--list`, `--from`; `ENGLMS_TASK` writes a log) and `scripts/contract-drift.sh`.
+  - JaCoCo: its totals appear in the CI job summary (`scripts/coverage-summary.sh`).
+  - Decisions DEC-049..DEC-055.
+- **The QA story:** round 1 FAILED on F1. The `backend` check was red because the **account-wide GitHub Actions artifact storage quota** is exhausted. Fixed by DEC-053: coverage goes to the job summary and the uploads are `continue-on-error`. Round 2: PASS WITH MINOR.
+- **Deferred:**
+  - To T-M1.8: F2 (Tomcat 400s have no security headers), R2-1 (a failed non-blocking upload is silent) and R2-3 (a test for `coverage-summary.sh`).
+  - To T-M2.1: F3 (raw dot-segment paths get the SPA shell).
+- **CSP:** React Aria's runtime `<style>` injection is pre-empted by a `<template id="react-aria-pressable-style">` in `index.html` (DEC-052). The T-M1.6 console guard must keep catching CSP violations.
 
 ## Next steps
-1. Implement T-M1.5 (PO-approved, DEC-048), then QA, LC-APPROVED and merge-gate; the QA report goes on `qa/T-M1.5`.
-2. Then T-M1.6 (E2E harness), T-M1.7 (merge-gate hardening), T-M1.8 (backend follow-ups) and T-M1.9 (web a11y follow-ups, **before the M2 routes**).
-3. The open Dependabot PRs #6 (web tooling group: its `web` check FAILS) and #7 (`@types/node` 26) need LC triage. Don't merge #6 as is.
+1. Ask the PO for the **T-M1.6** start signal (the packet `docs/tasks/T-M1.6-e2e-harness.md` is G0-complete). Then implement, QA and merge-gate.
+2. Then T-M1.7 (merge-gate hardening), T-M1.8 (backend follow-ups) and T-M1.9 (web a11y follow-ups, **before the M2 routes**).
+3. The open Dependabot PRs #6 (web tooling group; its `web` check FAILS) and #7 (`@types/node` 26) still need LC triage. Don't merge #6 as is.
 
-## Pending PO decisions
-None for T-M1.5 (approved, DEC-048). OQ-03..OQ-14 (defaults documented). OQ-16 is answered by T-M1.5 when it merges.
+## Pending PO decisions / actions
+- The start signal for T-M1.6.
+- **Free the GitHub Actions artifact storage** on the account (this repo holds none), or accept that uploads fail until it's recalculated (DEC-053). The LC does not delete data.
+- OQ-03..OQ-14 (defaults documented).
 
 ## Gotchas
-- Subagents can't write files: record their text (QA reports go on `qa/<task>`; the UX record for T-M1.3 is the PR #4 comments).
-- Run UX and QA agents one after the other if both use the browser or ports. PR numbers can skip (Dependabot takes numbers), so check `gh pr list`.
-- Wait for CI with until-loops that match the head SHA (`gh run list --json headSha,status`), not a bare sleep.
-- pnpm 12: no `-s`; release-age policy. zsh: `${=var}`. Kill by PID. Adding a required check means updating `OK_CHECKS` in `scripts/tests/merge-gate.test.sh`.
+- Subagents can't write files: record their text (the QA report goes on `qa/<task>`). If a background agent dies on a rate limit, resume it with SendMessage.
+- A host restart wipes the scratchpad and stops `englms-dev-db`: rerun `./scripts/dev-up.sh`. Agent transcripts under the session's tasks folder survive.
+- zsh word-splits differently: write probe loops as bash scripts (`evidence/T-M1.5/probe.sh`). `.env*` reads are blocked: use `--env-file .env`.
+- Wait for CI with until-loops that match the head SHA. A new push cancels in-progress runs for the same ref (concurrency).
+- `git revert` fails if the working tree is dirty; don't chain `--amend` after it blindly.
+- pnpm 12: no `-s`. Adding a required check means also updating `OK_CHECKS` in `scripts/tests/merge-gate.test.sh`.
 
 ## Files to read first
-`CLAUDE.md` → `progress.json` → this file → `docs/tasks/T-M1.5-single-image.md`.
+`CLAUDE.md` → `progress.json` → this file → `docs/tasks/T-M1.6-e2e-harness.md`.
