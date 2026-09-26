@@ -16,7 +16,7 @@
       }
     ]
   },
-  "updatedAt": "2026-09-26T00:25:00Z",
+  "updatedAt": "2026-09-26T03:35:00Z",
   "updatedBy": "lead-coordinator (session 2026-09-25/26 #4, Opus 5.5)",
   "phase": {
     "id": "P1",
@@ -30,53 +30,48 @@
     "exitCriteria": "scripts/gate.sh green locally and in CI; backend skeleton with Modulith verify + Flyway V1; SPA served same-origin; Playwright smoke at 3 viewports with axe; contract drift check; Testcontainers on rootless Podman or documented fallback (docs/01-product/roadmap.md)."
   },
   "currentTask": {
-    "id": "T-M1.6",
-    "title": "E2E harness: Playwright (6 viewports), helpers, smoke, e2e-smoke CI; /qa skeleton",
-    "status": "awaiting_approval",
-    "ownerRole": "FE",
-    "branch": "feature/T-M1.6-e2e-harness",
-    "packet": "docs/tasks/T-M1.6-e2e-harness.md",
+    "id": "T-M1.7",
+    "title": "Merge-gate hardening (push-time freshness, negative verdicts, dependabot rules)",
+    "status": "ready",
+    "ownerRole": "LC",
+    "branch": "chore/T-M1.7-merge-gate-hardening",
+    "packet": "docs/tasks/T-M1.7-merge-gate-hardening.md",
     "pr": null,
     "lastCommit": null,
-    "startedAt": "2026-09-26T01:00:00Z",
+    "startedAt": null,
     "entryGate": [
-      "T-M1.5 merged — met (a96dcf7)",
-      "PO start signal for T-M1.6 — met (DEC-056)"
+      "T-M1.6 merged — met (5f193e6)",
+      "PO start signal for T-M1.7 — pending"
     ],
     "nextSteps": [
-      "QA round 2 PASS WITH MINOR at e321675 (DEC-059)",
-      "CI green on the final head; QA-VERDICT + LC-APPROVED; merge-gate #12; then the qa/T-M1.6 PR (skeleton + report)"
+      "Ask the PO for the T-M1.7 start signal",
+      "Then implement per the packet; review (G3); merge via merge-gate"
     ],
     "trace": [
-      "NFR-RESP-01",
-      "qa-protocol",
-      "ci-cd §1",
-      "DEC-052",
-      "DEC-053",
-      "DEC-056",
-      "DEC-057",
-      "DEC-058",
-      "DEC-059"
+      "DEC-037",
+      "DEC-038",
+      "R-08"
     ]
   },
   "nextTask": {
-    "id": "T-M1.7",
-    "title": "Merge-gate hardening (push-time freshness, negative verdicts, dependabot rules)",
+    "id": "T-M1.8",
+    "title": "Backend error-surface and tooling follow-ups (T-M1.2/T-M1.4/T-M1.5 QA items)",
     "status": "draft",
-    "ownerRole": "LC",
-    "branch": "chore/T-M1.7-merge-gate-hardening",
+    "ownerRole": "BE",
+    "branch": "feature/T-M1.8-backend-follow-ups",
     "packet": "docs/tasks/backlog.md#m1--walking-skeleton-and-delivery-pipeline",
     "pr": null,
     "lastCommit": null,
     "startedAt": null,
     "entryGate": [
-      "T-M1.6 merged"
+      "T-M1.7 merged"
     ],
     "nextSteps": [],
     "trace": [
-      "DEC-037",
-      "DEC-038",
-      "R-08"
+      "DEC-041",
+      "DEC-047",
+      "DEC-054",
+      "DEC-055"
     ]
   },
   "completed": [
@@ -127,11 +122,19 @@
       "mergeCommit": "a96dcf7",
       "evidence": "evidence/T-M1.5/summary.md",
       "note": "Merged via scripts/merge-gate.sh (PR #10) at head ca92d19; CI green (6 checks incl. contract-drift). QA round 1 FAIL (F1: backend red on the account artifact quota) fixed (DEC-053); round 2 PASS WITH MINOR; report PR #11 → afd6a9b. Deferred: F2, R2-1, R2-3 → T-M1.8; F3 → T-M2.1 (DEC-054, DEC-055)."
+    },
+    {
+      "id": "T-M1.6",
+      "title": "E2E harness: Playwright (6 viewports), helpers, smoke, e2e-smoke CI; /qa skeleton",
+      "completedAt": "2026-09-26T03:30:00Z",
+      "mergeCommit": "5f193e6",
+      "evidence": "evidence/T-M1.6/summary.md",
+      "note": "Merged via scripts/merge-gate.sh (PR #12) at head 24043fb; CI green (7 checks incl. e2e-smoke). QA round 1 FAIL (F1: overflow guard blind under isMobile) fixed (DEC-058); round 2 PASS WITH MINOR (DEC-059). QA record + /qa skeleton PR #13 → 3dc82a2. Also: artifact retention 5 days, Dependabot #6/#7 closed with ignore rules, T-M1.10 (DEC-056). Deferred: F3 → T-M1.9."
     }
   ],
   "tests": {
     "lastRun": "2026-09-26T02:52:46Z",
-    "summary": "T-M1.6: gate.sh PASS (12 steps, 150 s); e2e smoke 30/30 on six projects; guard self-tests 4; script tests incl. gate 25, e2e-run 13, merge-gate 37.",
+    "summary": "At T-M1.6 merge (5f193e6): gate.sh PASS (12 steps, 151 s); e2e 46 passed/26 skipped on six projects (CI mandatory three: 28/8); backend 83 + JaCoCo; web 41; governance script tests incl. gate 25, e2e-run 13, merge-gate 37; CI 7 checks green.",
     "suites": [
       {
         "name": "backend (./mvnw -B verify)",
@@ -158,19 +161,19 @@
   "gates": {
     "G0": {
       "status": "pass",
-      "note": "T-M1.6 packet G0-complete"
+      "note": "T-M1.7 packet G0-complete"
     },
     "G1": {
-      "status": "pass",
-      "note": "gate.sh 12 steps PASS (evidence/T-M1.6/gate-20260926T025016Z.log)"
+      "status": "pending",
+      "note": "T-M1.7 not started"
     },
     "G2": {
-      "status": "pass",
-      "note": "PR #12 CI green (7 checks incl. e2e-smoke)"
+      "status": "pending",
+      "note": "T-M1.7 not started"
     },
     "G3": {
-      "status": "pass",
-      "note": "QA round 2 PASS WITH MINOR (round 1 FAIL F1 fixed, DEC-058)"
+      "status": "pending",
+      "note": "DOCS-REVIEW or QA-VERDICT required (chore packet)"
     },
     "G4": {
       "status": "pending",
@@ -374,6 +377,11 @@
       "at": "2026-09-26T01:00:00Z",
       "actor": "lead-coordinator",
       "event": "PO approved T-M1.6 and short artifact retention (DEC-056); Dependabot #6 (TS 7) and #7 (@types/node 26) closed with ignore rules; T-M1.10 added."
+    },
+    {
+      "at": "2026-09-26T03:30:00Z",
+      "actor": "lead-coordinator",
+      "event": "T-M1.6 merged via merge-gate (PR #12 → 5f193e6); QA record + /qa skeleton PR #13 → 3dc82a2; T-M1.7 packet written (ready, awaiting PO start)."
     }
   ]
 }

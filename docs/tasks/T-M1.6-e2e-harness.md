@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Milestone | M1 |
-| Status | **in_progress** (G0-complete; T-M1.5 merged `a96dcf7`; PO approved the start, DEC-056) |
+| Status | **done**: merged via merge-gate (PR #12 → `5f193e6`); QA round 2 PASS WITH MINOR; QA record + `/qa` skeleton PR #13 → `3dc82a2`; DEC-056..059 |
 | Owner role | FE (+LC for the CI wiring and the required-checks list) |
 | Branch | `feature/T-M1.6-e2e-harness` (from `develop`) |
 | Depends on | T-M1.5 merged (the packaged app serves the SPA same-origin) |
