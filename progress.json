@@ -32,27 +32,28 @@
   "currentTask": {
     "id": "T-M1.6",
     "title": "E2E harness: Playwright (6 viewports), helpers, smoke, e2e-smoke CI; /qa skeleton",
-    "status": "ready",
+    "status": "in_progress",
     "ownerRole": "FE",
     "branch": "feature/T-M1.6-e2e-harness",
     "packet": "docs/tasks/T-M1.6-e2e-harness.md",
     "pr": null,
     "lastCommit": null,
-    "startedAt": null,
+    "startedAt": "2026-09-26T01:00:00Z",
     "entryGate": [
       "T-M1.5 merged — met (a96dcf7)",
-      "PO start signal for T-M1.6 — pending"
+      "PO start signal for T-M1.6 — met (DEC-056)"
     ],
     "nextSteps": [
-      "Ask the PO for the T-M1.6 start signal",
-      "Then implement per the packet; QA; merge via merge-gate"
+      "Implement per the packet (AC1-AC7); the /qa skeleton goes on qa/T-M1.6 (path ownership)",
+      "QA; merge via merge-gate"
     ],
     "trace": [
       "NFR-RESP-01",
       "qa-protocol",
       "ci-cd §1",
       "DEC-052",
-      "DEC-053"
+      "DEC-053",
+      "DEC-056"
     ]
   },
   "nextTask": {
@@ -177,12 +178,12 @@
   "decisions": {
     "log": "docs/10-governance/decision-log.md",
     "recent": [
-      "DEC-050",
       "DEC-051",
       "DEC-052",
       "DEC-053",
       "DEC-054",
-      "DEC-055"
+      "DEC-055",
+      "DEC-056"
     ],
     "pendingPO": [
       "OQ-03",
@@ -273,7 +274,7 @@
     "gh": "2.101.0, authenticated as duochou042004 (scopes: repo, workflow, read:org, gist)",
     "host": "Kali Linux 7.1.5, 16 cores, 22 GB RAM, 92 GB free",
     "python": "3.14.7 with jsonschema 4.26.0 (used by scripts/check_docs.py)",
-    "githubActionsStorage": "Account-wide artifact storage quota exhausted on 2026-09-25 (DEC-053): uploads fail (non-blocking). Freeing it is a PO action."
+    "githubActionsStorage": "PO freed the account's artifact storage on 2026-09-26; artifacts are kept 5 days (DEC-056)."
   },
   "history": [
     {
@@ -365,6 +366,11 @@
       "at": "2026-09-26T00:20:00Z",
       "actor": "lead-coordinator",
       "event": "T-M1.5 merged via merge-gate (PR #10 → a96dcf7); QA report PR #11 → afd6a9b; T-M1.6 packet written (ready, awaiting PO start)."
+    },
+    {
+      "at": "2026-09-26T01:00:00Z",
+      "actor": "lead-coordinator",
+      "event": "PO approved T-M1.6 and short artifact retention (DEC-056); Dependabot #6 (TS 7) and #7 (@types/node 26) closed with ignore rules; T-M1.10 added."
     }
   ]
 }

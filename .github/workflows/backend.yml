@@ -48,7 +48,7 @@ jobs:
         with:
           name: backend-coverage
           path: backend/target/site/jacoco/
-          retention-days: 14
+          retention-days: 5
           if-no-files-found: warn
       - name: Upload test reports
         if: failure()
@@ -57,4 +57,4 @@ jobs:
         with:
           name: backend-test-reports
           path: backend/target/surefire-reports/
-          retention-days: 7
+          retention-days: 5

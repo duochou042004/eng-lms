@@ -33,3 +33,10 @@ updates:
         patterns: ["vite", "vitest", "@vitejs/*", "typescript", "oxlint", "stylelint*", "prettier"]
     commit-message:
       prefix: "build"
+    ignore:
+      # @types/node tracks the Node runtime major (24: engines, CI, image); majors move with the runtime (DEC-056).
+      - dependency-name: "@types/node"
+        update-types: ["version-update:semver-major"]
+      # TypeScript 7 (native compiler) drops the JS compiler API that openapi-typescript 7.x needs (PR #6, DEC-056).
+      - dependency-name: "typescript"
+        update-types: ["version-update:semver-major"]
