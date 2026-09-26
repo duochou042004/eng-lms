@@ -1,0 +1,43 @@
+name: contract-drift
+
+# Runs on every PR (no paths: filter): `contract-drift` is a required check (scripts/required-checks.txt). It regenerates
+# api/openapi.json and the web types from the code and fails on any difference (ADR-0014, T-M1.5).
+on:
+  pull_request:
+  push:
+    branches: [develop, master]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: contract-drift-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  contract-drift:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
+        with:
+          distribution: temurin
+          java-version: "25"
+          cache: maven
+          cache-dependency-path: backend/pom.xml
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: "24"
+      - name: Enable pnpm
+        run: corepack enable
+      - name: Install web dependencies (frozen lockfile)
+        working-directory: web
+        run: pnpm install --frozen-lockfile
+      # OpenApiContractTest with -Dcontract.write=true (Testcontainers PostgreSQL 18), then pnpm api:generate, then a diff.
+      - name: Regenerate the contract and the web types, then diff
+        run: ./scripts/contract-drift.sh
+      - name: No other tracked file changed
+        run: git diff --exit-code

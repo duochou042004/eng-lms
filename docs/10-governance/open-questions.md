@@ -1,6 +1,6 @@
 # Open Questions — Product Owner decisions needed
 
-> **Answered:** OQ-01 (DEC-033), OQ-02 (DEC-039), OQ-15 (DEC-034). The others are still open, with their defaults.
+> **Answered:** OQ-01 (DEC-033), OQ-02 (DEC-039), OQ-15 (DEC-034), OQ-16 (DEC-051, T-M1.5). The others are still open, with their defaults.
 > Every question has a **recommended default**. If the PO does not answer, the default is used once the planning baseline is approved,
 > and it is recorded as a DEC entry. The "Needed by" column is the latest point at which the answer changes the work.
 
@@ -21,4 +21,4 @@
 | OQ-13 | Add a "Duplicate lesson to next week" quick action in the MVP (not full recurrence)? | yes · no (wait for P2 recurrence) | **Yes** (small; big daily saving) | M3 | FR-LES scope |
 | OQ-14 | Dark theme? | MVP · P2 · never | **P2** (tokens make it cheap later) | — | — |
 | OQ-15 | Activate the proposed Claude Code permission settings (`docs/09-harness/claude-settings.proposed.json` → `.claude/settings.json`)? | yes · adjust · no | **ANSWERED: yes** (DEC-034) | T-M1.1 | — |
-| OQ-16 | When should JaCoCo coverage (test-strategy.md §5 floors) be wired into `backend` CI? T-M1.2's packet did not include it | with T-M1.5 (`gate.sh`) · with the first domain module (M2) · now | **With T-M1.5** (gate.sh aggregates the reports) | T-M1.5 | test-strategy §5, ci-cd §1 |
+| OQ-16 | When should JaCoCo coverage (test-strategy.md §5 floors) be wired into `backend` CI? T-M1.2's packet did not include it | with T-M1.5 (`gate.sh`) · with the first domain module (M2) · now | **ANSWERED: with T-M1.5** (DEC-051): the JaCoCo report runs in `verify` and CI uploads it; no threshold until the first domain module | T-M1.5 | test-strategy §5, ci-cd §1 |

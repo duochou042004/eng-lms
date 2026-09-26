@@ -29,6 +29,13 @@ class ForbiddenIdentifiersTest {
 
 	static final Pattern PATTERN = Pattern.compile(String.join("|", FORBIDDEN), Pattern.CASE_INSENSITIVE);
 
+	/**
+	 * The only allowed occurrence: the {@code Permissions-Policy} directive {@code payment=()} (security.md §5) turns
+	 * the browser Payment Request API off, which enforces the non-goal instead of breaking it (DEC-049). The exact
+	 * token is removed from a line before it is scanned; any other use of the word on that line still fails.
+	 */
+	static final String ALLOWED_PERMISSIONS_POLICY_DIRECTIVE = "payment=()";
+
 	@Test
 	void productionSourcesContainNoForbiddenIdentifiers() {
 		assertThat(scan(Path.of("src/main"))).isEmpty();
@@ -55,6 +62,20 @@ class ForbiddenIdentifiersTest {
 	}
 
 	@Test
+	void allowsOnlyTheExactPermissionsPolicyDirective(@TempDir Path root) throws IOException {
+		Path clean = root.resolve("clean/src/main/java/Headers.java");
+		Files.createDirectories(clean.getParent());
+		Files.writeString(clean, "class Headers { String p = \"camera=(), geolocation=(), payment=()\"; }\n");
+		Path dirty = root.resolve("dirty/src/main/java/Headers.java");
+		Files.createDirectories(dirty.getParent());
+		Files.writeString(dirty, "class Headers { String p = \"payment=(self)\"; String q = \"payment=()\"; }\n"
+				+ "class PaymentApi { String p = \"payment=()\"; }\n");
+
+		assertThat(scan(root.resolve("clean/src/main"))).isEmpty();
+		assertThat(scan(root.resolve("dirty/src/main"))).hasSize(2);
+	}
+
+	@Test
 	void acceptsCleanSources(@TempDir Path root) throws IOException {
 		Path file = root.resolve("src/main/java/Clean.java");
 		Files.createDirectories(file.getParent());
@@ -73,7 +94,7 @@ class ForbiddenIdentifiersTest {
 				}
 				List<String> lines = readLines(file);
 				for (int i = 0; i < lines.size(); i++) {
-					Matcher line = PATTERN.matcher(lines.get(i));
+					Matcher line = PATTERN.matcher(lines.get(i).replace(ALLOWED_PERMISSIONS_POLICY_DIRECTIVE, ""));
 					if (line.find()) {
 						findings.add(file + ":" + (i + 1) + ": contains '" + line.group() + "'");
 					}

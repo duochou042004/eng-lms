@@ -1,7 +1,7 @@
 # CI/CD
 
 > GitHub Actions. Workflows live in `.github/workflows/`. Created incrementally: `docs-check` + `secrets-scan` in **T-M1.1** (live), `backend` in **T-M1.2** (live),
-> `web` in **T-M1.3** (live), `e2e-smoke` in T-M1.6, release in M8. The required checks for `merge-gate.sh` are listed in `scripts/required-checks.txt`.
+> `web` in **T-M1.3** (live), `contract-drift` and the `container` build check in **T-M1.5** (live), `e2e-smoke` in T-M1.6, release in M8. The required checks for `merge-gate.sh` are listed in `scripts/required-checks.txt`.
 > Repository: https://github.com/duochou042004/eng-lms (private; default branch `develop`; merge commits only; branches deleted on merge).
 
 ## 1. Workflows and required checks
@@ -10,8 +10,9 @@
 |---|---|---|---|
 | `docs-check` | PR, push to develop/master | `scripts/check-docs.sh` (progress.json schema, relative links, ID references, source checksums, prompt ≤ 4,000 chars) + `scripts/tests/run-all.sh` (governance script tests) + `check-path-ownership.sh` on PRs | develop, master |
 | `secrets-scan` | PR, push | gitleaks CLI 8.30.1 (MIT), downloaded with a pinned SHA-256; scans the full git history. The EULA-licensed gitleaks-action is deliberately not used | develop, master |
-| `backend` | every PR (no path filter: required checks must always report), push | `.github/workflows/backend.yml` (live, T-M1.2): checkout (`persist-credentials: false`) → setup-java Temurin 25 (Maven cache) → `./mvnw -B -ntp verify` (Testcontainers uses the runner's Docker; includes the modularity, ArchUnit, forbidden-identifier, Flyway and OpenAPI contract tests) → upload surefire reports on failure. JaCoCo reporting is not wired yet (OQ-16) | develop, master |
-| `contract-drift` | PR (backend or web) | Regenerate `api/openapi.json` + web types; `git diff --exit-code` | develop, master |
+| `backend` | every PR (no path filter: required checks must always report), push | `.github/workflows/backend.yml` (live, T-M1.2): checkout (`persist-credentials: false`) → setup-java Temurin 25 (Maven cache) → `./mvnw -B -ntp verify` (Testcontainers uses the runner's Docker; includes the modularity, ArchUnit, forbidden-identifier, Flyway and OpenAPI contract tests) → JaCoCo totals and per-package coverage in the **job summary** (`scripts/coverage-summary.sh`; no threshold yet, OQ-16 answered by T-M1.5) → upload the HTML report (`backend-coverage`) → upload surefire reports on failure. The uploads are `continue-on-error`: an account-wide artifact storage quota must not fail the required check (DEC-053) | develop, master |
+| `contract-drift` | every PR (no path filter), push | `.github/workflows/contract-drift.yml` (live, T-M1.5): checkout → setup-java 25 + setup-node 24 → `pnpm install --frozen-lockfile` → `scripts/contract-drift.sh` (regenerates `api/openapi.json` with `OpenApiContractTest -Dcontract.write=true` and `web/src/lib/api/schema.d.ts` with `pnpm api:generate`, then diffs both) → `git diff --exit-code` | develop, master |
+| `container` (job `container-build`) | every PR, push | `.github/workflows/container.yml` (live, T-M1.5): `podman build --format docker -f deploy/Containerfile` (**build only, no push**; registry push and Trivy are M8) → checks uid 10001, no JDK/Node in the runtime image | — (reported; not required) |
 | `web` | every PR (no path filter, as for backend), push | `.github/workflows/web.yml` (live, T-M1.3): setup-node 24 → corepack pnpm → `pnpm install --frozen-lockfile` → lint (oxlint, stylelint, Prettier) → typecheck → API types match `api/openapi.json` → test (unit, component, axe, i18n completeness) → build → bundle budget → contrast check | develop, master |
 | `e2e-smoke` | PR | Build the jar with the SPA → start PostgreSQL as a service → run the app (e2e profile) → Playwright mandatory viewports (Chromium) → upload the report on failure | develop, master |
 | `e2e-nightly` | schedule (daily) | All 6 viewports × Chromium + smoke on Firefox and WebKit; PIT mutation (grading) | — (reported) |

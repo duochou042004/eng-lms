@@ -1,0 +1,7 @@
+gate: logging to evidence/T-M1.5/gate-20260925T143814Z.log
+env.sh: DOCKER_HOST=unix:///run/user/1000/podman/podman.sock TESTCONTAINERS_RYUK_DISABLED=true
+gate: a8fe6fb 2026-09-25T14:38:14Z, steps: docs scripts backend web-install web-lint web-typecheck web-test web-build web-budget web-contrast contract-drift
+gate: ==> docs
+docs-check: FAIL (1 problem(s))
+  - broken link in docs/tasks/T-M1.5-single-image.md -> does-not-exist.md
+gate: FAIL at step 'docs' (exit 1) after 0s; later steps were not run. Resume with: ./scripts/gate.sh --from docs

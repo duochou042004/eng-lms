@@ -21,6 +21,12 @@ html {
   text-size-adjust: 100%;
 }
 
+/* React Aria's pressable rule: its own injected <style> is blocked by CSP style-src 'self', so index.html pre-registers
+   the id it checks and the rule ships here instead (DEC-052). Zero specificity, like React Aria's anonymous layer. */
+:where([data-react-aria-pressable]) {
+  touch-action: pan-x pan-y pinch-zoom;
+}
+
 body {
   margin: 0;
   min-inline-size: 20rem;

@@ -73,6 +73,11 @@ The **authz matrix test** enumerates `RequestMappingHandlerMapping`. For each ha
   (`style-src` may need `'unsafe-inline'` only if a library requires it. That needs a DEC entry; the default is none.)
 - `X-Content-Type-Options: nosniff`, `Referrer-Policy: strict-origin-when-cross-origin`,
   `Permissions-Policy: microphone=(self), camera=(), geolocation=(), payment=()`, `Cross-Origin-Opener-Policy: same-origin`.
+- **As implemented (T-M1.5):** `shared.web.SecurityHeadersFilter` (a servlet filter; Spring Security arrives in T-M2.1) sets the CSP above with
+  `frame-src 'none'` (until the embed allow-list exists) and the four headers on **every response of the application port** (HTML, API JSON, Problem Details, assets).
+  The management port (:8081, never proxied by Caddy) serves only health/info JSON and does not carry them (DEC-050). HSTS stays with Caddy.
+  The SPA runs under `style-src 'self'` with no violations (evidence/T-M1.5): React Aria's runtime `<style>` injection is pre-empted by a marker in `index.html` and its rule ships in `global.css` (DEC-052). `Permissions-Policy: payment=()` disables the browser payment API; it is the one
+  allowed occurrence of "payment" in production sources (ForbiddenIdentifiersTest, DEC-049).
 
 ## 6. Input handling
 

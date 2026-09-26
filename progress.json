@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-09-25T14:20:00Z",
-  "updatedBy": "lead-coordinator (session 2026-09-25 #3, Opus 5.5)",
+  "updatedAt": "2026-09-26T00:00:00Z",
+  "updatedBy": "lead-coordinator (session 2026-09-25 #4, Opus 5.5)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -30,49 +30,56 @@
     "exitCriteria": "scripts/gate.sh green locally and in CI; backend skeleton with Modulith verify + Flyway V1; SPA served same-origin; Playwright smoke at 3 viewports with axe; contract drift check; Testcontainers on rootless Podman or documented fallback (docs/01-product/roadmap.md)."
   },
   "currentTask": {
-    "id": "T-M1.4",
-    "title": "Local stack + Testcontainers on rootless Podman",
+    "id": "T-M1.5",
+    "title": "Single image + same-origin SPA serving, gate.sh, contract-drift CI",
     "status": "awaiting_approval",
     "ownerRole": "BE",
-    "branch": "feature/T-M1.4-local-stack",
-    "packet": "docs/tasks/T-M1.4-local-stack.md",
-    "pr": "https://github.com/duochou042004/eng-lms/pull/8",
-    "lastCommit": "a196077",
-    "startedAt": "2026-09-25T13:25:00Z",
+    "branch": "feature/T-M1.5-single-image",
+    "packet": "docs/tasks/T-M1.5-single-image.md",
+    "pr": "https://github.com/duochou042004/eng-lms/pull/10",
+    "lastCommit": null,
+    "startedAt": "2026-09-25T14:15:00Z",
     "entryGate": [
-      "T-M1.2 merged — met (ae9ac5d)",
-      "PO approval: user podman.socket — met (DEC-044, enabled)",
-      "PO start signal for T-M1.4 — met (DEC-046)"
+      "T-M1.2 and T-M1.3 merged — met",
+      "PO start signal for T-M1.5 — met (DEC-048)"
     ],
     "nextSteps": [
-      "Post QA-VERDICT + LC-APPROVED after the final head; merge via merge-gate",
-      "Post-merge: QA report on qa/T-M1.4; record the merge; write the T-M1.5 packet"
+      "QA round 2 PASS WITH MINOR at 72da8a9 (DEC-055: R2-1/R2-3 → T-M1.8, R2-2 amended)",
+      "CI green on the final head; post QA-VERDICT + LC-APPROVED; merge via scripts/merge-gate.sh (--dry-run first)",
+      "commit the QA report on qa/T-M1.5"
     ],
     "trace": [
+      "ADR-0004",
       "ADR-0012",
-      "R-07",
-      "DEC-044"
+      "ADR-0014",
+      "NFR-SEC-08",
+      "OQ-16",
+      "DEC-049",
+      "DEC-050",
+      "DEC-051",
+      "DEC-052",
+      "DEC-053",
+      "DEC-054",
+      "DEC-055"
     ]
   },
   "nextTask": {
-    "id": "T-M1.5",
-    "title": "Single image + same-origin serving, gate.sh, contract-drift CI",
+    "id": "T-M1.6",
+    "title": "E2E harness: Playwright (6 viewports), helpers, smoke, e2e-smoke CI; /qa skeleton",
     "status": "draft",
-    "ownerRole": "BE",
-    "branch": "feature/T-M1.5-single-image",
+    "ownerRole": "FE",
+    "branch": "feature/T-M1.6-e2e-harness",
     "packet": "docs/tasks/backlog.md#m1--walking-skeleton-and-delivery-pipeline",
     "pr": null,
     "lastCommit": null,
     "startedAt": null,
     "entryGate": [
-      "T-M1.2 merged — met",
-      "T-M1.3 merged — met (8b9d938)"
+      "T-M1.5 merged"
     ],
     "nextSteps": [],
     "trace": [
-      "ADR-0004",
-      "NFR-SEC-08",
-      "OQ-16"
+      "NFR-RESP-01",
+      "qa-protocol"
     ]
   },
   "completed": [
@@ -107,45 +114,58 @@
       "mergeCommit": "8b9d938",
       "evidence": "evidence/T-M1.3/summary.md",
       "note": "Merged via scripts/merge-gate.sh (PR #4) at head 82db93c; CI green (docs-check, secrets-scan, backend, web). UX round 1 CHANGES REQUESTED → fixed; round 2 APPROVED (the UX record is the PR #4 comments). QA PASS WITH MINOR (3 × S4); the QA report was merged via PR #5 (bb1a6a3). Deferred: T-M1.9 (DEC-043, DEC-045)."
+    },
+    {
+      "id": "T-M1.4",
+      "title": "Local stack + Testcontainers on rootless Podman",
+      "completedAt": "2026-09-25T13:50:08Z",
+      "mergeCommit": "294d597",
+      "evidence": "evidence/T-M1.4/summary.md",
+      "note": "Merged via scripts/merge-gate.sh (PR #8) at head 3146cf3; CI green. QA PASS WITH MINOR; report merged via PR #9 (23eeb00). Deferred: F1 (local JVM 30 s shutdown kill) and F2 → T-M1.8 (DEC-047)."
     }
   ],
   "tests": {
-    "lastRun": "2026-09-25T12:18:43Z",
-    "summary": "Backend: ./mvnw -B verify in CI (52 tests incl. Testcontainers PostgreSQL 18); locally 29 non-container tests. Governance script tests 56. docs-check PASS.",
+    "lastRun": "2026-09-25T14:31:31Z",
+    "summary": "T-M1.5: ./scripts/gate.sh PASS locally (11 steps, 124 s): backend verify 83 tests incl. Testcontainers + JaCoCo report; web 41 tests; governance script tests 80; contract-drift OK.",
     "suites": [
       {
-        "name": "backend (./mvnw -B verify, CI)",
+        "name": "backend (./mvnw -B verify)",
         "result": "pass",
-        "details": "52 tests, 0 skipped at fbc9689 (PR #2 checks)"
+        "details": "83 tests (SpaServingTest 25, ApplicationIntegrationTest 21, ...) at 2d3d6e1; JaCoCo report in target/site/jacoco"
+      },
+      {
+        "name": "web (pnpm test --run)",
+        "result": "pass",
+        "details": "41 tests incl. csp.test.tsx"
       },
       {
         "name": "governance scripts (scripts/tests/run-all.sh)",
         "result": "pass",
-        "details": "37 merge-gate + 12 path-ownership + 7 pre-push"
+        "details": "incl. gate.test.sh 24 and merge-gate 37 (OK_CHECKS has contract-drift)"
       },
       {
-        "name": "docs-check (scripts/check-docs.sh)",
+        "name": "gate.sh",
         "result": "pass",
-        "details": "progress.json valid, links, sources intact"
+        "details": "evidence/T-M1.5/gate-20260925T143131Z.log; fail-fast demo gate-failfast-demo-20260925T143814Z.log"
       }
     ]
   },
   "gates": {
     "G0": {
       "status": "pass",
-      "note": "T-M1.4 packet G0-complete"
+      "note": "T-M1.5 packet G0-complete"
     },
     "G1": {
       "status": "pass",
-      "note": "T-M1.4 implemented"
+      "note": "T-M1.5 gate.sh green locally"
     },
     "G2": {
       "status": "pass",
-      "note": "PR #8 CI green (docs-check, secrets-scan, backend, web)"
+      "note": "PR #10 CI green (all 6 on 98a2bd3/72da8a9)"
     },
     "G3": {
       "status": "pass",
-      "note": "QA PASS WITH MINOR at a196077 (DEC-047)"
+      "note": "QA round 2 PASS WITH MINOR (round 1 FAIL F1 fixed, DEC-053)"
     },
     "G4": {
       "status": "pending",
@@ -156,12 +176,12 @@
   "decisions": {
     "log": "docs/10-governance/decision-log.md",
     "recent": [
-      "DEC-042",
-      "DEC-043",
-      "DEC-044",
-      "DEC-045",
-      "DEC-046",
-      "DEC-047"
+      "DEC-050",
+      "DEC-051",
+      "DEC-052",
+      "DEC-053",
+      "DEC-054",
+      "DEC-055"
     ],
     "pendingPO": [
       "OQ-03",
@@ -175,8 +195,7 @@
       "OQ-11",
       "OQ-12",
       "OQ-13",
-      "OQ-14",
-      "OQ-16"
+      "OQ-14"
     ]
   },
   "risks": {
@@ -234,6 +253,13 @@
       "status": "approved",
       "at": "2026-09-25T13:25:00Z",
       "ref": "DEC-046"
+    },
+    {
+      "what": "Start T-M1.5 (next session)",
+      "by": "PO",
+      "status": "approved",
+      "at": "2026-09-25T15:00:00Z",
+      "ref": "DEC-048"
     }
   ],
   "environment": {
@@ -327,6 +353,11 @@
       "at": "2026-09-25T13:26:16Z",
       "actor": "lead-coordinator",
       "event": "T-M1.3 merged via merge-gate (PR #4 → 8b9d938); QA report PR #5 → bb1a6a3; T-M1.4 packet written (ready, awaiting PO start)."
+    },
+    {
+      "at": "2026-09-25T13:50:08Z",
+      "actor": "lead-coordinator",
+      "event": "T-M1.4 merged via merge-gate (PR #8 → 294d597); QA report PR #9 → 23eeb00; T-M1.5 packet written (ready, awaiting PO start)."
     }
   ]
 }

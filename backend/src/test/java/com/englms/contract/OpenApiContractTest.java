@@ -40,6 +40,9 @@ class OpenApiContractTest {
 			.build()
 			.get()
 			.uri("/v3/api-docs")
+			// Without an explicit Accept header the SPA fallback (T-M1.5) would treat this extension-less path as a
+			// client route; springdoc is off at runtime, so only this test ever asks for it.
+			.header("Accept", "application/json")
 			.exchange()
 			.expectStatus()
 			.isOk()
