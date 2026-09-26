@@ -12,11 +12,17 @@ export async function expectNoAxeViolations(page: Page) {
   ).toEqual([])
 }
 
-/** responsive-standards §3.1: the page never scrolls horizontally. */
+/**
+ * responsive-standards §3.1: the page never scrolls horizontally. Compared against `documentElement.clientWidth` (the
+ * layout viewport), not `window.innerWidth`: with mobile emulation (`isMobile`) Chromium widens `innerWidth` to the
+ * content, which would hide an overflow (T-M1.6 QA F1).
+ */
 export async function expectNoHorizontalScroll(page: Page) {
-  const { scrollWidth, innerWidth } = await page.evaluate(() => ({
+  const { scrollWidth, viewportWidth } = await page.evaluate(() => ({
     scrollWidth: document.scrollingElement?.scrollWidth ?? 0,
-    innerWidth: window.innerWidth,
+    viewportWidth: document.documentElement.clientWidth,
   }))
-  expect(scrollWidth, `horizontal scroll: scrollWidth ${scrollWidth} > innerWidth ${innerWidth}`).toBeLessThanOrEqual(innerWidth)
+  expect(scrollWidth, `horizontal scroll: scrollWidth ${scrollWidth} > viewport width ${viewportWidth}`).toBeLessThanOrEqual(
+    viewportWidth,
+  )
 }

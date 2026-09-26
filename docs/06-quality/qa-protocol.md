@@ -24,6 +24,10 @@
 6. Re-test   : after fixes, re-run failed scenarios + smoke; append to report (never overwrite history)
 ```
 
+**Tooling (T-M1.6, DEC-057):** `qa/` has its own pinned Playwright package and config, independent of the implementer's `e2e/`
+(6 reference viewports; `QA_ENGINES=all` adds Firefox and WebKit for the milestone regression). See `qa/README.md`. The packaged app for step 1
+comes from `scripts/e2e-run.sh` (the jar with the SPA) or the image; the e2e profile and `scripts/seed-e2e` arrive with the first data (M2).
+
 ## 3. Standard scenario checklist (apply what is relevant)
 
 - **Happy path** per AC, at `phone-small`, `tablet` and `laptop`.

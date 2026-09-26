@@ -35,9 +35,14 @@ for (const target of PAGES) {
   })
 }
 
-test('a deep link survives a reload (same-origin SPA fallback)', async ({ page }) => {
-  const response = await page.goto('/student/x')
-  expect(response?.status()).toBe(200)
-  await page.reload()
-  await expect(page.getByRole('heading', { level: 1, name: 'Trang của học viên' })).toBeVisible()
-})
+for (const deepLink of [
+  { path: '/tutor', heading: 'Không gian gia sư' },
+  { path: '/student/x', heading: 'Trang của học viên' },
+]) {
+  test(`a deep link survives a reload: ${deepLink.path} (same-origin SPA fallback)`, async ({ page }) => {
+    const response = await page.goto(deepLink.path)
+    expect(response?.status()).toBe(200)
+    await page.reload()
+    await expect(page.getByRole('heading', { level: 1, name: deepLink.heading })).toBeVisible()
+  })
+}
