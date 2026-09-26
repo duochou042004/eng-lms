@@ -1,7 +1,7 @@
 # CI/CD
 
 > GitHub Actions. Workflows live in `.github/workflows/`. Created incrementally: `docs-check` + `secrets-scan` in **T-M1.1** (live), `backend` in **T-M1.2** (live),
-> `web` in **T-M1.3** (live), `contract-drift` and the `container` build check in **T-M1.5** (live), `e2e-smoke` in T-M1.6, release in M8. The required checks for `merge-gate.sh` are listed in `scripts/required-checks.txt`.
+> `web` in **T-M1.3** (live), `contract-drift` and the `container` build check in **T-M1.5** (live), `e2e-smoke` in **T-M1.6** (live), release in M8. The required checks for `merge-gate.sh` are listed in `scripts/required-checks.txt`.
 > Repository: https://github.com/duochou042004/eng-lms (private; default branch `develop`; merge commits only; branches deleted on merge).
 
 ## 1. Workflows and required checks
@@ -14,10 +14,11 @@
 | `contract-drift` | every PR (no path filter), push | `.github/workflows/contract-drift.yml` (live, T-M1.5): checkout → setup-java 25 + setup-node 24 → `pnpm install --frozen-lockfile` → `scripts/contract-drift.sh` (regenerates `api/openapi.json` with `OpenApiContractTest -Dcontract.write=true` and `web/src/lib/api/schema.d.ts` with `pnpm api:generate`, then diffs both) → `git diff --exit-code` | develop, master |
 | `container` (job `container-build`) | every PR, push | `.github/workflows/container.yml` (live, T-M1.5): `podman build --format docker -f deploy/Containerfile` (**build only, no push**; registry push and Trivy are M8) → checks uid 10001, no JDK/Node in the runtime image | — (reported; not required) |
 | `web` | every PR (no path filter, as for backend), push | `.github/workflows/web.yml` (live, T-M1.3): setup-node 24 → corepack pnpm → `pnpm install --frozen-lockfile` → lint (oxlint, stylelint, Prettier) → typecheck → API types match `api/openapi.json` → test (unit, component, axe, i18n completeness) → build → bundle budget → contrast check | develop, master |
-| `e2e-smoke` | PR | Build the jar with the SPA → start PostgreSQL as a service → run the app (e2e profile) → Playwright mandatory viewports (Chromium) → upload the report on failure | develop, master |
+| `e2e-smoke` | every PR (no path filter), push | `.github/workflows/e2e-smoke.yml` (live, T-M1.6): PostgreSQL 18 service (digest-pinned) → setup-java 25 + setup-node 24 → `pnpm install` + `playwright install --with-deps chromium` in `e2e/` → typecheck → `scripts/e2e-run.sh --project=phone-small --project=tablet --project=laptop` (builds the jar with the SPA, starts it, runs the smoke + guard self-tests, always stops it) → upload the report on failure (`continue-on-error`, 5 days). The e2e profile/seed endpoint arrives with the first data (M2) | develop, master |
 | `e2e-nightly` | schedule (daily) | All 6 viewports × Chromium + smoke on Firefox and WebKit; PIT mutation (grading) | — (reported) |
 | `release` | tag `v*` | Build the image → Trivy scan (fail on CRITICAL) → push to GHCR → attach the SBOM → draft the GitHub release | master |
 
+Artifacts serve CI only: every `upload-artifact` step keeps them **5 days** (`retention-days: 5`) and is `continue-on-error` (DEC-053, DEC-056).
 Actions are pinned by commit SHA. Workflow `permissions:` are minimal (read by default, `packages: write` only in release). Dependabot is enabled for GitHub Actions
 (weekly, grouped). Maven and npm entries are added by T-M1.2, T-M1.3 and T-M1.6. Dependabot PRs merge through merge-gate with `LC-APPROVED PR-<n>` (git-governance §4).
 

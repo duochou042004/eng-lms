@@ -68,8 +68,8 @@ Coverage is a floor, not a goal. Reviewers still judge assertion quality (R-18).
 ## 6. Commands (reproducible; wired into `scripts/gate.sh` in T-M1.x)
 
 ```bash
-./scripts/gate.sh            # everything below, fail-fast, writes evidence/<task>/gate-<timestamp>.log
+./scripts/gate.sh            # everything below (12 steps, the last is e2e), fail-fast, writes evidence/<task>/gate-<timestamp>.log
 (cd backend && ./mvnw -B verify)                     # unit + integration + authz + isolation + arch + jacoco
 (cd web && pnpm lint && pnpm typecheck && pnpm test --run && pnpm build && pnpm budget)
-(cd e2e && pnpm playwright test --project=phone-small --project=tablet --project=laptop)
+./scripts/e2e-run.sh --project=phone-small --project=tablet --project=laptop   # packaged app + Playwright (T-M1.6)
 ```
