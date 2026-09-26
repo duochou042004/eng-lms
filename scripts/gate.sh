@@ -5,10 +5,11 @@
 #   --from <step>  start at <step> (resume after fixing a failure)
 # With ENGLMS_TASK=<task id> (e.g. T-M1.5) the whole output is also written to evidence/<task>/gate-<UTC timestamp>.log.
 # The backend and contract-drift steps need Testcontainers: the rootless Podman socket (scripts/env.sh is sourced here).
+# The e2e step runs the packaged app on :8080/:8081 against the dev DB (scripts/e2e-run.sh).
 set -uo pipefail
 ROOT=$(cd "$(dirname "$0")/.." && pwd)
 
-STEPS=(docs scripts backend web-install web-lint web-typecheck web-test web-build web-budget web-contrast contract-drift)
+STEPS=(docs scripts backend web-install web-lint web-typecheck web-test web-build web-budget web-contrast contract-drift e2e)
 
 usage() { sed -n '2,7p' "$0" | sed 's/^# \{0,1\}//'; }
 
@@ -25,6 +26,8 @@ run_step() {
     web-budget) (cd "$ROOT/web" && pnpm budget) ;;
     web-contrast) (cd "$ROOT/web" && pnpm contrast) ;;
     contract-drift) "$ROOT/scripts/contract-drift.sh" ;;
+    # The mandatory viewports against the packaged app (T-M1.6); needs ports 8080/8081 free and the dev DB.
+    e2e) "$ROOT/scripts/e2e-run.sh" --project=phone-small --project=tablet --project=laptop ;;
   esac
 }
 

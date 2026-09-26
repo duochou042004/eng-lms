@@ -18,6 +18,7 @@ stub "$repo/scripts/check-docs.sh" docs
 stub "$repo/scripts/tests/run-all.sh" scripts
 stub "$repo/backend/mvnw" backend
 stub "$repo/scripts/contract-drift.sh" contract-drift
+stub "$repo/scripts/e2e-run.sh" e2e
 printf 'echo "env.sh: stub"\n' >"$repo/scripts/env.sh"
 # pnpm stub: its name is "web-<script>" ("web-install" for install), matching the gate's step names.
 cat >"$work/bin/pnpm" <<STUB
@@ -32,14 +33,15 @@ gate() { env PATH="$work/bin:$PATH" "$repo/scripts/gate.sh" "$@"; }
 
 : >"$calls"
 expect_exit 0 "passes when every step passes" -- gate
-expect_output_contains "gate: PASS (11 steps" "reports PASS with the step count"
+expect_output_contains "gate: PASS (12 steps" "reports PASS with the step count"
 LAST_OUTPUT=$(cut -d' ' -f1 "$calls" | paste -sd' ')
-expect_output_contains "docs scripts backend web-install web-lint web-typecheck web-test web-build web-budget web-contrast contract-drift" \
+expect_output_contains "docs scripts backend web-install web-lint web-typecheck web-test web-build web-budget web-contrast contract-drift e2e" \
   "runs every step in CI order"
 LAST_OUTPUT=$(cat "$calls")
 expect_output_contains "backend -B -ntp verify" "backend runs ./mvnw -B -ntp verify"
 expect_output_contains "web-install install --frozen-lockfile" "web install uses the frozen lockfile"
 expect_output_contains "web-test test --run" "web tests run once (no watch mode)"
+expect_output_contains "e2e --project=phone-small --project=tablet --project=laptop" "e2e runs the mandatory viewports"
 
 : >"$calls"
 expect_exit 1 "fails fast on the first failing step" -- env GATE_FAIL_AT=web-typecheck PATH="$work/bin:$PATH" "$repo/scripts/gate.sh"
@@ -47,7 +49,7 @@ expect_output_contains "gate: FAIL at step 'web-typecheck' (exit 7)" "names the 
 expect_output_contains "./scripts/gate.sh --from web-typecheck" "tells how to resume"
 LAST_OUTPUT=$(cut -d' ' -f1 "$calls" | paste -sd' ')
 expect_output_contains "web-lint web-typecheck" "ran the steps up to the failure"
-if grep -qE '^(web-test|web-build|contract-drift) ' "$calls"; then
+if grep -qE '^(web-test|web-build|contract-drift|e2e) ' "$calls"; then
   FAIL_COUNT=$((FAIL_COUNT + 1)); echo "  FAIL - steps after the failure must not run"
 else
   PASS_COUNT=$((PASS_COUNT + 1)); echo "  ok   - no step after the failure ran"
@@ -61,7 +63,7 @@ LAST_OUTPUT=$(cat "$calls")
 : >"$calls"
 expect_exit 0 "--from resumes at a step" -- gate --from web-budget
 LAST_OUTPUT=$(cut -d' ' -f1 "$calls" | paste -sd' ')
-[[ "$LAST_OUTPUT" == "web-budget web-contrast contract-drift" ]] && { PASS_COUNT=$((PASS_COUNT + 1)); echo "  ok   - --from runs that step and the rest"; } || { FAIL_COUNT=$((FAIL_COUNT + 1)); echo "  FAIL - --from ran: $LAST_OUTPUT"; }
+[[ "$LAST_OUTPUT" == "web-budget web-contrast contract-drift e2e" ]] && { PASS_COUNT=$((PASS_COUNT + 1)); echo "  ok   - --from runs that step and the rest"; } || { FAIL_COUNT=$((FAIL_COUNT + 1)); echo "  FAIL - --from ran: $LAST_OUTPUT"; }
 
 expect_exit 0 "--list prints the steps" -- gate --list
 expect_output_contains "contract-drift" "--list includes contract-drift"

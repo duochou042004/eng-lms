@@ -73,7 +73,9 @@ CI uses GitHub's Docker and needs none of this. The previous fallback (a `test-e
 | Regenerate API types | `(cd web && pnpm api:generate)` |
 | Web checks | `(cd web && pnpm lint && pnpm typecheck && pnpm test --run && pnpm build && pnpm budget && pnpm contrast)` (live, T-M1.3) |
 | Web dev server | `(cd web && pnpm install && pnpm dev)`: http://localhost:5173, proxies `/api` → :8080; component gallery at `/dev/ui` (dev builds only) |
-| E2E (mandatory viewports) | `(cd e2e && pnpm e2e:pr)` |
+| E2E (mandatory viewports) | `./scripts/e2e-run.sh --project=phone-small --project=tablet --project=laptop` (live, T-M1.6): builds the jar with the SPA, starts it on :8080/:8081 against the dev DB, runs Playwright, always stops it. `--no-build` reuses the jar; other args go to Playwright. Once: `(cd e2e && pnpm install && pnpm browsers)` |
+| E2E (all six viewports) | `./scripts/e2e-run.sh` (with `ENGLMS_TASK=T-Mx.y`, screenshots go to `evidence/<task>/screenshots/<project>/`) |
+| E2E against a running app | `(cd e2e && E2E_BASE_URL=http://localhost:8080 pnpm test:pr)` |
 | Docs check | `./scripts/check-docs.sh` |
 | Stop the DB | `./scripts/dev-down.sh` |
 

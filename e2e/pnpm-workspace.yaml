@@ -1,0 +1,2 @@
+# e2e/ is its own pnpm root (like web/). pnpm 12's default minimumReleaseAge policy applies. No dependency build scripts.
+allowBuilds: {}

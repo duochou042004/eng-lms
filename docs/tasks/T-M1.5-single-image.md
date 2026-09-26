@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Milestone | M1 |
-| Status | **ready** (G0-complete; T-M1.2 `ae9ac5d`, T-M1.3 `8b9d938` and T-M1.4 `294d597` merged; PO approved the start, DEC-048) |
+| Status | **done**: merged via merge-gate (PR #10 → `a96dcf7`); QA round 2 PASS WITH MINOR (report: PR #11 → `afd6a9b`); DEC-049..055 |
 | Owner role | BE (+FE for the web build integration) |
 | Branch | `feature/T-M1.5-single-image` (from `develop`) |
 | Depends on | T-M1.2, T-M1.3 merged |

@@ -1,0 +1,127 @@
+# T-M1.6 AC3: six-project run against the packaged app after the QA round-1 fixes (2026-09-26T03:06:22Z, HEAD 386f516 + the F1/F2/F7 working-tree fixes, committed next)
+662db3da228c2ea2649b3ae04db4b4479e85fea5979f6a917a7f6d5cb1e7ec39
+englms-dev-db
+dev-up: englms-dev-db is healthy on 127.0.0.1:5432
+e2e-run: building web/dist and the jar with the SPA
+✓ Lockfile passes supply-chain policies (verified 14h ago)
+Lockfile is up to date, resolution step is skipped
+Done in 23ms using pnpm v12.6.0
+$ tsc -b && vite build
+vite v8.3.1 building client environment for production...
+transforming...
+✓ 3389 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                                                    0.89 kB │ gzip:  0.47 kB
+dist/assets/be-vietnam-pro-vietnamese-400-normal-BuGn0gnm.woff     6.56 kB
+dist/assets/be-vietnam-pro-vietnamese-600-normal-DkpCIyan.woff     6.88 kB
+dist/assets/be-vietnam-pro-vietnamese-500-normal-CfdwVo8-.woff     6.88 kB
+dist/.vite/manifest.json                                           8.36 kB │ gzip:  0.97 kB
+dist/assets/be-vietnam-pro-vietnamese-400-normal-CRcqvyg1.woff2   11.53 kB
+dist/assets/be-vietnam-pro-vietnamese-500-normal-DREgrEoJ.woff2   12.17 kB
+dist/assets/be-vietnam-pro-vietnamese-600-normal-nyU-ZL2p.woff2   12.17 kB
+dist/assets/be-vietnam-pro-latin-400-normal-bXgqVju9.woff         16.43 kB
+dist/assets/be-vietnam-pro-latin-500-normal-BJkVuMHw.woff         16.99 kB
+dist/assets/be-vietnam-pro-latin-600-normal-5IO4e7bK.woff         17.01 kB
+dist/assets/be-vietnam-pro-latin-400-normal-PpnXBOrz.woff2        21.16 kB
+dist/assets/be-vietnam-pro-latin-500-normal-B6LVzGNe.woff2        21.89 kB
+dist/assets/be-vietnam-pro-latin-600-normal-BZDkUTrt.woff2        22.03 kB
+dist/assets/LanguageSwitcher-CetFZ35N.css                          0.24 kB │ gzip:  0.19 kB
+dist/assets/ShellLayout-Bp2zHVtQ.css                               1.17 kB │ gzip:  0.49 kB
+dist/assets/ui-DGhkCPZe.css                                        3.56 kB │ gzip:  1.05 kB
+dist/assets/index-B5XNooJ5.css                                     4.49 kB │ gzip:  1.42 kB
+dist/assets/LanguageSwitcher-DBN3bupF.js                           0.50 kB │ gzip:  0.33 kB
+dist/assets/rolldown-runtime-CbXtAM7H.js                           0.58 kB │ gzip:  0.36 kB
+dist/assets/NotFound-ceYi2xZX.js                                   0.66 kB │ gzip:  0.40 kB
+dist/assets/Landing-vR6fte3G.js                                    0.70 kB │ gzip:  0.33 kB
+dist/assets/StudentShell-CrUuY4zG.js                               0.73 kB │ gzip:  0.44 kB
+dist/assets/TutorShell-C2UmkiVM.js                                 0.90 kB │ gzip:  0.50 kB
+dist/assets/createLucideIcon-DIoloFqZ.js                           3.13 kB │ gzip:  1.51 kB
+dist/assets/ShellLayout-D3s4H5WQ.js                                9.37 kB │ gzip:  3.54 kB
+dist/assets/ui-D4g1k-hO.js                                       149.93 kB │ gzip: 49.42 kB
+dist/assets/index-BDZDyrpt.js                                    290.75 kB │ gzip: 91.32 kB
+
+✓ built in 417ms
+e2e-run: started englms-0.0.1-SNAPSHOT.jar (pid 197910, log backend/target/e2e-app.log)
+e2e-run: app ready; running Playwright (all projects)
+
+Running 72 tests using 8 workers
+
+  ✓   4 [phone-small] › tests/guards.spec.ts:37:3 › the layout check fails on horizontal overflow (+3000px) (1.8s)
+  -   1 [phone-small] › tests/guards.spec.ts:56:1 › the console guard fails on a console error
+  -   2 [phone-small] › tests/guards.spec.ts:26:1 › the axe check fails on an image without alt text
+  -   8 [phone-small] › tests/guards.spec.ts:63:1 › the console guard also watches a second page of the same context
+  -   7 [phone-small] › tests/guards.spec.ts:49:1 › the console guard fails on a CSP violation (an inline <style> under style-src self)
+  ✓   5 [phone-small] › tests/guards.spec.ts:37:3 › the layout check fails on horizontal overflow (+40px) (1.8s)
+  ✓  12 [phone-small] › tests/smoke.spec.ts:42:3 › a deep link survives a reload: /student/x (same-origin SPA fallback) (625ms)
+  ✓  11 [phone-small] › tests/smoke.spec.ts:42:3 › a deep link survives a reload: /tutor (same-origin SPA fallback) (646ms)
+  -  13 [phone] › tests/guards.spec.ts:26:1 › the axe check fails on an image without alt text
+  -  14 [phone] › tests/guards.spec.ts:37:3 › the layout check fails on horizontal overflow (+40px)
+  -  15 [phone] › tests/guards.spec.ts:56:1 › the console guard fails on a console error
+  -  16 [phone] › tests/guards.spec.ts:63:1 › the console guard also watches a second page of the same context
+  ✓   3 [phone-small] › tests/smoke.spec.ts:16:3 › landing renders in vi and en (3.2s)
+  ✓   6 [phone-small] › tests/smoke.spec.ts:16:3 › tutor renders in vi and en (3.2s)
+  -  20 [phone] › tests/guards.spec.ts:49:1 › the console guard fails on a CSP violation (an inline <style> under style-src self)
+  -  19 [phone] › tests/guards.spec.ts:37:3 › the layout check fails on horizontal overflow (+3000px)
+  ✓  10 [phone-small] › tests/smoke.spec.ts:16:3 › not-found renders in vi and en (2.0s)
+  ✓   9 [phone-small] › tests/smoke.spec.ts:16:3 › student renders in vi and en (2.1s)
+  ✓  21 [phone] › tests/smoke.spec.ts:42:3 › a deep link survives a reload: /tutor (same-origin SPA fallback) (511ms)
+  ✓  22 [phone] › tests/smoke.spec.ts:42:3 › a deep link survives a reload: /student/x (same-origin SPA fallback) (540ms)
+  -  25 [tablet] › tests/guards.spec.ts:26:1 › the axe check fails on an image without alt text
+  ✓  17 [phone] › tests/smoke.spec.ts:16:3 › landing renders in vi and en (2.0s)
+  -  29 [tablet] › tests/guards.spec.ts:56:1 › the console guard fails on a console error
+  ✓  18 [phone] › tests/smoke.spec.ts:16:3 › tutor renders in vi and en (2.1s)
+  -  28 [tablet] › tests/guards.spec.ts:49:1 › the console guard fails on a CSP violation (an inline <style> under style-src self)
+  ✓  26 [tablet] › tests/guards.spec.ts:37:3 › the layout check fails on horizontal overflow (+40px) (773ms)
+  ✓  27 [tablet] › tests/guards.spec.ts:37:3 › the layout check fails on horizontal overflow (+3000px) (784ms)
+  ✓  33 [tablet] › tests/smoke.spec.ts:42:3 › a deep link survives a reload: /tutor (same-origin SPA fallback) (571ms)
+  ✓  24 [phone] › tests/smoke.spec.ts:16:3 › not-found renders in vi and en (2.3s)
+  -  34 [tablet] › tests/guards.spec.ts:63:1 › the console guard also watches a second page of the same context
+  ✓  23 [phone] › tests/smoke.spec.ts:16:3 › student renders in vi and en (2.4s)
+  ✓  36 [tablet] › tests/smoke.spec.ts:42:3 › a deep link survives a reload: /student/x (same-origin SPA fallback) (587ms)
+  ✓  30 [tablet] › tests/smoke.spec.ts:16:3 › landing renders in vi and en (2.3s)
+  -  37 [tablet-land] › tests/guards.spec.ts:26:1 › the axe check fails on an image without alt text
+  ✓  31 [tablet] › tests/smoke.spec.ts:16:3 › student renders in vi and en (2.3s)
+  -  38 [tablet-land] › tests/guards.spec.ts:37:3 › the layout check fails on horizontal overflow (+40px)
+  -  39 [tablet-land] › tests/guards.spec.ts:37:3 › the layout check fails on horizontal overflow (+3000px)
+  ✓  32 [tablet] › tests/smoke.spec.ts:16:3 › not-found renders in vi and en (2.1s)
+  -  40 [tablet-land] › tests/guards.spec.ts:63:1 › the console guard also watches a second page of the same context
+  -  44 [tablet-land] › tests/guards.spec.ts:49:1 › the console guard fails on a CSP violation (an inline <style> under style-src self)
+  ✓  43 [tablet-land] › tests/smoke.spec.ts:42:3 › a deep link survives a reload: /tutor (same-origin SPA fallback) (606ms)
+  ✓  35 [tablet] › tests/smoke.spec.ts:16:3 › tutor renders in vi and en (2.3s)
+  -  46 [tablet-land] › tests/guards.spec.ts:56:1 › the console guard fails on a console error
+  ✓  45 [tablet-land] › tests/smoke.spec.ts:42:3 › a deep link survives a reload: /student/x (same-origin SPA fallback) (549ms)
+  ✓  42 [tablet-land] › tests/smoke.spec.ts:16:3 › student renders in vi and en (2.3s)
+  ✓  41 [tablet-land] › tests/smoke.spec.ts:16:3 › tutor renders in vi and en (2.4s)
+  ✓  50 [laptop] › tests/guards.spec.ts:37:3 › the layout check fails on horizontal overflow (+40px) (773ms)
+  ✓  51 [laptop] › tests/guards.spec.ts:37:3 › the layout check fails on horizontal overflow (+3000px) (783ms)
+  ✓  52 [laptop] › tests/guards.spec.ts:49:1 › the console guard fails on a CSP violation (an inline <style> under style-src self) (832ms)
+  ✓  49 [laptop] › tests/guards.spec.ts:26:1 › the axe check fails on an image without alt text (1.6s)
+  ✓  47 [tablet-land] › tests/smoke.spec.ts:16:3 › landing renders in vi and en (2.4s)
+  ✓  48 [tablet-land] › tests/smoke.spec.ts:16:3 › not-found renders in vi and en (2.3s)
+  ✓  56 [laptop] › tests/guards.spec.ts:56:1 › the console guard fails on a console error (656ms)
+  ✓  58 [laptop] › tests/guards.spec.ts:63:1 › the console guard also watches a second page of the same context (639ms)
+  ✓  53 [laptop] › tests/smoke.spec.ts:16:3 › landing renders in vi and en (2.3s)
+  ✓  59 [laptop] › tests/smoke.spec.ts:42:3 › a deep link survives a reload: /tutor (same-origin SPA fallback) (678ms)
+  ✓  60 [laptop] › tests/smoke.spec.ts:42:3 › a deep link survives a reload: /student/x (same-origin SPA fallback) (654ms)
+  ✓  54 [laptop] › tests/smoke.spec.ts:16:3 › tutor renders in vi and en (2.3s)
+  ✓  55 [laptop] › tests/smoke.spec.ts:16:3 › student renders in vi and en (2.3s)
+  -  62 [desktop] › tests/guards.spec.ts:37:3 › the layout check fails on horizontal overflow (+40px)
+  -  61 [desktop] › tests/guards.spec.ts:26:1 › the axe check fails on an image without alt text
+  ✓  57 [laptop] › tests/smoke.spec.ts:16:3 › not-found renders in vi and en (2.1s)
+  -  65 [desktop] › tests/guards.spec.ts:37:3 › the layout check fails on horizontal overflow (+3000px)
+  -  66 [desktop] › tests/guards.spec.ts:49:1 › the console guard fails on a CSP violation (an inline <style> under style-src self)
+  -  67 [desktop] › tests/guards.spec.ts:63:1 › the console guard also watches a second page of the same context
+  -  68 [desktop] › tests/guards.spec.ts:56:1 › the console guard fails on a console error
+  ✓  70 [desktop] › tests/smoke.spec.ts:42:3 › a deep link survives a reload: /tutor (same-origin SPA fallback) (756ms)
+  ✓  72 [desktop] › tests/smoke.spec.ts:42:3 › a deep link survives a reload: /student/x (same-origin SPA fallback) (753ms)
+  ✓  64 [desktop] › tests/smoke.spec.ts:16:3 › student renders in vi and en (2.3s)
+  ✓  63 [desktop] › tests/smoke.spec.ts:16:3 › tutor renders in vi and en (2.4s)
+  ✓  69 [desktop] › tests/smoke.spec.ts:16:3 › landing renders in vi and en (1.9s)
+  ✓  71 [desktop] › tests/smoke.spec.ts:16:3 › not-found renders in vi and en (1.7s)
+
+  26 skipped
+  46 passed (17.1s)
+e2e-run: playwright exit 0
+e2e-run: app stopped (pid 197910)
+exit=0

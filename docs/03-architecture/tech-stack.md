@@ -129,3 +129,5 @@ any analytics or tracking script.
 | Image runtime: JRE base | `docker.io/library/eclipse-temurin:25-jre@sha256:bb036ed6cfdc57e3da7c22634d15f1b840d2caf76183861c80e81ca4b5104abb` (multi-arch index; Temurin 25.0.4+7 JRE, Ubuntu 26.04) | T-M1.5 | 2026-09-25 |
 | JaCoCo (`jacoco-maven-plugin`) | 0.8.15 (report in `verify`, no threshold yet; EPL-2.0) | T-M1.5 | 2026-09-25 |
 | Podman (local image build) | 5.8.6 (CI: the runner's preinstalled Podman) | T-M1.5 | 2026-09-25 |
+| Playwright (`@playwright/test`, e2e/ and qa/) | 1.63.0 (Apache-2.0); Chromium headless shell 153.0.8010.12 (playwright build 1243) | T-M1.6 | 2026-09-26 |
+| `@axe-core/playwright` | 4.13.0 (MPL-2.0; axe-core 4.13) | T-M1.6 | 2026-09-26 |
