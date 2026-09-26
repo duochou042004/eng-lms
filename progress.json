@@ -32,7 +32,7 @@
   "currentTask": {
     "id": "T-M1.6",
     "title": "E2E harness: Playwright (6 viewports), helpers, smoke, e2e-smoke CI; /qa skeleton",
-    "status": "in_progress",
+    "status": "in_review",
     "ownerRole": "FE",
     "branch": "feature/T-M1.6-e2e-harness",
     "packet": "docs/tasks/T-M1.6-e2e-harness.md",
@@ -44,8 +44,9 @@
       "PO start signal for T-M1.6 — met (DEC-056)"
     ],
     "nextSteps": [
-      "Implement per the packet (AC1-AC7); the /qa skeleton goes on qa/T-M1.6 (path ownership)",
-      "QA; merge via merge-gate"
+      "PR CI green (incl. e2e-smoke)",
+      "independent QA (one agent; re-test via SendMessage)",
+      "QA-VERDICT + LC-APPROVED; merge-gate; qa/T-M1.6 (skeleton already committed locally) + report"
     ],
     "trace": [
       "NFR-RESP-01",
@@ -128,8 +129,8 @@
     }
   ],
   "tests": {
-    "lastRun": "2026-09-25T14:31:31Z",
-    "summary": "At T-M1.5 merge (a96dcf7): gate.sh PASS (11 steps); backend 83 tests + JaCoCo (lines 90.3%, branches 79.5%, no threshold); web 41; governance script tests incl. gate 24 + merge-gate 37; CI 6 checks green.",
+    "lastRun": "2026-09-26T02:52:46Z",
+    "summary": "T-M1.6: gate.sh PASS (12 steps, 150 s); e2e smoke 30/30 on six projects; guard self-tests 4; script tests incl. gate 25, e2e-run 13, merge-gate 37.",
     "suites": [
       {
         "name": "backend (./mvnw -B verify)",
@@ -159,8 +160,8 @@
       "note": "T-M1.6 packet G0-complete"
     },
     "G1": {
-      "status": "pending",
-      "note": "T-M1.6 not started"
+      "status": "pass",
+      "note": "gate.sh 12 steps PASS (evidence/T-M1.6/gate-20260926T025016Z.log)"
     },
     "G2": {
       "status": "pending",

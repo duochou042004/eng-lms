@@ -55,3 +55,19 @@ updates:
         update-types: ["version-update:semver-major"]
     commit-message:
       prefix: "build"
+  - package-ecosystem: npm
+    directory: /qa
+    target-branch: develop
+    schedule:
+      interval: weekly
+    groups:
+      playwright:
+        patterns: ["@playwright/test", "@axe-core/playwright"]
+    ignore:
+      # Same rules as web/ and e2e/ (DEC-056); qa/ is QA-owned (DEC-057).
+      - dependency-name: "@types/node"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "typescript"
+        update-types: ["version-update:semver-major"]
+    commit-message:
+      prefix: "build"
