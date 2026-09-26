@@ -1,0 +1,2 @@
+# qa/ is QA's own pnpm root, independent of the implementer's e2e/ (qa-protocol §1, DEC-057). No dependency build scripts.
+allowBuilds: {}
