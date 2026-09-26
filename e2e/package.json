@@ -1,0 +1,22 @@
+{
+  "name": "englms-e2e",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "test": "playwright test",
+    "test:pr": "playwright test --project=phone-small --project=tablet --project=laptop",
+    "typecheck": "tsc --noEmit",
+    "browsers": "playwright install chromium"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "4.13.0",
+    "@playwright/test": "1.63.0",
+    "@types/node": "24.13.6",
+    "typescript": "6.0.3"
+  },
+  "packageManager": "pnpm@12.6.0",
+  "engines": {
+    "node": ">=24 <25"
+  }
+}

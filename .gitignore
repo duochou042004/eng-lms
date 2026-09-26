@@ -41,3 +41,7 @@ evidence/**/raw/
 # --- Agent scratch ---
 .claude/settings.local.json
 .claude/scratch/
+
+# --- E2E (e2e/) ---
+e2e/playwright-report/
+e2e/test-results/

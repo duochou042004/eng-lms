@@ -1,6 +1,5 @@
 version: 2
 updates:
-  # The npm entry for e2e/ is added by T-M1.6.
   - package-ecosystem: github-actions
     directory: /
     target-branch: develop
@@ -40,3 +39,19 @@ updates:
       # TypeScript 7 (native compiler) drops the JS compiler API that openapi-typescript 7.x needs (PR #6, DEC-056).
       - dependency-name: "typescript"
         update-types: ["version-update:semver-major"]
+  - package-ecosystem: npm
+    directory: /e2e
+    target-branch: develop
+    schedule:
+      interval: weekly
+    groups:
+      playwright:
+        patterns: ["@playwright/test", "@axe-core/playwright"]
+    ignore:
+      # Same rules as web/ (DEC-056).
+      - dependency-name: "@types/node"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "typescript"
+        update-types: ["version-update:semver-major"]
+    commit-message:
+      prefix: "build"

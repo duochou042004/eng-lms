@@ -1,0 +1,75 @@
+name: e2e-smoke
+
+# Runs on every PR (no paths: filter): `e2e-smoke` is a required check (scripts/required-checks.txt). The Playwright
+# smoke + guard self-tests on the mandatory viewports against the packaged app (the jar with the SPA), T-M1.6.
+on:
+  pull_request:
+  push:
+    branches: [develop, master]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: e2e-smoke-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  e2e-smoke:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    services:
+      postgres:
+        # Same image as the dev stack (tech-stack §7), pinned by index digest.
+        image: docker.io/library/postgres:18@sha256:5a5a84b19854a9ffaa54082c166ff4ec27473a361e496e5ea167f298f2da9722
+        env:
+          POSTGRES_DB: englms
+          POSTGRES_USER: englms
+          # Throwaway credential of an ephemeral CI database; not a secret.
+          POSTGRES_PASSWORD: englms-ci
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U englms -d englms"
+          --health-interval 5s --health-timeout 5s --health-retries 20
+    env:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/englms
+      SPRING_DATASOURCE_USERNAME: englms
+      SPRING_DATASOURCE_PASSWORD: englms-ci
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
+        with:
+          distribution: temurin
+          java-version: "25"
+          cache: maven
+          cache-dependency-path: backend/pom.xml
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: "24"
+      - name: Enable pnpm
+        run: corepack enable
+      - name: Install e2e dependencies and Chromium
+        working-directory: e2e
+        run: |
+          pnpm install --frozen-lockfile
+          pnpm exec playwright install --with-deps chromium
+      - name: Typecheck the e2e suite
+        working-directory: e2e
+        run: pnpm typecheck
+      # Builds web/dist + the jar with the SPA, starts it on :8080/:8081, runs Playwright, always stops the app.
+      - name: Smoke on the mandatory viewports (phone-small, tablet, laptop)
+        run: ./scripts/e2e-run.sh --project=phone-small --project=tablet --project=laptop
+      - name: Upload the Playwright report
+        if: failure()
+        continue-on-error: true
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: e2e-playwright-report
+          path: |
+            e2e/playwright-report/
+            e2e/test-results/
+            backend/target/e2e-app.log
+          retention-days: 5

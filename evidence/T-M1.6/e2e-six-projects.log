@@ -1,0 +1,44 @@
+# T-M1.6 AC3: six-project smoke against the packaged app (2026-09-26T02:46:11Z, HEAD 67c93a3 + working tree)
+662db3da228c2ea2649b3ae04db4b4479e85fea5979f6a917a7f6d5cb1e7ec39
+englms-dev-db
+dev-up: englms-dev-db is healthy on 127.0.0.1:5432
+e2e-run: started englms-0.0.1-SNAPSHOT.jar (pid 115187, log backend/target/e2e-app.log)
+e2e-run: app ready; running Playwright (all projects)
+
+Running 30 tests using 8 workers
+
+  ✓   4 [phone-small] › tests/smoke.spec.ts:38:1 › a deep link survives a reload (same-origin SPA fallback) (1.9s)
+  ✓   1 [phone-small] › tests/smoke.spec.ts:16:3 › landing renders in vi and en (3.1s)
+  ✓   3 [phone-small] › tests/smoke.spec.ts:16:3 › not-found renders in vi and en (3.1s)
+  ✓   2 [phone-small] › tests/smoke.spec.ts:16:3 › student renders in vi and en (3.1s)
+  ✓   8 [phone] › tests/smoke.spec.ts:16:3 › student renders in vi and en (3.0s)
+  ✓   5 [phone-small] › tests/smoke.spec.ts:16:3 › tutor renders in vi and en (3.1s)
+  ✓   6 [phone] › tests/smoke.spec.ts:16:3 › landing renders in vi and en (3.1s)
+  ✓   7 [phone] › tests/smoke.spec.ts:16:3 › tutor renders in vi and en (3.1s)
+  ✓  11 [phone] › tests/smoke.spec.ts:38:1 › a deep link survives a reload (same-origin SPA fallback) (895ms)
+  ✓  15 [tablet] › tests/smoke.spec.ts:38:1 › a deep link survives a reload (same-origin SPA fallback) (840ms)
+  ✓   9 [phone] › tests/smoke.spec.ts:16:3 › not-found renders in vi and en (2.1s)
+  ✓  12 [tablet] › tests/smoke.spec.ts:16:3 › landing renders in vi and en (2.3s)
+  ✓  14 [tablet] › tests/smoke.spec.ts:16:3 › not-found renders in vi and en (2.3s)
+  ✓  10 [tablet] › tests/smoke.spec.ts:16:3 › tutor renders in vi and en (2.5s)
+  ✓  16 [tablet-land] › tests/smoke.spec.ts:16:3 › landing renders in vi and en (2.4s)
+  ✓  13 [tablet] › tests/smoke.spec.ts:16:3 › student renders in vi and en (2.5s)
+  ✓  20 [tablet-land] › tests/smoke.spec.ts:38:1 › a deep link survives a reload (same-origin SPA fallback) (847ms)
+  ✓  17 [tablet-land] › tests/smoke.spec.ts:16:3 › tutor renders in vi and en (2.3s)
+  ✓  18 [tablet-land] › tests/smoke.spec.ts:16:3 › student renders in vi and en (2.3s)
+  ✓  19 [tablet-land] › tests/smoke.spec.ts:16:3 › not-found renders in vi and en (2.1s)
+  ✓  25 [laptop] › tests/smoke.spec.ts:38:1 › a deep link survives a reload (same-origin SPA fallback) (780ms)
+  ✓  21 [laptop] › tests/smoke.spec.ts:16:3 › landing renders in vi and en (2.4s)
+  ✓  22 [laptop] › tests/smoke.spec.ts:16:3 › tutor renders in vi and en (2.4s)
+  ✓  24 [laptop] › tests/smoke.spec.ts:16:3 › not-found renders in vi and en (2.3s)
+  ✓  23 [laptop] › tests/smoke.spec.ts:16:3 › student renders in vi and en (2.4s)
+  ✓  26 [desktop] › tests/smoke.spec.ts:16:3 › landing renders in vi and en (2.0s)
+  ✓  30 [desktop] › tests/smoke.spec.ts:38:1 › a deep link survives a reload (same-origin SPA fallback) (482ms)
+  ✓  28 [desktop] › tests/smoke.spec.ts:16:3 › student renders in vi and en (1.9s)
+  ✓  27 [desktop] › tests/smoke.spec.ts:16:3 › tutor renders in vi and en (1.9s)
+  ✓  29 [desktop] › tests/smoke.spec.ts:16:3 › not-found renders in vi and en (1.4s)
+
+  30 passed (12.4s)
+e2e-run: playwright exit 0
+e2e-run: app stopped (pid 115187)
+exit=0

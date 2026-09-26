@@ -53,7 +53,8 @@
       "ci-cd §1",
       "DEC-052",
       "DEC-053",
-      "DEC-056"
+      "DEC-056",
+      "DEC-057"
     ]
   },
   "nextTask": {
@@ -178,12 +179,12 @@
   "decisions": {
     "log": "docs/10-governance/decision-log.md",
     "recent": [
-      "DEC-051",
       "DEC-052",
       "DEC-053",
       "DEC-054",
       "DEC-055",
-      "DEC-056"
+      "DEC-056",
+      "DEC-057"
     ],
     "pendingPO": [
       "OQ-03",
