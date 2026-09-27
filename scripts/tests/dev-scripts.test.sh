@@ -24,7 +24,7 @@ expect_exit 0 "env.sh exports DOCKER_HOST and disables Ryuk when the socket is a
   bash -c "source '$ROOT/scripts/env.sh' >/dev/null && echo \"\$DOCKER_HOST|\$TESTCONTAINERS_RYUK_DISABLED\""
 expect_output_contains "unix://$sock|true" "env.sh exports the expected values"
 
-# dev-down.sh: the stub podman records its arguments
+# dev-down.sh: the stub podman records its arguments; "container exists" succeeds (the stack is running)
 stub podman "echo \"\$*\" >>'$work/podman.args'"
 : >"$work/podman.args"
 expect_exit 0 "dev-down.sh keeps the volume by default" -- env PATH="$work/bin:$PATH" "$ROOT/scripts/dev-down.sh"
@@ -36,6 +36,26 @@ if grep -q -- " -v" "$work/podman.args"; then FAIL_COUNT=$((FAIL_COUNT + 1)); ec
 expect_exit 0 "dev-down.sh --purge" -- env PATH="$work/bin:$PATH" "$ROOT/scripts/dev-down.sh" --purge
 LAST_OUTPUT=$(cat "$work/podman.args")
 expect_output_contains "down -v" "--purge removes the volume"
+
+# T-M1.8 AC5: nothing running. The stub fails "container exists" and, like real Podman, prints errors for compose down.
+stub podman "echo \"\$*\" >>'$work/podman.args'
+case \"\$1 \$2\" in
+  'container exists') exit 1 ;;
+  'volume exists') [[ -f '$work/volume' ]] ;;
+  'volume rm') rm -f '$work/volume' ;;
+  compose*) echo 'Error: no container with name or ID \"englms-dev-db\" found: no such container' >&2; echo 'Error: no pod with name or ID pod_englms-dev found: no such pod' >&2 ;;
+esac"
+: >"$work/podman.args"
+expect_exit 0 "AC5: dev-down.sh with nothing running exits 0" -- env PATH="$work/bin:$PATH" "$ROOT/scripts/dev-down.sh"
+if [[ $(printf '%s\n' "$LAST_OUTPUT" | wc -l) -eq 1 && "$LAST_OUTPUT" == dev-down:* ]]; then PASS_COUNT=$((PASS_COUNT + 1)); echo "  ok   - AC5: stdout+stderr is exactly one 'dev-down:' line"; else FAIL_COUNT=$((FAIL_COUNT + 1)); echo "  FAIL - AC5: expected one 'dev-down:' line, got:"; echo "$LAST_OUTPUT" | sed 's/^/         /'; fi
+expect_output_contains "nothing is running" "AC5: says nothing is running"
+if grep -q "compose" "$work/podman.args"; then FAIL_COUNT=$((FAIL_COUNT + 1)); echo "  FAIL - AC5: compose down must not run when nothing is running"; else PASS_COUNT=$((PASS_COUNT + 1)); echo "  ok   - AC5: compose down is not run"; fi
+touch "$work/volume"
+expect_exit 0 "AC5: dev-down.sh --purge with nothing running still removes the volume" -- env PATH="$work/bin:$PATH" "$ROOT/scripts/dev-down.sh" --purge
+expect_output_contains "removed the englms-dev-pgdata volume" "AC5: reports the removed volume"
+[[ ! -f "$work/volume" ]] && { PASS_COUNT=$((PASS_COUNT + 1)); echo "  ok   - AC5: the volume is gone"; } || { FAIL_COUNT=$((FAIL_COUNT + 1)); echo "  FAIL - AC5: the volume was not removed"; }
+expect_exit 0 "AC5: dev-down.sh --purge with no volume" -- env PATH="$work/bin:$PATH" "$ROOT/scripts/dev-down.sh" --purge
+expect_output_contains "there is no englms-dev-pgdata volume" "AC5: says there is no volume"
 
 expect_exit 2 "dev-down.sh rejects unknown arguments" -- env PATH="$work/bin:$PATH" "$ROOT/scripts/dev-down.sh" --everything
 expect_output_contains "usage: dev-down.sh" "prints usage"

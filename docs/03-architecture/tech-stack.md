@@ -106,6 +106,7 @@ any analytics or tracking script.
 | springdoc-openapi (`starter-webmvc-api`, no UI) | 3.1.1 (built against Boot 4.1.0; Apache-2.0) | T-M1.2 | 2026-09-25 |
 | ArchUnit (`archunit-junit5`) | 1.5.1 (Apache-2.0) | T-M1.2 | 2026-09-25 |
 | Testcontainers | Boot-managed (2.x, `testcontainers-postgresql`); image `docker.io/library/postgres:18` | T-M1.2 | 2026-09-25 |
+| JUnit Platform Launcher (`junit-platform-launcher`, test scope) | Boot-managed (JUnit 6.0.x, the same release as Jupiter; EPL-2.0) | T-M1.8 (AC4: the test-plan listener that closes Spring contexts before JVM shutdown) | 2026-09-27 |
 | Maven (wrapper) | 3.9.16 (wrapper 3.3.4) | T-M1.2 | 2026-09-25 |
 | actions/setup-java | v6.0.1 @ `de7274f081f381c8f8158605e0321c36c376e2e6` | T-M1.2 | 2026-09-25 |
 | actions/upload-artifact | v7.0.1 @ `043fb46d1a93c77aae656e7c1c64a875d1fc6a0a` | T-M1.2 | 2026-09-25 |

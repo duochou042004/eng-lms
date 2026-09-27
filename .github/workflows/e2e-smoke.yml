@@ -63,6 +63,7 @@ jobs:
       - name: Smoke on the mandatory viewports (phone-small, tablet, laptop)
         run: ./scripts/e2e-run.sh --project=phone-small --project=tablet --project=laptop
       - name: Upload the Playwright report
+        id: upload-playwright-report
         if: failure()
         continue-on-error: true
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
@@ -73,3 +74,6 @@ jobs:
             e2e/test-results/
             backend/target/e2e-app.log
           retention-days: 5
+      - name: Warn when the Playwright report upload failed
+        if: always() && steps.upload-playwright-report.outcome == 'failure'
+        run: echo "::warning title=Playwright report not uploaded::The e2e-playwright-report artifact upload failed (storage quota?); see the GitLab mirror pipeline (DEC-060)."

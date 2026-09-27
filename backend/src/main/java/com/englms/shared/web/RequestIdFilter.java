@@ -1,7 +1,6 @@
 package com.englms.shared.web;
 
 import java.io.IOException;
-import java.util.regex.Pattern;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -20,14 +19,13 @@ import org.springframework.web.filter.OncePerRequestFilter;
 /**
  * Gives every request an ID (api-conventions.md): a well-formed incoming {@code X-Request-Id} is reused, otherwise a
  * new one is generated. The ID is echoed in the response header, put in the log MDC and exposed to Problem Details.
+ * It runs on the application port (this bean) and on the management port ({@link ManagementRequestIdConfiguration}).
  */
 @Component
 @Order(Ordered.HIGHEST_PRECEDENCE)
 class RequestIdFilter extends OncePerRequestFilter {
 
 	private static final Logger log = LoggerFactory.getLogger(RequestIdFilter.class);
-
-	private static final Pattern SAFE_ID = Pattern.compile("[A-Za-z0-9._-]{1,64}");
 
 	private final Ids ids;
 
@@ -38,8 +36,7 @@ class RequestIdFilter extends OncePerRequestFilter {
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
 			throws ServletException, IOException {
-		String incoming = request.getHeader(RequestIds.HEADER);
-		String requestId = (incoming != null && SAFE_ID.matcher(incoming).matches()) ? incoming : ids.newId().toString();
+		String requestId = RequestIds.resolve(request.getHeader(RequestIds.HEADER), ids);
 		request.setAttribute(RequestIds.ATTRIBUTE, requestId);
 		response.setHeader(RequestIds.HEADER, requestId);
 		MDC.put(RequestIds.MDC_KEY, requestId);

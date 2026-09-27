@@ -56,6 +56,8 @@
 ## 7. Forbidden (SPEC §33, §53 and the non-goals)
 
 - Hard-coding curricula or exam semantics: identifiers or enums like `TOEIC*`, `IELTS*`, `THPT*`, `ExamType`, `Part5`, "band" logic. These are **user data**.
+  `ForbiddenIdentifiersTest` scans `src/main` (case-insensitive) for exactly the list in test-strategy §4 rule 6: `toeic`, `ielts`, `thpt`, `examtype`, `part5`, `tenant`, `payment`,
+  `invoice`, `openai`, `anthropic`, `chatgpt`. "Band" logic and the other items here can't be caught by a name scan; reviews check them.
 - Assuming every student has a course, every lesson has video, every assignment is multiple choice, or everyone follows the same roadmap (SPEC §53).
 - Adding: public registration, payments, chat or messaging, video conferencing, AI features, multi-tenant or multi-tutor concepts, parent accounts, booking.
 - Adding infrastructure (Redis, Kafka, RabbitMQ, Elasticsearch, Kubernetes, microservices) or large libraries without an ADR.

@@ -42,6 +42,7 @@ jobs:
         working-directory: .
         run: ./scripts/coverage-summary.sh >> "$GITHUB_STEP_SUMMARY" && ./scripts/coverage-summary.sh
       - name: Upload coverage report
+        id: upload-coverage
         if: always()
         continue-on-error: true
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
@@ -50,7 +51,12 @@ jobs:
           path: backend/target/site/jacoco/
           retention-days: 5
           if-no-files-found: warn
+      # A failed best-effort upload stays non-blocking but becomes visible as an annotation (T-M1.8 AC6, DEC-055 R2-1).
+      - name: Warn when the coverage upload failed
+        if: always() && steps.upload-coverage.outcome == 'failure'
+        run: echo "::warning title=Coverage report not uploaded::The backend-coverage artifact upload failed (storage quota?); the totals are still in the job summary."
       - name: Upload test reports
+        id: upload-test-reports
         if: failure()
         continue-on-error: true
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
@@ -58,3 +64,6 @@ jobs:
           name: backend-test-reports
           path: backend/target/surefire-reports/
           retention-days: 5
+      - name: Warn when the test-report upload failed
+        if: always() && steps.upload-test-reports.outcome == 'failure'
+        run: echo "::warning title=Test reports not uploaded::The backend-test-reports artifact upload failed (storage quota?); see the GitLab mirror pipeline (DEC-060)."

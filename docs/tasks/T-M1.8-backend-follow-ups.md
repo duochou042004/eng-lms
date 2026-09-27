@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Milestone | M1 |
-| Status | **ready** (G0-complete 2026-09-27 after the PR #16 docs review; T-M1.7 merged `41beac7`). PO start signal given 2026-09-27 (DEC-068) |
+| Status | **in_review** (G0 passed on PR #16, merged `207be44`; PO start signal 2026-09-27, DEC-068) |
 | Owner role | BE (the LC-owned files it may touch are listed under "LC-owned files" below; the LC reviews that diff before `LC-APPROVED`) |
 | Branch | `feature/T-M1.8-backend-follow-ups` (from `develop`) |
 | Depends on | T-M1.2, T-M1.4, T-M1.5 (merged); T-M1.7 merged |
@@ -32,7 +32,8 @@ the written rules. The local test run must not stall for 30 s at shutdown, and t
   7. **`coverage-summary.sh` test (T-M1.5 R2-3).** Add `scripts/tests/coverage-summary.test.sh` with a fixture JaCoCo CSV, picked up by `run-all.sh`.
 
 ## Out of scope (explicit)
-- Security headers on :8081 (DEC-050); Tomcat-level rejections on :8081 (loopback/internal only; they keep Tomcat's minimal report); new endpoints; Spring Security or authentication (M2, T-M2.1, including the dot-segment paths of DEC-054 F3); changes to the required checks list or `merge-gate.sh`;
+- Security headers on :8081 (DEC-050); Tomcat-level rejections on :8081 (loopback/internal only; they keep Tomcat's minimal report); new endpoints;
+  Spring Security or authentication (M2, T-M2.1, including the dot-segment paths of DEC-054 F3); changes to the required checks list or `merge-gate.sh`;
   the T-M1.7 review S4 items and OQ-17 (backlog T-M1.12); the web client (T-M1.9).
 
 ## Guardrail answers (scope.md §6)

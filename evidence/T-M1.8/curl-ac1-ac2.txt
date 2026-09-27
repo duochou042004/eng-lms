@@ -1,0 +1,71 @@
+# T-M1.8 AC1/AC2: curl -si against the packaged jar (englms-0.0.1-SNAPSHOT.jar) on :8080/:8081, 2026-09-27T08:43:43Z, head da92eb2
+
+$ curl -si --path-as-is 'http://localhost:8081/actuator/env'
+HTTP/1.1 404 
+X-Request-Id: 01a0e208-cf04-7f05-afdf-aa2155e76ddc
+Content-Type: application/problem+json
+Transfer-Encoding: chunked
+Date: Sun, 27 Sep 2026 08:43:43 GMT
+
+{"instance":"/actuator/env","status":404,"title":"Not Found","type":"https://englms.local/problems/not-found","code":"NOT_FOUND","requestId":"01a0e208-cf04-7f05-afdf-aa2155e76ddc"}
+
+$ curl -si --path-as-is 'http://localhost:8081/actuator/health'
+HTTP/1.1 200 
+X-Request-Id: 01a0e208-cf36-72d0-a0e9-8f7e17969dfc
+Content-Type: application/vnd.spring-boot.actuator.v3+json
+Transfer-Encoding: chunked
+Date: Sun, 27 Sep 2026 08:43:43 GMT
+
+{"groups":["liveness","readiness"],"status":"UP"}
+
+$ curl -si --path-as-is 'http://localhost:8080/api/v1/meta?q=<'
+HTTP/1.1 400 
+Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; media-src 'self' blob:; font-src 'self'; connect-src 'self'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'
+X-Content-Type-Options: nosniff
+Referrer-Policy: strict-origin-when-cross-origin
+Permissions-Policy: microphone=(self), camera=(), geolocation=(), payment=()
+Cross-Origin-Opener-Policy: same-origin
+X-Request-Id: 01a0e208-cf47-7dee-b579-fe1facd3c489
+Cache-Control: no-store
+Content-Type: application/problem+json;charset=UTF-8
+Content-Length: 171
+Date: Sun, 27 Sep 2026 08:43:43 GMT
+Connection: close
+
+{"type":"https://englms.local/problems/malformed-request","title":"Bad Request","status":400,"code":"MALFORMED_REQUEST","requestId":"01a0e208-cf47-7dee-b579-fe1facd3c489"}
+
+$ curl -si --path-as-is 'http://localhost:8080/api/v1/a%2fb'
+HTTP/1.1 400 
+Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; media-src 'self' blob:; font-src 'self'; connect-src 'self'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'
+X-Content-Type-Options: nosniff
+Referrer-Policy: strict-origin-when-cross-origin
+Permissions-Policy: microphone=(self), camera=(), geolocation=(), payment=()
+Cross-Origin-Opener-Policy: same-origin
+X-Request-Id: 01a0e208-cf53-700c-a7ac-5608ed8bab38
+Cache-Control: no-store
+Content-Type: application/problem+json;charset=UTF-8
+Content-Length: 171
+Date: Sun, 27 Sep 2026 08:43:43 GMT
+Connection: close
+
+{"type":"https://englms.local/problems/malformed-request","title":"Bad Request","status":400,"code":"MALFORMED_REQUEST","requestId":"01a0e208-cf53-700c-a7ac-5608ed8bab38"}
+
+$ curl -si --path-as-is 'http://localhost:8080/api/..%2fmeta'
+HTTP/1.1 400 
+Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; media-src 'self' blob:; font-src 'self'; connect-src 'self'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'
+X-Content-Type-Options: nosniff
+Referrer-Policy: strict-origin-when-cross-origin
+Permissions-Policy: microphone=(self), camera=(), geolocation=(), payment=()
+Cross-Origin-Opener-Policy: same-origin
+X-Request-Id: 01a0e208-cf5c-7f50-919c-3766d7e8ba72
+Cache-Control: no-store
+Content-Type: application/problem+json;charset=UTF-8
+Content-Length: 171
+Date: Sun, 27 Sep 2026 08:43:43 GMT
+Connection: close
+
+{"type":"https://englms.local/problems/malformed-request","title":"Bad Request","status":400,"code":"MALFORMED_REQUEST","requestId":"01a0e208-cf5c-7f50-919c-3766d7e8ba72"}
+
+$ curl -si -H 'X-Request-Id: evidence-1' http://localhost:8081/actuator/health
+HTTP/1.1 200 
+X-Request-Id: evidence-1

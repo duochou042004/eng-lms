@@ -62,6 +62,17 @@ The version lives in the path (`v1`). Breaking changes → `v2` routes side by s
 
 The `code` values form a closed enum in `shared.ProblemCodes`, exported in OpenAPI. The frontend maps codes to i18n messages. **Do not show `detail` directly to users.**
 
+**Where Problem Details come from (T-M1.8):**
+- Errors inside the application: `shared.web.ProblemDetailsAdvice`.
+- Requests Tomcat rejects on the application port before any filter runs (an encoded `/` in the path, a raw `<` in the query string, …): `shared.web.ProblemDetailsErrorReportValve`.
+  It returns Tomcat's status (usually `400`; also e.g. `417` for a bad `Expect`, `501`/`505` for unsupported transfer codings or HTTP versions) with `MALFORMED_REQUEST` for
+  4xx and `INTERNAL_ERROR` for 5xx, `Cache-Control: no-store`, the security headers and `X-Request-Id`, with no `instance` and no `detail`, so the rejected input is never echoed.
+  It writes only for an error nobody has reported yet and with no body (Tomcat's own guard).
+  Residual cases (T-M1.8 QA F4/F5): when Tomcat fails on the **request line** (a raw `<` in the query, a raw `\` in the path), it never parses the headers, so a valid incoming
+  `X-Request-Id` can't be reused and a new one is generated. `OPTIONS *` is answered by Tomcat itself with no request ID or headers. `TRACE`: see security.md §5.
+- The management port (:8081) also carries `X-Request-Id`, and its Problem Details carry the `requestId`. It carries no security headers (DEC-050), and Tomcat-level rejections
+  there keep Tomcat's minimal report (loopback/internal only).
+
 ## 6. Concurrency and idempotency
 
 - Aggregates expose `version`. Updates must send it (in the body for PUT/PATCH). A mismatch → 409 `STALE_VERSION`, and the UI offers reload or merge.

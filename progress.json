@@ -16,7 +16,7 @@
       }
     ]
   },
-  "updatedAt": "2026-09-27T02:27:00Z",
+  "updatedAt": "2026-09-27T09:00:00Z",
   "updatedBy": "lead-coordinator (session 2026-09-27 #5, Opus 5.5)",
   "phase": {
     "id": "P1",
@@ -32,21 +32,21 @@
   "currentTask": {
     "id": "T-M1.8",
     "title": "Backend error-surface and tooling follow-ups (T-M1.2/T-M1.4/T-M1.5 QA items)",
-    "status": "ready",
+    "status": "in_review",
     "ownerRole": "BE",
     "branch": "feature/T-M1.8-backend-follow-ups",
     "packet": "docs/tasks/T-M1.8-backend-follow-ups.md",
     "pr": null,
     "lastCommit": null,
-    "startedAt": null,
+    "startedAt": "2026-09-27T08:25:00Z",
     "entryGate": [
       "T-M1.7 merged — met (41beac7)",
-      "Packet G0-complete — met (PR #16 docs review fixes)",
+      "Packet G0-complete — met (PR #16 DOCS-REVIEW PASS, merged 207be44)",
       "PO start signal for T-M1.8 — met (DEC-068)"
     ],
     "nextSteps": [
-      "Merge PR #16 via merge-gate after DOCS-REVIEW T-M1.8 PASS",
-      "Implement on feature/T-M1.8-backend-follow-ups; QA + SEC review (G3); merge via merge-gate; ./scripts/gitlab-sync.sh"
+      "Round 2: QA and SEC re-test the review-fix head",
+      "Then the verdict comments + LC-APPROVED T-M1.8 after CI is green; merge via merge-gate; qa/T-M1.8 record; ./scripts/gitlab-sync.sh"
     ],
     "trace": [
       "DEC-041",
@@ -54,7 +54,9 @@
       "DEC-050",
       "DEC-054",
       "DEC-055",
-      "DEC-068"
+      "DEC-068",
+      "DEC-069",
+      "DEC-070"
     ]
   },
   "nextTask": {
@@ -152,8 +154,8 @@
     }
   ],
   "tests": {
-    "lastRun": "2026-09-27T02:19:00Z",
-    "summary": "At T-M1.7 merge (41beac7): gate.sh PASS (12 steps, 174 s at c9d6206; the later commits are script-only, script tests re-run: PASS); governance script tests incl. merge-gate 131; CI 7/7 green at 0cd46cb.",
+    "lastRun": "2026-09-27T08:41:29Z",
+    "summary": "T-M1.8 branch: gate.sh PASS (12 steps, 108 s); backend 94 tests locally in 28.7 s with no Surefire kill (AC4); new script tests: workflow-warnings 10, coverage-summary 9, dev scripts 21.",
     "suites": [
       {
         "name": "backend (./mvnw -B verify)",
@@ -183,16 +185,16 @@
       "note": "T-M1.8 packet G0-complete (docs/T-M1.8-packet)"
     },
     "G1": {
-      "status": "pending",
-      "note": "T-M1.8 not started"
+      "status": "pass",
+      "note": "AC1-AC8 implemented with tests (evidence/T-M1.8/summary.md)"
     },
     "G2": {
-      "status": "pending",
-      "note": "T-M1.8 not started"
+      "status": "pass",
+      "note": "gate.sh PASS (12 steps, 108 s); CI on the PR"
     },
     "G3": {
       "status": "pending",
-      "note": "QA-VERDICT + SEC-REVIEW (error surface, headers)"
+      "note": "Round 1: SEC CHANGES REQUESTED (S3-1 double request-ID filter, fixed), QA PASS WITH MINOR; round 2 pending"
     },
     "G4": {
       "status": "pending",
@@ -203,12 +205,12 @@
   "decisions": {
     "log": "docs/10-governance/decision-log.md",
     "recent": [
-      "DEC-063",
-      "DEC-064",
       "DEC-065",
       "DEC-066",
       "DEC-067",
-      "DEC-068"
+      "DEC-068",
+      "DEC-069",
+      "DEC-070"
     ],
     "pendingPO": [
       "OQ-03",
@@ -458,6 +460,26 @@
       "at": "2026-09-27T02:27:00Z",
       "actor": "lead-coordinator",
       "event": "docs/T-M1.8-packet: T-M1.7 merge + review record, DEC-067, backlog T-M1.12, T-M1.8 packet G0 (ready; PO start signal pending), handoff."
+    },
+    {
+      "at": "2026-09-27T08:24:00Z",
+      "actor": "lead-coordinator",
+      "event": "PO start signal for T-M1.8 (DEC-068). PR #16 DOCS-REVIEW round 1 CHANGES REQUESTED (S2-1: headers on :8081 vs DEC-050) fixed; round 2 PASS; merged via merge-gate as 207be44 (first merge under the T-M1.7 gate)."
+    },
+    {
+      "at": "2026-09-27T08:25:00Z",
+      "actor": "lead-coordinator",
+      "event": "T-M1.8 started on feature/T-M1.8-backend-follow-ups; PR #16 review S4-A/B/C fixed here."
+    },
+    {
+      "at": "2026-09-27T08:50:00Z",
+      "actor": "lead-coordinator",
+      "event": "T-M1.8 AC1-AC8 implemented: :8081 request IDs (ManagementContextConfiguration), Problem Details valve for Tomcat-rejected requests, examtype/part5, AC4 root cause (Testcontainers JVM hook vs Spring shutdown + Modulith registry query) fixed by closing test contexts at test-plan end, quiet dev-down, upload ::warning steps, coverage-summary test. gate.sh PASS 108 s."
+    },
+    {
+      "at": "2026-09-27T09:00:00Z",
+      "actor": "lead-coordinator",
+      "event": "T-M1.8 review round 1: SEC CHANGES REQUESTED (S3-1: management config component-scanned -> request-ID filter twice on :8080), QA PASS WITH MINOR. Fixed S3-1/S4-1/S4-2 (DEC-069), TRACE + API no-store deferred to T-M2.1, F4/F5 documented (DEC-070). gate.sh PASS 111 s."
     }
   ]
 }
