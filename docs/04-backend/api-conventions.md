@@ -62,6 +62,13 @@ The version lives in the path (`v1`). Breaking changes → `v2` routes side by s
 
 The `code` values form a closed enum in `shared.ProblemCodes`, exported in OpenAPI. The frontend maps codes to i18n messages. **Do not show `detail` directly to users.**
 
+**Where Problem Details come from (T-M1.8):**
+- Errors inside the application: `shared.web.ProblemDetailsAdvice`.
+- Requests Tomcat rejects on the application port before any filter runs (an encoded `/` in the path, a raw `<` in the query string, …): `shared.web.ProblemDetailsErrorReportValve`.
+  It returns `400`, `MALFORMED_REQUEST`, `Cache-Control: no-store`, the security headers and `X-Request-Id`, with no `instance` and no `detail`, so the rejected input is never echoed.
+- The management port (:8081) also carries `X-Request-Id`, and its Problem Details carry the `requestId`. It carries no security headers (DEC-050), and Tomcat-level rejections
+  there keep Tomcat's minimal report (loopback/internal only).
+
 ## 6. Concurrency and idempotency
 
 - Aggregates expose `version`. Updates must send it (in the body for PUT/PATCH). A mismatch → 409 `STALE_VERSION`, and the UI offers reload or merge.
