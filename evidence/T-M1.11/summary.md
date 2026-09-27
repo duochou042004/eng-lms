@@ -16,4 +16,10 @@ after the T-M1.6 merge still logged `Artifact storage quota has been hit`). Usag
 | **AC4** docs, DEC, progress, GitHub CI green | see PR | ci-cd §1.1, git-governance §4, development-setup §4, tech-stack §7 (DinD, Playwright image, Temurin tarball, glab), backlog T-M1.11, DEC-060, `progress.json` |
 
 ## Pipelines
-- Branch, first run: 2886164985 (success).
+- Branch, first run: 2886164985 at `725b97b` (success; backend 101 s, web 29 s, e2e-smoke 148 s).
+- Branch head `b4a4eef`: 2886169118 (success; backend 82 s, web 29 s, e2e-smoke 98 s; artifacts expire 2026-10-02). GitHub PR #14 at `b4a4eef`: all 7 checks green.
+- Final head and develop after the merge: recorded in the merge record (docs/handoff) because they happen after this file is committed.
+
+## Review
+`review/docs.md`: **DOCS-REVIEW T-M1.11: PASS WITH MINOR** (F1 S3, F2–F7 S4; handled by DEC-061: GitLab branch protection + MRs disabled, the hook's
+test-only override limited to local paths, wording fixed, statuses aligned; the `.claude/settings.json` glab deny rules are recommended to the PO).

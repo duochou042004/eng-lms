@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Milestone | M1 |
-| Status | **in_progress** (PO request 2026-09-27, DEC-060; done in the same session) |
+| Status | **in_review** (PR #14; PO request 2026-09-27, DEC-060; review PASS WITH MINOR, DEC-061) |
 | Owner role | LC (CI/governance; no product code) |
 | Branch | `chore/T-M1.11-gitlab-ci` (from the T-M1.7 bookkeeping branch; it merges that bookkeeping too) |
 | Depends on | T-M1.6 merged |
@@ -41,6 +41,6 @@ GitHub stays the source of truth: PRs, the required checks and `merge-gate.sh` a
 `evidence/T-M1.11/summary.md`: pipeline links, the artifact listing and download proof, the script test output, CI links, the review.
 
 ## Risks
-- GitLab.com free tier: 400 compute minutes/month for private projects. One pipeline takes about 10–15 min, so sync only develop and branches under review.
+- GitLab.com free tier: 400 compute minutes/month for private projects. One pipeline takes about 4.5 compute minutes (backend ~1.5, web ~0.5, e2e ~2.5), so ≈ 85 pipelines/month; sync develop and branches under review only.
 - Docker Hub pull limits inside Docker-in-Docker (Testcontainers pulls `postgres:18`).
-- Remove or keep the mirror after the GitHub storage resets: a PO decision recorded in progress.json (`pendingPO`).
+- Remove or keep the mirror after the GitHub storage resets: a PO decision recorded in progress.json (`decisions.pendingPO`).

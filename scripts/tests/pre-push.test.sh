@@ -54,4 +54,7 @@ expect_exit 1 "still blocks a new develop commit to origin (GitHub), even with t
   "${mirror_env[@]}" git push -q origin develop:refs/heads/develop
 expect_exit 1 "blocks deleting develop on the mirror" -- \
   "${mirror_env[@]}" git push -q "$work/mirror.git" :refs/heads/develop
+expect_exit 1 "the test-only override is ignored for non-path URLs (file://, https://), so it cannot widen to a real remote" -- \
+  env ENGLMS_MIRROR_URL_RE=".*" git push -q "file://$work/other.git" refs/remotes/origin/develop:refs/heads/develop
+expect_output_contains "direct push to 'develop' is blocked" "explains the block"
 finish

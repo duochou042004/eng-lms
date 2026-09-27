@@ -56,8 +56,8 @@ Trailers: `Task: T-M2.3`, `Refs: FR-STU-01, DEC-012`, and the co-author attribut
   The update is a new head commit, so every verdict and approval must be re-posted afterwards.
 
 **GitLab mirror (DEC-060, temporary):** `origin` (GitHub) is the only place where work is merged. `scripts/gitlab-sync.sh` copies GitHub's
-`develop`, `master` and named branches to the `gitlab` remote. The pre-push hook allows develop/master there only as exactly `origin/<branch>`, so the
-mirror can only follow merge-gate's result. Never push local commits to the mirror's develop/master and never force-push it.
+`develop`, `master` and named branches to the `gitlab` remote. The pre-push hook allows develop/master there only as exactly the local `origin/<branch>` tracking ref (as last fetched
+from GitHub), and GitLab protects both branches (Maintainers push, no merges, no force push; merge requests disabled), so the mirror follows merge-gate's result. Never push local commits to the mirror's develop/master and never force-push it.
 
 ## 5. Releases and tags
 

@@ -36,7 +36,7 @@
     "ownerRole": "LC",
     "branch": "chore/T-M1.11-gitlab-ci",
     "packet": "docs/tasks/T-M1.11-gitlab-ci.md",
-    "pr": null,
+    "pr": "https://github.com/duochou042004/eng-lms/pull/14",
     "lastCommit": null,
     "startedAt": "2026-09-27T01:00:00Z",
     "entryGate": [
@@ -53,7 +53,8 @@
       "DEC-053",
       "DEC-056",
       "DEC-060",
-      "R-08"
+      "R-08",
+      "DEC-061"
     ]
   },
   "nextTask": {
@@ -167,19 +168,19 @@
   "gates": {
     "G0": {
       "status": "pass",
-      "note": "T-M1.7 packet G0-complete"
+      "note": "T-M1.11 packet"
     },
     "G1": {
-      "status": "pending",
-      "note": "T-M1.7 not started"
+      "status": "pass",
+      "note": "script tests + GitLab pipeline green"
     },
     "G2": {
-      "status": "pending",
-      "note": "T-M1.7 not started"
+      "status": "pass",
+      "note": "PR #14 CI green (7 checks)"
     },
     "G3": {
-      "status": "pending",
-      "note": "DOCS-REVIEW or QA-VERDICT required (chore packet)"
+      "status": "pass",
+      "note": "DOCS-REVIEW PASS WITH MINOR (DEC-061)"
     },
     "G4": {
       "status": "pending",
@@ -190,12 +191,12 @@
   "decisions": {
     "log": "docs/10-governance/decision-log.md",
     "recent": [
-      "DEC-055",
       "DEC-056",
       "DEC-057",
       "DEC-058",
       "DEC-059",
-      "DEC-060"
+      "DEC-060",
+      "DEC-061"
     ],
     "pendingPO": [
       "OQ-03",
@@ -209,7 +210,8 @@
       "OQ-11",
       "OQ-12",
       "OQ-13",
-      "OQ-14"
+      "OQ-14",
+      "DEC-060"
     ]
   },
   "risks": {

@@ -33,7 +33,7 @@ GitHub's Actions artifact storage is exhausted until the monthly reset (expected
 | `web` | `node:24-slim` | install, lint, typecheck, API types, test, build, budget, contrast | — |
 | `e2e-smoke` | `playwright:v1.63.0-noble` + Temurin 25 tarball (SHA-256) + `postgres:18` service | `scripts/e2e-run.sh` on the mandatory viewports | Playwright report, test results, app log |
 
-GitHub remains the source of truth: the GitLab pipeline is **not** a required check and GitLab is not a merge path. The mirror is fed by
+GitHub remains the source of truth: the GitLab pipeline is **not** a required check and GitLab is not a merge path (merge requests are disabled; develop/master are protected: Maintainers push only, no merges, no force push; DEC-061). The mirror is fed by
 `scripts/gitlab-sync.sh` (GitHub's commits only). Budget: GitLab.com free tier, 400 compute minutes/month; sync develop and the branches under review only.
 
 ## 2. Branch protection (target configuration)
