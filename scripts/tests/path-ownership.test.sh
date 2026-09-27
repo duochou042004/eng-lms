@@ -16,6 +16,9 @@ expect_exit 0 "chore/ branch with docs and scripts passes"    -- run chore/T-M1.
 expect_exit 1 "unknown branch kind fails"                     -- run random/thing README.md
 expect_exit 1 "R2-1: dependabot branch touching source code fails"   -- run dependabot/maven/backend/x backend/pom.xml backend/src/main/A.java
 expect_exit 0 "dependabot branch touching manifests/workflows passes" -- run dependabot/npm_and_yarn/web/x web/package.json web/pnpm-lock.yaml .github/workflows/web.yml
+expect_exit 0 "T-M1.7/R3-3: dependabot branch bumping the Maven wrapper properties passes" -- run dependabot/maven/backend/x backend/.mvn/wrapper/maven-wrapper.properties backend/pom.xml
+expect_exit 1 "T-M1.7: dependabot branch touching other .mvn files fails" -- run dependabot/maven/backend/x .mvn/extensions.xml
+expect_exit 1 "T-M1.7: dependabot branch touching the wrapper jar fails" -- run dependabot/maven/backend/x backend/.mvn/wrapper/maven-wrapper.jar
 expect_exit 2 "F5: an empty change list fails (no silent PASS)" -- run chore/T-M1.1-x ""
 expect_exit 2 "F5: an unknown base ref fails (no silent PASS)" -- env -u FILES_FROM "$ROOT/scripts/check-path-ownership.sh" chore/T-M1.1-x origin/does-not-exist
 finish
