@@ -2,6 +2,15 @@ package com.englms;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.Socket;
+import java.nio.charset.StandardCharsets;
+import java.util.LinkedHashMap;
+import java.util.Locale;
+import java.util.Map;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -127,6 +136,108 @@ class ApplicationIntegrationTest {
 			.expectBody()
 			.jsonPath("$.code")
 			.isEqualTo("NOT_FOUND");
+	}
+
+	// T-M1.8 AC1: the management port carries request IDs (only; no security headers there, DEC-050).
+	@Test
+	void managementProblemDetailsCarryTheRequestIdOfTheResponseHeader() {
+		management.get()
+			.uri("/actuator/env")
+			.exchange()
+			.expectStatus()
+			.isNotFound()
+			.expectHeader()
+			.contentTypeCompatibleWith(MediaType.APPLICATION_PROBLEM_JSON)
+			.expectHeader()
+			.doesNotExist("Content-Security-Policy")
+			.expectBody(String.class)
+			.consumeWith(result -> {
+				String header = result.getResponseHeaders().getFirst("X-Request-Id");
+				assertThat(header).isNotBlank();
+				assertThat(result.getResponseBody()).contains("\"requestId\":\"" + header + "\"");
+			});
+	}
+
+	@Test
+	void managementEchoesAValidIncomingRequestId() {
+		management.get()
+			.uri("/actuator/health")
+			.header("X-Request-Id", "it-mgmt-1")
+			.exchange()
+			.expectStatus()
+			.isOk()
+			.expectHeader()
+			.valueEquals("X-Request-Id", "it-mgmt-1");
+	}
+
+	@Test
+	void managementHealthCarriesAGeneratedRequestId() {
+		management.get()
+			.uri("/actuator/health")
+			.exchange()
+			.expectStatus()
+			.isOk()
+			.expectHeader()
+			.value("X-Request-Id", id -> assertThat(id).matches("[0-9a-f-]{36}"));
+	}
+
+	// T-M1.8 AC2: requests Tomcat rejects before any filter runs get Problem Details, the security headers and a request ID.
+	@ParameterizedTest
+	@ValueSource(strings = { "/api/v1/meta?q=<", "/api/v1/a%2fb", "/api/..%2fmeta" })
+	void requestsRejectedByTomcatGetProblemDetailsAndTheSecurityHeaders(String target) throws IOException {
+		RawResponse response = rawGet(port, target, null);
+
+		assertThat(response.status()).isEqualTo(400);
+		assertThat(response.header("content-type")).startsWith("application/problem+json");
+		assertThat(response.header("cache-control")).isEqualTo("no-store");
+		assertThat(response.header("content-security-policy")).isEqualTo(CSP);
+		assertThat(response.header("x-content-type-options")).isEqualTo("nosniff");
+		assertThat(response.header("referrer-policy")).isEqualTo("strict-origin-when-cross-origin");
+		assertThat(response.header("permissions-policy")).isEqualTo("microphone=(self), camera=(), geolocation=(), payment=()");
+		assertThat(response.header("cross-origin-opener-policy")).isEqualTo("same-origin");
+		String requestId = response.header("x-request-id");
+		assertThat(requestId).matches("[0-9a-f-]{36}");
+		assertThat(response.body()).contains("\"status\":400", "\"code\":\"MALFORMED_REQUEST\"",
+				"\"requestId\":\"" + requestId + "\"");
+		assertThat(response.body()).doesNotContain("<", "html", "Tomcat", "Exception", "instance", "meta", "%2f");
+	}
+
+	@Test
+	void aRejectedRequestReusesAValidIncomingRequestIdAndNeverEchoesABadOne() throws IOException {
+		assertThat(rawGet(port, "/api/v1/a%2fb", "it-rejected-1").header("x-request-id")).isEqualTo("it-rejected-1");
+		RawResponse bad = rawGet(port, "/api/v1/a%2fb", "bad<id>");
+		assertThat(bad.header("x-request-id")).matches("[0-9a-f-]{36}");
+		assertThat(bad.body()).doesNotContain("bad");
+	}
+
+	record RawResponse(int status, Map<String, String> headers, String body) {
+
+		String header(String name) {
+			return headers.get(name);
+		}
+
+	}
+
+	/** A raw HTTP/1.1 GET: HTTP clients refuse to send an unencoded {@code <}, Tomcat's parser is what is tested. */
+	static RawResponse rawGet(int port, String target, String requestId) throws IOException {
+		try (Socket socket = new Socket("localhost", port)) {
+			socket.setSoTimeout(10_000);
+			OutputStream out = socket.getOutputStream();
+			String request = "GET " + target + " HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n"
+					+ ((requestId != null) ? "X-Request-Id: " + requestId + "\r\n" : "") + "\r\n";
+			out.write(request.getBytes(StandardCharsets.ISO_8859_1));
+			out.flush();
+			InputStream in = socket.getInputStream();
+			String raw = new String(in.readAllBytes(), StandardCharsets.UTF_8);
+			int split = raw.indexOf("\r\n\r\n");
+			String[] head = raw.substring(0, split).split("\r\n");
+			Map<String, String> headers = new LinkedHashMap<>();
+			for (int i = 1; i < head.length; i++) {
+				int colon = head[i].indexOf(':');
+				headers.put(head[i].substring(0, colon).trim().toLowerCase(Locale.ROOT), head[i].substring(colon + 1).trim());
+			}
+			return new RawResponse(Integer.parseInt(head[0].split(" ")[1]), headers, raw.substring(split + 4));
+		}
 	}
 
 	@Test

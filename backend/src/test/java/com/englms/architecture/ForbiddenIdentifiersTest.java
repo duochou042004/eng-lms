@@ -24,8 +24,9 @@ import org.junit.jupiter.params.provider.ValueSource;
  */
 class ForbiddenIdentifiersTest {
 
-	static final List<String> FORBIDDEN = List.of("toeic", "ielts", "thpt", "tenant", "payment", "invoice", "openai",
-			"anthropic", "chatgpt");
+	// The same list as test-strategy.md §4 rule 6 and coding-agent-rules.md §7 (T-M1.8 AC3 added examtype and part5).
+	static final List<String> FORBIDDEN = List.of("toeic", "ielts", "thpt", "examtype", "part5", "tenant", "payment",
+			"invoice", "openai", "anthropic", "chatgpt");
 
 	static final Pattern PATTERN = Pattern.compile(String.join("|", FORBIDDEN), Pattern.CASE_INSENSITIVE);
 
@@ -42,8 +43,8 @@ class ForbiddenIdentifiersTest {
 	}
 
 	@ParameterizedTest
-	@ValueSource(strings = { "toeic", "IELTS", "ThptMockExam", "tenant_id", "PaymentService", "invoice",
-			"OpenAiClient", "anthropic", "chatgpt" })
+	@ValueSource(strings = { "toeic", "IELTS", "ThptMockExam", "ExamType", "EXAMTYPE_LISTENING", "Part5", "part5Questions",
+			"tenant_id", "PaymentService", "invoice", "OpenAiClient", "anthropic", "chatgpt" })
 	void detectsEachForbiddenIdentifierInAFixture(String identifier, @TempDir Path root) throws IOException {
 		Path file = root.resolve("src/main/java/com/example/Fixture.java");
 		Files.createDirectories(file.getParent());

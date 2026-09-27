@@ -48,7 +48,8 @@
 3. `..web.student..` handler methods have no parameter named `studentId` and no `@PathVariable` ending in `StudentId`.
 4. `..web.student..` DTO classes do not depend on `com.englms.notes..`, on `LearningProfile*`, or on types annotated `@TutorPrivate`.
 5. No `@Transactional` on controllers. No field injection.
-6. Forbidden identifiers in `src/main` (case-insensitive): `toeic`, `ielts`, `thpt`, `tenant`, `payment`, `invoice`, `openai`, `anthropic`, `chatgpt`.
+6. Forbidden identifiers in `src/main` (case-insensitive): `toeic`, `ielts`, `thpt`, `examtype`, `part5`, `tenant`, `payment`, `invoice`, `openai`, `anthropic`, `chatgpt`
+   (the same list as coding-agent-rules §7; `examtype` and `part5` since T-M1.8).
    The rule is implemented as a source scan test with an allow-list for docs and tests.
 7. No `switch`/`if` on question type IDs outside `questions..registry..` and the extension implementations.
 8. No `kind ==` comparisons inside `activities..grading..` (ADR-0007).
