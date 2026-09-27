@@ -2,7 +2,7 @@ Resume Eng-LMS as Lead Coordinator in /home/kali/App_sources/Eng-LMS (private re
 
 PRODUCT: a private 1:1 teaching workspace for ONE English tutor and their students. NOT a school LMS, SaaS, marketplace, booking, payment, chat, conferencing, Drive clone or AI tutor. No hard-coded TOEIC/IELTS curricula. Source of truth: docs/00-sources/ (immutable).
 
-START: read CLAUDE.md, progress.json and docs/handoff/HANDOFF.md, then docs/tasks/T-M1.7-merge-gate-hardening.md (DEC-037/038, git-governance §4, merge-gate.sh + tests). Create chore/T-M1.7-merge-gate-hardening fresh from develop (delete the stale merged copy first). T-M1.7 NEEDS THE PO START SIGNAL: ask first, and record the approval as a DEC.
+START: read CLAUDE.md, progress.json and docs/handoff/HANDOFF.md, then docs/tasks/T-M1.7-merge-gate-hardening.md (DEC-037/038, git-governance §4, merge-gate.sh + tests). Branch chore/T-M1.7-merge-gate-hardening holds bookkeeping only (if develop moved: gh pr update-branch). T-M1.7 NEEDS THE PO START SIGNAL: ask first, and record the approval as a DEC.
 
 STATE: M1: T-M1.1..T-M1.6 + T-M1.11 (GitLab mirror CI) merged. Required CI: docs-check, secrets-scan, backend, web, contract-drift, e2e-smoke (container is an extra). Local: ./scripts/dev-up.sh (rerun after a reboot); ./scripts/gate.sh runs 12 steps (ENGLMS_TASK=T-M1.7 writes the log). GitHub artifact storage is FULL until ~2026-10-01: GitHub uploads are continue-on-error; reports are stored by the private GitLab mirror CI (DEC-060): run ./scripts/gitlab-sync.sh after each merge and on branches under review. Follow-ups: T-M1.8, T-M1.9 (before M2), T-M1.10 (TS 7, waits for upstream).
 

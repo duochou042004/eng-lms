@@ -18,7 +18,9 @@ after the T-M1.6 merge still logged `Artifact storage quota has been hit`). Usag
 ## Pipelines
 - Branch, first run: 2886164985 at `725b97b` (success; backend 101 s, web 29 s, e2e-smoke 148 s).
 - Branch head `b4a4eef`: 2886169118 (success; backend 82 s, web 29 s, e2e-smoke 98 s; artifacts expire 2026-10-02). GitHub PR #14 at `b4a4eef`: all 7 checks green.
-- Final head and develop after the merge: recorded in the merge record (docs/handoff) because they happen after this file is committed.
+- Final head `12954f4`: 2886175924 (success); GitHub PR #14: 7/7 green.
+- **develop after the merge** (`293e048`, synced with `gitlab-sync.sh`): **2886180165 success** (AC1): backend 83 s https://gitlab.com/duochou042004/eng-lms/-/jobs/16759005344 (4 artifacts), web 33 s, e2e-smoke 106 s https://gitlab.com/duochou042004/eng-lms/-/jobs/16759005346 (2 artifacts); artifacts expire 2026-10-02.
+- For comparison, GitHub's develop backend run 36285885148 still logged the storage quota error (1 occurrence(s)): the GitLab copy is where the reports live until the reset.
 
 ## Review
 `review/docs.md`: **DOCS-REVIEW T-M1.11: PASS WITH MINOR** (F1 S3, F2–F7 S4; handled by DEC-061: GitLab branch protection + MRs disabled, the hook's

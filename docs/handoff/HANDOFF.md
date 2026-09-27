@@ -1,6 +1,6 @@
-# Handoff — 2026-09-27 (T-M1.6 and T-M1.11 merged; T-M1.7 ready)
+# Handoff — 2026-09-27 (T-M1.6 and T-M1.11 merged `293e048`; T-M1.7 ready)
 
-Phase/Milestone: P1 / M1 · Current task: **T-M1.7 (ready; awaiting the PO start signal)** · Branch: `chore/T-M1.7-merge-gate-hardening` (recreate from develop; the old copy's bookkeeping merged with PR #14) · Remote: https://github.com/duochou042004/eng-lms
+Phase/Milestone: P1 / M1 · Current task: **T-M1.7 (ready; awaiting the PO start signal)** · Branch: `chore/T-M1.7-merge-gate-hardening` (bookkeeping only; recreated from develop after PR #14) · Remote: https://github.com/duochou042004/eng-lms
 
 ## Where we are
 - **M1 progress:** T-M1.1..T-M1.5 and **T-M1.6 (`5f193e6`, PR #12)** are merged through merge-gate. The T-M1.6 QA record and the `/qa` skeleton are PR #13.
@@ -30,6 +30,7 @@ Phase/Milestone: P1 / M1 · Current task: **T-M1.7 (ready; awaiting the PO start
 ## Pending PO decisions / actions
 - The start signal for T-M1.7.
 - After the GitHub storage reset (expected 2026-10-01): keep or remove the GitLab mirror (DEC-060). Check with `gh run view <id> --log | grep quota`.
+- Recommended (DEC-061): add `Bash(glab mr merge:*)`, `Bash(glab repo delete:*)`, `Bash(glab release delete:*)` deny rules to `.claude/settings.json`, like the `gh` ones (the PO's permission file; the LC does not edit it).
 - OQ-03..OQ-14 (defaults documented).
 
 ## Gotchas
