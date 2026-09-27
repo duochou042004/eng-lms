@@ -50,11 +50,11 @@ is not applied, and the enforcement lives in the harness:
   any other non-positive token blocks on every path); the branch is 0 commits behind its base and has no conflicts; and `progress.json` changed. Every verdict must be posted
   **after the head commit arrived on the PR** (push time from the repository activity, the PR's `pull_request` workflow runs and force-push events; fails closed without them).
   Dependabot PRs need Dependabot-authored, GitHub-verified commits, only Dependabot pushes to the branch, and modifications of a narrow set of files where workflow edits are
-  pairwise `uses:` SHA bumps (git-governance §4, T-M1.7, DEC-063/064/065).
+  pairwise `uses:` SHA bumps (git-governance §4, T-M1.7, DEC-063..066).
   It then runs `gh pr merge --merge --delete-branch --match-head-commit <sha>`. The LC merges **only** through this script.
 - A `pre-push` hook (`scripts/install-hooks.sh` sets `core.hooksPath=scripts/hooks`) blocks direct pushes to `master`/`develop` and non-fast-forward pushes.
 - `check-path-ownership.sh` runs in `docs-check` on every PR. `.claude/settings.json` denies `gh pr merge`, force pushes and direct pushes for agents.
-- All of these are covered by `scripts/tests/*.test.sh` in CI (`run-all.sh` in `docs-check`; merge-gate alone has 115 cases since T-M1.7).
+- All of these are covered by `scripts/tests/*.test.sh` in CI (`run-all.sh` in `docs-check`; merge-gate alone has 131 cases since T-M1.7).
 
 ## 3. Versioning and release
 

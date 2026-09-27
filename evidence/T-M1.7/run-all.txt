@@ -180,7 +180,23 @@ merge-gate.sh
   ok   - S3-3: a Dependabot branch without a recorded creation fails closed
   ok   - S4-1: a run at 10:05:00.500Z makes a 10:05:00Z verdict stale (no string-order trick)
   ok   - S4-1: an unparsable (non-Z) run time fails closed
-  -> 115 passed, 0 failed
+  ok   - R2 S3-A: a removed line '-n' (an echo option) cannot hide a non-bump
+  ok   - R2 S3-A: a removed line '-e' (an echo option) cannot hide a non-bump
+  ok   - R2 S3-A: a removed line '-E' (an echo option) cannot hide a non-bump
+  ok   - R2 S3-A: a removed line '-ne' (an echo option) cannot hide a non-bump
+  ok   - R2 S4-A: a diff line with an unknown prefix fails closed
+  ok   - explains the unknown-prefix refusal
+  ok   - R2 S3-B: a human push in the same second as Dependabot's branch creation still counts
+  ok   - R2 S3-B: an activity entry with an unparsable time counts as inside the window
+  ok   - R2 S4-B: a non-exact negative verdict blocks: '## QA-VERDICT T-M9.9: FAIL'
+  ok   - R2 S4-B: a non-exact negative verdict blocks: '- QA-VERDICT T-M9.9: FAIL'
+  ok   - R2 S4-B: a non-exact negative verdict blocks: '❌ QA-VERDICT T-M9.9: FAIL'
+  ok   - R2 S4-B: a non-exact negative verdict blocks: 'QA-VERDICT T-M9.9 - FAIL'
+  ok   - R2 S4-B: a non-exact negative verdict blocks: 'QA VERDICT T-M9.9: FAIL'
+  ok   - R2 S4-B: a non-exact negative verdict blocks: 'DOCS-REVIEW T-M9.9: CHANGES_REQUESTED'
+  ok   - R2 S4-B: a non-exact negative verdict blocks: 'SEC-REVIEW T-M9.9: CHANGES-REQUESTED'
+  ok   - R2 S4-B: another id with a '-' suffix and prose mentioning a verdict do not block
+  -> 131 passed, 0 failed
 check-path-ownership.sh
   ok   - qa/ branch touching backend/ fails
   ok   - qa/ branch touching qa/ and qa evidence passes

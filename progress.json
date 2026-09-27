@@ -16,7 +16,7 @@
       }
     ]
   },
-  "updatedAt": "2026-09-27T02:12:00Z",
+  "updatedAt": "2026-09-27T02:19:00Z",
   "updatedBy": "lead-coordinator (session 2026-09-27 #5, Opus 5.5)",
   "phase": {
     "id": "P1",
@@ -44,8 +44,8 @@
       "PO start signal for T-M1.7 — met (DEC-062)"
     ],
     "nextSteps": [
-      "DOCS-REVIEW round 2 (re-test via the same reviewer) at the review-fix head",
-      "Then post the verdict + LC-APPROVED after CI is green for the final head; merge via merge-gate (--dry-run first); ./scripts/gitlab-sync.sh"
+      "DOCS-REVIEW round 3 at the final head",
+      "Then the verdict + LC-APPROVED after CI is green for that sha; merge via merge-gate (--dry-run first); ./scripts/gitlab-sync.sh"
     ],
     "trace": [
       "DEC-037",
@@ -54,7 +54,8 @@
       "DEC-063",
       "DEC-064",
       "R-08",
-      "DEC-065"
+      "DEC-065",
+      "DEC-066"
     ]
   },
   "nextTask": {
@@ -185,7 +186,7 @@
     },
     "G3": {
       "status": "pending",
-      "note": "DOCS-REVIEW round 1 CHANGES REQUESTED (S2-1 + S3s) fixed per DEC-065; round 2 pending"
+      "note": "Round 1 CHANGES REQUESTED (fixed, DEC-065); round 2 PASS at 39096c6 with S3-A/S3-B/S4 fixed (DEC-066); round 3 re-test at the final head pending"
     },
     "G4": {
       "status": "pending",
@@ -196,12 +197,12 @@
   "decisions": {
     "log": "docs/10-governance/decision-log.md",
     "recent": [
-      "DEC-060",
       "DEC-061",
       "DEC-062",
       "DEC-063",
       "DEC-064",
-      "DEC-065"
+      "DEC-065",
+      "DEC-066"
     ],
     "pendingPO": [
       "OQ-03",
@@ -429,6 +430,11 @@
       "at": "2026-09-27T02:12:00Z",
       "actor": "lead-coordinator",
       "event": "PR #15 opened; CI 7/7 green at c9d6206. DOCS-REVIEW round 1: CHANGES REQUESTED (S2-1 workflow uses: swap accepted; S3-1..5; S4). All fixed (DEC-065): pairwise uses: bump check, loose negatives block, repository Activity API push time + Dependabot actor check, modified-only Dependabot files, whole-second UTC times. merge-gate tests 115."
+    },
+    {
+      "at": "2026-09-27T02:19:00Z",
+      "actor": "lead-coordinator",
+      "event": "DOCS-REVIEW round 2 PASS at 39096c6; its S3-A (echo option fail-open), S3-B (same-second activity), S4-A/B fixed (DEC-066). merge-gate tests 131."
     }
   ]
 }

@@ -92,28 +92,31 @@ USES_LINE_RE='^[-+]([[:space:]]*(-[[:space:]]+)?uses:[[:space:]]*[A-Za-z0-9_.-]+
 uses_bump_problem() {
   local line i rp rs ap as n=0
   local -a rem=() add=()
+  say() { printf '%s\n' "$1"; }  # never echo: a diff line such as "-n" would be taken as an option (review T-M1.7 round 2, S3-A)
   while IFS= read -r line; do
     case "$line" in
       '\'*) continue;;  # "\ No newline at end of file"
-      -*) if ((${#add[@]})); then echo "a removed line after an added one: ${line:0:120}"; return; fi; rem+=("$line"); continue;;
+      -*) if ((${#add[@]})); then say "a removed line after an added one: ${line:0:120}"; return; fi; rem+=("$line"); continue;;
       +*) add+=("$line"); continue;;
+      ' '*|'@@'*) ;;    # context line or hunk header (the appended "@@ end" closes the last block)
+      *) say "an unexpected diff line: ${line:0:120}"; return;;  # fail closed on anything else (S4-A)
     esac
     # context line, hunk header or the end: judge the change block collected so far
     if ((${#rem[@]} || ${#add[@]})); then
-      if ((${#rem[@]} != ${#add[@]})); then echo "a change block removes ${#rem[@]} and adds ${#add[@]} line(s) (not a 1:1 replacement)"; return; fi
+      if ((${#rem[@]} != ${#add[@]})); then say "a change block removes ${#rem[@]} and adds ${#add[@]} line(s) (not a 1:1 replacement)"; return; fi
       for i in "${!rem[@]}"; do
-        [[ "${rem[i]}" =~ $USES_LINE_RE ]] || { echo "${rem[i]:0:120}"; return; }
+        [[ "${rem[i]}" =~ $USES_LINE_RE ]] || { say "not a uses: SHA line: ${rem[i]:0:120}"; return; }
         rp=${BASH_REMATCH[1]}; rs=${BASH_REMATCH[3]}
-        [[ "${add[i]}" =~ $USES_LINE_RE ]] || { echo "${add[i]:0:120}"; return; }
+        [[ "${add[i]}" =~ $USES_LINE_RE ]] || { say "not a uses: SHA line: ${add[i]:0:120}"; return; }
         ap=${BASH_REMATCH[1]}; as=${BASH_REMATCH[3]}
-        [[ "$rp" == "$ap" ]] || { echo "'${rp:0:60}' became '${ap:0:60}' (a bump keeps the line up to '@')"; return; }
-        [[ "$rs" != "$as" ]] || { echo "'${ap:0:60}' keeps its SHA (not a bump)"; return; }
+        [[ "$rp" == "$ap" ]] || { say "'${rp:0:60}' became '${ap:0:60}' (a bump keeps the line up to '@')"; return; }
+        [[ "$rs" != "$as" ]] || { say "'${ap:0:60}' keeps its SHA (not a bump)"; return; }
         n=$((n + 1))
       done
       rem=(); add=()
     fi
   done <<<"$1"$'\n@@ end'
-  ((n > 0)) || echo "no uses: bump in the diff"
+  ((n > 0)) || say "no uses: bump in the diff"
 }
 dependabot_checks() {
   local commits_out files_out bad f patch why
@@ -131,10 +134,13 @@ dependabot_checks() {
   fi
   # b) every push to the branch since it was (last) created was made by dependabot[bot] (repository activity; review T-M1.7 S3-3)
   if [[ -n "$act_out" ]]; then
-    bad=$(jq -rn '[inputs | .[]] | sort_by(.timestamp) as $a
-                  | ([range($a | length) | select($a[.].activity_type == "branch_creation")] | last) as $i
-                  | if $i == null then "no branch creation recorded"
-                    else [$a[$i:][] | select((.actor.login // "") != "dependabot[bot]") | "\(.activity_type) by \(.actor.login // "none") at \(.timestamp)"] | join(", ") end' <<<"$act_out")
+    # The window starts at the branch's latest creation and includes every entry stamped at or after that second (not an order-dependent slice:
+    # a push in the same second as the creation must count; review T-M1.7 round 2, S3-B). An unparsable time counts as inside the window.
+    bad=$(jq -rn "$TS_DEF"' [inputs | .[]] as $a
+                  | ([$a[] | select(.activity_type == "branch_creation") | .timestamp | ts | select(. != "INVALID")] | max) as $c
+                  | if $c == null then "no branch creation recorded"
+                    else [$a[] | select((.timestamp | ts) as $t | $t == "INVALID" or $t >= $c) | select((.actor.login // "") != "dependabot[bot]")
+                          | "\(.activity_type) by \(.actor.login // "none") at \(.timestamp)"] | join(", ") end' <<<"$act_out")
     [[ -z "$bad" ]] || fail "dependabot branch has activity not by Dependabot: $bad"
   fi
   # c) the file allow-list, modifications only, and workflow edits limited to `uses:` SHA bumps (judged on the diff content)
@@ -201,12 +207,13 @@ bad=$(jq -r '[.[] | select(.bucket == "fail" or .bucket == "pending" or .bucket 
 # verdict <TYPE>  → prints the exact verdict token of the latest fresh "<TYPE> <id>: <TOKEN>" comment ("" if none)
 verdict() {
   # An exact "<TYPE> <id>: <TOKEN>" first line gives its token. A NON-exact negative ("qa-verdict  <id> : fail", "**QA-VERDICT <id>: FAIL**",
-  # "> QA-VERDICT <id>: FAIL" …) also counts, as a negative, so a sloppy FAIL still blocks; sloppy positives never count (review T-M1.7 S3-1).
+  # "> QA-VERDICT <id>: FAIL", "## QA VERDICT <id> - FAIL", CHANGES_REQUESTED …) also counts, as a negative, so a sloppy FAIL still blocks; sloppy positives never count (review T-M1.7 S3-1).
   jq -r --arg type "$1" --arg id "$id" --arg since "$head_time" "$TS_DEF"'
     ($id | ascii_upcase | gsub("(?<c>[.+*?()\\[\\]{}|^$\\\\])"; "\\\(.c)")) as $idre
     | [ .comments[] | select((.createdAt | ts) as $t | $t != "INVALID" and $t > $since) | .body | gsub("\r"; "") | split("\n")[0] | gsub("^\\s+|\\s+$"; "")
       | if startswith($type + " " + $id + ":") then ltrimstr($type + " " + $id + ":") | gsub("^\\s+|\\s+$"; "")
-        elif (gsub("[*`>_]"; "") | gsub("\\s+"; " ") | ascii_upcase | test("^ ?" + $type + " " + $idre + " ?: ?(FAIL|CHANGES REQUESTED)"))
+        elif ([explode[] | select(. < 128)] | implode | gsub("[*`>#]"; "") | gsub("_"; " ") | gsub("\\s+"; " ") | ascii_upcase
+              | test("^ ?(- )?" + ($type | sub("-"; "[ -]?")) + " " + $idre + " ?[:-] ?(FAIL|CHANGES[ -]?REQUESTED)"))
         then "NEGATIVE (non-exact line: \(.[0:80]))"
         else empty end ]
     | last // ""' <<<"$pr_json"
