@@ -32,11 +32,11 @@
   "currentTask": {
     "id": "T-M1.7",
     "title": "Merge-gate hardening (push-time freshness, negative verdicts, dependabot rules)",
-    "status": "in_progress",
+    "status": "in_review",
     "ownerRole": "LC",
     "branch": "chore/T-M1.7-merge-gate-hardening",
     "packet": "docs/tasks/T-M1.7-merge-gate-hardening.md",
-    "pr": 15,
+    "pr": "https://github.com/duochou042004/eng-lms/pull/15",
     "lastCommit": null,
     "startedAt": "2026-09-27T01:41:00Z",
     "entryGate": [
@@ -184,7 +184,7 @@
       "note": "gate.sh PASS (12 steps) at c9d6206; CI 7/7 green on PR #15"
     },
     "G3": {
-      "status": "in_progress",
+      "status": "pending",
       "note": "DOCS-REVIEW round 1 CHANGES REQUESTED (S2-1 + S3s) fixed per DEC-065; round 2 pending"
     },
     "G4": {
