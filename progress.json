@@ -16,7 +16,7 @@
       }
     ]
   },
-  "updatedAt": "2026-09-27T08:25:00Z",
+  "updatedAt": "2026-09-27T08:50:00Z",
   "updatedBy": "lead-coordinator (session 2026-09-27 #5, Opus 5.5)",
   "phase": {
     "id": "P1",
@@ -32,7 +32,7 @@
   "currentTask": {
     "id": "T-M1.8",
     "title": "Backend error-surface and tooling follow-ups (T-M1.2/T-M1.4/T-M1.5 QA items)",
-    "status": "in_progress",
+    "status": "in_review",
     "ownerRole": "BE",
     "branch": "feature/T-M1.8-backend-follow-ups",
     "packet": "docs/tasks/T-M1.8-backend-follow-ups.md",
@@ -45,8 +45,9 @@
       "PO start signal for T-M1.8 — met (DEC-068)"
     ],
     "nextSteps": [
-      "Implement AC1-AC8 on feature/T-M1.8-backend-follow-ups",
-      "Open the PR; QA-VERDICT + SEC-REVIEW (G3); merge via merge-gate; ./scripts/gitlab-sync.sh"
+      "PR open; CI green for the head",
+      "G3: QA-VERDICT (qa-evaluator) + SEC-REVIEW (security-reviewer); fix S1/S2",
+      "Then the verdict comments + LC-APPROVED T-M1.8; merge via merge-gate; ./scripts/gitlab-sync.sh"
     ],
     "trace": [
       "DEC-041",
@@ -152,8 +153,8 @@
     }
   ],
   "tests": {
-    "lastRun": "2026-09-27T02:19:00Z",
-    "summary": "At T-M1.7 merge (41beac7): gate.sh PASS (12 steps, 174 s at c9d6206; the later commits are script-only, script tests re-run: PASS); governance script tests incl. merge-gate 131; CI 7/7 green at 0cd46cb.",
+    "lastRun": "2026-09-27T08:41:29Z",
+    "summary": "T-M1.8 branch: gate.sh PASS (12 steps, 108 s); backend 94 tests locally in 28.7 s with no Surefire kill (AC4); new script tests: workflow-warnings 10, coverage-summary 9, dev scripts 21.",
     "suites": [
       {
         "name": "backend (./mvnw -B verify)",
@@ -183,12 +184,12 @@
       "note": "T-M1.8 packet G0-complete (docs/T-M1.8-packet)"
     },
     "G1": {
-      "status": "pending",
-      "note": "T-M1.8 implementation in progress"
+      "status": "pass",
+      "note": "AC1-AC8 implemented with tests (evidence/T-M1.8/summary.md)"
     },
     "G2": {
-      "status": "pending",
-      "note": "T-M1.8 not started"
+      "status": "pass",
+      "note": "gate.sh PASS (12 steps, 108 s); CI on the PR"
     },
     "G3": {
       "status": "pending",
@@ -468,6 +469,11 @@
       "at": "2026-09-27T08:25:00Z",
       "actor": "lead-coordinator",
       "event": "T-M1.8 started on feature/T-M1.8-backend-follow-ups; PR #16 review S4-A/B/C fixed here."
+    },
+    {
+      "at": "2026-09-27T08:50:00Z",
+      "actor": "lead-coordinator",
+      "event": "T-M1.8 AC1-AC8 implemented: :8081 request IDs (ManagementContextConfiguration), Problem Details valve for Tomcat-rejected requests, examtype/part5, AC4 root cause (Testcontainers JVM hook vs Spring shutdown + Modulith registry query) fixed by closing test contexts at test-plan end, quiet dev-down, upload ::warning steps, coverage-summary test. gate.sh PASS 108 s."
     }
   ]
 }
