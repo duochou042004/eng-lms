@@ -1,0 +1,112 @@
+# GitLab CI on the private GitLab mirror (T-M1.11, DEC-060). TEMPORARY second CI while the GitHub account's Actions
+# artifact storage is exhausted (DEC-053; expected to reset on 2026-10-01). GitHub stays the source of truth: PRs, the
+# required checks and scripts/merge-gate.sh are unchanged. This pipeline re-runs the same checks and STORES the reports
+# (JaCoCo, JUnit, Playwright) as GitLab artifacts for 5 days. The mirror is fed by scripts/gitlab-sync.sh.
+# Images are fully qualified and pinned by multi-arch index digest (tech-stack §7).
+
+workflow:
+  rules:
+    - if: $CI_COMMIT_BRANCH # branch pushes only (no tags, no merge-request pipelines)
+  auto_cancel:
+    on_new_commit: interruptible
+
+default:
+  interruptible: true
+
+stages: [verify, e2e]
+
+variables:
+  MAVEN_OPTS: -Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository
+
+.maven-cache: &maven-cache
+  key:
+    files: [backend/pom.xml]
+    prefix: maven
+  paths: [.m2/repository/]
+
+backend:
+  stage: verify
+  image: docker.io/library/eclipse-temurin:25-jdk@sha256:97014c4b396021f9ddb7d592a7dbedb0c4e4215c29e03dc01c393558aefb71c2
+  services:
+    # Testcontainers (PostgreSQL 18) runs its containers in this Docker-in-Docker service.
+    - name: docker.io/library/docker:29.8.1-dind@sha256:3f3c01aaaebf7cce837356b688b7c059a4749f10bd7660dec7c58fc454a283f0
+      alias: docker
+  variables:
+    DOCKER_HOST: tcp://docker:2375
+    DOCKER_TLS_CERTDIR: ""
+    TESTCONTAINERS_HOST_OVERRIDE: docker
+  cache: *maven-cache
+  script:
+    - (cd backend && ./mvnw -B -ntp verify)
+    - ./scripts/coverage-summary.sh
+  coverage: '/\*\*Total:\*\* lines (\d+\.\d+)%/'
+  artifacts:
+    when: always
+    expire_in: 5 days
+    paths:
+      - backend/target/site/jacoco/
+      - backend/target/surefire-reports/
+    reports:
+      junit: backend/target/surefire-reports/TEST-*.xml
+      coverage_report:
+        coverage_format: jacoco
+        path: backend/target/site/jacoco/jacoco.xml
+
+web:
+  stage: verify
+  image: docker.io/library/node:24-slim@sha256:0e0ff40c39bc087845bfb27465a0df4ea419520094bc35842ff83dd8cbe6f9b6
+  variables:
+    COREPACK_ENABLE_DOWNLOAD_PROMPT: "0"
+  script:
+    - corepack enable
+    - cd web
+    - pnpm install --frozen-lockfile
+    - pnpm lint
+    - pnpm typecheck
+    # API types match api/openapi.json (the image has no git: compare with a copy).
+    - cp src/lib/api/schema.d.ts /tmp/schema.before.d.ts && pnpm api:generate && diff -u /tmp/schema.before.d.ts src/lib/api/schema.d.ts
+    - pnpm test --run
+    - pnpm build
+    - pnpm budget
+    - pnpm contrast
+
+e2e-smoke:
+  stage: e2e
+  needs: []
+  # Playwright's own image: Chromium for @playwright/test 1.63.0 and its OS dependencies are preinstalled.
+  image: mcr.microsoft.com/playwright:v1.63.0-noble@sha256:eff16c30e6f3f4af0a03fa4b706120d5e9b0891c344a27d64559aff5900a4a27
+  services:
+    - name: docker.io/library/postgres:18@sha256:5a5a84b19854a9ffaa54082c166ff4ec27473a361e496e5ea167f298f2da9722
+      alias: postgres
+  variables:
+    POSTGRES_DB: englms
+    POSTGRES_USER: englms
+    # Throwaway credential of an ephemeral CI database; not a secret.
+    POSTGRES_PASSWORD: englms-ci
+    SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/englms
+    SPRING_DATASOURCE_USERNAME: englms
+    SPRING_DATASOURCE_PASSWORD: englms-ci
+    COREPACK_ENABLE_DOWNLOAD_PROMPT: "0"
+    # Temurin 25 JDK for building and running the jar, pinned by SHA-256 (the Adoptium release's .sha256.txt).
+    TEMURIN_URL: https://github.com/adoptium/temurin25-binaries/releases/download/jdk-25.0.4%2B7/OpenJDK25U-jdk_x64_linux_hotspot_25.0.4_7.tar.gz
+    TEMURIN_SHA256: e58fcdcd637b25c03ca84cbbcefc70d11efb8f4b4cbd05decc9f661769d77f94
+  cache: *maven-cache
+  before_script:
+    - command -v curl >/dev/null || (apt-get update -qq && apt-get install -y -qq curl >/dev/null)
+    - curl -sSfL -o /tmp/jdk.tgz "$TEMURIN_URL"
+    - echo "$TEMURIN_SHA256  /tmp/jdk.tgz" | sha256sum -c -
+    - mkdir -p /opt/jdk && tar -xzf /tmp/jdk.tgz -C /opt/jdk --strip-components=1
+    - export JAVA_HOME=/opt/jdk PATH="/opt/jdk/bin:$PATH"
+    - java -version && node --version
+    - corepack enable
+    - (cd e2e && pnpm install --frozen-lockfile)
+  script:
+    # Builds web/dist + the jar with the SPA, starts it on :8080/:8081, runs the smoke + guard self-tests, always stops it.
+    - ./scripts/e2e-run.sh --project=phone-small --project=tablet --project=laptop
+  artifacts:
+    when: always
+    expire_in: 5 days
+    paths:
+      - e2e/playwright-report/
+      - e2e/test-results/
+      - backend/target/e2e-app.log
