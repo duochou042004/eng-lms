@@ -20,7 +20,7 @@ import org.springframework.http.MediaType;
  * Replaces Tomcat's HTML error report on the application port (T-M1.8 AC2). Tomcat answers some requests itself
  * before any filter runs (for example an encoded {@code /} in the path, or a raw {@code <} in the query string), so
  * neither {@link RequestIdFilter}, {@link SecurityHeadersFilter} nor {@link ProblemDetailsAdvice} sees them. For such
- * an error with no body yet, this writes RFC 9457 Problem Details (api-conventions.md §5) with the security headers
+ * an error nobody has reported yet and with no body, this writes RFC 9457 Problem Details (api-conventions.md §5) with the security headers
  * (security.md §5), {@code X-Request-Id} and {@code Cache-Control: no-store}. The body never echoes the request: no
  * {@code instance}, no {@code detail}, no server information, no stack trace.
  */
@@ -37,7 +37,8 @@ class ProblemDetailsErrorReportValve extends ErrorReportValve {
 	@Override
 	protected void report(Request request, Response response, Throwable throwable) {
 		int status = response.getStatus();
-		if (status < 400 || response.getContentWritten() > 0) {
+		// Same guard as Tomcat's report(): only an error nobody has reported yet, with no body (SEC review S4-1).
+		if (status < 400 || response.getContentWritten() > 0 || !response.setErrorReported()) {
 			return;
 		}
 		AtomicBoolean ioAllowed = new AtomicBoolean(true);
@@ -66,6 +67,11 @@ class ProblemDetailsErrorReportValve extends ErrorReportValve {
 
 	static String body(int status, String requestId) {
 		ProblemCodes code = ProblemDetailsAdvice.codeFor(HttpStatusCode.valueOf(status));
+		if (code == ProblemCodes.INTERNAL_ERROR && status < 500) {
+			// Tomcat also rejects requests with 4xx statuses the app never produces (e.g. 417 for a bad Expect header):
+			// they are client errors, not internal ones (SEC review S4-2).
+			code = ProblemCodes.MALFORMED_REQUEST;
+		}
 		HttpStatus known = HttpStatus.resolve(status);
 		String title = (known != null) ? known.getReasonPhrase() : "Error";
 		// Every value is either a constant or a request ID that matched RequestIds' safe pattern: no escaping needed.

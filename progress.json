@@ -16,7 +16,7 @@
       }
     ]
   },
-  "updatedAt": "2026-09-27T08:50:00Z",
+  "updatedAt": "2026-09-27T09:00:00Z",
   "updatedBy": "lead-coordinator (session 2026-09-27 #5, Opus 5.5)",
   "phase": {
     "id": "P1",
@@ -45,9 +45,8 @@
       "PO start signal for T-M1.8 — met (DEC-068)"
     ],
     "nextSteps": [
-      "PR open; CI green for the head",
-      "G3: QA-VERDICT (qa-evaluator) + SEC-REVIEW (security-reviewer); fix S1/S2",
-      "Then the verdict comments + LC-APPROVED T-M1.8; merge via merge-gate; ./scripts/gitlab-sync.sh"
+      "Round 2: QA and SEC re-test the review-fix head",
+      "Then the verdict comments + LC-APPROVED T-M1.8 after CI is green; merge via merge-gate; qa/T-M1.8 record; ./scripts/gitlab-sync.sh"
     ],
     "trace": [
       "DEC-041",
@@ -55,7 +54,9 @@
       "DEC-050",
       "DEC-054",
       "DEC-055",
-      "DEC-068"
+      "DEC-068",
+      "DEC-069",
+      "DEC-070"
     ]
   },
   "nextTask": {
@@ -193,7 +194,7 @@
     },
     "G3": {
       "status": "pending",
-      "note": "QA-VERDICT + SEC-REVIEW (error surface, headers)"
+      "note": "Round 1: SEC CHANGES REQUESTED (S3-1 double request-ID filter, fixed), QA PASS WITH MINOR; round 2 pending"
     },
     "G4": {
       "status": "pending",
@@ -204,12 +205,12 @@
   "decisions": {
     "log": "docs/10-governance/decision-log.md",
     "recent": [
-      "DEC-063",
-      "DEC-064",
       "DEC-065",
       "DEC-066",
       "DEC-067",
-      "DEC-068"
+      "DEC-068",
+      "DEC-069",
+      "DEC-070"
     ],
     "pendingPO": [
       "OQ-03",
@@ -474,6 +475,11 @@
       "at": "2026-09-27T08:50:00Z",
       "actor": "lead-coordinator",
       "event": "T-M1.8 AC1-AC8 implemented: :8081 request IDs (ManagementContextConfiguration), Problem Details valve for Tomcat-rejected requests, examtype/part5, AC4 root cause (Testcontainers JVM hook vs Spring shutdown + Modulith registry query) fixed by closing test contexts at test-plan end, quiet dev-down, upload ::warning steps, coverage-summary test. gate.sh PASS 108 s."
+    },
+    {
+      "at": "2026-09-27T09:00:00Z",
+      "actor": "lead-coordinator",
+      "event": "T-M1.8 review round 1: SEC CHANGES REQUESTED (S3-1: management config component-scanned -> request-ID filter twice on :8080), QA PASS WITH MINOR. Fixed S3-1/S4-1/S4-2 (DEC-069), TRACE + API no-store deferred to T-M2.1, F4/F5 documented (DEC-070). gate.sh PASS 111 s."
     }
   ]
 }

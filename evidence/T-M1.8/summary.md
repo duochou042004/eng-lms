@@ -52,7 +52,7 @@ No test was disabled or timeout changed.
 | **AC5** quiet `dev-down` | PASS | `dev-scripts.test.sh` 21/21 (+11: one line for stdout+stderr, no compose call, `--purge` with and without a volume). Real run: `dev-down: nothing is running (data volume englms-dev-pgdata kept; use --purge to delete it)`, rc 0 |
 | **AC6** upload warnings | PASS (storage reset: see the CI section) | `workflow-warnings.test.sh` 10/10, with fixtures for: no id, no warning, a warning in another job, a warning before the upload, and a warning without `always()`. The checker fails on develop's workflows (3 problems) and passes on this branch |
 | **AC7** `coverage-summary` test | PASS | `coverage-summary.test.sh` 9/9: the exact totals line and sorted rows, a missing CSV (exit 1 + message), a header-only CSV and an empty file |
-| **AC8** gate, docs, progress | PASS | `gate-20260927T084129Z.log`: **PASS (12 steps, 108 s)**, down from 174 s at T-M1.7 thanks to AC4. Docs: api-conventions §5, security.md §5, test-strategy rule 6, coding-agent-rules §7, development-setup (the known-issue note replaced), ci-cd §1, tech-stack |
+| **AC8** gate, docs, progress | PASS | `gate-20260927T085518Z.log`: **PASS (12 steps, 111 s at the review-fix head)**, down from 174 s at T-M1.7 thanks to AC4. Docs: api-conventions §5, security.md §5, test-strategy rule 6, coding-agent-rules §7, development-setup (the known-issue note replaced), ci-cd §1, tech-stack |
 
 ## CI
 PR #17 at `5c1b45b`: 7/7 green:
@@ -67,6 +67,14 @@ PR #17 at `5c1b45b`: 7/7 green:
 **AC6 live proof:** GitHub's artifact storage is still exhausted, so on backend run 36307161866 "Upload coverage report" failed (`Artifact storage quota has been hit`, 0 artifacts).
 The new step ran and the check shows the annotation `warning: Coverage report not uploaded`, while the job and the required check still passed.
 Once the storage resets (expected 2026-10-01), `backend-coverage` should upload again; this is recorded in the handoff.
+
+## Review round 1 (DEC-069, DEC-070)
+- **SEC-REVIEW: CHANGES REQUESTED.**
+  - **S3-1 fixed:** the management config was component-scanned into the app context, so the request-ID filter ran twice on :8080. It is now excluded from scanning, and `anApplicationPortRequestIsLoggedOnceWithItsRequestId` checks it. That test fails without the fix.
+  - **S4-1 fixed:** the valve uses Tomcat's `setErrorReported()` guard.
+  - **S4-2 fixed:** unmapped 4xx map to `MALFORMED_REQUEST`, with 417 and 505 tests.
+  - **S4-3 (TRACE) deferred to T-M2.1.**
+- **QA-VERDICT: PASS WITH MINOR.** F2/F3 are the same as SEC S3-1/S4-2 (fixed). F1 is the same as S4-3 (deferred). F4/F5 are documented. F6 (API `no-store`) is deferred to T-M2.1.
 
 ## Notes / findings for the reviewers
 - `Cache-Control: no-store` is **not** set on ordinary API responses yet, although api-conventions §7 asks for it. T-M1.8 sets it only on the valve's responses (AC2).

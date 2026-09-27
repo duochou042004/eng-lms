@@ -210,6 +210,36 @@ class ApplicationIntegrationTest {
 		assertThat(bad.body()).doesNotContain("bad");
 	}
 
+	// SEC review S4-2: other statuses Tomcat answers itself. 4xx are client errors (MALFORMED_REQUEST), 5xx INTERNAL_ERROR.
+	@Test
+	void tomcatLevelClientErrorsOtherThan400AreMalformedRequests() throws IOException {
+		RawResponse response = raw(port, "GET /api/v1/meta HTTP/1.1", "Expect: 200-foo\r\n");
+		assertThat(response.status()).isEqualTo(417);
+		assertThat(response.header("content-security-policy")).isEqualTo(CSP);
+		assertThat(response.body()).contains("\"status\":417", "\"code\":\"MALFORMED_REQUEST\"");
+	}
+
+	@Test
+	void tomcatLevelServerErrorsAreInternalErrorsWithTheHeaders() throws IOException {
+		RawResponse response = raw(port, "GET /api/v1/meta HTTP/3.0", "");
+		assertThat(response.status()).isEqualTo(505);
+		assertThat(response.header("content-security-policy")).isEqualTo(CSP);
+		assertThat(response.body()).contains("\"status\":505", "\"code\":\"INTERNAL_ERROR\"");
+	}
+
+	// SEC review S3-1: the management-context configuration must not leak into the application context. One request on
+	// :8080 gives exactly one access-log line, and it carries the request ID (the request-ID filter runs once).
+	@Test
+	void anApplicationPortRequestIsLoggedOnceWithItsRequestId(CapturedOutput output) {
+		String path = "/api/v1/single-log-" + java.util.UUID.randomUUID();
+		api.get().uri(path).exchange().expectStatus().isNotFound();
+
+		assertThat(output.getOut().lines().filter(line -> line.contains("GET " + path + " ->")))
+			.singleElement()
+			.asString()
+			.contains("\"requestId\":\"");
+	}
+
 	record RawResponse(int status, Map<String, String> headers, String body) {
 
 		String header(String name) {
@@ -220,11 +250,16 @@ class ApplicationIntegrationTest {
 
 	/** A raw HTTP/1.1 GET: HTTP clients refuse to send an unencoded {@code <}, Tomcat's parser is what is tested. */
 	static RawResponse rawGet(int port, String target, String requestId) throws IOException {
+		return raw(port, "GET " + target + " HTTP/1.1",
+				(requestId != null) ? "X-Request-Id: " + requestId + "\r\n" : "");
+	}
+
+	/** A raw request: {@code requestLine}, then Host, Connection: close and {@code extraHeaders} (CRLF-terminated). */
+	static RawResponse raw(int port, String requestLine, String extraHeaders) throws IOException {
 		try (Socket socket = new Socket("localhost", port)) {
 			socket.setSoTimeout(10_000);
 			OutputStream out = socket.getOutputStream();
-			String request = "GET " + target + " HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n"
-					+ ((requestId != null) ? "X-Request-Id: " + requestId + "\r\n" : "") + "\r\n";
+			String request = requestLine + "\r\nHost: localhost\r\nConnection: close\r\n" + extraHeaders + "\r\n";
 			out.write(request.getBytes(StandardCharsets.ISO_8859_1));
 			out.flush();
 			InputStream in = socket.getInputStream();
