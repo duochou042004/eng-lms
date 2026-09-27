@@ -1,0 +1,18 @@
+$ ./scripts/merge-gate.sh --dry-run 15   # 2026-09-27T01:55:25Z, head c9d6206, CI in progress, no reviews yet
+merge-gate: REFUSED PR #15 (chore/T-M1.7-merge-gate-hardening → develop)
+  - required check 'docs-check' is pending
+  - required check 'secrets-scan' is pending
+  - required check 'backend' is pending
+  - required check 'web' is pending
+  - required check 'contract-drift' is pending
+  - required check 'e2e-smoke' is pending
+  - non-passing checks: container-build=pending, secrets-scan=pending, contract-drift=pending, docs-check=pending, e2e-smoke=pending, backend=pending, web=pending
+  - missing fresh 'LC-APPROVED T-M1.7' comment (posted after the head commit arrived)
+  - needs a fresh 'DOCS-REVIEW T-M1.7: PASS' (or QA-VERDICT PASS) (latest: 'none')
+exit=1
+
+$ ./scripts/merge-gate.sh --dry-run 15   # 2026-09-27T02:11:17Z, working-tree script with the review-round-1 fixes; PR head c9d6206, CI 7/7 green, no reviews posted
+merge-gate: REFUSED PR #15 (chore/T-M1.7-merge-gate-hardening → develop)
+  - missing fresh 'LC-APPROVED T-M1.7' comment (posted after the head commit arrived)
+  - needs a fresh 'DOCS-REVIEW T-M1.7: PASS' (or QA-VERDICT PASS) (latest: 'none')
+exit=1

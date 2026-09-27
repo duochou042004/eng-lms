@@ -16,7 +16,7 @@
       }
     ]
   },
-  "updatedAt": "2026-09-27T01:56:00Z",
+  "updatedAt": "2026-09-27T02:12:00Z",
   "updatedBy": "lead-coordinator (session 2026-09-27 #5, Opus 5.5)",
   "phase": {
     "id": "P1",
@@ -36,7 +36,7 @@
     "ownerRole": "LC",
     "branch": "chore/T-M1.7-merge-gate-hardening",
     "packet": "docs/tasks/T-M1.7-merge-gate-hardening.md",
-    "pr": null,
+    "pr": 15,
     "lastCommit": null,
     "startedAt": "2026-09-27T01:41:00Z",
     "entryGate": [
@@ -44,9 +44,8 @@
       "PO start signal for T-M1.7 — met (DEC-062)"
     ],
     "nextSteps": [
-      "Open the PR; dry-run merge-gate on it (AC5)",
-      "G3: one fresh docs-reviewer tries to forge freshness and bypass the gate",
-      "Fix S1/S2; merge via merge-gate; ./scripts/gitlab-sync.sh after the merge"
+      "DOCS-REVIEW round 2 (re-test via the same reviewer) at the review-fix head",
+      "Then post the verdict + LC-APPROVED after CI is green for the final head; merge via merge-gate (--dry-run first); ./scripts/gitlab-sync.sh"
     ],
     "trace": [
       "DEC-037",
@@ -54,7 +53,8 @@
       "DEC-062",
       "DEC-063",
       "DEC-064",
-      "R-08"
+      "R-08",
+      "DEC-065"
     ]
   },
   "nextTask": {
@@ -180,12 +180,12 @@
       "note": "T-M1.7 implemented on chore/T-M1.7-merge-gate-hardening (AC1-AC4 in merge-gate.test.sh)"
     },
     "G2": {
-      "status": "pending",
-      "note": "gate.sh + CI on the PR head"
+      "status": "pass",
+      "note": "gate.sh PASS (12 steps) at c9d6206; CI 7/7 green on PR #15"
     },
     "G3": {
-      "status": "pending",
-      "note": "DOCS-REVIEW PASS (exact) or QA-VERDICT required (chore packet)"
+      "status": "in_progress",
+      "note": "DOCS-REVIEW round 1 CHANGES REQUESTED (S2-1 + S3s) fixed per DEC-065; round 2 pending"
     },
     "G4": {
       "status": "pending",
@@ -196,12 +196,12 @@
   "decisions": {
     "log": "docs/10-governance/decision-log.md",
     "recent": [
-      "DEC-059",
       "DEC-060",
       "DEC-061",
       "DEC-062",
       "DEC-063",
-      "DEC-064"
+      "DEC-064",
+      "DEC-065"
     ],
     "pendingPO": [
       "OQ-03",
@@ -424,6 +424,11 @@
       "at": "2026-09-27T01:56:00Z",
       "actor": "lead-coordinator",
       "event": "T-M1.7 implemented: push-time freshness from pull_request runs + force-push events, fail closed (DEC-063); negative verdicts of any type block; Dependabot commit identity + narrow allow-list + uses: SHA-bump diff check (DEC-064). merge-gate tests 37 -> 87, path-ownership 12 -> 15. OQ-17 (wrapper content check) raised."
+    },
+    {
+      "at": "2026-09-27T02:12:00Z",
+      "actor": "lead-coordinator",
+      "event": "PR #15 opened; CI 7/7 green at c9d6206. DOCS-REVIEW round 1: CHANGES REQUESTED (S2-1 workflow uses: swap accepted; S3-1..5; S4). All fixed (DEC-065): pairwise uses: bump check, loose negatives block, repository Activity API push time + Dependabot actor check, modified-only Dependabot files, whole-second UTC times. merge-gate tests 115."
     }
   ]
 }
