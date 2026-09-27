@@ -1,0 +1,20 @@
+# T-M1.11 AC2: GitLab artifacts downloaded from pipeline 2886164985 (2026-09-27T01:20:15Z); branch chore/T-M1.11-gitlab-ci @ 725b97b
+
+## job backend success expires 2026-10-02T01:18:42.867Z coverage 90.3
+downloaded 361477 bytes
+91 files, e.g.:
+   backend/target/site/jacoco/com.englms.settings.internal.web/index.html
+   backend/target/site/jacoco/com.englms.settings.internal/index.html
+   backend/target/site/jacoco/com.englms.shared.web/index.html
+   backend/target/site/jacoco/com.englms.shared/index.html
+   backend/target/site/jacoco/com.englms/index.html
+   backend/target/site/jacoco/index.html
+   backend/target/site/jacoco/jacoco.csv
+   backend/target/site/jacoco/jacoco.xml
+   backend/target/surefire-reports/TEST-com.englms.shared.web.SpaServingTest.xml
+
+## job e2e-smoke success expires 2026-10-02T01:19:29.962Z coverage None
+downloaded 265755 bytes
+5 files, e.g.:
+   backend/target/e2e-app.log
+   e2e/playwright-report/index.html

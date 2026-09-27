@@ -131,3 +131,7 @@ any analytics or tracking script.
 | Podman (local image build) | 5.8.6 (CI: the runner's preinstalled Podman) | T-M1.5 | 2026-09-25 |
 | Playwright (`@playwright/test`, e2e/ and qa/) | 1.63.0 (Apache-2.0); Chromium headless shell 153.0.8010.12 (playwright build 1243) | T-M1.6 | 2026-09-26 |
 | `@axe-core/playwright` | 4.13.0 (MPL-2.0; axe-core 4.13) | T-M1.6 | 2026-09-26 |
+| GitLab CI: Docker-in-Docker (Testcontainers) | `docker.io/library/docker:29.8.1-dind@sha256:3f3c01aaaebf7cce837356b688b7c059a4749f10bd7660dec7c58fc454a283f0` (multi-arch index) | T-M1.11 | 2026-09-27 |
+| GitLab CI: Playwright image | `mcr.microsoft.com/playwright:v1.63.0-noble@sha256:eff16c30e6f3f4af0a03fa4b706120d5e9b0891c344a27d64559aff5900a4a27` (multi-arch index) | T-M1.11 | 2026-09-27 |
+| GitLab CI: Temurin 25 JDK tarball | `OpenJDK25U-jdk_x64_linux_hotspot_25.0.4_7.tar.gz`, sha256 `e58fcdcd…d77f94` | T-M1.11 | 2026-09-27 |
+| glab (GitLab CLI) | 1.118.0 (local; the PO's gitlab.com account) | T-M1.11 | 2026-09-27 |

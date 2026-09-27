@@ -77,6 +77,7 @@ CI uses GitHub's Docker and needs none of this. The previous fallback (a `test-e
 | E2E (all six viewports) | `./scripts/e2e-run.sh` (with `ENGLMS_TASK=T-Mx.y`, screenshots go to `evidence/<task>/screenshots/<project>/`) |
 | E2E against a running app | `(cd e2e && E2E_BASE_URL=http://localhost:8080 pnpm test:pr)` |
 | Docs check | `./scripts/check-docs.sh` |
+| GitLab mirror CI (temporary, DEC-060) | Once: `git remote add gitlab https://gitlab.com/duochou042004/eng-lms.git` (glab/https auth). Then `./scripts/gitlab-sync.sh [branch...]` after a merge or before a review; pipelines and 5-day artifacts: `glab ci list -R duochou042004/eng-lms` |
 | Stop the DB | `./scripts/dev-down.sh` |
 
 ## 5. Editor settings
