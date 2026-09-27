@@ -1,47 +1,46 @@
-# Handoff — 2026-09-27 (T-M1.7 merged `41beac7`; T-M1.8 ready)
+# Handoff — 2026-09-27 (T-M1.8 merged `01dfc5d`; T-M1.9 next)
 
-Phase/Milestone: P1 / M1 · Current task: **T-M1.8 (ready; PO start signal given, DEC-068)** · Bookkeeping branch: `docs/T-M1.8-packet` (PR #16) · Remote: https://github.com/duochou042004/eng-lms
+Phase/Milestone: P1 / M1 · Current task: **T-M1.9 (draft: packet to write)** · Bookkeeping branch: `docs/T-M1.9-packet` (pushed; no PR yet) · Remote: https://github.com/duochou042004/eng-lms
 
 ## Where we are
-- **M1 progress:** T-M1.1..T-M1.6, T-M1.11 and **T-M1.7 (`41beac7`, PR #15)** are merged through merge-gate.
-  Required CI checks: docs-check, secrets-scan, backend, web, contract-drift and e2e-smoke. `container` runs on every PR but isn't required.
-- **What T-M1.7 changed in `scripts/merge-gate.sh`** (git-governance §4; DEC-062..067):
-  - **Freshness by push time.** A verdict counts only if posted strictly after the head **arrived**. The arrival is the latest of: the repository Activity API
-    (`/activity?ref=refs/heads/<branch>`, the entry whose `after` is the head), the head's `pull_request` workflow runs on the branch, the PR's force-push events,
-    and `committedDate`. Times are compared as whole-second UTC.
-    The gate **fails closed** when the activity entry or the run is missing, a time can't be parsed, or an API call fails. Right after a push, wait for CI to start before running the gate.
-  - **Negatives block.** For QA, DOCS, SEC and UX, the latest fresh verdict must be that type's positive token, on every path. Loosely written negatives also block.
-  - **Dependabot PRs:**
-    - every commit is authored by `dependabot[bot]`, committed by `web-flow`, and verified;
-    - every branch activity entry since creation is by `dependabot[bot]`, so **don't "Update branch" a Dependabot PR**: comment `@dependabot rebase` instead;
-    - only existing manifests, lockfiles and the wrapper properties may be *modified*, plus workflows whose change blocks are pairwise `uses:` SHA bumps.
-  - The DEC-037/038 manual checks are over (DEC-064). Tests: merge-gate **131**, path-ownership 15.
-  - Review: DOCS-REVIEW round 1 CHANGES REQUESTED (an S2: a `uses:` swap passed; fixed), then rounds 2 and 3 PASS. The round-3 S4s went to **T-M1.12** (DEC-067). Record: `evidence/T-M1.7/review/docs.md`.
-- **Open PR `docs/T-M1.8-packet`:** the T-M1.7 merge and review record, DEC-067, backlog T-M1.12, the **T-M1.8 packet** (G0), `progress.json` and this handoff.
-  It needs a `DOCS-REVIEW T-M1.8: PASS` (a fresh docs-reviewer on the packet) plus `LC-APPROVED T-M1.8`, then merge-gate. It uses the chore/docs path with id T-M1.8.
-- **GitLab mirror (DEC-060):** develop was synced at `41beac7`. The stale mirror branch `chore/T-M1.7-merge-gate-hardening` still exists on GitLab (harmless).
+- **M1 progress:** T-M1.1..T-M1.8 and T-M1.11 are merged through merge-gate. Required CI checks: docs-check, secrets-scan, backend, web, contract-drift and e2e-smoke (`container` isn't required).
+- **T-M1.8 (`01dfc5d`, PR #17; DEC-068..071):**
+  - :8081 carries request IDs; its security headers stay off (DEC-050).
+  - Requests Tomcat rejects on :8080 get Problem Details with the headers (`ProblemDetailsErrorReportValve`).
+  - `examtype`/`part5` are forbidden in `src/main`.
+  - Local tests no longer stall 30 s at exit: `SpringContextsClosingListener` closes the test contexts before Testcontainers' JVM hook runs. A local verify takes ~29 s, and `gate.sh` ~110 s.
+  - `dev-down` is quiet when idle.
+  - Failed best-effort uploads raise a `::warning` (enforced by `workflow-warnings.test.sh`).
+  - `coverage-summary.sh` has tests.
+- **Reviews:** SEC round 1 found that `@ManagementContextConfiguration` classes were component-scanned, so the request-ID filter ran twice on :8080. That's fixed: `EnglmsApplication` has a local `@ComponentScan` excluding them. **Keep management-port config out of the scan.**
+  - SEC round 2: APPROVED. QA: PASS WITH MINOR ×2.
+  - Records: `evidence/T-M1.8/qa/report.md` (PR #18) and `evidence/T-M1.8/review/security.md` (this branch).
+- **Deferred to T-M2.1** (backlog row): the TRACE 405 from Boot's `/error` (JSON or Whitelabel, without headers) and `Cache-Control: no-store` on API responses. Spring Security's firewall and default headers cover both.
+- **T-M1.7 gate reminders:**
+  - freshness is judged by push time; the gate fails closed until the head's `pull_request` runs and activity entry exist;
+  - any negative verdict of any type blocks;
+  - Dependabot PRs: use `@dependabot rebase`, not "Update branch".
 
 ## Next steps
-1. Open or merge the `docs/T-M1.8-packet` PR: get the docs review of the packet, post the comments, run merge-gate `--dry-run` from develop, then merge, then `./scripts/gitlab-sync.sh`.
-2. Implement **T-M1.8** (start signal given, DEC-068). T-M1.8 is BE: management-port request IDs, Problem Details and headers for Tomcat-rejected requests, the forbidden identifiers
-   `ExamType`/`Part5`, the local 30 s shutdown stall, a quiet `dev-down`, upload-failure warnings, and a `coverage-summary` test. G3 is QA plus **SEC** review.
-3. Then T-M1.9 (web a11y follow-ups, **before the M2 routes**). T-M1.10 (TS 7) waits for upstream. T-M1.12 (merge-gate polish) can run at any time.
+1. On `docs/T-M1.9-packet`, write the **T-M1.9 packet** (web a11y/UX follow-ups: DEC-043, DEC-045, DEC-058 F3; the backlog row lists them) to G0, following the task-packet skill. Open the PR (it also carries the T-M1.8 merge bookkeeping), get a fresh docs review, then post `DOCS-REVIEW T-M1.9: PASS` and `LC-APPROVED T-M1.9` after CI is green, and merge via merge-gate.
+2. Ask the PO for the T-M1.9 start signal (record it as a DEC). It's FE: G3 is QA + **UX** review, with screenshots at 360/768/1280.
+3. After 2026-10-01: check that `backend-coverage` uploads again (T-M1.8 AC6), and decide whether to keep the GitLab mirror (DEC-060).
+4. T-M1.12 (merge-gate polish, LC) and T-M1.10 (TS 7, waits for upstream) are open.
 
 ## Pending PO decisions / actions
-- OQ-17: a content check of the wrapper properties on the Dependabot path (default yes, in T-M1.12).
-- After the GitHub storage reset (expected 2026-10-01): keep or remove the GitLab mirror (DEC-060).
-- Recommended (DEC-061): `glab mr merge`/`repo delete`/`release delete` deny rules in `.claude/settings.json`.
+- The T-M1.9 start signal.
+- OQ-17 (wrapper-properties content check; default yes, in T-M1.12).
+- Keep or remove the GitLab mirror after the storage reset (DEC-060).
+- Recommended (DEC-061): `glab` deny rules in `.claude/settings.json`.
 - OQ-03..OQ-14 (defaults documented).
 
 ## Gotchas
-- merge-gate refuses until the head's `pull_request` runs **and** its activity entry exist. `gh pr checks` pending is expected right after a push.
-- A pipe to `tail` hides a failing `check-docs.sh`: run it bare before committing. `progress.json` `pr` is a string (the URL); the gate statuses are `n/a|pending|pass|fail`.
-- Mirror: `./scripts/gitlab-sync.sh [branch]` after merges and before reviews; pipelines: `glab ci list -R duochou042004/eng-lms`.
-- An unrelated untracked PDF of the user's sits in the repo root: never `git add -A`; stage explicit paths.
-- `/qa/**` can only change on `qa/<task>` branches; reviewer evidence (`evidence/*/review/`) can't go on feature/fix branches.
-- `e2e-run.sh` needs ports 8080/8081 free and `dev-up.sh` (rerun after a reboot). A host restart wipes the scratchpad.
-- If a subagent hits a rate limit, resume it with SendMessage. Wait for CI with until-loops on the head SHA (foreground `sleep` chains are blocked).
-- `shellcheck` isn't installed; installing it needs PO approval.
+- Run `./scripts/check-docs.sh` **bare** before every commit. It also fails on forward references to DECs that don't exist yet (it happened once this session).
+- merge-gate refuses until the head's `pull_request` runs **and** its activity entry exist. The LC-APPROVED/verdict comments must be re-posted after every new head.
+- `mvn test` doesn't delete removed resources from `target/`. When checking that a test fails without a fix, delete the stale copy too.
+- Mirror: `./scripts/gitlab-sync.sh [branch]` after merges and before reviews.
+- Stage explicit paths (a user PDF may sit in the repo root). `/qa/**` and `evidence/*/qa/**` only change on `qa/<task>`; `evidence/*/review/**` can't change on feature/fix branches.
+- `e2e-run.sh` needs 8080/8081 free and `dev-up.sh`. Shellcheck isn't installed (installing it needs PO approval).
 
 ## Files to read first
-`CLAUDE.md` → `progress.json` → this file → `docs/tasks/T-M1.8-backend-follow-ups.md`.
+`CLAUDE.md` → `progress.json` → this file → `docs/tasks/backlog.md` (the T-M1.9 row) → `docs/09-harness/task-packet-template.md`.

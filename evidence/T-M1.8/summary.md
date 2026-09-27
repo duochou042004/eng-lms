@@ -81,3 +81,7 @@ Once the storage resets (expected 2026-10-01), `backend-coverage` should upload 
   This is outside the packet, so it's an open question for the LC (not code here).
 - The :8081 Problem Details keep `instance` (the actuator path), as any app-handled error does. That is unchanged behaviour.
 - `shellcheck` is not installed locally (the PO's call).
+
+## Merge
+Merged `01dfc5d` (PR #17) via merge-gate on 2026-09-27 at head `e651c14`. CI 7/7 green for that SHA (run 36307161866 was the first-round backend run; the final-head runs passed too).
+Reviews: QA PASS WITH MINOR (`qa/report.md`, merged via PR #18) and SEC APPROVED (`review/security.md`). DEC-069..071.

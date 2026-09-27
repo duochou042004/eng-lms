@@ -16,7 +16,7 @@
       }
     ]
   },
-  "updatedAt": "2026-09-27T09:00:00Z",
+  "updatedAt": "2026-09-27T09:10:00Z",
   "updatedBy": "lead-coordinator (session 2026-09-27 #5, Opus 5.5)",
   "phase": {
     "id": "P1",
@@ -30,36 +30,6 @@
     "exitCriteria": "scripts/gate.sh green locally and in CI; backend skeleton with Modulith verify + Flyway V1; SPA served same-origin; Playwright smoke at 3 viewports with axe; contract drift check; Testcontainers on rootless Podman or documented fallback (docs/01-product/roadmap.md)."
   },
   "currentTask": {
-    "id": "T-M1.8",
-    "title": "Backend error-surface and tooling follow-ups (T-M1.2/T-M1.4/T-M1.5 QA items)",
-    "status": "in_review",
-    "ownerRole": "BE",
-    "branch": "feature/T-M1.8-backend-follow-ups",
-    "packet": "docs/tasks/T-M1.8-backend-follow-ups.md",
-    "pr": null,
-    "lastCommit": null,
-    "startedAt": "2026-09-27T08:25:00Z",
-    "entryGate": [
-      "T-M1.7 merged — met (41beac7)",
-      "Packet G0-complete — met (PR #16 DOCS-REVIEW PASS, merged 207be44)",
-      "PO start signal for T-M1.8 — met (DEC-068)"
-    ],
-    "nextSteps": [
-      "Round 2: QA and SEC re-test the review-fix head",
-      "Then the verdict comments + LC-APPROVED T-M1.8 after CI is green; merge via merge-gate; qa/T-M1.8 record; ./scripts/gitlab-sync.sh"
-    ],
-    "trace": [
-      "DEC-041",
-      "DEC-047",
-      "DEC-050",
-      "DEC-054",
-      "DEC-055",
-      "DEC-068",
-      "DEC-069",
-      "DEC-070"
-    ]
-  },
-  "nextTask": {
     "id": "T-M1.9",
     "title": "Web a11y/UX follow-ups (T-M1.3 UX review, T-M1.6 QA F3)",
     "status": "draft",
@@ -70,13 +40,39 @@
     "lastCommit": null,
     "startedAt": null,
     "entryGate": [
-      "Before the M2 routes"
+      "T-M1.8 merged — met (01dfc5d)",
+      "Packet G0 — pending (write it on docs/T-M1.9-packet)",
+      "PO start signal — pending"
     ],
-    "nextSteps": [],
+    "nextSteps": [
+      "Write the T-M1.9 packet to G0 on docs/T-M1.9-packet (this branch holds the T-M1.8 merge bookkeeping); docs review; merge via merge-gate",
+      "Ask the PO for the T-M1.9 start signal"
+    ],
     "trace": [
       "DEC-043",
       "DEC-045",
       "DEC-058"
+    ]
+  },
+  "nextTask": {
+    "id": "T-M1.12",
+    "title": "Merge-gate polish (deferred T-M1.7 review S4s, OQ-17)",
+    "status": "draft",
+    "ownerRole": "LC",
+    "branch": "chore/T-M1.12-merge-gate-polish",
+    "packet": "docs/tasks/backlog.md#m1--walking-skeleton-and-delivery-pipeline",
+    "pr": null,
+    "lastCommit": null,
+    "startedAt": null,
+    "entryGate": [
+      "T-M1.7 merged — met"
+    ],
+    "nextSteps": [],
+    "trace": [
+      "DEC-065",
+      "DEC-066",
+      "DEC-067",
+      "OQ-17"
     ]
   },
   "completed": [
@@ -151,11 +147,19 @@
       "mergeCommit": "41beac7",
       "evidence": "evidence/T-M1.7/summary.md",
       "note": "PO start DEC-062. Merged via scripts/merge-gate.sh (PR #15) at head 0cd46cb; CI 7/7 green. Push time = latest of repository activity + pull_request runs + force-push events + committedDate, fail closed (DEC-063/065); any review type negative blocks (incl. loose forms); Dependabot: commits + branch pushes by dependabot[bot], modified-only allow-list, pairwise uses: SHA bumps (DEC-064..066). DOCS-REVIEW round 1 CHANGES REQUESTED (S2-1 fixed), rounds 2 and 3 PASS; S4s -> T-M1.12 (DEC-067). merge-gate tests 37 -> 131. Review record evidence/T-M1.7/review/docs.md."
+    },
+    {
+      "id": "T-M1.8",
+      "title": "Backend error-surface and tooling follow-ups (T-M1.2/T-M1.4/T-M1.5 QA items)",
+      "completedAt": "2026-09-27T09:00:00Z",
+      "mergeCommit": "01dfc5d",
+      "evidence": "evidence/T-M1.8/summary.md",
+      "note": "PO start DEC-068. Merged via merge-gate (PR #17) at e651c14; CI 7/7. :8081 request IDs; Problem Details + headers for Tomcat-rejected requests (valve); examtype/part5; AC4 root cause fixed (test contexts closed at test-plan end; local verify 58 s -> 29 s, gate 174 s -> 111 s); quiet dev-down; upload ::warning steps; coverage-summary test. SEC round 1 CHANGES REQUESTED (S3-1 request-ID filter twice on :8080, fixed) -> APPROVED; QA PASS WITH MINOR x2 (record PR #18 cd04de1). Deferred to T-M2.1: TRACE 405, API no-store (DEC-069..071)."
     }
   ],
   "tests": {
     "lastRun": "2026-09-27T08:41:29Z",
-    "summary": "T-M1.8 branch: gate.sh PASS (12 steps, 108 s); backend 94 tests locally in 28.7 s with no Surefire kill (AC4); new script tests: workflow-warnings 10, coverage-summary 9, dev scripts 21.",
+    "summary": "At T-M1.8 merge (01dfc5d): gate.sh PASS (12 steps, 111 s); backend 97 tests (local verify ~29 s, no Surefire kill); script tests incl. merge-gate 131, workflow-warnings 10, coverage-summary 9, dev scripts 21; CI 7/7 green at e651c14.",
     "suites": [
       {
         "name": "backend (./mvnw -B verify)",
@@ -181,20 +185,20 @@
   },
   "gates": {
     "G0": {
-      "status": "pass",
-      "note": "T-M1.8 packet G0-complete (docs/T-M1.8-packet)"
+      "status": "pending",
+      "note": "T-M1.9 packet not written yet"
     },
     "G1": {
-      "status": "pass",
-      "note": "AC1-AC8 implemented with tests (evidence/T-M1.8/summary.md)"
+      "status": "pending",
+      "note": "T-M1.9 not started"
     },
     "G2": {
-      "status": "pass",
-      "note": "gate.sh PASS (12 steps, 108 s); CI on the PR"
+      "status": "pending",
+      "note": "T-M1.9 not started"
     },
     "G3": {
       "status": "pending",
-      "note": "Round 1: SEC CHANGES REQUESTED (S3-1 double request-ID filter, fixed), QA PASS WITH MINOR; round 2 pending"
+      "note": "QA + UX review (UI packet)"
     },
     "G4": {
       "status": "pending",
@@ -205,12 +209,12 @@
   "decisions": {
     "log": "docs/10-governance/decision-log.md",
     "recent": [
-      "DEC-065",
       "DEC-066",
       "DEC-067",
       "DEC-068",
       "DEC-069",
-      "DEC-070"
+      "DEC-070",
+      "DEC-071"
     ],
     "pendingPO": [
       "OQ-03",
@@ -480,6 +484,16 @@
       "at": "2026-09-27T09:00:00Z",
       "actor": "lead-coordinator",
       "event": "T-M1.8 review round 1: SEC CHANGES REQUESTED (S3-1: management config component-scanned -> request-ID filter twice on :8080), QA PASS WITH MINOR. Fixed S3-1/S4-1/S4-2 (DEC-069), TRACE + API no-store deferred to T-M2.1, F4/F5 documented (DEC-070). gate.sh PASS 111 s."
+    },
+    {
+      "at": "2026-09-27T09:00:00Z",
+      "actor": "lead-coordinator",
+      "event": "T-M1.8 review round 2: SEC APPROVED, QA PASS WITH MINOR at e651c14; verdicts + LC-APPROVED posted after CI 7/7; merged via merge-gate as 01dfc5d; QA record PR #18 merged (cd04de1)."
+    },
+    {
+      "at": "2026-09-27T09:10:00Z",
+      "actor": "lead-coordinator",
+      "event": "docs/T-M1.9-packet: T-M1.8 merge record, SEC review record, DEC-071 (QA F7 docs fix), progress; T-M1.9 packet still to write."
     }
   ]
 }
