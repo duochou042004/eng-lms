@@ -19,6 +19,8 @@
 | `release` | tag `v*` | Build the image → Trivy scan (fail on CRITICAL) → push to GHCR → attach the SBOM → draft the GitHub release | master |
 
 Artifacts serve CI only: every `upload-artifact` step keeps them **5 days** (`retention-days: 5`) and is `continue-on-error` (DEC-053, DEC-056).
+Every `continue-on-error` step has an `id` and is followed, in the same job, by a step with `if: always() && steps.<id>.outcome == 'failure'` that prints a `::warning`,
+so a failed upload shows as an annotation instead of passing silently (T-M1.8, DEC-055 R2-1). `scripts/tests/workflow-warnings.test.sh` enforces this for every workflow.
 Actions are pinned by commit SHA. Workflow `permissions:` are minimal (read by default, `packages: write` only in release). Dependabot is enabled for GitHub Actions
 (weekly, grouped). Maven and npm entries are added by T-M1.2, T-M1.3 and T-M1.6. Dependabot PRs merge through merge-gate with `LC-APPROVED PR-<n>` (git-governance §4).
 
