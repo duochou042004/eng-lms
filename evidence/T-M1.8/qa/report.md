@@ -33,7 +33,7 @@ No test was removed or weakened (the `FORBIDDEN` and `@ValueSource` lists were r
 | F4 | S4 | A request-line failure can't reuse a valid incoming `X-Request-Id` (Tomcat never parses the headers) | Documented in api-conventions §5 (residual case) |
 | F5 | S4 | `OPTIONS *` has no request ID or headers | Documented in api-conventions §5 (residual case) |
 | F6 | S4 | App-handled errors lack `Cache-Control: no-store` (pre-existing) | Deferred to **T-M2.1** (Spring Security's default cache headers), DEC-070 |
-| F7 | S4 | The security.md §5 TRACE note mentions only the JSON form, not the Whitelabel HTML page | Docs fixed in the post-merge bookkeeping (DEC-071) |
+| F7 | S4 | The security.md §5 TRACE note mentions only the JSON form, not the Whitelabel HTML page | Docs fixed in the post-merge bookkeeping (docs/T-M1.9-packet) |
 
 Also noted (outside the packet): Tomcat-level rejections on :8081 keep Tomcat's HTML report without a request ID. The packet puts this out of scope (loopback/internal).
 
