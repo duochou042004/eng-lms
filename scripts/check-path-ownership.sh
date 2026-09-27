@@ -42,8 +42,9 @@ for f in "${files[@]}"; do
     docs|chore)
       ((is_qa)) && violations+=("$f: docs/chore branches must not change QA-owned paths");;
     dependabot)
-      [[ "$f" =~ ^(\.github/workflows/[^/]+\.ya?ml|(.*/)?pom\.xml|\.mvn/.*|(.*/)?package\.json|(.*/)?pnpm-lock\.yaml)$ ]] \
-        || violations+=("$f: dependabot branches may only change dependency manifests and workflow files");;
+      # Same allow-list as DEPENDABOT_FILES_RE in merge-gate.sh (T-M1.7), which also checks that workflow edits are only `uses:` SHA bumps.
+      [[ "$f" =~ ^((.*/)?pom\.xml|(.*/)?package\.json|(.*/)?pnpm-lock\.yaml|backend/\.mvn/wrapper/maven-wrapper\.properties|\.github/workflows/[^/]+\.ya?ml)$ ]] \
+        || violations+=("$f: dependabot branches may only change dependency manifests, lockfiles, the Maven wrapper properties and workflow files");;
     release|hotfix) : ;;
     *) violations+=("$f: unknown branch kind '$kind' (use feature|fix|docs|chore|qa|release|hotfix)");;
   esac

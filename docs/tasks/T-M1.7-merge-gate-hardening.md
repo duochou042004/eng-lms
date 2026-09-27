@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Milestone | M1 |
-| Status | **ready** (G0-complete; T-M1.6 merged). A PO start signal is needed before implementation |
+| Status | **in_progress** (PO start signal 2026-09-27, DEC-062; push-time source: DEC-063) |
 | Owner role | LC (governance scripts; no product code) |
 | Branch | `chore/T-M1.7-merge-gate-hardening` (from `develop`) |
 | Depends on | T-M1.1 (merge-gate), T-M1.6 merged |

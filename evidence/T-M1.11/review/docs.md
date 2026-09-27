@@ -99,3 +99,49 @@ A1 and A2 both need a deliberate act that takes about as much effort as `--no-ve
 - **Earlier bookkeeping commit `6638a20`:** consistent. T-M1.6 is marked done with `5f193e6` and `3dc82a2`, the T-M1.7 packet is ready and waiting for the PO start signal, the backlog rows match, and the T-M1.5 handoff is archived.
 
 DOCS-REVIEW T-M1.11: PASS WITH MINOR
+---
+
+## Round 2 (re-review at `12954f4`, same reviewer)
+
+The round-1 findings are all fixed, so T-M1.11 passes at `12954f4`. Only F1's `glab` deny rules are not in place. They go in `.claude/settings.json`, the PO's own permission settings, so the LC was right to recommend them to the PO rather than change the file itself. I found nothing new at S1–S4, and I did not relax anything because merge-gate needs an exact PASS.
+
+## Checks at 12954f4
+- **GitHub PR #14:** all 7 checks pass at `12954f4`.
+- **GitLab pipeline 2886175924** (`12954f4`): success. backend 102 s (coverage 90.3), web 30 s, e2e-smoke 105 s. The backend and e2e artifacts expire 2026-10-02, 5 days out.
+- **`./scripts/check-docs.sh`:** PASS (122 files). I ran it on a `git archive` copy of `12954f4` in the scratch dir, because the repo is now on `develop`.
+- **Script tests:** `run-all.sh` passes. The hook test has 15/15, and the sync test has 8/8.
+- **`git status`:** clean, both before and after. The only side effect is that `git fetch` updated the remote-tracking refs.
+
+## Round-1 findings
+| # | Result | Evidence |
+|---|---|---|
+| **F1 (S3)** | Fixed on GitLab; deny rules left to the PO | `develop` and `master` are protected with no force push, push by Maintainers and merge by no one. Merge requests are off (`merge_requests_enabled: false`, `merge_requests_access_level: "disabled"`). The chore branch is no longer protected, and the project is private. GitLab now actually enforces that it is not a merge path. The `glab` deny rules are a PO recommendation, recorded in DEC-061. |
+| **F2 (S4)** | Fixed | The hook header, `git-governance.md` §4 and `ci-cd.md` §1.1 now say the hook trusts "the local `origin/<branch>` tracking ref as last fetched". They also say it guards against mistakes, not against a deliberate bypass. |
+| **F3 (S4)** | Fixed | The hook uses `ENGLMS_MIRROR_URL_RE` only when the remote URL starts with `/`, which a real GitHub or GitLab URL never does. A new test covers it. |
+| **F4 (S4)** | Fixed | The evidence summary lists pipelines 2886164985 and 2886169118. The final-head and develop pipelines are deferred to the merge record, which is reasonable. |
+| **F5 (S4)** | Fixed | The packet and backlog say `in_review`. `progress.json` has the PR URL, and `decisions.pendingPO` includes DEC-060. |
+| **F6 (S4)** | Fixed | The committed handoff covers the mirror. The next-session prompt's non-goals list again includes "conferencing, Drive clone". |
+| **F7 (S4)** | Fixed | The packet's cost estimate is now about 4.5 compute-minutes per pipeline, which matches the measured runs. |
+
+The review record `evidence/T-M1.11/review/docs.md` is my round-1 text word for word, with a header naming its source.
+
+## Attack cases against the new hook
+The script is `/tmp/claude-1000/-home-kali-App-sources-Eng-LMS/3b5d7c08-47e2-4424-9588-821d0ef38ff2/scratchpad/rev11/attack2.sh`. It runs the hook from `12954f4`, with origin set up as a `file://` URL so it behaves like a real remote rather than a local path.
+
+| Case | Result |
+|---|---|
+| A1: forged tracking ref pushed to the mirror | Allowed. This is the documented behaviour, and GitLab's protection now blocks any rewrite of a poisoned branch. |
+| A2: `ENGLMS_MIRROR_URL_RE='.*'` plus a forged ref, pushed to origin | **Blocked.** It was allowed in round 1. |
+| A2b: the same, pushed to a bare local path | Allowed, but only a local test repo can be reached this way; GitHub never can. |
+| A3: forged ref with no override, pushed to origin | Blocked |
+| A3c: override plus a `github.com` URL rewritten by `insteadOf` | Blocked |
+
+## Notes (no action required)
+- **A dropped instruction:** `docs/handoff/next-session-prompt.md` no longer contains "Don't filter errors out of logs." It is 3990 characters, so this was probably trimmed to stay under the length limit. `evidence-protocol.md:13` still requires full logs in `raw/`, so the rule survives there.
+- **A forward-dated statement:** the next-session prompt already says T-M1.11 is merged. That is intended, since the prompt is for the session after the merge.
+- **Still open for the PO:**
+  - The `glab` deny rules (DEC-061).
+  - Keeping or removing the mirror after the storage reset (`decisions.pendingPO`).
+  - AC1's develop pipeline, which can only run after the merge.
+
+DOCS-REVIEW T-M1.11: PASS

@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Milestone | M1 |
-| Status | **in_review** (PR #14; PO request 2026-09-27, DEC-060; review PASS WITH MINOR, DEC-061) |
+| Status | **done**: merged via merge-gate (PR #14 → `293e048`); DOCS-REVIEW round 1 PASS WITH MINOR (fixed, DEC-061), round 2 **PASS** |
 | Owner role | LC (CI/governance; no product code) |
 | Branch | `chore/T-M1.11-gitlab-ci` (from the T-M1.7 bookkeeping branch; it merges that bookkeeping too) |
 | Depends on | T-M1.6 merged |

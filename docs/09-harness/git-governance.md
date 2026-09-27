@@ -47,11 +47,25 @@ Trailers: `Task: T-M2.3`, `Refs: FR-STU-01, DEC-012`, and the co-author attribut
 - There are no local merges into `develop` or `master`. The only exception ever made was the one-time bootstrap merge (DEC-030). Back-merges from `master` into `develop` go through a
   `chore/<task-id>-backmerge-x.y.z` branch created from `master` and a normal PR.
 - **Merge paths** (implemented in `merge-gate.sh`): feature/fix → QA-VERDICT; docs/chore → DOCS-REVIEW (or QA); qa/ → LC only; release/hotfix → master with
-  QA-VERDICT + PO-APPROVED + LC-APPROVED `<x.y.z>`; dependabot/* → `LC-APPROVED PR-<n>`. Verdicts count only if they are the **exact** token and were posted **after** the head commit,
-  and the merge is pinned to the head SHA seen at gate time (`--match-head-commit`), so nothing pushed after the gate check can be merged.
-  **Known limitation (R2-2, DEC-037):** "fresh" is judged against the head commit's `committedDate`, which the committer controls, so a commit authored before a review but pushed after it
-  counts as reviewed. The LC checks the PR timeline before approving. Hardening is tracked as T-M1.7. Dependabot PRs also require the PR author to be the Dependabot app,
-  and they may only change manifests, lockfiles and workflows (R2-1).
+  QA-VERDICT + PO-APPROVED + LC-APPROVED `<x.y.z>`; dependabot/* → `LC-APPROVED PR-<n>`. The merge is pinned to the head SHA seen at gate time (`--match-head-commit`),
+  so nothing pushed after the gate check can be merged. The rules below are enforced by the script (T-M1.7, DEC-063/064) and covered by `scripts/tests/merge-gate.test.sh`:
+  - **Exact tokens, first line.** A verdict or approval counts only as the exact token on a comment's first line (`QA-VERDICT <id>: PASS`, `LC-APPROVED <id>`).
+  - **Freshness by push time.** A comment counts only if posted **strictly after the head commit arrived on the PR**, not after its (committer-controlled) `committedDate`.
+    The arrival time is the latest of: the newest push, force-push or branch creation of the head SHA to the PR branch in the **repository activity**
+    (`GET /repos/{owner}/{repo}/activity`), the newest `pull_request` workflow run GitHub created for the head SHA on the PR's branch, the latest force-push on the PR timeline, and
+    the newest `committedDate`. Times are compared as whole-second UTC. If the activity entry or the run is missing (CI hasn't started), a time can't be parsed, or an API call fails,
+    the gate **fails closed**; wait for CI to start and retry. A back-dated commit or a force-push after a review therefore makes every verdict stale: re-post them.
+  - **Negative verdicts block.** For each review type (QA-VERDICT, DOCS-REVIEW, SEC-REVIEW, UX-REVIEW) the latest fresh comment wins within its type. If it is anything but that
+    type's positive token (QA `PASS`/`PASS WITH MINOR`, DOCS `PASS`, SEC/UX `APPROVED`), for example `FAIL` or `CHANGES REQUESTED`, the merge is refused on **every** path, even if another
+    review type passed, and the message names the verdict. A negative written loosely still counts as a negative: other case, extra spaces, markdown
+    (`**`, `` ` ``, `>`, `#`, `_`, a leading `- `), emoji, `QA VERDICT`, `<id> - FAIL`, `CHANGES_REQUESTED`/`CHANGES-REQUESTED`. Positives must be exact.
+  - **Dependabot PRs.** The PR author is the Dependabot app; **every** commit is authored by `dependabot[bot]`, committed by `web-flow` (or `dependabot[bot]`) and
+    signature-verified by GitHub; and every repository-activity entry stamped at or after the branch's latest creation was made by `dependabot[bot]`. So a human "Update branch" disqualifies
+    the PR: ask Dependabot to rebase (`@dependabot rebase`) instead. Only **modifications** of existing `**/pom.xml`, `**/package.json`, `**/pnpm-lock.yaml`,
+    `backend/.mvn/wrapper/maven-wrapper.properties` and `.github/workflows/*.yml` files are allowed (no adds, removals, renames or copies). In a workflow, every change block must replace
+    `uses: <action>@<40-hex sha>` lines one for one, keeping each line identical up to `@` (indentation, step and action) and changing the SHA; only the trailing `# comment` may
+    also change. A workflow without a diff, or with a diff line of an unknown kind, is refused. `check-path-ownership.sh` applies the same file-name allow-list in CI.
+  - The manual LC checks of DEC-037/038 ended with T-M1.7 (DEC-064). The LC still reads the PR timeline and all verdicts before `LC-APPROVED` as part of the review.
 - **Catching up with `develop`:** agents may not run `git merge` (deny rule). Use `gh pr update-branch <n>`, which creates the merge commit on GitHub, or ask the LC.
   The update is a new head commit, so every verdict and approval must be re-posted afterwards.
 
