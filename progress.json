@@ -16,7 +16,7 @@
       }
     ]
   },
-  "updatedAt": "2026-09-27T02:19:00Z",
+  "updatedAt": "2026-09-27T02:27:00Z",
   "updatedBy": "lead-coordinator (session 2026-09-27 #5, Opus 5.5)",
   "phase": {
     "id": "P1",
@@ -30,53 +30,50 @@
     "exitCriteria": "scripts/gate.sh green locally and in CI; backend skeleton with Modulith verify + Flyway V1; SPA served same-origin; Playwright smoke at 3 viewports with axe; contract drift check; Testcontainers on rootless Podman or documented fallback (docs/01-product/roadmap.md)."
   },
   "currentTask": {
-    "id": "T-M1.7",
-    "title": "Merge-gate hardening (push-time freshness, negative verdicts, dependabot rules)",
-    "status": "in_review",
-    "ownerRole": "LC",
-    "branch": "chore/T-M1.7-merge-gate-hardening",
-    "packet": "docs/tasks/T-M1.7-merge-gate-hardening.md",
-    "pr": "https://github.com/duochou042004/eng-lms/pull/15",
-    "lastCommit": null,
-    "startedAt": "2026-09-27T01:41:00Z",
-    "entryGate": [
-      "T-M1.6 merged — met (5f193e6)",
-      "PO start signal for T-M1.7 — met (DEC-062)"
-    ],
-    "nextSteps": [
-      "DOCS-REVIEW round 3 at the final head",
-      "Then the verdict + LC-APPROVED after CI is green for that sha; merge via merge-gate (--dry-run first); ./scripts/gitlab-sync.sh"
-    ],
-    "trace": [
-      "DEC-037",
-      "DEC-038",
-      "DEC-062",
-      "DEC-063",
-      "DEC-064",
-      "R-08",
-      "DEC-065",
-      "DEC-066"
-    ]
-  },
-  "nextTask": {
     "id": "T-M1.8",
     "title": "Backend error-surface and tooling follow-ups (T-M1.2/T-M1.4/T-M1.5 QA items)",
-    "status": "draft",
+    "status": "ready",
     "ownerRole": "BE",
     "branch": "feature/T-M1.8-backend-follow-ups",
-    "packet": "docs/tasks/backlog.md#m1--walking-skeleton-and-delivery-pipeline",
+    "packet": "docs/tasks/T-M1.8-backend-follow-ups.md",
     "pr": null,
     "lastCommit": null,
     "startedAt": null,
     "entryGate": [
-      "T-M1.7 merged"
+      "T-M1.7 merged — met (41beac7)",
+      "Packet G0-complete — met (docs/T-M1.8-packet)",
+      "PO start signal for T-M1.8 — pending"
     ],
-    "nextSteps": [],
+    "nextSteps": [
+      "Merge the docs/T-M1.8-packet branch (T-M1.7 merge + review record, T-M1.8 packet) through merge-gate after its DOCS-REVIEW",
+      "Ask the PO for the T-M1.8 start signal",
+      "Implement (BE) per the packet; QA + SEC review (G3); merge via merge-gate; ./scripts/gitlab-sync.sh"
+    ],
     "trace": [
       "DEC-041",
       "DEC-047",
       "DEC-054",
       "DEC-055"
+    ]
+  },
+  "nextTask": {
+    "id": "T-M1.9",
+    "title": "Web a11y/UX follow-ups (T-M1.3 UX review, T-M1.6 QA F3)",
+    "status": "draft",
+    "ownerRole": "FE",
+    "branch": "feature/T-M1.9-web-follow-ups",
+    "packet": "docs/tasks/backlog.md#m1--walking-skeleton-and-delivery-pipeline",
+    "pr": null,
+    "lastCommit": null,
+    "startedAt": null,
+    "entryGate": [
+      "Before the M2 routes"
+    ],
+    "nextSteps": [],
+    "trace": [
+      "DEC-043",
+      "DEC-045",
+      "DEC-058"
     ]
   },
   "completed": [
@@ -143,11 +140,19 @@
       "mergeCommit": "293e048",
       "evidence": "evidence/T-M1.11/summary.md",
       "note": "PO decision DEC-060. Merged via scripts/merge-gate.sh (PR #14) at head 12954f4; GitHub 7/7 green; GitLab pipeline 2886175924 success. DOCS-REVIEW round 1 PASS WITH MINOR (F1 S3: GitLab protection; fixed, DEC-061), round 2 PASS. Mirror develop/master protected, MRs disabled. Pending PO: glab deny rules in .claude/settings.json; keep/remove the mirror after the GitHub storage reset."
+    },
+    {
+      "id": "T-M1.7",
+      "title": "Merge-gate hardening (push-time freshness, negative verdicts, dependabot rules)",
+      "completedAt": "2026-09-27T02:23:46Z",
+      "mergeCommit": "41beac7",
+      "evidence": "evidence/T-M1.7/summary.md",
+      "note": "PO start DEC-062. Merged via scripts/merge-gate.sh (PR #15) at head 0cd46cb; CI 7/7 green. Push time = latest of repository activity + pull_request runs + force-push events + committedDate, fail closed (DEC-063/065); any review type negative blocks (incl. loose forms); Dependabot: commits + branch pushes by dependabot[bot], modified-only allow-list, pairwise uses: SHA bumps (DEC-064..066). DOCS-REVIEW round 1 CHANGES REQUESTED (S2-1 fixed), rounds 2 and 3 PASS; S4s -> T-M1.12 (DEC-067). merge-gate tests 37 -> 131. Review record evidence/T-M1.7/review/docs.md."
     }
   ],
   "tests": {
-    "lastRun": "2026-09-26T02:52:46Z",
-    "summary": "At T-M1.6 merge (5f193e6): gate.sh PASS (12 steps, 151 s); e2e 46 passed/26 skipped on six projects (CI mandatory three: 28/8); backend 83 + JaCoCo; web 41; governance script tests incl. gate 25, e2e-run 13, merge-gate 37; CI 7 checks green.",
+    "lastRun": "2026-09-27T02:19:00Z",
+    "summary": "At T-M1.7 merge (41beac7): gate.sh PASS (12 steps, 174 s at c9d6206; the later commits are script-only, script tests re-run: PASS); governance script tests incl. merge-gate 131; CI 7/7 green at 0cd46cb.",
     "suites": [
       {
         "name": "backend (./mvnw -B verify)",
@@ -162,7 +167,7 @@
       {
         "name": "governance scripts (scripts/tests/run-all.sh)",
         "result": "pass",
-        "details": "T-M1.7: merge-gate 87 (37 old unchanged + 50 new), path-ownership 15, gate 25, e2e-run 13, gitlab-sync 8, pre-push 15, dev scripts 12"
+        "details": "At T-M1.7 merge (41beac7): merge-gate 131, path-ownership 15, gate 25, e2e-run 13, gitlab-sync 8, pre-push 15, dev scripts 12"
       },
       {
         "name": "gate.sh",
@@ -174,19 +179,19 @@
   "gates": {
     "G0": {
       "status": "pass",
-      "note": "T-M1.7 packet G0-complete"
+      "note": "T-M1.8 packet G0-complete (docs/T-M1.8-packet)"
     },
     "G1": {
-      "status": "pass",
-      "note": "T-M1.7 implemented on chore/T-M1.7-merge-gate-hardening (AC1-AC4 in merge-gate.test.sh)"
+      "status": "pending",
+      "note": "T-M1.8 not started"
     },
     "G2": {
-      "status": "pass",
-      "note": "gate.sh PASS (12 steps) at c9d6206; CI 7/7 green on PR #15"
+      "status": "pending",
+      "note": "T-M1.8 not started"
     },
     "G3": {
       "status": "pending",
-      "note": "Round 1 CHANGES REQUESTED (fixed, DEC-065); round 2 PASS at 39096c6 with S3-A/S3-B/S4 fixed (DEC-066); round 3 re-test at the final head pending"
+      "note": "QA-VERDICT + SEC-REVIEW (error surface, headers)"
     },
     "G4": {
       "status": "pending",
@@ -197,12 +202,12 @@
   "decisions": {
     "log": "docs/10-governance/decision-log.md",
     "recent": [
-      "DEC-061",
       "DEC-062",
       "DEC-063",
       "DEC-064",
       "DEC-065",
-      "DEC-066"
+      "DEC-066",
+      "DEC-067"
     ],
     "pendingPO": [
       "OQ-03",
@@ -435,6 +440,16 @@
       "at": "2026-09-27T02:19:00Z",
       "actor": "lead-coordinator",
       "event": "DOCS-REVIEW round 2 PASS at 39096c6; its S3-A (echo option fail-open), S3-B (same-second activity), S4-A/B fixed (DEC-066). merge-gate tests 131."
+    },
+    {
+      "at": "2026-09-27T02:23:46Z",
+      "actor": "lead-coordinator",
+      "event": "DOCS-REVIEW round 3 PASS at 0cd46cb (S4 only -> T-M1.12). Posted DOCS-REVIEW + LC-APPROVED after CI 7/7; merge-gate dry runs (develop gate + new gate) passed; merged PR #15 as 41beac7; branch deleted; gitlab-sync develop."
+    },
+    {
+      "at": "2026-09-27T02:27:00Z",
+      "actor": "lead-coordinator",
+      "event": "docs/T-M1.8-packet: T-M1.7 merge + review record, DEC-067, backlog T-M1.12, T-M1.8 packet G0 (ready; PO start signal pending), handoff."
     }
   ]
 }

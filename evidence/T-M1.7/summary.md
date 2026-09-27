@@ -41,7 +41,7 @@ Branch `chore/T-M1.7-merge-gate-hardening` · Packet `docs/tasks/T-M1.7-merge-ga
 - At `c9d6206`, with CI in progress: refused, citing the pending checks and the missing verdicts.
 - With the review-round-1 script, at `c9d6206` after CI went green: refused only for the missing verdicts.
 
-Both runs found the push time, so neither gave a false fail-closed. The final passing run is part of the merge (see the merge record).
+Both runs found the push time, so neither gave a false fail-closed. The final passing runs (the new gate at `0cd46cb`, and develop's gate) and the merge are in `review/docs.md` § Merge.
 
 ## CI
 - PR #15 at `c9d6206`: 7/7 green:
@@ -53,12 +53,21 @@ Both runs found the push time, so neither gave a false fail-closed. The final pa
   - e2e-smoke https://github.com/duochou042004/eng-lms/actions/runs/36286985495
   - container https://github.com/duochou042004/eng-lms/actions/runs/36286985497
 - GitLab mirror pipeline 2886200386 (branch @ `c9d6206`): success.
-- The review-fix head's links are recorded in the merge record (`progress.json`, the handoff).
+- Round-1 fix head `39096c6`: 7/7 green (e.g. docs-check https://github.com/duochou042004/eng-lms/actions/runs/36287816313).
+- **Final head `0cd46cb`: 7/7 green**:
+  - docs-check https://github.com/duochou042004/eng-lms/actions/runs/36288206870
+  - secrets-scan https://github.com/duochou042004/eng-lms/actions/runs/36288206842
+  - backend https://github.com/duochou042004/eng-lms/actions/runs/36288206880
+  - web https://github.com/duochou042004/eng-lms/actions/runs/36288206887
+  - contract-drift https://github.com/duochou042004/eng-lms/actions/runs/36288206833
+  - e2e-smoke https://github.com/duochou042004/eng-lms/actions/runs/36288206850
+  - container https://github.com/duochou042004/eng-lms/actions/runs/36288206875
+- **Merged `41beac7`** via merge-gate on 2026-09-27T02:23:46Z. The branch was deleted, and `gitlab-sync.sh` pushed develop to the mirror.
 
 ## Review
 Round 1 at `c9d6206`: **DOCS-REVIEW T-M1.7: CHANGES REQUESTED**. One S2 (the workflow rule accepted non-bumps), S3-1..5 and S4 notes; all fixed (DEC-065).
-Round 2 at `39096c6`: **DOCS-REVIEW T-M1.7: PASS**, with new S3-A (an `echo` option fail-open), S3-B (a same-second activity entry) and S4-A/B, all fixed (DEC-066). Round 3 re-tests the final head.
-The round-by-round record is `review/docs.md`, committed with the merge record because the final verdict comes after the final head.
+Round 2 at `39096c6`: **DOCS-REVIEW T-M1.7: PASS**, with new S3-A (an `echo` option fail-open), S3-B (a same-second activity entry) and S4-A/B, all fixed (DEC-066). Round 3 at `0cd46cb` (final): **PASS**, S4 only, deferred to T-M1.12 (DEC-067).
+The round-by-round record is `review/docs.md`, committed with the merge record on `docs/T-M1.8-packet`.
 
 ## Not done / notes
 - `shellcheck` is not installed on this host, and there is no local image; downloading it needs PO approval, so it was not run. `bash -n` passes.
