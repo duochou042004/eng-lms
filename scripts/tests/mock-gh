@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Fake `gh` for merge-gate tests. Reads fixtures from $MOCK_DIR:
 #   pr.json (pr view), checks.json (pr checks), behind.txt (compare behind_by); records merges in merged.txt
-#   runs.json (actions/runs), forcepush.json (graphql timeline), pr-commits.json / pr-files.json (pulls/<n>/commits|files)
+#   activity.json (repository activity), runs.json (actions/runs), forcepush.json (graphql timeline), pr-commits.json / pr-files.json (pulls/<n>/commits|files)
 #   A fixture file named <name>.fail makes that call exit non-zero (API error → the gate must fail closed).
 set -euo pipefail
 serve() { if [[ -f "$MOCK_DIR/$1.fail" ]]; then echo "mock-gh: HTTP 502 for $1" >&2; exit 1; fi; cat "$MOCK_DIR/$1"; }
@@ -11,6 +11,7 @@ case "$1 $2" in
   "pr merge")  echo "$*" >>"$MOCK_DIR/merged.txt"; echo "merged" ;;
   "api "*)
     case "$*" in
+      */activity\?*)     serve activity.json ;;
       *actions/runs*)    serve runs.json ;;
       *" graphql "*)     serve forcepush.json ;;
       *pulls/*/commits*) serve pr-commits.json ;;

