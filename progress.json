@@ -16,7 +16,7 @@
       }
     ]
   },
-  "updatedAt": "2026-09-27T02:27:00Z",
+  "updatedAt": "2026-09-27T08:25:00Z",
   "updatedBy": "lead-coordinator (session 2026-09-27 #5, Opus 5.5)",
   "phase": {
     "id": "P1",
@@ -32,21 +32,21 @@
   "currentTask": {
     "id": "T-M1.8",
     "title": "Backend error-surface and tooling follow-ups (T-M1.2/T-M1.4/T-M1.5 QA items)",
-    "status": "ready",
+    "status": "in_progress",
     "ownerRole": "BE",
     "branch": "feature/T-M1.8-backend-follow-ups",
     "packet": "docs/tasks/T-M1.8-backend-follow-ups.md",
     "pr": null,
     "lastCommit": null,
-    "startedAt": null,
+    "startedAt": "2026-09-27T08:25:00Z",
     "entryGate": [
       "T-M1.7 merged — met (41beac7)",
-      "Packet G0-complete — met (PR #16 docs review fixes)",
+      "Packet G0-complete — met (PR #16 DOCS-REVIEW PASS, merged 207be44)",
       "PO start signal for T-M1.8 — met (DEC-068)"
     ],
     "nextSteps": [
-      "Merge PR #16 via merge-gate after DOCS-REVIEW T-M1.8 PASS",
-      "Implement on feature/T-M1.8-backend-follow-ups; QA + SEC review (G3); merge via merge-gate; ./scripts/gitlab-sync.sh"
+      "Implement AC1-AC8 on feature/T-M1.8-backend-follow-ups",
+      "Open the PR; QA-VERDICT + SEC-REVIEW (G3); merge via merge-gate; ./scripts/gitlab-sync.sh"
     ],
     "trace": [
       "DEC-041",
@@ -184,7 +184,7 @@
     },
     "G1": {
       "status": "pending",
-      "note": "T-M1.8 not started"
+      "note": "T-M1.8 implementation in progress"
     },
     "G2": {
       "status": "pending",
@@ -458,6 +458,16 @@
       "at": "2026-09-27T02:27:00Z",
       "actor": "lead-coordinator",
       "event": "docs/T-M1.8-packet: T-M1.7 merge + review record, DEC-067, backlog T-M1.12, T-M1.8 packet G0 (ready; PO start signal pending), handoff."
+    },
+    {
+      "at": "2026-09-27T08:24:00Z",
+      "actor": "lead-coordinator",
+      "event": "PO start signal for T-M1.8 (DEC-068). PR #16 DOCS-REVIEW round 1 CHANGES REQUESTED (S2-1: headers on :8081 vs DEC-050) fixed; round 2 PASS; merged via merge-gate as 207be44 (first merge under the T-M1.7 gate)."
+    },
+    {
+      "at": "2026-09-27T08:25:00Z",
+      "actor": "lead-coordinator",
+      "event": "T-M1.8 started on feature/T-M1.8-backend-follow-ups; PR #16 review S4-A/B/C fixed here."
     }
   ]
 }
