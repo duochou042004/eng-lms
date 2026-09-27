@@ -55,7 +55,18 @@ No test was disabled or timeout changed.
 | **AC8** gate, docs, progress | PASS | `gate-20260927T084129Z.log`: **PASS (12 steps, 108 s)**, down from 174 s at T-M1.7 thanks to AC4. Docs: api-conventions §5, security.md §5, test-strategy rule 6, coding-agent-rules §7, development-setup (the known-issue note replaced), ci-cd §1, tech-stack |
 
 ## CI
-See the PR (links added after the run). AC6 artifact check: GitHub's storage reset is expected on 2026-10-01; whether `backend-coverage` uploaded on the PR run is recorded there.
+PR #17 at `5c1b45b`: 7/7 green:
+- backend https://github.com/duochou042004/eng-lms/actions/runs/36307161866
+- docs-check https://github.com/duochou042004/eng-lms/actions/runs/36307161855
+- secrets-scan https://github.com/duochou042004/eng-lms/actions/runs/36307161861
+- web https://github.com/duochou042004/eng-lms/actions/runs/36307161874
+- contract-drift https://github.com/duochou042004/eng-lms/actions/runs/36307161867
+- e2e-smoke https://github.com/duochou042004/eng-lms/actions/runs/36307161838
+- container https://github.com/duochou042004/eng-lms/actions/runs/36307161877
+
+**AC6 live proof:** GitHub's artifact storage is still exhausted, so on backend run 36307161866 "Upload coverage report" failed (`Artifact storage quota has been hit`, 0 artifacts).
+The new step ran and the check shows the annotation `warning: Coverage report not uploaded`, while the job and the required check still passed.
+Once the storage resets (expected 2026-10-01), `backend-coverage` should upload again; this is recorded in the handoff.
 
 ## Notes / findings for the reviewers
 - `Cache-Control: no-store` is **not** set on ordinary API responses yet, although api-conventions §7 asks for it. T-M1.8 sets it only on the valve's responses (AC2).
