@@ -1,6 +1,6 @@
 # Handoff — 2026-09-27 (T-M1.7 merged `41beac7`; T-M1.8 ready)
 
-Phase/Milestone: P1 / M1 · Current task: **T-M1.8 (ready; awaiting the PO start signal)** · Bookkeeping branch: `docs/T-M1.8-packet` (open PR; not yet merged) · Remote: https://github.com/duochou042004/eng-lms
+Phase/Milestone: P1 / M1 · Current task: **T-M1.8 (ready; PO start signal given, DEC-068)** · Bookkeeping branch: `docs/T-M1.8-packet` (PR #16) · Remote: https://github.com/duochou042004/eng-lms
 
 ## Where we are
 - **M1 progress:** T-M1.1..T-M1.6, T-M1.11 and **T-M1.7 (`41beac7`, PR #15)** are merged through merge-gate.
@@ -23,12 +23,11 @@ Phase/Milestone: P1 / M1 · Current task: **T-M1.8 (ready; awaiting the PO start
 
 ## Next steps
 1. Open or merge the `docs/T-M1.8-packet` PR: get the docs review of the packet, post the comments, run merge-gate `--dry-run` from develop, then merge, then `./scripts/gitlab-sync.sh`.
-2. Ask the PO for the **T-M1.8 start signal** and record it as a DEC. T-M1.8 is BE: management-port request IDs, Problem Details and headers for Tomcat-rejected requests, the forbidden identifiers
+2. Implement **T-M1.8** (start signal given, DEC-068). T-M1.8 is BE: management-port request IDs, Problem Details and headers for Tomcat-rejected requests, the forbidden identifiers
    `ExamType`/`Part5`, the local 30 s shutdown stall, a quiet `dev-down`, upload-failure warnings, and a `coverage-summary` test. G3 is QA plus **SEC** review.
 3. Then T-M1.9 (web a11y follow-ups, **before the M2 routes**). T-M1.10 (TS 7) waits for upstream. T-M1.12 (merge-gate polish) can run at any time.
 
 ## Pending PO decisions / actions
-- The T-M1.8 start signal.
 - OQ-17: a content check of the wrapper properties on the Dependabot path (default yes, in T-M1.12).
 - After the GitHub storage reset (expected 2026-10-01): keep or remove the GitLab mirror (DEC-060).
 - Recommended (DEC-061): `glab mr merge`/`repo delete`/`release delete` deny rules in `.claude/settings.json`.

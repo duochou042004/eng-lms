@@ -41,19 +41,20 @@
     "startedAt": null,
     "entryGate": [
       "T-M1.7 merged — met (41beac7)",
-      "Packet G0-complete — met (docs/T-M1.8-packet)",
-      "PO start signal for T-M1.8 — pending"
+      "Packet G0-complete — met (PR #16 docs review fixes)",
+      "PO start signal for T-M1.8 — met (DEC-068)"
     ],
     "nextSteps": [
-      "Merge the docs/T-M1.8-packet branch (T-M1.7 merge + review record, T-M1.8 packet) through merge-gate after its DOCS-REVIEW",
-      "Ask the PO for the T-M1.8 start signal",
-      "Implement (BE) per the packet; QA + SEC review (G3); merge via merge-gate; ./scripts/gitlab-sync.sh"
+      "Merge PR #16 via merge-gate after DOCS-REVIEW T-M1.8 PASS",
+      "Implement on feature/T-M1.8-backend-follow-ups; QA + SEC review (G3); merge via merge-gate; ./scripts/gitlab-sync.sh"
     ],
     "trace": [
       "DEC-041",
       "DEC-047",
+      "DEC-050",
       "DEC-054",
-      "DEC-055"
+      "DEC-055",
+      "DEC-068"
     ]
   },
   "nextTask": {
@@ -202,12 +203,12 @@
   "decisions": {
     "log": "docs/10-governance/decision-log.md",
     "recent": [
-      "DEC-062",
       "DEC-063",
       "DEC-064",
       "DEC-065",
       "DEC-066",
-      "DEC-067"
+      "DEC-067",
+      "DEC-068"
     ],
     "pendingPO": [
       "OQ-03",
@@ -295,6 +296,13 @@
       "status": "approved",
       "at": "2026-09-27T01:40:00Z",
       "ref": "DEC-062"
+    },
+    {
+      "what": "Start T-M1.8 (backend follow-ups)",
+      "by": "PO",
+      "status": "approved",
+      "at": "2026-09-27T08:10:00Z",
+      "ref": "DEC-068"
     }
   ],
   "environment": {

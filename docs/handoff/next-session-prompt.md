@@ -2,13 +2,13 @@ Resume Eng-LMS as Lead Coordinator in /home/kali/App_sources/Eng-LMS (private re
 
 PRODUCT: a private 1:1 teaching workspace for ONE English tutor and their students. NOT a school LMS, SaaS, marketplace, booking, payment, chat, conferencing, Drive clone or AI tutor. No hard-coded TOEIC/IELTS curricula. Source of truth: docs/00-sources/ (immutable).
 
-START: read CLAUDE.md, progress.json and docs/handoff/HANDOFF.md, then docs/tasks/T-M1.8-backend-follow-ups.md (DEC-041/047/054/055). T-M1.8 NEEDS THE PO START SIGNAL: ask first, and record it as a DEC.
+START: read CLAUDE.md, progress.json and docs/handoff/HANDOFF.md, then docs/tasks/T-M1.8-backend-follow-ups.md (DEC-041/047/054/055). The PO start signal for T-M1.8 is given (DEC-068).
 
 STATE: M1: T-M1.1..T-M1.7 + T-M1.11 merged (T-M1.7 = 41beac7: merge-gate push-time freshness via repository activity + pull_request runs, fail closed; negatives of any type block; strict Dependabot path; DEC-062..067). Branch docs/T-M1.8-packet (pushed; open a PR if none) holds the T-M1.7 merge and review record, DEC-067, backlog T-M1.12, the T-M1.8 packet and the handoff. Required CI: docs-check, secrets-scan, backend, web, contract-drift, e2e-smoke. Local: ./scripts/dev-up.sh (after a reboot); ./scripts/gate.sh (12 steps; ENGLMS_TASK=<id> writes the log). GitHub artifact storage may reset ~2026-10-01; until then the reports live in the GitLab mirror CI: run ./scripts/gitlab-sync.sh after each merge and on branches under review.
 
 DO:
 1. Bookkeeping PR (docs/T-M1.8-packet): one fresh docs-reviewer reviews the T-M1.8 packet (G0 quality, traceability, scope). Fix the findings; post "DOCS-REVIEW T-M1.8: PASS" then "LC-APPROVED T-M1.8" after CI is green for the final head; ./scripts/merge-gate.sh --dry-run <pr> from an up-to-date develop, then merge; gitlab-sync.
-2. With the PO start signal: implement T-M1.8 on feature/T-M1.8-backend-follow-ups via the backend-implementer agent (or yourself), AC1-AC8 exactly. Tests at the right levels; no test removed or weakened; evidence in evidence/T-M1.8/.
+2. Implement T-M1.8 on feature/T-M1.8-backend-follow-ups via the backend-implementer agent (or yourself), AC1-AC8 exactly. Tests at the right levels; no test removed or weakened; evidence in evidence/T-M1.8/.
 3. G3: a fresh qa-evaluator (QA-VERDICT) and a security-reviewer (SEC-REVIEW; error surface and headers). Black-box; re-test via SendMessage; fix S1/S2; defer S3/S4 only via a DEC + backlog task. The QA record goes on a qa/T-M1.8 branch. After CI is green for the final head: the verdict comments, then LC-APPROVED T-M1.8, then merge ONLY with merge-gate (--dry-run first). The gate fails closed until the head's pull_request runs and activity entry exist.
 4. Post-merge: confirm the branches are deleted; record the merge on a new branch; write the T-M1.9 packet to G0; update progress.json + docs/handoff/.
 
