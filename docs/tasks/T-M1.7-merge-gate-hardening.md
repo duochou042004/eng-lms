@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Milestone | M1 |
-| Status | **in_progress** (PO start signal 2026-09-27, DEC-062; push-time source: DEC-063) |
+| Status | **done**: merged `41beac7` (PR #15) via merge-gate on 2026-09-27; DOCS-REVIEW PASS (round 3). DEC-062..067 |
 | Owner role | LC (governance scripts; no product code) |
 | Branch | `chore/T-M1.7-merge-gate-hardening` (from `develop`) |
 | Depends on | T-M1.1 (merge-gate), T-M1.6 merged |
