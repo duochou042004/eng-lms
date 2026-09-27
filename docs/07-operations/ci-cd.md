@@ -46,11 +46,14 @@ GitHub remains the source of truth: the GitLab pipeline is **not** a required ch
 **Result (R-08, DEC-031): branch protection is NOT available.** The API returned 403 on 2026-09-25 (private repo, free plan), so the target configuration above
 is not applied, and the enforcement lives in the harness:
 - `scripts/merge-gate.sh [--dry-run] <pr>`: refuses unless every required check in `scripts/required-checks.txt` passes and no other check fails; `LC-APPROVED <task>`
-  is present; the latest `QA-VERDICT` (feature/fix/release) or `DOCS-REVIEW` (docs/chore) says PASS; no SEC/UX review requests changes; the branch is 0 commits behind its base
-  and has no conflicts; and `progress.json` changed. It then runs `gh pr merge --merge --delete-branch`. The LC merges **only** through this script.
+  is present; the latest `QA-VERDICT` (feature/fix/release) or `DOCS-REVIEW` (docs/chore) says PASS; **no review type's latest verdict is negative** (FAIL, CHANGES REQUESTED or
+  any other non-positive token blocks on every path); the branch is 0 commits behind its base and has no conflicts; and `progress.json` changed. Every verdict must be posted
+  **after the head commit arrived on the PR** (push time from the PR's `pull_request` workflow runs and force-push events; fails closed without them). Dependabot PRs need
+  Dependabot-authored, GitHub-verified commits only, and a narrow file allow-list where workflow edits are `uses:` SHA bumps only (git-governance §4, T-M1.7, DEC-063/064).
+  It then runs `gh pr merge --merge --delete-branch --match-head-commit <sha>`. The LC merges **only** through this script.
 - A `pre-push` hook (`scripts/install-hooks.sh` sets `core.hooksPath=scripts/hooks`) blocks direct pushes to `master`/`develop` and non-fast-forward pushes.
 - `check-path-ownership.sh` runs in `docs-check` on every PR. `.claude/settings.json` denies `gh pr merge`, force pushes and direct pushes for agents.
-- All of these are covered by `scripts/tests/*.test.sh` (34 cases) in CI.
+- All of these are covered by `scripts/tests/*.test.sh` in CI (`run-all.sh` in `docs-check`; merge-gate alone has 87 cases since T-M1.7).
 
 ## 3. Versioning and release
 

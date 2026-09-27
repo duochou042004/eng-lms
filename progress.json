@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-09-27T01:55:00Z",
-  "updatedBy": "lead-coordinator (session 2026-09-25/26 #4, Opus 5.5)",
+  "updatedAt": "2026-09-27T01:56:00Z",
+  "updatedBy": "lead-coordinator (session 2026-09-27 #5, Opus 5.5)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -32,24 +32,28 @@
   "currentTask": {
     "id": "T-M1.7",
     "title": "Merge-gate hardening (push-time freshness, negative verdicts, dependabot rules)",
-    "status": "ready",
+    "status": "in_progress",
     "ownerRole": "LC",
     "branch": "chore/T-M1.7-merge-gate-hardening",
     "packet": "docs/tasks/T-M1.7-merge-gate-hardening.md",
     "pr": null,
     "lastCommit": null,
-    "startedAt": null,
+    "startedAt": "2026-09-27T01:41:00Z",
     "entryGate": [
       "T-M1.6 merged — met (5f193e6)",
-      "PO start signal for T-M1.7 — pending"
+      "PO start signal for T-M1.7 — met (DEC-062)"
     ],
     "nextSteps": [
-      "Ask the PO for the T-M1.7 start signal",
-      "Then implement per the packet; review (G3); merge via merge-gate; ./scripts/gitlab-sync.sh after the merge"
+      "Open the PR; dry-run merge-gate on it (AC5)",
+      "G3: one fresh docs-reviewer tries to forge freshness and bypass the gate",
+      "Fix S1/S2; merge via merge-gate; ./scripts/gitlab-sync.sh after the merge"
     ],
     "trace": [
       "DEC-037",
       "DEC-038",
+      "DEC-062",
+      "DEC-063",
+      "DEC-064",
       "R-08"
     ]
   },
@@ -157,7 +161,7 @@
       {
         "name": "governance scripts (scripts/tests/run-all.sh)",
         "result": "pass",
-        "details": "incl. gate.test.sh 24 and merge-gate 37 (OK_CHECKS has contract-drift)"
+        "details": "T-M1.7: merge-gate 87 (37 old unchanged + 50 new), path-ownership 15, gate 25, e2e-run 13, gitlab-sync 8, pre-push 15, dev scripts 12"
       },
       {
         "name": "gate.sh",
@@ -172,12 +176,12 @@
       "note": "T-M1.7 packet G0-complete"
     },
     "G1": {
-      "status": "pending",
-      "note": "T-M1.7 not started"
+      "status": "pass",
+      "note": "T-M1.7 implemented on chore/T-M1.7-merge-gate-hardening (AC1-AC4 in merge-gate.test.sh)"
     },
     "G2": {
       "status": "pending",
-      "note": "T-M1.7 not started"
+      "note": "gate.sh + CI on the PR head"
     },
     "G3": {
       "status": "pending",
@@ -192,12 +196,12 @@
   "decisions": {
     "log": "docs/10-governance/decision-log.md",
     "recent": [
-      "DEC-056",
-      "DEC-057",
-      "DEC-058",
       "DEC-059",
       "DEC-060",
-      "DEC-061"
+      "DEC-061",
+      "DEC-062",
+      "DEC-063",
+      "DEC-064"
     ],
     "pendingPO": [
       "OQ-03",
@@ -212,7 +216,8 @@
       "OQ-12",
       "OQ-13",
       "OQ-14",
-      "DEC-060"
+      "DEC-060",
+      "OQ-17"
     ]
   },
   "risks": {
@@ -277,6 +282,13 @@
       "status": "approved",
       "at": "2026-09-25T15:00:00Z",
       "ref": "DEC-048"
+    },
+    {
+      "what": "Start T-M1.7 (merge-gate hardening)",
+      "by": "PO",
+      "status": "approved",
+      "at": "2026-09-27T01:40:00Z",
+      "ref": "DEC-062"
     }
   ],
   "environment": {
@@ -402,6 +414,16 @@
       "at": "2026-09-27T01:50:00Z",
       "actor": "lead-coordinator",
       "event": "T-M1.11 merged via merge-gate (PR #14 → 293e048): private GitLab mirror + GitLab CI storing reports 5 days (DEC-060/061); develop synced to GitLab. T-M1.7 ready (awaiting PO start)."
+    },
+    {
+      "at": "2026-09-27T01:40:00Z",
+      "actor": "lead-coordinator",
+      "event": "PO start signal for T-M1.7 (DEC-062)."
+    },
+    {
+      "at": "2026-09-27T01:56:00Z",
+      "actor": "lead-coordinator",
+      "event": "T-M1.7 implemented: push-time freshness from pull_request runs + force-push events, fail closed (DEC-063); negative verdicts of any type block; Dependabot commit identity + narrow allow-list + uses: SHA-bump diff check (DEC-064). merge-gate tests 37 -> 87, path-ownership 12 -> 15. OQ-17 (wrapper content check) raised."
     }
   ]
 }
