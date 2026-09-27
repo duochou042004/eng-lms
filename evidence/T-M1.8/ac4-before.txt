@@ -1,0 +1,5 @@
+# before the fix (same host, same day): 58.5 s, 'Surefire is going to kill self fork JVM' after 30 s
+[ERROR] Surefire is going to kill self fork JVM. The exit has elapsed 30 seconds after System.exit(0).
+[INFO] BUILD SUCCESS
+[INFO] Total time:  58.490 s
+hikari 'has been closed' warnings: 10

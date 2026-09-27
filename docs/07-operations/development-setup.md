@@ -54,7 +54,9 @@ podman ps -a --filter label=org.testcontainers=true -q | xargs -r podman rm -fv 
 podman volume prune                                                           # unused anonymous volumes left by earlier crashes (asks first)
 ```
 
-Known issue (T-M1.8): on local Podman runs Surefire force-exits the test JVM 30 s after the tests (a shutdown hook hangs). The build still passes.
+Shutdown order (fixed in T-M1.8): with Ryuk off, Testcontainers' JVM shutdown hook and Spring's run at the same time, and Spring Modulith queries the database while
+its context closes. `SpringContextsClosingListener` (test sources) therefore closes the Spring test contexts as soon as the test plan ends, while the database still runs.
+Keep new `@SpringBootTest` classes on the default context cache; no per-test shutdown handling is needed.
 
 CI uses GitHub's Docker and needs none of this. The previous fallback (a `test-external-db` profile) is no longer needed.
 

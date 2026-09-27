@@ -1,0 +1,17 @@
+# local ./mvnw -B verify on rootless Podman (source scripts/env.sh; Ryuk off), run 1 of 2
+kill-self-fork lines: 0
+hikari 'has been closed' warnings: 0
+modulith shutdown line(s): 3
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.163 s -- in com.englms.shared.IdsTest
+[INFO] Tests run: 25, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 3.371 s -- in com.englms.shared.web.SpaServingTest
+[INFO] Tests run: 28, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 13.36 s -- in com.englms.ApplicationIntegrationTest
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.239 s -- in com.englms.settings.internal.web.MetaControllerTest
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.722 s -- in com.englms.persistence.FlywayMigrationTest
+[INFO] Tests run: 17, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.062 s -- in com.englms.architecture.ForbiddenIdentifiersTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.141 s -- in com.englms.architecture.ModularityViolationTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 3.157 s -- in com.englms.contract.OpenApiContractTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.142 s -- in com.englms.ModularityTests
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.305 s -- in com.englms.architecture.ArchitectureRulesTest
+[INFO] Tests run: 94, Failures: 0, Errors: 0, Skipped: 0
+[INFO] BUILD SUCCESS
+[INFO] Total time:  28.747 s
