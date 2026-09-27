@@ -1,39 +1,45 @@
-# Handoff — 2026-09-26 (T-M1.5 merged; T-M1.6 ready)
+# Handoff — 2026-09-27 (T-M1.6 and T-M1.11 merged; T-M1.7 ready)
 
-Phase/Milestone: P1 / M1 · Current task: **T-M1.6 (ready; awaiting the PO start signal)** · Branch: `feature/T-M1.6-e2e-harness` · Remote: https://github.com/duochou042004/eng-lms
+Phase/Milestone: P1 / M1 · Current task: **T-M1.7 (ready; awaiting the PO start signal)** · Branch: `chore/T-M1.7-merge-gate-hardening` (recreate from develop; the old copy's bookkeeping merged with PR #14) · Remote: https://github.com/duochou042004/eng-lms
 
 ## Where we are
-- **M1 progress:** T-M1.1 (`f1e3caa`), T-M1.2 (`ae9ac5d`), T-M1.3 (`8b9d938`), T-M1.4 (`294d597`) and **T-M1.5 (`a96dcf7`, PR #10)** are merged through merge-gate.
-  The QA report for T-M1.5 is PR #11 (`afd6a9b`). The required CI checks are now: docs-check, secrets-scan, backend, web and **contract-drift**. `container` (a build-only image check) runs on every PR but isn't required.
-- **What T-M1.5 delivered:**
-  - `deploy/Containerfile`: 3 stages, digest-pinned bases, a JRE runtime running as uid 10001, a read-only root + tmpfs `/tmp`, and a HEALTHCHECK. Build it with `--format docker`.
-  - `shared.web`: the SPA fallback, cache headers and the security.md §5 headers.
-  - `scripts/gate.sh` (fail-fast; `--list`, `--from`; `ENGLMS_TASK` writes a log) and `scripts/contract-drift.sh`.
-  - JaCoCo: its totals appear in the CI job summary (`scripts/coverage-summary.sh`).
-  - Decisions DEC-049..DEC-055.
-- **The QA story:** round 1 FAILED on F1. The `backend` check was red because the **account-wide GitHub Actions artifact storage quota** is exhausted. Fixed by DEC-053: coverage goes to the job summary and the uploads are `continue-on-error`. Round 2: PASS WITH MINOR.
+- **M1 progress:** T-M1.1..T-M1.5 and **T-M1.6 (`5f193e6`, PR #12)** are merged through merge-gate. The T-M1.6 QA record and the `/qa` skeleton are PR #13.
+  Required CI checks: docs-check, secrets-scan, backend, web, contract-drift and **e2e-smoke**. `container` (a build-only image check) runs on every PR but isn't required.
+- **What T-M1.6 delivered:**
+  - `e2e/`: Playwright 1.63.0 + axe with 6 viewport projects; guards for axe, overflow (`clientWidth`) and a context-level console/CSP check; guard self-tests; a vi+en smoke.
+  - `scripts/e2e-run.sh`: builds the packaged jar with the SPA and always stops the app. `gate.sh` has **12 steps** (the last is `e2e`).
+  - `/qa`: QA's own pinned Playwright toolchain (DEC-057).
+  - QA round 1 FAILED on F1: the overflow guard was blind under mobile emulation. Fixed by DEC-058. Round 2: PASS WITH MINOR (DEC-059).
+- **T-M1.11 (DEC-060, PO decision):** a private **GitLab mirror** https://gitlab.com/duochou042004/eng-lms whose `.gitlab-ci.yml` re-runs backend, web and e2e-smoke and
+  **stores the reports for 5 days** (JaCoCo, JUnit, Playwright). GitHub's artifact storage is still exhausted (monthly usage; expected reset 2026-10-01).
+  GitHub stays the source of truth (PRs, required checks, merge-gate). After every merge, run `./scripts/gitlab-sync.sh` (pushes GitHub's develop/master and any named
+  branches). The pre-push hook allows develop/master on the mirror only as exactly `origin/<branch>`. GitLab.com free tier: 400 CI minutes/month (≈4.5 min per pipeline).
+- **PO requests done (DEC-056):**
+  - Every `upload-artifact` step keeps **5 days**. The PO freed the account storage; the quota may still show until GitHub recalculates (6–12 h).
+  - Dependabot #6 (TypeScript 7 breaks openapi-typescript) and #7 (`@types/node` 26 vs Node 24) are closed. `dependabot.yml` ignores those majors, and T-M1.10 is in the backlog.
 - **Deferred:**
-  - To T-M1.8: F2 (Tomcat 400s have no security headers), R2-1 (a failed non-blocking upload is silent) and R2-3 (a test for `coverage-summary.sh`).
-  - To T-M2.1: F3 (raw dot-segment paths get the SPA shell).
-- **CSP:** React Aria's runtime `<style>` injection is pre-empted by a `<template id="react-aria-pressable-style">` in `index.html` (DEC-052). The T-M1.6 console guard must keep catching CSP violations.
+  - T-M1.8: F2, R2-1, R2-3 from T-M1.5.
+  - T-M1.9: F3 from T-M1.6 (a late console error).
+  - T-M2.1: F3 from T-M1.5 (dot-segment paths).
 
 ## Next steps
-1. Ask the PO for the **T-M1.6** start signal (the packet `docs/tasks/T-M1.6-e2e-harness.md` is G0-complete). Then implement, QA and merge-gate.
-2. Then T-M1.7 (merge-gate hardening), T-M1.8 (backend follow-ups) and T-M1.9 (web a11y follow-ups, **before the M2 routes**).
-3. The open Dependabot PRs #6 (web tooling group; its `web` check FAILS) and #7 (`@types/node` 26) still need LC triage. Don't merge #6 as is.
+1. Ask the PO for the **T-M1.7** start signal (merge-gate hardening; the packet `docs/tasks/T-M1.7-merge-gate-hardening.md` is G0-complete). It's a chore packet, so G3 is a review by a docs-reviewer or QA agent.
+2. Then T-M1.8 (backend follow-ups) and T-M1.9 (web a11y follow-ups, **before the M2 routes**). T-M1.10 (TS 7) waits for upstream.
+3. The M1 exit needs everything in roadmap M1 (gate.sh, CI and the e2e smoke are live now).
 
 ## Pending PO decisions / actions
-- The start signal for T-M1.6.
-- **Free the GitHub Actions artifact storage** on the account (this repo holds none), or accept that uploads fail until it's recalculated (DEC-053). The LC does not delete data.
+- The start signal for T-M1.7.
+- After the GitHub storage reset (expected 2026-10-01): keep or remove the GitLab mirror (DEC-060). Check with `gh run view <id> --log | grep quota`.
 - OQ-03..OQ-14 (defaults documented).
 
 ## Gotchas
-- Subagents can't write files: record their text (the QA report goes on `qa/<task>`). If a background agent dies on a rate limit, resume it with SendMessage.
-- A host restart wipes the scratchpad and stops `englms-dev-db`: rerun `./scripts/dev-up.sh`. Agent transcripts under the session's tasks folder survive.
-- zsh word-splits differently: write probe loops as bash scripts (`evidence/T-M1.5/probe.sh`). `.env*` reads are blocked: use `--env-file .env`.
-- Wait for CI with until-loops that match the head SHA. A new push cancels in-progress runs for the same ref (concurrency).
-- `git revert` fails if the working tree is dirty; don't chain `--amend` after it blindly.
-- pnpm 12: no `-s`. Adding a required check means also updating `OK_CHECKS` in `scripts/tests/merge-gate.test.sh`.
+- Mirror: `./scripts/gitlab-sync.sh [branch]` after merges and before reviews; pipelines: `glab ci list -R duochou042004/eng-lms`; artifacts: `glab api projects/86941168/jobs/<id>/artifacts > a.zip`.
+- An unrelated untracked PDF of the user's sits in the repo root: never `git add -A`; stage explicit paths.
+- `/qa/**` can only change on `qa/<task>` branches (path ownership); `.gitignore` can't. Keep a `qa/` worktree in the scratchpad for the QA branch.
+- Chromium's `isMobile` widens `window.innerWidth`: measure the layout with `documentElement.clientWidth`.
+- `e2e-run.sh` needs ports 8080/8081 free and `dev-up.sh` (restart it after a reboot). A host restart wipes the scratchpad; subagent transcripts survive.
+- If a subagent hits a rate limit, resume it with SendMessage. Wait for CI with until-loops that match the head SHA.
+- pnpm 12: `pnpm list` is pnpm's own command; use `pnpm run <script>`. Adding a required check means also updating `OK_CHECKS`.
 
 ## Files to read first
-`CLAUDE.md` → `progress.json` → this file → `docs/tasks/T-M1.6-e2e-harness.md`.
+`CLAUDE.md` → `progress.json` → this file → `docs/tasks/T-M1.7-merge-gate-hardening.md`.

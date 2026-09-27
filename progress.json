@@ -16,7 +16,7 @@
       }
     ]
   },
-  "updatedAt": "2026-09-26T00:25:00Z",
+  "updatedAt": "2026-09-27T01:25:00Z",
   "updatedBy": "lead-coordinator (session 2026-09-25/26 #4, Opus 5.5)",
   "phase": {
     "id": "P1",
@@ -30,49 +30,51 @@
     "exitCriteria": "scripts/gate.sh green locally and in CI; backend skeleton with Modulith verify + Flyway V1; SPA served same-origin; Playwright smoke at 3 viewports with axe; contract drift check; Testcontainers on rootless Podman or documented fallback (docs/01-product/roadmap.md)."
   },
   "currentTask": {
-    "id": "T-M1.6",
-    "title": "E2E harness: Playwright (6 viewports), helpers, smoke, e2e-smoke CI; /qa skeleton",
-    "status": "awaiting_approval",
-    "ownerRole": "FE",
-    "branch": "feature/T-M1.6-e2e-harness",
-    "packet": "docs/tasks/T-M1.6-e2e-harness.md",
-    "pr": null,
+    "id": "T-M1.11",
+    "title": "GitLab mirror + GitLab CI for CI artifacts (temporary)",
+    "status": "in_review",
+    "ownerRole": "LC",
+    "branch": "chore/T-M1.11-gitlab-ci",
+    "packet": "docs/tasks/T-M1.11-gitlab-ci.md",
+    "pr": "https://github.com/duochou042004/eng-lms/pull/14",
     "lastCommit": null,
-    "startedAt": "2026-09-26T01:00:00Z",
+    "startedAt": "2026-09-27T01:00:00Z",
     "entryGate": [
-      "T-M1.5 merged — met (a96dcf7)",
-      "PO start signal for T-M1.6 — met (DEC-056)"
+      "T-M1.6 merged — met",
+      "PO request — met (DEC-060)"
     ],
     "nextSteps": [
-      "QA round 2 PASS WITH MINOR at e321675 (DEC-059)",
-      "CI green on the final head; QA-VERDICT + LC-APPROVED; merge-gate #12; then the qa/T-M1.6 PR (skeleton + report)"
+      "PR on GitHub (CI green) + GitLab pipeline green at the final head",
+      "review (DOCS-REVIEW, one agent); LC-APPROVED; merge-gate",
+      "after the merge: ./scripts/gitlab-sync.sh (develop pipeline green = AC1); then T-M1.7 next session",
+      "PO later: keep or remove the GitLab mirror after the GitHub storage reset (expected 2026-10-01)"
     ],
     "trace": [
-      "NFR-RESP-01",
-      "qa-protocol",
-      "ci-cd §1",
-      "DEC-052",
       "DEC-053",
       "DEC-056",
-      "DEC-057",
-      "DEC-058",
-      "DEC-059"
+      "DEC-060",
+      "R-08",
+      "DEC-061"
     ]
   },
   "nextTask": {
     "id": "T-M1.7",
     "title": "Merge-gate hardening (push-time freshness, negative verdicts, dependabot rules)",
-    "status": "draft",
+    "status": "ready",
     "ownerRole": "LC",
     "branch": "chore/T-M1.7-merge-gate-hardening",
-    "packet": "docs/tasks/backlog.md#m1--walking-skeleton-and-delivery-pipeline",
+    "packet": "docs/tasks/T-M1.7-merge-gate-hardening.md",
     "pr": null,
     "lastCommit": null,
     "startedAt": null,
     "entryGate": [
-      "T-M1.6 merged"
+      "T-M1.6 merged — met (5f193e6)",
+      "PO start signal for T-M1.7 — pending"
     ],
-    "nextSteps": [],
+    "nextSteps": [
+      "Ask the PO for the T-M1.7 start signal",
+      "Then implement per the packet; review (G3); merge via merge-gate"
+    ],
     "trace": [
       "DEC-037",
       "DEC-038",
@@ -127,11 +129,19 @@
       "mergeCommit": "a96dcf7",
       "evidence": "evidence/T-M1.5/summary.md",
       "note": "Merged via scripts/merge-gate.sh (PR #10) at head ca92d19; CI green (6 checks incl. contract-drift). QA round 1 FAIL (F1: backend red on the account artifact quota) fixed (DEC-053); round 2 PASS WITH MINOR; report PR #11 → afd6a9b. Deferred: F2, R2-1, R2-3 → T-M1.8; F3 → T-M2.1 (DEC-054, DEC-055)."
+    },
+    {
+      "id": "T-M1.6",
+      "title": "E2E harness: Playwright (6 viewports), helpers, smoke, e2e-smoke CI; /qa skeleton",
+      "completedAt": "2026-09-26T03:30:00Z",
+      "mergeCommit": "5f193e6",
+      "evidence": "evidence/T-M1.6/summary.md",
+      "note": "Merged via scripts/merge-gate.sh (PR #12) at head 24043fb; CI green (7 checks incl. e2e-smoke). QA round 1 FAIL (F1: overflow guard blind under isMobile) fixed (DEC-058); round 2 PASS WITH MINOR (DEC-059). QA record + /qa skeleton PR #13 → 3dc82a2. Also: artifact retention 5 days, Dependabot #6/#7 closed with ignore rules, T-M1.10 (DEC-056). Deferred: F3 → T-M1.9."
     }
   ],
   "tests": {
     "lastRun": "2026-09-26T02:52:46Z",
-    "summary": "T-M1.6: gate.sh PASS (12 steps, 150 s); e2e smoke 30/30 on six projects; guard self-tests 4; script tests incl. gate 25, e2e-run 13, merge-gate 37.",
+    "summary": "At T-M1.6 merge (5f193e6): gate.sh PASS (12 steps, 151 s); e2e 46 passed/26 skipped on six projects (CI mandatory three: 28/8); backend 83 + JaCoCo; web 41; governance script tests incl. gate 25, e2e-run 13, merge-gate 37; CI 7 checks green.",
     "suites": [
       {
         "name": "backend (./mvnw -B verify)",
@@ -158,19 +168,19 @@
   "gates": {
     "G0": {
       "status": "pass",
-      "note": "T-M1.6 packet G0-complete"
+      "note": "T-M1.11 packet"
     },
     "G1": {
       "status": "pass",
-      "note": "gate.sh 12 steps PASS (evidence/T-M1.6/gate-20260926T025016Z.log)"
+      "note": "script tests + GitLab pipeline green"
     },
     "G2": {
       "status": "pass",
-      "note": "PR #12 CI green (7 checks incl. e2e-smoke)"
+      "note": "PR #14 CI green (7 checks)"
     },
     "G3": {
       "status": "pass",
-      "note": "QA round 2 PASS WITH MINOR (round 1 FAIL F1 fixed, DEC-058)"
+      "note": "DOCS-REVIEW PASS WITH MINOR (DEC-061)"
     },
     "G4": {
       "status": "pending",
@@ -181,12 +191,12 @@
   "decisions": {
     "log": "docs/10-governance/decision-log.md",
     "recent": [
-      "DEC-054",
-      "DEC-055",
       "DEC-056",
       "DEC-057",
       "DEC-058",
-      "DEC-059"
+      "DEC-059",
+      "DEC-060",
+      "DEC-061"
     ],
     "pendingPO": [
       "OQ-03",
@@ -200,7 +210,8 @@
       "OQ-11",
       "OQ-12",
       "OQ-13",
-      "OQ-14"
+      "OQ-14",
+      "DEC-060"
     ]
   },
   "risks": {
@@ -277,7 +288,8 @@
     "gh": "2.101.0, authenticated as duochou042004 (scopes: repo, workflow, read:org, gist)",
     "host": "Kali Linux 7.1.5, 16 cores, 22 GB RAM, 92 GB free",
     "python": "3.14.7 with jsonschema 4.26.0 (used by scripts/check_docs.py)",
-    "githubActionsStorage": "PO freed the account's artifact storage on 2026-09-26; artifacts are kept 5 days (DEC-056)."
+    "githubActionsStorage": "PO freed the account's artifact storage on 2026-09-26; artifacts are kept 5 days (DEC-056).",
+    "gitlab": "Private mirror gitlab.com/duochou042004/eng-lms (project 86941168), remote 'gitlab', glab 1.118.0 authenticated as duochou042004; GitLab CI stores reports 5 days (DEC-060). Sync: ./scripts/gitlab-sync.sh"
   },
   "history": [
     {
@@ -374,6 +386,16 @@
       "at": "2026-09-26T01:00:00Z",
       "actor": "lead-coordinator",
       "event": "PO approved T-M1.6 and short artifact retention (DEC-056); Dependabot #6 (TS 7) and #7 (@types/node 26) closed with ignore rules; T-M1.10 added."
+    },
+    {
+      "at": "2026-09-26T03:30:00Z",
+      "actor": "lead-coordinator",
+      "event": "T-M1.6 merged via merge-gate (PR #12 → 5f193e6); QA record + /qa skeleton PR #13 → 3dc82a2; T-M1.7 packet written (ready, awaiting PO start)."
+    },
+    {
+      "at": "2026-09-27T01:25:00Z",
+      "actor": "lead-coordinator",
+      "event": "PO decision DEC-060: GitLab mirror + GitLab CI for artifacts (GitHub artifact storage still exhausted). First GitLab pipeline green (backend 101 s, web 29 s, e2e-smoke 148 s); artifacts stored 5 days."
     }
   ]
 }

@@ -22,6 +22,20 @@ Artifacts serve CI only: every `upload-artifact` step keeps them **5 days** (`re
 Actions are pinned by commit SHA. Workflow `permissions:` are minimal (read by default, `packages: write` only in release). Dependabot is enabled for GitHub Actions
 (weekly, grouped). Maven and npm entries are added by T-M1.2, T-M1.3 and T-M1.6. Dependabot PRs merge through merge-gate with `LC-APPROVED PR-<n>` (git-governance §4).
 
+### 1.1 GitLab mirror CI (temporary, T-M1.11, DEC-060)
+
+GitHub's Actions artifact storage is exhausted until the monthly reset (expected 2026-10-01), so no GitHub run can store reports (their uploads are
+`continue-on-error`, DEC-053). The private mirror `gitlab.com/duochou042004/eng-lms` runs `.gitlab-ci.yml` on every branch push:
+
+| Job | Image (digest-pinned) | What it runs | Artifacts (5 days) |
+|---|---|---|---|
+| `backend` | `eclipse-temurin:25-jdk` + `docker:29.8.1-dind` service | `./mvnw -B -ntp verify` (Testcontainers over DinD) + `coverage-summary.sh` | JaCoCo HTML/XML, surefire reports; JUnit + JaCoCo coverage reports in the UI |
+| `web` | `node:24-slim` | install, lint, typecheck, API types, test, build, budget, contrast | — |
+| `e2e-smoke` | `playwright:v1.63.0-noble` + Temurin 25 tarball (SHA-256) + `postgres:18` service | `scripts/e2e-run.sh` on the mandatory viewports | Playwright report, test results, app log |
+
+GitHub remains the source of truth: the GitLab pipeline is **not** a required check and GitLab is not a merge path (merge requests are disabled; develop/master are protected: Maintainers push only, no merges, no force push; DEC-061). The mirror is fed by
+`scripts/gitlab-sync.sh` (GitHub's commits only). Budget: GitLab.com free tier, 400 compute minutes/month; sync develop and the branches under review only.
+
 ## 2. Branch protection (target configuration)
 
 | Branch | Rules |

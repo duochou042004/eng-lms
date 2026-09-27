@@ -34,4 +34,27 @@ g commit -q --allow-empty -m "more work"
 g reset -q --hard origin/feature/T-M9.9-demo
 g commit -q --allow-empty -m "fast-forward work"
 expect_exit 0 "allows a normal fast-forward push" -- g push -q origin feature/T-M9.9-demo
+
+# GitLab mirror exception (DEC-060): develop/master only as exactly origin's commit, and only to the mirror URL.
+g init -q --bare "$work/mirror.git"
+g init -q --bare "$work/other.git"
+g checkout -q -B develop origin/master 2>/dev/null
+g -c core.hooksPath=/dev/null push -q origin HEAD:refs/heads/develop 2>/dev/null   # "merged on GitHub" (test setup only)
+g fetch -q origin
+mirror_env=(env "ENGLMS_MIRROR_URL_RE=^$work/mirror\\.git\$")
+expect_exit 0 "mirrors develop to the GitLab mirror when it is exactly origin/develop" -- \
+  "${mirror_env[@]}" git push -q "$work/mirror.git" refs/remotes/origin/develop:refs/heads/develop
+g commit -q --allow-empty -m "local develop commit not on GitHub"
+expect_exit 1 "blocks develop on the mirror when the commit is not origin/develop" -- \
+  "${mirror_env[@]}" git push -q "$work/mirror.git" develop:refs/heads/develop
+expect_output_contains "the GitLab mirror only accepts origin/develop exactly" "points to gitlab-sync.sh"
+expect_exit 1 "blocks origin's develop commit to a remote that is not the mirror" -- \
+  "${mirror_env[@]}" git push -q "$work/other.git" refs/remotes/origin/develop:refs/heads/develop
+expect_exit 1 "still blocks a new develop commit to origin (GitHub), even with the mirror setting" -- \
+  "${mirror_env[@]}" git push -q origin develop:refs/heads/develop
+expect_exit 1 "blocks deleting develop on the mirror" -- \
+  "${mirror_env[@]}" git push -q "$work/mirror.git" :refs/heads/develop
+expect_exit 1 "the test-only override is ignored for non-path URLs (file://, https://), so it cannot widen to a real remote" -- \
+  env ENGLMS_MIRROR_URL_RE=".*" git push -q "file://$work/other.git" refs/remotes/origin/develop:refs/heads/develop
+expect_output_contains "direct push to 'develop' is blocked" "explains the block"
 finish
