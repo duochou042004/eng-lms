@@ -1,0 +1,67 @@
+# T-M1.9 AC9 (T-M1.6 QA F3, DEC-058, QA probe P15): the console guard sees an error raised 300 ms after the test body ends
+# 2026-09-28T03:59:14Z, base 5c78168 + working tree; packaged app via scripts/e2e-run.sh --no-build, laptop project,
+# the four console-guard self-tests (-g 'console guard'). The late-error self-test is
+#   e2e/tests/guards.spec.ts 'the console guard fails on an error raised 300 ms after the test body ends (expected failure)':
+#   test.fail(); openTutorWith(page); page.evaluate(() => setTimeout(() => console.error('late'), 300)); expect(consoleGuard).toEqual([])
+# The list reporter draws an expected failure with a cross but counts it as passed; the json lines give the outcome.
+#
+# Finding while building this demo: with the committed config (screenshot: 'only-on-failure') Playwright captures a temporary
+# screenshot after the test body and BEFORE fixture teardown (ArtifactsRecorder.didFinishTestFunction); here that took ~1.4 s, which
+# by accident gave the guard a late window. With screenshots off (another config, e.g. QA's) there is no window: that is F3.
+# LATE_ERROR_SETTLE_MS makes the window explicit and independent of the screenshot setting. Runs B-D edit two lines temporarily;
+# both were restored afterwards (see the end of this log).
+
+## A. committed: LATE_ERROR_SETTLE_MS = 500, screenshot 'only-on-failure' -> caught (expected failure), run passes
+    ✓  1 [laptop] › tests/guards.spec.ts:49:1 › the console guard fails on a CSP violation (an inline <style> under style-src self) (1.8s)
+    ✓  4 [laptop] › tests/guards.spec.ts:56:1 › the console guard fails on a console error (1.8s)
+    ✓  3 [laptop] › tests/guards.spec.ts:63:1 › the console guard also watches a second page of the same context (1.8s)
+    ✘  2 [laptop] › tests/guards.spec.ts:75:1 › the console guard fails on an error raised 300 ms after the test body ends (expected failure) (2.4s)
+    4 passed (3.2s)
+  e2e-run: playwright exit 0
+  e2e-run exit: 0
+  json: expectedStatus=failed status=failed outcome=expected duration=2353ms
+  json error: Error: console errors, page errors or CSP violations | expect(received).toEqual(expected) // deep equality | - Expected  - 1 | + Received  + 3 | - Array [] | + Array [ | +   "console.error: late", | + ] | at ../support/fixtures.ts:37 | 35 |         await new Promise((resolve) => setTimeout(resolve, 
+  stats: expected=4 unexpected=0 flaky=0 skipped=0
+
+## B. LATE_ERROR_SETTLE_MS = 500, screenshot 'off' -> still caught: the settle alone covers the 300 ms
+    ✓  2 [laptop] › tests/guards.spec.ts:63:1 › the console guard also watches a second page of the same context (883ms)
+    ✓  1 [laptop] › tests/guards.spec.ts:49:1 › the console guard fails on a CSP violation (an inline <style> under style-src self) (947ms)
+    ✓  4 [laptop] › tests/guards.spec.ts:56:1 › the console guard fails on a console error (947ms)
+    ✘  3 [laptop] › tests/guards.spec.ts:75:1 › the console guard fails on an error raised 300 ms after the test body ends (expected failure) (956ms)
+    4 passed (2.4s)
+  e2e-run: playwright exit 0
+  e2e-run exit: 0
+  json: expectedStatus=failed status=failed outcome=expected duration=956ms
+  json error: Error: console errors, page errors or CSP violations | expect(received).toEqual(expected) // deep equality | - Expected  - 1 | + Received  + 3 | - Array [] | + Array [ | +   "console.error: late", | + ] | at ../support/fixtures.ts:37 | 35 |         await new Promise((resolve) => setTimeout(resolve, 
+  stats: expected=4 unexpected=0 flaky=0 skipped=0
+
+## C. NEGATIVE: LATE_ERROR_SETTLE_MS = 0, screenshot 'off' (the pre-T-M1.9 guard without the accidental delay) -> missed:
+##    the test 'unexpectedly passes' and Playwright fails the run
+    ✓  1 [laptop] › tests/guards.spec.ts:63:1 › the console guard also watches a second page of the same context (409ms)
+    ✓  3 [laptop] › tests/guards.spec.ts:49:1 › the console guard fails on a CSP violation (an inline <style> under style-src self) (460ms)
+    ✓  4 [laptop] › tests/guards.spec.ts:56:1 › the console guard fails on a console error (456ms)
+    ✓  2 [laptop] › tests/guards.spec.ts:75:1 › the console guard fails on an error raised 300 ms after the test body ends (expected failure) (493ms)
+      Expected to fail, but passed.
+    1 failed
+    3 passed (2.5s)
+  e2e-run: playwright exit 1
+  e2e-run exit: 1
+  json: expectedStatus=failed status=passed outcome=unexpected duration=493ms
+  stats: expected=3 unexpected=1 flaky=0 skipped=0
+
+## D. LATE_ERROR_SETTLE_MS = 0, screenshot 'only-on-failure' -> caught only thanks to the screenshot delay (why a settle-0 run with
+##    the committed config does not show the gap)
+    ✓  1 [laptop] › tests/guards.spec.ts:49:1 › the console guard fails on a CSP violation (an inline <style> under style-src self) (1.8s)
+    ✓  3 [laptop] › tests/guards.spec.ts:56:1 › the console guard fails on a console error (1.8s)
+    ✓  2 [laptop] › tests/guards.spec.ts:63:1 › the console guard also watches a second page of the same context (1.8s)
+    ✘  4 [laptop] › tests/guards.spec.ts:75:1 › the console guard fails on an error raised 300 ms after the test body ends (expected failure) (1.9s)
+    4 passed (2.6s)
+  e2e-run: playwright exit 0
+  e2e-run exit: 0
+  json: expectedStatus=failed status=failed outcome=expected duration=1850ms
+  json error: Error: console errors, page errors or CSP violations | expect(received).toEqual(expected) // deep equality | - Expected  - 1 | + Received  + 3 | - Array [] | + Array [ | +   "console.error: late", | + ] | at ../support/fixtures.ts:37 | 35 |         await new Promise((resolve) => setTimeout(resolve, 
+  stats: expected=4 unexpected=0 flaky=0 skipped=0
+
+## Restored:
+9:export const LATE_ERROR_SETTLE_MS = 500
+26:    screenshot: 'only-on-failure',

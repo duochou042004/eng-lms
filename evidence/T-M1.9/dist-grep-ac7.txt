@@ -1,0 +1,40 @@
+# T-M1.9 AC7: no dev-namespace string in the production build (T-M1.3 QA F-1, DEC-045)
+# 2026-09-28T03:50:35Z, after 'pnpm build' of the working tree on feature/T-M1.9-web-follow-ups (base 5c78168)
+# grep -rlF <string> dist/ for unique dev strings (vi + en) — expect no file for each; then the manifest check
+ok   absent  "Component gallery" 
+ok   absent  "UI components and their states" 
+ok   absent  "Thư viện thành phần" 
+ok   absent  "Các thành phần giao diện và trạng thái" 
+ok   absent  "Segmented control" 
+ok   absent  "Nút chọn phân đoạn" 
+ok   absent  "Chế độ xem (không khả dụng)" 
+ok   absent  "View (one option unavailable)" 
+ok   absent  "Hãy nhập tên đăng nhập." 
+ok   absent  "Enter a username." 
+ok   absent  "Nội dung chi tiết của thông báo." 
+ok   absent  "The details of the message." 
+
+## the /dev/ui route and its module
+ok   absent  "dev/ui" 
+ok   absent  "DevUiPage" 
+ok   absent  "registerDevNamespace" 
+
+## manifest: no src/dev/ entry (node scripts/bundle-budget.mjs also fails if src/dev/DevUiPage.tsx is in it)
+"src/app/routes/Landing.tsx"
+"src/app/routes/NotFound.tsx"
+"src/app/shells/StudentShell.tsx"
+"src/app/shells/TutorShell.tsx"
+src/dev/ entries in the manifest: 0
+
+## control: production strings ARE found (the grep works)
+"Không gian dạy học": dist/assets/index-DbB_dR1Z.js 
+"Teaching workspace": dist/assets/index-DbB_dR1Z.js 
+
+## BEFORE (develop 5c78168): the same grep on a build of the develop tree
+PRESENT "Component gallery" dist/assets/index-BDZDyrpt.js 
+PRESENT "UI components and their states" dist/assets/index-BDZDyrpt.js 
+PRESENT "Thư viện thành phần" dist/assets/index-BDZDyrpt.js 
+PRESENT "Hãy nhập tên đăng nhập." dist/assets/index-BDZDyrpt.js 
+PRESENT "Nội dung chi tiết của thông báo." dist/assets/index-BDZDyrpt.js 
+
+(the develop build shipped the dev namespace in the entry chunk: the loophole this task closes)

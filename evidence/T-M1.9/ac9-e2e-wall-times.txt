@@ -1,0 +1,17 @@
+# T-M1.9 AC9: E2E wall time before/after the console-guard settle (LATE_ERROR_SETTLE_MS = 500)
+# Mandatory projects (phone-small, tablet, laptop), packaged app, this machine; Playwright's own duration line.
+
+## Before (develop 5c78168, full suite = the T-M1.6 smoke + guards): e2e-before-5c78168.log
+  8 skipped
+  28 passed (10.0s)
+  e2e-run.sh total incl. web + jar build: 33 s
+
+## After, the same 28 tests (smoke + the original guard self-tests; --grep-invert '300 ms'), --no-build, two runs:
+  run 1:  8 skipped  28 passed (10.9s) 
+  run 2:  8 skipped  28 passed (10.7s) 
+  -> +0.7..0.9 s for 28 tests on 8 workers: the 500 ms settle runs in each test's teardown, in parallel.
+
+## After, full suite (gate e2e step at 76fb26a, gate-20260928T040335Z.log): 34 more tests (route focus, loading/CLS, budgets, the late-error self-test)
+  10 skipped
+  62 passed (17.9s)
+gate: <== e2e OK (34s)

@@ -1,0 +1,56 @@
+# T-M1.9 AC8: fetch lint loophole (T-M1.3 QA F-2, DEC-045) — negative demo
+# 2026-09-28T03:50:02Z at 5c78168 + working tree; oxlint Version: 1.85.0
+# Mechanism: oxlint's built-in no-restricted-properties (window/globalThis/self . fetch), off for src/lib/api/** (like no-restricted-globals).
+# The fixtures were created for this run only and deleted afterwards (never committed).
+
+## Fixtures
+--- src/features/lintdemo/loophole.ts
+// T-M1.9 AC8 throwaway lint fixture (deleted after the demo)
+export async function viaWindow() {
+  return window.fetch('/api/v1/meta')
+}
+export async function viaGlobalThis() {
+  return globalThis.fetch('/api/v1/meta')
+}
+export async function viaSelf() {
+  return self.fetch('/api/v1/meta')
+}
+--- src/features/lintdemo/existing.ts
+// T-M1.9 AC8 throwaway lint fixture (deleted after the demo)
+import { Button } from 'react-aria-components'
+export const B = Button
+export async function bare() {
+  return fetch('/api/v1/meta')
+}
+--- src/lib/api/lintdemo.ts
+// T-M1.9 AC8 throwaway lint fixture (deleted after the demo)
+export async function viaWindow() {
+  return window.fetch('/api/v1/meta')
+}
+export async function viaGlobalThis() {
+  return globalThis.fetch('/api/v1/meta')
+}
+export async function viaSelf() {
+  return self.fetch('/api/v1/meta')
+}
+
+## 1. BEFORE (the develop config, git show HEAD:web/.oxlintrc.json): the loophole file passes
+$ oxlint --deny-warnings -c <develop .oxlintrc.json> src/features/lintdemo/loophole.ts
+exit: 0
+
+## 2. AFTER: pnpm lint fails on window.fetch( / globalThis.fetch( / self.fetch( in src/features/, and still on bare fetch( and the react-aria-components import
+$ oxlint --deny-warnings && stylelint "src/**/*.css" && prettier --check .
+src/features/lintdemo/existing.ts:5:10: error eslint(no-restricted-globals): Unexpected use of 'fetch'. No fetch outside src/lib/api (frontend-architecture §1). Use the API client. help: Use a local variable or function parameter instead of the restricted global.
+src/features/lintdemo/existing.ts:2:1: error eslint(no-restricted-imports): 'react-aria-components' import is restricted from being used. help: Only src/ui/ may import react-aria-components (frontend-architecture §1, ADR-0013). Use the ui/ components.
+src/features/lintdemo/loophole.ts:3:10: error eslint(no-restricted-properties): 'window.fetch' is restricted from being used. help: No fetch outside src/lib/api (frontend-architecture §1). Use the API client.
+src/features/lintdemo/loophole.ts:6:10: error eslint(no-restricted-properties): 'globalThis.fetch' is restricted from being used. help: No fetch outside src/lib/api (frontend-architecture §1). Use the API client.
+src/features/lintdemo/loophole.ts:9:10: error eslint(no-restricted-properties): 'self.fetch' is restricted from being used. help: No fetch outside src/lib/api (frontend-architecture §1). Use the API client.
+[ELIFECYCLE] Command failed with exit code 1.
+exit: 1
+
+## 3. AFTER: the same code in src/lib/api/ passes (the src/features fixtures removed first; src/lib/api/lintdemo.ts still present)
+src/lib/api/lintdemo.ts
+$ oxlint --deny-warnings && stylelint "src/**/*.css" && prettier --check .
+Checking formatting...
+All matched files use Prettier code style!
+exit: 0

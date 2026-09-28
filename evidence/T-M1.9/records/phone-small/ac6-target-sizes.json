@@ -1,0 +1,14 @@
+{
+  "viewport": {
+    "width": 360,
+    "height": 740
+  },
+  "minimum": 44,
+  "sizes": {
+    "skipLink": 44,
+    "shellHomeLink": 44,
+    "switcherSegment:Tiếng Việt": 44,
+    "switcherSegment:English": 44,
+    "notFoundHomeLink": 44
+  }
+}
