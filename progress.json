@@ -16,7 +16,7 @@
       }
     ]
   },
-  "updatedAt": "2026-09-28T05:20:00Z",
+  "updatedAt": "2026-09-28T06:10:00Z",
   "updatedBy": "lead-coordinator (session 2026-09-28 #1, Opus 5.5)",
   "phase": {
     "id": "P1",
@@ -157,7 +157,7 @@
     {
       "id": "T-M1.9",
       "title": "Web a11y/UX follow-ups (route focus + titles, SegmentedControl, skeleton delay, field-error icon, 44 px links, dev strings, fetch lint, late console errors)",
-      "completedAt": "2026-09-28T05:20:00Z",
+      "completedAt": "2026-09-28T04:34:25Z",
       "mergeCommit": "e20e8ec",
       "evidence": "evidence/T-M1.9/summary.md",
       "note": "PO start DEC-072. Packet PR #19 (5c78168; DOCS-REVIEW 3 rounds, final PASS). Merged via merge-gate (PR #20) at a55b1cb (= reviewed 92e213b + progress.json); CI 7/7 (backend re-run once: flaky T-M1.8 test, DEC-074 -> T-M1.14). QA PASS WITH MINOR (4 x S4), UX APPROVED (5 x S4); S4s -> T-M1.13 / T-M2.4 (DEC-073). QA record PR #21 (8b2156e); UX record evidence/T-M1.9/review/ux.md."
@@ -165,7 +165,7 @@
   ],
   "tests": {
     "lastRun": "2026-09-28T04:03:35Z",
-    "summary": "At T-M1.9 merge (e20e8ec): gate.sh PASS (12 steps, 113 s); E2E 62 passed/10 skipped on the 3 mandatory projects (113/31 over 6); CI 7/7 (one backend re-run for the flaky T-M1.8 test, DEC-074).",
+    "summary": "T-M1.9: gate.sh PASS at 92e213b (12 steps, 113 s); E2E 62 passed/10 skipped on the 3 mandatory projects (113/31 over 6); CI 7/7 at the merged head a55b1cb (one backend re-run for the flaky T-M1.8 test, DEC-074). Merged as e20e8ec.",
     "suites": [
       {
         "name": "backend (./mvnw -B verify)",
@@ -235,8 +235,7 @@
       "OQ-12",
       "OQ-13",
       "OQ-14",
-      "DEC-060",
-      "OQ-17"
+      "DEC-060"
     ]
   },
   "risks": {
@@ -525,6 +524,11 @@
       "at": "2026-09-28T05:40:00Z",
       "actor": "lead-coordinator",
       "event": "PO start signal for T-M1.12 (DEC-075)."
+    },
+    {
+      "at": "2026-09-28T06:10:00Z",
+      "actor": "lead-coordinator",
+      "event": "PR #22 DOCS-REVIEW round 1: CHANGES REQUESTED (R1-1 S3: the word-boundary hint would un-block FAILED; R1-2 S3: OQ-17 default not recorded — DEC-075 amended; 8 S4) — all fixed."
     }
   ]
 }

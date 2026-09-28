@@ -11,7 +11,7 @@ Phase/Milestone: P1 / M1 · Current task: **T-M1.12 (ready; packet in review, PO
   - The `dev` i18n namespace is registered only in dev builds; oxlint `no-restricted-properties` blocks `window`/`globalThis`/`self.fetch` outside `lib/api`.
   - The E2E console guard waits 500 ms in teardown (late errors fail tests; permanent expected-failure self-test). E2E: 62 passed / 10 skipped on the 3 mandatory projects.
 - **Reviews:** packet DOCS-REVIEW 3 rounds (PR #19). QA **PASS WITH MINOR** and UX **APPROVED** at `92e213b`, S4 only, deferred (DEC-073): web polish → **T-M1.13**; QA F4 (no loading feedback on a slow client-side lazy navigation) and the "class name" copy → **T-M2.4**. Records: `evidence/T-M1.9/qa/report.md` (PR #21) and `evidence/T-M1.9/review/ux.md` (this branch). The QA spec is `qa/e2e/T-M1.9.spec.ts`.
-- **DEC-074:** a flaky T-M1.8 backend test (the random UUID can contain the hex `bad`, ≈ 0.7 %) failed CI once; re-run passed → **T-M1.14**. And `merge-gate.sh 19 --dry-run` **merged** PR #19 (only a leading `--dry-run` is parsed; gates had passed) → **T-M1.12** scope 4. **Always put `--dry-run` first until T-M1.12 lands.**
+- **DEC-074:** a flaky T-M1.8 backend test (the UUIDv7 request ID can contain the hex `bad`: ≈ 0.4 % per run, plus timestamp windows) failed CI once; re-run passed → **T-M1.14**. And `merge-gate.sh 19 --dry-run` **merged** PR #19 (only a leading `--dry-run` is parsed; gates had passed) → **T-M1.12** scope 4. **Always put `--dry-run` first until T-M1.12 lands.**
 - **Deferred to T-M2.1** (backlog row): the TRACE 405 from Boot's `/error` and `Cache-Control: no-store` on API responses.
 
 ## Next steps
@@ -23,7 +23,7 @@ Phase/Milestone: P1 / M1 · Current task: **T-M1.12 (ready; packet in review, PO
 ## Pending PO decisions / actions
 - Keep or remove the GitLab mirror after the storage reset (DEC-060).
 - Recommended (DEC-061): `glab` deny rules in `.claude/settings.json`.
-- OQ-03..OQ-14 (defaults documented). OQ-17 is answered "yes" inside T-M1.12.
+- OQ-03..OQ-14 (defaults documented). OQ-17 is answered "yes" (DEC-075), implemented in T-M1.12.
 
 ## Gotchas
 - Run `./scripts/check-docs.sh` **bare** before every commit (it fails on forward DEC references and on schema errors, e.g. `progress.json` `pr` must be a string like `"#20"`, and gate statuses are only n/a/pending/pass/fail).
