@@ -16,7 +16,7 @@
       }
     ]
   },
-  "updatedAt": "2026-09-28T10:45:00Z",
+  "updatedAt": "2026-09-28T10:50:00Z",
   "updatedBy": "lead-coordinator (session 2026-09-28 #1, Opus 5.5)",
   "phase": {
     "id": "P1",
@@ -32,12 +32,12 @@
   "currentTask": {
     "id": "T-M1.12",
     "title": "Merge-gate polish (T-M1.7 review S4s, OQ-17, argument parsing)",
-    "status": "in_review",
+    "status": "awaiting_approval",
     "ownerRole": "LC",
     "branch": "chore/T-M1.12-merge-gate-polish",
     "packet": "docs/tasks/T-M1.12-merge-gate-polish.md",
     "pr": "#23",
-    "lastCommit": null,
+    "lastCommit": "d901291",
     "startedAt": "2026-09-28T09:30:00Z",
     "entryGate": [
       "T-M1.7 merged — met (41beac7)",
@@ -203,8 +203,8 @@
       "note": "gate.sh PASS (12 steps, 133 s); merge-gate tests 131 -> 263"
     },
     "G3": {
-      "status": "pending",
-      "note": "DOCS-REVIEW (docs/chore packet)"
+      "status": "pass",
+      "note": "DOCS-REVIEW round 3 PASS at d901291 (rounds 1-2 CHANGES REQUESTED, fixed)"
     },
     "G4": {
       "status": "pending",
@@ -536,14 +536,19 @@
       "event": "PR #22 merged via merge-gate (360c15a): T-M1.12 packet G0, T-M1.9 records. T-M1.12 implemented on chore/T-M1.12-merge-gate-polish: strict arguments, loose negatives, wrapper content check; merge-gate tests 263; gate PASS."
     },
     {
-      "at": "2026-09-28T11:10:00Z",
+      "at": "2026-09-28T10:17:00Z",
       "actor": "lead-coordinator",
       "event": "PR #23 DOCS-REVIEW round 1: CHANGES REQUESTED (F1 S3: loose FAILURES/FAILSAFE un-blocked; F2-F5 S4) — all fixed; merge-gate tests 287."
     },
     {
-      "at": "2026-09-28T10:45:00Z",
+      "at": "2026-09-28T10:21:00Z",
       "actor": "lead-coordinator",
       "event": "PR #23 DOCS-REVIEW round 2: CHANGES REQUESTED (R2-1 S3: '<id>- FAIL' ignored after the F1 rewrite) — fixed; merge-gate tests 295."
+    },
+    {
+      "at": "2026-09-28T10:50:00Z",
+      "actor": "lead-coordinator",
+      "event": "PR #23 DOCS-REVIEW round 3: PASS at d901291; CI 7/7; the new gate's own dry run passes. Evidence-only commit (CI links, dry run, R3-1 timestamps)."
     }
   ]
 }

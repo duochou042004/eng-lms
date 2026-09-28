@@ -1,0 +1,2 @@
+merge-gate: all gates passed for PR #23 (T-M1.12: chore/T-M1.12-merge-gate-polish → develop @ d901291)
+merge-gate: dry run — not merging

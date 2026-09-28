@@ -51,3 +51,12 @@ changes behaviour fails there (e.g. the `FAILOVER` false refusal, the em-dash an
 ## Notes
 - The look-ahead `(?![A-Z0-9])` works on the local jq 1.8.2; CI runs the same tests with the runner's jq (`docs-check` job).
 - `merge-gate.test.sh` now takes ~2 minutes locally (263 mocked gate runs).
+
+## CI and the gate's own dry run (reviewed head `d901291`)
+- CI 7/7 green at `d901291` (`pull_request` runs): docs-check [36409259587](https://github.com/duochou042004/eng-lms/actions/runs/36409259587) (runs `run-all.sh`: merge-gate 295/295 with the runner's jq),
+  backend [36409259479](https://github.com/duochou042004/eng-lms/actions/runs/36409259479), web [36409259428](https://github.com/duochou042004/eng-lms/actions/runs/36409259428),
+  contract-drift [36409259506](https://github.com/duochou042004/eng-lms/actions/runs/36409259506), e2e-smoke [36409259865](https://github.com/duochou042004/eng-lms/actions/runs/36409259865),
+  secrets-scan [36409259530](https://github.com/duochou042004/eng-lms/actions/runs/36409259530), container-build [36409259437](https://github.com/duochou042004/eng-lms/actions/runs/36409259437).
+- `dry-run-new-gate-d901291.txt`: this branch's `merge-gate.sh --dry-run 23` after DOCS-REVIEW PASS and LC-APPROVED at `d901291`: all gates passed, not merged.
+- DOCS-REVIEW: round 1 CHANGES REQUESTED (`ebc23cb`), round 2 CHANGES REQUESTED (`539ad0c`), round 3 **PASS** (`d901291`). The final commit adds only this evidence and
+  `progress.json` (R3-1 timestamps); the verdicts are re-posted for it. The review record goes to `evidence/T-M1.12/review/docs.md` on the next docs branch.
