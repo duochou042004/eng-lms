@@ -16,7 +16,7 @@
       }
     ]
   },
-  "updatedAt": "2026-09-28T11:20:00Z",
+  "updatedAt": "2026-09-28T10:50:00Z",
   "updatedBy": "lead-coordinator (session 2026-09-28 #1, Opus 5.5)",
   "phase": {
     "id": "P1",
@@ -163,7 +163,7 @@
     {
       "id": "T-M1.12",
       "title": "Merge-gate polish (strict arguments, loose negatives, wrapper content check)",
-      "completedAt": "2026-09-28T10:58:00Z",
+      "completedAt": "2026-09-28T10:30:34Z",
       "mergeCommit": "9866f26",
       "evidence": "evidence/T-M1.12/summary.md",
       "note": "PO start DEC-075 (OQ-17 default recorded). Packet PR #22 (360c15a). Merged via merge-gate (PR #23) at 0123d7f (= reviewed d901291 + evidence); CI 7/7. DOCS-REVIEW 3 rounds: two S3 fail-opens in the new negative pattern found and fixed; final PASS. merge-gate tests 131 -> 295. DEC-076."
@@ -197,8 +197,8 @@
   },
   "gates": {
     "G0": {
-      "status": "pass",
-      "note": "T-M1.13 packet G0-complete; confirmed by the docs/T-M1.13-packet PR DOCS-REVIEW (merge-gate refuses without a PASS)"
+      "status": "pending",
+      "note": "T-M1.13 packet: DOCS-REVIEW on PR #24 round 1 CHANGES REQUESTED (2 S3, 8 S4), fixed; re-review pending"
     },
     "G1": {
       "status": "pending",
@@ -552,19 +552,24 @@
       "event": "PR #23 DOCS-REVIEW round 2: CHANGES REQUESTED (R2-1 S3: '<id>- FAIL' ignored after the F1 rewrite) — fixed; merge-gate tests 295."
     },
     {
-      "at": "2026-09-28T10:50:00Z",
+      "at": "2026-09-28T10:25:00Z",
       "actor": "lead-coordinator",
       "event": "PR #23 DOCS-REVIEW round 3: PASS at d901291; CI 7/7; the new gate's own dry run passes. Evidence-only commit (CI links, dry run, R3-1 timestamps)."
     },
     {
-      "at": "2026-09-28T11:05:00Z",
+      "at": "2026-09-28T10:31:00Z",
       "actor": "lead-coordinator",
       "event": "T-M1.12 merged via merge-gate as 9866f26 (PR #23, head 0123d7f). docs/T-M1.13-packet: review record, DEC-076, progress, handoff; T-M1.13 packet next."
     },
     {
-      "at": "2026-09-28T11:20:00Z",
+      "at": "2026-09-28T10:40:00Z",
       "actor": "lead-coordinator",
       "event": "PO start signal for T-M1.13 (DEC-077). T-M1.13 packet written on docs/T-M1.13-packet; PR opened; session handed off at the context budget."
+    },
+    {
+      "at": "2026-09-28T10:50:00Z",
+      "actor": "lead-coordinator",
+      "event": "PR #24 DOCS-REVIEW round 1: CHANGES REQUESTED (F1 S3: label weight also shifts widths; F2 S3: no ui/ link style; 8 S4) — all fixed."
     }
   ]
 }
