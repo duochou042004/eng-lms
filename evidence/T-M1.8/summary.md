@@ -83,5 +83,5 @@ Once the storage resets (expected 2026-10-01), `backend-coverage` should upload 
 - `shellcheck` is not installed locally (the PO's call).
 
 ## Merge
-Merged `01dfc5d` (PR #17) via merge-gate on 2026-09-27 at head `e651c14`. CI 7/7 green for that SHA (run 36307161866 was the first-round backend run; the final-head runs passed too).
+Merged `01dfc5d` (PR #17) via merge-gate on 2026-09-27 at head `e651c14`. CI 7/7 green for that SHA (`pull_request` runs 36307848113 web, 36307848120 backend, 36307848125 container, 36307848126 secrets-scan, 36307848151 docs-check, 36307848170 contract-drift, 36307848171 e2e-smoke: https://github.com/duochou042004/eng-lms/actions/runs/<id>).
 Reviews: QA PASS WITH MINOR (`qa/report.md`, merged via PR #18) and SEC APPROVED (`review/security.md`). DEC-069..071.
