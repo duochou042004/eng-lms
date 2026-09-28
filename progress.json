@@ -16,7 +16,7 @@
       }
     ]
   },
-  "updatedAt": "2026-09-28T06:10:00Z",
+  "updatedAt": "2026-09-28T10:05:00Z",
   "updatedBy": "lead-coordinator (session 2026-09-28 #1, Opus 5.5)",
   "phase": {
     "id": "P1",
@@ -32,21 +32,21 @@
   "currentTask": {
     "id": "T-M1.12",
     "title": "Merge-gate polish (T-M1.7 review S4s, OQ-17, argument parsing)",
-    "status": "ready",
+    "status": "in_review",
     "ownerRole": "LC",
     "branch": "chore/T-M1.12-merge-gate-polish",
     "packet": "docs/tasks/T-M1.12-merge-gate-polish.md",
     "pr": null,
     "lastCommit": null,
-    "startedAt": null,
+    "startedAt": "2026-09-28T09:30:00Z",
     "entryGate": [
       "T-M1.7 merged — met (41beac7)",
-      "Packet G0 — written on docs/T-M1.12-packet (DOCS-REVIEW on its PR)",
-      "PO start signal — given (DEC-075), effective when the packet PR merges"
+      "Packet G0 — met (PR #22, 360c15a)",
+      "PO start signal — given (DEC-075)"
     ],
     "nextSteps": [
-      "Docs review of the docs/T-M1.12-packet PR; merge via merge-gate",
-      "Implement on chore/T-M1.12-merge-gate-polish"
+      "DOCS-REVIEW of the T-M1.12 PR (fresh reviewer; bypass attempts per the packet's review focus)",
+      "Merge via merge-gate (its own dry run first)"
     ],
     "trace": [
       "DEC-065",
@@ -164,8 +164,8 @@
     }
   ],
   "tests": {
-    "lastRun": "2026-09-28T04:03:35Z",
-    "summary": "T-M1.9: gate.sh PASS at 92e213b (12 steps, 113 s); E2E 62 passed/10 skipped on the 3 mandatory projects (113/31 over 6); CI 7/7 at the merged head a55b1cb (one backend re-run for the flaky T-M1.8 test, DEC-074). Merged as e20e8ec.",
+    "lastRun": "2026-09-28T09:58:54Z",
+    "summary": "T-M1.12 branch: gate.sh PASS (12 steps, 133 s); merge-gate 263/263 (was 131); the new tests against the old gate: 57 fail (negative demo). T-M1.9 (e20e8ec): E2E 62 passed/10 skipped on the 3 mandatory projects.",
     "suites": [
       {
         "name": "backend (./mvnw -B verify)",
@@ -192,15 +192,15 @@
   "gates": {
     "G0": {
       "status": "pass",
-      "note": "T-M1.12 packet G0-complete; confirmed by the docs/T-M1.12-packet PR DOCS-REVIEW (merge-gate refuses without a PASS)"
+      "note": "T-M1.12 packet merged (PR #22, 360c15a); DOCS-REVIEW 3 rounds, final PASS"
     },
     "G1": {
-      "status": "pending",
-      "note": "T-M1.12 not started"
+      "status": "pass",
+      "note": "T-M1.12 implemented by the LC; evidence/T-M1.12/summary.md"
     },
     "G2": {
-      "status": "pending",
-      "note": "T-M1.12 not started"
+      "status": "pass",
+      "note": "gate.sh PASS (12 steps, 133 s); merge-gate tests 131 -> 263"
     },
     "G3": {
       "status": "pending",
@@ -529,6 +529,11 @@
       "at": "2026-09-28T06:10:00Z",
       "actor": "lead-coordinator",
       "event": "PR #22 DOCS-REVIEW round 1: CHANGES REQUESTED (R1-1 S3: the word-boundary hint would un-block FAILED; R1-2 S3: OQ-17 default not recorded — DEC-075 amended; 8 S4) — all fixed."
+    },
+    {
+      "at": "2026-09-28T10:05:00Z",
+      "actor": "lead-coordinator",
+      "event": "PR #22 merged via merge-gate (360c15a): T-M1.12 packet G0, T-M1.9 records. T-M1.12 implemented on chore/T-M1.12-merge-gate-polish: strict arguments, loose negatives, wrapper content check; merge-gate tests 263; gate PASS."
     }
   ]
 }

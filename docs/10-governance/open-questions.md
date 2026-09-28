@@ -1,6 +1,6 @@
 # Open Questions — Product Owner decisions needed
 
-> **Answered:** OQ-01 (DEC-033), OQ-02 (DEC-039), OQ-15 (DEC-034), OQ-16 (DEC-051, T-M1.5). The others are still open, with their defaults.
+> **Answered:** OQ-01 (DEC-033), OQ-02 (DEC-039), OQ-15 (DEC-034), OQ-16 (DEC-051, T-M1.5), OQ-17 (DEC-075, T-M1.12). The others are still open, with their defaults.
 > Every question has a **recommended default**. If the PO does not answer, the default is used once the planning baseline is approved,
 > and it is recorded as a DEC entry. The "Needed by" column is the latest point at which the answer changes the work.
 
@@ -22,4 +22,4 @@
 | OQ-14 | Dark theme? | MVP · P2 · never | **P2** (tokens make it cheap later) | — | — |
 | OQ-15 | Activate the proposed Claude Code permission settings (`docs/09-harness/claude-settings.proposed.json` → `.claude/settings.json`)? | yes · adjust · no | **ANSWERED: yes** (DEC-034) | T-M1.1 | — |
 | OQ-16 | When should JaCoCo coverage (test-strategy.md §5 floors) be wired into `backend` CI? T-M1.2's packet did not include it | with T-M1.5 (`gate.sh`) · with the first domain module (M2) · now | **ANSWERED: with T-M1.5** (DEC-051): the JaCoCo report runs in `verify` and CI uploads it; no threshold until the first domain module | T-M1.5 | test-strategy §5, ci-cd §1 |
-| OQ-17 | On the Dependabot path, should `merge-gate.sh` also check the **content** of a `backend/.mvn/wrapper/maven-wrapper.properties` change (e.g. only `wrapperVersion`/`distributionUrl` under `https://repo.maven.apache.org/maven2/` may change)? T-M1.7 only allows the file (R3-3); the commit-identity checks (all commits by Dependabot, GitHub-verified) and `LC-APPROVED` are the controls today | yes (small script change + tests) · no | **Yes**, in backlog **T-M1.12** (merge-gate polish, DEC-067) | before the first wrapper bump by Dependabot | DEC-064 |
+| OQ-17 | On the Dependabot path, should `merge-gate.sh` also check the **content** of a `backend/.mvn/wrapper/maven-wrapper.properties` change (e.g. only `wrapperVersion`/`distributionUrl` under `https://repo.maven.apache.org/maven2/` may change)? T-M1.7 only allows the file (R3-3); the commit-identity checks (all commits by Dependabot, GitHub-verified) and `LC-APPROVED` are the controls today | yes (small script change + tests) · no | **Yes**, in backlog **T-M1.12** (merge-gate polish, DEC-067). **Answered: yes (default accepted, DEC-075); implemented in T-M1.12** | before the first wrapper bump by Dependabot | DEC-064 |

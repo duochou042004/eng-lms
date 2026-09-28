@@ -3,7 +3,7 @@
 # Branch protection is unavailable on this private free-plan repo (DEC-031), so this script enforces the gate.
 # Run it from an up-to-date `develop` checkout (not from the PR branch), so a PR cannot weaken the gate it is judged by.
 #
-# Usage: scripts/merge-gate.sh [--dry-run] <pr-number>
+# Usage: scripts/merge-gate.sh [--dry-run] <pr-number>   (--dry-run may also follow the number; any other argument exits 2 before any API call)
 # Env:   GH_BIN (default: gh)  — override for tests
 #        REQUIRED_CHECKS_FILE (default: scripts/required-checks.txt)
 #
@@ -20,8 +20,18 @@ set -euo pipefail
 
 GH=${GH_BIN:-gh}
 DRY_RUN=0
-if [[ "${1:-}" == "--dry-run" ]]; then DRY_RUN=1; shift; fi
-PR=${1:?"usage: merge-gate.sh [--dry-run] <pr-number>"}
+PR=""
+# Strict arguments (T-M1.12 AC4, DEC-074): `--dry-run` may come before or after the PR number; anything else (an unknown option, a second or
+# non-numeric PR, no PR) is refused with exit 2 BEFORE any API call, so a mistyped flag can never turn a dry run into a merge.
+usage() { printf 'usage: merge-gate.sh [--dry-run] <pr-number>   (--dry-run may also follow the number)\n' >&2; exit 2; }
+while (($#)); do
+  case "$1" in
+    --dry-run) DRY_RUN=1;;
+    *) if [[ -z "$PR" && "$1" =~ ^[1-9][0-9]*$ ]]; then PR=$1; else printf 'merge-gate: unexpected argument: %q\n' "$1" >&2; usage; fi;;
+  esac
+  shift
+done
+[[ -n "$PR" ]] || usage
 SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
 REQUIRED_CHECKS_FILE=${REQUIRED_CHECKS_FILE:-$SCRIPT_DIR/required-checks.txt}
 
@@ -118,6 +128,42 @@ uses_bump_problem() {
   done <<<"$1"$'\n@@ end'
   ((n > 0)) || say "no uses: bump in the diff"
 }
+# wrapper_bump_problem <patch> → prints why a maven-wrapper.properties patch is not a pure version bump ("" if it is) (OQ-17 = yes, DEC-075).
+# Each change block must replace N lines by N lines, pairwise with the same key; only `wrapperVersion=<x.y.z>` and
+# `distributionUrl=https://repo.maven.apache.org/maven2/org/apache/maven/apache-maven/<v>/apache-maven-<v>-bin.zip` may change. Anything else fails closed.
+WRAPPER_VERSION_RE='^[0-9]+\.[0-9]+\.[0-9]+$'
+WRAPPER_DIST_RE='^https://repo\.maven\.apache\.org/maven2/org/apache/maven/apache-maven/([0-9]+\.[0-9]+\.[0-9]+)/apache-maven-([0-9]+\.[0-9]+\.[0-9]+)-bin\.zip$'
+wrapper_bump_problem() {
+  local line i rk ak av n=0
+  local -a rem=() add=()
+  say() { printf '%s\n' "$1"; }
+  while IFS= read -r line; do
+    case "$line" in
+      '\'*) continue;;
+      -*) if ((${#add[@]})); then say "a removed line after an added one: ${line:0:120}"; return; fi; rem+=("${line:1}"); continue;;
+      +*) add+=("${line:1}"); continue;;
+      ' '*|'@@'*) ;;
+      *) say "an unexpected diff line: ${line:0:120}"; return;;
+    esac
+    if ((${#rem[@]} || ${#add[@]})); then
+      if ((${#rem[@]} != ${#add[@]})); then say "a change block removes ${#rem[@]} and adds ${#add[@]} line(s) (keys may not be added or removed)"; return; fi
+      for i in "${!rem[@]}"; do
+        rk=${rem[i]%%=*}; ak=${add[i]%%=*}; av=${add[i]#*=}
+        [[ "${rem[i]}" == *=* && "${add[i]}" == *=* && "$rk" == "$ak" ]] || { say "'${rem[i]:0:60}' became '${add[i]:0:60}' (a bump keeps the key)"; return; }
+        case "$ak" in
+          wrapperVersion) [[ "$av" =~ $WRAPPER_VERSION_RE ]] || { say "not a wrapperVersion=<x.y.z> line: ${add[i]:0:120}"; return; };;
+          distributionUrl)
+            [[ "$av" =~ $WRAPPER_DIST_RE && "${BASH_REMATCH[1]}" == "${BASH_REMATCH[2]}" ]] \
+              || { say "not a Maven Central apache-maven distributionUrl: ${add[i]:0:120}"; return; };;
+          *) say "only wrapperVersion and distributionUrl may change: ${add[i]:0:120}"; return;;
+        esac
+        n=$((n + 1))
+      done
+      rem=(); add=()
+    fi
+  done <<<"$1"$'\n@@ end'
+  ((n > 0)) || say "no wrapperVersion/distributionUrl change in the diff"
+}
 dependabot_checks() {
   local commits_out files_out bad f patch why
   # a) every commit: authored by dependabot[bot], committed by GitHub for it (web-flow or dependabot[bot]), and signature-verified by GitHub
@@ -159,6 +205,16 @@ dependabot_checks() {
     why=$(uses_bump_problem "$patch")
     [[ -z "$why" ]] || fail "workflow $f: only 'uses: <action>@<sha>' SHA bumps may change on the dependabot path; found: $why"
   done < <(jq -rn '[inputs | .[]? | select(.filename | test("^\\.github/workflows/")) | .filename] | .[]' <<<"$files_out")
+  # d) the Maven wrapper properties: only version bumps (OQ-17 = yes, DEC-075)
+  f=backend/.mvn/wrapper/maven-wrapper.properties
+  if jq -en --arg f "$f" '[inputs | .[]? | select(.filename == $f)] | length > 0' <<<"$files_out" >/dev/null; then
+    patch=$(jq -rn --arg f "$f" '[inputs | .[]? | select(.filename == $f) | .patch // empty][0] // ""' <<<"$files_out")
+    if [[ -z "$patch" ]]; then fail "$f: no diff available to verify (fail closed)"
+    else
+      why=$(wrapper_bump_problem "$patch")
+      [[ -z "$why" ]] || fail "$f: only wrapperVersion/distributionUrl version bumps (Maven Central) may change on the dependabot path; found: $why"
+    fi
+  fi
 }
 
 # 1. PR shape and verdict id
@@ -208,12 +264,15 @@ bad=$(jq -r '[.[] | select(.bucket == "fail" or .bucket == "pending" or .bucket 
 verdict() {
   # An exact "<TYPE> <id>: <TOKEN>" first line gives its token. A NON-exact negative ("qa-verdict  <id> : fail", "**QA-VERDICT <id>: FAIL**",
   # "> QA-VERDICT <id>: FAIL", "## QA VERDICT <id> - FAIL", CHANGES_REQUESTED …) also counts, as a negative, so a sloppy FAIL still blocks; sloppy positives never count (review T-M1.7 S3-1).
+  # T-M1.12: Unicode dashes become "-" before the ASCII filter; leading list markers ("1.", "1)", "- - ") and a colon after the type are allowed; the negative
+  # word must end there (FAIL, FAILS, FAILED, FAILURE, FAILING, CHANGES REQUESTED), so "<id>-FAILOVER: PASS" is not a negative (T-M1.7 R3 S4-1, S4-2).
   jq -r --arg type "$1" --arg id "$id" --arg since "$head_time" "$TS_DEF"'
     ($id | ascii_upcase | gsub("(?<c>[.+*?()\\[\\]{}|^$\\\\])"; "\\\(.c)")) as $idre
     | [ .comments[] | select((.createdAt | ts) as $t | $t != "INVALID" and $t > $since) | .body | gsub("\r"; "") | split("\n")[0] | gsub("^\\s+|\\s+$"; "")
       | if startswith($type + " " + $id + ":") then ltrimstr($type + " " + $id + ":") | gsub("^\\s+|\\s+$"; "")
-        elif ([explode[] | select(. < 128)] | implode | gsub("[*`>#]"; "") | gsub("_"; " ") | gsub("\\s+"; " ") | ascii_upcase
-              | test("^ ?(- )?" + ($type | sub("-"; "[ -]?")) + " " + $idre + " ?[:-] ?(FAIL|CHANGES[ -]?REQUESTED)"))
+        elif (gsub("[\u2010-\u2015\u2212]"; "-") | [explode[] | select(. < 128)] | implode | gsub("[*`>#]"; "") | gsub("_"; " ") | gsub("\\s+"; " ")
+              | ascii_upcase | sub("^ ?(([0-9]+[.)]|-) ?)*"; "")
+              | test("^" + ($type | sub("-"; "[ -]?")) + ":? " + $idre + " ?[:-]+ ?(FAIL(S|ED|URE|ING)?|CHANGES[ -]?REQUESTED)(?![A-Z0-9])"))
         then "NEGATIVE (non-exact line: \(.[0:80]))"
         else empty end ]
     | last // ""' <<<"$pr_json"

@@ -40,7 +40,7 @@ Trailers: `Task: T-M2.3`, `Refs: FR-STU-01, DEC-012`, and the co-author attribut
 
 ## 4. Merging
 
-- **Only the LC merges**, only through `scripts/merge-gate.sh <pr-number>`. The script checks that all CI checks are green (`gh pr checks`), the required verdict comments are present,
+- **Only the LC merges**, only through `scripts/merge-gate.sh [--dry-run] <pr-number>` (`--dry-run` may also follow the number; any other argument, a second or non-numeric PR, or no PR exits 2 before any API call, so a mistyped flag never merges: T-M1.12, DEC-074). The script checks that all CI checks are green (`gh pr checks`), the required verdict comments are present,
   the branch is up to date with its base, and `progress.json` changed in the PR. Then it runs `gh pr merge <n> --merge --delete-branch`.
 - The merge method is a **merge commit** (the `--no-ff` equivalent): task history stays grouped, and reverting a task is one `git revert -m 1`.
 - Squash merges are not used (they lose the per-step history the evidence refers to). Rebase-merging onto develop is not used.
@@ -58,13 +58,18 @@ Trailers: `Task: T-M2.3`, `Refs: FR-STU-01, DEC-012`, and the co-author attribut
   - **Negative verdicts block.** For each review type (QA-VERDICT, DOCS-REVIEW, SEC-REVIEW, UX-REVIEW) the latest fresh comment wins within its type. If it is anything but that
     type's positive token (QA `PASS`/`PASS WITH MINOR`, DOCS `PASS`, SEC/UX `APPROVED`), for example `FAIL` or `CHANGES REQUESTED`, the merge is refused on **every** path, even if another
     review type passed, and the message names the verdict. A negative written loosely still counts as a negative: other case, extra spaces, markdown
-    (`**`, `` ` ``, `>`, `#`, `_`, a leading `- `), emoji, `QA VERDICT`, `<id> - FAIL`, `CHANGES_REQUESTED`/`CHANGES-REQUESTED`. Positives must be exact.
+    (`**`, `` ` ``, `>`, `#`, `_`, leading list markers such as `- `, `- - `, `1.`, `1)`), emoji, Unicode dashes (`<id> — FAIL`), `QA VERDICT`, `QA-VERDICT: <id>`, `<id> - FAIL`,
+    `CHANGES_REQUESTED`/`CHANGES-REQUESTED`, and the words `FAIL`, `FAILS`, `FAILED`, `FAILURE`, `FAILING`. The negative word must end there, so an id with a suffix
+    (`QA-VERDICT <id>-FAILOVER: …`) is not a negative (T-M1.12). Positives must be exact.
   - **Dependabot PRs.** The PR author is the Dependabot app; **every** commit is authored by `dependabot[bot]`, committed by `web-flow` (or `dependabot[bot]`) and
     signature-verified by GitHub; and every repository-activity entry stamped at or after the branch's latest creation was made by `dependabot[bot]`. So a human "Update branch" disqualifies
     the PR: ask Dependabot to rebase (`@dependabot rebase`) instead. Only **modifications** of existing `**/pom.xml`, `**/package.json`, `**/pnpm-lock.yaml`,
     `backend/.mvn/wrapper/maven-wrapper.properties` and `.github/workflows/*.yml` files are allowed (no adds, removals, renames or copies). In a workflow, every change block must replace
     `uses: <action>@<40-hex sha>` lines one for one, keeping each line identical up to `@` (indentation, step and action) and changing the SHA; only the trailing `# comment` may
-    also change. A workflow without a diff, or with a diff line of an unknown kind, is refused. `check-path-ownership.sh` applies the same file-name allow-list in CI.
+    also change. A workflow without a diff, or with a diff line of an unknown kind, is refused. In `maven-wrapper.properties` (OQ-17, DEC-075) every change block must replace
+    lines one for one with the same key, and only `wrapperVersion=<x.y.z>` and
+    `distributionUrl=https://repo.maven.apache.org/maven2/org/apache/maven/apache-maven/<v>/apache-maven-<v>-bin.zip` (the same `<v>` twice) may change; any other key, an added or
+    removed key, another host, path, userinfo or query, or a missing diff is refused. `check-path-ownership.sh` applies the same file-name allow-list in CI.
   - The manual LC checks of DEC-037/038 ended with T-M1.7 (DEC-064). The LC still reads the PR timeline and all verdicts before `LC-APPROVED` as part of the review.
 - **Catching up with `develop`:** agents may not run `git merge` (deny rule). Use `gh pr update-branch <n>`, which creates the merge commit on GitHub, or ask the LC.
   The update is a new head commit, so every verdict and approval must be re-posted afterwards.
