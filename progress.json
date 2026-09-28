@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-09-27T09:10:00Z",
-  "updatedBy": "lead-coordinator (session 2026-09-27 #5, Opus 5.5)",
+  "updatedAt": "2026-09-28T00:00:00Z",
+  "updatedBy": "lead-coordinator (session 2026-09-28 #1, Opus 5.5)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -32,21 +32,21 @@
   "currentTask": {
     "id": "T-M1.9",
     "title": "Web a11y/UX follow-ups (T-M1.3 UX review, T-M1.6 QA F3)",
-    "status": "draft",
+    "status": "ready",
     "ownerRole": "FE",
     "branch": "feature/T-M1.9-web-follow-ups",
-    "packet": "docs/tasks/backlog.md#m1--walking-skeleton-and-delivery-pipeline",
+    "packet": "docs/tasks/T-M1.9-web-follow-ups.md",
     "pr": null,
     "lastCommit": null,
     "startedAt": null,
     "entryGate": [
       "T-M1.8 merged — met (01dfc5d)",
-      "Packet G0 — pending (write it on docs/T-M1.9-packet)",
+      "Packet G0 — written on docs/T-M1.9-packet (docs review pending)",
       "PO start signal — pending"
     ],
     "nextSteps": [
-      "Write the T-M1.9 packet to G0 on docs/T-M1.9-packet (this branch holds the T-M1.8 merge bookkeeping); docs review; merge via merge-gate",
-      "Ask the PO for the T-M1.9 start signal"
+      "Docs review of the packet PR; merge via merge-gate",
+      "Ask the PO for the T-M1.9 start signal (record as a DEC)"
     ],
     "trace": [
       "DEC-043",
@@ -186,7 +186,7 @@
   "gates": {
     "G0": {
       "status": "pending",
-      "note": "T-M1.9 packet not written yet"
+      "note": "T-M1.9 packet written (docs/tasks/T-M1.9-web-follow-ups.md); docs review pending"
     },
     "G1": {
       "status": "pending",
