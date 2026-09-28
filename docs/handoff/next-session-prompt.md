@@ -8,7 +8,7 @@ STATE: M1: T-M1.1..T-M1.9 + T-M1.11 merged (T-M1.9 = e20e8ec: route focus/titles
 
 DO:
 1. Open the PR for docs/T-M1.12-packet (template). One fresh docs-reviewer reviews it; fix findings; after CI is green for the final head, post "DOCS-REVIEW T-M1.12: PASS" then "LC-APPROVED T-M1.12"; merge ONLY via ./scripts/merge-gate.sh --dry-run <pr> (the flag FIRST: a trailing --dry-run merges, DEC-074), then without it, from an up-to-date develop; gitlab-sync.
-2. Ask the PO for the T-M1.12 start signal and record it as a DEC. Implement on chore/T-M1.12-merge-gate-polish (LC), AC1-AC5 exactly, with tests; evidence/T-M1.12/.
+2. The PO start signal is DEC-075. Implement on chore/T-M1.12-merge-gate-polish (LC), AC1-AC5 exactly, with tests; evidence/T-M1.12/.
 3. G3: a fresh docs-reviewer (DOCS-REVIEW), read-only, text report; re-test via SendMessage. Fix S1/S2; defer S3/S4 only via a DEC + backlog task. After CI is green for the final head: verdict, LC-APPROVED, merge-gate. The review record goes to evidence/T-M1.12/review/docs.md on the next docs branch.
 4. Post-merge: the merge recorded on a new branch; the next packet (T-M1.13 or T-M1.14) to G0; progress.json + docs/handoff/.
 

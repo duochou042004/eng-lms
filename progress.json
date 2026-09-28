@@ -42,11 +42,11 @@
     "entryGate": [
       "T-M1.7 merged — met (41beac7)",
       "Packet G0 — written on docs/T-M1.12-packet (DOCS-REVIEW on its PR)",
-      "PO start signal — pending"
+      "PO start signal — given (DEC-075), effective when the packet PR merges"
     ],
     "nextSteps": [
-      "Docs review of the docs/T-M1.12-packet PR (T-M1.9 post-merge record + the T-M1.12 packet); merge via merge-gate",
-      "Ask the PO for the T-M1.12 start signal (record as a DEC)"
+      "Docs review of the docs/T-M1.12-packet PR; merge via merge-gate",
+      "Implement on chore/T-M1.12-merge-gate-polish"
     ],
     "trace": [
       "DEC-065",
@@ -215,12 +215,12 @@
   "decisions": {
     "log": "docs/10-governance/decision-log.md",
     "recent": [
-      "DEC-069",
       "DEC-070",
       "DEC-071",
       "DEC-072",
       "DEC-073",
-      "DEC-074"
+      "DEC-074",
+      "DEC-075"
     ],
     "pendingPO": [
       "OQ-03",
@@ -520,6 +520,11 @@
       "at": "2026-09-28T05:20:00Z",
       "actor": "lead-coordinator",
       "event": "T-M1.9 merged via merge-gate as e20e8ec (PR #20, head a55b1cb); QA record PR #21 (8b2156e). DEC-073 (S4 deferrals -> T-M1.13, T-M2.4), DEC-074 (merge; flaky test -> T-M1.14; trailing --dry-run footgun -> T-M1.12). docs/T-M1.12-packet: UX record, T-M1.12 packet to G0."
+    },
+    {
+      "at": "2026-09-28T05:40:00Z",
+      "actor": "lead-coordinator",
+      "event": "PO start signal for T-M1.12 (DEC-075)."
     }
   ]
 }

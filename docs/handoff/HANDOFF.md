@@ -1,6 +1,6 @@
 # Handoff — 2026-09-28 (T-M1.9 merged `e20e8ec`; T-M1.12 packet written)
 
-Phase/Milestone: P1 / M1 · Current task: **T-M1.12 (ready; packet in review, PO start signal pending)** · Bookkeeping branch: `docs/T-M1.12-packet` · Remote: https://github.com/duochou042004/eng-lms
+Phase/Milestone: P1 / M1 · Current task: **T-M1.12 (ready; packet in review, PO start signal given DEC-075)** · Bookkeeping branch: `docs/T-M1.12-packet` · Remote: https://github.com/duochou042004/eng-lms
 
 ## Where we are
 - **M1 progress:** T-M1.1..T-M1.9 and T-M1.11 are merged through merge-gate. Required CI checks: docs-check, secrets-scan, backend, web, contract-drift and e2e-smoke (`container` isn't required). Open in M1: T-M1.12 (LC), T-M1.13 (FE), T-M1.14 (BE), T-M1.10 (TS 7, waits for upstream).
@@ -16,12 +16,11 @@ Phase/Milestone: P1 / M1 · Current task: **T-M1.12 (ready; packet in review, PO
 
 ## Next steps
 1. Open the PR for `docs/T-M1.12-packet` (T-M1.9 post-merge record + the **T-M1.12 packet** `docs/tasks/T-M1.12-merge-gate-polish.md`), get one fresh docs review, fix findings, then after CI is green post `DOCS-REVIEW T-M1.12: PASS` and `LC-APPROVED T-M1.12`, and merge via `./scripts/merge-gate.sh --dry-run <pr>` then without `--dry-run`.
-2. Ask the PO for the T-M1.12 start signal (record it as a DEC); implement on `chore/T-M1.12-merge-gate-polish` (LC); G3 = DOCS-REVIEW.
+2. The PO gave the T-M1.12 start signal (DEC-075); implement on `chore/T-M1.12-merge-gate-polish` (LC); G3 = DOCS-REVIEW.
 3. Then T-M1.13 (FE) and T-M1.14 (BE) packets, then M2 (T-M2.1 first) once the M1 exit criteria are confirmed.
 4. After 2026-10-01: check that `backend-coverage` uploads again (T-M1.8 AC6), and decide whether to keep the GitLab mirror (DEC-060).
 
 ## Pending PO decisions / actions
-- The T-M1.12 start signal.
 - Keep or remove the GitLab mirror after the storage reset (DEC-060).
 - Recommended (DEC-061): `glab` deny rules in `.claude/settings.json`.
 - OQ-03..OQ-14 (defaults documented). OQ-17 is answered "yes" inside T-M1.12.

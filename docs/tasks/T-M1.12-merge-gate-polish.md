@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Milestone | M1 |
-| Status | **ready** (G0: DOCS-REVIEW on the packet PR; dependencies merged; the PO gives the start signal) |
+| Status | **ready** (G0: DOCS-REVIEW on the packet PR; dependencies merged; PO start signal given, DEC-075) |
 | Owner role | LC (governance scripts; no product code) |
 | Branch | `chore/T-M1.12-merge-gate-polish` (from `develop`) |
 | Depends on | T-M1.7 merged (`41beac7`) |
