@@ -1,4 +1,4 @@
-import { act, render, screen } from '@testing-library/react'
+import { act, render, screen, within } from '@testing-library/react'
 import { createMemoryRouter, RouterProvider } from 'react-router'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { expectNoAxeViolations } from '../../test/axe'
@@ -36,6 +36,22 @@ describe('RouteLoading (T-M1.9 AC4, AC6 N3)', () => {
     renderLoading(path)
     expect(screen.queryByTestId('route-loading-topbar')).not.toBeInTheDocument()
     expect(screen.getAllByTestId('skeleton').length).toBeGreaterThan(0)
+  })
+
+  it('starts the landing skeleton with the 44 px, end-aligned language-switcher row (T-M1.13 AC3)', () => {
+    renderLoading('/')
+    const toolbar = screen.getByTestId('route-loading-toolbar')
+    expect(toolbar).toHaveClass('toolbar')
+    const [switcher] = within(toolbar).getAllByTestId('skeleton')
+    expect(switcher).toHaveStyle({ blockSize: 'var(--size-control-md)' })
+    // It comes before the title line (document order = block order in the Stack).
+    const title = screen.getByRole('status').querySelector('.headerSkeleton')
+    expect(toolbar.compareDocumentPosition(title!) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
+  })
+
+  it.each(['/khong-co', '/tutorial', '/tutor', '/student/x'])('has no landing toolbar row on %s', (path) => {
+    renderLoading(path)
+    expect(screen.queryByTestId('route-loading-toolbar')).not.toBeInTheDocument()
   })
 
   it('is block-level (the page padding applies)', () => {
