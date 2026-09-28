@@ -1,0 +1,69 @@
+.group {
+  display: inline-flex;
+  flex-wrap: wrap;
+  max-inline-size: 100%;
+  border: var(--border-width) solid var(--color-border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  overflow: hidden;
+}
+
+.group[data-disabled] {
+  opacity: 0.55;
+}
+
+/* Segments share any extra width when a parent stretches the group. */
+.segment {
+  flex: 1 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-1);
+  min-block-size: var(--size-control-md);
+  min-inline-size: var(--size-control-md);
+  padding-block: var(--space-2);
+  padding-inline: var(--space-3);
+  border: 0;
+  background: transparent;
+  color: var(--color-text);
+  font: inherit;
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: background-color var(--motion-duration) var(--motion-easing);
+}
+
+.segment + .segment {
+  border-inline-start: var(--border-width) solid var(--color-border-strong);
+}
+
+.segment[data-hovered] {
+  background: var(--color-surface-sunken);
+}
+
+.segment[data-pressed] {
+  background: var(--color-accent-subtle);
+}
+
+.segment[data-selected] {
+  background: var(--color-accent-subtle);
+  color: var(--color-accent-strong);
+  font-weight: var(--font-weight-semibold);
+  cursor: default;
+}
+
+/* Drawn inside the segment, so a neighbouring segment's background cannot cover it. */
+.segment[data-focus-visible] {
+  outline: var(--focus-ring-width) solid var(--color-focus);
+  outline-offset: calc(-2 * var(--focus-ring-width));
+}
+
+.segment[data-disabled] {
+  color: var(--color-text-subtle);
+  cursor: not-allowed;
+}
+
+.check {
+  flex: none;
+  inline-size: var(--size-icon);
+  block-size: var(--size-icon);
+}

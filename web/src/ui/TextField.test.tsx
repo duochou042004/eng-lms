@@ -22,6 +22,34 @@ describe('TextField', () => {
     await expectNoAxeViolations(container)
   })
 
+  it('shows a decorative icon before the error text (not colour alone); the description is the text only', async () => {
+    const { container } = render(<TextField label="Tên đăng nhập" isInvalid errorMessage="Hãy nhập tên." />)
+    const input = screen.getByRole('textbox', { name: 'Tên đăng nhập' })
+    expect(input).toHaveAccessibleDescription('Hãy nhập tên.')
+    const error = document.getElementById(input.getAttribute('aria-describedby')!.split(' ').at(-1)!)!
+    expect(error).toHaveTextContent('Hãy nhập tên.')
+    const icon = error.firstElementChild!
+    expect(icon.tagName.toLowerCase()).toBe('svg')
+    expect(icon).toHaveAttribute('aria-hidden', 'true')
+    await expectNoAxeViolations(container)
+  })
+
+  it('shows the native validation message with the icon when no message is given', async () => {
+    render(
+      <form>
+        <TextField label="Mã" isRequired validationBehavior="native" />
+        <button type="submit">Lưu</button>
+      </form>,
+    )
+    await userEvent.click(screen.getByRole('button', { name: 'Lưu' }))
+    const input = screen.getByRole('textbox', { name: 'Mã' })
+    expect(input).toHaveAttribute('aria-invalid', 'true')
+    expect(input.getAttribute('aria-describedby')).toBeTruthy()
+    const error = document.querySelector('.error')!
+    expect(error.querySelector('svg[aria-hidden="true"]')).not.toBeNull()
+    expect(error.textContent).not.toBe('')
+  })
+
   it('is not editable when disabled', async () => {
     render(<TextField label="Mã" isDisabled defaultValue="S-1" />)
     const input = screen.getByRole('textbox', { name: 'Mã' })

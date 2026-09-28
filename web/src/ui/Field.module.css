@@ -15,8 +15,18 @@
 }
 
 .error {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-1);
   font-size: var(--font-size-sm);
   color: var(--color-danger);
+}
+
+/* One line of the error text tall (--font-size-sm × --line-height-body), so the icon sits on the first line. */
+.errorIcon {
+  flex: none;
+  inline-size: 1.1em;
+  block-size: calc(1em * var(--line-height-body));
 }
 
 .input {
