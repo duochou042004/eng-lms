@@ -42,5 +42,6 @@ Implementer: frontend-implementer agent (this summary was written by the LC from
 4. On-failure screenshots add ~0.9 s per test (possible harness speed-up later).
 5. The shared chunk is named `routeAnnouncement-*.js` (cosmetic); the budget is 144.9 KB gz (+2.9 KB vs develop, limits 200/300).
 
-## Reviews
-QA (qa-evaluator) and UX (ux-reviewer) at G3: see the PR comments; the QA record goes on `qa/T-M1.9`, the UX record to `evidence/T-M1.9/review/ux.md` on the next docs branch.
+## Reviews and merge
+- QA: **PASS WITH MINOR** at `92e213b` (4 × S4): `qa/report.md` (merged via PR #21, `8b2156e`). UX: **APPROVED** (5 × S4): `review/ux.md`. Dispositions: DEC-073 (T-M1.13, T-M2.4).
+- Merged `e20e8ec` (PR #20) via merge-gate at head `a55b1cb` (`92e213b` + `progress.json`); CI 7/7 (the `backend` check needed one re-run for a flaky T-M1.8 test, DEC-074 → T-M1.14).

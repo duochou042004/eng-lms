@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Milestone | M1 |
-| Status | **ready** (G0: DOCS-REVIEW on PR #19, round 2 PASS; dependencies merged; PO start signal given, DEC-072) |
+| Status | **done**: merged `e20e8ec` (PR #20) via merge-gate on 2026-09-28; QA PASS WITH MINOR, UX APPROVED (DEC-073, DEC-074). (G0 on PR #19, `5c78168`; PO start DEC-072) |
 | Owner role | FE (frontend-implementer) |
 | Branch | `feature/T-M1.9-web-follow-ups` (from `develop`) |
 | Depends on | T-M1.3, T-M1.6 (merged); T-M1.8 merged (`01dfc5d`) |
