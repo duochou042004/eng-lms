@@ -16,7 +16,7 @@
       }
     ]
   },
-  "updatedAt": "2026-09-28T01:00:00Z",
+  "updatedAt": "2026-09-28T01:40:00Z",
   "updatedBy": "lead-coordinator (session 2026-09-28 #1, Opus 5.5)",
   "phase": {
     "id": "P1",
@@ -41,12 +41,12 @@
     "startedAt": null,
     "entryGate": [
       "T-M1.8 merged — met (01dfc5d)",
-      "Packet G0 — written (PR #19); DOCS-REVIEW round 1 CHANGES REQUESTED, fixed; round 2 pending",
-      "PO start signal — pending"
+      "Packet G0 — met (PR #19 DOCS-REVIEW round 2 PASS at bb52368)",
+      "PO start signal — given (DEC-072), effective when PR #19 merges"
     ],
     "nextSteps": [
-      "Docs review of the packet PR; merge via merge-gate",
-      "Ask the PO for the T-M1.9 start signal (record as a DEC)"
+      "Merge PR #19 via merge-gate after CI is green (DOCS-REVIEW PASS, LC-APPROVED)",
+      "Implement on feature/T-M1.9-web-follow-ups from the merged develop"
     ],
     "trace": [
       "DEC-043",
@@ -209,12 +209,12 @@
   "decisions": {
     "log": "docs/10-governance/decision-log.md",
     "recent": [
-      "DEC-066",
       "DEC-067",
       "DEC-068",
       "DEC-069",
       "DEC-070",
-      "DEC-071"
+      "DEC-071",
+      "DEC-072"
     ],
     "pendingPO": [
       "OQ-03",
@@ -499,6 +499,11 @@
       "at": "2026-09-28T01:00:00Z",
       "actor": "lead-coordinator",
       "event": "T-M1.9 packet written (2727f89), PR #19 opened. DOCS-REVIEW round 1: CHANGES REQUESTED (4 S3: RR 8 not 7, first-load detection hint, skip-link claim on landing/404, stale handoff; 17 S4) — all fixed; T-M1.3 UX record backfilled to evidence/T-M1.3/review/ux.md."
+    },
+    {
+      "at": "2026-09-28T01:40:00Z",
+      "actor": "lead-coordinator",
+      "event": "PR #19 DOCS-REVIEW round 2: PASS at bb52368 (R2-1/R2-2 S4 bookkeeping fixed in the final commit). PO start signal for T-M1.9 (DEC-072)."
     }
   ]
 }

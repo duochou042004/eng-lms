@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Milestone | M1 |
-| Status | **ready** (G0: confirmed by the DOCS-REVIEW on PR #19; dependencies merged; the PO gives the start signal) |
+| Status | **ready** (G0: DOCS-REVIEW on PR #19, round 2 PASS; dependencies merged; PO start signal given, DEC-072) |
 | Owner role | FE (frontend-implementer) |
 | Branch | `feature/T-M1.9-web-follow-ups` (from `develop`) |
 | Depends on | T-M1.3, T-M1.6 (merged); T-M1.8 merged (`01dfc5d`) |

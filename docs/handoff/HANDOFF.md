@@ -1,6 +1,6 @@
 # Handoff — 2026-09-28 (T-M1.8 merged `01dfc5d`; T-M1.9 packet in review, PR #19)
 
-Phase/Milestone: P1 / M1 · Current task: **T-M1.9 (ready; packet in DOCS-REVIEW, PO start signal pending)** · Bookkeeping branch: `docs/T-M1.9-packet` (PR #19) · Remote: https://github.com/duochou042004/eng-lms
+Phase/Milestone: P1 / M1 · Current task: **T-M1.9 (ready; DOCS-REVIEW PASS, PO start signal given DEC-072)** · Bookkeeping branch: `docs/T-M1.9-packet` (PR #19) · Remote: https://github.com/duochou042004/eng-lms
 
 ## Where we are
 - **M1 progress:** T-M1.1..T-M1.8 and T-M1.11 are merged through merge-gate. Required CI checks: docs-check, secrets-scan, backend, web, contract-drift and e2e-smoke (`container` isn't required).
@@ -22,13 +22,12 @@ Phase/Milestone: P1 / M1 · Current task: **T-M1.9 (ready; packet in DOCS-REVIEW
   - Dependabot PRs: use `@dependabot rebase`, not "Update branch".
 
 ## Next steps
-1. The **T-M1.9 packet** is written: `docs/tasks/T-M1.9-web-follow-ups.md` (PR #19, which also carries the T-M1.8 bookkeeping). DOCS-REVIEW round 1 was CHANGES REQUESTED (4 × S3, 17 × S4), all fixed; the T-M1.3 UX record was backfilled to `evidence/T-M1.3/review/ux.md`. Next: a round-2 re-review of the fixes, then after CI is green post `DOCS-REVIEW T-M1.9: PASS` and `LC-APPROVED T-M1.9`, and merge via merge-gate (`--dry-run` first).
-2. Ask the PO for the T-M1.9 start signal (record it as a DEC). It's FE: G3 is QA + **UX** review, with screenshots at 360/768/1280.
+1. The **T-M1.9 packet** is written: `docs/tasks/T-M1.9-web-follow-ups.md` (PR #19, which also carries the T-M1.8 bookkeeping). DOCS-REVIEW round 1 was CHANGES REQUESTED (4 × S3, 17 × S4), all fixed; the T-M1.3 UX record was backfilled to `evidence/T-M1.3/review/ux.md`. Round 2 **PASS** at `bb52368` (two S4 bookkeeping notes fixed). Next: after CI is green for the final head, post `DOCS-REVIEW T-M1.9: PASS` and `LC-APPROVED T-M1.9`, and merge via merge-gate (`--dry-run` first).
+2. The PO gave the T-M1.9 start signal (DEC-072): implement on `feature/T-M1.9-web-follow-ups` after PR #19 merges. It's FE: G3 is QA + **UX** review, with screenshots at 360/768/1280.
 3. After 2026-10-01: check that `backend-coverage` uploads again (T-M1.8 AC6), and decide whether to keep the GitLab mirror (DEC-060).
 4. T-M1.12 (merge-gate polish, LC) and T-M1.10 (TS 7, waits for upstream) are open.
 
 ## Pending PO decisions / actions
-- The T-M1.9 start signal.
 - OQ-17 (wrapper-properties content check; default yes, in T-M1.12).
 - Keep or remove the GitLab mirror after the storage reset (DEC-060).
 - Recommended (DEC-061): `glab` deny rules in `.claude/settings.json`.
