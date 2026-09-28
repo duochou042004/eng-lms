@@ -1,6 +1,6 @@
-# Handoff — 2026-09-28 (T-M1.12 merged `9866f26`; T-M1.13 packet next)
+# Handoff — 2026-09-28 (T-M1.12 merged `9866f26`; T-M1.13 packet written, in review)
 
-Phase/Milestone: P1 / M1 · Current task: **T-M1.13 (draft: packet to write)** · Bookkeeping branch: `docs/T-M1.13-packet` (pushed; no PR yet) · Remote: https://github.com/duochou042004/eng-lms
+Phase/Milestone: P1 / M1 · Current task: **T-M1.13 (ready; packet in review; PO start signal given, DEC-077)** · Bookkeeping branch: `docs/T-M1.13-packet` (PR open) · Remote: https://github.com/duochou042004/eng-lms
 
 ## Where we are
 - **M1 progress:** T-M1.1..T-M1.9, T-M1.11 and T-M1.12 are merged through merge-gate. Required CI checks: docs-check, secrets-scan, backend, web, contract-drift and e2e-smoke. Open in M1: **T-M1.13** (FE web polish, DEC-073), **T-M1.14** (BE flaky test, DEC-074), T-M1.10 (TS 7, waits for upstream).
@@ -13,13 +13,12 @@ Phase/Milestone: P1 / M1 · Current task: **T-M1.13 (draft: packet to write)** �
 - **Deferred to T-M2.1** (backlog row): the TRACE 405 from Boot's `/error` and `Cache-Control: no-store` on API responses.
 
 ## Next steps
-1. On `docs/T-M1.13-packet`, write the **T-M1.13 packet** (FE web polish; the backlog row lists the five items: the SegmentedControl keyboard-model note, stable segment widths, the landing switcher-row skeleton, a start-page link on the error page, two more fetch lint forms) to G0 with the task-packet skill. Open the PR (it also carries the T-M1.12 record), one fresh docs review, then `DOCS-REVIEW T-M1.13: PASS` + `LC-APPROVED T-M1.13` after CI is green, and merge via merge-gate (`--dry-run` first as a habit).
-2. Ask the PO for the T-M1.13 start signal (DEC). It's FE: G3 is QA + UX review, screenshots at 360/768/1280, vi + en.
+1. The **T-M1.13 packet** is written: `docs/tasks/T-M1.13-web-polish.md` (6 ACs: the SegmentedControl keyboard-model note, stable segment widths, the landing switcher-row skeleton, a start-page link on the error page, two more fetch lint forms, gate/evidence). Its PR (which also carries the T-M1.12 record) is open and **not reviewed yet**: one fresh docs review, then `DOCS-REVIEW T-M1.13: PASS` + `LC-APPROVED T-M1.13` after CI is green, and merge via merge-gate (`--dry-run` first as a habit).
+2. The PO gave the T-M1.13 start signal (DEC-077): implement on `feature/T-M1.13-web-polish` after the packet PR merges. It's FE: G3 is QA + UX review, screenshots at 360/768/1280, vi + en.
 3. T-M1.14 (BE, small): fix the flaky request-ID test without relying on randomness. Then confirm the M1 exit criteria and start M2 (T-M2.1).
 4. After 2026-10-01: check that `backend-coverage` uploads again (T-M1.8 AC6), and decide whether to keep the GitLab mirror (DEC-060).
 
 ## Pending PO decisions / actions
-- The T-M1.13 start signal.
 - Keep or remove the GitLab mirror after the storage reset (DEC-060).
 - Recommended (DEC-061): `glab` deny rules in `.claude/settings.json`.
 - OQ-03..OQ-14 (defaults documented).
@@ -34,4 +33,4 @@ Phase/Milestone: P1 / M1 · Current task: **T-M1.13 (draft: packet to write)** �
 - `e2e-run.sh` needs 8080/8081 free and `dev-up.sh`. Shellcheck isn't installed (installing it needs PO approval).
 
 ## Files to read first
-`CLAUDE.md` → `progress.json` → this file → `docs/tasks/backlog.md` (the T-M1.13 row) → `docs/09-harness/task-packet-template.md` → the frontend-standards skill.
+`CLAUDE.md` → `progress.json` → this file → `docs/tasks/T-M1.13-web-polish.md` → the frontend-standards skill.

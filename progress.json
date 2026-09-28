@@ -16,7 +16,7 @@
       }
     ]
   },
-  "updatedAt": "2026-09-28T11:05:00Z",
+  "updatedAt": "2026-09-28T11:20:00Z",
   "updatedBy": "lead-coordinator (session 2026-09-28 #1, Opus 5.5)",
   "phase": {
     "id": "P1",
@@ -32,24 +32,25 @@
   "currentTask": {
     "id": "T-M1.13",
     "title": "Web polish from the T-M1.9 reviews (DEC-073)",
-    "status": "draft",
+    "status": "ready",
     "ownerRole": "FE",
     "branch": "feature/T-M1.13-web-polish",
-    "packet": "docs/tasks/backlog.md#m1--walking-skeleton-and-delivery-pipeline",
+    "packet": "docs/tasks/T-M1.13-web-polish.md",
     "pr": null,
     "lastCommit": null,
     "startedAt": null,
     "entryGate": [
       "T-M1.9 merged — met (e20e8ec)",
-      "Packet G0 — pending (write it on docs/T-M1.13-packet)",
-      "PO start signal — pending"
+      "Packet G0 — written on docs/T-M1.13-packet (DOCS-REVIEW on its PR)",
+      "PO start signal — given (DEC-077), effective when the packet PR merges"
     ],
     "nextSteps": [
-      "Write the T-M1.13 packet to G0 on docs/T-M1.13-packet (this branch holds the T-M1.12 merge record); docs review; merge via merge-gate",
-      "Ask the PO for the T-M1.13 start signal"
+      "Fresh docs review of the docs/T-M1.13-packet PR (T-M1.12 record + the T-M1.13 packet); merge via merge-gate",
+      "Implement on feature/T-M1.13-web-polish; G3 = QA + UX"
     ],
     "trace": [
-      "DEC-073"
+      "DEC-073",
+      "DEC-077"
     ]
   },
   "nextTask": {
@@ -196,8 +197,8 @@
   },
   "gates": {
     "G0": {
-      "status": "pending",
-      "note": "T-M1.13 packet not written yet"
+      "status": "pass",
+      "note": "T-M1.13 packet G0-complete; confirmed by the docs/T-M1.13-packet PR DOCS-REVIEW (merge-gate refuses without a PASS)"
     },
     "G1": {
       "status": "pending",
@@ -220,12 +221,12 @@
   "decisions": {
     "log": "docs/10-governance/decision-log.md",
     "recent": [
-      "DEC-071",
       "DEC-072",
       "DEC-073",
       "DEC-074",
       "DEC-075",
-      "DEC-076"
+      "DEC-076",
+      "DEC-077"
     ],
     "pendingPO": [
       "OQ-03",
@@ -559,6 +560,11 @@
       "at": "2026-09-28T11:05:00Z",
       "actor": "lead-coordinator",
       "event": "T-M1.12 merged via merge-gate as 9866f26 (PR #23, head 0123d7f). docs/T-M1.13-packet: review record, DEC-076, progress, handoff; T-M1.13 packet next."
+    },
+    {
+      "at": "2026-09-28T11:20:00Z",
+      "actor": "lead-coordinator",
+      "event": "PO start signal for T-M1.13 (DEC-077). T-M1.13 packet written on docs/T-M1.13-packet; PR opened; session handed off at the context budget."
     }
   ]
 }
