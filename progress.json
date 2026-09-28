@@ -16,7 +16,7 @@
       }
     ]
   },
-  "updatedAt": "2026-09-28T10:50:00Z",
+  "updatedAt": "2026-09-28T12:10:00Z",
   "updatedBy": "lead-coordinator (session 2026-09-28 #1, Opus 5.5)",
   "phase": {
     "id": "P1",
@@ -32,21 +32,21 @@
   "currentTask": {
     "id": "T-M1.13",
     "title": "Web polish from the T-M1.9 reviews (DEC-073)",
-    "status": "ready",
+    "status": "in_progress",
     "ownerRole": "FE",
     "branch": "feature/T-M1.13-web-polish",
     "packet": "docs/tasks/T-M1.13-web-polish.md",
     "pr": null,
     "lastCommit": null,
-    "startedAt": null,
+    "startedAt": "2026-09-28T12:10:00Z",
     "entryGate": [
       "T-M1.9 merged — met (e20e8ec)",
-      "Packet G0 — written on docs/T-M1.13-packet (DOCS-REVIEW on its PR)",
-      "PO start signal — given (DEC-077), effective when the packet PR merges"
+      "Packet G0 — met (PR #24, 6c8d1d4; DOCS-REVIEW round 2 PASS)",
+      "PO start signal — given (DEC-077)"
     ],
     "nextSteps": [
-      "Fresh docs review of the docs/T-M1.13-packet PR (T-M1.12 record + the T-M1.13 packet); merge via merge-gate",
-      "Implement on feature/T-M1.13-web-polish; G3 = QA + UX"
+      "Implement AC1-AC6 on feature/T-M1.13-web-polish (frontend-implementer)",
+      "G3: fresh qa-evaluator + ux-reviewer"
     ],
     "trace": [
       "DEC-073",
@@ -197,12 +197,12 @@
   },
   "gates": {
     "G0": {
-      "status": "pending",
-      "note": "T-M1.13 packet: DOCS-REVIEW on PR #24 round 1 CHANGES REQUESTED (2 S3, 8 S4), fixed; re-review pending"
+      "status": "pass",
+      "note": "T-M1.13 packet merged (PR #24, 6c8d1d4); DOCS-REVIEW round 2 PASS"
     },
     "G1": {
       "status": "pending",
-      "note": "T-M1.13 not started"
+      "note": "T-M1.13 in progress"
     },
     "G2": {
       "status": "pending",
@@ -562,14 +562,19 @@
       "event": "T-M1.12 merged via merge-gate as 9866f26 (PR #23, head 0123d7f). docs/T-M1.13-packet: review record, DEC-076, progress, handoff; T-M1.13 packet next."
     },
     {
-      "at": "2026-09-28T10:40:00Z",
+      "at": "2026-09-28T11:51:00Z",
       "actor": "lead-coordinator",
       "event": "PO start signal for T-M1.13 (DEC-077). T-M1.13 packet written on docs/T-M1.13-packet; PR opened; session handed off at the context budget."
     },
     {
-      "at": "2026-09-28T10:50:00Z",
+      "at": "2026-09-28T11:57:00Z",
       "actor": "lead-coordinator",
       "event": "PR #24 DOCS-REVIEW round 1: CHANGES REQUESTED (F1 S3: label weight also shifts widths; F2 S3: no ui/ link style; 8 S4) — all fixed."
+    },
+    {
+      "at": "2026-09-28T12:10:00Z",
+      "actor": "lead-coordinator",
+      "event": "PR #24 merged via merge-gate (6c8d1d4): T-M1.13 packet G0 (DOCS-REVIEW round 2 PASS; R2-1 timestamps fixed here), T-M1.12 record. T-M1.13 in progress on feature/T-M1.13-web-polish."
     }
   ]
 }
