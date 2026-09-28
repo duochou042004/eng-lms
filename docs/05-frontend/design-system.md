@@ -59,7 +59,15 @@ strategy, an RTL-agnostic layout (logical properties), a unit test, an axe test 
 each segment a `radio` with `aria-checked`. Props: a required `label` (the group's accessible name), `options` (`id`, `label`, optional `lang` for an
 endonym, optional `isDisabled`), `selected`, `onChange`, `isDisabled`. Segments are ≥ 44 px (`--size-control-md`). States: hover (`--color-surface-sunken`),
 pressed and selected (`--color-accent-subtle`; the selected label is `--color-accent-strong`, semibold, with a lucide `Check` icon, so selection is never
-colour alone), focus-visible (the 2 px ring drawn inside the segment), disabled. Keyboard: Tab into the group, arrow keys between segments, Space/Enter select.
+colour alone), focus-visible (the 2 px ring drawn inside the segment), disabled. **Stable widths** (T-M1.13): selecting a segment never moves the boundaries
+between segments. The icon slot is always laid out and hidden (`visibility: hidden`) on unselected segments, and each label shares its grid cell with an
+invisible, `aria-hidden` semibold copy, so the cell is always as wide as the semibold label.
+**Keyboard model (on purpose):** React Aria's toolbar model, as `ToggleButtonGroup` provides it, with no custom key handling (ADR-0013). The group is one
+Tab stop; the arrow keys only move focus between segments; Space or Enter selects the focused segment. A forward Tab into the group lands on the segment that
+last had focus, otherwise the first; Shift+Tab lands on the last segment. Focus does not necessarily land on the checked segment. Why: selection waits for an
+explicit Space/Enter, which suits a switch whose change redraws the UI (the language switcher re-renders every string), so arrowing through the options does
+not redraw the page on each key press. A view switcher where the arrow keys should select at once (the usual radio-group behaviour) uses React Aria
+`RadioGroup` instead, not a `SegmentedControl`.
 
 **Skeleton delay** (interaction-states §1, T-M1.9): wrap a loading region's `Skeleton`s in `DelayedSkeleton` (default `SKELETON_DELAY_MS` = 150 ms). The
 skeletons are laid out at once but stay `visibility: hidden` until the delay has passed, so the region already has its final size (no layout shift when the

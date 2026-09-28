@@ -37,11 +37,24 @@ describe('SegmentedControl', () => {
     expect(radio('Danh sách')).toHaveAttribute('aria-checked', 'true')
     expect(radio('Danh sách')).toHaveAttribute('data-selected')
     expect(radio('Tuần')).toHaveAttribute('aria-checked', 'false')
-    expect(radio('Danh sách').querySelector('svg[aria-hidden="true"]')).not.toBeNull()
-    expect(radio('Tuần').querySelector('svg')).toBeNull()
+    expect(radio('Danh sách').querySelector('svg[aria-hidden="true"]')).toBeVisible()
+    // The icon slot is always laid out (stable widths, T-M1.13): present on an unselected segment but not visible.
+    expect(radio('Tuần').querySelector('svg[aria-hidden="true"]')).not.toBeNull()
+    expect(radio('Tuần').querySelector('svg')).not.toBeVisible()
     expect(radio('Danh sách')).not.toHaveAttribute('aria-pressed')
     expect(radio('Tháng')).toHaveAttribute('lang', 'vi')
     await expectNoAxeViolations(container)
+  })
+
+  it('reserves the semibold label width with an aria-hidden copy that is not part of the accessible name', () => {
+    render(<Controlled />)
+    for (const { label } of OPTIONS) {
+      const reserve = radio(label).querySelector('.labelReserve')
+      expect(reserve).toHaveAttribute('aria-hidden', 'true')
+      expect(reserve).toHaveTextContent(label)
+      // Exact accessible name: the hidden copy does not double the label.
+      expect(radio(label)).toHaveAccessibleName(label)
+    }
   })
 
   it('selects with a pointer and moves the check icon; pressing the selected segment keeps it selected', async () => {
@@ -50,8 +63,9 @@ describe('SegmentedControl', () => {
     await userEvent.click(radio('Tuần'))
     expect(onChange).toHaveBeenLastCalledWith('week')
     expect(radio('Tuần')).toHaveAttribute('aria-checked', 'true')
-    expect(radio('Tuần').querySelector('svg[aria-hidden="true"]')).not.toBeNull()
+    expect(radio('Tuần').querySelector('svg[aria-hidden="true"]')).toBeVisible()
     expect(radio('Danh sách')).toHaveAttribute('aria-checked', 'false')
+    expect(radio('Danh sách').querySelector('svg')).not.toBeVisible()
     await userEvent.click(radio('Tuần'))
     expect(onChange).toHaveBeenCalledTimes(1)
     expect(radio('Tuần')).toHaveAttribute('aria-checked', 'true')

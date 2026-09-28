@@ -67,3 +67,19 @@
   inline-size: var(--size-icon);
   block-size: var(--size-icon);
 }
+
+/* The visible label and an invisible semibold copy share one grid cell, so the cell is always as wide as the selected
+   (semibold) label and the weight change does not move the segment boundaries. */
+.label {
+  display: inline-grid;
+  justify-items: center;
+}
+
+.label > * {
+  grid-area: 1 / 1;
+}
+
+.labelReserve {
+  font-weight: var(--font-weight-semibold);
+  visibility: hidden;
+}
