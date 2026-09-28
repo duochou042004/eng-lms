@@ -16,7 +16,7 @@
       }
     ]
   },
-  "updatedAt": "2026-09-28T12:10:00Z",
+  "updatedAt": "2026-09-28T12:40:00Z",
   "updatedBy": "lead-coordinator (session 2026-09-28 #1, Opus 5.5)",
   "phase": {
     "id": "P1",
@@ -32,12 +32,12 @@
   "currentTask": {
     "id": "T-M1.13",
     "title": "Web polish from the T-M1.9 reviews (DEC-073)",
-    "status": "in_progress",
+    "status": "in_review",
     "ownerRole": "FE",
     "branch": "feature/T-M1.13-web-polish",
     "packet": "docs/tasks/T-M1.13-web-polish.md",
     "pr": null,
-    "lastCommit": null,
+    "lastCommit": "1fa265f",
     "startedAt": "2026-09-28T12:10:00Z",
     "entryGate": [
       "T-M1.9 merged — met (e20e8ec)",
@@ -45,8 +45,8 @@
       "PO start signal — given (DEC-077)"
     ],
     "nextSteps": [
-      "Implement AC1-AC6 on feature/T-M1.13-web-polish (frontend-implementer)",
-      "G3: fresh qa-evaluator + ux-reviewer"
+      "G3: fresh qa-evaluator (QA-VERDICT) + ux-reviewer (UX-REVIEW) on the T-M1.13 PR",
+      "Merge via merge-gate after CI is green for the final head"
     ],
     "trace": [
       "DEC-073",
@@ -201,16 +201,16 @@
       "note": "T-M1.13 packet merged (PR #24, 6c8d1d4); DOCS-REVIEW round 2 PASS"
     },
     "G1": {
-      "status": "pending",
-      "note": "T-M1.13 in progress"
+      "status": "pass",
+      "note": "T-M1.13 implemented (frontend-implementer); evidence/T-M1.13/summary.md"
     },
     "G2": {
-      "status": "pending",
-      "note": "T-M1.13 not started"
+      "status": "pass",
+      "note": "gate.sh PASS (12 steps, 145 s; E2E 86 passed/16 skipped)"
     },
     "G3": {
       "status": "pending",
-      "note": "QA + UX review (UI packet)"
+      "note": "QA + UX review"
     },
     "G4": {
       "status": "pending",
@@ -575,6 +575,11 @@
       "at": "2026-09-28T12:10:00Z",
       "actor": "lead-coordinator",
       "event": "PR #24 merged via merge-gate (6c8d1d4): T-M1.13 packet G0 (DOCS-REVIEW round 2 PASS; R2-1 timestamps fixed here), T-M1.12 record. T-M1.13 in progress on feature/T-M1.13-web-polish."
+    },
+    {
+      "at": "2026-09-28T12:40:00Z",
+      "actor": "lead-coordinator",
+      "event": "T-M1.13 implemented (5 commits, gate PASS); summary written by the LC; PR opened; G3 pending."
     }
   ]
 }
