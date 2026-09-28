@@ -49,11 +49,25 @@ React Router data routers with `lazy()` per route module. The tutor and student 
 builder or grading code. Route loaders prefetch the queries of the destination. Budget per NFR-PERF-03 is enforced by `web/scripts/bundle-budget`
 (reads the Vite manifest).
 
+**Route focus and titles (T-M1.9, accessibility §2).** The root route's `RootLayout` (`app/RootLayout.tsx`) calls `useRouteFocus()`
+(`app/routeAnnouncement.ts`): after every client-side navigation (link, `navigate()`, browser back/forward) it moves focus to `main h1`, which
+`PageHeader` and a level-1 `EmptyState` render with `tabIndex={-1}` (a focus target, not a Tab stop). On a first load or a reload focus stays on
+`body`, so the skip link is the first Tab stop on the shells. The first load is detected with a ref holding the last seen path (not
+`useNavigationType`, not `location.key`); hash-only changes are ignored. The pages sit under a pathless route with the `RouteError` boundary, so a
+failed navigation also renders inside `RootLayout` and gets the same focus move. Every route component calls `usePageTitle(t('…title'))`, which sets
+`document.title` to `app.documentTitle` (`<page title> · <app name>`) and follows a language change. `RouteLoading` (the hydrate fallback) shows a
+top-bar-shaped skeleton on `/tutor/*` and `/student/*` and the page-only skeleton elsewhere.
+
 ## 4. i18n
 
 `i18next` namespaces per feature. Keys are semantic (`students.create.title`). The Vietnamese catalogue is the default (A-012). A missing key fails the unit test
 `i18n-completeness` (the vi and en key sets must be equal). Pluralisation uses i18next plural rules. Dates and numbers are always formatted through
 `lib/time` and `Intl.NumberFormat` with the user's locale and time zone. The server stores UTC.
+
+**Where namespaces are registered:** `lib/i18n/index.ts` loads the production namespaces (`common`, `shell`, …) at start-up. The development-only
+`dev` namespace (the `/dev/ui` gallery) is **not** there: `src/dev/i18n.ts` registers it with `i18n.addResourceBundle` when the lazily imported
+`/dev/ui` module is evaluated, and that route exists only when `import.meta.env.DEV` is true, so no `dev` string reaches `dist/` (T-M1.9 AC7). The
+`i18n-completeness` test still compares `dev` (it imports `devResources`).
 
 ## 5. Extensions (frontend registry)
 

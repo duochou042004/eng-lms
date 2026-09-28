@@ -47,13 +47,24 @@ Use at most **3 sizes per screen region**.
 | Layout | `AppShell` (tutor, student), `PageHeader`, `Section`, `Stack`, `Cluster`, `Split`, `Sheet` (bottom sheet on mobile / side panel on desktop), `StickyFooter` |
 | Navigation | `NavList`, `BottomTabs`, `Tabs` (scrollable, overflow menu), `Breadcrumbs`, `CommandPalette`, `Pagination` |
 | Actions | `Button` (primary, secondary, quiet, danger; sizes md and lg), `IconButton` (label required), `Menu`, `SplitButton`, `CopyButton` |
-| Forms | `Form`, `Field` (label + hint + error wrapper), `TextField`, `TextArea` (auto-grow, counter), `NumberField`, `Select`, `ComboBox`, `StudentPicker`, `DatePicker`, `TimeField`, `DurationField`, `Checkbox`, `RadioGroup`, `Switch`, `TagInput`, `FileDrop` + `UploadList`, `RichTextEditor`, `AudioRecorder`, `PasswordField` (reveal), `ErrorSummary` |
+| Forms | `Form`, `Field` (label + hint + error wrapper), `TextField`, `TextArea` (auto-grow, counter), `NumberField`, `Select`, `ComboBox`, `StudentPicker`, `DatePicker`, `TimeField`, `DurationField`, `Checkbox`, `RadioGroup`, `SegmentedControl` (one of a few options, always one selected; e.g. the language switcher), `Switch`, `TagInput`, `FileDrop` + `UploadList`, `RichTextEditor`, `AudioRecorder`, `PasswordField` (reveal), `ErrorSummary` |
 | Data display | `DataList` (responsive table ↔ list), `Timeline`, `DescriptionList`, `StatusBadge`, `Meter` (labelled bar), `ScoreLine`, `Sparkline`, `Avatar` (initials), `EmptyState`, `KeyValueSummary`, `Countdown` |
-| Feedback | `Toast` (polite live region), `InlineAlert`, `Skeleton` (shape-matched), `Spinner` (only for actions under 1 s), `ProgressBar` (uploads), `ConfirmDialog`, `UnsavedChangesGuard`, `SaveIndicator` |
+| Feedback | `Toast` (polite live region), `InlineAlert`, `Skeleton` (shape-matched) + `DelayedSkeleton` (the 150 ms delay), `Spinner` (only for actions under 1 s), `ProgressBar` (uploads), `ConfirmDialog`, `UnsavedChangesGuard`, `SaveIndicator` |
 | Reorder | `ReorderableList` (React Aria DnD with keyboard, plus a "Move to…" menu fallback) |
 
 Every component ships with: its states (default, hover, focus-visible, active, disabled, invalid, loading), keyboard behaviour, an accessible name
 strategy, an RTL-agnostic layout (logical properties), a unit test, an axe test and a `/dev/ui` entry.
+
+**`SegmentedControl`** (T-M1.9): React Aria `ToggleButtonGroup` in single selection with empty selection disallowed, so the group is a `radiogroup` and
+each segment a `radio` with `aria-checked`. Props: a required `label` (the group's accessible name), `options` (`id`, `label`, optional `lang` for an
+endonym, optional `isDisabled`), `selected`, `onChange`, `isDisabled`. Segments are ≥ 44 px (`--size-control-md`). States: hover (`--color-surface-sunken`),
+pressed and selected (`--color-accent-subtle`; the selected label is `--color-accent-strong`, semibold, with a lucide `Check` icon, so selection is never
+colour alone), focus-visible (the 2 px ring drawn inside the segment), disabled. Keyboard: Tab into the group, arrow keys between segments, Space/Enter select.
+
+**Skeleton delay** (interaction-states §1, T-M1.9): wrap a loading region's `Skeleton`s in `DelayedSkeleton` (default `SKELETON_DELAY_MS` = 150 ms). The
+skeletons are laid out at once but stay `visibility: hidden` until the delay has passed, so the region already has its final size (no layout shift when the
+skeleton or the data appears); the wrapper generates no box (`display: contents`). The region itself (`<output aria-busy="true" aria-label=…>`) is busy
+and labelled from 0 ms. Used by `RouteLoading` and `WorkspaceName`; new loading regions use the same wrapper, not their own timers.
 
 ## 4. Status vocabulary (one mapping, used everywhere)
 
