@@ -1,0 +1,13 @@
+{
+  "viewport": {
+    "width": 1280,
+    "height": 800
+  },
+  "budget": 1,
+  "steps": {
+    "pointer /": 1,
+    "pointer /tutor": 1,
+    "pointer /student": 1,
+    "keyboard /": 1
+  }
+}
