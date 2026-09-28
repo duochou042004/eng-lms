@@ -5,3 +5,10 @@
   gap: var(--space-2);
   color: var(--color-text-muted);
 }
+
+/* One line of body text tall, like the name that replaces it. */
+.loading {
+  display: inline-flex;
+  align-items: center;
+  block-size: calc(1em * var(--line-height-body));
+}

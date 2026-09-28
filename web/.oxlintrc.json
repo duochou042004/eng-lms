@@ -20,11 +20,29 @@
     "no-restricted-globals": [
       "error",
       { "name": "fetch", "message": "No fetch outside src/lib/api (frontend-architecture §1). Use the API client." }
+    ],
+    "no-restricted-properties": [
+      "error",
+      {
+        "object": "window",
+        "property": "fetch",
+        "message": "No fetch outside src/lib/api (frontend-architecture §1). Use the API client."
+      },
+      {
+        "object": "globalThis",
+        "property": "fetch",
+        "message": "No fetch outside src/lib/api (frontend-architecture §1). Use the API client."
+      },
+      {
+        "object": "self",
+        "property": "fetch",
+        "message": "No fetch outside src/lib/api (frontend-architecture §1). Use the API client."
+      }
     ]
   },
   "overrides": [
     { "files": ["src/ui/**"], "rules": { "no-restricted-imports": "off" } },
-    { "files": ["src/lib/api/**"], "rules": { "no-restricted-globals": "off" } }
+    { "files": ["src/lib/api/**"], "rules": { "no-restricted-globals": "off", "no-restricted-properties": "off" } }
   ],
   "ignorePatterns": ["dist", "src/lib/api/schema.d.ts"]
 }

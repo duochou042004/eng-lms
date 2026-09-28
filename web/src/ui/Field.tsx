@@ -1,3 +1,4 @@
+import { CircleAlert } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { FieldError, Label, Text } from 'react-aria-components'
 import styles from './Field.module.css'
@@ -15,6 +16,19 @@ export function FieldHint({ children }: { children: ReactNode }) {
   )
 }
 
+/**
+ * Shown only while the field is invalid. A decorative icon precedes the text, so the error is not signalled by colour
+ * alone; the text (the message given, or the native validation messages) is the accessible description.
+ */
 export function FieldErrorMessage({ children }: { children?: ReactNode }) {
-  return <FieldError className={styles.error}>{children}</FieldError>
+  return (
+    <FieldError className={styles.error}>
+      {({ validationErrors }) => (
+        <>
+          <CircleAlert aria-hidden="true" className={styles.errorIcon} />
+          <span>{children ?? validationErrors.join(' ')}</span>
+        </>
+      )}
+    </FieldError>
+  )
 }

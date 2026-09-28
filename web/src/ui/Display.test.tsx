@@ -58,6 +58,17 @@ describe('EmptyState', () => {
     await expectNoAxeViolations(container)
   })
 
+  it('makes a level-1 heading a programmatic focus target (not a Tab stop); other levels stay plain', () => {
+    render(
+      <>
+        <EmptyState headingLevel={1} title="Không tìm thấy" />
+        <EmptyState title="Trống" />
+      </>,
+    )
+    expect(screen.getByRole('heading', { level: 1 })).toHaveAttribute('tabindex', '-1')
+    expect(screen.getByRole('heading', { level: 2 })).not.toHaveAttribute('tabindex')
+  })
+
   it('supports a level-3 heading', () => {
     render(<EmptyState headingLevel={3} title="Trống" />)
     expect(screen.getByRole('heading', { level: 3 })).toBeInTheDocument()
@@ -69,6 +80,7 @@ describe('PageHeader', () => {
     const { container } = render(<PageHeader title="Học viên" description="Mô tả" actions={<button>Thêm</button>} />)
     expect(screen.getByRole('heading', { level: 1, name: 'Học viên' })).toBeInTheDocument()
     expect(screen.getByText('Mô tả')).toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 1 })).toHaveAttribute('tabindex', '-1')
     await expectNoAxeViolations(container)
   })
 })

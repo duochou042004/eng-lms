@@ -1,10 +1,12 @@
 // The design system (ADR-0013). Feature and app code import UI only from here.
 export { Button, type ButtonProps, type ButtonSize, type ButtonVariant } from './Button'
+export { DelayedSkeleton, SKELETON_DELAY_MS, type DelayedSkeletonProps } from './DelayedSkeleton'
 export { EmptyState, type EmptyStateProps } from './EmptyState'
 export { FieldErrorMessage, FieldHint, FieldLabel } from './Field'
 export { IconButton, type IconButtonProps } from './IconButton'
 export { InlineAlert, type AlertTone, type InlineAlertProps } from './InlineAlert'
 export { PageHeader, type PageHeaderProps } from './PageHeader'
+export { SegmentedControl, type SegmentedControlProps, type SegmentedOption } from './SegmentedControl'
 export { Skeleton, type SkeletonProps } from './Skeleton'
 export { Stack, type Space, type StackProps } from './Stack'
 export { TextField, type TextFieldProps } from './TextField'

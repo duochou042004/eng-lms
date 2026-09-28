@@ -22,13 +22,27 @@ for (const target of PAGES) {
     await evidenceShot(page, testInfo, `${target.name}-vi`)
 
     if (target.switcher) {
-      await page.getByRole('button', { name: 'English' }).click()
+      // The language switcher is a SegmentedControl: a radiogroup of radio segments with aria-checked (T-M1.9 AC3).
+      const switcher = page.getByRole('radiogroup', { name: 'Ngôn ngữ' })
+      await expect(switcher.getByRole('radio', { name: 'Tiếng Việt' })).toBeChecked()
+      await expect(switcher.getByRole('radio', { name: 'English' })).not.toBeChecked()
+      await switcher.getByRole('radio', { name: 'English' }).click()
     } else {
       await page.evaluate(() => localStorage.setItem('englms.locale', 'en'))
       await page.reload()
     }
     await expect(page.getByRole('heading', { level: 1, name: target.en })).toBeVisible()
     await expect(page.locator('html')).toHaveAttribute('lang', 'en')
+    if (target.switcher) {
+      const switcher = page.getByRole('radiogroup', { name: 'Language' })
+      await expect(switcher.getByRole('radio', { name: 'English' })).toBeChecked()
+      await expect(switcher.getByRole('radio', { name: 'Tiếng Việt' })).not.toBeChecked()
+      await expect(switcher.getByRole('radio', { name: 'English' })).toHaveAttribute('lang', 'en')
+      // The choice survives a reload (localStorage, T-M1.3 AC5).
+      await page.reload()
+      await expect(page.getByRole('heading', { level: 1, name: target.en })).toBeVisible()
+      await expect(page.getByRole('radiogroup', { name: 'Language' }).getByRole('radio', { name: 'English' })).toBeChecked()
+    }
     await expectNoAxeViolations(page)
     await expectNoHorizontalScroll(page)
     await evidenceShot(page, testInfo, `${target.name}-en`)

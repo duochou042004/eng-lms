@@ -30,7 +30,10 @@
 
 - [ ] axe: 0 serious or critical violations on each changed route (Playwright `checkA11y` in E2E).
 - [ ] Keyboard-only pass of the changed flow (recorded as steps in the evidence).
-- [ ] Focus management after route change (focus the `h1`), dialog open and close, and async errors.
+- [ ] Focus management after route change (focus the `h1`), dialog open and close, and async errors. Route changes are handled by the app (T-M1.9):
+      the root layout moves focus to `main h1` after every client-side navigation (not on a first load or reload) and each route sets its
+      `document.title` with `usePageTitle` (frontend-architecture §3). A new page only has to render its `h1` through `PageHeader` (or a level-1
+      `EmptyState`) and call `usePageTitle`; check both in the evidence.
 - [ ] Screen-reader spot check of new components (the name, role and state announced correctly), noted in the evidence.
 - [ ] Contrast script passes. No colour-only status.
 - [ ] Reduced-motion mode checked for new animations.

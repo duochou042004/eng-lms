@@ -16,7 +16,7 @@
       }
     ]
   },
-  "updatedAt": "2026-09-28T01:40:00Z",
+  "updatedAt": "2026-09-28T05:00:00Z",
   "updatedBy": "lead-coordinator (session 2026-09-28 #1, Opus 5.5)",
   "phase": {
     "id": "P1",
@@ -32,21 +32,21 @@
   "currentTask": {
     "id": "T-M1.9",
     "title": "Web a11y/UX follow-ups (T-M1.3 UX review, T-M1.6 QA F3)",
-    "status": "ready",
+    "status": "awaiting_approval",
     "ownerRole": "FE",
     "branch": "feature/T-M1.9-web-follow-ups",
     "packet": "docs/tasks/T-M1.9-web-follow-ups.md",
-    "pr": null,
-    "lastCommit": null,
-    "startedAt": null,
+    "pr": "#20",
+    "lastCommit": "92e213b",
+    "startedAt": "2026-09-28T02:00:00Z",
     "entryGate": [
       "T-M1.8 merged — met (01dfc5d)",
-      "Packet G0 — met (PR #19 DOCS-REVIEW round 2 PASS at bb52368)",
-      "PO start signal — given (DEC-072), effective when PR #19 merges"
+      "Packet G0 — met (PR #19, 5c78168)",
+      "PO start signal — given (DEC-072)"
     ],
     "nextSteps": [
-      "Merge PR #19 via merge-gate after CI is green (DOCS-REVIEW PASS, LC-APPROVED)",
-      "Implement on feature/T-M1.9-web-follow-ups from the merged develop"
+      "Merge PR #20 via merge-gate",
+      "Post-merge: QA record on qa/T-M1.9; UX record + S4 deferral DEC + backlog task on the next docs branch"
     ],
     "trace": [
       "DEC-043",
@@ -158,8 +158,8 @@
     }
   ],
   "tests": {
-    "lastRun": "2026-09-27T08:41:29Z",
-    "summary": "At T-M1.8 merge (01dfc5d): gate.sh PASS (12 steps, 111 s); backend 97 tests (local verify ~29 s, no Surefire kill); script tests incl. merge-gate 131, workflow-warnings 10, coverage-summary 9, dev scripts 21; CI 7/7 green at e651c14.",
+    "lastRun": "2026-09-28T04:03:35Z",
+    "summary": "At T-M1.9 (92e213b): gate.sh PASS (12 steps, 113 s); web 72+ unit tests; E2E 62 passed/10 skipped (3 mandatory projects), 113/31 over 6 projects; CI 7/7 green.",
     "suites": [
       {
         "name": "backend (./mvnw -B verify)",
@@ -189,16 +189,16 @@
       "note": "T-M1.9 packet G0-complete (docs/tasks/T-M1.9-web-follow-ups.md); confirmed by the PR #19 DOCS-REVIEW (merge-gate refuses without a PASS)"
     },
     "G1": {
-      "status": "pending",
-      "note": "T-M1.9 not started"
+      "status": "pass",
+      "note": "T-M1.9 implemented (frontend-implementer), evidence/T-M1.9/summary.md"
     },
     "G2": {
-      "status": "pending",
-      "note": "T-M1.9 not started"
+      "status": "pass",
+      "note": "gate.sh PASS (12 steps, 113 s); CI 7/7 green at 92e213b"
     },
     "G3": {
-      "status": "pending",
-      "note": "QA + UX review (UI packet)"
+      "status": "pass",
+      "note": "QA PASS WITH MINOR (4 × S4), UX APPROVED (5 × S4) at 92e213b"
     },
     "G4": {
       "status": "pending",
@@ -504,6 +504,11 @@
       "at": "2026-09-28T01:40:00Z",
       "actor": "lead-coordinator",
       "event": "PR #19 DOCS-REVIEW round 2: PASS at bb52368 (R2-1/R2-2 S4 bookkeeping fixed in the final commit). PO start signal for T-M1.9 (DEC-072)."
+    },
+    {
+      "at": "2026-09-28T05:00:00Z",
+      "actor": "lead-coordinator",
+      "event": "T-M1.9 implemented (PR #20, head 92e213b); gate PASS; CI 7/7; QA PASS WITH MINOR (4 × S4) and UX APPROVED (5 × S4). progress.json updated in the PR for merge-gate."
     }
   ]
 }

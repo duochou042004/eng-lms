@@ -21,7 +21,10 @@ export function EmptyState({ title, description, icon, action, headingLevel = 2 
           {icon}
         </span>
       ) : null}
-      <Heading className={styles.title}>{title}</Heading>
+      {/* As a page's h1 it is the focus target after a client-side navigation (see PageHeader); never a Tab stop. */}
+      <Heading className={styles.title} tabIndex={headingLevel === 1 ? -1 : undefined}>
+        {title}
+      </Heading>
       {description ? <p className={styles.description}>{description}</p> : null}
       {action ? <div className={styles.action}>{action}</div> : null}
     </section>

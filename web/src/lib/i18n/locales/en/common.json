@@ -2,7 +2,8 @@
   "app": {
     "name": "Eng-LMS",
     "skipToContent": "Skip to main content",
-    "loading": "Loading the page"
+    "loading": "Loading the page",
+    "documentTitle": "{{page}} · {{app}}"
   },
   "language": {
     "label": "Language",
@@ -22,7 +23,8 @@
   },
   "error": {
     "title": "This page couldn't be displayed",
-    "description": "Reload the page. If the problem continues, include the request ID when you report it.",
+    "description": "Reload the page. If the problem continues, try again in a few minutes.",
+    "descriptionWithRequestId": "Reload the page. If the problem continues, include the request ID when you report it.",
     "requestId": "Request ID: {{requestId}}",
     "reload": "Reload page"
   },
