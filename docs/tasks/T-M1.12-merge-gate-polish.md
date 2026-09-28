@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Milestone | M1 |
-| Status | **ready** (G0: DOCS-REVIEW on the packet PR; dependencies merged; PO start signal given, DEC-075) |
+| Status | **done**: merged `9866f26` (PR #23) via merge-gate on 2026-09-28; DOCS-REVIEW PASS (round 3). DEC-075, DEC-076. (G0 on PR #22, `360c15a`) |
 | Owner role | LC (governance scripts; no product code) |
 | Branch | `chore/T-M1.12-merge-gate-polish` (from `develop`) |
 | Depends on | T-M1.7 merged (`41beac7`) |
