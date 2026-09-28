@@ -28,7 +28,7 @@ loosely written negatives that are still ignored, no content check on a Dependab
   3. **Wrapper properties content (OQ-17 = yes, the default accepted with DEC-075).** The real file has three keys (`wrapperVersion=3.3.4`, `distributionType=only-script`,
      `distributionUrl=https://repo.maven.apache.org/maven2/org/apache/maven/apache-maven/3.9.16/apache-maven-3.9.16-bin.zip`). On the Dependabot path, a change to
      `backend/.mvn/wrapper/maven-wrapper.properties` is accepted only if each change replaces a `wrapperVersion=<semver>` line by another `wrapperVersion=<semver>`, or a
-     `distributionUrl=` line by `https://repo.maven.apache.org/maven2/org/apache/maven/apache-maven/<ver>/apache-maven-<ver>-bin.zip` (the same `<ver>` twice; no userinfo,
+     `distributionUrl=` line by `distributionUrl=https://repo.maven.apache.org/maven2/org/apache/maven/apache-maven/<ver>/apache-maven-<ver>-bin.zip` (the same `<ver>` twice; no userinfo,
      port, query or other path). Any added key, removed key, other key's change (e.g. `distributionType`, or a checksum key if one is ever added — refused on purpose) or other
      host fails closed with a message naming the line.
   4. **Argument parsing (DEC-074).** `merge-gate.sh` accepts `--dry-run` before **or** after the PR number, refuses any other argument (unknown options, a second PR
