@@ -1,0 +1,16 @@
+# T-M1.13 AC2: the 3-option /dev/ui example (dev build) at 360/768/1280, vi and en
+# 2026-09-28T12:10:06Z at 42d88f1 + working tree; vite dev server on :5173 (started for this run, stopped afterwards)
+$ ENGLMS_TASK=T-M1.13 E2E_BASE_URL=http://localhost:5173 pnpm exec playwright test tests/polish.spec.ts -g "dev/ui" --project=phone-small --project=tablet --project=laptop
+
+Running 6 tests using 6 workers
+
+  ✓  4 [phone-small] › tests/polish.spec.ts:139:3 › AC2 (/dev/ui, dev build) [en]: the 3-option example keeps its segment boundaries (4.9s)
+  ✓  3 [laptop] › tests/polish.spec.ts:139:3 › AC2 (/dev/ui, dev build) [en]: the 3-option example keeps its segment boundaries (5.1s)
+  ✓  1 [tablet] › tests/polish.spec.ts:139:3 › AC2 (/dev/ui, dev build) [vi]: the 3-option example keeps its segment boundaries (5.2s)
+  ✓  5 [laptop] › tests/polish.spec.ts:139:3 › AC2 (/dev/ui, dev build) [vi]: the 3-option example keeps its segment boundaries (5.3s)
+  ✓  2 [phone-small] › tests/polish.spec.ts:139:3 › AC2 (/dev/ui, dev build) [vi]: the 3-option example keeps its segment boundaries (5.4s)
+  ✓  6 [tablet] › tests/polish.spec.ts:139:3 › AC2 (/dev/ui, dev build) [en]: the 3-option example keeps its segment boundaries (5.5s)
+
+  6 passed (6.5s)
+exit: 0
+# vite dev server stopped after the run (port 5173 closed)

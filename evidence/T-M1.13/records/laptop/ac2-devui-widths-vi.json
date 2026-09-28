@@ -1,0 +1,101 @@
+{
+  "viewport": {
+    "width": 1280,
+    "height": 800
+  },
+  "tolerancePx": 1,
+  "boxes": {
+    "Danh sách": [
+      {
+        "name": "Danh sáchDanh sách",
+        "x": 81,
+        "width": 132,
+        "checked": true,
+        "iconVisible": true
+      },
+      {
+        "name": "TuầnTuần",
+        "x": 213,
+        "width": 88,
+        "checked": false,
+        "iconVisible": false
+      },
+      {
+        "name": "ThángTháng",
+        "x": 301,
+        "width": 100,
+        "checked": false,
+        "iconVisible": false
+      }
+    ],
+    "Tuần (after)": [
+      {
+        "name": "Danh sáchDanh sách",
+        "x": 81,
+        "width": 132,
+        "checked": false,
+        "iconVisible": false
+      },
+      {
+        "name": "TuầnTuần",
+        "x": 213,
+        "width": 88,
+        "checked": true,
+        "iconVisible": true
+      },
+      {
+        "name": "ThángTháng",
+        "x": 301,
+        "width": 100,
+        "checked": false,
+        "iconVisible": false
+      }
+    ],
+    "Tháng (after)": [
+      {
+        "name": "Danh sáchDanh sách",
+        "x": 81,
+        "width": 132,
+        "checked": false,
+        "iconVisible": false
+      },
+      {
+        "name": "TuầnTuần",
+        "x": 213,
+        "width": 88,
+        "checked": false,
+        "iconVisible": false
+      },
+      {
+        "name": "ThángTháng",
+        "x": 301,
+        "width": 100,
+        "checked": true,
+        "iconVisible": true
+      }
+    ],
+    "Danh sách (after)": [
+      {
+        "name": "Danh sáchDanh sách",
+        "x": 81,
+        "width": 132,
+        "checked": true,
+        "iconVisible": true
+      },
+      {
+        "name": "TuầnTuần",
+        "x": 213,
+        "width": 88,
+        "checked": false,
+        "iconVisible": false
+      },
+      {
+        "name": "ThángTháng",
+        "x": 301,
+        "width": 100,
+        "checked": false,
+        "iconVisible": false
+      }
+    ]
+  }
+}
