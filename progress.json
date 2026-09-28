@@ -16,7 +16,7 @@
       }
     ]
   },
-  "updatedAt": "2026-09-28T11:10:00Z",
+  "updatedAt": "2026-09-28T10:45:00Z",
   "updatedBy": "lead-coordinator (session 2026-09-28 #1, Opus 5.5)",
   "phase": {
     "id": "P1",
@@ -539,6 +539,11 @@
       "at": "2026-09-28T11:10:00Z",
       "actor": "lead-coordinator",
       "event": "PR #23 DOCS-REVIEW round 1: CHANGES REQUESTED (F1 S3: loose FAILURES/FAILSAFE un-blocked; F2-F5 S4) — all fixed; merge-gate tests 287."
+    },
+    {
+      "at": "2026-09-28T10:45:00Z",
+      "actor": "lead-coordinator",
+      "event": "PR #23 DOCS-REVIEW round 2: CHANGES REQUESTED (R2-1 S3: '<id>- FAIL' ignored after the F1 rewrite) — fixed; merge-gate tests 295."
     }
   ]
 }

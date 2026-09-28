@@ -266,8 +266,9 @@ verdict() {
   # An exact "<TYPE> <id>: <TOKEN>" first line gives its token. A NON-exact negative ("qa-verdict  <id> : fail", "**QA-VERDICT <id>: FAIL**",
   # "> QA-VERDICT <id>: FAIL", "## QA VERDICT <id> - FAIL", CHANGES_REQUESTED …) also counts, as a negative, so a sloppy FAIL still blocks; sloppy positives never count (review T-M1.7 S3-1).
   # T-M1.12: Unicode spaces, colons and dashes are normalised before the ASCII filter; leading list markers ("1.", "1)", "(1)", "- - ", "+ ", "[x] ") and a colon
-  # after the type are allowed. After a separator (": ", " - ", "—") any word starting with FAIL is a negative, as before; only when a dash is glued to the id
-  # must the word end (FAIL, FAILS, FAILED, FAILURE, FAILING), so "<id>-FAILOVER: PASS" is not a negative (T-M1.7 R3 S4-1, S4-2; T-M1.12 review F1).
+  # after the type are allowed. After any run of ":", "-" and spaces that contains a colon or a space (": ", " - ", "- ", "-: ", " : - ") any word starting with
+  # FAIL is a negative, as before; only a word glued to the id by dashes alone must end (FAIL, FAILS, FAILED, FAILURE(S), FAILING(S)), so "<id>-FAILOVER: PASS" is
+  # not a negative (T-M1.7 R3 S4-1, S4-2; T-M1.12 review F1, R2-1).
   jq -r --arg type "$1" --arg id "$id" --arg since "$head_time" "$TS_DEF"'
     ($id | ascii_upcase | gsub("(?<c>[.+*?()\\[\\]{}|^$\\\\])"; "\\\(.c)")) as $idre
     | [ .comments[] | select((.createdAt | ts) as $t | $t != "INVALID" and $t > $since) | .body | gsub("\r"; "") | split("\n")[0] | gsub("^\\s+|\\s+$"; "")
@@ -277,8 +278,8 @@ verdict() {
               | [explode[] | select(. < 128)] | implode | gsub("[*`>#]"; "") | gsub("_"; " ") | gsub("\\s+"; " ")
               | ascii_upcase | sub("^ ?(([0-9]+[.)]|\\([0-9]+\\)|[-+]|\\[[ X]?\\]) ?)*"; "")
               | ("^" + ($type | sub("-"; "[ -]?")) + ":? " + $idre) as $p
-              | test($p + "( ?:[:-]* ?| [:-]+ ?)(FAIL|CHANGES[ -]?REQUESTED)")
-                or test($p + "-+(FAIL(S|ED|URE|ING)?|CHANGES[ -]?REQUESTED)(?![A-Z0-9])"))
+              | test($p + "[ :-]*[ :][ :-]*(FAIL|CHANGES[ -]?REQUESTED)")
+                or test($p + "-+(FAIL(S|ED|URES?|INGS?)?|CHANGES[ -]?REQUESTED)(?![A-Z0-9])"))
         then "NEGATIVE (non-exact line: \(.[0:80]))"
         else empty end ]
     | last // ""' <<<"$pr_json"

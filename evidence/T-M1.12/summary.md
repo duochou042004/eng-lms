@@ -14,7 +14,7 @@ Implementer: the LC (governance scripts).
     for one with the same key; only `wrapperVersion=<x.y.z>` and `distributionUrl=https://repo.maven.apache.org/maven2/org/apache/maven/apache-maven/<v>/apache-maven-<v>-bin.zip`
     (same `<v>`) may change. A missing diff fails closed.
 - `scripts/tests/mock-gh`: logs every call to `calls.txt` (AC4's "no gh call" proof).
-- `scripts/tests/merge-gate.test.sh`: 131 → **287** tests (263 at `ebc23cb`, +24 for the review fixes). The T-M1.7 wrapper test's placeholder `-a/+b` patch is replaced by a realistic `wrapperVersion` +
+- `scripts/tests/merge-gate.test.sh`: 131 → **295** tests (263 at `ebc23cb`, 287 at `539ad0c`, +8 for round-2 R2-1). The T-M1.7 wrapper test's placeholder `-a/+b` patch is replaced by a realistic `wrapperVersion` +
   `distributionUrl` diff (same intent, not weaker).
 - Docs: git-governance §4 (arguments, loose negatives, wrapper rule); open-questions (OQ-17 answered, DEC-075).
 
@@ -37,6 +37,12 @@ Implementer: the LC (governance scripts).
   (tests run the gate under `LC_ALL=en_US.UTF-8`; without the export `７` reached `gh`).
 - **F4 (S4):** the AC2 twin assertion checks the exact "needs a fresh 'QA-VERDICT T-M9.9: PASS' (latest: 'none')" message.
 - **F5 (S4):** `progress.json` `pr`; the CI links and the gate's own dry run are recorded below before the merge.
+
+## G3 review round 2 (at `539ad0c`: CHANGES REQUESTED)
+- **R2-1 (S3):** the round-1 F1 separator needed a colon or a space *before* the dashes, so `<id>- FAIL`, `<id>-: FAIL` and `**<id>- CHANGES REQUESTED**` fell to the strict
+  glued pattern and were ignored (develop blocked them). Now the loose separator is any run of `:`, `-` and spaces that contains a colon or a space (this also covers the
+  stacked ` : - FAIL` and ` - - FAIL`, R2-2); only a word glued to the id by dashes alone must end (`FAILURE(S)`, `FAILING(S)` added). Tests for each.
+- R2-2 (S4 note): other rare forms ignored by every version (e.g. `a.` markers, HTML, `=`/`→` separators) stay out of scope; the LC reads every verdict before `LC-APPROVED`.
 
 ## Negative demo
 `negative-old-gate.txt`: the new test file and `mock-gh` run against develop's `merge-gate.sh` (before T-M1.12): **206 passed, 57 failed**: every AC1–AC4 case that
