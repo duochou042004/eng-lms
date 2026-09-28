@@ -77,7 +77,7 @@ The **authz matrix test** enumerates `RequestMappingHandlerMapping`. For each ha
   `frame-src 'none'` (until the embed allow-list exists) and the four headers on **every response of the application port** (HTML, API JSON, Problem Details, assets),
   including requests Tomcat rejects before the filter chain: `ProblemDetailsErrorReportValve` sets the same headers on those (T-M1.8, `SecurityHeadersFilter.apply`).
   **Known exception:** `TRACE` requests. Tomcat refuses them (`allowTrace=false`) with a 405 that Boot's `/error` page answers before the valve and outside the filters, so that
-  response has no security headers or request ID, and it reflects the path JSON-encoded. Browsers can't send `TRACE`, so it isn't exploitable. This predates T-M1.8 and is closed with
+  response has no security headers or request ID: it reflects the path JSON-encoded, or, with `Accept: text/html`, it is Boot's Whitelabel HTML page (naming the framework). Browsers can't send `TRACE`, so it isn't exploitable. This predates T-M1.8 and is closed with
   Spring Security's firewall in T-M2.1 (T-M1.8 SEC review S4-3).
   The management port (:8081, never proxied by Caddy) serves only health/info JSON and does not carry them (DEC-050). HSTS stays with Caddy.
   The SPA runs under `style-src 'self'` with no violations (evidence/T-M1.5): React Aria's runtime `<style>` injection is pre-empted by a marker in `index.html` and its rule ships in `global.css` (DEC-052). `Permissions-Policy: payment=()` disables the browser payment API; it is the one
