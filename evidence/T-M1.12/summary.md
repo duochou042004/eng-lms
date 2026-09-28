@@ -60,3 +60,6 @@ changes behaviour fails there (e.g. the `FAILOVER` false refusal, the em-dash an
 - `dry-run-new-gate-d901291.txt`: this branch's `merge-gate.sh --dry-run 23` after DOCS-REVIEW PASS and LC-APPROVED at `d901291`: all gates passed, not merged.
 - DOCS-REVIEW: round 1 CHANGES REQUESTED (`ebc23cb`), round 2 CHANGES REQUESTED (`539ad0c`), round 3 **PASS** (`d901291`). The final commit adds only this evidence and
   `progress.json` (R3-1 timestamps); the verdicts are re-posted for it. The review record goes to `evidence/T-M1.12/review/docs.md` on the next docs branch.
+
+## Merge
+Merged `9866f26` (PR #23) via merge-gate (develop's gate, `--dry-run` first) at head `0123d7f`, CI 7/7. Review record `review/docs.md`; DEC-076.

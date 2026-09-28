@@ -16,7 +16,7 @@
       }
     ]
   },
-  "updatedAt": "2026-09-28T10:50:00Z",
+  "updatedAt": "2026-09-28T11:05:00Z",
   "updatedBy": "lead-coordinator (session 2026-09-28 #1, Opus 5.5)",
   "phase": {
     "id": "P1",
@@ -30,32 +30,6 @@
     "exitCriteria": "scripts/gate.sh green locally and in CI; backend skeleton with Modulith verify + Flyway V1; SPA served same-origin; Playwright smoke at 3 viewports with axe; contract drift check; Testcontainers on rootless Podman or documented fallback (docs/01-product/roadmap.md)."
   },
   "currentTask": {
-    "id": "T-M1.12",
-    "title": "Merge-gate polish (T-M1.7 review S4s, OQ-17, argument parsing)",
-    "status": "awaiting_approval",
-    "ownerRole": "LC",
-    "branch": "chore/T-M1.12-merge-gate-polish",
-    "packet": "docs/tasks/T-M1.12-merge-gate-polish.md",
-    "pr": "#23",
-    "lastCommit": "d901291",
-    "startedAt": "2026-09-28T09:30:00Z",
-    "entryGate": [
-      "T-M1.7 merged — met (41beac7)",
-      "Packet G0 — met (PR #22, 360c15a)",
-      "PO start signal — given (DEC-075)"
-    ],
-    "nextSteps": [
-      "DOCS-REVIEW of the T-M1.12 PR (fresh reviewer; bypass attempts per the packet's review focus)",
-      "Merge via merge-gate (its own dry run first)"
-    ],
-    "trace": [
-      "DEC-065",
-      "DEC-067",
-      "DEC-074",
-      "OQ-17"
-    ]
-  },
-  "nextTask": {
     "id": "T-M1.13",
     "title": "Web polish from the T-M1.9 reviews (DEC-073)",
     "status": "draft",
@@ -66,11 +40,34 @@
     "lastCommit": null,
     "startedAt": null,
     "entryGate": [
-      "T-M1.9 merged — met (e20e8ec)"
+      "T-M1.9 merged — met (e20e8ec)",
+      "Packet G0 — pending (write it on docs/T-M1.13-packet)",
+      "PO start signal — pending"
+    ],
+    "nextSteps": [
+      "Write the T-M1.13 packet to G0 on docs/T-M1.13-packet (this branch holds the T-M1.12 merge record); docs review; merge via merge-gate",
+      "Ask the PO for the T-M1.13 start signal"
+    ],
+    "trace": [
+      "DEC-073"
+    ]
+  },
+  "nextTask": {
+    "id": "T-M1.14",
+    "title": "Fix the flaky request-ID backend test (DEC-074)",
+    "status": "draft",
+    "ownerRole": "BE",
+    "branch": "fix/T-M1.14-flaky-request-id-test",
+    "packet": "docs/tasks/backlog.md#m1--walking-skeleton-and-delivery-pipeline",
+    "pr": null,
+    "lastCommit": null,
+    "startedAt": null,
+    "entryGate": [
+      "T-M1.8 merged — met"
     ],
     "nextSteps": [],
     "trace": [
-      "DEC-073"
+      "DEC-074"
     ]
   },
   "completed": [
@@ -161,11 +158,19 @@
       "mergeCommit": "e20e8ec",
       "evidence": "evidence/T-M1.9/summary.md",
       "note": "PO start DEC-072. Packet PR #19 (5c78168; DOCS-REVIEW 3 rounds, final PASS). Merged via merge-gate (PR #20) at a55b1cb (= reviewed 92e213b + progress.json); CI 7/7 (backend re-run once: flaky T-M1.8 test, DEC-074 -> T-M1.14). QA PASS WITH MINOR (4 x S4), UX APPROVED (5 x S4); S4s -> T-M1.13 / T-M2.4 (DEC-073). QA record PR #21 (8b2156e); UX record evidence/T-M1.9/review/ux.md."
+    },
+    {
+      "id": "T-M1.12",
+      "title": "Merge-gate polish (strict arguments, loose negatives, wrapper content check)",
+      "completedAt": "2026-09-28T10:58:00Z",
+      "mergeCommit": "9866f26",
+      "evidence": "evidence/T-M1.12/summary.md",
+      "note": "PO start DEC-075 (OQ-17 default recorded). Packet PR #22 (360c15a). Merged via merge-gate (PR #23) at 0123d7f (= reviewed d901291 + evidence); CI 7/7. DOCS-REVIEW 3 rounds: two S3 fail-opens in the new negative pattern found and fixed; final PASS. merge-gate tests 131 -> 295. DEC-076."
     }
   ],
   "tests": {
     "lastRun": "2026-09-28T09:58:54Z",
-    "summary": "T-M1.12 branch: gate.sh PASS (12 steps, 133 s); merge-gate 263/263 (was 131); the new tests against the old gate: 57 fail (negative demo). T-M1.9 (e20e8ec): E2E 62 passed/10 skipped on the 3 mandatory projects.",
+    "summary": "At T-M1.12 merge (9866f26): gate.sh PASS (12 steps, 133 s at ebc23cb); merge-gate 295/295; CI 7/7 at 0123d7f. T-M1.9: E2E 62 passed/10 skipped on the 3 mandatory projects.",
     "suites": [
       {
         "name": "backend (./mvnw -B verify)",
@@ -191,20 +196,20 @@
   },
   "gates": {
     "G0": {
-      "status": "pass",
-      "note": "T-M1.12 packet merged (PR #22, 360c15a); DOCS-REVIEW 3 rounds, final PASS"
+      "status": "pending",
+      "note": "T-M1.13 packet not written yet"
     },
     "G1": {
-      "status": "pass",
-      "note": "T-M1.12 implemented by the LC; evidence/T-M1.12/summary.md"
+      "status": "pending",
+      "note": "T-M1.13 not started"
     },
     "G2": {
-      "status": "pass",
-      "note": "gate.sh PASS (12 steps, 133 s); merge-gate tests 131 -> 263"
+      "status": "pending",
+      "note": "T-M1.13 not started"
     },
     "G3": {
-      "status": "pass",
-      "note": "DOCS-REVIEW round 3 PASS at d901291 (rounds 1-2 CHANGES REQUESTED, fixed)"
+      "status": "pending",
+      "note": "QA + UX review (UI packet)"
     },
     "G4": {
       "status": "pending",
@@ -215,12 +220,12 @@
   "decisions": {
     "log": "docs/10-governance/decision-log.md",
     "recent": [
-      "DEC-070",
       "DEC-071",
       "DEC-072",
       "DEC-073",
       "DEC-074",
-      "DEC-075"
+      "DEC-075",
+      "DEC-076"
     ],
     "pendingPO": [
       "OQ-03",
@@ -549,6 +554,11 @@
       "at": "2026-09-28T10:50:00Z",
       "actor": "lead-coordinator",
       "event": "PR #23 DOCS-REVIEW round 3: PASS at d901291; CI 7/7; the new gate's own dry run passes. Evidence-only commit (CI links, dry run, R3-1 timestamps)."
+    },
+    {
+      "at": "2026-09-28T11:05:00Z",
+      "actor": "lead-coordinator",
+      "event": "T-M1.12 merged via merge-gate as 9866f26 (PR #23, head 0123d7f). docs/T-M1.13-packet: review record, DEC-076, progress, handoff; T-M1.13 packet next."
     }
   ]
 }
