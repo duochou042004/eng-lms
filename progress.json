@@ -16,7 +16,7 @@
       }
     ]
   },
-  "updatedAt": "2026-09-28T10:05:00Z",
+  "updatedAt": "2026-09-28T11:10:00Z",
   "updatedBy": "lead-coordinator (session 2026-09-28 #1, Opus 5.5)",
   "phase": {
     "id": "P1",
@@ -36,7 +36,7 @@
     "ownerRole": "LC",
     "branch": "chore/T-M1.12-merge-gate-polish",
     "packet": "docs/tasks/T-M1.12-merge-gate-polish.md",
-    "pr": null,
+    "pr": "#23",
     "lastCommit": null,
     "startedAt": "2026-09-28T09:30:00Z",
     "entryGate": [
@@ -534,6 +534,11 @@
       "at": "2026-09-28T10:05:00Z",
       "actor": "lead-coordinator",
       "event": "PR #22 merged via merge-gate (360c15a): T-M1.12 packet G0, T-M1.9 records. T-M1.12 implemented on chore/T-M1.12-merge-gate-polish: strict arguments, loose negatives, wrapper content check; merge-gate tests 263; gate PASS."
+    },
+    {
+      "at": "2026-09-28T11:10:00Z",
+      "actor": "lead-coordinator",
+      "event": "PR #23 DOCS-REVIEW round 1: CHANGES REQUESTED (F1 S3: loose FAILURES/FAILSAFE un-blocked; F2-F5 S4) — all fixed; merge-gate tests 287."
     }
   ]
 }

@@ -356,12 +356,20 @@ for form in '1. QA-VERDICT T-M9.9: %s' '1) QA-VERDICT T-M9.9: %s' '12. QA-VERDIC
   printf -v pos -- "$form" PASS
   write_fixture feature/T-M9.9-x develop CLEAN "$(cs "$(c "$pos")" "$(c 'LC-APPROVED T-M9.9')")" "$FILES" "$OK_CHECKS" 0
   expect_exit 1 "T-M1.12 AC2: '$pos' is not a positive QA verdict" -- gate --dry-run 7
-  expect_output_contains "QA-VERDICT" "names the missing QA verdict"
+  expect_output_contains "needs a fresh 'QA-VERDICT T-M9.9: PASS' (latest: 'none')" "the twin is ignored, not read as a verdict"
 done
 for pos in 'DOCS-REVIEW: T-M9.9: PASS' '1. DOCS-REVIEW T-M9.9: PASS'; do
   write_fixture chore/T-M9.9-x develop CLEAN "$(cs "$(c "$pos")" "$(c 'LC-APPROVED T-M9.9')")" "$FILES" "$OK_CHECKS" 0
   expect_exit 1 "T-M1.12 AC2: '$pos' is not a positive docs verdict" -- gate --dry-run 7
 done
+
+# ---- T-M1.12 review F1/F2: loose words after a separator still block; Unicode spaces, colons, dashes and more list markers are normalised ----
+for neg in '**QA-VERDICT T-M9.9: FAILURES**' 'QA-VERDICT T-M9.9 - FAILINGS' 'QA-VERDICT T-M9.9: FAIL2' 'QA-VERDICT T-M9.9 -FAILSAFE' 'QA-VERDICT T-M9.9-FAILED' 'QA-VERDICT T-M9.9—FAIL'            $'SEC-REVIEW T-M9.9: CHANGES REQUESTED' $'QA-VERDICT T-M9.9: FAIL' $'QA-VERDICT T-M9.9： FAIL' $'QA-VERDICT T-M9.9 － FAIL' $'QA-VERDICT　T-M9.9: FAIL'            '+ QA-VERDICT T-M9.9: FAIL' '- [x] QA-VERDICT T-M9.9: FAIL' '(1) QA-VERDICT T-M9.9: FAIL' 'QA-VERDICT T-M9.9:: CHANGES REQUESTED'; do
+  write_fixture chore/T-M9.9-x develop CLEAN "$(cs "$(c 'DOCS-REVIEW T-M9.9: PASS')" "$(c 'LC-APPROVED T-M9.9')" "$(c "$neg")")" "$FILES" "$OK_CHECKS" 0
+  expect_exit 1 "T-M1.12 review F1/F2: '$neg' blocks" -- gate --dry-run 7
+done
+write_fixture chore/T-M9.9-x develop CLEAN "$(cs "$(c 'DOCS-REVIEW T-M9.9: PASS')" "$(c 'LC-APPROVED T-M9.9')" "$(c 'QA-VERDICT T-M9.9-FAILOVER: PASS')" "$(c 'UX-REVIEW T-M9.9-FAILSAFE: APPROVED')")" "$FILES" "$OK_CHECKS" 0
+expect_exit 0 "T-M1.12 review F1: a word glued to the id by a dash (FAILOVER, FAILSAFE) is not a negative" -- gate --dry-run 7
 
 # ---- T-M1.12 AC3 (OQ-17 = yes, DEC-075): the Maven wrapper properties may only get version bumps ----
 PRFILES=$(wrapper_files $'@@ -1,3 +1,3 @@\n-wrapperVersion=3.3.4\n+wrapperVersion=3.3.5\n distributionType=only-script\n distributionUrl=x')
@@ -382,6 +390,7 @@ bad_wrapper "a removed key" $'@@ -1,3 +1,2 @@\n wrapperVersion=3.3.4\n-distribut
 bad_wrapper "a distributionType change" $'@@ -2 +2 @@\n-distributionType=only-script\n+distributionType=bin' "distributionType=bin"
 bad_wrapper "a renamed key" $'@@ -1 +1 @@\n-wrapperVersion=3.3.4\n+wrapperVersionX=3.3.5' "wrapperVersionX"
 bad_wrapper "a non-semver wrapperVersion" $'@@ -1 +1 @@\n-wrapperVersion=3.3.4\n+wrapperVersion=3.3.5;x' "3.3.5;x"
+bad_wrapper "a fullwidth digit (any locale, review F3)" $'@@ -1 +1 @@\n-wrapperVersion=3.3.4\n+wrapperVersion=\uff13.3.5' "wrapperVersion="
 bad_wrapper "a -n line (printf, not echo)" $'@@ -1 +1 @@\n-n\n+wrapperVersion=3.3.5' "became"
 PRFILES='[{"filename":"backend/.mvn/wrapper/maven-wrapper.properties","status":"modified"}]'
 dep '[{"path":"backend/.mvn/wrapper/maven-wrapper.properties"}]'
@@ -393,10 +402,10 @@ expect_exit 0 "T-M1.12 AC4: '--dry-run 7' dry-runs" -- gate --dry-run 7
 [[ ! -f "$MOCK_DIR/merged.txt" ]] && { PASS_COUNT=$((PASS_COUNT + 1)); echo "  ok   - T-M1.12 AC4: '--dry-run 7' made no merge call"; } || { FAIL_COUNT=$((FAIL_COUNT + 1)); echo "  FAIL - '--dry-run 7' merged"; }
 expect_exit 0 "T-M1.12 AC4: '7 --dry-run' dry-runs" -- gate 7 --dry-run
 [[ ! -f "$MOCK_DIR/merged.txt" ]] && { PASS_COUNT=$((PASS_COUNT + 1)); echo "  ok   - T-M1.12 AC4: '7 --dry-run' made no merge call"; } || { FAIL_COUNT=$((FAIL_COUNT + 1)); echo "  FAIL - '7 --dry-run' merged (DEC-074)"; }
-for args in "" "--dry-run" "7 --dryrun" "7 21" "abc" "--force 7" "07" "7 --dry-run=1" "-- 7"; do
+for args in "" "--dry-run" "7 --dryrun" "7 21" "abc" "--force 7" "07" "7 --dry-run=1" "-- 7" $'\uff17' $'\u0667'; do
   rm -f "$MOCK_DIR/calls.txt"
   # shellcheck disable=SC2086
-  expect_exit 2 "T-M1.12 AC4: arguments '$args' exit 2" -- gate $args
+  expect_exit 2 "T-M1.12 AC4: arguments '$args' exit 2 (caller locale en_US.UTF-8)" -- env LC_ALL=en_US.UTF-8 "$ROOT/scripts/merge-gate.sh" $args
   expect_output_contains "usage: merge-gate.sh" "T-M1.12 AC4: '$args' prints the usage"
   [[ ! -s "$MOCK_DIR/calls.txt" ]] && { PASS_COUNT=$((PASS_COUNT + 1)); echo "  ok   - T-M1.12 AC4: '$args' made no gh call"; } \
     || { FAIL_COUNT=$((FAIL_COUNT + 1)); echo "  FAIL - T-M1.12 AC4: '$args' called gh: $(head -1 "$MOCK_DIR/calls.txt")"; }

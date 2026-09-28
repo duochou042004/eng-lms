@@ -17,6 +17,7 @@
 # In every case: required checks pass, no check fails, branch 0 behind base, no conflicts, no review type's latest fresh verdict is negative,
 # and every verdict comment must be posted AFTER the head commit ARRIVED on the PR (push time, not committedDate; stale verdicts don't count).
 set -euo pipefail
+export LC_ALL=C  # [0-9] must mean ASCII digits whatever the caller's locale (T-M1.12 review F3)
 
 GH=${GH_BIN:-gh}
 DRY_RUN=0
@@ -264,15 +265,20 @@ bad=$(jq -r '[.[] | select(.bucket == "fail" or .bucket == "pending" or .bucket 
 verdict() {
   # An exact "<TYPE> <id>: <TOKEN>" first line gives its token. A NON-exact negative ("qa-verdict  <id> : fail", "**QA-VERDICT <id>: FAIL**",
   # "> QA-VERDICT <id>: FAIL", "## QA VERDICT <id> - FAIL", CHANGES_REQUESTED …) also counts, as a negative, so a sloppy FAIL still blocks; sloppy positives never count (review T-M1.7 S3-1).
-  # T-M1.12: Unicode dashes become "-" before the ASCII filter; leading list markers ("1.", "1)", "- - ") and a colon after the type are allowed; the negative
-  # word must end there (FAIL, FAILS, FAILED, FAILURE, FAILING, CHANGES REQUESTED), so "<id>-FAILOVER: PASS" is not a negative (T-M1.7 R3 S4-1, S4-2).
+  # T-M1.12: Unicode spaces, colons and dashes are normalised before the ASCII filter; leading list markers ("1.", "1)", "(1)", "- - ", "+ ", "[x] ") and a colon
+  # after the type are allowed. After a separator (": ", " - ", "—") any word starting with FAIL is a negative, as before; only when a dash is glued to the id
+  # must the word end (FAIL, FAILS, FAILED, FAILURE, FAILING), so "<id>-FAILOVER: PASS" is not a negative (T-M1.7 R3 S4-1, S4-2; T-M1.12 review F1).
   jq -r --arg type "$1" --arg id "$id" --arg since "$head_time" "$TS_DEF"'
     ($id | ascii_upcase | gsub("(?<c>[.+*?()\\[\\]{}|^$\\\\])"; "\\\(.c)")) as $idre
     | [ .comments[] | select((.createdAt | ts) as $t | $t != "INVALID" and $t > $since) | .body | gsub("\r"; "") | split("\n")[0] | gsub("^\\s+|\\s+$"; "")
       | if startswith($type + " " + $id + ":") then ltrimstr($type + " " + $id + ":") | gsub("^\\s+|\\s+$"; "")
-        elif (gsub("[\u2010-\u2015\u2212]"; "-") | [explode[] | select(. < 128)] | implode | gsub("[*`>#]"; "") | gsub("_"; " ") | gsub("\\s+"; " ")
-              | ascii_upcase | sub("^ ?(([0-9]+[.)]|-) ?)*"; "")
-              | test("^" + ($type | sub("-"; "[ -]?")) + ":? " + $idre + " ?[:-]+ ?(FAIL(S|ED|URE|ING)?|CHANGES[ -]?REQUESTED)(?![A-Z0-9])"))
+        elif (gsub("[\u00a0\u1680\u2000-\u200a\u202f\u205f\u3000]"; " ") | gsub("[\uff1a\ufe13\ufe55]"; ":")
+              | gsub("[\u2010-\u2015\u2212\u2e3a\u2e3b\ufe58\ufe63\uff0d]"; "-")
+              | [explode[] | select(. < 128)] | implode | gsub("[*`>#]"; "") | gsub("_"; " ") | gsub("\\s+"; " ")
+              | ascii_upcase | sub("^ ?(([0-9]+[.)]|\\([0-9]+\\)|[-+]|\\[[ X]?\\]) ?)*"; "")
+              | ("^" + ($type | sub("-"; "[ -]?")) + ":? " + $idre) as $p
+              | test($p + "( ?:[:-]* ?| [:-]+ ?)(FAIL|CHANGES[ -]?REQUESTED)")
+                or test($p + "-+(FAIL(S|ED|URE|ING)?|CHANGES[ -]?REQUESTED)(?![A-Z0-9])"))
         then "NEGATIVE (non-exact line: \(.[0:80]))"
         else empty end ]
     | last // ""' <<<"$pr_json"

@@ -58,9 +58,10 @@ Trailers: `Task: T-M2.3`, `Refs: FR-STU-01, DEC-012`, and the co-author attribut
   - **Negative verdicts block.** For each review type (QA-VERDICT, DOCS-REVIEW, SEC-REVIEW, UX-REVIEW) the latest fresh comment wins within its type. If it is anything but that
     type's positive token (QA `PASS`/`PASS WITH MINOR`, DOCS `PASS`, SEC/UX `APPROVED`), for example `FAIL` or `CHANGES REQUESTED`, the merge is refused on **every** path, even if another
     review type passed, and the message names the verdict. A negative written loosely still counts as a negative: other case, extra spaces, markdown
-    (`**`, `` ` ``, `>`, `#`, `_`, leading list markers such as `- `, `- - `, `1.`, `1)`), emoji, Unicode dashes (`<id> — FAIL`), `QA VERDICT`, `QA-VERDICT: <id>`, `<id> - FAIL`,
-    `CHANGES_REQUESTED`/`CHANGES-REQUESTED`, and the words `FAIL`, `FAILS`, `FAILED`, `FAILURE`, `FAILING`. The negative word must end there, so an id with a suffix
-    (`QA-VERDICT <id>-FAILOVER: …`) is not a negative (T-M1.12). Positives must be exact.
+    (`**`, `` ` ``, `>`, `#`, `_`, leading list markers such as `- `, `- - `, `+ `, `[x] `, `1.`, `1)`, `(1)`), emoji, Unicode spaces (e.g. NBSP), fullwidth colons and
+    Unicode dashes (`<id> — FAIL`), `QA VERDICT`, `QA-VERDICT: <id>`, `<id> - FAIL`, `CHANGES_REQUESTED`/`CHANGES-REQUESTED`. After a separator any word starting with
+    `FAIL` counts (`FAILED`, `FAILURES` …); only a word glued to the id by a dash must end at `FAIL`/`FAILS`/`FAILED`/`FAILURE`/`FAILING`, so an id with a suffix
+    (`QA-VERDICT <id>-FAILOVER: …`) is not a negative (T-M1.12). The script runs with `LC_ALL=C`, so digits are ASCII digits whatever the caller's locale. Positives must be exact.
   - **Dependabot PRs.** The PR author is the Dependabot app; **every** commit is authored by `dependabot[bot]`, committed by `web-flow` (or `dependabot[bot]`) and
     signature-verified by GitHub; and every repository-activity entry stamped at or after the branch's latest creation was made by `dependabot[bot]`. So a human "Update branch" disqualifies
     the PR: ask Dependabot to rebase (`@dependabot rebase`) instead. Only **modifications** of existing `**/pom.xml`, `**/package.json`, `**/pnpm-lock.yaml`,
