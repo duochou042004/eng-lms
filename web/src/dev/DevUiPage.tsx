@@ -1,9 +1,55 @@
 import { Plus, Users } from 'lucide-react'
-import type { ReactNode } from 'react'
+import { useState, type ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import { LanguageSwitcher } from '../app/components/LanguageSwitcher'
-import { Button, EmptyState, IconButton, InlineAlert, PageHeader, Skeleton, Stack, TextField } from '../ui'
+import { usePageTitle } from '../app/routeAnnouncement'
+import {
+  Button,
+  EmptyState,
+  IconButton,
+  InlineAlert,
+  PageHeader,
+  SegmentedControl,
+  Skeleton,
+  Stack,
+  TextField,
+} from '../ui'
 import styles from './DevUiPage.module.css'
+import { registerDevNamespace } from './i18n'
+
+// The `dev` strings are registered when this lazily imported module loads, so they never ship in production.
+registerDevNamespace()
+
+type View = 'list' | 'week' | 'month'
+
+function SegmentedSamples() {
+  const { t } = useTranslation('dev')
+  const [view, setView] = useState<View>('list')
+  const options: Array<{ id: View; label: string }> = [
+    { id: 'list', label: t('sample.segmentedList') },
+    { id: 'week', label: t('sample.segmentedWeek') },
+    { id: 'month', label: t('sample.segmentedMonth') },
+  ]
+  return (
+    <Stack gap={3}>
+      <SegmentedControl label={t('sample.segmentedLabel')} options={options} selected={view} onChange={setView} />
+      <SegmentedControl
+        label={t('sample.segmentedPartialLabel')}
+        options={options.map((o) => ({ ...o, isDisabled: o.id === 'month' }))}
+        selected="week"
+        onChange={() => {}}
+      />
+      <SegmentedControl
+        label={t('sample.segmentedDisabledLabel')}
+        options={options}
+        selected="list"
+        onChange={() => {}}
+        isDisabled
+      />
+      <LanguageSwitcher />
+    </Stack>
+  )
+}
 
 function Section({ title, children }: { title: string; children: ReactNode }) {
   return (
@@ -17,6 +63,7 @@ function Section({ title, children }: { title: string; children: ReactNode }) {
 /** Component gallery (`/dev/ui`, development builds only): every ui/ primitive in each of its states. */
 export function DevUiPage() {
   const { t } = useTranslation('dev')
+  usePageTitle(t('title'))
   return (
     <main id="main" className={styles.page}>
       <Stack gap={7}>
@@ -36,6 +83,9 @@ export function DevUiPage() {
           <TextField label={t('sample.fieldLabel')} hint={t('sample.fieldHint')} />
           <TextField label={t('sample.invalidLabel')} isInvalid errorMessage={t('sample.fieldError')} />
           <TextField label={t('sample.disabledLabel')} isDisabled defaultValue="S-0001" />
+        </Section>
+        <Section title={t('sections.segmented')}>
+          <SegmentedSamples />
         </Section>
         <Section title={t('sections.alerts')}>
           <Stack gap={3}>

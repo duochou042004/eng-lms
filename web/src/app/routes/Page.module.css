@@ -36,3 +36,28 @@
   background: var(--color-accent-subtle);
   color: var(--color-accent-strong);
 }
+
+/* RouteLoading: a block-level region (an <output> is inline by default), so the page and shell paddings apply. */
+.loading {
+  display: block;
+}
+
+/* The shell brand row is as tall as its 44 px home link. */
+.brandSkeleton {
+  min-block-size: var(--size-control-md);
+}
+
+/* The PageHeader's box (title line, padding and hairline) without its text. */
+.headerSkeleton {
+  padding-block-end: var(--space-4);
+  border-block-end: var(--border-width) solid var(--color-border);
+}
+
+/* The 404 "go to the start page" link: a 44 px target (DEC-045 N1). */
+.homeLink {
+  display: inline-flex;
+  align-items: center;
+  min-block-size: var(--size-control-md);
+  padding-inline: var(--space-2);
+  font-weight: var(--font-weight-medium);
+}

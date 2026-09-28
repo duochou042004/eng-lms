@@ -2,7 +2,8 @@
   "app": {
     "name": "Eng-LMS",
     "skipToContent": "Chuyển đến nội dung chính",
-    "loading": "Đang tải trang"
+    "loading": "Đang tải trang",
+    "documentTitle": "{{page}} · {{app}}"
   },
   "language": {
     "label": "Ngôn ngữ",
@@ -22,7 +23,8 @@
   },
   "error": {
     "title": "Không hiển thị được trang này",
-    "description": "Hãy tải lại trang. Nếu lỗi vẫn còn, hãy gửi kèm mã yêu cầu khi báo lỗi.",
+    "description": "Hãy tải lại trang. Nếu lỗi vẫn còn, hãy thử lại sau vài phút.",
+    "descriptionWithRequestId": "Hãy tải lại trang. Nếu lỗi vẫn còn, hãy gửi kèm mã yêu cầu khi báo lỗi.",
     "requestId": "Mã yêu cầu: {{requestId}}",
     "reload": "Tải lại trang"
   },

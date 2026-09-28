@@ -1,10 +1,8 @@
 import i18n from 'i18next'
 import { initReactI18next } from 'react-i18next'
 import enCommon from './locales/en/common.json'
-import enDev from './locales/en/dev.json'
 import enShell from './locales/en/shell.json'
 import viCommon from './locales/vi/common.json'
-import viDev from './locales/vi/dev.json'
 import viShell from './locales/vi/shell.json'
 
 export const LOCALES = ['vi', 'en'] as const
@@ -13,9 +11,13 @@ export type Locale = (typeof LOCALES)[number]
 export const DEFAULT_LOCALE: Locale = 'vi'
 export const LOCALE_STORAGE_KEY = 'englms.locale'
 
+/**
+ * The production catalogues. The `dev` namespace (the `/dev/ui` gallery) is not here: `src/dev/i18n.ts` registers it
+ * when the lazily loaded `/dev/ui` module runs, so no `dev` string reaches a production build (T-M1.3 QA F-1, DEC-045).
+ */
 export const resources = {
-  vi: { common: viCommon, shell: viShell, dev: viDev },
-  en: { common: enCommon, shell: enShell, dev: enDev },
+  vi: { common: viCommon, shell: viShell },
+  en: { common: enCommon, shell: enShell },
 } as const
 
 export function isLocale(value: unknown): value is Locale {
@@ -50,7 +52,7 @@ void i18n.use(initReactI18next).init({
   lng: initialLocale(),
   fallbackLng: DEFAULT_LOCALE,
   supportedLngs: [...LOCALES],
-  ns: ['common', 'shell', 'dev'],
+  ns: ['common', 'shell'],
   defaultNS: 'common',
   interpolation: { escapeValue: false },
   returnNull: false,

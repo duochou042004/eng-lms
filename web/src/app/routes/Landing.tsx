@@ -2,11 +2,13 @@ import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router'
 import { PageHeader, Stack } from '../../ui'
 import { LanguageSwitcher } from '../components/LanguageSwitcher'
+import { usePageTitle } from '../routeAnnouncement'
 import styles from './Page.module.css'
 
 /** Neutral entry page until sign-in exists (M2). */
 export function Landing() {
   const { t } = useTranslation()
+  usePageTitle(t('landing.title'))
   return (
     <main id="main" className={styles.page}>
       <Stack gap={6}>

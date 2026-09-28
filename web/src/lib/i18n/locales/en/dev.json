@@ -4,6 +4,7 @@
   "sections": {
     "buttons": "Buttons",
     "fields": "Fields",
+    "segmented": "Segmented control",
     "alerts": "Alerts",
     "loading": "Loading",
     "empty": "Empty state"
@@ -30,6 +31,12 @@
     "loadingLabel": "Loading example",
     "emptyTitle": "No students yet",
     "emptyDescription": "Add your first student to get started.",
-    "emptyAction": "Add student"
+    "emptyAction": "Add student",
+    "segmentedLabel": "View",
+    "segmentedList": "List",
+    "segmentedWeek": "Week",
+    "segmentedMonth": "Month",
+    "segmentedDisabledLabel": "View (unavailable)",
+    "segmentedPartialLabel": "View (one option unavailable)"
   }
 }

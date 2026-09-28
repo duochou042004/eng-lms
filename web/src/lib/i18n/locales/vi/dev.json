@@ -4,6 +4,7 @@
   "sections": {
     "buttons": "Nút",
     "fields": "Trường nhập",
+    "segmented": "Nút chọn phân đoạn",
     "alerts": "Thông báo",
     "loading": "Đang tải",
     "empty": "Trạng thái trống"
@@ -30,6 +31,12 @@
     "loadingLabel": "Đang tải ví dụ",
     "emptyTitle": "Chưa có học viên",
     "emptyDescription": "Thêm học viên đầu tiên để bắt đầu.",
-    "emptyAction": "Thêm học viên"
+    "emptyAction": "Thêm học viên",
+    "segmentedLabel": "Chế độ xem",
+    "segmentedList": "Danh sách",
+    "segmentedWeek": "Tuần",
+    "segmentedMonth": "Tháng",
+    "segmentedDisabledLabel": "Chế độ xem (không khả dụng)",
+    "segmentedPartialLabel": "Chế độ xem (một lựa chọn không khả dụng)"
   }
 }
