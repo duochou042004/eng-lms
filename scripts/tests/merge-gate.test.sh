@@ -103,6 +103,23 @@ write_fixture chore/T-M9.9-x develop DIRTY "$GOOD" "$FILES" "$OK_CHECKS" 0
 expect_exit 1 "refuses on merge conflicts" -- gate --dry-run 7
 write_fixture chore/T-M9.9-x develop CLEAN "$GOOD" '[{"path":"docs/README.md"}]' "$OK_CHECKS" 0
 expect_exit 1 "refuses when progress.json is not updated" -- gate --dry-run 7
+# T-M1.15: the files come from the paginated REST listing, not `gh pr view --json files` (capped at the first 100 files)
+BIG=$(jq -cn '[range(100) | {path:"evidence/f\(.).png"}]')
+PRFILES="$(jq -cn '[range(100) | {filename:"evidence/f\(.).png",status:"added"}]')
+$(jq -cn '[range(29) | {filename:"evidence/g\(.).png",status:"added"}] + [{filename:"progress.json",status:"modified"}]')"
+write_fixture chore/T-M9.9-x develop CLEAN "$GOOD" "$BIG" "$OK_CHECKS" 0
+expect_exit 0 "(T-M1.15) passes when progress.json is the 130th file (on the second page)" -- gate --dry-run 7
+PRFILES='[{"filename":"docs/README.md","status":"modified"}]'
+write_fixture chore/T-M9.9-x develop CLEAN "$GOOD" "$FILES" "$OK_CHECKS" 0
+expect_exit 1 "(T-M1.15) refuses when only pr view lists progress.json (the REST listing decides)" -- gate --dry-run 7
+expect_output_contains "progress.json not updated in this PR" "says progress.json is missing"
+PRFILES='[{"filename":"progress.json","status":"removed"}]'
+write_fixture chore/T-M9.9-x develop CLEAN "$GOOD" "$FILES" "$OK_CHECKS" 0
+expect_exit 1 "(T-M1.15) refuses when the PR deletes progress.json" -- gate --dry-run 7
+write_fixture chore/T-M9.9-x develop CLEAN "$GOOD" "$FILES" "$OK_CHECKS" 0
+touch "$MOCK_DIR/pr-files.json.fail"
+expect_exit 1 "(T-M1.15) refuses when the PR's files cannot be listed (fail closed)" -- gate --dry-run 7
+expect_output_contains "cannot list the PR's files (fail closed)" "reports the listing failure"
 write_fixture wip-branch develop CLEAN "$GOOD" "$FILES" "$OK_CHECKS" 0
 expect_exit 1 "refuses a branch kind without a merge path" -- gate --dry-run 7
 write_fixture feature/T-M9.9-x master CLEAN "$(cs "$(c 'LC-APPROVED T-M9.9')" "$(c 'QA-VERDICT T-M9.9: PASS')")" "$FILES" "$OK_CHECKS" 0

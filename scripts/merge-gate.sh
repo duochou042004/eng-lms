@@ -39,7 +39,7 @@ REQUIRED_CHECKS_FILE=${REQUIRED_CHECKS_FILE:-$SCRIPT_DIR/required-checks.txt}
 problems=()
 fail() { problems+=("$1"); }
 
-pr_json=$($GH pr view "$PR" --json number,state,isDraft,author,baseRefName,headRefName,headRefOid,mergeStateStatus,comments,files,commits)
+pr_json=$($GH pr view "$PR" --json number,state,isDraft,author,baseRefName,headRefName,headRefOid,mergeStateStatus,comments,commits)
 state=$(jq -r .state <<<"$pr_json")
 draft=$(jq -r .isDraft <<<"$pr_json")
 base=$(jq -r .baseRefName <<<"$pr_json")
@@ -315,10 +315,16 @@ if [[ -n "$id" ]]; then
   esac
 fi
 
-# 5. Bookkeeping: progress.json must change in every task PR
+# 5. Bookkeeping: progress.json must change in every task PR. `gh pr view --json files` returns only the first 100 files, so the
+# paginated REST listing is used (T-M1.15); an API error fails closed, and deleting progress.json does not count.
 case "$kind" in
   feature|fix|docs|chore|release|hotfix)
-    jq -e '[.files[].path] | index("progress.json")' <<<"$pr_json" >/dev/null || fail "progress.json not updated in this PR";;
+    if ! all_files=$($GH api --paginate "repos/{owner}/{repo}/pulls/${PR}/files?per_page=100" 2>/dev/null); then
+      fail "cannot list the PR's files (fail closed)"
+    else
+      jq -en '[inputs | .[]? | select(.filename == "progress.json" and .status != "removed")] | length > 0' <<<"$all_files" >/dev/null \
+        || fail "progress.json not updated in this PR"
+    fi;;
 esac
 
 if ((${#problems[@]})); then
