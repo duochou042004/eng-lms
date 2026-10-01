@@ -337,6 +337,33 @@
       "status": "approved",
       "at": "2026-09-27T08:10:00Z",
       "ref": "DEC-068"
+    },
+    {
+      "what": "Start T-M1.12 (merge-gate polish)",
+      "by": "PO",
+      "status": "approved",
+      "at": null,
+      "ref": "DEC-075"
+    },
+    {
+      "what": "Start T-M1.13 (web polish)",
+      "by": "PO",
+      "status": "approved",
+      "at": null,
+      "ref": "DEC-077"
+    },
+    {
+      "what": "Start T-M1.15 (merge-gate PR files; packet and fix in one PR)",
+      "by": "PO",
+      "status": "approved",
+      "at": null,
+      "ref": "DEC-078"
+    },
+    {
+      "what": "Start T-M1.14 (flaky request-ID test)",
+      "by": "PO",
+      "status": "pending",
+      "at": null
     }
   ],
   "environment": {

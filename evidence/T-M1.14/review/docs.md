@@ -5,6 +5,7 @@
 | Round | Head | Verdict | Findings |
 |---|---|---|---|
 | 1 | `5106589` | **CHANGES REQUESTED** | F1 S3, F2–F8 S4 |
+| 2 | `f0c85ff` | **PASS** | R2-1 S4 (fixed in the `progress.json`-only commit after `f0c85ff`: `approvals` entries) |
 
 ## Round 1 dispositions
 | ID | Disposition |
@@ -83,3 +84,31 @@ I'm returning the review here rather than writing `evidence/T-M1.14/review/docs.
 I found no S1/S2 issues, no scope creep, no broken links and no conflict with develop. F1 needs fixing before the packet is usable without chat history. F2–F8 can be fixed in the same commit, and the verdicts re-posted for the new head.
 
 DOCS-REVIEW T-M1.14: CHANGES REQUESTED
+
+## Round 2 report (`f0c85ff`)
+
+**DOCS-REVIEW T-M1.14, round 2: PASS.** Head `f0c85ff` fixes F1–F4 and F6–F8, and I accept the F5 disposition. The one new finding (R2-1) is a minor optional suggestion. Same rules as round 1: read-only, so the LC records this in `evidence/T-M1.14/review/docs.md`.
+
+**Checks**
+- `./scripts/check-docs.sh` passes (154 markdown files, `progress.json` valid, sources intact, prompt within limit). `next-session-prompt.md` is 3343 chars, under the 4000 limit.
+- **Branch catch-up:** `e634a87` merges develop at `ac27fea`. PR #27 is MERGED at 2026-10-01T18:40:45Z, which matches the `progress.json` history entry, HANDOFF and the prompt. Against develop, the branch changes only docs, evidence and `progress.json`. The QA record and spec arrived through the develop merge, not as new changes on this branch.
+
+**Round-1 findings**
+- **F1 (S3), fixed.** The commands now source `scripts/env.sh` from the repo root, so Testcontainers gets `DOCKER_HOST`. `dev-up.sh` is gone. The loop writes `run i` and `FAIL run i` markers through `tee` to `evidence/T-M1.14/runs-50.log`, which the evidence list also names. The pipe hides the loop's exit code, but the `FAIL` marker shows a failure in the log, and AC5 is judged from the log.
+- **F2, fixed.** AC2's mutation now targets `RequestIds.resolve` or the valve's fallback, and the packet explains why the filter is irrelevant for `/api/v1/a%2fb`. That matches the code: the valve falls back to `RequestIds.resolve(header, ids)` when no request attribute is set.
+- **F3, fixed.** The trace now points to T-M1.8 AC2 and api-conventions §5 (lines 67–72) plus §7.
+- **F4, fixed.** The packet names `tools.jackson.databind.json.JsonMapper`. `tech-stack.md:40` documents Jackson 3, and `tools.jackson.core:jackson-databind` 3.1.5 is in the local Maven repository.
+- **F6, fixed.** DEC-079 and backlog row T-M1.16 now add `navigator.sendBeacon` (as `no-restricted-properties`). Dynamic keys and `Reflect.get` are explicitly accepted. The two documents agree.
+- **F7, fixed.** HANDOFF names both skills (backend-module for the implementer brief, qa-evaluation for G3).
+- **F8, fixed.** `## Out of scope (explicit)` is now its own heading.
+- **F5, accepted.** I agree with your reason. `docs/09-harness/schemas/progress.schema.json:93` only allows `OQ-nn` or `DEC-nnn` in `pendingPO`. The pending start signal is stated in `currentTask.entryGate`, the packet status, HANDOFF and the prompt, so a fresh agent will see it.
+
+**New finding**
+- **R2-1 (S4, optional): use the `approvals` array in `progress.json` for the start signal.** The schema (lines 99–100) has an `approvals` array with `what`, `by`, `status`, `at` and `ref`. It was used for earlier PO start signals (T-M1.4, 5, 7 and 8, for example `{"what":"Start T-M1.8 …","by":"PO","status":"approved","ref":"DEC-068"}`).
+  - Suggested fix: add `{"what":"Start T-M1.14 (flaky request-ID test)","by":"PO","status":"pending","at":null}`, then set it to approved with the DEC when the PO answers.
+  - The T-M1.12, T-M1.13 and T-M1.15 start signals are also missing from that array. This is older drift; backfill it or drop the convention, at the LC's choice.
+
+**Note for the record file**
+- `evidence/T-M1.14/review/docs.md` currently ends with the round-1 line `DOCS-REVIEW T-M1.14: CHANGES REQUESTED`. Add round 2 to the table and append this verdict after it, so the file's last verdict is PASS.
+
+DOCS-REVIEW T-M1.14: PASS
