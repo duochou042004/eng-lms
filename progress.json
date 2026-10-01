@@ -36,8 +36,8 @@
     "ownerRole": "LC",
     "branch": "chore/T-M1.15-merge-gate-pr-files",
     "packet": "docs/tasks/T-M1.15-merge-gate-pr-files.md",
-    "pr": null,
-    "lastCommit": null,
+    "pr": "#26",
+    "lastCommit": "3eff11a",
     "startedAt": "2026-10-02T08:30:00Z",
     "entryGate": [
       "T-M1.12 merged — met (9866f26)",
