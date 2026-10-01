@@ -53,7 +53,15 @@
   border-block-end: var(--border-width) solid var(--color-border);
 }
 
-/* The 404 "go to the start page" link: a 44 px target (DEC-045 N1). */
+/* The route error page's actions: the reload button, then the "go to the start page" link (T-M1.13). */
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+/* The 404 and route error "go to the start page" link: a 44 px target (DEC-045 N1). */
 .homeLink {
   display: inline-flex;
   align-items: center;

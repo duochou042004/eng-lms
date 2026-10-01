@@ -1,0 +1,163 @@
+# T-M1.13 AC5: two more fetch forms (QA F3) — negative demo
+# 2026-09-28T12:05:58Z at 42d88f1 + working tree; oxlint Version: 1.85.0
+# Mechanism: oxlint's no-restricted-properties with one property-only entry { "property": "fetch" } (any object),
+# replacing the three window/globalThis/self entries; off for src/lib/api/** (like no-restricted-globals).
+# Why: an object+property entry only matches when the object is an identifier, so nested members (globalThis.window.fetch,
+# document.defaultView.fetch) were missed; oxlint 1.85 has no no-restricted-syntax.
+# The fixtures were created for this run only and deleted afterwards (never committed). Script: bash, exit codes via PIPESTATUS.
+
+## Fixtures
+--- src/features/lintdemo/existing.ts
+// T-M1.13 AC5 throwaway lint fixture (deleted after the demo): the T-M1.9 forms
+import { Button } from 'react-aria-components'
+export const B = Button
+export async function bare() {
+  return fetch('/api/v1/meta')
+}
+export async function viaWindow() {
+  return window.fetch('/api/v1/meta')
+}
+export async function viaGlobalThis() {
+  return globalThis.fetch('/api/v1/meta')
+}
+export async function viaSelf() {
+  return self.fetch('/api/v1/meta')
+}
+--- src/features/lintdemo/loophole.ts
+// T-M1.13 AC5 throwaway lint fixture (deleted after the demo): the four listed forms
+export async function viaGlobalThisWindow() {
+  return globalThis.window.fetch('/api/v1/meta')
+}
+export async function viaDefaultView() {
+  return document.defaultView.fetch('/api/v1/meta')
+}
+export async function viaDefaultViewOptional() {
+  return document.defaultView?.fetch('/api/v1/meta')
+}
+export async function viaDefaultViewNonNull() {
+  return document.defaultView!.fetch('/api/v1/meta')
+}
+--- src/features/lintdemo/nofalsepositive.ts
+// T-M1.13 AC5 throwaway lint fixture (deleted after the demo): members that are not `.fetch` must pass
+interface Q {
+  refetch(): Promise<void>
+  fetchQuery(o: object): Promise<void>
+  prefetchQuery(o: object): Promise<void>
+  fetchNextPage(): Promise<void>
+}
+export async function ok(q: Q) {
+  await q.refetch()
+  await q.fetchQuery({})
+  await q.prefetchQuery({})
+  await q.fetchNextPage()
+}
+--- src/features/lintdemo/probes.ts
+// T-M1.13 AC5 throwaway lint fixture (deleted after the demo): forms beyond the listed ones
+export async function computed() {
+  return window['fetch']('/api/v1/meta')
+}
+export function destructured() {
+  const { fetch: f } = window
+  return f
+}
+export async function sequence() {
+  return (0, globalThis.window).fetch('/api/v1/meta')
+}
+--- src/lib/api/lintdemo/existing.ts
+// T-M1.13 AC5 throwaway lint fixture (deleted after the demo): the T-M1.9 forms
+export async function bare() {
+  return fetch('/api/v1/meta')
+}
+export async function viaWindow() {
+  return window.fetch('/api/v1/meta')
+}
+export async function viaGlobalThis() {
+  return globalThis.fetch('/api/v1/meta')
+}
+export async function viaSelf() {
+  return self.fetch('/api/v1/meta')
+}
+--- src/lib/api/lintdemo/loophole.ts
+// T-M1.13 AC5 throwaway lint fixture (deleted after the demo): the four listed forms
+export async function viaGlobalThisWindow() {
+  return globalThis.window.fetch('/api/v1/meta')
+}
+export async function viaDefaultView() {
+  return document.defaultView.fetch('/api/v1/meta')
+}
+export async function viaDefaultViewOptional() {
+  return document.defaultView?.fetch('/api/v1/meta')
+}
+export async function viaDefaultViewNonNull() {
+  return document.defaultView!.fetch('/api/v1/meta')
+}
+--- src/lib/api/lintdemo/probes.ts
+// T-M1.13 AC5 throwaway lint fixture (deleted after the demo): forms beyond the listed ones
+export async function computed() {
+  return window['fetch']('/api/v1/meta')
+}
+export function destructured() {
+  const { fetch: f } = window
+  return f
+}
+export async function sequence() {
+  return (0, globalThis.window).fetch('/api/v1/meta')
+}
+
+## 1. BEFORE (the develop config, git show HEAD:web/.oxlintrc.json): the four listed forms pass (loophole.ts not reported); only two probes are caught
+$ oxlint --deny-warnings -c <develop .oxlintrc.json> src/features/lintdemo/loophole.ts src/features/lintdemo/probes.ts
+src/features/lintdemo/probes.ts:3:10: error eslint(no-restricted-properties): 'window.fetch' is restricted from being used. help: No fetch outside src/lib/api (frontend-architecture §1). Use the API client.
+src/features/lintdemo/probes.ts:6:11: error eslint(no-restricted-properties): 'window.fetch' is restricted from being used. help: No fetch outside src/lib/api (frontend-architecture §1). Use the API client.
+exit: 1
+
+## 2. AFTER: pnpm lint fails on the four listed forms and the three probes in src/features/, and still on the T-M1.9 forms;
+##    nofalsepositive.ts (refetch, fetchQuery, prefetchQuery, fetchNextPage) is not reported
+$ pnpm lint
+$ oxlint --deny-warnings && stylelint "src/**/*.css" && prettier --check .
+src/features/lintdemo/probes.ts:3:17: error eslint(no-restricted-properties): 'fetch' is restricted from being used. help: No fetch outside src/lib/api (frontend-architecture §1). Use the API client.
+src/features/lintdemo/probes.ts:6:11: error eslint(no-restricted-properties): 'fetch' is restricted from being used. help: No fetch outside src/lib/api (frontend-architecture §1). Use the API client.
+src/features/lintdemo/probes.ts:10:33: error eslint(no-restricted-properties): 'fetch' is restricted from being used. help: No fetch outside src/lib/api (frontend-architecture §1). Use the API client.
+src/features/lintdemo/loophole.ts:3:28: error eslint(no-restricted-properties): 'fetch' is restricted from being used. help: No fetch outside src/lib/api (frontend-architecture §1). Use the API client.
+src/features/lintdemo/loophole.ts:6:31: error eslint(no-restricted-properties): 'fetch' is restricted from being used. help: No fetch outside src/lib/api (frontend-architecture §1). Use the API client.
+src/features/lintdemo/loophole.ts:9:32: error eslint(no-restricted-properties): 'fetch' is restricted from being used. help: No fetch outside src/lib/api (frontend-architecture §1). Use the API client.
+src/features/lintdemo/loophole.ts:12:32: error eslint(no-restricted-properties): 'fetch' is restricted from being used. help: No fetch outside src/lib/api (frontend-architecture §1). Use the API client.
+src/features/lintdemo/existing.ts:5:10: error eslint(no-restricted-globals): Unexpected use of 'fetch'. No fetch outside src/lib/api (frontend-architecture §1). Use the API client. help: Use a local variable or function parameter instead of the restricted global.
+src/features/lintdemo/existing.ts:2:1: error eslint(no-restricted-imports): 'react-aria-components' import is restricted from being used. help: Only src/ui/ may import react-aria-components (frontend-architecture §1, ADR-0013). Use the ui/ components.
+src/features/lintdemo/existing.ts:8:17: error eslint(no-restricted-properties): 'fetch' is restricted from being used. help: No fetch outside src/lib/api (frontend-architecture §1). Use the API client.
+src/features/lintdemo/existing.ts:11:21: error eslint(no-restricted-properties): 'fetch' is restricted from being used. help: No fetch outside src/lib/api (frontend-architecture §1). Use the API client.
+src/features/lintdemo/existing.ts:14:15: error eslint(no-restricted-properties): 'fetch' is restricted from being used. help: No fetch outside src/lib/api (frontend-architecture §1). Use the API client.
+[ELIFECYCLE] Command failed with exit code 1.
+exit: 1
+$ oxlint --deny-warnings src/features/lintdemo/nofalsepositive.ts
+exit: 0
+
+## 3. AFTER: the same code in src/lib/api/ passes (the src/features fixtures removed first; src/lib/api/lintdemo/ still present)
+existing.ts
+loophole.ts
+probes.ts
+$ pnpm lint
+$ oxlint --deny-warnings && stylelint "src/**/*.css" && prettier --check .
+Checking formatting...
+All matched files use Prettier code style!
+exit: 0
+
+## 4. AFTER: the current code base (all fixtures removed) passes: no false positives
+$ git status --short --untracked-files=all src
+ M src/app/routes/Page.module.css
+ M src/app/routes/RouteError.test.tsx
+ M src/app/routes/RouteError.tsx
+ M src/app/routes/RouteLoading.test.tsx
+ M src/app/routes/RouteLoading.tsx
+ M src/ui/SegmentedControl.module.css
+ M src/ui/SegmentedControl.test.tsx
+ M src/ui/SegmentedControl.tsx
+$ pnpm lint
+$ oxlint --deny-warnings && stylelint "src/**/*.css" && prettier --check .
+Checking formatting...
+All matched files use Prettier code style!
+exit: 0
+
+## 5. False-positive check: every fetch-named identifier or member outside src/lib/api (grep); none is a '.fetch' member
+$ grep -rnE "\b(fetch|refetch|fetchQuery|prefetchQuery|fetchNextPage|fetchStatus|isFetching)\b" src --include=*.ts --include=*.tsx | grep -v "^src/lib/api/"
+src/app/components/WorkspaceName.tsx:26:        <Button variant="quiet" onPress={() => void meta.refetch()}>
+(end of grep)

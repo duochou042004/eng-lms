@@ -1,0 +1,308 @@
+# T-M1.13 AC2/AC3 before demo: e2e/tests/polish.spec.ts (AC2, AC3) run against the develop SegmentedControl (git show HEAD:web/src/ui/SegmentedControl.{tsx,module.css})
+# and RouteLoading without the landing toolbar row (toolbar={false}); the AC3 test's toolbar assertions were stubbed for this run only.
+# 2026-09-28T12:09:47Z at 42d88f1; ./scripts/e2e-run.sh --project=phone-small --project=tablet --project=laptop tests/polish.spec.ts -g 'AC2|AC3' --reporter=line
+# Expected: every AC2 and AC3 test fails (segment 0 changes size by 26 px; the heading lands 70 px below its skeleton line). The fixes were restored afterwards.
+
+662db3da228c2ea2649b3ae04db4b4479e85fea5979f6a917a7f6d5cb1e7ec39
+englms-dev-db
+dev-up: englms-dev-db is healthy on 127.0.0.1:5432
+e2e-run: building web/dist and the jar with the SPA
+✓ Lockfile passes supply-chain policies (verified 2d ago)
+Lockfile is up to date, resolution step is skipped
+Done in 23ms using pnpm v12.6.0
+$ tsc -b && vite build
+vite v8.3.1 building client environment for production...
+transforming...
+✓ 3392 modules transformed.
+rendering chunks...
+computing gzip size...
+✓ built in 379ms
+e2e-run: started englms-0.0.1-SNAPSHOT.jar (pid 472540, log backend/target/e2e-app.log)
+e2e-run: app ready; running Playwright --project=phone-small --project=tablet --project=laptop tests/polish.spec.ts -g AC2|AC3 --reporter=line
+Running 18 tests using 8 workers
+[1/18] [tablet] › tests/polish.spec.ts:97:3 › AC2: the language switcher keeps its segment boundaries when the selection changes (pointer and keyboard) on /
+[2/18] [phone-small] › tests/polish.spec.ts:97:3 › AC2: the language switcher keeps its segment boundaries when the selection changes (pointer and keyboard) on /tutor
+[3/18] [phone-small] › tests/polish.spec.ts:199:3 › AC3 [vi]: on a slowed first load of /, the heading appears where its skeleton line was; CLS ≤ 0.05
+[4/18] [phone-small] › tests/polish.spec.ts:199:3 › AC3 [en]: on a slowed first load of /, the heading appears where its skeleton line was; CLS ≤ 0.05
+[5/18] [tablet] › tests/polish.spec.ts:97:3 › AC2: the language switcher keeps its segment boundaries when the selection changes (pointer and keyboard) on /tutor
+[6/18] [phone-small] › tests/polish.spec.ts:139:3 › AC2 (/dev/ui, dev build) [vi]: the 3-option example keeps its segment boundaries
+[7/18] [phone-small] › tests/polish.spec.ts:97:3 › AC2: the language switcher keeps its segment boundaries when the selection changes (pointer and keyboard) on /
+[8/18] [phone-small] › tests/polish.spec.ts:139:3 › AC2 (/dev/ui, dev build) [en]: the 3-option example keeps its segment boundaries
+  1) [phone-small] › tests/polish.spec.ts:199:3 › AC3 [en]: on a slowed first load of /, the heading appears where its skeleton line was; CLS ≤ 0.05 
+    Error: heading block start vs its skeleton line
+    expect(received).toBeLessThanOrEqual(expected)
+    Expected: <= 8
+    Received:    70
+      242 |       clsLimit: 0.05,
+      243 |     })
+    > 244 |     expect(headingDelta, 'heading block start vs its skeleton line').toBeLessThanOrEqual(8)
+          |                                                                      ^
+      245 |     expect(cls.total, 'layout shift total of the first load').toBeLessThanOrEqual(0.05)
+      246 |   })
+      247 | }
+    attachment #2: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/polish-AC3-en-on-a-slowed--9482a-keleton-line-was-CLS-≤-0-05-phone-small/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+    Error Context: test-results/polish-AC3-en-on-a-slowed--9482a-keleton-line-was-CLS-≤-0-05-phone-small/error-context.md
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/polish-AC3-en-on-a-slowed--9482a-keleton-line-was-CLS-≤-0-05-phone-small/trace.zip
+    Usage:
+        pnpm exec playwright show-trace test-results/polish-AC3-en-on-a-slowed--9482a-keleton-line-was-CLS-≤-0-05-phone-small/trace.zip
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+  2) [phone-small] › tests/polish.spec.ts:199:3 › AC3 [vi]: on a slowed first load of /, the heading appears where its skeleton line was; CLS ≤ 0.05 
+    Error: heading block start vs its skeleton line
+    expect(received).toBeLessThanOrEqual(expected)
+    Expected: <= 8
+    Received:    70
+      242 |       clsLimit: 0.05,
+      243 |     })
+    > 244 |     expect(headingDelta, 'heading block start vs its skeleton line').toBeLessThanOrEqual(8)
+          |                                                                      ^
+      245 |     expect(cls.total, 'layout shift total of the first load').toBeLessThanOrEqual(0.05)
+      246 |   })
+      247 | }
+    attachment #2: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/polish-AC3-vi-on-a-slowed--f8f02-keleton-line-was-CLS-≤-0-05-phone-small/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+    Error Context: test-results/polish-AC3-vi-on-a-slowed--f8f02-keleton-line-was-CLS-≤-0-05-phone-small/error-context.md
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/polish-AC3-vi-on-a-slowed--f8f02-keleton-line-was-CLS-≤-0-05-phone-small/trace.zip
+    Usage:
+        pnpm exec playwright show-trace test-results/polish-AC3-vi-on-a-slowed--f8f02-keleton-line-was-CLS-≤-0-05-phone-small/trace.zip
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+[9/18] [tablet] › tests/polish.spec.ts:139:3 › AC2 (/dev/ui, dev build) [vi]: the 3-option example keeps its segment boundaries
+[10/18] [tablet] › tests/polish.spec.ts:139:3 › AC2 (/dev/ui, dev build) [en]: the 3-option example keeps its segment boundaries
+  3) [phone-small] › tests/polish.spec.ts:97:3 › AC2: the language switcher keeps its segment boundaries when the selection changes (pointer and keyboard) on / 
+    Error: inline size of segment 0
+    expect(received).toBeLessThanOrEqual(expected)
+    Expected: <= 1
+    Received:    26
+      88 |   before.forEach((b, i) => {
+      89 |     expect(Math.abs(after[i]!.x - b.x), `inline start of segment ${i}`).toBeLessThanOrEqual(1)
+    > 90 |     expect(Math.abs(after[i]!.width - b.width), `inline size of segment ${i}`).toBeLessThanOrEqual(1)
+         |                                                                                ^
+      91 |   })
+      92 |   for (const s of [...before, ...after])
+      93 |     expect(s.iconVisible, `check icon visible = checked (${s.name})`).toBe(s.checked)
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/polish-AC2-the-language-sw-c775e-es-pointer-and-keyboard-on--phone-small/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+    Error Context: test-results/polish-AC2-the-language-sw-c775e-es-pointer-and-keyboard-on--phone-small/error-context.md
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/polish-AC2-the-language-sw-c775e-es-pointer-and-keyboard-on--phone-small/trace.zip
+    Usage:
+        pnpm exec playwright show-trace test-results/polish-AC2-the-language-sw-c775e-es-pointer-and-keyboard-on--phone-small/trace.zip
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+  4) [tablet] › tests/polish.spec.ts:97:3 › AC2: the language switcher keeps its segment boundaries when the selection changes (pointer and keyboard) on / 
+    Error: inline size of segment 0
+    expect(received).toBeLessThanOrEqual(expected)
+    Expected: <= 1
+    Received:    26
+      88 |   before.forEach((b, i) => {
+      89 |     expect(Math.abs(after[i]!.x - b.x), `inline start of segment ${i}`).toBeLessThanOrEqual(1)
+    > 90 |     expect(Math.abs(after[i]!.width - b.width), `inline size of segment ${i}`).toBeLessThanOrEqual(1)
+         |                                                                                ^
+      91 |   })
+      92 |   for (const s of [...before, ...after])
+      93 |     expect(s.iconVisible, `check icon visible = checked (${s.name})`).toBe(s.checked)
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/polish-AC2-the-language-sw-c775e-es-pointer-and-keyboard-on--tablet/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+    Error Context: test-results/polish-AC2-the-language-sw-c775e-es-pointer-and-keyboard-on--tablet/error-context.md
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/polish-AC2-the-language-sw-c775e-es-pointer-and-keyboard-on--tablet/trace.zip
+    Usage:
+        pnpm exec playwright show-trace test-results/polish-AC2-the-language-sw-c775e-es-pointer-and-keyboard-on--tablet/trace.zip
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+  5) [phone-small] › tests/polish.spec.ts:97:3 › AC2: the language switcher keeps its segment boundaries when the selection changes (pointer and keyboard) on /tutor 
+    Error: inline size of segment 0
+    expect(received).toBeLessThanOrEqual(expected)
+    Expected: <= 1
+    Received:    26
+      88 |   before.forEach((b, i) => {
+      89 |     expect(Math.abs(after[i]!.x - b.x), `inline start of segment ${i}`).toBeLessThanOrEqual(1)
+    > 90 |     expect(Math.abs(after[i]!.width - b.width), `inline size of segment ${i}`).toBeLessThanOrEqual(1)
+         |                                                                                ^
+      91 |   })
+      92 |   for (const s of [...before, ...after])
+      93 |     expect(s.iconVisible, `check icon visible = checked (${s.name})`).toBe(s.checked)
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/polish-AC2-the-language-sw-18892-inter-and-keyboard-on-tutor-phone-small/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+    Error Context: test-results/polish-AC2-the-language-sw-18892-inter-and-keyboard-on-tutor-phone-small/error-context.md
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/polish-AC2-the-language-sw-18892-inter-and-keyboard-on-tutor-phone-small/trace.zip
+    Usage:
+        pnpm exec playwright show-trace test-results/polish-AC2-the-language-sw-18892-inter-and-keyboard-on-tutor-phone-small/trace.zip
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+  6) [tablet] › tests/polish.spec.ts:97:3 › AC2: the language switcher keeps its segment boundaries when the selection changes (pointer and keyboard) on /tutor 
+    Error: inline size of segment 0
+    expect(received).toBeLessThanOrEqual(expected)
+    Expected: <= 1
+    Received:    26
+      88 |   before.forEach((b, i) => {
+      89 |     expect(Math.abs(after[i]!.x - b.x), `inline start of segment ${i}`).toBeLessThanOrEqual(1)
+    > 90 |     expect(Math.abs(after[i]!.width - b.width), `inline size of segment ${i}`).toBeLessThanOrEqual(1)
+         |                                                                                ^
+      91 |   })
+      92 |   for (const s of [...before, ...after])
+      93 |     expect(s.iconVisible, `check icon visible = checked (${s.name})`).toBe(s.checked)
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/polish-AC2-the-language-sw-18892-inter-and-keyboard-on-tutor-tablet/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+    Error Context: test-results/polish-AC2-the-language-sw-18892-inter-and-keyboard-on-tutor-tablet/error-context.md
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/polish-AC2-the-language-sw-18892-inter-and-keyboard-on-tutor-tablet/trace.zip
+    Usage:
+        pnpm exec playwright show-trace test-results/polish-AC2-the-language-sw-18892-inter-and-keyboard-on-tutor-tablet/trace.zip
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+[11/18] [tablet] › tests/polish.spec.ts:199:3 › AC3 [en]: on a slowed first load of /, the heading appears where its skeleton line was; CLS ≤ 0.05
+[12/18] [tablet] › tests/polish.spec.ts:199:3 › AC3 [vi]: on a slowed first load of /, the heading appears where its skeleton line was; CLS ≤ 0.05
+[13/18] [laptop] › tests/polish.spec.ts:97:3 › AC2: the language switcher keeps its segment boundaries when the selection changes (pointer and keyboard) on /
+[14/18] [laptop] › tests/polish.spec.ts:139:3 › AC2 (/dev/ui, dev build) [en]: the 3-option example keeps its segment boundaries
+[15/18] [laptop] › tests/polish.spec.ts:97:3 › AC2: the language switcher keeps its segment boundaries when the selection changes (pointer and keyboard) on /tutor
+[16/18] [laptop] › tests/polish.spec.ts:139:3 › AC2 (/dev/ui, dev build) [vi]: the 3-option example keeps its segment boundaries
+[17/18] [laptop] › tests/polish.spec.ts:199:3 › AC3 [vi]: on a slowed first load of /, the heading appears where its skeleton line was; CLS ≤ 0.05
+[18/18] [laptop] › tests/polish.spec.ts:199:3 › AC3 [en]: on a slowed first load of /, the heading appears where its skeleton line was; CLS ≤ 0.05
+  7) [tablet] › tests/polish.spec.ts:199:3 › AC3 [en]: on a slowed first load of /, the heading appears where its skeleton line was; CLS ≤ 0.05 
+    Error: heading block start vs its skeleton line
+    expect(received).toBeLessThanOrEqual(expected)
+    Expected: <= 8
+    Received:    70
+      242 |       clsLimit: 0.05,
+      243 |     })
+    > 244 |     expect(headingDelta, 'heading block start vs its skeleton line').toBeLessThanOrEqual(8)
+          |                                                                      ^
+      245 |     expect(cls.total, 'layout shift total of the first load').toBeLessThanOrEqual(0.05)
+      246 |   })
+      247 | }
+    attachment #2: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/polish-AC3-en-on-a-slowed--9482a-keleton-line-was-CLS-≤-0-05-tablet/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+    Error Context: test-results/polish-AC3-en-on-a-slowed--9482a-keleton-line-was-CLS-≤-0-05-tablet/error-context.md
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/polish-AC3-en-on-a-slowed--9482a-keleton-line-was-CLS-≤-0-05-tablet/trace.zip
+    Usage:
+        pnpm exec playwright show-trace test-results/polish-AC3-en-on-a-slowed--9482a-keleton-line-was-CLS-≤-0-05-tablet/trace.zip
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+  8) [laptop] › tests/polish.spec.ts:97:3 › AC2: the language switcher keeps its segment boundaries when the selection changes (pointer and keyboard) on / 
+    Error: inline size of segment 0
+    expect(received).toBeLessThanOrEqual(expected)
+    Expected: <= 1
+    Received:    26
+      88 |   before.forEach((b, i) => {
+      89 |     expect(Math.abs(after[i]!.x - b.x), `inline start of segment ${i}`).toBeLessThanOrEqual(1)
+    > 90 |     expect(Math.abs(after[i]!.width - b.width), `inline size of segment ${i}`).toBeLessThanOrEqual(1)
+         |                                                                                ^
+      91 |   })
+      92 |   for (const s of [...before, ...after])
+      93 |     expect(s.iconVisible, `check icon visible = checked (${s.name})`).toBe(s.checked)
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/polish-AC2-the-language-sw-c775e-es-pointer-and-keyboard-on--laptop/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+    Error Context: test-results/polish-AC2-the-language-sw-c775e-es-pointer-and-keyboard-on--laptop/error-context.md
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/polish-AC2-the-language-sw-c775e-es-pointer-and-keyboard-on--laptop/trace.zip
+    Usage:
+        pnpm exec playwright show-trace test-results/polish-AC2-the-language-sw-c775e-es-pointer-and-keyboard-on--laptop/trace.zip
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+  9) [tablet] › tests/polish.spec.ts:199:3 › AC3 [vi]: on a slowed first load of /, the heading appears where its skeleton line was; CLS ≤ 0.05 
+    Error: heading block start vs its skeleton line
+    expect(received).toBeLessThanOrEqual(expected)
+    Expected: <= 8
+    Received:    70
+      242 |       clsLimit: 0.05,
+      243 |     })
+    > 244 |     expect(headingDelta, 'heading block start vs its skeleton line').toBeLessThanOrEqual(8)
+          |                                                                      ^
+      245 |     expect(cls.total, 'layout shift total of the first load').toBeLessThanOrEqual(0.05)
+      246 |   })
+      247 | }
+    attachment #2: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/polish-AC3-vi-on-a-slowed--f8f02-keleton-line-was-CLS-≤-0-05-tablet/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+    Error Context: test-results/polish-AC3-vi-on-a-slowed--f8f02-keleton-line-was-CLS-≤-0-05-tablet/error-context.md
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/polish-AC3-vi-on-a-slowed--f8f02-keleton-line-was-CLS-≤-0-05-tablet/trace.zip
+    Usage:
+        pnpm exec playwright show-trace test-results/polish-AC3-vi-on-a-slowed--f8f02-keleton-line-was-CLS-≤-0-05-tablet/trace.zip
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+  10) [laptop] › tests/polish.spec.ts:97:3 › AC2: the language switcher keeps its segment boundaries when the selection changes (pointer and keyboard) on /tutor 
+    Error: inline size of segment 0
+    expect(received).toBeLessThanOrEqual(expected)
+    Expected: <= 1
+    Received:    26
+      88 |   before.forEach((b, i) => {
+      89 |     expect(Math.abs(after[i]!.x - b.x), `inline start of segment ${i}`).toBeLessThanOrEqual(1)
+    > 90 |     expect(Math.abs(after[i]!.width - b.width), `inline size of segment ${i}`).toBeLessThanOrEqual(1)
+         |                                                                                ^
+      91 |   })
+      92 |   for (const s of [...before, ...after])
+      93 |     expect(s.iconVisible, `check icon visible = checked (${s.name})`).toBe(s.checked)
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/polish-AC2-the-language-sw-18892-inter-and-keyboard-on-tutor-laptop/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+    Error Context: test-results/polish-AC2-the-language-sw-18892-inter-and-keyboard-on-tutor-laptop/error-context.md
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/polish-AC2-the-language-sw-18892-inter-and-keyboard-on-tutor-laptop/trace.zip
+    Usage:
+        pnpm exec playwright show-trace test-results/polish-AC2-the-language-sw-18892-inter-and-keyboard-on-tutor-laptop/trace.zip
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+  11) [laptop] › tests/polish.spec.ts:199:3 › AC3 [en]: on a slowed first load of /, the heading appears where its skeleton line was; CLS ≤ 0.05 
+    Error: heading block start vs its skeleton line
+    expect(received).toBeLessThanOrEqual(expected)
+    Expected: <= 8
+    Received:    70
+      242 |       clsLimit: 0.05,
+      243 |     })
+    > 244 |     expect(headingDelta, 'heading block start vs its skeleton line').toBeLessThanOrEqual(8)
+          |                                                                      ^
+      245 |     expect(cls.total, 'layout shift total of the first load').toBeLessThanOrEqual(0.05)
+      246 |   })
+      247 | }
+    attachment #2: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/polish-AC3-en-on-a-slowed--9482a-keleton-line-was-CLS-≤-0-05-laptop/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+    Error Context: test-results/polish-AC3-en-on-a-slowed--9482a-keleton-line-was-CLS-≤-0-05-laptop/error-context.md
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/polish-AC3-en-on-a-slowed--9482a-keleton-line-was-CLS-≤-0-05-laptop/trace.zip
+    Usage:
+        pnpm exec playwright show-trace test-results/polish-AC3-en-on-a-slowed--9482a-keleton-line-was-CLS-≤-0-05-laptop/trace.zip
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+  12) [laptop] › tests/polish.spec.ts:199:3 › AC3 [vi]: on a slowed first load of /, the heading appears where its skeleton line was; CLS ≤ 0.05 
+    Error: heading block start vs its skeleton line
+    expect(received).toBeLessThanOrEqual(expected)
+    Expected: <= 8
+    Received:    70
+      242 |       clsLimit: 0.05,
+      243 |     })
+    > 244 |     expect(headingDelta, 'heading block start vs its skeleton line').toBeLessThanOrEqual(8)
+          |                                                                      ^
+      245 |     expect(cls.total, 'layout shift total of the first load').toBeLessThanOrEqual(0.05)
+      246 |   })
+      247 | }
+    attachment #2: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/polish-AC3-vi-on-a-slowed--f8f02-keleton-line-was-CLS-≤-0-05-laptop/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+    Error Context: test-results/polish-AC3-vi-on-a-slowed--f8f02-keleton-line-was-CLS-≤-0-05-laptop/error-context.md
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/polish-AC3-vi-on-a-slowed--f8f02-keleton-line-was-CLS-≤-0-05-laptop/trace.zip
+    Usage:
+        pnpm exec playwright show-trace test-results/polish-AC3-vi-on-a-slowed--f8f02-keleton-line-was-CLS-≤-0-05-laptop/trace.zip
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+  12 failed
+    [phone-small] › tests/polish.spec.ts:97:3 › AC2: the language switcher keeps its segment boundaries when the selection changes (pointer and keyboard) on / 
+    [phone-small] › tests/polish.spec.ts:97:3 › AC2: the language switcher keeps its segment boundaries when the selection changes (pointer and keyboard) on /tutor 
+    [phone-small] › tests/polish.spec.ts:199:3 › AC3 [vi]: on a slowed first load of /, the heading appears where its skeleton line was; CLS ≤ 0.05 
+    [phone-small] › tests/polish.spec.ts:199:3 › AC3 [en]: on a slowed first load of /, the heading appears where its skeleton line was; CLS ≤ 0.05 
+    [tablet] › tests/polish.spec.ts:97:3 › AC2: the language switcher keeps its segment boundaries when the selection changes (pointer and keyboard) on / 
+    [tablet] › tests/polish.spec.ts:97:3 › AC2: the language switcher keeps its segment boundaries when the selection changes (pointer and keyboard) on /tutor 
+    [tablet] › tests/polish.spec.ts:199:3 › AC3 [vi]: on a slowed first load of /, the heading appears where its skeleton line was; CLS ≤ 0.05 
+    [tablet] › tests/polish.spec.ts:199:3 › AC3 [en]: on a slowed first load of /, the heading appears where its skeleton line was; CLS ≤ 0.05 
+    [laptop] › tests/polish.spec.ts:97:3 › AC2: the language switcher keeps its segment boundaries when the selection changes (pointer and keyboard) on / 
+    [laptop] › tests/polish.spec.ts:97:3 › AC2: the language switcher keeps its segment boundaries when the selection changes (pointer and keyboard) on /tutor 
+    [laptop] › tests/polish.spec.ts:199:3 › AC3 [vi]: on a slowed first load of /, the heading appears where its skeleton line was; CLS ≤ 0.05 
+    [laptop] › tests/polish.spec.ts:199:3 › AC3 [en]: on a slowed first load of /, the heading appears where its skeleton line was; CLS ≤ 0.05 
+  6 skipped
+e2e-run: playwright exit 1
+e2e-run: app stopped (pid 472540)
