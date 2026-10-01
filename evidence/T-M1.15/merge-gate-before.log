@@ -1,0 +1,315 @@
+merge-gate.sh
+  ok   - passes when all gates hold (dry run)
+  ok   - dry run does not merge
+  ok   - merges when not a dry run
+  ok   - merge commit, deletes branch, pins the head commit
+  ok   - (a) refuses when a required check fails
+  ok   - reports the failing check
+  ok   - (a) refuses when a required check is pending
+  ok   - (a) refuses when a required check is missing
+  ok   - (b) refuses without LC-APPROVED
+  ok   - reports missing LC approval
+  ok   - (b) LC approval must be the exact line
+  ok   - (c) refuses a chore PR without DOCS-REVIEW
+  ok   - (c) F1: 'CHANGES REQUESTED (previous verdict: PASS)' is not a pass
+  ok   - (c) F1: template placeholder 'PASS | CHANGES REQUESTED' is not a pass
+  ok   - (c) F1: 'FAIL (AC1: PASS …)' is not a pass
+  ok   - (c) the latest QA verdict wins (FAIL after PASS)
+  ok   - (c) refuses when the latest SEC-REVIEW requests changes
+  ok   - (c) UX-REVIEW must be exactly APPROVED
+  ok   - accepts a feature PR with QA 'PASS WITH MINOR'
+  ok   - (c) a verdict for another task id does not count
+  ok   - F3: a verdict posted before the head commit is stale
+  ok   - F3: an LC approval posted before the head commit is stale
+  ok   - (d) refuses when the branch is behind its base
+  ok   - reports how far behind
+  ok   - refuses on merge conflicts
+  ok   - refuses when progress.json is not updated
+  FAIL - (T-M1.15) passes when progress.json is the 130th file (on the second page) (expected exit 0, got 1)
+         merge-gate: REFUSED PR #7 (chore/T-M9.9-x → develop)
+           - progress.json not updated in this PR
+  FAIL - (T-M1.15) refuses when only pr view lists progress.json (the REST listing decides) (expected exit 1, got 0)
+         merge-gate: all gates passed for PR #7 (T-M9.9: chore/T-M9.9-x → develop @ abc1234)
+         merge-gate: dry run — not merging
+  FAIL - says progress.json is missing (missing: progress.json not updated in this PR)
+         merge-gate: all gates passed for PR #7 (T-M9.9: chore/T-M9.9-x → develop @ abc1234)
+         merge-gate: dry run — not merging
+  FAIL - (T-M1.15) refuses when the PR deletes progress.json (expected exit 1, got 0)
+         merge-gate: all gates passed for PR #7 (T-M9.9: chore/T-M9.9-x → develop @ abc1234)
+         merge-gate: dry run — not merging
+  FAIL - (T-M1.15) refuses when the PR's files cannot be listed (fail closed) (expected exit 1, got 0)
+         merge-gate: all gates passed for PR #7 (T-M9.9: chore/T-M9.9-x → develop @ abc1234)
+         merge-gate: dry run — not merging
+  FAIL - reports the listing failure (missing: cannot list the PR's files (fail closed))
+         merge-gate: all gates passed for PR #7 (T-M9.9: chore/T-M9.9-x → develop @ abc1234)
+         merge-gate: dry run — not merging
+  ok   - refuses a branch kind without a merge path
+  ok   - refuses a task branch targeting master
+  ok   - F4: dependabot PR (by the Dependabot app) merges with checks + 'LC-APPROVED PR-<n>'
+  ok   - R2-1: a hand-made dependabot/* branch (human author) is refused
+  ok   - explains the author check
+  ok   - R2-1: a dependabot PR touching non-manifest files is refused
+  ok   - R2-4: an explicit DOCS-REVIEW CHANGES REQUESTED is not overridden by QA PASS
+  ok   - R2-5: a verdict that is not the comment's first line (e.g. in a code block) does not count
+  ok   - R2-7: an empty commit list is refused (no freshness baseline)
+  ok   - F4: release PR needs PO-APPROVED
+  ok   - F4: release PR merges into master with QA + PO + LC
+  ok   - AC1: a back-dated commit pushed AFTER the verdict makes the verdict stale
+  ok   - reports the approval as stale
+  ok   - reports the review as stale
+  ok   - AC1: the same back-dated commit counts once it arrived BEFORE the verdict
+  ok   - AC1: the LATEST pull_request run for the head counts (head re-arrived after the verdict)
+  ok   - AC1: a force-push after the verdict (back to an already-built SHA) invalidates it
+  ok   - AC1: a force-push before the head arrived does not block
+  ok   - AC1: no pull_request run for the head (no push-time data) fails closed
+  ok   - explains the fail-closed refusal
+  ok   - AC1: a run for the same SHA on ANOTHER branch is no evidence (fails closed)
+  ok   - AC1: a non-pull_request run is no evidence (fails closed)
+  ok   - AC1: a run for another SHA is no evidence (fails closed)
+  ok   - AC1: a workflow-runs API error fails closed
+  ok   - reports the runs API failure
+  ok   - AC1: a PR-timeline API error fails closed
+  ok   - reports the timeline failure
+  ok   - AC1: a PR-timeline answer without timeline data fails closed
+  ok   - AC1: a verdict in the same second as the arrival is not strictly after it
+  ok   - AC2: QA-VERDICT FAIL blocks a chore PR even though DOCS-REVIEW passed
+  ok   - names the blocking verdict
+  ok   - AC2: DOCS-REVIEW CHANGES REQUESTED blocks a feature PR even though QA passed
+  ok   - names the blocking docs review
+  ok   - AC2: UX-REVIEW CHANGES REQUESTED blocks although QA and SEC passed
+  ok   - names the blocking UX review
+  ok   - AC2: SEC-REVIEW CHANGES REQUESTED blocks a chore PR
+  ok   - AC2: within a type the latest wins (QA FAIL then PASS on re-test) — positive path passes
+  ok   - AC2: all four review types positive passes
+  ok   - AC2: a stale negative (posted before the head arrived) does not block the new head
+  ok   - AC2: a negative verdict blocks the dependabot path too
+  ok   - AC3: manifests + lockfile + a workflow uses: SHA bump, all by Dependabot, passes
+  ok   - AC3: a human commit on a Dependabot PR blocks
+  ok   - names the foreign commit
+  ok   - AC3: a Dependabot-authored commit without a verified signature (forged author e-mail) blocks
+  ok   - AC3: a Dependabot-authored commit committed by a human blocks
+  ok   - AC3: an empty commit list from the API fails closed
+  ok   - AC3: a commits API error fails closed
+  ok   - AC3: a workflow edit that is not a uses: bump blocks
+  ok   - explains the workflow rule
+  ok   - AC3: a uses: line that swaps the action (not a bump) blocks
+  ok   - explains the same-action rule
+  ok   - AC3: a uses: bump to a tag instead of a 40-hex SHA blocks
+  ok   - AC3: a uses: bump bundled with a with: change blocks
+  ok   - AC3: adding a workflow file blocks
+  ok   - AC3: a workflow change without a diff to verify fails closed
+  ok   - AC3: renaming a file into an allowed path blocks
+  ok   - AC3/R3-3: a Maven wrapper properties bump passes
+  ok   - AC3: other .mvn files (e.g. extensions.xml) are no longer allowed
+  ok   - AC3: the wrapper jar is not allowed
+  ok   - AC3: the file list is taken from the files API, not only from pr view
+  ok   - names the allow-list
+  ok   - S2-1: swapping two uses: lines (no SHA change) blocks
+  ok   - S2-1: re-indenting a uses: line blocks
+  ok   - S2-1: a uses: line that keeps its SHA is not a bump
+  ok   - explains the same-SHA refusal
+  ok   - S2-1: moving a uses: line into a run: block blocks
+  ok   - S2-1: two adjacent pairwise SHA bumps pass
+  ok   - S3-4: adding or removing manifests on a Dependabot PR blocks
+  ok   - explains the modified-only rule
+  ok   - S3-1: a non-exact negative verdict blocks: 'QA-VERDICT  T-M9.9: FAIL'
+  ok   - S3-1: a non-exact negative verdict blocks: 'qa-verdict T-M9.9: FAIL'
+  ok   - S3-1: a non-exact negative verdict blocks: 'QA-VERDICT T-M9.9 : FAIL'
+  ok   - S3-1: a non-exact negative verdict blocks: '**QA-VERDICT T-M9.9: FAIL**'
+  ok   - S3-1: a non-exact negative verdict blocks: '`QA-VERDICT T-M9.9: FAIL`'
+  ok   - S3-1: a non-exact negative verdict blocks: '> QA-VERDICT T-M9.9: FAIL'
+  ok   - S3-1: a non-exact negative verdict blocks: 'ux-review t-m9.9: changes requested'
+  ok   - S3-1: a negative for another id does not block, and a sloppy positive is simply ignored
+  ok   - S3-1: an exact PASS after a non-exact FAIL wins (latest within the type)
+  ok   - S3-2: a push recorded in the repository activity after the verdict makes it stale (even without a new run)
+  ok   - S3-2: no activity entry for the head fails closed
+  ok   - explains the activity refusal
+  ok   - S3-2: an activity API error fails closed
+  ok   - S3-2: an activity answer that is not a list fails closed
+  ok   - S3-3: a push by a human to a Dependabot branch (per the repository activity) blocks
+  ok   - names the foreign push
+  ok   - S3-3: activity before Dependabot (re)created the branch does not count
+  ok   - S3-3: a Dependabot branch without a recorded creation fails closed
+  ok   - S4-1: a run at 10:05:00.500Z makes a 10:05:00Z verdict stale (no string-order trick)
+  ok   - S4-1: an unparsable (non-Z) run time fails closed
+  ok   - R2 S3-A: a removed line '-n' (an echo option) cannot hide a non-bump
+  ok   - R2 S3-A: a removed line '-e' (an echo option) cannot hide a non-bump
+  ok   - R2 S3-A: a removed line '-E' (an echo option) cannot hide a non-bump
+  ok   - R2 S3-A: a removed line '-ne' (an echo option) cannot hide a non-bump
+  ok   - R2 S4-A: a diff line with an unknown prefix fails closed
+  ok   - explains the unknown-prefix refusal
+  ok   - R2 S3-B: a human push in the same second as Dependabot's branch creation still counts
+  ok   - R2 S3-B: an activity entry with an unparsable time counts as inside the window
+  ok   - R2 S4-B: a non-exact negative verdict blocks: '## QA-VERDICT T-M9.9: FAIL'
+  ok   - R2 S4-B: a non-exact negative verdict blocks: '- QA-VERDICT T-M9.9: FAIL'
+  ok   - R2 S4-B: a non-exact negative verdict blocks: '❌ QA-VERDICT T-M9.9: FAIL'
+  ok   - R2 S4-B: a non-exact negative verdict blocks: 'QA-VERDICT T-M9.9 - FAIL'
+  ok   - R2 S4-B: a non-exact negative verdict blocks: 'QA VERDICT T-M9.9: FAIL'
+  ok   - R2 S4-B: a non-exact negative verdict blocks: 'DOCS-REVIEW T-M9.9: CHANGES_REQUESTED'
+  ok   - R2 S4-B: a non-exact negative verdict blocks: 'SEC-REVIEW T-M9.9: CHANGES-REQUESTED'
+  ok   - R2 S4-B: another id with a '-' suffix and prose mentioning a verdict do not block
+  ok   - T-M1.12 AC1: 'QA-VERDICT <id>-FAILOVER: PASS' is not a negative
+  ok   - T-M1.12 AC1: 'QA-VERDICT T-M9.9: FAIL' blocks
+  ok   - T-M1.12 AC1: 'QA-VERDICT T-M9.9: FAIL.' blocks
+  ok   - T-M1.12 AC1: 'QA-VERDICT T-M9.9: FAIL (see F1)' blocks
+  ok   - T-M1.12 AC1: 'QA-VERDICT T-M9.9: CHANGES REQUESTED' blocks
+  ok   - T-M1.12 AC1: '**QA-VERDICT T-M9.9: FAILED**' blocks
+  ok   - T-M1.12 AC1: 'QA-VERDICT T-M9.9 - FAILS AC3' blocks
+  ok   - T-M1.12 AC1: 'QA-VERDICT T-M9.9: FAILED' blocks
+  ok   - T-M1.12 AC1: '> qa-verdict T-M9.9: failed' blocks
+  ok   - T-M1.12 AC1: 'QA-VERDICT T-M9.9: FAILURE' blocks
+  ok   - T-M1.12 AC1: 'QA-VERDICT T-M9.9 - FAILING' blocks
+  ok   - T-M1.12 AC1: 'DOCS-REVIEW T-M9.9: FAIL' blocks
+  ok   - T-M1.12 AC1: 'DOCS-REVIEW T-M9.9: FAIL.' blocks
+  ok   - T-M1.12 AC1: 'DOCS-REVIEW T-M9.9: FAIL (see F1)' blocks
+  ok   - T-M1.12 AC1: 'DOCS-REVIEW T-M9.9: CHANGES REQUESTED' blocks
+  ok   - T-M1.12 AC1: '**DOCS-REVIEW T-M9.9: FAILED**' blocks
+  ok   - T-M1.12 AC1: 'DOCS-REVIEW T-M9.9 - FAILS AC3' blocks
+  ok   - T-M1.12 AC1: 'DOCS-REVIEW T-M9.9: FAILED' blocks
+  ok   - T-M1.12 AC1: '> docs-review T-M9.9: failed' blocks
+  ok   - T-M1.12 AC1: 'DOCS-REVIEW T-M9.9: FAILURE' blocks
+  ok   - T-M1.12 AC1: 'DOCS-REVIEW T-M9.9 - FAILING' blocks
+  ok   - T-M1.12 AC1: 'SEC-REVIEW T-M9.9: FAIL' blocks
+  ok   - T-M1.12 AC1: 'SEC-REVIEW T-M9.9: FAIL.' blocks
+  ok   - T-M1.12 AC1: 'SEC-REVIEW T-M9.9: FAIL (see F1)' blocks
+  ok   - T-M1.12 AC1: 'SEC-REVIEW T-M9.9: CHANGES REQUESTED' blocks
+  ok   - T-M1.12 AC1: '**SEC-REVIEW T-M9.9: FAILED**' blocks
+  ok   - T-M1.12 AC1: 'SEC-REVIEW T-M9.9 - FAILS AC3' blocks
+  ok   - T-M1.12 AC1: 'SEC-REVIEW T-M9.9: FAILED' blocks
+  ok   - T-M1.12 AC1: '> sec-review T-M9.9: failed' blocks
+  ok   - T-M1.12 AC1: 'SEC-REVIEW T-M9.9: FAILURE' blocks
+  ok   - T-M1.12 AC1: 'SEC-REVIEW T-M9.9 - FAILING' blocks
+  ok   - T-M1.12 AC1: 'UX-REVIEW T-M9.9: FAIL' blocks
+  ok   - T-M1.12 AC1: 'UX-REVIEW T-M9.9: FAIL.' blocks
+  ok   - T-M1.12 AC1: 'UX-REVIEW T-M9.9: FAIL (see F1)' blocks
+  ok   - T-M1.12 AC1: 'UX-REVIEW T-M9.9: CHANGES REQUESTED' blocks
+  ok   - T-M1.12 AC1: '**UX-REVIEW T-M9.9: FAILED**' blocks
+  ok   - T-M1.12 AC1: 'UX-REVIEW T-M9.9 - FAILS AC3' blocks
+  ok   - T-M1.12 AC1: 'UX-REVIEW T-M9.9: FAILED' blocks
+  ok   - T-M1.12 AC1: '> ux-review T-M9.9: failed' blocks
+  ok   - T-M1.12 AC1: 'UX-REVIEW T-M9.9: FAILURE' blocks
+  ok   - T-M1.12 AC1: 'UX-REVIEW T-M9.9 - FAILING' blocks
+  ok   - T-M1.12 AC1: an exact line with an unknown token (FAILED-OVER) still blocks
+  ok   - T-M1.12 AC2: '1. QA-VERDICT T-M9.9: FAIL' blocks
+  ok   - T-M1.12 AC2: '1. QA-VERDICT T-M9.9: PASS' is not a positive QA verdict
+  ok   - the twin is ignored, not read as a verdict
+  ok   - T-M1.12 AC2: '1) QA-VERDICT T-M9.9: FAIL' blocks
+  ok   - T-M1.12 AC2: '1) QA-VERDICT T-M9.9: PASS' is not a positive QA verdict
+  ok   - the twin is ignored, not read as a verdict
+  ok   - T-M1.12 AC2: '12. QA-VERDICT T-M9.9: FAIL' blocks
+  ok   - T-M1.12 AC2: '12. QA-VERDICT T-M9.9: PASS' is not a positive QA verdict
+  ok   - the twin is ignored, not read as a verdict
+  ok   - T-M1.12 AC2: '- - QA-VERDICT T-M9.9: FAIL' blocks
+  ok   - T-M1.12 AC2: '- - QA-VERDICT T-M9.9: PASS' is not a positive QA verdict
+  ok   - the twin is ignored, not read as a verdict
+  ok   - T-M1.12 AC2: '* QA-VERDICT T-M9.9: FAIL' blocks
+  ok   - T-M1.12 AC2: '* QA-VERDICT T-M9.9: PASS' is not a positive QA verdict
+  ok   - the twin is ignored, not read as a verdict
+  ok   - T-M1.12 AC2: '- * QA-VERDICT T-M9.9: FAIL' blocks
+  ok   - T-M1.12 AC2: '- * QA-VERDICT T-M9.9: PASS' is not a positive QA verdict
+  ok   - the twin is ignored, not read as a verdict
+  ok   - T-M1.12 AC2: 'QA-VERDICT T-M9.9 — FAIL' blocks
+  ok   - T-M1.12 AC2: 'QA-VERDICT T-M9.9 — PASS' is not a positive QA verdict
+  ok   - the twin is ignored, not read as a verdict
+  ok   - T-M1.12 AC2: 'QA-VERDICT T-M9.9 – FAIL' blocks
+  ok   - T-M1.12 AC2: 'QA-VERDICT T-M9.9 – PASS' is not a positive QA verdict
+  ok   - the twin is ignored, not read as a verdict
+  ok   - T-M1.12 AC2: 'QA-VERDICT T-M9.9—FAIL' blocks
+  ok   - T-M1.12 AC2: 'QA-VERDICT T-M9.9—PASS' is not a positive QA verdict
+  ok   - the twin is ignored, not read as a verdict
+  ok   - T-M1.12 AC2: 'QA-VERDICT: T-M9.9: FAIL' blocks
+  ok   - T-M1.12 AC2: 'QA-VERDICT: T-M9.9: PASS' is not a positive QA verdict
+  ok   - the twin is ignored, not read as a verdict
+  ok   - T-M1.12 AC2: '1.  QA-VERDICT:  T-M9.9 —  FAIL' blocks
+  ok   - T-M1.12 AC2: '1.  QA-VERDICT:  T-M9.9 —  PASS' is not a positive QA verdict
+  ok   - the twin is ignored, not read as a verdict
+  ok   - T-M1.12 AC2: 'DOCS-REVIEW: T-M9.9: PASS' is not a positive docs verdict
+  ok   - T-M1.12 AC2: '1. DOCS-REVIEW T-M9.9: PASS' is not a positive docs verdict
+  ok   - T-M1.12 review F1/F2: '**QA-VERDICT T-M9.9: FAILURES**' blocks
+  ok   - T-M1.12 review F1/F2: 'QA-VERDICT T-M9.9 - FAILINGS' blocks
+  ok   - T-M1.12 review F1/F2: 'QA-VERDICT T-M9.9: FAIL2' blocks
+  ok   - T-M1.12 review F1/F2: 'QA-VERDICT T-M9.9 -FAILSAFE' blocks
+  ok   - T-M1.12 review F1/F2: 'QA-VERDICT T-M9.9-FAILED' blocks
+  ok   - T-M1.12 review F1/F2: 'QA-VERDICT T-M9.9—FAIL' blocks
+  ok   - T-M1.12 review F1/F2: 'SEC-REVIEW T-M9.9: CHANGES REQUESTED' blocks
+  ok   - T-M1.12 review F1/F2: 'QA-VERDICT T-M9.9: FAIL' blocks
+  ok   - T-M1.12 review F1/F2: 'QA-VERDICT T-M9.9： FAIL' blocks
+  ok   - T-M1.12 review F1/F2: 'QA-VERDICT T-M9.9 － FAIL' blocks
+  ok   - T-M1.12 review F1/F2: 'QA-VERDICT　T-M9.9: FAIL' blocks
+  ok   - T-M1.12 review F1/F2: '+ QA-VERDICT T-M9.9: FAIL' blocks
+  ok   - T-M1.12 review F1/F2: '- [x] QA-VERDICT T-M9.9: FAIL' blocks
+  ok   - T-M1.12 review F1/F2: '(1) QA-VERDICT T-M9.9: FAIL' blocks
+  ok   - T-M1.12 review F1/F2: 'QA-VERDICT T-M9.9:: CHANGES REQUESTED' blocks
+  ok   - T-M1.12 review F1/F2: 'QA-VERDICT T-M9.9- FAIL' blocks
+  ok   - T-M1.12 review F1/F2: '**QA-VERDICT T-M9.9- CHANGES REQUESTED**' blocks
+  ok   - T-M1.12 review F1/F2: 'QA-VERDICT T-M9.9-: FAIL' blocks
+  ok   - T-M1.12 review F1/F2: 'QA-VERDICT T-M9.9-  FAILED' blocks
+  ok   - T-M1.12 review F1/F2: 'QA-VERDICT T-M9.9 : - FAIL' blocks
+  ok   - T-M1.12 review F1/F2: 'QA-VERDICT T-M9.9 - - FAIL' blocks
+  ok   - T-M1.12 review F1/F2: 'QA-VERDICT T-M9.9-FAILURES' blocks
+  ok   - T-M1.12 review F1/F2: 'QA-VERDICT T-M9.9--FAILINGS' blocks
+  ok   - T-M1.12 review F1: a word glued to the id by a dash (FAILOVER, FAILSAFE) is not a negative
+  ok   - T-M1.12 AC3: a wrapperVersion-only bump passes
+  ok   - T-M1.12 AC3: another host fails
+  ok   - T-M1.12 AC3: another host — names the line
+  ok   - T-M1.12 AC3: userinfo in the URL fails
+  ok   - T-M1.12 AC3: userinfo in the URL — names the line
+  ok   - T-M1.12 AC3: another path on the same host fails
+  ok   - T-M1.12 AC3: another path on the same host — names the line
+  ok   - T-M1.12 AC3: mismatched versions in the URL fails
+  ok   - T-M1.12 AC3: mismatched versions in the URL — names the line
+  ok   - T-M1.12 AC3: a query string fails
+  ok   - T-M1.12 AC3: a query string — names the line
+  ok   - T-M1.12 AC3: an added key fails
+  ok   - T-M1.12 AC3: an added key — names the line
+  ok   - T-M1.12 AC3: a removed key fails
+  ok   - T-M1.12 AC3: a removed key — names the line
+  ok   - T-M1.12 AC3: a distributionType change fails
+  ok   - T-M1.12 AC3: a distributionType change — names the line
+  ok   - T-M1.12 AC3: a renamed key fails
+  ok   - T-M1.12 AC3: a renamed key — names the line
+  ok   - T-M1.12 AC3: a non-semver wrapperVersion fails
+  ok   - T-M1.12 AC3: a non-semver wrapperVersion — names the line
+  ok   - T-M1.12 AC3: a fullwidth digit (any locale, review F3) fails
+  ok   - T-M1.12 AC3: a fullwidth digit (any locale, review F3) — names the line
+  ok   - T-M1.12 AC3: a -n line (printf, not echo) fails
+  ok   - T-M1.12 AC3: a -n line (printf, not echo) — names the line
+  ok   - T-M1.12 AC3: a wrapper change without a diff fails closed
+  ok   - T-M1.12 AC4: '--dry-run 7' dry-runs
+  ok   - T-M1.12 AC4: '--dry-run 7' made no merge call
+  ok   - T-M1.12 AC4: '7 --dry-run' dry-runs
+  ok   - T-M1.12 AC4: '7 --dry-run' made no merge call
+  ok   - T-M1.12 AC4: arguments '' exit 2 (caller locale en_US.UTF-8)
+  ok   - T-M1.12 AC4: '' prints the usage
+  ok   - T-M1.12 AC4: '' made no gh call
+  ok   - T-M1.12 AC4: arguments '--dry-run' exit 2 (caller locale en_US.UTF-8)
+  ok   - T-M1.12 AC4: '--dry-run' prints the usage
+  ok   - T-M1.12 AC4: '--dry-run' made no gh call
+  ok   - T-M1.12 AC4: arguments '7 --dryrun' exit 2 (caller locale en_US.UTF-8)
+  ok   - T-M1.12 AC4: '7 --dryrun' prints the usage
+  ok   - T-M1.12 AC4: '7 --dryrun' made no gh call
+  ok   - T-M1.12 AC4: arguments '7 21' exit 2 (caller locale en_US.UTF-8)
+  ok   - T-M1.12 AC4: '7 21' prints the usage
+  ok   - T-M1.12 AC4: '7 21' made no gh call
+  ok   - T-M1.12 AC4: arguments 'abc' exit 2 (caller locale en_US.UTF-8)
+  ok   - T-M1.12 AC4: 'abc' prints the usage
+  ok   - T-M1.12 AC4: 'abc' made no gh call
+  ok   - T-M1.12 AC4: arguments '--force 7' exit 2 (caller locale en_US.UTF-8)
+  ok   - T-M1.12 AC4: '--force 7' prints the usage
+  ok   - T-M1.12 AC4: '--force 7' made no gh call
+  ok   - T-M1.12 AC4: arguments '07' exit 2 (caller locale en_US.UTF-8)
+  ok   - T-M1.12 AC4: '07' prints the usage
+  ok   - T-M1.12 AC4: '07' made no gh call
+  ok   - T-M1.12 AC4: arguments '7 --dry-run=1' exit 2 (caller locale en_US.UTF-8)
+  ok   - T-M1.12 AC4: '7 --dry-run=1' prints the usage
+  ok   - T-M1.12 AC4: '7 --dry-run=1' made no gh call
+  ok   - T-M1.12 AC4: arguments '-- 7' exit 2 (caller locale en_US.UTF-8)
+  ok   - T-M1.12 AC4: '-- 7' prints the usage
+  ok   - T-M1.12 AC4: '-- 7' made no gh call
+  ok   - T-M1.12 AC4: arguments '７' exit 2 (caller locale en_US.UTF-8)
+  ok   - T-M1.12 AC4: '７' prints the usage
+  ok   - T-M1.12 AC4: '７' made no gh call
+  ok   - T-M1.12 AC4: arguments '٧' exit 2 (caller locale en_US.UTF-8)
+  ok   - T-M1.12 AC4: '٧' prints the usage
+  ok   - T-M1.12 AC4: '٧' made no gh call
+  -> 295 passed, 6 failed
