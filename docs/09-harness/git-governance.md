@@ -41,7 +41,7 @@ Trailers: `Task: T-M2.3`, `Refs: FR-STU-01, DEC-012`, and the co-author attribut
 ## 4. Merging
 
 - **Only the LC merges**, only through `scripts/merge-gate.sh [--dry-run] <pr-number>` (`--dry-run` may also follow the number; any other argument, a second or non-numeric PR, or no PR exits 2 before any API call, so a mistyped flag never merges: T-M1.12, DEC-074). The script checks that all CI checks are green (`gh pr checks`), the required verdict comments are present,
-  the branch is up to date with its base, and `progress.json` changed in the PR. Then it runs `gh pr merge <n> --merge --delete-branch`.
+  the branch is up to date with its base, and `progress.json` changed in the PR (judged on the paginated REST file listing, since `gh pr view` stops at 100 files: T-M1.15). Then it runs `gh pr merge <n> --merge --delete-branch`.
 - The merge method is a **merge commit** (the `--no-ff` equivalent): task history stays grouped, and reverting a task is one `git revert -m 1`.
 - Squash merges are not used (they lose the per-step history the evidence refers to). Rebase-merging onto develop is not used.
 - There are no local merges into `develop` or `master`. The only exception ever made was the one-time bootstrap merge (DEC-030). Back-merges from `master` into `develop` go through a
