@@ -12,7 +12,7 @@ Packet: `docs/tasks/T-M1.15-merge-gate-pr-files.md` (packet and fix in one PR, D
 | AC1 | `merge-gate-after.log`: "(T-M1.15) passes when progress.json is the 130th file (on the second page)" (the mocked REST listing serves two arrays; `pr view` lists 100 files without it). |
 | AC2 | `merge-gate-after.log`: the three "(T-M1.15) refuses …" tests (only `pr view` lists it; deleted; listing fails, with the "fail closed" message). |
 | AC3 | `merge-gate-after.log`: **301 passed, 0 failed** (was 295). `merge-gate-before.log`: the same tests against develop's gate: 295 passed, **6 failed** (the four new tests and their two message checks). |
-| AC4 | `merge-gate-live-25.log`: the fixed gate's `--dry-run 25` passes PR #25 (develop's gate refused it). `check-docs.sh` PASS. CI: see the PR. |
+| AC4 | `merge-gate-live-25.log`: the fixed gate's `--dry-run 25` passes PR #25 (develop's gate refused it). `check-docs.sh` PASS. CI 7/7 for `dc42050` (e.g. backend run https://github.com/duochou042004/eng-lms/actions/runs/36905974878). Merged as `9a68eb7` via merge-gate. Review: `review/docs.md`. |
 
 ## Scope 3 (other capped fields)
 `GH_DEBUG=api gh pr view 25 --json comments,files,commits` (gh 2.102.0): `comments(first: 100)` with `pageInfo` (paged by gh); `files(first: 100)` and
