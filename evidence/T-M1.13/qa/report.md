@@ -62,7 +62,7 @@ Evaluator: independent G3 QA, fresh context. Date: 2026-10-02.
 **F-3.**
 - Steps: oxlint on `src/features/qaprobe/probe.ts`.
 - Not flagged:
-  - `const k = "fe" + "tch"; (window as any)[k](…)`
+  - `const k = "fe" + "tch"; (window as any)[k] (…)`
   - `Reflect.get(window, "fetch")(…)`
   - any file with a blanket `/* eslint-disable */` or `// oxlint-disable`. My first probe run reported nothing at all because of one such comment.
 - `XMLHttpRequest`, `navigator.sendBeacon` and `EventSource` are also not covered. That is outside AC5 but against the intent of frontend-architecture §1.
