@@ -16,7 +16,7 @@
       }
     ]
   },
-  "updatedAt": "2026-10-01T18:35:38Z",
+  "updatedAt": "2026-10-01T18:42:03Z",
   "updatedBy": "lead-coordinator (session 2026-10-02 #1, Opus 5.5)",
   "phase": {
     "id": "P1",
@@ -183,7 +183,7 @@
       "completedAt": "2026-10-01T18:33:12Z",
       "mergeCommit": "625c8fc",
       "evidence": "evidence/T-M1.13/summary.md",
-      "note": "PO start DEC-077. Packet PR #24 (6c8d1d4). Merged via merge-gate (PR #25) at 5c169fb (= reviewed 3ff781c + develop's T-M1.15 merge + progress.json; verdicts re-posted); CI 7/7. QA-VERDICT PASS (record PR #27), UX-REVIEW APPROVED (evidence/T-M1.13/review/ux.md); S4s: UX-1 accepted, the rest to T-M1.16 (DEC-079). The merge first needed T-M1.15 (merge-gate saw only 100 of the PR's 130 files, DEC-078)."
+      "note": "PO start DEC-077. Packet PR #24 (6c8d1d4). Merged via merge-gate (PR #25) at 5c169fb (= reviewed 3ff781c + develop's T-M1.15 merge + progress.json; verdicts re-posted); CI 7/7. QA-VERDICT PASS (record PR #27, merged ac27fea), UX-REVIEW APPROVED (evidence/T-M1.13/review/ux.md); S4s: UX-1 accepted, the rest to T-M1.16 (DEC-079). The merge first needed T-M1.15 (merge-gate saw only 100 of the PR's 130 files, DEC-078)."
     }
   ],
   "tests": {
@@ -607,6 +607,11 @@
       "at": "2026-10-01T18:35:38Z",
       "actor": "lead-coordinator",
       "event": "docs/T-M1.14-packet: T-M1.13/T-M1.15 review records, DEC-079 (merge + S4 deferrals to T-M1.16), T-M1.14 packet (ready; PO start pending), handoff."
+    },
+    {
+      "at": "2026-10-01T18:52:00Z",
+      "actor": "lead-coordinator",
+      "event": "QA record PR #27 merged via merge-gate (ac27fea). PR #28 DOCS-REVIEW round 1: CHANGES REQUESTED (F1 S3, 7 S4), fixed."
     }
   ]
 }
