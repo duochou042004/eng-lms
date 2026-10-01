@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-09-28T12:40:00Z",
-  "updatedBy": "lead-coordinator (session 2026-09-28 #1, Opus 5.5)",
+  "updatedAt": "2026-10-02T08:00:00Z",
+  "updatedBy": "lead-coordinator (session 2026-10-02 #1, Opus 5.5)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -36,8 +36,8 @@
     "ownerRole": "FE",
     "branch": "feature/T-M1.13-web-polish",
     "packet": "docs/tasks/T-M1.13-web-polish.md",
-    "pr": null,
-    "lastCommit": "1fa265f",
+    "pr": "#25",
+    "lastCommit": "fce92d2",
     "startedAt": "2026-09-28T12:10:00Z",
     "entryGate": [
       "T-M1.9 merged — met (e20e8ec)",
