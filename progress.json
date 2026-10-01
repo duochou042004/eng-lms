@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-10-02T08:00:00Z",
-  "updatedBy": "lead-coordinator (session 2026-10-02 #1, Opus 5.5)",
+  "updatedAt": "2026-10-02T09:00:00Z",
+  "updatedBy": "lead-coordinator (session 2026-09-28 #1, Opus 5.5)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -30,27 +30,25 @@
     "exitCriteria": "scripts/gate.sh green locally and in CI; backend skeleton with Modulith verify + Flyway V1; SPA served same-origin; Playwright smoke at 3 viewports with axe; contract drift check; Testcontainers on rootless Podman or documented fallback (docs/01-product/roadmap.md)."
   },
   "currentTask": {
-    "id": "T-M1.13",
-    "title": "Web polish from the T-M1.9 reviews (DEC-073)",
+    "id": "T-M1.15",
+    "title": "merge-gate reads all of a PR's files (DEC-078)",
     "status": "in_review",
-    "ownerRole": "FE",
-    "branch": "feature/T-M1.13-web-polish",
-    "packet": "docs/tasks/T-M1.13-web-polish.md",
-    "pr": "#25",
-    "lastCommit": "fce92d2",
-    "startedAt": "2026-09-28T12:10:00Z",
+    "ownerRole": "LC",
+    "branch": "chore/T-M1.15-merge-gate-pr-files",
+    "packet": "docs/tasks/T-M1.15-merge-gate-pr-files.md",
+    "pr": "#26",
+    "lastCommit": "3eff11a",
+    "startedAt": "2026-10-02T08:30:00Z",
     "entryGate": [
-      "T-M1.9 merged — met (e20e8ec)",
-      "Packet G0 — met (PR #24, 6c8d1d4; DOCS-REVIEW round 2 PASS)",
-      "PO start signal — given (DEC-077)"
+      "T-M1.12 merged — met (9866f26)",
+      "PO start signal and one-PR waiver — given (DEC-078)"
     ],
     "nextSteps": [
-      "G3: fresh qa-evaluator (QA-VERDICT) + ux-reviewer (UX-REVIEW) on the T-M1.13 PR",
-      "Merge via merge-gate after CI is green for the final head"
+      "Fresh docs-reviewer (DOCS-REVIEW) on the T-M1.15 PR",
+      "Merge via merge-gate, then merge T-M1.13 PR #25 with the fixed gate"
     ],
     "trace": [
-      "DEC-073",
-      "DEC-077"
+      "DEC-078"
     ]
   },
   "nextTask": {
@@ -198,35 +196,42 @@
   "gates": {
     "G0": {
       "status": "pass",
-      "note": "T-M1.13 packet merged (PR #24, 6c8d1d4); DOCS-REVIEW round 2 PASS"
+      "note": "T-M1.13 packet via PR #24; T-M1.15 packet in its own fix PR (DEC-078)"
     },
     "G1": {
       "status": "pass",
-      "note": "T-M1.13 implemented (frontend-implementer); evidence/T-M1.13/summary.md"
+      "note": "T-M1.13 gate PASS"
     },
     "G2": {
       "status": "pass",
-      "note": "gate.sh PASS (12 steps, 145 s; E2E 86 passed/16 skipped)"
+      "note": "T-M1.13 CI 7/7"
     },
     "G3": {
-      "status": "pending",
-      "note": "QA + UX review"
+      "status": "pass",
+      "note": "T-M1.13: QA-VERDICT PASS, UX-REVIEW APPROVED at 3ff781c (S4s only, deferred on the post-merge docs branch)"
     },
     "G4": {
       "status": "pending",
-      "note": "merge via merge-gate"
+      "note": "T-M1.13 merge blocked by the merge-gate file cap; T-M1.15 fixes it (DEC-078)"
     }
   },
-  "blockers": [],
+  "blockers": [
+    {
+      "id": "B-T-M1.13-merge",
+      "description": "T-M1.13 PR #25 (QA-VERDICT PASS, UX-REVIEW APPROVED, LC-APPROVED, CI 7/7 at 3ff781c) waits for T-M1.15: the old merge-gate sees only the first 100 of its 130 files",
+      "owner": "LC",
+      "since": "2026-10-02"
+    }
+  ],
   "decisions": {
     "log": "docs/10-governance/decision-log.md",
     "recent": [
-      "DEC-072",
       "DEC-073",
       "DEC-074",
       "DEC-075",
       "DEC-076",
-      "DEC-077"
+      "DEC-077",
+      "DEC-078"
     ],
     "pendingPO": [
       "OQ-03",
@@ -562,24 +567,19 @@
       "event": "T-M1.12 merged via merge-gate as 9866f26 (PR #23, head 0123d7f). docs/T-M1.13-packet: review record, DEC-076, progress, handoff; T-M1.13 packet next."
     },
     {
-      "at": "2026-09-28T11:51:00Z",
+      "at": "2026-09-28T10:40:00Z",
       "actor": "lead-coordinator",
       "event": "PO start signal for T-M1.13 (DEC-077). T-M1.13 packet written on docs/T-M1.13-packet; PR opened; session handed off at the context budget."
     },
     {
-      "at": "2026-09-28T11:57:00Z",
+      "at": "2026-09-28T10:50:00Z",
       "actor": "lead-coordinator",
       "event": "PR #24 DOCS-REVIEW round 1: CHANGES REQUESTED (F1 S3: label weight also shifts widths; F2 S3: no ui/ link style; 8 S4) — all fixed."
     },
     {
-      "at": "2026-09-28T12:10:00Z",
+      "at": "2026-10-02T09:00:00Z",
       "actor": "lead-coordinator",
-      "event": "PR #24 merged via merge-gate (6c8d1d4): T-M1.13 packet G0 (DOCS-REVIEW round 2 PASS; R2-1 timestamps fixed here), T-M1.12 record. T-M1.13 in progress on feature/T-M1.13-web-polish."
-    },
-    {
-      "at": "2026-09-28T12:40:00Z",
-      "actor": "lead-coordinator",
-      "event": "T-M1.13 implemented (5 commits, gate PASS); summary written by the LC; PR opened; G3 pending."
+      "event": "T-M1.13 G3: QA PASS, UX APPROVED at 3ff781c; merge-gate refused (files capped at 100). PO started T-M1.15 (one PR, DEC-078)."
     }
   ]
 }
