@@ -30,4 +30,4 @@ Phase/Milestone: P1 / M1 · Current task: **T-M1.14 (ready; PO start signal pend
 - `./scripts/gitlab-sync.sh [branch]` after merges and before reviews. Stage explicit paths. `ENGLMS_TASK=<id>` makes E2E write evidence; don't commit it for non-UI tasks.
 
 ## Files to read first
-`CLAUDE.md` → `progress.json` → this file → `docs/tasks/T-M1.14-flaky-request-id-test.md` → the backend-module skill.
+`CLAUDE.md` → `progress.json` → this file → `docs/tasks/T-M1.14-flaky-request-id-test.md` → the backend-module skill (for the implementer brief) and the qa-evaluation skill (G3).
