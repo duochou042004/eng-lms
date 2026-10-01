@@ -609,7 +609,7 @@
       "event": "docs/T-M1.14-packet: T-M1.13/T-M1.15 review records, DEC-079 (merge + S4 deferrals to T-M1.16), T-M1.14 packet (ready; PO start pending), handoff."
     },
     {
-      "at": "2026-10-01T18:52:00Z",
+      "at": "2026-10-01T18:40:45Z",
       "actor": "lead-coordinator",
       "event": "QA record PR #27 merged via merge-gate (ac27fea). PR #28 DOCS-REVIEW round 1: CHANGES REQUESTED (F1 S3, 7 S4), fixed."
     }
