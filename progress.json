@@ -16,7 +16,7 @@
       }
     ]
   },
-  "updatedAt": "2026-10-02T04:05:00Z",
+  "updatedAt": "2026-10-02T04:24:49Z",
   "updatedBy": "lead-coordinator (session 2026-10-02 #2, Opus 5.5)",
   "phase": {
     "id": "P1",
@@ -32,12 +32,12 @@
   "currentTask": {
     "id": "T-M1.14",
     "title": "Fix the flaky request-ID backend test (DEC-074)",
-    "status": "in_progress",
+    "status": "in_review",
     "ownerRole": "BE",
     "branch": "fix/T-M1.14-flaky-request-id-test",
     "packet": "docs/tasks/T-M1.14-flaky-request-id-test.md",
-    "pr": null,
-    "lastCommit": null,
+    "pr": "#37",
+    "lastCommit": "82b89a4",
     "startedAt": "2026-10-02T04:05:00Z",
     "entryGate": [
       "T-M1.8 merged — met (01dfc5d)",
@@ -45,8 +45,8 @@
       "PO start signal — given (DEC-080)"
     ],
     "nextSteps": [
-      "backend-implementer on fix/T-M1.14-flaky-request-id-test",
-      "G3: fresh qa-evaluator (QA-VERDICT); merge via merge-gate"
+      "G3: fresh qa-evaluator (QA-VERDICT) on PR #37",
+      "Merge via merge-gate after CI is green; QA record on qa/T-M1.14"
     ],
     "trace": [
       "DEC-074",
@@ -219,8 +219,8 @@
       "note": "T-M1.14: packet via PR #28 (DOCS-REVIEW round 2 PASS); PO start DEC-080"
     },
     "G1": {
-      "status": "pending",
-      "note": "T-M1.14 not started"
+      "status": "pass",
+      "note": "T-M1.14: gate.sh PASS (ENGLMS_TASK=T-M1.14); 50/50 runs"
     },
     "G2": {
       "status": "pending",
@@ -652,6 +652,11 @@
       "at": "2026-10-02T04:05:00Z",
       "actor": "lead-coordinator",
       "event": "PO: start T-M1.14; keep the GitLab mirror (DEC-080). Docs PR for the decision; then the backend-implementer."
+    },
+    {
+      "at": "2026-10-02T04:24:49Z",
+      "actor": "lead-coordinator",
+      "event": "T-M1.14 implemented (1e0825b, 82b89a4; gate PASS, 50/50 runs); PR #37 open, caught up with develop."
     }
   ]
 }

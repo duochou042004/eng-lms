@@ -1,0 +1,59 @@
+# T-M1.14 AC3 determinism demo (2026-10-02T04:03:43Z), openjdk version "25.0.4" 2026-07-21 LTS
+# Scratch program (not committed), run as: java -cp backend/target/classes:<test classpath> DeterminismDemo.java
+# --- source ---
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.lang.reflect.Method;
+import java.util.UUID;
+
+import tools.jackson.databind.json.JsonMapper;
+
+/** T-M1.14 AC3 scratch demo (not committed): old vs new assertions on a valve body whose generated ID contains "bad". */
+public class DeterminismDemo {
+
+	public static void main(String[] args) throws Exception {
+		String requestId = "01a0e646-0000-7bad-8bad-000000000bad";
+		// The real body the Tomcat-level valve writes for a 400 (package-private static method, called reflectively).
+		Method m = Class.forName("com.englms.shared.web.ProblemDetailsErrorReportValve").getDeclaredMethod("body", int.class, String.class);
+		m.setAccessible(true);
+		String body = (String) m.invoke(null, 400, requestId);
+		System.out.println("header X-Request-Id: " + requestId);
+		System.out.println("body: " + body);
+
+		System.out.println("\n== OLD assertions (develop @ 14e820d) ==");
+		try {
+			assertThat(requestId).matches("[0-9a-f-]{36}");
+			assertThat(body).doesNotContain("bad");
+			System.out.println("OLD: PASSED");
+		}
+		catch (AssertionError e) {
+			System.out.println("OLD: FAILED -> " + e.getMessage().strip().replace("\n", " "));
+		}
+
+		System.out.println("\n== NEW assertions (fix/T-M1.14) ==");
+		try {
+			assertThat(requestId).matches("[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}");
+			assertThat(UUID.fromString(requestId)).satisfies(uuid -> {
+				assertThat(uuid.version()).isEqualTo(7);
+				assertThat(uuid.variant()).isEqualTo(2);
+			});
+			assertThat(JsonMapper.builder().build().readTree(body).path("requestId").asString()).isEqualTo(requestId);
+			assertThat(requestId).doesNotContain("bad<id>", "<");
+			assertThat(body).doesNotContain("bad<id>", "<");
+			System.out.println("NEW: PASSED");
+		}
+		catch (AssertionError e) {
+			System.out.println("NEW: FAILED -> " + e.getMessage());
+		}
+	}
+
+}
+# --- output ---
+header X-Request-Id: 01a0e646-0000-7bad-8bad-000000000bad
+body: {"type":"https://englms.local/problems/malformed-request","title":"Bad Request","status":400,"code":"MALFORMED_REQUEST","requestId":"01a0e646-0000-7bad-8bad-000000000bad"}
+
+== OLD assertions (develop @ 14e820d) ==
+OLD: FAILED -> Expecting actual:   "{"type":"https://englms.local/problems/malformed-request","title":"Bad Request","status":400,"code":"MALFORMED_REQUEST","requestId":"01a0e646-0000-7bad-8bad-000000000bad"}" not to contain:   "bad"
+
+== NEW assertions (fix/T-M1.14) ==
+NEW: PASSED
