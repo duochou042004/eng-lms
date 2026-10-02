@@ -30,6 +30,9 @@ that don't trip over the hidden label copy, no dead markup, no network-call loop
      of any object (`window.XMLHttpRequest`, `globalThis.EventSource`, `window.navigator.sendBeacon`: the global + property-only pair the `fetch` rule uses), and on
      any `eslint-disable`/`oxlint-disable` comment. Oxlint first; if the installed oxlint (1.85, or 1.86 if Dependabot #32 merges) has no rule for the disable comments, one `grep`-based step in the `lint` script is
      allowed (no new linter without a DEC). Dynamic keys and `Reflect.get(window, "fetch")` stay accepted (DEC-079).
+  9. **Flaky E2E step budget (DEC-082).** `e2e/tests/route-focus.spec.ts` "switch the language from any page" (keyboard part) presses Tab right after `page.goto('/')`,
+     before the lazy landing page has rendered (a first load does not move focus), so focus sometimes misses the switcher (failed on Dependabot PRs #30 and #32 on
+     laptop/tablet; passed on re-run). Wait for the landing content (its `h1` visible) before the first Tab; check the other keyboard specs for the same race. Test-only.
 - In (LC):
   6. **merge-gate file pages (T-M1.15 review F1, F2).** Step 5 fails closed when a page of the REST file listing is not an array, and counts `progress.json` only with
      status `added`, `modified`, `renamed`, `copied` or `changed`; the Dependabot path's file listing gets the same array check; tests with the mocked `gh`.
@@ -66,16 +69,18 @@ switcher skeletons are seen on every first load. 5. No exam or curriculum semant
 - **AC5 (item 6):** the gate refuses a file page that is a JSON object (step 5 and the Dependabot path) and a `progress.json` with status `unchanged` or no status; all earlier merge-gate tests pass; the new
   tests fail against develop's gate.
 - **AC6 (items 7–8):** the wrapper properties name Maven 3.10.0 and nothing else in `backend/` changes; `./mvnw -v` shows 3.10.0; the two docs use the new branch name.
-- **AC7:** `./scripts/gate.sh` green (`ENGLMS_TASK=T-M1.16`, log in the evidence); CI 7/7; screenshots at 360×740, 768×1024, 1280×800 in vi and en of the landing and shell
+- **AC7 (item 9):** the keyboard step-budget test waits for the landing content before its first Tab, and passes 20 consecutive runs on each of the three projects
+  (`--repeat-each=20`, log); any other spec with the same race (Tab right after a `goto`) is fixed the same way or listed as "none found" with the grep.
+- **AC8:** `./scripts/gate.sh` green (`ENGLMS_TASK=T-M1.16`, log in the evidence); CI 7/7; screenshots at 360×740, 768×1024, 1280×800 in vi and en of the landing and shell
   loading states; `evidence/T-M1.16/summary.md` maps each AC to its proof.
 
 ## Test plan
-- Implementation: unit (RouteLoading, SegmentedControl), E2E (AC1 measurements; AC2 on the dev server), lint fixtures (AC4), merge-gate tests (AC5), the full gate (AC6).
-- Independent QA focus: throttled first loads of `/` and a shell route at the three viewports; the `/dev/ui` language switch; lint probes beyond the listed forms; the gate
+- Implementation: unit (RouteLoading, SegmentedControl), E2E (AC1 measurements; AC2 on the dev server), lint fixtures (AC4), merge-gate tests (AC5), the repeated step-budget run (AC7), the full gate (AC6).
+- Independent QA focus: throttled first loads of `/` and a shell route at the three viewports; the `/dev/ui` language switch; the keyboard step budget repeated on a cold first load; lint probes beyond the listed forms; the gate
   with odd file pages. **UX review** (ux-reviewer) is required at G3 (UI change).
 
 ## Evidence required
-`evidence/T-M1.16/summary.md`, the gate log, the AC1/AC2 measurements, the lint and merge-gate negative demos, the screenshots, the CI links, the QA report (on `qa/T-M1.16`)
+`evidence/T-M1.16/summary.md`, the gate log, the AC1/AC2 measurements, the AC7 repeat log, the lint and merge-gate negative demos, the screenshots, the CI links, the QA report (on `qa/T-M1.16`)
 and the UX review (`evidence/T-M1.16/review/ux.md`, on the next docs branch).
 
 ## Docs to update
