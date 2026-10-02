@@ -37,6 +37,7 @@ stores the reports again; the PO keeps the mirror as a second copy of the reposi
 
 GitHub remains the source of truth: the GitLab pipeline is **not** a required check and GitLab is not a merge path (merge requests are disabled; develop/master are protected: Maintainers push only, no merges, no force push; DEC-061). The mirror is fed by
 `scripts/gitlab-sync.sh` (GitHub's commits only). Budget: GitLab.com free tier, 400 compute minutes/month; sync develop and the branches under review only.
+The GitLab images are outside Dependabot: bump their digests by hand with the monthly dependency batch (tech-stack.md).
 
 ## 2. Branch protection (target configuration)
 

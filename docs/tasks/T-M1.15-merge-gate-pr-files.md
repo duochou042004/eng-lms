@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Milestone | M1 |
-| Status | **in review** (packet and fix in one PR by PO choice, DEC-078; G0 and G3 are the same DOCS-REVIEW) |
+| Status | **done** (merged `9a68eb7`, PR #26) (packet and fix in one PR by PO choice, DEC-078; G0 and G3 are the same DOCS-REVIEW) |
 | Owner role | LC (harness script) |
 | Branch | `chore/T-M1.15-merge-gate-pr-files` (from `develop` `6c8d1d4`) |
 | Depends on | T-M1.12 merged (`9866f26`) |

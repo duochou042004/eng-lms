@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# gitlab-sync.sh — mirror GitHub's state to the private GitLab mirror (T-M1.11, DEC-060; temporary while GitHub's
-# artifact storage is exhausted). Fetches origin, then pushes origin's develop, master and any given branches to the
+# gitlab-sync.sh — mirror GitHub's state to the private GitLab mirror (T-M1.11, DEC-060; kept as a backup,
+# DEC-080). Fetches origin, then pushes origin's develop, master and any given branches to the
 # `gitlab` remote. It pushes GitHub's commits (refs/remotes/origin/*), never local ones, fast-forward only; the
 # pre-push hook allows develop/master on the mirror only for exactly those commits. Each push runs .gitlab-ci.yml.
 # Usage: ./scripts/gitlab-sync.sh [branch...]      Env: ENGLMS_MIRROR_REMOTE (default: gitlab)
