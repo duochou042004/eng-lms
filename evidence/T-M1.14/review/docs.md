@@ -154,3 +154,9 @@ Scope: I read the diff of `docs/DEC-080-start-T-M1.14` against `develop` at head
   - Fix: set both to **done** with their merge commits, alongside F2.
 
 DOCS-REVIEW T-M1.14: PASS
+
+## PR #35 re-check, head `37d899c`: PASS
+
+The same reviewer verified F1–F7 fixed (`git diff 045127b 37d899c`; `bash -n` on `gitlab-sync.sh`, `.gitlab-ci.yml` parses). New: N1 (S4) the T-M1.11 backlog row's trace lacked DEC-080, fixed in the next commit; this record now covers the final head. Process note from the reviewer: in its first pass it checked out the PR head in the main working tree (clean at the time) while the implementer was starting; the LC verified the implementer's branch and work afterwards (on `fix/T-M1.14-flaky-request-id-test`, nothing lost).
+
+DOCS-REVIEW T-M1.14: PASS
