@@ -4,16 +4,16 @@
 |---|---|
 | Milestone | M1 |
 | Status | **ready** (G0: DOCS-REVIEW on the packet PR, recorded in `evidence/T-M1.16/review/docs.md`; dependencies merged); **the PO start signal is still needed** |
-| Owner role | FE (frontend-implementer) for items 1–5; LC for items 6 and 8 (harness, docs) and, by the exception in DEC-082, for the one-line item 7 in `backend/.mvn/wrapper/` |
+| Owner role | FE (frontend-implementer) for items 1–5 and 9; LC for items 6 and 8 (harness, docs) and, by the exception in DEC-082, for the one-line item 7 in `backend/.mvn/wrapper/` |
 | Branch | `feature/T-M1.16-review-polish` (from `develop`) |
 | Depends on | T-M1.13 (`625c8fc`), T-M1.15 (`9a68eb7`) merged |
 | Estimate | ≤ 1 agent-day |
-| Trace | DEC-079 (the S4 deferrals; sources `evidence/T-M1.13/qa/report.md` F-1..F-4, `evidence/T-M1.13/review/ux.md` UX-2..UX-4, `evidence/T-M1.15/review/docs.md` F1/F2); DEC-082 (Dependabot triage: Maven 3.10.0 and the dependency-batch branch name); interaction-states §1 (skeletons match the final layout); frontend-architecture §1 (no network calls outside `lib/api`); tech-stack (upgrades) |
+| Trace | DEC-079 (the S4 deferrals; sources `evidence/T-M1.13/qa/report.md` F-1..F-4, `evidence/T-M1.13/review/ux.md` UX-2..UX-4, `evidence/T-M1.15/review/docs.md` F1/F2); DEC-082 (Dependabot triage: Maven 3.10.0, the dependency-batch branch name, the flaky route-focus test under the test-strategy flaky policy); interaction-states §1 (skeletons match the final layout); frontend-architecture §1 (no network calls outside `lib/api`); tech-stack (upgrades) |
 
 ## Goal
 Close the review leftovers before M2 reuses these pieces: skeletons as wide as the real language switcher, a `/dev/ui` example that keeps its width, E2E records and a docblock
-that don't trip over the hidden label copy, no dead markup, no network-call loopholes beyond `fetch` outside `src/lib/api`, a stricter merge-gate file check, and the Maven
-3.10.0 bump that Dependabot could not deliver within the merge-gate's allow-list.
+that don't trip over the hidden label copy, no dead markup, no network-call loopholes beyond `fetch` outside `src/lib/api`, a stricter merge-gate file check, the Maven
+3.10.0 bump that Dependabot could not deliver within the merge-gate's allow-list, and a deterministic keyboard step-budget E2E test.
 
 ## Scope
 - In (FE):
@@ -32,7 +32,7 @@ that don't trip over the hidden label copy, no dead markup, no network-call loop
      allowed (no new linter without a DEC). Dynamic keys and `Reflect.get(window, "fetch")` stay accepted (DEC-079).
   9. **Flaky E2E step budget (DEC-082).** `e2e/tests/route-focus.spec.ts` "switch the language from any page" (keyboard part) presses Tab right after `page.goto('/')`,
      before the lazy landing page has rendered (a first load does not move focus), so focus sometimes misses the switcher (failed on Dependabot PRs #30 and #32 on
-     laptop/tablet; passed on re-run). Wait for the landing content (its `h1` visible) before the first Tab; check the other keyboard specs for the same race. Test-only.
+     laptop/tablet; #30's re-run passed; outcomes in the next merge record). Wait for the landing content (its `h1` visible) before the first Tab; check the other keyboard specs for the same race. Test-only.
 - In (LC):
   6. **merge-gate file pages (T-M1.15 review F1, F2).** Step 5 fails closed when a page of the REST file listing is not an array, and counts `progress.json` only with
      status `added`, `modified`, `renamed`, `copied` or `changed`; the Dependabot path's file listing gets the same array check; tests with the mocked `gh`.
@@ -69,13 +69,13 @@ switcher skeletons are seen on every first load. 5. No exam or curriculum semant
 - **AC5 (item 6):** the gate refuses a file page that is a JSON object (step 5 and the Dependabot path) and a `progress.json` with status `unchanged` or no status; all earlier merge-gate tests pass; the new
   tests fail against develop's gate.
 - **AC6 (items 7–8):** the wrapper properties name Maven 3.10.0 and nothing else in `backend/` changes; `./mvnw -v` shows 3.10.0; the two docs use the new branch name.
-- **AC7 (item 9):** the keyboard step-budget test waits for the landing content before its first Tab, and passes 20 consecutive runs on each of the three projects
-  (`--repeat-each=20`, log); any other spec with the same race (Tab right after a `goto`) is fixed the same way or listed as "none found" with the grep.
+- **AC7 (item 9):** the keyboard step-budget test waits for the landing content before its first Tab, and passes 20 consecutive runs on each of `phone-small`, `tablet` and `laptop`
+  (`--project=phone-small --project=tablet --project=laptop --repeat-each=20`, log); any other spec with the same race (Tab right after a `goto`) is fixed the same way or listed as "none found" with the grep.
 - **AC8:** `./scripts/gate.sh` green (`ENGLMS_TASK=T-M1.16`, log in the evidence); CI 7/7; screenshots at 360×740, 768×1024, 1280×800 in vi and en of the landing and shell
   loading states; `evidence/T-M1.16/summary.md` maps each AC to its proof.
 
 ## Test plan
-- Implementation: unit (RouteLoading, SegmentedControl), E2E (AC1 measurements; AC2 on the dev server), lint fixtures (AC4), merge-gate tests (AC5), the repeated step-budget run (AC7), the full gate (AC6).
+- Implementation: unit (RouteLoading, SegmentedControl), E2E (AC1 measurements; AC2 on the dev server), lint fixtures (AC4), merge-gate tests (AC5), the repeated step-budget run (AC7), the full gate (AC8).
 - Independent QA focus: throttled first loads of `/` and a shell route at the three viewports; the `/dev/ui` language switch; the keyboard step budget repeated on a cold first load; lint probes beyond the listed forms; the gate
   with odd file pages. **UX review** (ux-reviewer) is required at G3 (UI change).
 

@@ -6,6 +6,7 @@
 |---|---|---|---|
 | 1 | `cfefa4e` | **CHANGES REQUESTED** | F1, F2 S3; F3–F8 S4 |
 | 2 | `ca427c3` | **PASS** | R2-1, R2-2 S4 (fixed in the next commit: the item 6 design note; this record) |
+| 3 | `3dc3561` | **CHANGES REQUESTED** | new scope item 9 (flaky route-focus test): R3-1 S3 (DEC-082 / item 9 misstated the CI facts), R3-2..R3-5 S4; all fixed in the next commit |
 
 ## Round 1 dispositions
 | ID | Disposition |
@@ -100,3 +101,35 @@ Round 2 at head `ca427c3`: **PASS**. All eight round-1 findings are fixed, and I
 - /home/kali/App_sources/Eng-LMS/evidence/T-M1.16/review/docs.md
 
 DOCS-REVIEW T-M1.16: PASS
+
+## Round 3 report (`3dc3561`, after item 9 was added)
+
+Round 3 at head `3dc3561`: **CHANGES REQUESTED**, for one S3. DEC-082 misstates what happened on #32's first run, and the new item 9 says the test passed on re-run, which no run has shown yet.
+
+Adding the flaky test as item 9 is sound in itself. The race is real, the fix is test-only, and the flaky policy in `docs/06-quality/test-strategy.md:40` (a DEC entry plus a fix within one milestone) is met. `check-docs.sh` passes at `3dc3561` (158 markdown files, `progress.json` valid, sources intact, prompt within limit). I ran it on an export in my scratchpad and changed nothing in the repo.
+
+**What the CI logs show**
+- **#30, attempt 1 (run 36973007377):** "1 failed, 85 passed". The failure is `[laptop] route-focus.spec.ts:139`, step 1, `toBeFocused` "Received: inactive". Attempt 2 is still running.
+- **#32 (run 36958901028):** also "1 failed, 85 passed". The failure is `[tablet] route-focus.spec.ts:139`, same error. The other ✘ is `guards.spec.ts:76`, "the console guard fails on an error raised 300 ms after the test body ends (**expected failure**)", which is a designed failure and counts as passed. #30's log shows the same line. #32 has not been re-run and still shows `e2e-smoke=fail`.
+- **Merged so far:** #29 and #33. #30, #32 and #34 are open.
+- **The race is confirmed in the code:** in `route-focus.spec.ts`, `page.goto('/')` is followed immediately by `keyboard.press('Tab')`, with no wait for the landing page to render.
+
+**R3 findings**
+- **R3-1 (S3)** in `docs/10-governance/decision-log.md` (DEC-082) and `docs/tasks/T-M1.16-review-polish.md:33-35` (item 9):
+  - DEC-082 still says #32's first run had "two E2E failures on a stale base, a timing guard and a tablet step budget, that pass on develop". There was only one real failure, the flaky step-budget test. The "timing guard" is the designed expected failure, not a failure. The same entry now also says the cause is the flaky test, so it contradicts itself.
+  - Item 9 says "failed on #30 and #32 … passed on re-run". #30's re-run has not finished and #32 was never re-run.
+  - **Fix:**
+    - DEC-082: "#32's first run had one E2E failure, the flaky `route-focus.spec.ts:139` on tablet; the `guards.spec.ts:76` ✘ is its designed expected failure".
+    - Item 9: "re-run requested for #30; outcomes in the next merge record".
+- **R3-2 (S4)** packet line 7: the Owner row does not mention item 9, although it sits under "In (FE)". **Fix:** "FE for items 1–5 and 9".
+- **R3-3 (S4)** packet line 78: the Test plan still says "the full gate (AC6)". **Fix:** change it to AC8.
+- **R3-4 (S4)** packet line 72 (AC7): "each of the three projects" does not name them, and the Playwright config has six projects. **Fix:** name `phone-small`, `tablet` and `laptop`, for example `--project=phone-small --project=tablet --project=laptop --repeat-each=20`.
+- **R3-5 (S4)** packet line 11 (Trace) and the Goal: neither mentions the flaky test. **Fix:** add "flaky route-focus test (DEC-082; test-strategy flaky policy)" to the Trace row and a short clause to the Goal.
+
+**Files reviewed**
+- /home/kali/App_sources/Eng-LMS/docs/10-governance/decision-log.md
+- /home/kali/App_sources/Eng-LMS/docs/tasks/T-M1.16-review-polish.md
+- /home/kali/App_sources/Eng-LMS/docs/tasks/backlog.md
+- /home/kali/App_sources/Eng-LMS/e2e/tests/route-focus.spec.ts
+
+DOCS-REVIEW T-M1.16: CHANGES REQUESTED
