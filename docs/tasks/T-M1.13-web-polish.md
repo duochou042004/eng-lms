@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Milestone | M1 |
-| Status | **ready** (G0: DOCS-REVIEW on PR #24, recorded in `evidence/T-M1.13/review/docs.md`; dependencies merged; PO start signal given, DEC-077) |
+| Status | **done** (merged `625c8fc`, PR #25; DEC-079) (G0: DOCS-REVIEW on PR #24, recorded in `evidence/T-M1.13/review/docs.md`; dependencies merged; PO start signal given, DEC-077) |
 | Owner role | FE (frontend-implementer) |
 | Branch | `feature/T-M1.13-web-polish` (from `develop`) |
 | Depends on | T-M1.9 merged (`e20e8ec`) |

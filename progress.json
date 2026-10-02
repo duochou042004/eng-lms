@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-10-01T18:42:03Z",
-  "updatedBy": "lead-coordinator (session 2026-10-02 #1, Opus 5.5)",
+  "updatedAt": "2026-10-02T04:05:00Z",
+  "updatedBy": "lead-coordinator (session 2026-10-02 #2, Opus 5.5)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -32,25 +32,26 @@
   "currentTask": {
     "id": "T-M1.14",
     "title": "Fix the flaky request-ID backend test (DEC-074)",
-    "status": "ready",
+    "status": "in_progress",
     "ownerRole": "BE",
     "branch": "fix/T-M1.14-flaky-request-id-test",
     "packet": "docs/tasks/T-M1.14-flaky-request-id-test.md",
     "pr": null,
     "lastCommit": null,
-    "startedAt": null,
+    "startedAt": "2026-10-02T04:05:00Z",
     "entryGate": [
       "T-M1.8 merged — met (01dfc5d)",
-      "Packet G0 — DOCS-REVIEW on the docs/T-M1.14-packet PR",
-      "PO start signal — pending"
+      "Packet G0 — met (PR #28, 14e820d; DOCS-REVIEW round 2 PASS)",
+      "PO start signal — given (DEC-080)"
     ],
     "nextSteps": [
-      "PO start signal for T-M1.14",
-      "backend-implementer on fix/T-M1.14-flaky-request-id-test; G3 = fresh qa-evaluator (no UI)"
+      "backend-implementer on fix/T-M1.14-flaky-request-id-test",
+      "G3: fresh qa-evaluator (QA-VERDICT); merge via merge-gate"
     ],
     "trace": [
       "DEC-074",
-      "DEC-079"
+      "DEC-079",
+      "DEC-080"
     ]
   },
   "nextTask": {
@@ -214,8 +215,8 @@
   },
   "gates": {
     "G0": {
-      "status": "pending",
-      "note": "T-M1.14: packet DOCS-REVIEW on the docs/T-M1.14-packet PR; PO start signal pending"
+      "status": "pass",
+      "note": "T-M1.14: packet via PR #28 (DOCS-REVIEW round 2 PASS); PO start DEC-080"
     },
     "G1": {
       "status": "pending",
@@ -238,12 +239,12 @@
   "decisions": {
     "log": "docs/10-governance/decision-log.md",
     "recent": [
-      "DEC-074",
       "DEC-075",
       "DEC-076",
       "DEC-077",
       "DEC-078",
-      "DEC-079"
+      "DEC-079",
+      "DEC-080"
     ],
     "pendingPO": [
       "OQ-03",
@@ -257,8 +258,7 @@
       "OQ-11",
       "OQ-12",
       "OQ-13",
-      "OQ-14",
-      "DEC-060"
+      "OQ-14"
     ]
   },
   "risks": {
@@ -362,8 +362,16 @@
     {
       "what": "Start T-M1.14 (flaky request-ID test)",
       "by": "PO",
-      "status": "pending",
-      "at": null
+      "status": "approved",
+      "at": "2026-10-02T03:59:00Z",
+      "ref": "DEC-080"
+    },
+    {
+      "what": "Keep the GitLab mirror after the storage reset",
+      "by": "PO",
+      "status": "approved",
+      "at": "2026-10-02T03:59:00Z",
+      "ref": "DEC-080"
     }
   ],
   "environment": {
@@ -639,6 +647,11 @@
       "at": "2026-10-01T18:40:45Z",
       "actor": "lead-coordinator",
       "event": "QA record PR #27 merged via merge-gate (ac27fea). PR #28 DOCS-REVIEW round 1: CHANGES REQUESTED (F1 S3, 7 S4), fixed."
+    },
+    {
+      "at": "2026-10-02T04:05:00Z",
+      "actor": "lead-coordinator",
+      "event": "PO: start T-M1.14; keep the GitLab mirror (DEC-080). Docs PR for the decision; then the backend-implementer."
     }
   ]
 }

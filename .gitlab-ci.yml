@@ -1,5 +1,5 @@
-# GitLab CI on the private GitLab mirror (T-M1.11, DEC-060). TEMPORARY second CI while the GitHub account's Actions
-# artifact storage is exhausted (DEC-053; expected to reset on 2026-10-01). GitHub stays the source of truth: PRs, the
+# GitLab CI on the private GitLab mirror (T-M1.11, DEC-060). Second CI, added while the GitHub account's Actions
+# artifact storage was exhausted (DEC-053); kept as a backup after the 2026-10-01 reset (DEC-080). GitHub stays the source of truth: PRs, the
 # required checks and scripts/merge-gate.sh are unchanged. This pipeline re-runs the same checks and STORES the reports
 # (JaCoCo, JUnit, Playwright) as GitLab artifacts for 5 days. The mirror is fed by scripts/gitlab-sync.sh.
 # Images are fully qualified and pinned by multi-arch index digest (tech-stack §7).
