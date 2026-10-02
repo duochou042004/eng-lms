@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Milestone | M1 |
-| Status | **in progress** (G0: DOCS-REVIEW on the packet PR, recorded in `evidence/T-M1.14/review/docs.md`; dependencies merged; PO start signal given, DEC-080) |
+| Status | **done** (merged `3a405ce`, PR #37; DEC-081) (G0: DOCS-REVIEW on the packet PR, recorded in `evidence/T-M1.14/review/docs.md`; dependencies merged; PO start signal given, DEC-080) |
 | Owner role | BE (backend-implementer) |
 | Branch | `fix/T-M1.14-flaky-request-id-test` (from `develop`) |
 | Depends on | T-M1.8 merged (`01dfc5d`) |

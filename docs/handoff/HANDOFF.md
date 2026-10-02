@@ -1,32 +1,31 @@
-# Handoff — 2026-10-02 (T-M1.14 started, DEC-080)
+# Handoff — 2026-10-02 (T-M1.14 merged; M1 nearly done)
 
-Phase/Milestone: P1 / M1 · Current task: **T-M1.14 (in progress; PO start DEC-080)** · Remote: https://github.com/duochou042004/eng-lms
+Phase/Milestone: P1 / M1 · Current task: **T-M1.16 (draft: S4 polish, no packet yet)** · Remote: https://github.com/duochou042004/eng-lms
 
 ## Where we are
-- **M1 progress:** T-M1.1..T-M1.9, T-M1.11, T-M1.12, **T-M1.13** (`625c8fc`) and **T-M1.15** (`9a68eb7`) are merged through merge-gate. Open in M1: **T-M1.14** (BE flaky
-  test, in progress, DEC-080), **T-M1.16** (S4 polish, backlog stub, DEC-079), T-M1.10 (TS 7, waits for upstream).
-- **T-M1.13 (PR #25):** QA-VERDICT PASS and UX-REVIEW APPROVED at `3ff781c`, merged at `5c169fb` (only develop's T-M1.15 merge + `progress.json` on top; verdicts
-  re-posted). Records: `evidence/T-M1.13/qa/report.md` (PR #27, merged `ac27fea`), `evidence/T-M1.13/review/ux.md` and `review/docs.md` (PR #28).
-- **T-M1.15 (PR #26, DEC-078):** merge-gate refused PR #25 because `gh pr view --json files` stops at 100 files (PR had 130). Step 5 now uses the paginated REST listing,
-  fails closed, ignores a removed `progress.json`. PO started it with the packet and fix in one PR. DOCS-REVIEW PASS (7 S4; F1/F2 → T-M1.16).
-- **T-M1.8 AC6:** `backend-coverage` uploads again (artifact storage reset). The PO keeps the GitLab mirror as a backup (DEC-080).
+- **M1 progress:** T-M1.1..T-M1.9 and T-M1.11..T-M1.15 are merged through merge-gate. **T-M1.14** (`3a405ce`, PR #37): the flaky request-ID test is
+  deterministic (strict UUIDv7 header, body `requestId` == header, no echo of `bad<id>`/`<`); QA-VERDICT PASS; DEC-081. Open in M1: **T-M1.16** (S4 polish stub,
+  DEC-079) and T-M1.10 (TS 7, waits for upstream).
+- **DEC-080 (PO, 2026-10-02):** T-M1.14 started; **the GitLab mirror is kept as a backup** (GitHub stays the only merge path; GitLab CI not required; image digests
+  bumped by hand with the monthly batch). `backend-coverage` uploads on GitHub again.
+- **Open PRs:** #38 `qa/T-M1.14` (QA record, LC-only path); this branch `docs/T-M1.14-merge-record` (DEC-081, state); **six Dependabot PRs #29–#34** (npm
+  `@types/node` ×3, `@tanstack/react-query`, a web tooling group; Maven 3.9.16 → 3.10.0) not yet triaged.
 
 ## Next steps
-1. The T-M1.14 packet merged (PR #28, `14e820d`, DOCS-REVIEW round 2 PASS). The PO started T-M1.14 and kept the GitLab mirror (DEC-080, docs PR `docs/DEC-080-start-T-M1.14`).
-2. A backend-implementer on `fix/T-M1.14-flaky-request-id-test`; G3 = a fresh qa-evaluator; merge via merge-gate; QA record on `qa/T-M1.14`.
-3. T-M1.16 (S4 polish) needs a packet and a PO start; then confirm the M1 exit criteria and start M2 (T-M2.1).
+1. Merge #38 and this branch via merge-gate (this one needs a fresh `DOCS-REVIEW T-M1.14: PASS`).
+2. Triage the Dependabot PRs (git-governance: Dependabot path; `@dependabot rebase`, never "Update branch"; the Maven bump changes the wrapper: OQ-17 content check).
+3. T-M1.16 packet (task-packet skill; FE + LC items, UX review at G3) → PO start. Then check the M1 exit criteria (roadmap.md) and plan M2 (T-M2.1).
 
 ## Pending PO decisions / actions
-- Recommended (DEC-061): `glab` deny rules. OQ-03..OQ-14 (defaults documented).
+- T-M1.16 start (after its packet). Recommended (DEC-061): `glab` deny rules. OQ-03..OQ-14 (defaults documented).
 
 ## Gotchas
-- Run `./scripts/check-docs.sh` **bare** (not piped into `tail` inside an `&&` chain: the pipe hides its exit code).
-- Verdict tokens: QA `PASS`/`PASS WITH MINOR`; DOCS `PASS`; SEC and **UX `APPROVED`** (not PASS). Ask reviewers for their canonical token.
-- `git merge` is denied: catch up with `gh pr update-branch <n>`. If `progress.json` conflicts, first commit develop's `progress.json` on the branch, update, then re-apply
-  the task's state in a new commit; re-post the verdicts with what changed.
-- merge-gate needs `progress.json` changed in feature/docs/chore PRs; after any new head, re-post the verdicts and `LC-APPROVED`.
-- Subagents can't write report files: the LC records their returned text. The `backend` CI check can flake (T-M1.14): read the log, re-run once, record it.
-- `./scripts/gitlab-sync.sh [branch]` after merges and before reviews. Stage explicit paths. `ENGLMS_TASK=<id>` makes E2E write evidence; don't commit it for non-UI tasks.
+- Branch names must be `<kind>/<task-id>-<slug>` (merge-gate refuses others, e.g. `docs/DEC-080-…`).
+- Verdict tokens: QA `PASS`/`PASS WITH MINOR`; DOCS `PASS`; SEC and UX `APPROVED`.
+- `git merge` is denied: `gh pr update-branch <n>`. If `progress.json` would conflict, update the branch **before** editing `progress.json`.
+- Subagents share the working tree: give each one its own worktree or tell it not to checkout branches; `gh pr close -d` switches the current checkout.
+- Run `./scripts/check-docs.sh` bare; timestamps from `date -u` (don't type them).
+- `./scripts/gitlab-sync.sh [branch]` after merges and on branches under review. Stage explicit paths.
 
 ## Files to read first
-`CLAUDE.md` → `progress.json` → this file → `docs/tasks/T-M1.14-flaky-request-id-test.md` → the backend-module skill (for the implementer brief) and the qa-evaluation skill (G3).
+`CLAUDE.md` → `progress.json` → this file → `docs/tasks/backlog.md` (T-M1.16 row, DEC-079) → the task-packet skill.
