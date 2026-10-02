@@ -7,6 +7,7 @@
 | 1 | `cfefa4e` | **CHANGES REQUESTED** | F1, F2 S3; F3–F8 S4 |
 | 2 | `ca427c3` | **PASS** | R2-1, R2-2 S4 (fixed in the next commit: the item 6 design note; this record) |
 | 3 | `3dc3561` | **CHANGES REQUESTED** | new scope item 9 (flaky route-focus test): R3-1 S3 (DEC-082 / item 9 misstated the CI facts), R3-2..R3-5 S4; all fixed in the next commit |
+| 4 | `d48064f` | **PASS** | R4-1 S4 (DEC-082 wording; fixed in the next commit) |
 
 ## Round 1 dispositions
 | ID | Disposition |
@@ -133,3 +134,28 @@ Adding the flaky test as item 9 is sound in itself. The race is real, the fix is
 - /home/kali/App_sources/Eng-LMS/e2e/tests/route-focus.spec.ts
 
 DOCS-REVIEW T-M1.16: CHANGES REQUESTED
+
+## Round 4 report (`d48064f`)
+
+Round 4 at head `d48064f`: **PASS**. All five round-3 findings are fixed and the new text matches CI. The one remaining note is S4 wording.
+
+`check-docs.sh` passes at `d48064f` (158 markdown files, `progress.json` valid, sources intact, prompt within limit). I ran it on an export in my scratchpad and changed nothing in the repo.
+
+**Round-3 findings**
+| ID | Status at `d48064f` |
+|---|---|
+| R3-1 (S3) | Fixed. DEC-082 now says #32's first run had one E2E failure, `route-focus.spec.ts:139` on tablet, and that the `guards.spec.ts:76` ✘ is a designed expected failure. That matches run 36958901028 ("1 failed, 85 passed"). The claim that #30's re-run passed is now true: `gh pr checks 30` shows all 7 checks passing. #32 is still open, and the text says it will be re-run by its rebase with outcomes in the next merge record, which describes a plan rather than a result. Item 9 matches. |
+| R3-2 | Fixed: the Owner row says "items 1–5 and 9". |
+| R3-3 | Fixed: the Test plan says AC8. |
+| R3-4 | Fixed: AC7 names `phone-small`, `tablet` and `laptop` and gives the exact flags (`--project=phone-small --project=tablet --project=laptop --repeat-each=20`). |
+| R3-5 | Fixed: the Trace row cites the flaky test under the test-strategy flaky policy, and the Goal mentions "a deterministic keyboard step-budget E2E test". |
+
+**R4 findings**
+- **R4-1 (S4)** In DEC-082 (`docs/10-governance/decision-log.md`), "its `guards.spec.ts:76` ✘ is that test's designed expected failure" could be read as referring to the route-focus test. **Fix:** "the `guards.spec.ts:76` ✘ is the guard test's designed expected failure". Optional.
+
+**Files reviewed**
+- /home/kali/App_sources/Eng-LMS/docs/10-governance/decision-log.md
+- /home/kali/App_sources/Eng-LMS/docs/tasks/T-M1.16-review-polish.md
+- /home/kali/App_sources/Eng-LMS/evidence/T-M1.16/review/docs.md
+
+DOCS-REVIEW T-M1.16: PASS
