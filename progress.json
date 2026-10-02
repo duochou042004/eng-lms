@@ -16,7 +16,7 @@
       }
     ]
   },
-  "updatedAt": "2026-10-02T04:24:49Z",
+  "updatedAt": "2026-10-02T04:30:52Z",
   "updatedBy": "lead-coordinator (session 2026-10-02 #2, Opus 5.5)",
   "phase": {
     "id": "P1",
@@ -30,31 +30,6 @@
     "exitCriteria": "scripts/gate.sh green locally and in CI; backend skeleton with Modulith verify + Flyway V1; SPA served same-origin; Playwright smoke at 3 viewports with axe; contract drift check; Testcontainers on rootless Podman or documented fallback (docs/01-product/roadmap.md)."
   },
   "currentTask": {
-    "id": "T-M1.14",
-    "title": "Fix the flaky request-ID backend test (DEC-074)",
-    "status": "in_review",
-    "ownerRole": "BE",
-    "branch": "fix/T-M1.14-flaky-request-id-test",
-    "packet": "docs/tasks/T-M1.14-flaky-request-id-test.md",
-    "pr": "#37",
-    "lastCommit": "82b89a4",
-    "startedAt": "2026-10-02T04:05:00Z",
-    "entryGate": [
-      "T-M1.8 merged — met (01dfc5d)",
-      "Packet G0 — met (PR #28, 14e820d; DOCS-REVIEW round 2 PASS)",
-      "PO start signal — given (DEC-080)"
-    ],
-    "nextSteps": [
-      "G3: fresh qa-evaluator (QA-VERDICT) on PR #37",
-      "Merge via merge-gate after CI is green; QA record on qa/T-M1.14"
-    ],
-    "trace": [
-      "DEC-074",
-      "DEC-079",
-      "DEC-080"
-    ]
-  },
-  "nextTask": {
     "id": "T-M1.16",
     "title": "S4 polish from the T-M1.13 and T-M1.15 reviews (DEC-079)",
     "status": "draft",
@@ -66,11 +41,37 @@
     "startedAt": null,
     "entryGate": [
       "T-M1.13 merged — met (625c8fc)",
-      "T-M1.15 merged — met (9a68eb7)"
+      "T-M1.15 merged — met (9a68eb7)",
+      "Packet G0 — not written",
+      "PO start signal — pending"
+    ],
+    "nextSteps": [
+      "Write the T-M1.16 packet (task-packet skill) and get its DOCS-REVIEW",
+      "Check the M1 exit criteria; then plan M2 (T-M2.1)"
+    ],
+    "trace": [
+      "DEC-079"
+    ]
+  },
+  "nextTask": {
+    "id": "T-M2.1",
+    "title": "Identity core: accounts, tutor bootstrap, login/logout/session",
+    "status": "draft",
+    "ownerRole": "BE",
+    "branch": "feature/T-M2.1-identity-core",
+    "packet": "docs/tasks/backlog.md#m2--identity-and-students",
+    "pr": null,
+    "lastCommit": null,
+    "startedAt": null,
+    "entryGate": [
+      "M1 exit criteria met"
     ],
     "nextSteps": [],
     "trace": [
-      "DEC-079"
+      "FR-AUTH-01..06",
+      "FR-AUTH-09",
+      "FR-AUTH-10",
+      "ADR-0005"
     ]
   },
   "completed": [
@@ -185,6 +186,14 @@
       "mergeCommit": "625c8fc",
       "evidence": "evidence/T-M1.13/summary.md",
       "note": "PO start DEC-077. Packet PR #24 (6c8d1d4). Merged via merge-gate (PR #25) at 5c169fb (= reviewed 3ff781c + develop's T-M1.15 merge + progress.json; verdicts re-posted); CI 7/7. QA-VERDICT PASS (record PR #27, merged ac27fea), UX-REVIEW APPROVED (evidence/T-M1.13/review/ux.md); S4s: UX-1 accepted, the rest to T-M1.16 (DEC-079). The merge first needed T-M1.15 (merge-gate saw only 100 of the PR's 130 files, DEC-078)."
+    },
+    {
+      "id": "T-M1.14",
+      "title": "Fix the flaky request-ID backend test",
+      "completedAt": "2026-10-02T04:30:00Z",
+      "mergeCommit": "3a405ce",
+      "evidence": "evidence/T-M1.14/summary.md",
+      "note": "PO start DEC-080. Packet PR #28 (14e820d). Merged via merge-gate (PR #37) at 0de5bb0; CI 7/7. Test-only: strict UUIDv7 header, body requestId == header, no echo of bad<id>/<. QA-VERDICT PASS (record PR #38); S4s accepted/recorded (DEC-081). gate PASS; 50/50 runs."
     }
   ],
   "tests": {
@@ -215,36 +224,36 @@
   },
   "gates": {
     "G0": {
-      "status": "pass",
-      "note": "T-M1.14: packet via PR #28 (DOCS-REVIEW round 2 PASS); PO start DEC-080"
+      "status": "pending",
+      "note": "T-M1.16: packet not written"
     },
     "G1": {
-      "status": "pass",
-      "note": "T-M1.14: gate.sh PASS (ENGLMS_TASK=T-M1.14); 50/50 runs"
+      "status": "pending",
+      "note": "T-M1.16 not started"
     },
     "G2": {
       "status": "pending",
-      "note": "T-M1.14 not started"
+      "note": "T-M1.16 not started"
     },
     "G3": {
       "status": "pending",
-      "note": "T-M1.14: fresh qa-evaluator (no UI)"
+      "note": "T-M1.16: QA + UX (UI changes)"
     },
     "G4": {
       "status": "pending",
-      "note": "T-M1.14: merge via merge-gate"
+      "note": "T-M1.16: merge via merge-gate"
     }
   },
   "blockers": [],
   "decisions": {
     "log": "docs/10-governance/decision-log.md",
     "recent": [
-      "DEC-075",
       "DEC-076",
       "DEC-077",
       "DEC-078",
       "DEC-079",
-      "DEC-080"
+      "DEC-080",
+      "DEC-081"
     ],
     "pendingPO": [
       "OQ-03",
@@ -657,6 +666,16 @@
       "at": "2026-10-02T04:24:49Z",
       "actor": "lead-coordinator",
       "event": "T-M1.14 implemented (1e0825b, 82b89a4; gate PASS, 50/50 runs); PR #37 open, caught up with develop."
+    },
+    {
+      "at": "2026-10-02T04:30:00Z",
+      "actor": "lead-coordinator",
+      "event": "T-M1.14 merged via merge-gate (3a405ce, PR #37 at 0de5bb0). QA record PR #38 opened."
+    },
+    {
+      "at": "2026-10-02T04:30:52Z",
+      "actor": "lead-coordinator",
+      "event": "docs/T-M1.14-merge-record: DEC-081, statuses, handoff."
     }
   ]
 }
