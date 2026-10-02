@@ -16,7 +16,7 @@
       }
     ]
   },
-  "updatedAt": "2026-10-02T04:30:52Z",
+  "updatedAt": "2026-10-02T06:43:46Z",
   "updatedBy": "lead-coordinator (session 2026-10-02 #2, Opus 5.5)",
   "phase": {
     "id": "P1",
@@ -31,26 +31,27 @@
   },
   "currentTask": {
     "id": "T-M1.16",
-    "title": "S4 polish from the T-M1.13 and T-M1.15 reviews (DEC-079)",
-    "status": "draft",
+    "title": "S4 polish from the T-M1.13 and T-M1.15 reviews; Maven 3.10.0 (DEC-079, DEC-082)",
+    "status": "ready",
     "ownerRole": "FE",
     "branch": "feature/T-M1.16-review-polish",
-    "packet": "docs/tasks/backlog.md#m1--walking-skeleton-and-delivery-pipeline",
+    "packet": "docs/tasks/T-M1.16-review-polish.md",
     "pr": null,
     "lastCommit": null,
     "startedAt": null,
     "entryGate": [
       "T-M1.13 merged — met (625c8fc)",
       "T-M1.15 merged — met (9a68eb7)",
-      "Packet G0 — not written",
+      "Packet G0 — DOCS-REVIEW on the docs/T-M1.16-packet PR",
       "PO start signal — pending"
     ],
     "nextSteps": [
-      "Write the T-M1.16 packet (task-packet skill) and get its DOCS-REVIEW",
-      "Check the M1 exit criteria; then plan M2 (T-M2.1)"
+      "PO start signal for T-M1.16",
+      "frontend-implementer (items 1–5) + LC (items 6–8) on feature/T-M1.16-review-polish; G3 = QA + UX"
     ],
     "trace": [
-      "DEC-079"
+      "DEC-079",
+      "DEC-082"
     ]
   },
   "nextTask": {
@@ -225,7 +226,7 @@
   "gates": {
     "G0": {
       "status": "pending",
-      "note": "T-M1.16: packet not written"
+      "note": "T-M1.16: packet DOCS-REVIEW on the docs/T-M1.16-packet PR; PO start signal pending"
     },
     "G1": {
       "status": "pending",
@@ -248,12 +249,12 @@
   "decisions": {
     "log": "docs/10-governance/decision-log.md",
     "recent": [
-      "DEC-076",
       "DEC-077",
       "DEC-078",
       "DEC-079",
       "DEC-080",
-      "DEC-081"
+      "DEC-081",
+      "DEC-082"
     ],
     "pendingPO": [
       "OQ-03",
@@ -381,6 +382,12 @@
       "status": "approved",
       "at": "2026-10-02T03:59:00Z",
       "ref": "DEC-080"
+    },
+    {
+      "what": "Start T-M1.16 (review polish; Maven 3.10.0)",
+      "by": "PO",
+      "status": "pending",
+      "at": null
     }
   ],
   "environment": {
@@ -676,6 +683,16 @@
       "at": "2026-10-02T04:30:52Z",
       "actor": "lead-coordinator",
       "event": "docs/T-M1.14-merge-record: DEC-081, statuses, handoff."
+    },
+    {
+      "at": "2026-10-02T06:06:52Z",
+      "actor": "lead-coordinator",
+      "event": "Dependabot triage (DEC-082): #29/#30/#32/#33/#34 via rebase + merge-gate; #31 (Maven) to T-M1.16. T-M1.16 packet written (docs/T-M1.16-packet)."
+    },
+    {
+      "at": "2026-10-02T06:43:46Z",
+      "actor": "lead-coordinator",
+      "event": "Dependabot #33/#29/#30/#34/#32 merged via merge-gate (DEC-082 outcome); #31 closed. T-M1.16 packet DOCS-REVIEW round 4 PASS."
     }
   ]
 }
