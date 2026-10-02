@@ -1,0 +1,50 @@
+# T-M1.14 AC4 scope-2 grep (2026-10-02T04:03:51Z) on the fix branch
+$ grep -rnE "doesNotContain|doesNotMatch|not\(containsString|doesNotStartWith|doesNotEndWith|noneMatch|isNotEqualTo" backend/src/test
+backend/src/test/java/com/englms/ApplicationIntegrationTest.java:67:		assertThat(managementPort).isNotEqualTo(port);
+backend/src/test/java/com/englms/ApplicationIntegrationTest.java:205:		assertThat(response.body()).doesNotContain("<", "html", "Tomcat", "Exception", "instance", "meta", "%2f");
+backend/src/test/java/com/englms/ApplicationIntegrationTest.java:223:		assertThat(requestId).doesNotContain("bad<id>", "<");
+backend/src/test/java/com/englms/ApplicationIntegrationTest.java:224:		assertThat(bad.body()).doesNotContain("bad<id>", "<");
+backend/src/test/java/com/englms/shared/IdsTest.java:24:		assertThat(ids.newId()).isNotEqualTo(id);
+
+# where generated IDs / request IDs appear in tests:
+$ grep -rnE "newId\(\)|randomUUID|UUID\.|requestId|x-request-id|X-Request-Id" backend/src/test
+backend/src/test/java/com/englms/ApplicationIntegrationTest.java:158:				String header = result.getResponseHeaders().getFirst("X-Request-Id");
+backend/src/test/java/com/englms/ApplicationIntegrationTest.java:160:				assertThat(result.getResponseBody()).contains("\"requestId\":\"" + header + "\"");
+backend/src/test/java/com/englms/ApplicationIntegrationTest.java:168:			.header("X-Request-Id", "it-mgmt-1")
+backend/src/test/java/com/englms/ApplicationIntegrationTest.java:173:			.valueEquals("X-Request-Id", "it-mgmt-1");
+backend/src/test/java/com/englms/ApplicationIntegrationTest.java:184:			.value("X-Request-Id", id -> assertThat(id).matches("[0-9a-f-]{36}"));
+backend/src/test/java/com/englms/ApplicationIntegrationTest.java:201:		String requestId = response.header("x-request-id");
+backend/src/test/java/com/englms/ApplicationIntegrationTest.java:202:		assertThat(requestId).matches("[0-9a-f-]{36}");
+backend/src/test/java/com/englms/ApplicationIntegrationTest.java:204:				"\"requestId\":\"" + requestId + "\"");
+backend/src/test/java/com/englms/ApplicationIntegrationTest.java:212:		assertThat(valid.header("x-request-id")).isEqualTo("it-rejected-1");
+backend/src/test/java/com/englms/ApplicationIntegrationTest.java:216:		String requestId = bad.header("x-request-id");
+backend/src/test/java/com/englms/ApplicationIntegrationTest.java:217:		assertThat(requestId).matches("[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}");
+backend/src/test/java/com/englms/ApplicationIntegrationTest.java:218:		assertThat(UUID.fromString(requestId)).satisfies(uuid -> {
+backend/src/test/java/com/englms/ApplicationIntegrationTest.java:222:		assertThat(bodyRequestId(bad)).isEqualTo(requestId);
+backend/src/test/java/com/englms/ApplicationIntegrationTest.java:223:		assertThat(requestId).doesNotContain("bad<id>", "<");
+backend/src/test/java/com/englms/ApplicationIntegrationTest.java:228:		return JsonMapper.builder().build().readTree(response.body()).path("requestId").asString();
+backend/src/test/java/com/englms/ApplicationIntegrationTest.java:252:		String path = "/api/v1/single-log-" + java.util.UUID.randomUUID();
+backend/src/test/java/com/englms/ApplicationIntegrationTest.java:258:			.contains("\"requestId\":\"");
+backend/src/test/java/com/englms/ApplicationIntegrationTest.java:270:	static RawResponse rawGet(int port, String target, String requestId) throws IOException {
+backend/src/test/java/com/englms/ApplicationIntegrationTest.java:272:				(requestId != null) ? "X-Request-Id: " + requestId + "\r\n" : "");
+backend/src/test/java/com/englms/ApplicationIntegrationTest.java:298:		api.get().uri("/api/v1/meta").header("X-Request-Id", "it-log-check-1").exchange().expectStatus().isOk();
+backend/src/test/java/com/englms/ApplicationIntegrationTest.java:304:				.contains("\"requestId\":\"it-log-check-1\""));
+backend/src/test/java/com/englms/settings/internal/web/MetaControllerTest.java:42:			.exists("X-Request-Id")
+backend/src/test/java/com/englms/settings/internal/web/MetaControllerTest.java:67:			.jsonPath("$.requestId").isNotEmpty()
+backend/src/test/java/com/englms/settings/internal/web/MetaControllerTest.java:86:			.header("X-Request-Id", "abc-123")
+backend/src/test/java/com/englms/settings/internal/web/MetaControllerTest.java:89:			.valueEquals("X-Request-Id", "abc-123")
+backend/src/test/java/com/englms/settings/internal/web/MetaControllerTest.java:91:			.jsonPath("$.requestId").isEqualTo("abc-123");
+backend/src/test/java/com/englms/settings/internal/web/MetaControllerTest.java:98:			.header("X-Request-Id", "bad id\" injected")
+backend/src/test/java/com/englms/settings/internal/web/MetaControllerTest.java:101:			.value("X-Request-Id", id -> org.assertj.core.api.Assertions.assertThat(id).matches("[0-9a-f-]{36}"));
+backend/src/test/java/com/englms/shared/IdsTest.java:19:		UUID id = ids.newId();
+backend/src/test/java/com/englms/shared/IdsTest.java:24:		assertThat(ids.newId()).isNotEqualTo(id);
+backend/src/test/java/com/englms/shared/IdsTest.java:32:		assertThat(later.newId().toString()).isGreaterThan(earlier.newId().toString());
+
+# Result: none found other than the fixed test (ApplicationIntegrationTest:210 on develop, now lines 212-224).
+# - ApplicationIntegrationTest:205 doesNotContain("<","html","Tomcat","Exception","instance","meta","%2f") on a body with a generated
+#   UUIDv7: every token contains a character outside [0-9a-f-] ('<','h','T','E','i','m','%'), so no generated ID can match. Deterministic; unchanged.
+# - ApplicationIntegrationTest:223-224: the new assertions; both banned strings contain '<'. Deterministic.
+# - ApplicationIntegrationTest:67 compares two ports, not an ID.
+# - IdsTest:24 isNotEqualTo between two UUIDv7 from a fixed clock: a uniqueness property on 74 random bits (collision ~2^-74), not a
+#   substring match on the digits; IdsTest:32 ordering uses fixed clocks 1 s apart (timestamp prefix decides). Both unchanged.
+# - Hits at 160/202/204/184 and MetaControllerTest:101 only use [0-9a-f-]{36} shape checks or equality with the header: deterministic.

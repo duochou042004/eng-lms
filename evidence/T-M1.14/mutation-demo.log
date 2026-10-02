@@ -1,0 +1,42 @@
+# T-M1.14 AC2 mutation demo (2026-10-02T04:02:58Z), branch fix/T-M1.14-flaky-request-id-test @ 14e820d
+# Scratch change to backend/src/main (git diff):
+diff --git a/backend/src/main/java/com/englms/shared/web/RequestIds.java b/backend/src/main/java/com/englms/shared/web/RequestIds.java
+index 8e6fa5c..6fc8658 100644
+--- a/backend/src/main/java/com/englms/shared/web/RequestIds.java
++++ b/backend/src/main/java/com/englms/shared/web/RequestIds.java
+@@ -24,7 +24,7 @@ public final class RequestIds {
+ 	 * The request ID to use: a well-formed incoming {@code X-Request-Id} is reused, anything else gets a new ID.
+ 	 */
+ 	static String resolve(String incoming, Ids ids) {
+-		return (incoming != null && SAFE_ID.matcher(incoming).matches()) ? incoming : ids.newId().toString();
++		return (incoming != null) ? incoming : ids.newId().toString(); // SCRATCH MUTATION (T-M1.14 AC2), not committed
+ 	}
+ 
+ }
+# Run: ./mvnw -B test -Dtest='ApplicationIntegrationTest#aRejectedRequestReusesAValidIncomingRequestIdAndNeverEchoesABadOne'
+[ERROR] Tests run: 1, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 14.72 s <<< FAILURE! -- in com.englms.ApplicationIntegrationTest
+[ERROR] com.englms.ApplicationIntegrationTest.aRejectedRequestReusesAValidIncomingRequestIdAndNeverEchoesABadOne -- Time elapsed: 0.674 s <<< FAILURE!
+Expecting actual:
+  "bad<id>"
+to match pattern:
+[ERROR] Failures: 
+[ERROR]   ApplicationIntegrationTest.aRejectedRequestReusesAValidIncomingRequestIdAndNeverEchoesABadOne:217 
+Expecting actual:
+  "bad<id>"
+to match pattern:
+[ERROR] Tests run: 1, Failures: 1, Errors: 0, Skipped: 0
+[INFO] BUILD FAILURE
+[ERROR] Failed to execute goal org.apache.maven.plugins:maven-surefire-plugin:3.5.6:test (default-test) on project englms: There are test failures.
+[ERROR] 
+[ERROR] See /home/kali/App_sources/Eng-LMS/backend/target/surefire-reports for the individual test results.
+[ERROR] See dump files (if any exist) [date].dump, [date]-jvmRun[N].dump and [date].dumpstream.
+[ERROR] -> [Help 1]
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR] 
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException
+mvn exit: non-zero (BUILD FAILURE above)
+# Reverted: git status of src/main:
+(empty = clean)

@@ -1,0 +1,1063 @@
+gate: logging to evidence/T-M1.14/gate-20261002T042058Z.log
+env.sh: DOCKER_HOST=unix:///run/user/1000/podman/podman.sock TESTCONTAINERS_RYUK_DISABLED=true
+gate: 1e0825b 2026-10-02T04:20:58Z, steps: docs scripts backend web-install web-lint web-typecheck web-test web-build web-budget web-contrast contract-drift e2e
+gate: ==> docs
+docs-check: PASS (154 markdown files, progress.json valid, sources intact, prompt within limit)
+gate: <== docs OK (0s)
+gate: ==> scripts
+coverage-summary.sh
+  ok   - summarises a fixture CSV
+  ok   - exact totals line and sorted per-package rows
+  ok   - a missing CSV exits 1
+  ok   - explains the missing CSV
+  ok   - a header-only CSV (no classes) is not an error
+  ok   - reports n/a totals
+  ok   - no package rows
+  ok   - an empty CSV file is not an error
+  ok   - reports n/a totals for an empty file
+  -> 9 passed, 0 failed
+dev scripts
+  ok   - env.sh fails when podman.socket is inactive
+  ok   - env.sh tells how to enable the socket
+  ok   - env.sh fails when the socket file is missing
+  ok   - env.sh exports DOCKER_HOST and disables Ryuk when the socket is active
+  ok   - env.sh exports the expected values
+  ok   - dev-down.sh keeps the volume by default
+  ok   - dev-down.sh runs compose down
+  ok   - default down does not delete the volume
+  ok   - dev-down.sh --purge
+  ok   - --purge removes the volume
+  ok   - AC5: dev-down.sh with nothing running exits 0
+  ok   - AC5: stdout+stderr is exactly one 'dev-down:' line
+  ok   - AC5: says nothing is running
+  ok   - AC5: compose down is not run
+  ok   - AC5: dev-down.sh --purge with nothing running still removes the volume
+  ok   - AC5: reports the removed volume
+  ok   - AC5: the volume is gone
+  ok   - AC5: dev-down.sh --purge with no volume
+  ok   - AC5: says there is no volume
+  ok   - dev-down.sh rejects unknown arguments
+  ok   - prints usage
+  -> 21 passed, 0 failed
+e2e-run.sh
+  ok   - --help prints usage
+  ok   - usage names the arguments
+  ok   - passes when Playwright passes
+  ok   - stops the app after the run
+  ok   - passes the Playwright arguments through
+  ok   - no app process is left
+  ok   - propagates Playwright's exit code
+  ok   - stops the app after a failing run too
+  ok   - no app process is left after a failure
+  ok   - refuses to start when a port is busy
+  ok   - names the busy port
+  ok   - needs .env or SPRING_DATASOURCE_URL
+  ok   - explains the datasource requirement
+  -> 13 passed, 0 failed
+gate.sh
+  ok   - passes when every step passes
+  ok   - reports PASS with the step count
+  ok   - runs every step in CI order
+  ok   - backend runs ./mvnw -B -ntp verify
+  ok   - web install uses the frozen lockfile
+  ok   - web tests run once (no watch mode)
+  ok   - e2e runs the mandatory viewports
+  ok   - fails fast on the first failing step
+  ok   - names the failing step and its exit code
+  ok   - tells how to resume
+  ok   - ran the steps up to the failure
+  ok   - no step after the failure ran
+  ok   - a failing first step stops everything
+  ok   - only docs ran
+  ok   - --from resumes at a step
+  ok   - --from runs that step and the rest
+  ok   - --list prints the steps
+  ok   - --list includes contract-drift
+  ok   - --from without a step is a usage error
+  ok   - --from with an unknown step is a usage error
+  ok   - names the unknown step
+  ok   - unknown arguments are rejected
+  ok   - a malformed ENGLMS_TASK is rejected
+  ok   - ENGLMS_TASK writes the evidence log, including the failure
+  ok   - evidence/<task>/gate-<timestamp>.log holds the run and the failure
+  -> 25 passed, 0 failed
+gitlab-sync.sh
+  ok   - fails without a gitlab remote
+  ok   - explains how to add the remote
+  ok   - mirrors develop, master and a named branch
+  ok   - mirror develop == origin/develop (not the local commit)
+  ok   - mirror master == origin/master (not the local commit)
+  ok   - mirror chore/T-M9.9-x == origin/chore/T-M9.9-x (not the local commit)
+  ok   - fails for a branch GitHub does not have
+  ok   - names the missing branch
+  -> 8 passed, 0 failed
+merge-gate.sh
+  ok   - passes when all gates hold (dry run)
+  ok   - dry run does not merge
+  ok   - merges when not a dry run
+  ok   - merge commit, deletes branch, pins the head commit
+  ok   - (a) refuses when a required check fails
+  ok   - reports the failing check
+  ok   - (a) refuses when a required check is pending
+  ok   - (a) refuses when a required check is missing
+  ok   - (b) refuses without LC-APPROVED
+  ok   - reports missing LC approval
+  ok   - (b) LC approval must be the exact line
+  ok   - (c) refuses a chore PR without DOCS-REVIEW
+  ok   - (c) F1: 'CHANGES REQUESTED (previous verdict: PASS)' is not a pass
+  ok   - (c) F1: template placeholder 'PASS | CHANGES REQUESTED' is not a pass
+  ok   - (c) F1: 'FAIL (AC1: PASS …)' is not a pass
+  ok   - (c) the latest QA verdict wins (FAIL after PASS)
+  ok   - (c) refuses when the latest SEC-REVIEW requests changes
+  ok   - (c) UX-REVIEW must be exactly APPROVED
+  ok   - accepts a feature PR with QA 'PASS WITH MINOR'
+  ok   - (c) a verdict for another task id does not count
+  ok   - F3: a verdict posted before the head commit is stale
+  ok   - F3: an LC approval posted before the head commit is stale
+  ok   - (d) refuses when the branch is behind its base
+  ok   - reports how far behind
+  ok   - refuses on merge conflicts
+  ok   - refuses when progress.json is not updated
+  ok   - (T-M1.15) passes when progress.json is the 130th file (on the second page)
+  ok   - (T-M1.15) refuses when only pr view lists progress.json (the REST listing decides)
+  ok   - says progress.json is missing
+  ok   - (T-M1.15) refuses when the PR deletes progress.json
+  ok   - (T-M1.15) refuses when the PR's files cannot be listed (fail closed)
+  ok   - reports the listing failure
+  ok   - refuses a branch kind without a merge path
+  ok   - refuses a task branch targeting master
+  ok   - F4: dependabot PR (by the Dependabot app) merges with checks + 'LC-APPROVED PR-<n>'
+  ok   - R2-1: a hand-made dependabot/* branch (human author) is refused
+  ok   - explains the author check
+  ok   - R2-1: a dependabot PR touching non-manifest files is refused
+  ok   - R2-4: an explicit DOCS-REVIEW CHANGES REQUESTED is not overridden by QA PASS
+  ok   - R2-5: a verdict that is not the comment's first line (e.g. in a code block) does not count
+  ok   - R2-7: an empty commit list is refused (no freshness baseline)
+  ok   - F4: release PR needs PO-APPROVED
+  ok   - F4: release PR merges into master with QA + PO + LC
+  ok   - AC1: a back-dated commit pushed AFTER the verdict makes the verdict stale
+  ok   - reports the approval as stale
+  ok   - reports the review as stale
+  ok   - AC1: the same back-dated commit counts once it arrived BEFORE the verdict
+  ok   - AC1: the LATEST pull_request run for the head counts (head re-arrived after the verdict)
+  ok   - AC1: a force-push after the verdict (back to an already-built SHA) invalidates it
+  ok   - AC1: a force-push before the head arrived does not block
+  ok   - AC1: no pull_request run for the head (no push-time data) fails closed
+  ok   - explains the fail-closed refusal
+  ok   - AC1: a run for the same SHA on ANOTHER branch is no evidence (fails closed)
+  ok   - AC1: a non-pull_request run is no evidence (fails closed)
+  ok   - AC1: a run for another SHA is no evidence (fails closed)
+  ok   - AC1: a workflow-runs API error fails closed
+  ok   - reports the runs API failure
+  ok   - AC1: a PR-timeline API error fails closed
+  ok   - reports the timeline failure
+  ok   - AC1: a PR-timeline answer without timeline data fails closed
+  ok   - AC1: a verdict in the same second as the arrival is not strictly after it
+  ok   - AC2: QA-VERDICT FAIL blocks a chore PR even though DOCS-REVIEW passed
+  ok   - names the blocking verdict
+  ok   - AC2: DOCS-REVIEW CHANGES REQUESTED blocks a feature PR even though QA passed
+  ok   - names the blocking docs review
+  ok   - AC2: UX-REVIEW CHANGES REQUESTED blocks although QA and SEC passed
+  ok   - names the blocking UX review
+  ok   - AC2: SEC-REVIEW CHANGES REQUESTED blocks a chore PR
+  ok   - AC2: within a type the latest wins (QA FAIL then PASS on re-test) — positive path passes
+  ok   - AC2: all four review types positive passes
+  ok   - AC2: a stale negative (posted before the head arrived) does not block the new head
+  ok   - AC2: a negative verdict blocks the dependabot path too
+  ok   - AC3: manifests + lockfile + a workflow uses: SHA bump, all by Dependabot, passes
+  ok   - AC3: a human commit on a Dependabot PR blocks
+  ok   - names the foreign commit
+  ok   - AC3: a Dependabot-authored commit without a verified signature (forged author e-mail) blocks
+  ok   - AC3: a Dependabot-authored commit committed by a human blocks
+  ok   - AC3: an empty commit list from the API fails closed
+  ok   - AC3: a commits API error fails closed
+  ok   - AC3: a workflow edit that is not a uses: bump blocks
+  ok   - explains the workflow rule
+  ok   - AC3: a uses: line that swaps the action (not a bump) blocks
+  ok   - explains the same-action rule
+  ok   - AC3: a uses: bump to a tag instead of a 40-hex SHA blocks
+  ok   - AC3: a uses: bump bundled with a with: change blocks
+  ok   - AC3: adding a workflow file blocks
+  ok   - AC3: a workflow change without a diff to verify fails closed
+  ok   - AC3: renaming a file into an allowed path blocks
+  ok   - AC3/R3-3: a Maven wrapper properties bump passes
+  ok   - AC3: other .mvn files (e.g. extensions.xml) are no longer allowed
+  ok   - AC3: the wrapper jar is not allowed
+  ok   - AC3: the file list is taken from the files API, not only from pr view
+  ok   - names the allow-list
+  ok   - S2-1: swapping two uses: lines (no SHA change) blocks
+  ok   - S2-1: re-indenting a uses: line blocks
+  ok   - S2-1: a uses: line that keeps its SHA is not a bump
+  ok   - explains the same-SHA refusal
+  ok   - S2-1: moving a uses: line into a run: block blocks
+  ok   - S2-1: two adjacent pairwise SHA bumps pass
+  ok   - S3-4: adding or removing manifests on a Dependabot PR blocks
+  ok   - explains the modified-only rule
+  ok   - S3-1: a non-exact negative verdict blocks: 'QA-VERDICT  T-M9.9: FAIL'
+  ok   - S3-1: a non-exact negative verdict blocks: 'qa-verdict T-M9.9: FAIL'
+  ok   - S3-1: a non-exact negative verdict blocks: 'QA-VERDICT T-M9.9 : FAIL'
+  ok   - S3-1: a non-exact negative verdict blocks: '**QA-VERDICT T-M9.9: FAIL**'
+  ok   - S3-1: a non-exact negative verdict blocks: '`QA-VERDICT T-M9.9: FAIL`'
+  ok   - S3-1: a non-exact negative verdict blocks: '> QA-VERDICT T-M9.9: FAIL'
+  ok   - S3-1: a non-exact negative verdict blocks: 'ux-review t-m9.9: changes requested'
+  ok   - S3-1: a negative for another id does not block, and a sloppy positive is simply ignored
+  ok   - S3-1: an exact PASS after a non-exact FAIL wins (latest within the type)
+  ok   - S3-2: a push recorded in the repository activity after the verdict makes it stale (even without a new run)
+  ok   - S3-2: no activity entry for the head fails closed
+  ok   - explains the activity refusal
+  ok   - S3-2: an activity API error fails closed
+  ok   - S3-2: an activity answer that is not a list fails closed
+  ok   - S3-3: a push by a human to a Dependabot branch (per the repository activity) blocks
+  ok   - names the foreign push
+  ok   - S3-3: activity before Dependabot (re)created the branch does not count
+  ok   - S3-3: a Dependabot branch without a recorded creation fails closed
+  ok   - S4-1: a run at 10:05:00.500Z makes a 10:05:00Z verdict stale (no string-order trick)
+  ok   - S4-1: an unparsable (non-Z) run time fails closed
+  ok   - R2 S3-A: a removed line '-n' (an echo option) cannot hide a non-bump
+  ok   - R2 S3-A: a removed line '-e' (an echo option) cannot hide a non-bump
+  ok   - R2 S3-A: a removed line '-E' (an echo option) cannot hide a non-bump
+  ok   - R2 S3-A: a removed line '-ne' (an echo option) cannot hide a non-bump
+  ok   - R2 S4-A: a diff line with an unknown prefix fails closed
+  ok   - explains the unknown-prefix refusal
+  ok   - R2 S3-B: a human push in the same second as Dependabot's branch creation still counts
+  ok   - R2 S3-B: an activity entry with an unparsable time counts as inside the window
+  ok   - R2 S4-B: a non-exact negative verdict blocks: '## QA-VERDICT T-M9.9: FAIL'
+  ok   - R2 S4-B: a non-exact negative verdict blocks: '- QA-VERDICT T-M9.9: FAIL'
+  ok   - R2 S4-B: a non-exact negative verdict blocks: '❌ QA-VERDICT T-M9.9: FAIL'
+  ok   - R2 S4-B: a non-exact negative verdict blocks: 'QA-VERDICT T-M9.9 - FAIL'
+  ok   - R2 S4-B: a non-exact negative verdict blocks: 'QA VERDICT T-M9.9: FAIL'
+  ok   - R2 S4-B: a non-exact negative verdict blocks: 'DOCS-REVIEW T-M9.9: CHANGES_REQUESTED'
+  ok   - R2 S4-B: a non-exact negative verdict blocks: 'SEC-REVIEW T-M9.9: CHANGES-REQUESTED'
+  ok   - R2 S4-B: another id with a '-' suffix and prose mentioning a verdict do not block
+  ok   - T-M1.12 AC1: 'QA-VERDICT <id>-FAILOVER: PASS' is not a negative
+  ok   - T-M1.12 AC1: 'QA-VERDICT T-M9.9: FAIL' blocks
+  ok   - T-M1.12 AC1: 'QA-VERDICT T-M9.9: FAIL.' blocks
+  ok   - T-M1.12 AC1: 'QA-VERDICT T-M9.9: FAIL (see F1)' blocks
+  ok   - T-M1.12 AC1: 'QA-VERDICT T-M9.9: CHANGES REQUESTED' blocks
+  ok   - T-M1.12 AC1: '**QA-VERDICT T-M9.9: FAILED**' blocks
+  ok   - T-M1.12 AC1: 'QA-VERDICT T-M9.9 - FAILS AC3' blocks
+  ok   - T-M1.12 AC1: 'QA-VERDICT T-M9.9: FAILED' blocks
+  ok   - T-M1.12 AC1: '> qa-verdict T-M9.9: failed' blocks
+  ok   - T-M1.12 AC1: 'QA-VERDICT T-M9.9: FAILURE' blocks
+  ok   - T-M1.12 AC1: 'QA-VERDICT T-M9.9 - FAILING' blocks
+  ok   - T-M1.12 AC1: 'DOCS-REVIEW T-M9.9: FAIL' blocks
+  ok   - T-M1.12 AC1: 'DOCS-REVIEW T-M9.9: FAIL.' blocks
+  ok   - T-M1.12 AC1: 'DOCS-REVIEW T-M9.9: FAIL (see F1)' blocks
+  ok   - T-M1.12 AC1: 'DOCS-REVIEW T-M9.9: CHANGES REQUESTED' blocks
+  ok   - T-M1.12 AC1: '**DOCS-REVIEW T-M9.9: FAILED**' blocks
+  ok   - T-M1.12 AC1: 'DOCS-REVIEW T-M9.9 - FAILS AC3' blocks
+  ok   - T-M1.12 AC1: 'DOCS-REVIEW T-M9.9: FAILED' blocks
+  ok   - T-M1.12 AC1: '> docs-review T-M9.9: failed' blocks
+  ok   - T-M1.12 AC1: 'DOCS-REVIEW T-M9.9: FAILURE' blocks
+  ok   - T-M1.12 AC1: 'DOCS-REVIEW T-M9.9 - FAILING' blocks
+  ok   - T-M1.12 AC1: 'SEC-REVIEW T-M9.9: FAIL' blocks
+  ok   - T-M1.12 AC1: 'SEC-REVIEW T-M9.9: FAIL.' blocks
+  ok   - T-M1.12 AC1: 'SEC-REVIEW T-M9.9: FAIL (see F1)' blocks
+  ok   - T-M1.12 AC1: 'SEC-REVIEW T-M9.9: CHANGES REQUESTED' blocks
+  ok   - T-M1.12 AC1: '**SEC-REVIEW T-M9.9: FAILED**' blocks
+  ok   - T-M1.12 AC1: 'SEC-REVIEW T-M9.9 - FAILS AC3' blocks
+  ok   - T-M1.12 AC1: 'SEC-REVIEW T-M9.9: FAILED' blocks
+  ok   - T-M1.12 AC1: '> sec-review T-M9.9: failed' blocks
+  ok   - T-M1.12 AC1: 'SEC-REVIEW T-M9.9: FAILURE' blocks
+  ok   - T-M1.12 AC1: 'SEC-REVIEW T-M9.9 - FAILING' blocks
+  ok   - T-M1.12 AC1: 'UX-REVIEW T-M9.9: FAIL' blocks
+  ok   - T-M1.12 AC1: 'UX-REVIEW T-M9.9: FAIL.' blocks
+  ok   - T-M1.12 AC1: 'UX-REVIEW T-M9.9: FAIL (see F1)' blocks
+  ok   - T-M1.12 AC1: 'UX-REVIEW T-M9.9: CHANGES REQUESTED' blocks
+  ok   - T-M1.12 AC1: '**UX-REVIEW T-M9.9: FAILED**' blocks
+  ok   - T-M1.12 AC1: 'UX-REVIEW T-M9.9 - FAILS AC3' blocks
+  ok   - T-M1.12 AC1: 'UX-REVIEW T-M9.9: FAILED' blocks
+  ok   - T-M1.12 AC1: '> ux-review T-M9.9: failed' blocks
+  ok   - T-M1.12 AC1: 'UX-REVIEW T-M9.9: FAILURE' blocks
+  ok   - T-M1.12 AC1: 'UX-REVIEW T-M9.9 - FAILING' blocks
+  ok   - T-M1.12 AC1: an exact line with an unknown token (FAILED-OVER) still blocks
+  ok   - T-M1.12 AC2: '1. QA-VERDICT T-M9.9: FAIL' blocks
+  ok   - T-M1.12 AC2: '1. QA-VERDICT T-M9.9: PASS' is not a positive QA verdict
+  ok   - the twin is ignored, not read as a verdict
+  ok   - T-M1.12 AC2: '1) QA-VERDICT T-M9.9: FAIL' blocks
+  ok   - T-M1.12 AC2: '1) QA-VERDICT T-M9.9: PASS' is not a positive QA verdict
+  ok   - the twin is ignored, not read as a verdict
+  ok   - T-M1.12 AC2: '12. QA-VERDICT T-M9.9: FAIL' blocks
+  ok   - T-M1.12 AC2: '12. QA-VERDICT T-M9.9: PASS' is not a positive QA verdict
+  ok   - the twin is ignored, not read as a verdict
+  ok   - T-M1.12 AC2: '- - QA-VERDICT T-M9.9: FAIL' blocks
+  ok   - T-M1.12 AC2: '- - QA-VERDICT T-M9.9: PASS' is not a positive QA verdict
+  ok   - the twin is ignored, not read as a verdict
+  ok   - T-M1.12 AC2: '* QA-VERDICT T-M9.9: FAIL' blocks
+  ok   - T-M1.12 AC2: '* QA-VERDICT T-M9.9: PASS' is not a positive QA verdict
+  ok   - the twin is ignored, not read as a verdict
+  ok   - T-M1.12 AC2: '- * QA-VERDICT T-M9.9: FAIL' blocks
+  ok   - T-M1.12 AC2: '- * QA-VERDICT T-M9.9: PASS' is not a positive QA verdict
+  ok   - the twin is ignored, not read as a verdict
+  ok   - T-M1.12 AC2: 'QA-VERDICT T-M9.9 — FAIL' blocks
+  ok   - T-M1.12 AC2: 'QA-VERDICT T-M9.9 — PASS' is not a positive QA verdict
+  ok   - the twin is ignored, not read as a verdict
+  ok   - T-M1.12 AC2: 'QA-VERDICT T-M9.9 – FAIL' blocks
+  ok   - T-M1.12 AC2: 'QA-VERDICT T-M9.9 – PASS' is not a positive QA verdict
+  ok   - the twin is ignored, not read as a verdict
+  ok   - T-M1.12 AC2: 'QA-VERDICT T-M9.9—FAIL' blocks
+  ok   - T-M1.12 AC2: 'QA-VERDICT T-M9.9—PASS' is not a positive QA verdict
+  ok   - the twin is ignored, not read as a verdict
+  ok   - T-M1.12 AC2: 'QA-VERDICT: T-M9.9: FAIL' blocks
+  ok   - T-M1.12 AC2: 'QA-VERDICT: T-M9.9: PASS' is not a positive QA verdict
+  ok   - the twin is ignored, not read as a verdict
+  ok   - T-M1.12 AC2: '1.  QA-VERDICT:  T-M9.9 —  FAIL' blocks
+  ok   - T-M1.12 AC2: '1.  QA-VERDICT:  T-M9.9 —  PASS' is not a positive QA verdict
+  ok   - the twin is ignored, not read as a verdict
+  ok   - T-M1.12 AC2: 'DOCS-REVIEW: T-M9.9: PASS' is not a positive docs verdict
+  ok   - T-M1.12 AC2: '1. DOCS-REVIEW T-M9.9: PASS' is not a positive docs verdict
+  ok   - T-M1.12 review F1/F2: '**QA-VERDICT T-M9.9: FAILURES**' blocks
+  ok   - T-M1.12 review F1/F2: 'QA-VERDICT T-M9.9 - FAILINGS' blocks
+  ok   - T-M1.12 review F1/F2: 'QA-VERDICT T-M9.9: FAIL2' blocks
+  ok   - T-M1.12 review F1/F2: 'QA-VERDICT T-M9.9 -FAILSAFE' blocks
+  ok   - T-M1.12 review F1/F2: 'QA-VERDICT T-M9.9-FAILED' blocks
+  ok   - T-M1.12 review F1/F2: 'QA-VERDICT T-M9.9—FAIL' blocks
+  ok   - T-M1.12 review F1/F2: 'SEC-REVIEW T-M9.9: CHANGES REQUESTED' blocks
+  ok   - T-M1.12 review F1/F2: 'QA-VERDICT T-M9.9: FAIL' blocks
+  ok   - T-M1.12 review F1/F2: 'QA-VERDICT T-M9.9： FAIL' blocks
+  ok   - T-M1.12 review F1/F2: 'QA-VERDICT T-M9.9 － FAIL' blocks
+  ok   - T-M1.12 review F1/F2: 'QA-VERDICT　T-M9.9: FAIL' blocks
+  ok   - T-M1.12 review F1/F2: '+ QA-VERDICT T-M9.9: FAIL' blocks
+  ok   - T-M1.12 review F1/F2: '- [x] QA-VERDICT T-M9.9: FAIL' blocks
+  ok   - T-M1.12 review F1/F2: '(1) QA-VERDICT T-M9.9: FAIL' blocks
+  ok   - T-M1.12 review F1/F2: 'QA-VERDICT T-M9.9:: CHANGES REQUESTED' blocks
+  ok   - T-M1.12 review F1/F2: 'QA-VERDICT T-M9.9- FAIL' blocks
+  ok   - T-M1.12 review F1/F2: '**QA-VERDICT T-M9.9- CHANGES REQUESTED**' blocks
+  ok   - T-M1.12 review F1/F2: 'QA-VERDICT T-M9.9-: FAIL' blocks
+  ok   - T-M1.12 review F1/F2: 'QA-VERDICT T-M9.9-  FAILED' blocks
+  ok   - T-M1.12 review F1/F2: 'QA-VERDICT T-M9.9 : - FAIL' blocks
+  ok   - T-M1.12 review F1/F2: 'QA-VERDICT T-M9.9 - - FAIL' blocks
+  ok   - T-M1.12 review F1/F2: 'QA-VERDICT T-M9.9-FAILURES' blocks
+  ok   - T-M1.12 review F1/F2: 'QA-VERDICT T-M9.9--FAILINGS' blocks
+  ok   - T-M1.12 review F1: a word glued to the id by a dash (FAILOVER, FAILSAFE) is not a negative
+  ok   - T-M1.12 AC3: a wrapperVersion-only bump passes
+  ok   - T-M1.12 AC3: another host fails
+  ok   - T-M1.12 AC3: another host — names the line
+  ok   - T-M1.12 AC3: userinfo in the URL fails
+  ok   - T-M1.12 AC3: userinfo in the URL — names the line
+  ok   - T-M1.12 AC3: another path on the same host fails
+  ok   - T-M1.12 AC3: another path on the same host — names the line
+  ok   - T-M1.12 AC3: mismatched versions in the URL fails
+  ok   - T-M1.12 AC3: mismatched versions in the URL — names the line
+  ok   - T-M1.12 AC3: a query string fails
+  ok   - T-M1.12 AC3: a query string — names the line
+  ok   - T-M1.12 AC3: an added key fails
+  ok   - T-M1.12 AC3: an added key — names the line
+  ok   - T-M1.12 AC3: a removed key fails
+  ok   - T-M1.12 AC3: a removed key — names the line
+  ok   - T-M1.12 AC3: a distributionType change fails
+  ok   - T-M1.12 AC3: a distributionType change — names the line
+  ok   - T-M1.12 AC3: a renamed key fails
+  ok   - T-M1.12 AC3: a renamed key — names the line
+  ok   - T-M1.12 AC3: a non-semver wrapperVersion fails
+  ok   - T-M1.12 AC3: a non-semver wrapperVersion — names the line
+  ok   - T-M1.12 AC3: a fullwidth digit (any locale, review F3) fails
+  ok   - T-M1.12 AC3: a fullwidth digit (any locale, review F3) — names the line
+  ok   - T-M1.12 AC3: a -n line (printf, not echo) fails
+  ok   - T-M1.12 AC3: a -n line (printf, not echo) — names the line
+  ok   - T-M1.12 AC3: a wrapper change without a diff fails closed
+  ok   - T-M1.12 AC4: '--dry-run 7' dry-runs
+  ok   - T-M1.12 AC4: '--dry-run 7' made no merge call
+  ok   - T-M1.12 AC4: '7 --dry-run' dry-runs
+  ok   - T-M1.12 AC4: '7 --dry-run' made no merge call
+  ok   - T-M1.12 AC4: arguments '' exit 2 (caller locale en_US.UTF-8)
+  ok   - T-M1.12 AC4: '' prints the usage
+  ok   - T-M1.12 AC4: '' made no gh call
+  ok   - T-M1.12 AC4: arguments '--dry-run' exit 2 (caller locale en_US.UTF-8)
+  ok   - T-M1.12 AC4: '--dry-run' prints the usage
+  ok   - T-M1.12 AC4: '--dry-run' made no gh call
+  ok   - T-M1.12 AC4: arguments '7 --dryrun' exit 2 (caller locale en_US.UTF-8)
+  ok   - T-M1.12 AC4: '7 --dryrun' prints the usage
+  ok   - T-M1.12 AC4: '7 --dryrun' made no gh call
+  ok   - T-M1.12 AC4: arguments '7 21' exit 2 (caller locale en_US.UTF-8)
+  ok   - T-M1.12 AC4: '7 21' prints the usage
+  ok   - T-M1.12 AC4: '7 21' made no gh call
+  ok   - T-M1.12 AC4: arguments 'abc' exit 2 (caller locale en_US.UTF-8)
+  ok   - T-M1.12 AC4: 'abc' prints the usage
+  ok   - T-M1.12 AC4: 'abc' made no gh call
+  ok   - T-M1.12 AC4: arguments '--force 7' exit 2 (caller locale en_US.UTF-8)
+  ok   - T-M1.12 AC4: '--force 7' prints the usage
+  ok   - T-M1.12 AC4: '--force 7' made no gh call
+  ok   - T-M1.12 AC4: arguments '07' exit 2 (caller locale en_US.UTF-8)
+  ok   - T-M1.12 AC4: '07' prints the usage
+  ok   - T-M1.12 AC4: '07' made no gh call
+  ok   - T-M1.12 AC4: arguments '7 --dry-run=1' exit 2 (caller locale en_US.UTF-8)
+  ok   - T-M1.12 AC4: '7 --dry-run=1' prints the usage
+  ok   - T-M1.12 AC4: '7 --dry-run=1' made no gh call
+  ok   - T-M1.12 AC4: arguments '-- 7' exit 2 (caller locale en_US.UTF-8)
+  ok   - T-M1.12 AC4: '-- 7' prints the usage
+  ok   - T-M1.12 AC4: '-- 7' made no gh call
+  ok   - T-M1.12 AC4: arguments '７' exit 2 (caller locale en_US.UTF-8)
+  ok   - T-M1.12 AC4: '７' prints the usage
+  ok   - T-M1.12 AC4: '７' made no gh call
+  ok   - T-M1.12 AC4: arguments '٧' exit 2 (caller locale en_US.UTF-8)
+  ok   - T-M1.12 AC4: '٧' prints the usage
+  ok   - T-M1.12 AC4: '٧' made no gh call
+  -> 301 passed, 0 failed
+check-path-ownership.sh
+  ok   - qa/ branch touching backend/ fails
+  ok   - qa/ branch touching qa/ and qa evidence passes
+  ok   - feature/ branch touching qa/ fails
+  ok   - feature/ branch writing reviewer evidence fails
+  ok   - feature/ branch with backend, web, impl evidence passes
+  ok   - any branch touching docs/00-sources fails
+  ok   - chore/ branch with docs and scripts passes
+  ok   - unknown branch kind fails
+  ok   - R2-1: dependabot branch touching source code fails
+  ok   - dependabot branch touching manifests/workflows passes
+  ok   - T-M1.7/R3-3: dependabot branch bumping the Maven wrapper properties passes
+  ok   - T-M1.7: dependabot branch touching other .mvn files fails
+  ok   - T-M1.7: dependabot branch touching the wrapper jar fails
+  ok   - F5: an empty change list fails (no silent PASS)
+  ok   - F5: an unknown base ref fails (no silent PASS)
+  -> 15 passed, 0 failed
+pre-push hook
+  ok   - blocks a direct push to develop
+  ok   - explains the develop block
+  ok   - blocks a direct push to master
+  ok   - allows pushing a feature branch
+  ok   - blocks a force push that rewrites history
+  ok   - explains the force-push block
+  ok   - allows a normal fast-forward push
+  ok   - mirrors develop to the GitLab mirror when it is exactly origin/develop
+  ok   - blocks develop on the mirror when the commit is not origin/develop
+  ok   - points to gitlab-sync.sh
+  ok   - blocks origin's develop commit to a remote that is not the mirror
+  ok   - still blocks a new develop commit to origin (GitHub), even with the mirror setting
+  ok   - blocks deleting develop on the mirror
+  ok   - the test-only override is ignored for non-path URLs (file://, https://), so it cannot widen to a real remote
+  ok   - explains the block
+  -> 15 passed, 0 failed
+workflow upload warnings
+  ok   - a best-effort upload followed by its warning step passes
+  ok   - a continue-on-error step without an id fails
+  ok   - names the missing id
+  ok   - a continue-on-error step without a warning step fails
+  ok   - names the missing warning
+  ok   - a warning step in another job does not count
+  ok   - a warning step before the upload does not count
+  ok   - a warning step without always() (skipped after a failure) does not count
+  ok   - all real workflows warn on every failed best-effort step
+  ok   - the scan saw the real best-effort steps (2 workflow files)
+  -> 10 passed, 0 failed
+script tests: PASS
+gate: <== scripts OK (38s)
+gate: ==> backend
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] -------------------------< com.englms:englms >--------------------------
+[INFO] Building englms 0.0.1-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- jacoco:0.8.15:prepare-agent (prepare-agent) @ englms ---
+[INFO] argLine set to -javaagent:/home/kali/.m2/repository/org/jacoco/org.jacoco.agent/0.8.15/org.jacoco.agent-0.8.15-runtime.jar=destfile=/home/kali/App_sources/Eng-LMS/backend/target/jacoco.exec
+[INFO] 
+[INFO] --- resources:3.5.0:resources (default-resources) @ englms ---
+[INFO] Copying 1 resource from src/main/resources to target/classes
+[INFO] Copying 2 resources from src/main/resources to target/classes
+[INFO] 
+[INFO] --- compiler:3.15.0:compile (default-compile) @ englms ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] --- resources:3.5.0:testResources (default-testResources) @ englms ---
+[INFO] Copying 5 resources from src/test/resources to target/test-classes
+[INFO] 
+[INFO] --- compiler:3.15.0:testCompile (default-testCompile) @ englms ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] --- surefire:3.5.6:test (default-test) @ englms ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running com.englms.shared.IdsTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.173 s -- in com.englms.shared.IdsTest
+[INFO] Running com.englms.shared.web.SpaServingTest
+11:21:40.492 [main] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [com.englms.shared.web.SpaServingTest]: SpaServingTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+11:21:40.660 [main] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration com.englms.EnglmsApplication for test class com.englms.shared.web.SpaServingTest
+11:21:40.663 [main] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [com.englms.shared.web.SpaServingTest]: SpaServingTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+11:21:40.676 [main] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration com.englms.EnglmsApplication for test class com.englms.shared.web.SpaServingTest
+{"@timestamp":"2026-10-02T04:21:41.198595050Z","log":{"level":"INFO","logger":"com.englms.shared.web.SpaServingTest"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Starting SpaServingTest using Java 25.0.4 with PID 159321 (started by kali in /home/kali/App_sources/Eng-LMS/backend)","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:41.206635232Z","log":{"level":"INFO","logger":"com.englms.shared.web.SpaServingTest"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"No active profile set, falling back to 1 default profile: \"default\"","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:41.935505482Z","log":{"level":"INFO","logger":"org.springframework.boot.webmvc.autoconfigure.WelcomePageHandlerMapping"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Adding welcome page: class path resource [static/index.html]","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:42.302147023Z","log":{"level":"INFO","logger":"org.springframework.boot.test.mock.web.SpringBootMockServletContext"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Initializing Spring TestDispatcherServlet ''","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:42.302731641Z","log":{"level":"INFO","logger":"org.springframework.test.web.servlet.TestDispatcherServlet"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Initializing Servlet ''","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:42.304993954Z","log":{"level":"INFO","logger":"org.springframework.test.web.servlet.TestDispatcherServlet"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Completed initialization in 1 ms","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:42.333494173Z","log":{"level":"INFO","logger":"com.englms.shared.web.SpaServingTest"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Started SpaServingTest in 1.545 seconds (process running for 3.485)","ecs":{"version":"8.11"}}
+Mockito is currently self-attaching to enable the inline-mock-maker. This will no longer work in future releases of the JDK. Please add Mockito as an agent to your build as described in Mockito's documentation: https://javadoc.io/doc/org.mockito/mockito-core/latest/org.mockito/org/mockito/Mockito.html#0.3
+OpenJDK 64-Bit Server VM warning: Sharing is only supported for boot loader classes because bootstrap classpath has been appended
+WARNING: A Java agent has been loaded dynamically (/home/kali/.m2/repository/net/bytebuddy/byte-buddy-agent/1.18.11/byte-buddy-agent-1.18.11.jar)
+WARNING: If a serviceability tool is in use, please run with -XX:+EnableDynamicAgentLoading to hide this warning
+WARNING: If a serviceability tool is not in use, please run with -Djdk.instrument.traceUsage for more information
+WARNING: Dynamic loading of agents will be disallowed by default in a future release
+{"@timestamp":"2026-10-02T04:21:43.214123508Z","log":{"level":"INFO","logger":"com.englms.shared.web.RequestIdFilter"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"GET /tutor -> 404","requestId":"01a0fad8-bc1c-7143-b1a5-92a5dd9fbb1f","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:43.252226787Z","log":{"level":"INFO","logger":"com.englms.shared.web.RequestIdFilter"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"GET /tutor -> 404","requestId":"01a0fad8-bcd1-742c-bb75-e38f5f606050","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:43.264194501Z","log":{"level":"INFO","logger":"com.englms.shared.web.RequestIdFilter"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"GET /tutor -> 404","requestId":"01a0fad8-bcde-717e-9840-467a160a6998","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:43.275991127Z","log":{"level":"INFO","logger":"com.englms.shared.web.RequestIdFilter"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"GET /robots.txt -> 404","requestId":"01a0fad8-bce9-764f-a866-d07f445d44d0","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:43.296192543Z","log":{"level":"INFO","logger":"com.englms.shared.web.RequestIdFilter"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"GET /assets/index-Ab12Cd34.js -> 200","requestId":"01a0fad8-bcf4-7e9b-be33-41af7b2b1b10","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:43.308253070Z","log":{"level":"INFO","logger":"com.englms.shared.web.RequestIdFilter"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"GET /index.html -> 200","requestId":"01a0fad8-bd0a-7bde-8e47-bdcd2b6d1de8","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:43.326569436Z","log":{"level":"INFO","logger":"com.englms.shared.web.RequestIdFilter"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"GET /favicon.svg -> 200","requestId":"01a0fad8-bd1d-7693-8720-51ed96b33973","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:43.347121625Z","log":{"level":"INFO","logger":"com.englms.shared.web.RequestIdFilter"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"GET /api/v1/probe -> 200","requestId":"01a0fad8-bd26-7757-a022-d8235ab57a47","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:43.359118193Z","log":{"level":"INFO","logger":"com.englms.shared.web.RequestIdFilter"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"POST /tutor -> 404","requestId":"01a0fad8-bd3d-719c-9fa8-4a0eda92bc59","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:43.370098719Z","log":{"level":"INFO","logger":"com.englms.shared.web.RequestIdFilter"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"PUT /tutor -> 404","requestId":"01a0fad8-bd48-746e-8e2e-4559a3a9c1a7","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:43.380326062Z","log":{"level":"INFO","logger":"com.englms.shared.web.RequestIdFilter"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"DELETE /tutor -> 404","requestId":"01a0fad8-bd52-7709-9eb0-c19395d3490c","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:43.390417914Z","log":{"level":"INFO","logger":"com.englms.shared.web.RequestIdFilter"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"PATCH /tutor -> 404","requestId":"01a0fad8-bd5c-7aa7-9c91-ca450a6c724d","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:43.399990268Z","log":{"level":"INFO","logger":"com.englms.shared.web.RequestIdFilter"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"GET / -> 200","requestId":"01a0fad8-bd67-75e5-bf73-6949336c2e04","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:43.410923526Z","log":{"level":"INFO","logger":"com.englms.shared.web.RequestIdFilter"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"GET /tutor -> 200","requestId":"01a0fad8-bd72-7b6b-b656-27f2f6fe486e","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:43.418218840Z","log":{"level":"INFO","logger":"com.englms.shared.web.RequestIdFilter"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"GET /student/x -> 200","requestId":"01a0fad8-bd79-7f3f-8ce3-85a4532efc70","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:43.426250025Z","log":{"level":"INFO","logger":"com.englms.shared.web.RequestIdFilter"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"GET /tutor/students/01J/ -> 200","requestId":"01a0fad8-bd82-7c3d-9ce9-98d821ff3084","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:43.433598267Z","log":{"level":"INFO","logger":"com.englms.shared.web.RequestIdFilter"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"GET /tutor -> 200","requestId":"01a0fad8-bd89-799d-b3d6-c4a7ed69b695","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:43.434591747Z","log":{"level":"INFO","logger":"com.englms.shared.web.RequestIdFilter"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"HEAD /tutor -> 200","requestId":"01a0fad8-bd8a-7655-bb91-a1d9434c92f7","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:43.444138183Z","log":{"level":"INFO","logger":"com.englms.shared.web.RequestIdFilter"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"GET /api -> 404","requestId":"01a0fad8-bd92-73cb-a8bc-61336857e0dc","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:43.488580957Z","log":{"level":"INFO","logger":"com.englms.shared.web.RequestIdFilter"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"GET /api/v1/x -> 404","requestId":"01a0fad8-bdbf-7762-b86a-27782de3fb9f","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:43.497656245Z","log":{"level":"INFO","logger":"com.englms.shared.web.RequestIdFilter"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"GET /api/v1/tutor/students -> 404","requestId":"01a0fad8-bdc8-76f9-958a-b6cd9738d033","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:43.507217969Z","log":{"level":"INFO","logger":"com.englms.shared.web.RequestIdFilter"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"GET /api;x=1/v1/x -> 404","requestId":"01a0fad8-bdd1-7ddb-bb03-3afc956d569e","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:43.516797517Z","log":{"level":"INFO","logger":"com.englms.shared.web.RequestIdFilter"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"GET /actuator/health -> 404","requestId":"01a0fad8-bddb-7e35-b11b-546745bbf9e4","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:43.526604217Z","log":{"level":"INFO","logger":"com.englms.shared.web.RequestIdFilter"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"GET /actuator -> 404","requestId":"01a0fad8-bde4-7119-8eba-81367945e67d","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:43.535877074Z","log":{"level":"INFO","logger":"com.englms.shared.web.RequestIdFilter"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"GET /assets/missing-00000000.js -> 404","requestId":"01a0fad8-bdee-7d15-86aa-de5fbdf80a2c","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:43.545077825Z","log":{"level":"INFO","logger":"com.englms.shared.web.RequestIdFilter"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"GET /assets/tutor -> 404","requestId":"01a0fad8-bdf7-7d60-968e-5186531a87d7","ecs":{"version":"8.11"}}
+[INFO] Tests run: 25, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 3.170 s -- in com.englms.shared.web.SpaServingTest
+[INFO] Running com.englms.ApplicationIntegrationTest
+{"@timestamp":"2026-10-02T04:21:43.557109850Z","log":{"level":"INFO","logger":"org.springframework.test.context.support.AnnotationConfigContextLoaderUtils"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Could not detect default configuration classes for test class [com.englms.ApplicationIntegrationTest]: ApplicationIntegrationTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:43.567278965Z","log":{"level":"INFO","logger":"org.springframework.boot.test.context.SpringBootTestContextBootstrapper"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Found @SpringBootConfiguration com.englms.EnglmsApplication for test class com.englms.ApplicationIntegrationTest","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:43.570732135Z","log":{"level":"INFO","logger":"org.springframework.test.context.support.AnnotationConfigContextLoaderUtils"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Could not detect default configuration classes for test class [com.englms.ApplicationIntegrationTest]: ApplicationIntegrationTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:43.574223386Z","log":{"level":"INFO","logger":"org.springframework.boot.test.context.SpringBootTestContextBootstrapper"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Found @SpringBootConfiguration com.englms.EnglmsApplication for test class com.englms.ApplicationIntegrationTest","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:43.608804667Z","log":{"level":"INFO","logger":"com.englms.ApplicationIntegrationTest"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Starting ApplicationIntegrationTest using Java 25.0.4 with PID 159321 (started by kali in /home/kali/App_sources/Eng-LMS/backend)","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:43.609916297Z","log":{"level":"INFO","logger":"com.englms.ApplicationIntegrationTest"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"No active profile set, falling back to 1 default profile: \"default\"","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:44.033451513Z","log":{"level":"INFO","logger":"org.springframework.data.repository.config.RepositoryConfigurationDelegate"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Bootstrapping Spring Data JPA repositories in DEFAULT mode.","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:44.059683999Z","log":{"level":"INFO","logger":"org.springframework.data.repository.config.RepositoryConfigurationDelegate"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Finished Spring Data repository scanning in 8 ms. Found 0 JPA repository interfaces.","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:44.340416591Z","log":{"level":"INFO","logger":"com.tngtech.archunit.core.PluginLoader"},"process":{"pid":159321,"thread":{"name":"SimpleAsyncTaskExecutor-1"}},"service":{"name":"englms","node":{}},"message":"Detected Java version 25.0.4","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:46.152417347Z","log":{"level":"INFO","logger":"org.springframework.boot.tomcat.TomcatWebServer"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Tomcat initialized with port 0 (http)","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:46.169476041Z","log":{"level":"INFO","logger":"org.apache.catalina.core.StandardService"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Starting service [Tomcat]","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:46.169873561Z","log":{"level":"INFO","logger":"org.apache.catalina.core.StandardEngine"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Starting Servlet engine: [Apache Tomcat/11.0.24]","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:46.208320440Z","log":{"level":"INFO","logger":"org.springframework.boot.web.context.servlet.WebApplicationContextInitializer"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Root WebApplicationContext: initialization completed in 2597 ms","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:46.324690022Z","log":{"level":"INFO","logger":"org.testcontainers.images.PullPolicy"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Image pull policy will be performed by: DefaultPullPolicy()","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:46.327325859Z","log":{"level":"INFO","logger":"org.testcontainers.utility.ImageNameSubstitutor"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Image name substitution will be performed by: DefaultImageNameSubstitutor (composite of 'ConfigurationFileImageNameSubstitutor' and 'PrefixingImageNameSubstitutor')","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:46.350270874Z","log":{"level":"INFO","logger":"org.testcontainers.DockerClientFactory"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Testcontainers version: 2.0.5","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:48.822245341Z","log":{"level":"INFO","logger":"org.testcontainers.dockerclient.DockerClientProviderStrategy"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Found Docker environment with Environment variables, system properties and defaults. Resolved dockerHost=unix:///run/user/1000/podman/podman.sock","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:48.823866099Z","log":{"level":"INFO","logger":"org.testcontainers.DockerClientFactory"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Docker host IP address is localhost","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:50.516797058Z","log":{"level":"INFO","logger":"org.testcontainers.DockerClientFactory"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Connected to docker: \n  Server Version: 5.8.6\n  API Version: 1.44\n  Operating System: kali\n  Total Memory: 23375 MB","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:50.519288177Z","log":{"level":"WARN","logger":"org.testcontainers.utility.ResourceReaper"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"\n********************************************************************************\nRyuk has been disabled. This can cause unexpected behavior in your environment.\n********************************************************************************","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:50.522727130Z","log":{"level":"INFO","logger":"org.testcontainers.DockerClientFactory"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Checking the system...","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:50.523285840Z","log":{"level":"INFO","logger":"org.testcontainers.DockerClientFactory"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"✔︎ Docker server version should be at least 1.6.0","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:50.608168200Z","log":{"level":"INFO","logger":"tc.docker.io/library/postgres:18"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Creating container for image: docker.io/library/postgres:18","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:50.615528014Z","log":{"level":"INFO","logger":"org.testcontainers.utility.RegistryAuthLocator"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Failure when attempting to lookup auth config. Please ignore if you don't have images in an authenticated registry. Details: (dockerImageName: docker.io/library/postgres:18, configFile: /home/kali/.docker/config.json, configEnv: DOCKER_AUTH_CONFIG). Falling back to docker-java default behaviour. Exception message: Status 404: No config supplied. Checked in order: /home/kali/.docker/config.json (file not found), DOCKER_AUTH_CONFIG (not set)","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:50.722494896Z","log":{"level":"INFO","logger":"tc.docker.io/library/postgres:18"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Container docker.io/library/postgres:18 is starting: a6cdf4ec4bd2a1958e5f399d4ea5abc9d3dae9fd90f4b7cfe68410bef16838f3","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:52.700264650Z","log":{"level":"INFO","logger":"tc.docker.io/library/postgres:18"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Container docker.io/library/postgres:18 started in PT2.092067426S","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:52.700875718Z","log":{"level":"INFO","logger":"tc.docker.io/library/postgres:18"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Container is started (JDBC URL: jdbc:postgresql://localhost:46375/test?loggerLevel=OFF)","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:53.094335050Z","log":{"level":"INFO","logger":"org.flywaydb.core.FlywayExecutor"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Database: jdbc:postgresql://localhost:46375/test?loggerLevel=OFF (PostgreSQL 18.6)","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:53.148097244Z","log":{"level":"INFO","logger":"org.flywaydb.core.internal.database.base.Schema"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Creating schema \"app\" ...","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:53.153064292Z","log":{"level":"INFO","logger":"org.flywaydb.core.internal.schemahistory.JdbcTableSchemaHistory"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Creating Schema History table \"app\".\"flyway_schema_history\" ...","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:53.215336311Z","log":{"level":"INFO","logger":"org.flywaydb.core.internal.command.DbMigrate"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Current version of schema \"app\": null","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:53.225543366Z","log":{"level":"INFO","logger":"org.flywaydb.core.internal.command.DbMigrate"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Migrating schema \"app\" to version \"202609250001 - platform extensions\"","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:53.251922514Z","log":{"level":"INFO","logger":"org.flywaydb.core.internal.command.DbMigrate"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Successfully applied 1 migration to schema \"app\", now at version v202609250001 (execution time 00:00.019s)","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:53.270493262Z","log":{"level":"INFO","logger":"com.zaxxer.hikari.HikariDataSource"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"HikariPool-1 - Starting...","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:53.293457270Z","log":{"level":"INFO","logger":"com.zaxxer.hikari.pool.HikariPool"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@f6b6616","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:53.295240410Z","log":{"level":"INFO","logger":"com.zaxxer.hikari.HikariDataSource"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"HikariPool-1 - Start completed.","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:53.447542432Z","log":{"level":"INFO","logger":"org.hibernate.orm.jpa"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"HHH008540: Processing PersistenceUnitInfo [name: default]","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:53.513611241Z","log":{"level":"INFO","logger":"org.hibernate.orm.core"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"HHH000001: Hibernate ORM core version 7.4.5.Final","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:53.814120380Z","log":{"level":"INFO","logger":"org.springframework.orm.jpa.persistenceunit.SpringPersistenceUnitInfo"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"No LoadTimeWeaver setup: ignoring JPA class transformer","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:53.932483109Z","log":{"level":"INFO","logger":"org.hibernate.orm.connections.pooling"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"HHH10001005: Database info:\n\tDatabase JDBC URL [jdbc:postgresql://localhost:46375/test?loggerLevel=OFF]\n\tDatabase driver: PostgreSQL JDBC Driver\n\tDatabase dialect: PostgreSQLDialect\n\tDatabase version: 18.6\n\tDefault catalog/schema: test/app\n\tAutocommit mode: undefined/unknown\n\tIsolation level: READ_COMMITTED [default READ_COMMITTED]\n\tJDBC fetch size: none\n\tPool: DataSourceConnectionProvider\n\tMinimum pool size: undefined/unknown\n\tMaximum pool size: undefined/unknown","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:54.395148597Z","log":{"level":"INFO","logger":"org.hibernate.orm.core"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:54.437439601Z","log":{"level":"INFO","logger":"org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Initialized JPA EntityManagerFactory for persistence unit 'default'","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:54.554724391Z","log":{"level":"INFO","logger":"org.springframework.boot.webmvc.autoconfigure.WelcomePageHandlerMapping"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Adding welcome page: class path resource [static/index.html]","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:54.968281611Z","log":{"level":"INFO","logger":"org.springframework.boot.tomcat.TomcatWebServer"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Tomcat started on port 34517 (http) with context path '/'","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:55.029210058Z","log":{"level":"INFO","logger":"org.springframework.boot.tomcat.TomcatWebServer"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Tomcat initialized with port 0 (http)","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:55.030238683Z","log":{"level":"INFO","logger":"org.apache.catalina.core.StandardService"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Starting service [Tomcat]","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:55.030534404Z","log":{"level":"INFO","logger":"org.apache.catalina.core.StandardEngine"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Starting Servlet engine: [Apache Tomcat/11.0.24]","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:55.041657895Z","log":{"level":"INFO","logger":"org.springframework.boot.web.context.servlet.WebApplicationContextInitializer"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Root WebApplicationContext: initialization completed in 66 ms","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:55.055909852Z","log":{"level":"INFO","logger":"org.springframework.boot.actuate.endpoint.web.EndpointLinksResolver"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Exposing 2 endpoints beneath base path '/actuator'","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:55.089078871Z","log":{"level":"INFO","logger":"org.springframework.boot.tomcat.TomcatWebServer"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Tomcat started on port 40739 (http) with context path '/'","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:55.099318948Z","log":{"level":"INFO","logger":"org.springframework.scheduling.config.TaskSchedulerRouter"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"No TaskScheduler/ScheduledExecutorService bean found for scheduled processing","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:55.103098926Z","log":{"level":"INFO","logger":"com.englms.ApplicationIntegrationTest"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Started ApplicationIntegrationTest in 11.521 seconds (process running for 16.254)","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:55.326416344Z","log":{"level":"INFO","logger":"org.apache.catalina.core.ContainerBase.[Tomcat-1].[localhost].[/]"},"process":{"pid":159321,"thread":{"name":"tomcat-handler-0"}},"service":{"name":"englms","node":{}},"message":"Initializing Spring DispatcherServlet 'dispatcherServletRegistration'","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:55.326698640Z","log":{"level":"INFO","logger":"org.springframework.web.servlet.DispatcherServlet"},"process":{"pid":159321,"thread":{"name":"tomcat-handler-0"}},"service":{"name":"englms","node":{}},"message":"Initializing Servlet 'dispatcherServletRegistration'","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:55.327176800Z","log":{"level":"INFO","logger":"org.springframework.web.servlet.DispatcherServlet"},"process":{"pid":159321,"thread":{"name":"tomcat-handler-0"}},"service":{"name":"englms","node":{}},"message":"Completed initialization in 1 ms","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:55.396233341Z","log":{"level":"INFO","logger":"com.englms.shared.web.RequestIdFilter"},"process":{"pid":159321,"thread":{"name":"tomcat-handler-0"}},"service":{"name":"englms","node":{}},"message":"GET /actuator/health -> 200","requestId":"it-mgmt-1","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:55.442456416Z","log":{"level":"INFO","logger":"com.englms.shared.web.RequestIdFilter"},"process":{"pid":159321,"thread":{"name":"tomcat-handler-1"}},"service":{"name":"englms","node":{}},"message":"GET /actuator/health -> 200","requestId":"01a0fad8-ec6d-7c54-9cd5-541057175ecf","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:55.459853689Z","log":{"level":"INFO","logger":"com.englms.shared.web.RequestIdFilter"},"process":{"pid":159321,"thread":{"name":"tomcat-handler-2"}},"service":{"name":"englms","node":{}},"message":"GET /actuator/health/liveness -> 200","requestId":"01a0fad8-ec7f-757e-93ef-059263d91779","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:55.473351582Z","log":{"level":"INFO","logger":"com.englms.shared.web.RequestIdFilter"},"process":{"pid":159321,"thread":{"name":"tomcat-handler-3"}},"service":{"name":"englms","node":{}},"message":"GET /actuator/health/readiness -> 200","requestId":"01a0fad8-ec8f-7c48-9592-6847a93c5f84","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:55.490532512Z","log":{"level":"INFO","logger":"com.englms.shared.web.RequestIdFilter"},"process":{"pid":159321,"thread":{"name":"tomcat-handler-4"}},"service":{"name":"englms","node":{}},"message":"GET /actuator/info -> 200","requestId":"01a0fad8-ec9c-7500-9025-0d63c0b7e058","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:55.519347414Z","log":{"level":"INFO","logger":"org.apache.catalina.core.ContainerBase.[Tomcat].[localhost].[/]"},"process":{"pid":159321,"thread":{"name":"tomcat-handler-0"}},"service":{"name":"englms","node":{}},"message":"Initializing Spring DispatcherServlet 'dispatcherServlet'","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:55.519651510Z","log":{"level":"INFO","logger":"org.springframework.web.servlet.DispatcherServlet"},"process":{"pid":159321,"thread":{"name":"tomcat-handler-0"}},"service":{"name":"englms","node":{}},"message":"Initializing Servlet 'dispatcherServlet'","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:55.521232444Z","log":{"level":"INFO","logger":"org.springframework.web.servlet.DispatcherServlet"},"process":{"pid":159321,"thread":{"name":"tomcat-handler-0"}},"service":{"name":"englms","node":{}},"message":"Completed initialization in 2 ms","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:55.527003750Z","log":{"level":"INFO","logger":"com.englms.shared.web.RequestIdFilter"},"process":{"pid":159321,"thread":{"name":"tomcat-handler-0"}},"service":{"name":"englms","node":{}},"message":"GET /assets/index-Ab12Cd34.js -> 200","requestId":"01a0fad8-ecc2-7445-98ad-618731775d3a","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:55.559939555Z","log":{"level":"INFO","logger":"com.englms.shared.web.RequestIdFilter"},"process":{"pid":159321,"thread":{"name":"tomcat-handler-1"}},"service":{"name":"englms","node":{}},"message":"GET /api/v1/meta -> 200","requestId":"it-log-check-1","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:55.595042606Z","log":{"level":"INFO","logger":"com.englms.shared.web.RequestIdFilter"},"process":{"pid":159321,"thread":{"name":"tomcat-handler-9"}},"service":{"name":"englms","node":{}},"message":"GET /actuator/env -> 404","requestId":"01a0fad8-ed04-7d01-9152-abbc9331822a","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:55.608499792Z","log":{"level":"INFO","logger":"com.englms.shared.web.RequestIdFilter"},"process":{"pid":159321,"thread":{"name":"tomcat-handler-10"}},"service":{"name":"englms","node":{}},"message":"GET /actuator/beans -> 404","requestId":"01a0fad8-ed16-7d27-8ff8-f0f7b7de62bb","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:55.622761006Z","log":{"level":"INFO","logger":"com.englms.shared.web.RequestIdFilter"},"process":{"pid":159321,"thread":{"name":"tomcat-handler-11"}},"service":{"name":"englms","node":{}},"message":"GET /actuator/configprops -> 404","requestId":"01a0fad8-ed24-7d0d-aa48-9884069603f1","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:55.637428436Z","log":{"level":"INFO","logger":"com.englms.shared.web.RequestIdFilter"},"process":{"pid":159321,"thread":{"name":"tomcat-handler-12"}},"service":{"name":"englms","node":{}},"message":"GET /actuator/modulith -> 404","requestId":"01a0fad8-ed33-756d-bf76-8cca038f6be5","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:55.650628294Z","log":{"level":"INFO","logger":"com.englms.shared.web.RequestIdFilter"},"process":{"pid":159321,"thread":{"name":"tomcat-handler-13"}},"service":{"name":"englms","node":{}},"message":"GET /actuator/metrics -> 404","requestId":"01a0fad8-ed40-7f30-88aa-ece83c7d4f50","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:55.664616740Z","log":{"level":"INFO","logger":"com.englms.shared.web.RequestIdFilter"},"process":{"pid":159321,"thread":{"name":"tomcat-handler-14"}},"service":{"name":"englms","node":{}},"message":"GET /actuator/loggers -> 404","requestId":"01a0fad8-ed4e-795c-8f0f-99ac8f3b4f22","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:55.678833902Z","log":{"level":"INFO","logger":"com.englms.shared.web.RequestIdFilter"},"process":{"pid":159321,"thread":{"name":"tomcat-handler-15"}},"service":{"name":"englms","node":{}},"message":"GET /actuator/heapdump -> 404","requestId":"01a0fad8-ed5c-7fd6-bcd1-c0aa2542ec0f","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:55.704381620Z","log":{"level":"INFO","logger":"com.englms.shared.web.RequestIdFilter"},"process":{"pid":159321,"thread":{"name":"tomcat-handler-3"}},"service":{"name":"englms","node":{}},"message":"GET /api/v1/single-log-5d19e648-a0f3-4b1f-b6ba-699704aa9be2 -> 404","requestId":"01a0fad8-ed75-70ea-b947-4adc4f72032c","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:55.739060711Z","log":{"level":"INFO","logger":"com.englms.shared.web.RequestIdFilter"},"process":{"pid":159321,"thread":{"name":"tomcat-handler-5"}},"service":{"name":"englms","node":{}},"message":"GET / -> 200","requestId":"01a0fad8-ed93-79d5-bc48-93cff7c5bf14","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:55.752738739Z","log":{"level":"INFO","logger":"com.englms.shared.web.RequestIdFilter"},"process":{"pid":159321,"thread":{"name":"tomcat-handler-6"}},"service":{"name":"englms","node":{}},"message":"GET /tutor -> 200","requestId":"01a0fad8-eda6-757b-b6a4-adc81a1a9e56","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:55.765314205Z","log":{"level":"INFO","logger":"com.englms.shared.web.RequestIdFilter"},"process":{"pid":159321,"thread":{"name":"tomcat-handler-7"}},"service":{"name":"englms","node":{}},"message":"GET /student/x -> 200","requestId":"01a0fad8-edb3-745a-a0f2-23aeb8fab76e","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:55.777760469Z","log":{"level":"INFO","logger":"com.englms.shared.web.RequestIdFilter"},"process":{"pid":159321,"thread":{"name":"tomcat-handler-16"}},"service":{"name":"englms","node":{}},"message":"GET /actuator/health -> 200","requestId":"01a0fad8-edbf-7c52-a23a-41a4ed51a0e0","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:55.792193092Z","log":{"level":"INFO","logger":"com.englms.shared.web.RequestIdFilter"},"process":{"pid":159321,"thread":{"name":"tomcat-handler-8"}},"service":{"name":"englms","node":{}},"message":"GET /actuator/health -> 404","requestId":"01a0fad8-edce-794c-8e0e-722c283f23a1","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:55.804887629Z","log":{"level":"INFO","logger":"com.englms.shared.web.RequestIdFilter"},"process":{"pid":159321,"thread":{"name":"tomcat-handler-9"}},"service":{"name":"englms","node":{}},"message":"GET /actuator/info -> 404","requestId":"01a0fad8-edda-7cea-9225-d11e2fdd0c98","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:55.817148207Z","log":{"level":"INFO","logger":"com.englms.shared.web.RequestIdFilter"},"process":{"pid":159321,"thread":{"name":"tomcat-handler-10"}},"service":{"name":"englms","node":{}},"message":"GET /api/v1/x -> 404","requestId":"01a0fad8-ede7-7ff0-b361-6a9990b82f76","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:55.845937482Z","log":{"level":"INFO","logger":"com.englms.shared.web.RequestIdFilter"},"process":{"pid":159321,"thread":{"name":"tomcat-handler-17"}},"service":{"name":"englms","node":{}},"message":"GET /actuator/env -> 404","requestId":"01a0fad8-ee04-7cbf-87f1-b635b46a4ef9","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:55.857767158Z","log":{"level":"INFO","logger":"com.englms.shared.web.RequestIdFilter"},"process":{"pid":159321,"thread":{"name":"tomcat-handler-13"}},"service":{"name":"englms","node":{}},"message":"GET /api/v1/meta -> 200","requestId":"01a0fad8-ee10-7842-9068-31fa92022d90","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:55.868576124Z","log":{"level":"INFO","logger":"org.apache.coyote.http11.Http11Processor"},"process":{"pid":159321,"thread":{"name":"tomcat-handler-14"}},"service":{"name":"englms","node":{}},"message":"Error parsing HTTP request header\n Note: further occurrences of HTTP request parsing errors will be logged at DEBUG level.","error":{"type":"java.lang.IllegalArgumentException","message":"Invalid character found in the request target [/api/v1/meta?q=< ]. The valid characters are defined in RFC 7230 and RFC 3986","stack_trace":"java.lang.IllegalArgumentException: Invalid character found in the request target [/api/v1/meta?q=< ]. The valid characters are defined in RFC 7230 and RFC 3986\n\tat org.apache.coyote.http11.Http11InputBuffer.parseRequestLine(Http11InputBuffer.java:473)\n\tat org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:279)\n\tat org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:71)\n\tat org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:1307)\n\tat org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:2036)\n\tat org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:74)\n\tat java.base/java.lang.VirtualThread.run(VirtualThread.java:460)\n"},"ecs":{"version":"8.11"}}
+[INFO] Tests run: 31, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 12.34 s -- in com.englms.ApplicationIntegrationTest
+[INFO] Running com.englms.settings.internal.web.MetaControllerTest
+{"@timestamp":"2026-10-02T04:21:55.895030671Z","log":{"level":"INFO","logger":"org.springframework.test.context.support.AnnotationConfigContextLoaderUtils"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Could not detect default configuration classes for test class [com.englms.settings.internal.web.MetaControllerTest]: MetaControllerTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:55.908131134Z","log":{"level":"INFO","logger":"org.springframework.boot.test.context.SpringBootTestContextBootstrapper"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Found @SpringBootConfiguration com.englms.EnglmsApplication for test class com.englms.settings.internal.web.MetaControllerTest","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:55.908705554Z","log":{"level":"INFO","logger":"org.springframework.test.context.support.AnnotationConfigContextLoaderUtils"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Could not detect default configuration classes for test class [com.englms.settings.internal.web.MetaControllerTest]: MetaControllerTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:55.914081874Z","log":{"level":"INFO","logger":"org.springframework.boot.test.context.SpringBootTestContextBootstrapper"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Found @SpringBootConfiguration com.englms.EnglmsApplication for test class com.englms.settings.internal.web.MetaControllerTest","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:55.916349436Z","log":{"level":"INFO","logger":"org.springframework.boot.tomcat.GracefulShutdown"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Commencing graceful shutdown. Waiting for active requests to complete","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:55.918195864Z","log":{"level":"INFO","logger":"org.springframework.boot.tomcat.GracefulShutdown"},"process":{"pid":159321,"thread":{"name":"tomcat-shutdown"}},"service":{"name":"englms","node":{}},"message":"Graceful shutdown complete","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:55.937577272Z","log":{"level":"INFO","logger":"com.englms.settings.internal.web.MetaControllerTest"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Starting MetaControllerTest using Java 25.0.4 with PID 159321 (started by kali in /home/kali/App_sources/Eng-LMS/backend)","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:55.937929888Z","log":{"level":"INFO","logger":"com.englms.settings.internal.web.MetaControllerTest"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"No active profile set, falling back to 1 default profile: \"default\"","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:56.029666758Z","log":{"level":"INFO","logger":"org.springframework.boot.webmvc.autoconfigure.WelcomePageHandlerMapping"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Adding welcome page: class path resource [static/index.html]","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:56.055549090Z","log":{"level":"INFO","logger":"org.springframework.boot.test.mock.web.SpringBootMockServletContext"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Initializing Spring TestDispatcherServlet ''","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:56.055839411Z","log":{"level":"INFO","logger":"org.springframework.test.web.servlet.TestDispatcherServlet"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Initializing Servlet ''","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:56.056464925Z","log":{"level":"INFO","logger":"org.springframework.test.web.servlet.TestDispatcherServlet"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Completed initialization in 1 ms","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:56.061276374Z","log":{"level":"INFO","logger":"com.englms.settings.internal.web.MetaControllerTest"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Started MetaControllerTest in 0.14 seconds (process running for 17.212)","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:56.073642389Z","log":{"level":"INFO","logger":"com.englms.shared.web.RequestIdFilter"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"GET /api/v1/x -> 404","requestId":"01a0fad8-eee2-7c45-b51f-977208902fad","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:56.082320798Z","log":{"level":"WARN","logger":"org.springframework.web.servlet.PageNotFound"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Request method 'POST' is not supported","requestId":"01a0fad8-eef1-72e9-8265-a8354defac87","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:56.083395178Z","log":{"level":"INFO","logger":"com.englms.shared.web.RequestIdFilter"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"POST /api/v1/meta -> 405","requestId":"01a0fad8-eef1-72e9-8265-a8354defac87","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:56.092875741Z","log":{"level":"INFO","logger":"com.englms.shared.web.RequestIdFilter"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"GET /api/v1/meta -> 200","requestId":"01a0fad8-eef9-7afb-af2c-ac46052f858c","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:56.099886545Z","log":{"level":"INFO","logger":"com.englms.shared.web.RequestIdFilter"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"GET /api/v1/x -> 404","requestId":"abc-123","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:56.106277935Z","log":{"level":"INFO","logger":"com.englms.shared.web.RequestIdFilter"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"GET /api/v1/meta -> 200","requestId":"01a0fad8-ef09-7dce-80dd-dafd9f7c8cc2","ecs":{"version":"8.11"}}
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.234 s -- in com.englms.settings.internal.web.MetaControllerTest
+[INFO] Running com.englms.persistence.FlywayMigrationTest
+{"@timestamp":"2026-10-02T04:21:56.128920174Z","log":{"level":"INFO","logger":"org.springframework.test.context.support.AnnotationConfigContextLoaderUtils"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Could not detect default configuration classes for test class [com.englms.persistence.FlywayMigrationTest]: FlywayMigrationTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:56.135906562Z","log":{"level":"INFO","logger":"org.springframework.boot.test.context.SpringBootTestContextBootstrapper"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Found @SpringBootConfiguration com.englms.EnglmsApplication for test class com.englms.persistence.FlywayMigrationTest","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:56.136647562Z","log":{"level":"INFO","logger":"org.springframework.test.context.support.AnnotationConfigContextLoaderUtils"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Could not detect default configuration classes for test class [com.englms.persistence.FlywayMigrationTest]: FlywayMigrationTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:56.139850506Z","log":{"level":"INFO","logger":"org.springframework.boot.test.context.SpringBootTestContextBootstrapper"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Found @SpringBootConfiguration com.englms.EnglmsApplication for test class com.englms.persistence.FlywayMigrationTest","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:56.155279223Z","log":{"level":"INFO","logger":"com.englms.persistence.FlywayMigrationTest"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Starting FlywayMigrationTest using Java 25.0.4 with PID 159321 (started by kali in /home/kali/App_sources/Eng-LMS/backend)","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:56.155533236Z","log":{"level":"INFO","logger":"com.englms.persistence.FlywayMigrationTest"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"No active profile set, falling back to 1 default profile: \"default\"","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:56.282792978Z","log":{"level":"INFO","logger":"org.springframework.data.repository.config.RepositoryConfigurationDelegate"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Bootstrapping Spring Data JPA repositories in DEFAULT mode.","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:56.287086973Z","log":{"level":"INFO","logger":"org.springframework.data.repository.config.RepositoryConfigurationDelegate"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Finished Spring Data repository scanning in 2 ms. Found 0 JPA repository interfaces.","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:56.359818276Z","log":{"level":"INFO","logger":"tc.docker.io/library/postgres:18"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Creating container for image: docker.io/library/postgres:18","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:56.390517726Z","log":{"level":"INFO","logger":"tc.docker.io/library/postgres:18"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Container docker.io/library/postgres:18 is starting: dbb696f69335a2c03c0ddb3cbf41a309d0104a6822df30de99b173c97f356858","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:58.273943881Z","log":{"level":"INFO","logger":"tc.docker.io/library/postgres:18"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Container docker.io/library/postgres:18 started in PT1.914114384S","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:58.274244791Z","log":{"level":"INFO","logger":"tc.docker.io/library/postgres:18"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Container is started (JDBC URL: jdbc:postgresql://localhost:42097/test?loggerLevel=OFF)","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:58.352762356Z","log":{"level":"INFO","logger":"org.flywaydb.core.FlywayExecutor"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Database: jdbc:postgresql://localhost:42097/test?loggerLevel=OFF (PostgreSQL 18.6)","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:58.360347981Z","log":{"level":"INFO","logger":"org.flywaydb.core.internal.database.base.Schema"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Creating schema \"app\" ...","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:58.362157260Z","log":{"level":"INFO","logger":"org.flywaydb.core.internal.schemahistory.JdbcTableSchemaHistory"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Creating Schema History table \"app\".\"flyway_schema_history\" ...","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:58.382182044Z","log":{"level":"INFO","logger":"org.flywaydb.core.internal.command.DbMigrate"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Current version of schema \"app\": null","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:58.386193052Z","log":{"level":"INFO","logger":"org.flywaydb.core.internal.command.DbMigrate"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Migrating schema \"app\" to version \"202609250001 - platform extensions\"","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:58.403431249Z","log":{"level":"INFO","logger":"org.flywaydb.core.internal.command.DbMigrate"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Successfully applied 1 migration to schema \"app\", now at version v202609250001 (execution time 00:00.014s)","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:58.408422683Z","log":{"level":"INFO","logger":"com.zaxxer.hikari.HikariDataSource"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"HikariPool-2 - Starting...","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:58.417076837Z","log":{"level":"INFO","logger":"com.zaxxer.hikari.pool.HikariPool"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"HikariPool-2 - Added connection org.postgresql.jdbc.PgConnection@5ad12905","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:58.417414495Z","log":{"level":"INFO","logger":"com.zaxxer.hikari.HikariDataSource"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"HikariPool-2 - Start completed.","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:58.439773125Z","log":{"level":"INFO","logger":"org.hibernate.orm.jpa"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"HHH008540: Processing PersistenceUnitInfo [name: default]","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:58.454819231Z","log":{"level":"INFO","logger":"org.springframework.orm.jpa.persistenceunit.SpringPersistenceUnitInfo"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"No LoadTimeWeaver setup: ignoring JPA class transformer","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:58.460558957Z","log":{"level":"INFO","logger":"org.hibernate.orm.connections.pooling"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"HHH10001005: Database info:\n\tDatabase JDBC URL [jdbc:postgresql://localhost:42097/test?loggerLevel=OFF]\n\tDatabase driver: PostgreSQL JDBC Driver\n\tDatabase dialect: PostgreSQLDialect\n\tDatabase version: 18.6\n\tDefault catalog/schema: test/app\n\tAutocommit mode: undefined/unknown\n\tIsolation level: READ_COMMITTED [default READ_COMMITTED]\n\tJDBC fetch size: none\n\tPool: DataSourceConnectionProvider\n\tMinimum pool size: undefined/unknown\n\tMaximum pool size: undefined/unknown","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:58.478060454Z","log":{"level":"INFO","logger":"org.hibernate.orm.core"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:58.488791675Z","log":{"level":"INFO","logger":"org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Initialized JPA EntityManagerFactory for persistence unit 'default'","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:58.546348633Z","log":{"level":"INFO","logger":"org.springframework.boot.webmvc.autoconfigure.WelcomePageHandlerMapping"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Adding welcome page: class path resource [static/index.html]","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:58.668183212Z","log":{"level":"INFO","logger":"org.springframework.scheduling.config.TaskSchedulerRouter"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"No TaskScheduler/ScheduledExecutorService bean found for scheduled processing","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:58.669504712Z","log":{"level":"INFO","logger":"com.englms.persistence.FlywayMigrationTest"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Started FlywayMigrationTest in 2.528 seconds (process running for 19.821)","ecs":{"version":"8.11"}}
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.573 s -- in com.englms.persistence.FlywayMigrationTest
+[INFO] Running com.englms.architecture.ForbiddenIdentifiersTest
+[INFO] Tests run: 17, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.058 s -- in com.englms.architecture.ForbiddenIdentifiersTest
+[INFO] Running com.englms.architecture.ModularityViolationTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.136 s -- in com.englms.architecture.ModularityViolationTest
+[INFO] Running com.englms.contract.OpenApiContractTest
+{"@timestamp":"2026-10-02T04:21:58.898919881Z","log":{"level":"INFO","logger":"org.springframework.test.context.support.AnnotationConfigContextLoaderUtils"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Could not detect default configuration classes for test class [com.englms.contract.OpenApiContractTest]: OpenApiContractTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:58.907741886Z","log":{"level":"INFO","logger":"org.springframework.boot.test.context.SpringBootTestContextBootstrapper"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Found @SpringBootConfiguration com.englms.EnglmsApplication for test class com.englms.contract.OpenApiContractTest","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:58.908656129Z","log":{"level":"INFO","logger":"org.springframework.test.context.support.AnnotationConfigContextLoaderUtils"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Could not detect default configuration classes for test class [com.englms.contract.OpenApiContractTest]: OpenApiContractTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:58.912382837Z","log":{"level":"INFO","logger":"org.springframework.boot.test.context.SpringBootTestContextBootstrapper"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Found @SpringBootConfiguration com.englms.EnglmsApplication for test class com.englms.contract.OpenApiContractTest","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:58.930052668Z","log":{"level":"INFO","logger":"com.englms.contract.OpenApiContractTest"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Starting OpenApiContractTest using Java 25.0.4 with PID 159321 (started by kali in /home/kali/App_sources/Eng-LMS/backend)","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:58.930355241Z","log":{"level":"INFO","logger":"com.englms.contract.OpenApiContractTest"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"No active profile set, falling back to 1 default profile: \"default\"","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:59.269318891Z","log":{"level":"INFO","logger":"org.springframework.data.repository.config.RepositoryConfigurationDelegate"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Bootstrapping Spring Data JPA repositories in DEFAULT mode.","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:59.277427198Z","log":{"level":"INFO","logger":"org.springframework.data.repository.config.RepositoryConfigurationDelegate"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Finished Spring Data repository scanning in 5 ms. Found 0 JPA repository interfaces.","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:59.376455532Z","log":{"level":"INFO","logger":"tc.docker.io/library/postgres:18"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Creating container for image: docker.io/library/postgres:18","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:21:59.402860948Z","log":{"level":"INFO","logger":"tc.docker.io/library/postgres:18"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Container docker.io/library/postgres:18 is starting: 2da9f754a9d38c505f58993831c831c8120c47fc10e8a6be5b929766603dbf06","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:22:01.263804888Z","log":{"level":"INFO","logger":"tc.docker.io/library/postgres:18"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Container docker.io/library/postgres:18 started in PT1.887328117S","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:22:01.264185637Z","log":{"level":"INFO","logger":"tc.docker.io/library/postgres:18"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Container is started (JDBC URL: jdbc:postgresql://localhost:42541/test?loggerLevel=OFF)","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:22:01.340114671Z","log":{"level":"INFO","logger":"org.flywaydb.core.FlywayExecutor"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Database: jdbc:postgresql://localhost:42541/test?loggerLevel=OFF (PostgreSQL 18.6)","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:22:01.347901319Z","log":{"level":"INFO","logger":"org.flywaydb.core.internal.database.base.Schema"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Creating schema \"app\" ...","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:22:01.349715617Z","log":{"level":"INFO","logger":"org.flywaydb.core.internal.schemahistory.JdbcTableSchemaHistory"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Creating Schema History table \"app\".\"flyway_schema_history\" ...","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:22:01.369359362Z","log":{"level":"INFO","logger":"org.flywaydb.core.internal.command.DbMigrate"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Current version of schema \"app\": null","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:22:01.372704231Z","log":{"level":"INFO","logger":"org.flywaydb.core.internal.command.DbMigrate"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Migrating schema \"app\" to version \"202609250001 - platform extensions\"","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:22:01.390216227Z","log":{"level":"INFO","logger":"org.flywaydb.core.internal.command.DbMigrate"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Successfully applied 1 migration to schema \"app\", now at version v202609250001 (execution time 00:00.014s)","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:22:01.395154111Z","log":{"level":"INFO","logger":"com.zaxxer.hikari.HikariDataSource"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"HikariPool-3 - Starting...","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:22:01.402222682Z","log":{"level":"INFO","logger":"com.zaxxer.hikari.pool.HikariPool"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"HikariPool-3 - Added connection org.postgresql.jdbc.PgConnection@1f9e17e4","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:22:01.402569928Z","log":{"level":"INFO","logger":"com.zaxxer.hikari.HikariDataSource"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"HikariPool-3 - Start completed.","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:22:01.425214671Z","log":{"level":"INFO","logger":"org.hibernate.orm.jpa"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"HHH008540: Processing PersistenceUnitInfo [name: default]","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:22:01.438970222Z","log":{"level":"INFO","logger":"org.springframework.orm.jpa.persistenceunit.SpringPersistenceUnitInfo"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"No LoadTimeWeaver setup: ignoring JPA class transformer","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:22:01.444504437Z","log":{"level":"INFO","logger":"org.hibernate.orm.connections.pooling"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"HHH10001005: Database info:\n\tDatabase JDBC URL [jdbc:postgresql://localhost:42541/test?loggerLevel=OFF]\n\tDatabase driver: PostgreSQL JDBC Driver\n\tDatabase dialect: PostgreSQLDialect\n\tDatabase version: 18.6\n\tDefault catalog/schema: test/app\n\tAutocommit mode: undefined/unknown\n\tIsolation level: READ_COMMITTED [default READ_COMMITTED]\n\tJDBC fetch size: none\n\tPool: DataSourceConnectionProvider\n\tMinimum pool size: undefined/unknown\n\tMaximum pool size: undefined/unknown","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:22:01.461660731Z","log":{"level":"INFO","logger":"org.hibernate.orm.core"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:22:01.472113052Z","log":{"level":"INFO","logger":"org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Initialized JPA EntityManagerFactory for persistence unit 'default'","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:22:01.525775318Z","log":{"level":"INFO","logger":"org.springframework.boot.webmvc.autoconfigure.WelcomePageHandlerMapping"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Adding welcome page: class path resource [static/index.html]","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:22:01.792264430Z","log":{"level":"INFO","logger":"org.springframework.boot.test.mock.web.SpringBootMockServletContext"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Initializing Spring TestDispatcherServlet ''","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:22:01.792810276Z","log":{"level":"INFO","logger":"org.springframework.test.web.servlet.TestDispatcherServlet"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Initializing Servlet ''","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:22:01.794239608Z","log":{"level":"INFO","logger":"org.springframework.test.web.servlet.TestDispatcherServlet"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Completed initialization in 2 ms","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:22:01.827680712Z","log":{"level":"INFO","logger":"org.springframework.scheduling.config.TaskSchedulerRouter"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"No TaskScheduler/ScheduledExecutorService bean found for scheduled processing","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:22:01.829053949Z","log":{"level":"INFO","logger":"com.englms.contract.OpenApiContractTest"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Started OpenApiContractTest in 2.913 seconds (process running for 22.98)","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:22:02.094966989Z","log":{"level":"INFO","logger":"org.springdoc.api.AbstractOpenApiResource"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Init duration for springdoc-openapi is: 250 ms","requestId":"01a0fad9-056b-738a-90af-2e25ec015a3e","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:22:02.122193743Z","log":{"level":"INFO","logger":"com.englms.shared.web.RequestIdFilter"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"GET /v3/api-docs -> 200","requestId":"01a0fad9-056b-738a-90af-2e25ec015a3e","ecs":{"version":"8.11"}}
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 3.228 s -- in com.englms.contract.OpenApiContractTest
+[INFO] Running com.englms.ModularityTests
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.147 s -- in com.englms.ModularityTests
+[INFO] Running com.englms.architecture.ArchitectureRulesTest
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.313 s -- in com.englms.architecture.ArchitectureRulesTest
+{"@timestamp":"2026-10-02T04:22:02.696532585Z","log":{"level":"INFO","logger":"org.springframework.modulith.events.core.DefaultEventPublicationRegistry"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"No publications outstanding!","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:22:02.714761245Z","log":{"level":"INFO","logger":"org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Closing JPA EntityManagerFactory for persistence unit 'default'","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:22:02.719152842Z","log":{"level":"INFO","logger":"com.zaxxer.hikari.HikariDataSource"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"HikariPool-2 - Shutdown initiated...","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:22:02.722021884Z","log":{"level":"INFO","logger":"com.zaxxer.hikari.HikariDataSource"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"HikariPool-2 - Shutdown completed.","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:22:02.962568563Z","log":{"level":"INFO","logger":"org.springframework.boot.tomcat.GracefulShutdown"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Commencing graceful shutdown. Waiting for active requests to complete","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:22:02.963605503Z","log":{"level":"INFO","logger":"org.springframework.boot.tomcat.GracefulShutdown"},"process":{"pid":159321,"thread":{"name":"tomcat-shutdown"}},"service":{"name":"englms","node":{}},"message":"Graceful shutdown complete","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:22:02.967886043Z","log":{"level":"INFO","logger":"org.springframework.modulith.events.core.DefaultEventPublicationRegistry"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"No publications outstanding!","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:22:02.968726518Z","log":{"level":"INFO","logger":"org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Closing JPA EntityManagerFactory for persistence unit 'default'","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:22:02.969331094Z","log":{"level":"INFO","logger":"com.zaxxer.hikari.HikariDataSource"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"HikariPool-1 - Shutdown initiated...","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:22:02.970777597Z","log":{"level":"INFO","logger":"com.zaxxer.hikari.HikariDataSource"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"HikariPool-1 - Shutdown completed.","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:22:03.160590582Z","log":{"level":"INFO","logger":"org.apache.catalina.core.StandardService"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Stopping service [Tomcat]","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:22:03.161728380Z","log":{"level":"INFO","logger":"org.apache.catalina.core.ContainerBase.[Tomcat].[localhost].[/]"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Destroying Spring FrameworkServlet 'dispatcherServlet'","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:22:03.169607170Z","log":{"level":"INFO","logger":"org.springframework.modulith.events.core.DefaultEventPublicationRegistry"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"No publications outstanding!","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:22:03.170483111Z","log":{"level":"INFO","logger":"org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Closing JPA EntityManagerFactory for persistence unit 'default'","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:22:03.170996587Z","log":{"level":"INFO","logger":"com.zaxxer.hikari.HikariDataSource"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"HikariPool-3 - Shutdown initiated...","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:22:03.172026474Z","log":{"level":"INFO","logger":"com.zaxxer.hikari.HikariDataSource"},"process":{"pid":159321,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"HikariPool-3 - Shutdown completed.","ecs":{"version":"8.11"}}
+[INFO] 
+[INFO] Results:
+[INFO] 
+[INFO] Tests run: 97, Failures: 0, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] 
+[INFO] --- jar:3.5.1:jar (default-jar) @ englms ---
+[INFO] Building jar: /home/kali/App_sources/Eng-LMS/backend/target/englms-0.0.1-SNAPSHOT.jar
+[INFO] 
+[INFO] --- spring-boot:4.1.1:repackage (repackage) @ englms ---
+[INFO] Replacing main artifact /home/kali/App_sources/Eng-LMS/backend/target/englms-0.0.1-SNAPSHOT.jar with repackaged archive, adding nested dependencies in BOOT-INF/.
+[INFO] The original artifact has been renamed to /home/kali/App_sources/Eng-LMS/backend/target/englms-0.0.1-SNAPSHOT.jar.original
+[INFO] 
+[INFO] --- jacoco:0.8.15:report (report) @ englms ---
+[INFO] Loading execution data file /home/kali/App_sources/Eng-LMS/backend/target/jacoco.exec
+[INFO] Analyzed bundle 'englms' with 18 classes
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  27.569 s
+[INFO] Finished at: 2026-10-02T11:22:05+07:00
+[INFO] ------------------------------------------------------------------------
+gate: <== backend OK (29s)
+gate: ==> web-install
+✓ Lockfile passes supply-chain policies (verified 6d ago)
+Lockfile is up to date, resolution step is skipped
+Done in 49ms using pnpm v12.6.0
+gate: <== web-install OK (0s)
+gate: ==> web-lint
+$ oxlint --deny-warnings && stylelint "src/**/*.css" && prettier --check .
+Checking formatting...
+All matched files use Prettier code style!
+gate: <== web-lint OK (2s)
+gate: ==> web-typecheck
+$ tsc -b
+gate: <== web-typecheck OK (3s)
+gate: ==> web-test
+$ vitest --run
+
+ RUN  v5.0.1 /home/kali/App_sources/Eng-LMS/web
+
+
+ Test Files  15 passed (15)
+      Tests  86 passed (86)
+   Start at  11:22:11
+   Duration  4.08s (environment 44%, import 18%, setup 15%, tests 15%, transform 8%)
+
+gate: <== web-test OK (5s)
+gate: ==> web-build
+$ tsc -b && vite build
+vite v8.3.1 building client environment for production...
+transforming...
+✓ 3392 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                                                    0.92 kB │ gzip:  0.49 kB
+dist/assets/be-vietnam-pro-vietnamese-400-normal-BuGn0gnm.woff     6.56 kB
+dist/assets/be-vietnam-pro-vietnamese-600-normal-DkpCIyan.woff     6.88 kB
+dist/assets/be-vietnam-pro-vietnamese-500-normal-CfdwVo8-.woff     6.88 kB
+dist/.vite/manifest.json                                           8.04 kB │ gzip:  0.93 kB
+dist/assets/be-vietnam-pro-vietnamese-400-normal-CRcqvyg1.woff2   11.53 kB
+dist/assets/be-vietnam-pro-vietnamese-500-normal-DREgrEoJ.woff2   12.17 kB
+dist/assets/be-vietnam-pro-vietnamese-600-normal-nyU-ZL2p.woff2   12.17 kB
+dist/assets/be-vietnam-pro-latin-400-normal-bXgqVju9.woff         16.43 kB
+dist/assets/be-vietnam-pro-latin-500-normal-BJkVuMHw.woff         16.99 kB
+dist/assets/be-vietnam-pro-latin-600-normal-5IO4e7bK.woff         17.01 kB
+dist/assets/be-vietnam-pro-latin-400-normal-PpnXBOrz.woff2        21.16 kB
+dist/assets/be-vietnam-pro-latin-500-normal-B6LVzGNe.woff2        21.89 kB
+dist/assets/be-vietnam-pro-latin-600-normal-BZDkUTrt.woff2        22.03 kB
+dist/assets/ShellLayout-jVwH8Ww6.css                               0.21 kB │ gzip:  0.17 kB
+dist/assets/routeAnnouncement-D7i1mbBV.css                         5.19 kB │ gzip:  1.32 kB
+dist/assets/index-5MzpU1N3.css                                     6.18 kB │ gzip:  1.78 kB
+dist/assets/LanguageSwitcher-DqiLqERS.js                           0.34 kB │ gzip:  0.26 kB
+dist/assets/rolldown-runtime-CbXtAM7H.js                           0.58 kB │ gzip:  0.36 kB
+dist/assets/NotFound-BwNHSXMl.js                                   0.68 kB │ gzip:  0.42 kB
+dist/assets/StudentShell-CIVDy8w9.js                               0.73 kB │ gzip:  0.44 kB
+dist/assets/Landing-CkSrZ5cp.js                                    0.75 kB │ gzip:  0.36 kB
+dist/assets/TutorShell-Dzp0QNPu.js                                 0.90 kB │ gzip:  0.50 kB
+dist/assets/ShellLayout-Dgt9tknd.js                                9.28 kB │ gzip:  3.50 kB
+dist/assets/routeAnnouncement-WERGL_D8.js                        166.07 kB │ gzip: 54.37 kB
+dist/assets/index-Cw7A2h6u.js                                    290.77 kB │ gzip: 91.16 kB
+
+✓ built in 429ms
+gate: <== web-build OK (4s)
+gate: ==> web-budget
+$ node scripts/bundle-budget.mjs
+ok    student   145.0 KB gz ≤ 200 KB  (6 chunks)
+ok    tutor     145.1 KB gz ≤ 300 KB  (6 chunks)
+budget: PASS
+gate: <== web-budget OK (0s)
+gate: ==> web-contrast
+$ node scripts/contrast-check.mjs
+ok    15.98:1 ≥ 4.5  --color-text (#1f1d1a) on --color-bg (#faf9f7)  body text
+ok    16.81:1 ≥ 4.5  --color-text (#1f1d1a) on --color-surface (#fff)  body text
+ok    14.91:1 ≥ 4.5  --color-text (#1f1d1a) on --color-surface-sunken (#f3f1ed)  body text
+ok     7.36:1 ≥ 4.5  --color-text-muted (#57524a) on --color-bg (#faf9f7)  body text
+ok     7.75:1 ≥ 4.5  --color-text-muted (#57524a) on --color-surface (#fff)  body text
+ok     6.87:1 ≥ 4.5  --color-text-muted (#57524a) on --color-surface-sunken (#f3f1ed)  body text
+ok     5.49:1 ≥ 4.5  --color-text-subtle (#6b655b) on --color-bg (#faf9f7)  body text
+ok     5.77:1 ≥ 4.5  --color-text-subtle (#6b655b) on --color-surface (#fff)  body text
+ok     5.12:1 ≥ 4.5  --color-text-subtle (#6b655b) on --color-surface-sunken (#f3f1ed)  body text
+ok     6.51:1 ≥ 4.5  --color-accent (#2f5d8c) on --color-bg (#faf9f7)  links
+ok     6.85:1 ≥ 4.5  --color-accent (#2f5d8c) on --color-surface (#fff)  links, secondary button label
+ok     7.84:1 ≥ 4.5  --color-accent-strong (#234a70) on --color-accent-subtle (#e6eef6)  quiet button hover label
+ok     6.85:1 ≥ 4.5  --color-on-accent (#fff) on --color-accent (#2f5d8c)  primary button label
+ok     9.19:1 ≥ 4.5  --color-on-accent (#fff) on --color-accent-strong (#234a70)  primary button hover label
+ok     6.54:1 ≥ 4.5  --color-on-accent (#fff) on --color-danger (#b3261e)  danger button label
+ok     9.11:1 ≥ 4.5  --color-on-accent (#fff) on --color-danger-strong (#8c1d18)  danger button hover label
+ok     6.96:1 ≥ 4.5  --color-success-text (#1f5c39) on --color-success-subtle (#e7f3ec)  success alert
+ok     7.33:1 ≥ 4.5  --color-warning-text (#6b4800) on --color-warning-subtle (#fbf1dc)  warning alert
+ok     7.77:1 ≥ 4.5  --color-danger-text (#8c1d18) on --color-danger-subtle (#fbe9e7)  danger alert
+ok     7.84:1 ≥ 4.5  --color-info-text (#234a70) on --color-info-subtle (#e6eef6)  info alert
+ok     6.54:1 ≥ 4.5  --color-danger (#b3261e) on --color-surface (#fff)  field error text
+ok     6.21:1 ≥ 4.5  --color-danger (#b3261e) on --color-bg (#faf9f7)  field error text on the page background
+ok     6.54:1 ≥ 3  --color-danger (#b3261e) on --color-surface (#fff)  field error icon (T-M1.9 AC5)
+ok     6.21:1 ≥ 3  --color-danger (#b3261e) on --color-bg (#faf9f7)  field error icon on the page background (T-M1.9 AC5)
+ok     7.84:1 ≥ 4.5  --color-accent-strong (#234a70) on --color-accent-subtle (#e6eef6)  segmented control: selected label
+ok     7.84:1 ≥ 3  --color-accent-strong (#234a70) on --color-accent-subtle (#e6eef6)  segmented control: selected check icon
+ok    14.91:1 ≥ 4.5  --color-text (#1f1d1a) on --color-surface-sunken (#f3f1ed)  segmented control: hovered label
+ok     5.85:1 ≥ 3  --color-focus (#2f5d8c) on --color-accent-subtle (#e6eef6)  segmented control: focus ring inside a selected segment
+ok     3.51:1 ≥ 3  --color-border-strong (#8f887c) on --color-surface (#fff)  input boundary
+ok     3.34:1 ≥ 3  --color-border-strong (#8f887c) on --color-bg (#faf9f7)  input boundary
+ok     6.51:1 ≥ 3  --color-focus (#2f5d8c) on --color-bg (#faf9f7)  focus ring
+ok     6.85:1 ≥ 3  --color-focus (#2f5d8c) on --color-surface (#fff)  focus ring
+contrast: PASS (32 pairs)
+gate: <== web-contrast OK (0s)
+gate: ==> contract-drift
+11:22:22.823 [main] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [com.englms.contract.OpenApiContractTest]: OpenApiContractTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+11:22:23.019 [main] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration com.englms.EnglmsApplication for test class com.englms.contract.OpenApiContractTest
+11:22:23.144 [main] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [com.englms.contract.OpenApiContractTest]: OpenApiContractTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+11:22:23.151 [main] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration com.englms.EnglmsApplication for test class com.englms.contract.OpenApiContractTest
+{"@timestamp":"2026-10-02T04:22:23.555148172Z","log":{"level":"INFO","logger":"com.englms.contract.OpenApiContractTest"},"process":{"pid":161655,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Starting OpenApiContractTest using Java 25.0.4 with PID 161655 (started by kali in /home/kali/App_sources/Eng-LMS/backend)","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:22:23.563604556Z","log":{"level":"INFO","logger":"com.englms.contract.OpenApiContractTest"},"process":{"pid":161655,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"No active profile set, falling back to 1 default profile: \"default\"","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:22:24.602566890Z","log":{"level":"INFO","logger":"org.springframework.data.repository.config.RepositoryConfigurationDelegate"},"process":{"pid":161655,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Bootstrapping Spring Data JPA repositories in DEFAULT mode.","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:22:24.633859941Z","log":{"level":"INFO","logger":"org.springframework.data.repository.config.RepositoryConfigurationDelegate"},"process":{"pid":161655,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Finished Spring Data repository scanning in 19 ms. Found 0 JPA repository interfaces.","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:22:25.069354080Z","log":{"level":"INFO","logger":"com.tngtech.archunit.core.PluginLoader"},"process":{"pid":161655,"thread":{"name":"SimpleAsyncTaskExecutor-1"}},"service":{"name":"englms","node":{}},"message":"Detected Java version 25.0.4","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:22:26.638787836Z","log":{"level":"INFO","logger":"org.testcontainers.images.PullPolicy"},"process":{"pid":161655,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Image pull policy will be performed by: DefaultPullPolicy()","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:22:26.641535201Z","log":{"level":"INFO","logger":"org.testcontainers.utility.ImageNameSubstitutor"},"process":{"pid":161655,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Image name substitution will be performed by: DefaultImageNameSubstitutor (composite of 'ConfigurationFileImageNameSubstitutor' and 'PrefixingImageNameSubstitutor')","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:22:26.666967941Z","log":{"level":"INFO","logger":"org.testcontainers.DockerClientFactory"},"process":{"pid":161655,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Testcontainers version: 2.0.5","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:22:29.194569009Z","log":{"level":"INFO","logger":"org.testcontainers.dockerclient.DockerClientProviderStrategy"},"process":{"pid":161655,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Found Docker environment with Environment variables, system properties and defaults. Resolved dockerHost=unix:///run/user/1000/podman/podman.sock","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:22:29.196366636Z","log":{"level":"INFO","logger":"org.testcontainers.DockerClientFactory"},"process":{"pid":161655,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Docker host IP address is localhost","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:22:30.950797125Z","log":{"level":"INFO","logger":"org.testcontainers.DockerClientFactory"},"process":{"pid":161655,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Connected to docker: \n  Server Version: 5.8.6\n  API Version: 1.44\n  Operating System: kali\n  Total Memory: 23375 MB","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:22:30.953597749Z","log":{"level":"WARN","logger":"org.testcontainers.utility.ResourceReaper"},"process":{"pid":161655,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"\n********************************************************************************\nRyuk has been disabled. This can cause unexpected behavior in your environment.\n********************************************************************************","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:22:30.957605020Z","log":{"level":"INFO","logger":"org.testcontainers.DockerClientFactory"},"process":{"pid":161655,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Checking the system...","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:22:30.958496921Z","log":{"level":"INFO","logger":"org.testcontainers.DockerClientFactory"},"process":{"pid":161655,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"✔︎ Docker server version should be at least 1.6.0","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:22:31.047403883Z","log":{"level":"INFO","logger":"tc.docker.io/library/postgres:18"},"process":{"pid":161655,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Creating container for image: docker.io/library/postgres:18","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:22:31.056209096Z","log":{"level":"INFO","logger":"org.testcontainers.utility.RegistryAuthLocator"},"process":{"pid":161655,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Failure when attempting to lookup auth config. Please ignore if you don't have images in an authenticated registry. Details: (dockerImageName: docker.io/library/postgres:18, configFile: /home/kali/.docker/config.json, configEnv: DOCKER_AUTH_CONFIG). Falling back to docker-java default behaviour. Exception message: Status 404: No config supplied. Checked in order: /home/kali/.docker/config.json (file not found), DOCKER_AUTH_CONFIG (not set)","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:22:31.184815459Z","log":{"level":"INFO","logger":"tc.docker.io/library/postgres:18"},"process":{"pid":161655,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Container docker.io/library/postgres:18 is starting: 50ab3b7ecbedced6b1b2e6412edd70ac6aad0734ba41342ce3337ce1c27837a5","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:22:33.150648316Z","log":{"level":"INFO","logger":"tc.docker.io/library/postgres:18"},"process":{"pid":161655,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Container docker.io/library/postgres:18 started in PT2.103217062S","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:22:33.151605679Z","log":{"level":"INFO","logger":"tc.docker.io/library/postgres:18"},"process":{"pid":161655,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Container is started (JDBC URL: jdbc:postgresql://localhost:43001/test?loggerLevel=OFF)","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:22:33.643184621Z","log":{"level":"INFO","logger":"org.flywaydb.core.FlywayExecutor"},"process":{"pid":161655,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Database: jdbc:postgresql://localhost:43001/test?loggerLevel=OFF (PostgreSQL 18.6)","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:22:33.709357868Z","log":{"level":"INFO","logger":"org.flywaydb.core.internal.database.base.Schema"},"process":{"pid":161655,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Creating schema \"app\" ...","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:22:33.715574723Z","log":{"level":"INFO","logger":"org.flywaydb.core.internal.schemahistory.JdbcTableSchemaHistory"},"process":{"pid":161655,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Creating Schema History table \"app\".\"flyway_schema_history\" ...","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:22:33.772307765Z","log":{"level":"INFO","logger":"org.flywaydb.core.internal.command.DbMigrate"},"process":{"pid":161655,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Current version of schema \"app\": null","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:22:33.783627439Z","log":{"level":"INFO","logger":"org.flywaydb.core.internal.command.DbMigrate"},"process":{"pid":161655,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Migrating schema \"app\" to version \"202609250001 - platform extensions\"","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:22:33.808890012Z","log":{"level":"INFO","logger":"org.flywaydb.core.internal.command.DbMigrate"},"process":{"pid":161655,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Successfully applied 1 migration to schema \"app\", now at version v202609250001 (execution time 00:00.018s)","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:22:33.830927420Z","log":{"level":"INFO","logger":"com.zaxxer.hikari.HikariDataSource"},"process":{"pid":161655,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"HikariPool-1 - Starting...","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:22:33.853351257Z","log":{"level":"INFO","logger":"com.zaxxer.hikari.pool.HikariPool"},"process":{"pid":161655,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@7b29b052","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:22:33.855345560Z","log":{"level":"INFO","logger":"com.zaxxer.hikari.HikariDataSource"},"process":{"pid":161655,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"HikariPool-1 - Start completed.","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:22:34.016049449Z","log":{"level":"INFO","logger":"org.hibernate.orm.jpa"},"process":{"pid":161655,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"HHH008540: Processing PersistenceUnitInfo [name: default]","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:22:34.083769596Z","log":{"level":"INFO","logger":"org.hibernate.orm.core"},"process":{"pid":161655,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"HHH000001: Hibernate ORM core version 7.4.5.Final","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:22:34.584792999Z","log":{"level":"INFO","logger":"org.springframework.orm.jpa.persistenceunit.SpringPersistenceUnitInfo"},"process":{"pid":161655,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"No LoadTimeWeaver setup: ignoring JPA class transformer","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:22:34.704266597Z","log":{"level":"INFO","logger":"org.hibernate.orm.connections.pooling"},"process":{"pid":161655,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"HHH10001005: Database info:\n\tDatabase JDBC URL [jdbc:postgresql://localhost:43001/test?loggerLevel=OFF]\n\tDatabase driver: PostgreSQL JDBC Driver\n\tDatabase dialect: PostgreSQLDialect\n\tDatabase version: 18.6\n\tDefault catalog/schema: test/app\n\tAutocommit mode: undefined/unknown\n\tIsolation level: READ_COMMITTED [default READ_COMMITTED]\n\tJDBC fetch size: none\n\tPool: DataSourceConnectionProvider\n\tMinimum pool size: undefined/unknown\n\tMaximum pool size: undefined/unknown","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:22:35.185409216Z","log":{"level":"INFO","logger":"org.hibernate.orm.core"},"process":{"pid":161655,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:22:35.226821244Z","log":{"level":"INFO","logger":"org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean"},"process":{"pid":161655,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Initialized JPA EntityManagerFactory for persistence unit 'default'","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:22:35.556896075Z","log":{"level":"INFO","logger":"org.springframework.boot.webmvc.autoconfigure.WelcomePageHandlerMapping"},"process":{"pid":161655,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Adding welcome page: class path resource [static/index.html]","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:22:36.274765392Z","log":{"level":"INFO","logger":"org.springframework.boot.test.mock.web.SpringBootMockServletContext"},"process":{"pid":161655,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Initializing Spring TestDispatcherServlet ''","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:22:36.275177449Z","log":{"level":"INFO","logger":"org.springframework.test.web.servlet.TestDispatcherServlet"},"process":{"pid":161655,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Initializing Servlet ''","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:22:36.276735870Z","log":{"level":"INFO","logger":"org.springframework.test.web.servlet.TestDispatcherServlet"},"process":{"pid":161655,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Completed initialization in 1 ms","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:22:36.460404521Z","log":{"level":"INFO","logger":"org.springframework.scheduling.config.TaskSchedulerRouter"},"process":{"pid":161655,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"No TaskScheduler/ScheduledExecutorService bean found for scheduled processing","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:22:36.465249100Z","log":{"level":"INFO","logger":"com.englms.contract.OpenApiContractTest"},"process":{"pid":161655,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Started OpenApiContractTest in 13.233 seconds (process running for 14.885)","ecs":{"version":"8.11"}}
+Mockito is currently self-attaching to enable the inline-mock-maker. This will no longer work in future releases of the JDK. Please add Mockito as an agent to your build as described in Mockito's documentation: https://javadoc.io/doc/org.mockito/mockito-core/latest/org.mockito/org/mockito/Mockito.html#0.3
+OpenJDK 64-Bit Server VM warning: Sharing is only supported for boot loader classes because bootstrap classpath has been appended
+WARNING: A Java agent has been loaded dynamically (/home/kali/.m2/repository/net/bytebuddy/byte-buddy-agent/1.18.11/byte-buddy-agent-1.18.11.jar)
+WARNING: If a serviceability tool is in use, please run with -XX:+EnableDynamicAgentLoading to hide this warning
+WARNING: If a serviceability tool is not in use, please run with -Djdk.instrument.traceUsage for more information
+WARNING: Dynamic loading of agents will be disallowed by default in a future release
+{"@timestamp":"2026-10-02T04:22:37.364924465Z","log":{"level":"INFO","logger":"org.springdoc.api.AbstractOpenApiResource"},"process":{"pid":161655,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Init duration for springdoc-openapi is: 307 ms","requestId":"01a0fad9-8edb-73cf-a892-f9555aaa2a92","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:22:37.399482522Z","log":{"level":"INFO","logger":"com.englms.shared.web.RequestIdFilter"},"process":{"pid":161655,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"GET /v3/api-docs -> 200","requestId":"01a0fad9-8edb-73cf-a892-f9555aaa2a92","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:22:37.501859169Z","log":{"level":"INFO","logger":"org.springframework.modulith.events.core.DefaultEventPublicationRegistry"},"process":{"pid":161655,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"No publications outstanding!","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:22:37.506277114Z","log":{"level":"INFO","logger":"org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean"},"process":{"pid":161655,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"Closing JPA EntityManagerFactory for persistence unit 'default'","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:22:37.509036532Z","log":{"level":"INFO","logger":"com.zaxxer.hikari.HikariDataSource"},"process":{"pid":161655,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"HikariPool-1 - Shutdown initiated...","ecs":{"version":"8.11"}}
+{"@timestamp":"2026-10-02T04:22:37.510898558Z","log":{"level":"INFO","logger":"com.zaxxer.hikari.HikariDataSource"},"process":{"pid":161655,"thread":{"name":"main"}},"service":{"name":"englms","node":{}},"message":"HikariPool-1 - Shutdown completed.","ecs":{"version":"8.11"}}
+$ openapi-typescript ../api/openapi.json -o src/lib/api/schema.d.ts && prettier --write src/lib/api/schema.d.ts
+✨ openapi-typescript 7.13.0
+🚀 ../api/openapi.json → src/lib/api/schema.d.ts [32.1ms]
+src/lib/api/schema.d.ts 55ms
+contract-drift: OK (api/openapi.json and web/src/lib/api/schema.d.ts match the code)
+gate: <== contract-drift OK (19s)
+gate: ==> e2e
+662db3da228c2ea2649b3ae04db4b4479e85fea5979f6a917a7f6d5cb1e7ec39
+englms-dev-db
+dev-up: englms-dev-db is healthy on 127.0.0.1:5432
+e2e-run: building web/dist and the jar with the SPA
+✓ Lockfile passes supply-chain policies (verified 6d ago)
+Lockfile is up to date, resolution step is skipped
+Done in 23ms using pnpm v12.6.0
+$ tsc -b && vite build
+vite v8.3.1 building client environment for production...
+transforming...
+✓ 3392 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                                                    0.92 kB │ gzip:  0.49 kB
+dist/assets/be-vietnam-pro-vietnamese-400-normal-BuGn0gnm.woff     6.56 kB
+dist/assets/be-vietnam-pro-vietnamese-600-normal-DkpCIyan.woff     6.88 kB
+dist/assets/be-vietnam-pro-vietnamese-500-normal-CfdwVo8-.woff     6.88 kB
+dist/.vite/manifest.json                                           8.04 kB │ gzip:  0.93 kB
+dist/assets/be-vietnam-pro-vietnamese-400-normal-CRcqvyg1.woff2   11.53 kB
+dist/assets/be-vietnam-pro-vietnamese-500-normal-DREgrEoJ.woff2   12.17 kB
+dist/assets/be-vietnam-pro-vietnamese-600-normal-nyU-ZL2p.woff2   12.17 kB
+dist/assets/be-vietnam-pro-latin-400-normal-bXgqVju9.woff         16.43 kB
+dist/assets/be-vietnam-pro-latin-500-normal-BJkVuMHw.woff         16.99 kB
+dist/assets/be-vietnam-pro-latin-600-normal-5IO4e7bK.woff         17.01 kB
+dist/assets/be-vietnam-pro-latin-400-normal-PpnXBOrz.woff2        21.16 kB
+dist/assets/be-vietnam-pro-latin-500-normal-B6LVzGNe.woff2        21.89 kB
+dist/assets/be-vietnam-pro-latin-600-normal-BZDkUTrt.woff2        22.03 kB
+dist/assets/ShellLayout-jVwH8Ww6.css                               0.21 kB │ gzip:  0.17 kB
+dist/assets/routeAnnouncement-D7i1mbBV.css                         5.19 kB │ gzip:  1.32 kB
+dist/assets/index-5MzpU1N3.css                                     6.18 kB │ gzip:  1.78 kB
+dist/assets/LanguageSwitcher-DqiLqERS.js                           0.34 kB │ gzip:  0.26 kB
+dist/assets/rolldown-runtime-CbXtAM7H.js                           0.58 kB │ gzip:  0.36 kB
+dist/assets/NotFound-BwNHSXMl.js                                   0.68 kB │ gzip:  0.42 kB
+dist/assets/StudentShell-CIVDy8w9.js                               0.73 kB │ gzip:  0.44 kB
+dist/assets/Landing-CkSrZ5cp.js                                    0.75 kB │ gzip:  0.36 kB
+dist/assets/TutorShell-Dzp0QNPu.js                                 0.90 kB │ gzip:  0.50 kB
+dist/assets/ShellLayout-Dgt9tknd.js                                9.28 kB │ gzip:  3.50 kB
+dist/assets/routeAnnouncement-WERGL_D8.js                        166.07 kB │ gzip: 54.37 kB
+dist/assets/index-Cw7A2h6u.js                                    290.77 kB │ gzip: 91.16 kB
+
+✓ built in 380ms
+e2e-run: started englms-0.0.1-SNAPSHOT.jar (pid 163349, log backend/target/e2e-app.log)
+e2e-run: app ready; running Playwright --project=phone-small --project=tablet --project=laptop
+
+Running 102 tests using 8 workers
+
+  ✓    7 [phone-small] › tests/guards.spec.ts:37:3 › the layout check fails on horizontal overflow (+40px) (1.9s)
+  -    6 [phone-small] › tests/guards.spec.ts:63:1 › the console guard also watches a second page of the same context
+  -    3 [phone-small] › tests/guards.spec.ts:56:1 › the console guard fails on a console error
+  -    2 [phone-small] › tests/guards.spec.ts:26:1 › the axe check fails on an image without alt text
+  ✓    8 [phone-small] › tests/guards.spec.ts:37:3 › the layout check fails on horizontal overflow (+3000px) (1.9s)
+  -    5 [phone-small] › tests/guards.spec.ts:76:1 › the console guard fails on an error raised 300 ms after the test body ends (expected failure)
+  -    4 [phone-small] › tests/guards.spec.ts:49:1 › the console guard fails on a CSP violation (an inline <style> under style-src self)
+  -   14 [phone-small] › tests/polish.spec.ts:139:3 › AC2 (/dev/ui, dev build) [vi]: the 3-option example keeps its segment boundaries
+  -   15 [phone-small] › tests/polish.spec.ts:139:3 › AC2 (/dev/ui, dev build) [en]: the 3-option example keeps its segment boundaries
+  ✓   11 [phone-small] › tests/loading.spec.ts:92:1 › the loading region in English (1.3s)
+  ✓   12 [phone-small] › tests/polish.spec.ts:97:3 › AC2: the language switcher keeps its segment boundaries when the selection changes (pointer and keyboard) on / (1.5s)
+  ✓   13 [phone-small] › tests/polish.spec.ts:97:3 › AC2: the language switcher keeps its segment boundaries when the selection changes (pointer and keyboard) on /tutor (1.5s)
+  ✓   10 [phone-small] › tests/loading.spec.ts:57:3 › landing: the loading region is busy at once, shows its skeleton later, and the first load does not shift (CLS) (1.6s)
+  ✓    1 [phone-small] › tests/loading.spec.ts:57:3 › tutor: the loading region is busy at once, shows its skeleton later, and the first load does not shift (CLS) (3.6s)
+  ✓   17 [phone-small] › tests/polish.spec.ts:199:3 › AC3 [en]: on a slowed first load of /, the heading appears where its skeleton line was; CLS ≤ 0.05 (1.5s)
+  ✓   16 [phone-small] › tests/polish.spec.ts:199:3 › AC3 [vi]: on a slowed first load of /, the heading appears where its skeleton line was; CLS ≤ 0.05 (1.5s)
+  ✓    9 [phone-small] › tests/loading.spec.ts:57:3 › student: the loading region is busy at once, shows its skeleton later, and the first load does not shift (CLS) (2.4s)
+  ✓   19 [phone-small] › tests/polish.spec.ts:317:3 › AC4 [vi]: no start-page link when the failed route is / itself (1.4s)
+  ✓   21 [phone-small] › tests/polish.spec.ts:317:3 › AC4 [en]: no start-page link when the failed route is / itself (1.4s)
+  ✓   18 [phone-small] › tests/polish.spec.ts:254:3 › AC4 [vi]: a failed lazy load on a client navigation → error page → "go to the start page" (1 step) (1.9s)
+  ✓   22 [phone-small] › tests/route-focus.spec.ts:57:3 › [vi] client-side navigation moves focus to the h1 and sets the title; a first load does not (1.5s)
+  ✓   23 [phone-small] › tests/route-focus.spec.ts:94:3 › [vi] a language change updates the title without a navigation and keeps focus on the switcher (1.0s)
+  ✓   25 [phone-small] › tests/route-focus.spec.ts:94:3 › [en] a language change updates the title without a navigation and keeps focus on the switcher (992ms)
+  ✓   20 [phone-small] › tests/polish.spec.ts:254:3 › AC4 [en]: a failed lazy load on a client navigation → error page → "go to the start page" (1 step) (1.9s)
+  ✓   24 [phone-small] › tests/route-focus.spec.ts:57:3 › [en] client-side navigation moves focus to the h1 and sets the title; a first load does not (1.5s)
+  ✓   26 [phone-small] › tests/route-focus.spec.ts:118:1 › targets measure at least 44 px block size: skip link, shell home link, 404 link, switcher segments (1.0s)
+  ✓   27 [phone-small] › tests/route-focus.spec.ts:139:3 › UX step budgets (T-M1.9 design notes) › switch the language from any page: 1 step (pointer), 1 step (keyboard) (1.5s)
+  ✓   33 [phone-small] › tests/smoke.spec.ts:56:3 › a deep link survives a reload: /tutor (same-origin SPA fallback) (983ms)
+  ✓   34 [phone-small] › tests/smoke.spec.ts:56:3 › a deep link survives a reload: /student/x (same-origin SPA fallback) (916ms)
+  ✓   28 [phone-small] › tests/route-focus.spec.ts:167:3 › UX step budgets (T-M1.9 design notes) › reach the main content: 1 step on a fresh shell load, 0 on landing/404, 0 after a client-side navigation (1.6s)
+  ✓   32 [phone-small] › tests/smoke.spec.ts:16:3 › not-found renders in vi and en (2.1s)
+  ✓   31 [phone-small] › tests/smoke.spec.ts:16:3 › landing renders in vi and en (2.4s)
+  ✓   30 [phone-small] › tests/smoke.spec.ts:16:3 › student renders in vi and en (2.4s)
+  ✓   29 [phone-small] › tests/smoke.spec.ts:16:3 › tutor renders in vi and en (2.5s)
+  -   35 [tablet] › tests/guards.spec.ts:26:1 › the axe check fails on an image without alt text
+  -   38 [tablet] › tests/guards.spec.ts:49:1 › the console guard fails on a CSP violation (an inline <style> under style-src self)
+  ✓   36 [tablet] › tests/guards.spec.ts:37:3 › the layout check fails on horizontal overflow (+40px) (1.0s)
+  ✓   37 [tablet] › tests/guards.spec.ts:37:3 › the layout check fails on horizontal overflow (+3000px) (1.0s)
+  -   40 [tablet] › tests/guards.spec.ts:56:1 › the console guard fails on a console error
+  -   43 [tablet] › tests/guards.spec.ts:63:1 › the console guard also watches a second page of the same context
+  -   44 [tablet] › tests/guards.spec.ts:76:1 › the console guard fails on an error raised 300 ms after the test body ends (expected failure)
+  ✓   45 [tablet] › tests/loading.spec.ts:92:1 › the loading region in English (1.2s)
+  ✓   41 [tablet] › tests/loading.spec.ts:57:3 › landing: the loading region is busy at once, shows its skeleton later, and the first load does not shift (CLS) (1.5s)
+  -   49 [tablet] › tests/polish.spec.ts:139:3 › AC2 (/dev/ui, dev build) [vi]: the 3-option example keeps its segment boundaries
+  -   48 [tablet] › tests/polish.spec.ts:139:3 › AC2 (/dev/ui, dev build) [en]: the 3-option example keeps its segment boundaries
+  ✓   46 [tablet] › tests/polish.spec.ts:97:3 › AC2: the language switcher keeps its segment boundaries when the selection changes (pointer and keyboard) on / (1.4s)
+  ✓   39 [tablet] › tests/loading.spec.ts:57:3 › student: the loading region is busy at once, shows its skeleton later, and the first load does not shift (CLS) (2.3s)
+  ✓   47 [tablet] › tests/polish.spec.ts:97:3 › AC2: the language switcher keeps its segment boundaries when the selection changes (pointer and keyboard) on /tutor (1.4s)
+  ✓   42 [tablet] › tests/loading.spec.ts:57:3 › tutor: the loading region is busy at once, shows its skeleton later, and the first load does not shift (CLS) (2.4s)
+  ✓   50 [tablet] › tests/polish.spec.ts:199:3 › AC3 [vi]: on a slowed first load of /, the heading appears where its skeleton line was; CLS ≤ 0.05 (1.7s)
+  ✓   51 [tablet] › tests/polish.spec.ts:199:3 › AC3 [en]: on a slowed first load of /, the heading appears where its skeleton line was; CLS ≤ 0.05 (1.7s)
+  ✓   53 [tablet] › tests/polish.spec.ts:317:3 › AC4 [vi]: no start-page link when the failed route is / itself (1.5s)
+  ✓   55 [tablet] › tests/polish.spec.ts:317:3 › AC4 [en]: no start-page link when the failed route is / itself (1.5s)
+  ✓   57 [tablet] › tests/route-focus.spec.ts:94:3 › [vi] a language change updates the title without a navigation and keeps focus on the switcher (936ms)
+  ✓   56 [tablet] › tests/route-focus.spec.ts:57:3 › [vi] client-side navigation moves focus to the h1 and sets the title; a first load does not (1.6s)
+  ✓   52 [tablet] › tests/polish.spec.ts:254:3 › AC4 [vi]: a failed lazy load on a client navigation → error page → "go to the start page" (1 step) (2.0s)
+  ✓   54 [tablet] › tests/polish.spec.ts:254:3 › AC4 [en]: a failed lazy load on a client navigation → error page → "go to the start page" (1 step) (2.1s)
+  ✓   59 [tablet] › tests/route-focus.spec.ts:94:3 › [en] a language change updates the title without a navigation and keeps focus on the switcher (952ms)
+  ✓   60 [tablet] › tests/route-focus.spec.ts:118:1 › targets measure at least 44 px block size: skip link, shell home link, 404 link, switcher segments (1.1s)
+  ✓   58 [tablet] › tests/route-focus.spec.ts:57:3 › [en] client-side navigation moves focus to the h1 and sets the title; a first load does not (1.6s)
+  ✓   61 [tablet] › tests/route-focus.spec.ts:139:3 › UX step budgets (T-M1.9 design notes) › switch the language from any page: 1 step (pointer), 1 step (keyboard) (1.7s)
+  ✓   67 [tablet] › tests/smoke.spec.ts:56:3 › a deep link survives a reload: /tutor (same-origin SPA fallback) (1.1s)
+  ✓   62 [tablet] › tests/route-focus.spec.ts:167:3 › UX step budgets (T-M1.9 design notes) › reach the main content: 1 step on a fresh shell load, 0 on landing/404, 0 after a client-side navigation (1.9s)
+  ✓   68 [tablet] › tests/smoke.spec.ts:56:3 › a deep link survives a reload: /student/x (same-origin SPA fallback) (968ms)
+  ✓   63 [tablet] › tests/smoke.spec.ts:16:3 › landing renders in vi and en (2.6s)
+  ✓   64 [tablet] › tests/smoke.spec.ts:16:3 › tutor renders in vi and en (2.7s)
+  ✓   66 [tablet] › tests/smoke.spec.ts:16:3 › not-found renders in vi and en (2.3s)
+  ✓   65 [tablet] › tests/smoke.spec.ts:16:3 › student renders in vi and en (2.7s)
+  ✓   71 [laptop] › tests/guards.spec.ts:37:3 › the layout check fails on horizontal overflow (+3000px) (1.3s)
+  ✓   70 [laptop] › tests/guards.spec.ts:37:3 › the layout check fails on horizontal overflow (+40px) (1.5s)
+  ✓   72 [laptop] › tests/guards.spec.ts:49:1 › the console guard fails on a CSP violation (an inline <style> under style-src self) (1.2s)
+  ✓   73 [laptop] › tests/guards.spec.ts:56:1 › the console guard fails on a console error (952ms)
+  ✓   76 [laptop] › tests/guards.spec.ts:63:1 › the console guard also watches a second page of the same context (946ms)
+  ✘   74 [laptop] › tests/guards.spec.ts:76:1 › the console guard fails on an error raised 300 ms after the test body ends (expected failure) (1.0s)
+  ✓   69 [laptop] › tests/guards.spec.ts:26:1 › the axe check fails on an image without alt text (2.6s)
+  -   82 [laptop] › tests/polish.spec.ts:139:3 › AC2 (/dev/ui, dev build) [vi]: the 3-option example keeps its segment boundaries
+  ✓   79 [laptop] › tests/loading.spec.ts:92:1 › the loading region in English (1.2s)
+  -   83 [laptop] › tests/polish.spec.ts:139:3 › AC2 (/dev/ui, dev build) [en]: the 3-option example keeps its segment boundaries
+  ✓   78 [laptop] › tests/loading.spec.ts:57:3 › landing: the loading region is busy at once, shows its skeleton later, and the first load does not shift (CLS) (1.7s)
+  ✓   80 [laptop] › tests/polish.spec.ts:97:3 › AC2: the language switcher keeps its segment boundaries when the selection changes (pointer and keyboard) on / (1.5s)
+  ✓   75 [laptop] › tests/loading.spec.ts:57:3 › tutor: the loading region is busy at once, shows its skeleton later, and the first load does not shift (CLS) (2.4s)
+  ✓   81 [laptop] › tests/polish.spec.ts:97:3 › AC2: the language switcher keeps its segment boundaries when the selection changes (pointer and keyboard) on /tutor (1.5s)
+  ✓   77 [laptop] › tests/loading.spec.ts:57:3 › student: the loading region is busy at once, shows its skeleton later, and the first load does not shift (CLS) (2.5s)
+  ✓   84 [laptop] › tests/polish.spec.ts:199:3 › AC3 [vi]: on a slowed first load of /, the heading appears where its skeleton line was; CLS ≤ 0.05 (1.6s)
+  ✓   85 [laptop] › tests/polish.spec.ts:199:3 › AC3 [en]: on a slowed first load of /, the heading appears where its skeleton line was; CLS ≤ 0.05 (1.6s)
+  ✓   87 [laptop] › tests/polish.spec.ts:317:3 › AC4 [vi]: no start-page link when the failed route is / itself (1.5s)
+  ✓   91 [laptop] › tests/route-focus.spec.ts:94:3 › [vi] a language change updates the title without a navigation and keeps focus on the switcher (977ms)
+  ✓   89 [laptop] › tests/polish.spec.ts:317:3 › AC4 [en]: no start-page link when the failed route is / itself (1.4s)
+  ✓   90 [laptop] › tests/route-focus.spec.ts:57:3 › [vi] client-side navigation moves focus to the h1 and sets the title; a first load does not (1.5s)
+  ✓   86 [laptop] › tests/polish.spec.ts:254:3 › AC4 [vi]: a failed lazy load on a client navigation → error page → "go to the start page" (1 step) (2.1s)
+  ✓   93 [laptop] › tests/route-focus.spec.ts:94:3 › [en] a language change updates the title without a navigation and keeps focus on the switcher (997ms)
+  ✓   88 [laptop] › tests/polish.spec.ts:254:3 › AC4 [en]: a failed lazy load on a client navigation → error page → "go to the start page" (1 step) (2.1s)
+  ✓   94 [laptop] › tests/route-focus.spec.ts:118:1 › targets measure at least 44 px block size: skip link, shell home link, 404 link, switcher segments (1.1s)
+  ✓   92 [laptop] › tests/route-focus.spec.ts:57:3 › [en] client-side navigation moves focus to the h1 and sets the title; a first load does not (1.6s)
+  ✓   95 [laptop] › tests/route-focus.spec.ts:139:3 › UX step budgets (T-M1.9 design notes) › switch the language from any page: 1 step (pointer), 1 step (keyboard) (1.7s)
+  ✓   96 [laptop] › tests/route-focus.spec.ts:167:3 › UX step budgets (T-M1.9 design notes) › reach the main content: 1 step on a fresh shell load, 0 on landing/404, 0 after a client-side navigation (1.8s)
+  ✓  101 [laptop] › tests/smoke.spec.ts:56:3 › a deep link survives a reload: /tutor (same-origin SPA fallback) (1.0s)
+  ✓  102 [laptop] › tests/smoke.spec.ts:56:3 › a deep link survives a reload: /student/x (same-origin SPA fallback) (982ms)
+  ✓   97 [laptop] › tests/smoke.spec.ts:16:3 › landing renders in vi and en (2.6s)
+  ✓  100 [laptop] › tests/smoke.spec.ts:16:3 › not-found renders in vi and en (2.2s)
+  ✓   98 [laptop] › tests/smoke.spec.ts:16:3 › tutor renders in vi and en (2.6s)
+  ✓   99 [laptop] › tests/smoke.spec.ts:16:3 › student renders in vi and en (2.5s)
+
+  16 skipped
+  86 passed (23.5s)
+e2e-run: playwright exit 0
+e2e-run: app stopped (pid 163349)
+gate: <== e2e OK (43s)
+gate: PASS (12 steps, 143s)
