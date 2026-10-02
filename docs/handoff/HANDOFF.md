@@ -8,11 +8,11 @@ Phase/Milestone: P1 / M1 · Current task: **T-M1.16 (draft: S4 polish, no packet
   DEC-079) and T-M1.10 (TS 7, waits for upstream).
 - **DEC-080 (PO, 2026-10-02):** T-M1.14 started; **the GitLab mirror is kept as a backup** (GitHub stays the only merge path; GitLab CI not required; image digests
   bumped by hand with the monthly batch). `backend-coverage` uploads on GitHub again.
-- **Open PRs:** #38 `qa/T-M1.14` (QA record, LC-only path); this branch `docs/T-M1.14-merge-record` (DEC-081, state); **six Dependabot PRs #29–#34** (npm
+- **Open PRs:** (#38, the QA record, merged as `ed4aa9a`) this branch `docs/T-M1.14-merge-record` (DEC-081, state); **six Dependabot PRs #29–#34** (npm
   `@types/node` ×3, `@tanstack/react-query`, a web tooling group; Maven 3.9.16 → 3.10.0) not yet triaged.
 
 ## Next steps
-1. Merge #38 and this branch via merge-gate (this one needs a fresh `DOCS-REVIEW T-M1.14: PASS`).
+1. Merge this branch via merge-gate if still open (DOCS-REVIEW PASS posted on PR #39).
 2. Triage the Dependabot PRs (git-governance: Dependabot path; `@dependabot rebase`, never "Update branch"; the Maven bump changes the wrapper: OQ-17 content check).
 3. T-M1.16 packet (task-packet skill; FE + LC items, UX review at G3) → PO start. Then check the M1 exit criteria (roadmap.md) and plan M2 (T-M2.1).
 

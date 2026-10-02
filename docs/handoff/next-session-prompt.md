@@ -4,7 +4,7 @@ PRODUCT: a private 1:1 teaching workspace for ONE English tutor and their studen
 
 START: read CLAUDE.md, progress.json and docs/handoff/HANDOFF.md, then docs/tasks/backlog.md (T-M1.16, DEC-079), docs/09-harness/git-governance.md (Dependabot path) and the task-packet skill.
 
-STATE: M1: T-M1.1..T-M1.9, T-M1.11..T-M1.15 merged (T-M1.14 = 3a405ce, DEC-081). DEC-080: GitLab mirror kept as a backup. Open PRs: #38 qa/T-M1.14 (QA record, LC-only), docs/T-M1.14-merge-record (DEC-081; needs DOCS-REVIEW if not merged), Dependabot #29-#34. Open tasks: T-M1.16 (S4 polish stub), T-M1.10 (waits upstream). Required CI: docs-check, secrets-scan, backend, web, contract-drift, e2e-smoke. Local: ./scripts/dev-up.sh; ./scripts/gate.sh (ENGLMS_TASK=<id>). Run ./scripts/gitlab-sync.sh after each merge and on branches under review.
+STATE: M1: T-M1.1..T-M1.9, T-M1.11..T-M1.15 merged (T-M1.14 = 3a405ce, DEC-081). DEC-080: GitLab mirror kept as a backup. QA record merged (#38, ed4aa9a). Open PRs: #39 docs/T-M1.14-merge-record if not yet merged (DEC-081; DOCS-REVIEW PASS posted), Dependabot #29-#34. Open tasks: T-M1.16 (S4 polish stub), T-M1.10 (waits upstream). Required CI: docs-check, secrets-scan, backend, web, contract-drift, e2e-smoke. Local: ./scripts/dev-up.sh; ./scripts/gate.sh (ENGLMS_TASK=<id>). Run ./scripts/gitlab-sync.sh after each merge and on branches under review.
 
 DO:
 1. Merge the open bookkeeping PRs via ./scripts/merge-gate.sh --dry-run <pr>, then without it (fresh DOCS-REVIEW PASS for docs PRs; LC-APPROVED after CI is green).
