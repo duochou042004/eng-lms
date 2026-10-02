@@ -28,7 +28,7 @@ that don't trip over the hidden label copy, no dead markup, no network-call loop
      already assert visibility).
   5. **More lint loopholes (QA F-3).** Outside `src/lib/api/**`, `pnpm lint` fails on `XMLHttpRequest`, `EventSource` and `sendBeacon`, both as globals and as members
      of any object (`window.XMLHttpRequest`, `globalThis.EventSource`, `window.navigator.sendBeacon`: the global + property-only pair the `fetch` rule uses), and on
-     any `eslint-disable`/`oxlint-disable` comment. Oxlint first; if the installed oxlint (1.85, or 1.86 if Dependabot #32 merges) has no rule for the disable comments, one `grep`-based step in the `lint` script is
+     any `eslint-disable`/`oxlint-disable` comment. Oxlint first; if the installed oxlint (1.86 since Dependabot #32) has no rule for the disable comments, one `grep`-based step in the `lint` script is
      allowed (no new linter without a DEC). Dynamic keys and `Reflect.get(window, "fetch")` stay accepted (DEC-079).
   9. **Flaky E2E step budget (DEC-082).** `e2e/tests/route-focus.spec.ts` "switch the language from any page" (keyboard part) presses Tab right after `page.goto('/')`,
      before the lazy landing page has rendered (a first load does not move focus), so focus sometimes misses the switcher (failed on Dependabot PRs #30 and #32 on

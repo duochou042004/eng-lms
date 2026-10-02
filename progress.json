@@ -16,7 +16,7 @@
       }
     ]
   },
-  "updatedAt": "2026-10-02T06:06:52Z",
+  "updatedAt": "2026-10-02T06:43:46Z",
   "updatedBy": "lead-coordinator (session 2026-10-02 #2, Opus 5.5)",
   "phase": {
     "id": "P1",
@@ -688,6 +688,11 @@
       "at": "2026-10-02T06:06:52Z",
       "actor": "lead-coordinator",
       "event": "Dependabot triage (DEC-082): #29/#30/#32/#33/#34 via rebase + merge-gate; #31 (Maven) to T-M1.16. T-M1.16 packet written (docs/T-M1.16-packet)."
+    },
+    {
+      "at": "2026-10-02T06:43:46Z",
+      "actor": "lead-coordinator",
+      "event": "Dependabot #33/#29/#30/#34/#32 merged via merge-gate (DEC-082 outcome); #31 closed. T-M1.16 packet DOCS-REVIEW round 4 PASS."
     }
   ]
 }

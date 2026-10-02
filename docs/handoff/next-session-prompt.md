@@ -4,7 +4,7 @@ PRODUCT: a private 1:1 teaching workspace for ONE English tutor and their studen
 
 START: read CLAUDE.md, progress.json and docs/handoff/HANDOFF.md, then docs/tasks/T-M1.16-review-polish.md and the frontend-standards, qa-evaluation and ux-review skills.
 
-STATE: M1 exit criteria met; T-M1.1..T-M1.9, T-M1.11..T-M1.15 merged. DEC-080: GitLab mirror kept. DEC-082: Dependabot triage (#29/#30/#32/#33/#34 via merge-gate; #31 Maven -> T-M1.16 item 7). T-M1.16 packet: PR from docs/T-M1.16-packet (merge it first if still open; check `gh pr list` for leftover Dependabot PRs). Open: T-M1.16 (ready, PO start pending), T-M1.10 (waits upstream). Required CI: docs-check, secrets-scan, backend, web, contract-drift, e2e-smoke. Local: ./scripts/dev-up.sh; ./scripts/gate.sh (ENGLMS_TASK=<id>). Run ./scripts/gitlab-sync.sh after each merge and on branches under review.
+STATE: M1 exit criteria met; T-M1.1..T-M1.9, T-M1.11..T-M1.15 merged. DEC-080: GitLab mirror kept. DEC-082: Dependabot #29/#30/#32/#33/#34 merged; #31 Maven -> T-M1.16 item 7; flaky route-focus E2E -> item 9. T-M1.16 packet: PR from docs/T-M1.16-packet (merge it first if still open). Open: T-M1.16 (ready, PO start pending), T-M1.10 (waits upstream). Required CI: docs-check, secrets-scan, backend, web, contract-drift, e2e-smoke. Local: ./scripts/dev-up.sh; ./scripts/gate.sh (ENGLMS_TASK=<id>). Run ./scripts/gitlab-sync.sh after each merge and on branches under review.
 
 DO:
 1. Record the PO start as a DEC (on the feature branch's first commit or a docs PR). A frontend-implementer for items 1-5 in its own git worktree; the LC does items 6-8 (merge-gate step 5 hardening + tests; Maven distributionUrl; deps-batch branch name in tech-stack/hoh) on the same branch.

@@ -6,12 +6,12 @@ Phase/Milestone: P1 / M1 · Current task: **T-M1.16 (ready; PO start signal pend
 - **M1 exit criteria are met** by merged work (gate green locally and in CI; backend skeleton + Modulith + Flyway V1; same-origin SPA; Playwright smoke at 3 viewports
   with axe; contract drift; Testcontainers on rootless Podman). T-M1.1..T-M1.9 and T-M1.11..T-M1.15 are merged. Left in M1: **T-M1.16** (review polish + Maven 3.10.0,
   packet on PR `docs/T-M1.16-packet`) and T-M1.10 (TS 7, waits for upstream; proposed to the PO: don't let it block M2).
-- **Dependabot triage (DEC-082):** #29, #30, #33, #34 (types/react-query) and #32 (oxlint/vitest) go through `@dependabot rebase` + CI + `LC-APPROVED PR-<n>` +
-  merge-gate one at a time; #31 (Maven) closed, its bump is T-M1.16 item 7. Check `gh pr list` for any that are still open (e.g. if #32's E2E fails again).
+- **Dependabot triage (DEC-082):** #33, #29, #30, #34, #32 merged via `@dependabot rebase` + CI 7/7 + `LC-APPROVED PR-<n>` + merge-gate (oxlint 1.86 now);
+  #31 (Maven) closed, its bump is T-M1.16 item 7. A flaky E2E test (`route-focus.spec.ts:139`, Tab before the lazy landing renders) failed #30 once; fix = T-M1.16 item 9.
 - The GitLab mirror is kept as a backup (DEC-080).
 
 ## Next steps
-1. Merge the `docs/T-M1.16-packet` PR (fresh DOCS-REVIEW PASS, LC-APPROVED after CI) if still open; finish any open Dependabot PRs the same way.
+1. Merge the `docs/T-M1.16-packet` PR (fresh DOCS-REVIEW PASS, LC-APPROVED after CI) if still open; no Dependabot PRs are open.
 2. PO start for T-M1.16 → a frontend-implementer (items 1–5) and the LC (items 6–8) on `feature/T-M1.16-review-polish`; G3 = QA + UX.
 3. Then M2: write the T-M2.1 packet (identity core; SEC review applies).
 
