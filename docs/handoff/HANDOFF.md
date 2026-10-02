@@ -1,31 +1,30 @@
-# Handoff — 2026-10-02 (T-M1.14 merged; M1 nearly done)
+# Handoff — 2026-10-02 (Dependabot triage; T-M1.16 packet)
 
-Phase/Milestone: P1 / M1 · Current task: **T-M1.16 (draft: S4 polish, no packet yet)** · Remote: https://github.com/duochou042004/eng-lms
+Phase/Milestone: P1 / M1 · Current task: **T-M1.16 (ready; PO start signal pending)** · Remote: https://github.com/duochou042004/eng-lms
 
 ## Where we are
-- **M1 progress:** T-M1.1..T-M1.9 and T-M1.11..T-M1.15 are merged through merge-gate. **T-M1.14** (`3a405ce`, PR #37): the flaky request-ID test is
-  deterministic (strict UUIDv7 header, body `requestId` == header, no echo of `bad<id>`/`<`); QA-VERDICT PASS; DEC-081. Open in M1: **T-M1.16** (S4 polish stub,
-  DEC-079) and T-M1.10 (TS 7, waits for upstream).
-- **DEC-080 (PO, 2026-10-02):** T-M1.14 started; **the GitLab mirror is kept as a backup** (GitHub stays the only merge path; GitLab CI not required; image digests
-  bumped by hand with the monthly batch). `backend-coverage` uploads on GitHub again.
-- **Open PRs:** (#38, the QA record, merged as `ed4aa9a`) this branch `docs/T-M1.14-merge-record` (DEC-081, state); **six Dependabot PRs #29–#34** (npm
-  `@types/node` ×3, `@tanstack/react-query`, a web tooling group; Maven 3.9.16 → 3.10.0) not yet triaged.
+- **M1 exit criteria are met** by merged work (gate green locally and in CI; backend skeleton + Modulith + Flyway V1; same-origin SPA; Playwright smoke at 3 viewports
+  with axe; contract drift; Testcontainers on rootless Podman). T-M1.1..T-M1.9 and T-M1.11..T-M1.15 are merged. Left in M1: **T-M1.16** (review polish + Maven 3.10.0,
+  packet on PR `docs/T-M1.16-packet`) and T-M1.10 (TS 7, waits for upstream; proposed to the PO: don't let it block M2).
+- **Dependabot triage (DEC-082):** #29, #30, #33, #34 (types/react-query) and #32 (oxlint/vitest) go through `@dependabot rebase` + CI + `LC-APPROVED PR-<n>` +
+  merge-gate one at a time; #31 (Maven) closed, its bump is T-M1.16 item 7. Check `gh pr list` for any that are still open (e.g. if #32's E2E fails again).
+- The GitLab mirror is kept as a backup (DEC-080).
 
 ## Next steps
-1. Merge this branch via merge-gate if still open (DOCS-REVIEW PASS posted on PR #39).
-2. Triage the Dependabot PRs (git-governance: Dependabot path; `@dependabot rebase`, never "Update branch"; the Maven bump changes the wrapper: OQ-17 content check).
-3. T-M1.16 packet (task-packet skill; FE + LC items, UX review at G3) → PO start. Then check the M1 exit criteria (roadmap.md) and plan M2 (T-M2.1).
+1. Merge the `docs/T-M1.16-packet` PR (fresh DOCS-REVIEW PASS, LC-APPROVED after CI) if still open; finish any open Dependabot PRs the same way.
+2. PO start for T-M1.16 → a frontend-implementer (items 1–5) and the LC (items 6–8) on `feature/T-M1.16-review-polish`; G3 = QA + UX.
+3. Then M2: write the T-M2.1 packet (identity core; SEC review applies).
 
 ## Pending PO decisions / actions
-- T-M1.16 start (after its packet). Recommended (DEC-061): `glab` deny rules. OQ-03..OQ-14 (defaults documented).
+- T-M1.16 start. T-M1.10 outside the M1 exit path (proposal). Recommended (DEC-061): `glab` deny rules. OQ-03..OQ-14 (defaults documented).
 
 ## Gotchas
-- Branch names must be `<kind>/<task-id>-<slug>` (merge-gate refuses others, e.g. `docs/DEC-080-…`).
+- Branch names must be `<kind>/<task-id>-<slug>`; the monthly deps batch too (`chore/<task-id>-deps-YYYY-MM` after T-M1.16).
+- Dependabot PRs: `@dependabot rebase`, never "Update branch"; only manifests/lockfiles/wrapper-properties changes pass merge-gate.
 - Verdict tokens: QA `PASS`/`PASS WITH MINOR`; DOCS `PASS`; SEC and UX `APPROVED`.
-- `git merge` is denied: `gh pr update-branch <n>`. If `progress.json` would conflict, update the branch **before** editing `progress.json`.
-- Subagents share the working tree: give each one its own worktree or tell it not to checkout branches; `gh pr close -d` switches the current checkout.
-- Run `./scripts/check-docs.sh` bare; timestamps from `date -u` (don't type them).
-- `./scripts/gitlab-sync.sh [branch]` after merges and on branches under review. Stage explicit paths.
+- `git merge` is denied: `gh pr update-branch <n>`; update before editing `progress.json` if it would conflict.
+- Subagents share the working tree: give each a worktree or forbid checkouts; `gh pr close -d` switches the current checkout.
+- Run `./scripts/check-docs.sh` bare; timestamps from `date -u`; `./scripts/gitlab-sync.sh` after merges; stage explicit paths.
 
 ## Files to read first
-`CLAUDE.md` → `progress.json` → this file → `docs/tasks/backlog.md` (T-M1.16 row, DEC-079) → the task-packet skill.
+`CLAUDE.md` → `progress.json` → this file → `docs/tasks/T-M1.16-review-polish.md` → the frontend-standards skill.
