@@ -10,6 +10,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.UUID;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
@@ -27,6 +28,8 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.client.RestTestClient;
+
+import tools.jackson.databind.json.JsonMapper;
 
 /**
  * AC5 and AC8 on the real server: the API port serves the API only, Actuator is on the management port with
@@ -202,12 +205,27 @@ class ApplicationIntegrationTest {
 		assertThat(response.body()).doesNotContain("<", "html", "Tomcat", "Exception", "instance", "meta", "%2f");
 	}
 
+	// Deterministic: the generated ID is only checked for its UUIDv7 shape and equality; every banned string contains '<', which hex never does.
 	@Test
 	void aRejectedRequestReusesAValidIncomingRequestIdAndNeverEchoesABadOne() throws IOException {
-		assertThat(rawGet(port, "/api/v1/a%2fb", "it-rejected-1").header("x-request-id")).isEqualTo("it-rejected-1");
+		RawResponse valid = rawGet(port, "/api/v1/a%2fb", "it-rejected-1");
+		assertThat(valid.header("x-request-id")).isEqualTo("it-rejected-1");
+		assertThat(bodyRequestId(valid)).isEqualTo("it-rejected-1");
+
 		RawResponse bad = rawGet(port, "/api/v1/a%2fb", "bad<id>");
-		assertThat(bad.header("x-request-id")).matches("[0-9a-f-]{36}");
-		assertThat(bad.body()).doesNotContain("bad");
+		String requestId = bad.header("x-request-id");
+		assertThat(requestId).matches("[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}");
+		assertThat(UUID.fromString(requestId)).satisfies(uuid -> {
+			assertThat(uuid.version()).isEqualTo(7);
+			assertThat(uuid.variant()).isEqualTo(2);
+		});
+		assertThat(bodyRequestId(bad)).isEqualTo(requestId);
+		assertThat(requestId).doesNotContain("bad<id>", "<");
+		assertThat(bad.body()).doesNotContain("bad<id>", "<");
+	}
+
+	static String bodyRequestId(RawResponse response) {
+		return JsonMapper.builder().build().readTree(response.body()).path("requestId").asString();
 	}
 
 	// SEC review S4-2: other statuses Tomcat answers itself. 4xx are client errors (MALFORMED_REQUEST), 5xx INTERNAL_ERROR.
