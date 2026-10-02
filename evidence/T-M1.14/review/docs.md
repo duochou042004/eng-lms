@@ -112,3 +112,51 @@ DOCS-REVIEW T-M1.14: CHANGES REQUESTED
 - `evidence/T-M1.14/review/docs.md` currently ends with the round-1 line `DOCS-REVIEW T-M1.14: CHANGES REQUESTED`. Add round 2 to the table and append this verdict after it, so the file's last verdict is PASS.
 
 DOCS-REVIEW T-M1.14: PASS
+
+## PR #35 (DEC-080: start T-M1.14, keep the GitLab mirror), head `045127b`: PASS
+
+Fresh docs-reviewer. Dispositions: F1–F5, F7 fixed in the next commit (`.gitlab-ci.yml` and `gitlab-sync.sh` headers; the packet set to in progress as the implementer started; handoff header and bullets; GitLab image digests bumped by hand with the monthly batch, ci-cd §1.1; T-M1.13/T-M1.15 packet status done); F6 done (backlog row).
+
+No S1–S3 findings, so PR #35 passes. There are 7 S4 findings, all wording or bookkeeping.
+
+Scope: I read the diff of `docs/DEC-080-start-T-M1.14` against `develop` at head `045127b` (8 files), DEC-060, DEC-061, DEC-079 and DEC-080, and the docs you listed. I also searched the repo for leftover "temporary" and "pending" wording about the mirror. I made no edits.
+
+**Checks**
+- `./scripts/check-docs.sh` passes (154 markdown files, `progress.json` valid, sources intact).
+- On PR #35, docs-check and secrets-scan pass. The other five checks were still running when I looked.
+
+**What is consistent**
+- **Mirror rules unchanged:** DEC-080 only drops "temporary". The docs still say GitHub is the source of truth and the only merge path, and that GitLab CI is not a required check. GitLab still has protected develop/master and merge requests disabled (DEC-061). The sync rule ("develop and the branches under review only") is unchanged in ci-cd §1.1, git-governance and development-setup.
+- **Traceability:** DEC-080 links to T-M1.14, T-M1.11, DEC-060, DEC-061 and DEC-079. The two approvals in `progress.json` point to DEC-080. DEC-060 is removed from `pendingPO`.
+- **`progress.json`:** consistent. `currentTask` is T-M1.14, `in_progress`, with DEC-080 in its trace. Its entry gates are met. G0 passes; G1–G4 are pending. `recent` adds DEC-080, there are no blockers, and a history entry was added.
+- **Scope:** no scope creep and no product or non-goal impact; this is a governance-only change.
+- The packet's link to `evidence/T-M1.14/review/docs.md` resolves.
+
+**Findings (all S4)**
+- **F1 (S4), stale "temporary" in live config:**
+  - `.gitlab-ci.yml:1-2` still says "TEMPORARY second CI while … storage is exhausted … expected to reset on 2026-10-01".
+  - `scripts/gitlab-sync.sh:2-3` still says "temporary while GitHub's artifact storage is exhausted".
+  - Both contradict DEC-080, and a coding agent could read them as permission to remove the mirror.
+  - Fix: change both to "kept as a backup, DEC-080", here or in a small chore PR.
+- **F2 (S4), status mismatch:** the packet (`docs/tasks/T-M1.14-flaky-request-id-test.md:6`) still says **ready**, while `backlog.md:26` and `progress.json` say in progress, with `startedAt` set before any implementer has started. The template (`task-packet-template.md` "Status transitions") says `in_progress` begins when the implementer starts, and T-M1.13 followed that precedent.
+  - Fix: either keep backlog and `progress.json` at `ready` (start signal given) until the implementer starts, or also set the packet to in progress. Pick one convention.
+- **F3 (S4), stale handoff header:** `docs/handoff/HANDOFF.md:1` still reads "2026-10-01 (… T-M1.14 packet on its docs PR)".
+  - Fix: "2026-10-02 (T-M1.14 started, DEC-080)".
+- **F4 (S4), stale handoff bullets:**
+  - `HANDOFF.md:7` says T-M1.14 "packet ready"; it should say "in progress (DEC-080)".
+  - `HANDOFF.md:9` says "`review/docs.md` (this branch)", but "this branch" now means the DEC-080 branch. It should name PR #28.
+- **F5 (S4), mirror image pins no longer maintained:** keeping the mirror long-term leaves its pinned images (`.gitlab-ci.yml`; tech-stack rows 135–137) outside Dependabot. The T-M1.11 review (`evidence/T-M1.11/review/docs.md:96`) accepted that only because the mirror was temporary.
+  - Fix: add one line to ci-cd §1.1 saying GitLab image digests are bumped by hand with the monthly deps batch (tech-stack line 91), or add a backlog item.
+- **F6 (S4), wording:** `backlog.md:23` (T-M1.11 row, "temporary, DEC-060") and the T-M1.11 packet title are historical records, so they are acceptable. Optionally append "(kept, DEC-080)" to the backlog row.
+- **F7 (S4), outside this diff:** two older packets have stale status lines.
+  - `docs/tasks/T-M1.13-web-polish.md:6` still says **ready**, but it merged as `625c8fc`.
+  - `docs/tasks/T-M1.15-merge-gate-pr-files.md:6` says **in review**, but it merged as `9a68eb7`.
+  - Fix: set both to **done** with their merge commits, alongside F2.
+
+DOCS-REVIEW T-M1.14: PASS
+
+## PR #35 re-check, head `37d899c`: PASS
+
+The same reviewer verified F1–F7 fixed (`git diff 045127b 37d899c`; `bash -n` on `gitlab-sync.sh`, `.gitlab-ci.yml` parses). New: N1 (S4) the T-M1.11 backlog row's trace lacked DEC-080, fixed in the next commit; this record now covers the final head. Process note from the reviewer: in its first pass it checked out the PR head in the main working tree (clean at the time) while the implementer was starting; the LC verified the implementer's branch and work afterwards (on `fix/T-M1.14-flaky-request-id-test`, nothing lost).
+
+DOCS-REVIEW T-M1.14: PASS
