@@ -49,7 +49,7 @@ switcher skeletons are seen on every first load. 5. No exam or curriculum semant
 ## Design notes
 - Item 1: `web/src/app/routes/RouteLoading.tsx` (two `inlineSize="13rem"`); the switcher's width is the same in vi and en (its labels are endonyms: "Tiếng Việt", "English").
 - Item 5: `web/.oxlintrc.json` (`no-restricted-globals` and property-only `no-restricted-properties` entries, as for `fetch`); keep the `src/lib/api/**` override for all of them.
-- Item 6: `scripts/merge-gate.sh` step 5 and `scripts/tests/merge-gate.test.sh` (reuse the array-type check of the activity listing in step 0).
+- Item 6: `scripts/merge-gate.sh` step 5 and the Dependabot path's `files_out` reads (one shared array check can serve both), and `scripts/tests/merge-gate.test.sh` (reuse the array-type check of the activity listing in step 0).
 - Item 7: no other backend change; if 3.10.0 breaks the build, stop and report (a DEC decides).
 
 ## Acceptance criteria

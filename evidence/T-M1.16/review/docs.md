@@ -5,6 +5,7 @@
 | Round | Head | Verdict | Findings |
 |---|---|---|---|
 | 1 | `cfefa4e` | **CHANGES REQUESTED** | F1, F2 S3; F3–F8 S4 |
+| 2 | `ca427c3` | **PASS** | R2-1, R2-2 S4 (fixed in the next commit: the item 6 design note; this record) |
 
 ## Round 1 dispositions
 | ID | Disposition |
@@ -70,3 +71,32 @@ I made no changes to the repo. I ran `./scripts/check-docs.sh` on an export of t
 - /home/kali/App_sources/Eng-LMS/docs/handoff/archive/20261002T0430Z-T-M1.14-merged.md
 
 DOCS-REVIEW T-M1.16: CHANGES REQUESTED
+
+## Round 2 report (`ca427c3`)
+
+Round 2 at head `ca427c3`: **PASS**. All eight round-1 findings are fixed, and I found two small S4 notes, neither blocking.
+
+`check-docs.sh` passes at `ca427c3` (158 markdown files, `progress.json` valid, sources intact, prompt within limit). I ran it on an export of that commit in my scratchpad, with no checkout of the main tree and no repo changes.
+
+**Round-1 findings**
+| ID | Status at `ca427c3` |
+|---|---|
+| F1 (S3) | Fixed. DEC-082 now says the five PRs are "**to be** merged … each only after `@dependabot rebase` and CI 7/7", with outcomes going to the next merge record. That matches GitHub: they are still open and #32's E2E is red. |
+| F2 (S3) | Fixed. DEC-082 records the LC exception to `backend/**` being BE-owned (agent-roles §3) for the one-line wrapper bump, and the packet's Owner row cites it. |
+| F3 | Fixed: "the installed oxlint (1.85, or 1.86 if Dependabot #32 merges)". |
+| F4 | Fixed. Item 5 and the design note now use a global rule plus a property-only rule for each name, as the `fetch` rule does. AC4 adds `window.XMLHttpRequest`, `globalThis.EventSource` and `window.navigator.sendBeacon(` fixtures. |
+| F5 | Fixed. AC2 now checks segment widths and offsets from the group's inline start at 360, 768 and 1280, and says the whole example may move. |
+| F6 | Fixed. The block size stays 44 px; the real switcher's 46 px is explicitly out of scope. |
+| F7 | Fixed. Item 6 and AC5 now cover the Dependabot path's file listing as well. |
+| F8 | Fixed: "are still reported by `pnpm lint`". |
+
+**New findings**
+- **R2-1 (S4)** The item 6 design note in `docs/tasks/T-M1.16-review-polish.md` still names only "step 5". Since the scope now also covers the Dependabot listing, the note should point the implementer to it as well (`scripts/merge-gate.sh`, about lines 192–215, the `.[]?` reads of `files_out`). One shared array check could serve both listings. This is not blocking, because the scope line and AC5 already state the requirement.
+- **R2-2 (S4)** `evidence/T-M1.16/review/docs.md` currently ends with the round-1 line `DOCS-REVIEW T-M1.16: CHANGES REQUESTED`. Add this round-2 report and its final PASS line to the record before merging, so the file's last verdict matches the PR.
+
+**Files reviewed**
+- /home/kali/App_sources/Eng-LMS/docs/tasks/T-M1.16-review-polish.md
+- /home/kali/App_sources/Eng-LMS/docs/10-governance/decision-log.md
+- /home/kali/App_sources/Eng-LMS/evidence/T-M1.16/review/docs.md
+
+DOCS-REVIEW T-M1.16: PASS
