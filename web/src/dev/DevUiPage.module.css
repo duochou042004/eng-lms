@@ -25,6 +25,11 @@
   flex: 0 1 auto;
 }
 
+/* A flex row: the control inside sizes to its content instead of stretching with the column (T-M1.16). */
+.fit {
+  display: flex;
+}
+
 .skeletons {
   display: flex;
   flex-direction: column;

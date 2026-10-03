@@ -1,0 +1,43 @@
+{
+  "viewport": {
+    "width": 360,
+    "height": 740
+  },
+  "tolerancePx": 1,
+  "vi": [
+    {
+      "name": "Tiếng Việt",
+      "offsetPx": 1,
+      "width": 131
+    },
+    {
+      "name": "English",
+      "offsetPx": 132,
+      "width": 105
+    }
+  ],
+  "en": [
+    {
+      "name": "Tiếng Việt",
+      "offsetPx": 1,
+      "width": 131
+    },
+    {
+      "name": "English",
+      "offsetPx": 132,
+      "width": 105
+    }
+  ],
+  "viAgain": [
+    {
+      "name": "Tiếng Việt",
+      "offsetPx": 1,
+      "width": 131
+    },
+    {
+      "name": "English",
+      "offsetPx": 132,
+      "width": 105
+    }
+  ]
+}

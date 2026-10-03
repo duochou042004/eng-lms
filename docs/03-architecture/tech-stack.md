@@ -88,7 +88,7 @@ any analytics or tracking script.
 
 - Pin exact versions: the Maven BOM via the Boot parent; `pnpm-lock.yaml`; container images by tag **and** digest in production units.
 - Use the Boot-managed version of every dependency the BOM covers. Pin non-BOM libraries explicitly and list them in §7.
-- Upgrades: monthly Dependabot batch PR (`chore/deps-YYYY-MM`) with the full gate. Major upgrades need a packet.
+- Upgrades: monthly Dependabot batch PR (`chore/<task-id>-deps-YYYY-MM`; the batch gets a backlog task ID, as merge-gate requires `<kind>/<task-id>-<slug>`) with the full gate. Major upgrades need a packet.
 - **Boot 4 / Java 25 pitfalls for agents** are listed in `docs/09-harness/coding-agent-rules.md` §9.
 
 ## 7. Pinned versions (filled in by the packet that introduces each dependency)
@@ -107,7 +107,7 @@ any analytics or tracking script.
 | ArchUnit (`archunit-junit5`) | 1.5.1 (Apache-2.0) | T-M1.2 | 2026-09-25 |
 | Testcontainers | Boot-managed (2.x, `testcontainers-postgresql`); image `docker.io/library/postgres:18` | T-M1.2 | 2026-09-25 |
 | JUnit Platform Launcher (`junit-platform-launcher`, test scope) | Boot-managed (JUnit 6.0.x, the same release as Jupiter; EPL-2.0) | T-M1.8 (AC4: the test-plan listener that closes Spring contexts before JVM shutdown) | 2026-09-27 |
-| Maven (wrapper) | 3.9.16 (wrapper 3.3.4) | T-M1.2 | 2026-09-25 |
+| Maven (wrapper) | 3.10.0 (wrapper 3.3.4) | T-M1.2; T-M1.16 (DEC-082) | 2026-10-03 |
 | actions/setup-java | v6.0.1 @ `de7274f081f381c8f8158605e0321c36c376e2e6` | T-M1.2 | 2026-09-25 |
 | actions/upload-artifact | v7.0.1 @ `043fb46d1a93c77aae656e7c1c64a875d1fc6a0a` | T-M1.2 | 2026-09-25 |
 | PostgreSQL image (dev) | `docker.io/library/postgres:18@sha256:5a5a84b19854a9ffaa54082c166ff4ec27473a361e496e5ea167f298f2da9722` (multi-arch index, PostgreSQL 18.6); Testcontainers uses the `postgres:18` tag | T-M1.4 | 2026-09-25 |

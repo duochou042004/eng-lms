@@ -1,0 +1,194 @@
+# T-M1.16 AC4 (item 5): network-call and disable-directive lint, negative demo
+# 2026-10-03T17:26:46Z at e855d18 + working tree; Version: 1.86.0
+# Mechanism: oxlint no-restricted-globals (fetch, XMLHttpRequest, EventSource) + property-only no-restricted-properties
+# (fetch, XMLHttpRequest, EventSource, sendBeacon), both off in src/lib/api/**; directives: scripts/no-lint-directives.sh
+# (grep step in pnpm lint, skips src/lib/api/). Why a grep: oxlint has no rule that bans directives; its
+# no-warning-comments (terms eslint-disable/oxlint-disable, location start) is silenced by a file-wide /* eslint-disable */
+# itself (probe in section 0). The fixtures were created by this script and deleted at its end (never committed).
+
+## 0. Probe: no-warning-comments as the directive rule misses the block directives (lines 5 and 7-9 not reported: the file-wide /* oxlint-disable */ on line 5 silences the rule itself)
+$ ./node_modules/.bin/oxlint -c /tmp/claude-1000/-home-kali-App-sources-eng-lms/64a15a85-c9e1-44f4-a561-109592bfb483/scratchpad/wc.json src/features/lintdemo/directives.ts
+src/features/lintdemo/directives.ts:2:1: error eslint(no-warning-comments): Unexpected 'eslint-disable' comment: eslint-disable-next-line... help: Remove or rephrase this comment
+src/features/lintdemo/directives.ts:4:24: error eslint(no-warning-comments): Unexpected 'oxlint-disable' comment: oxlint-disable-line... help: Remove or rephrase this comment
+exit: 1
+
+## Fixtures
+--- src/features/lintdemo/directives.ts
+// T-M1.16 AC4 throwaway lint fixture (deleted after the demo): disable directives, each hiding a restricted global
+// eslint-disable-next-line no-restricted-globals
+export const a = fetch
+export const b = fetch // oxlint-disable-line no-restricted-globals
+/* oxlint-disable */
+export const c = fetch
+/*
+ * eslint-disable no-restricted-globals
+ */
+--- src/features/lintdemo/fetch-t-m1.13.ts
+// T-M1.16 AC4 throwaway lint fixture (deleted after the demo): the T-M1.13 fetch probes
+export const bare = () => fetch('/api/v1/meta')
+export const viaWindow = () => window.fetch('/api/v1/meta')
+export const viaGlobalThis = () => globalThis.fetch('/api/v1/meta')
+export const viaSelf = () => self.fetch('/api/v1/meta')
+export const viaGlobalThisWindow = () => globalThis.window.fetch('/api/v1/meta')
+export const viaDefaultView = () => document.defaultView!.fetch('/api/v1/meta')
+export const viaDefaultViewOptional = () => document.defaultView?.fetch('/api/v1/meta')
+export const computed = () => window['fetch']('/api/v1/meta')
+export function destructured() {
+  const { fetch: f } = window
+  return f
+}
+export const sequence = () => (0, globalThis.window).fetch('/api/v1/meta')
+--- src/features/lintdemo/network.ts
+// T-M1.16 AC4 throwaway lint fixture (deleted after the demo): the listed network forms
+export const xhr = new XMLHttpRequest()
+export const xhrViaWindow = new window.XMLHttpRequest()
+export const events = new EventSource('/api/v1/events')
+export const eventsViaGlobalThis = new globalThis.EventSource('/api/v1/events')
+export const beacon = navigator.sendBeacon('/api/v1/log')
+export const beaconViaWindow = window.navigator.sendBeacon('/api/v1/log')
+--- src/lib/api/lintdemo/directives.ts
+// T-M1.16 AC4 throwaway lint fixture (deleted after the demo): disable directives, each hiding a restricted global
+// eslint-disable-next-line no-restricted-globals
+export const a = fetch
+export const b = fetch // oxlint-disable-line no-restricted-globals
+/* oxlint-disable */
+export const c = fetch
+/*
+ * eslint-disable no-restricted-globals
+ */
+--- src/lib/api/lintdemo/fetch-t-m1.13.ts
+// T-M1.16 AC4 throwaway lint fixture (deleted after the demo): the T-M1.13 fetch probes
+export const bare = () => fetch('/api/v1/meta')
+export const viaWindow = () => window.fetch('/api/v1/meta')
+export const viaGlobalThis = () => globalThis.fetch('/api/v1/meta')
+export const viaSelf = () => self.fetch('/api/v1/meta')
+export const viaGlobalThisWindow = () => globalThis.window.fetch('/api/v1/meta')
+export const viaDefaultView = () => document.defaultView!.fetch('/api/v1/meta')
+export const viaDefaultViewOptional = () => document.defaultView?.fetch('/api/v1/meta')
+export const computed = () => window['fetch']('/api/v1/meta')
+export function destructured() {
+  const { fetch: f } = window
+  return f
+}
+export const sequence = () => (0, globalThis.window).fetch('/api/v1/meta')
+--- src/lib/api/lintdemo/network.ts
+// T-M1.16 AC4 throwaway lint fixture (deleted after the demo): the listed network forms
+export const xhr = new XMLHttpRequest()
+export const xhrViaWindow = new window.XMLHttpRequest()
+export const events = new EventSource('/api/v1/events')
+export const eventsViaGlobalThis = new globalThis.EventSource('/api/v1/events')
+export const beacon = navigator.sendBeacon('/api/v1/log')
+export const beaconViaWindow = window.navigator.sendBeacon('/api/v1/log')
+
+## 1. BEFORE (develop's .oxlintrc.json and lint script, which has no directive step): the six network forms and all directives pass
+$ ./node_modules/.bin/oxlint --deny-warnings -c /tmp/claude-1000/-home-kali-App-sources-eng-lms/64a15a85-c9e1-44f4-a561-109592bfb483/scratchpad/develop-oxlintrc.json src/features/lintdemo/network.ts src/features/lintdemo/directives.ts
+exit: 0
+
+## 2. AFTER: pnpm lint fails on src/features/ (oxlint step: the six network forms and the T-M1.13 fetch probes)
+$ pnpm lint
+$ oxlint --deny-warnings && sh scripts/no-lint-directives.sh && stylelint "src/**/*.css" && prettier --check .
+src/features/lintdemo/network.ts:4:27: error eslint(no-restricted-globals): Unexpected use of 'EventSource'. No EventSource outside src/lib/api (frontend-architecture §1). Use the API client. help: Use a local variable or function parameter instead of the restricted global.
+src/features/lintdemo/network.ts:2:24: error eslint(no-restricted-globals): Unexpected use of 'XMLHttpRequest'. No XMLHttpRequest outside src/lib/api (frontend-architecture §1). Use the API client. help: Use a local variable or function parameter instead of the restricted global.
+src/features/lintdemo/network.ts:3:40: error eslint(no-restricted-properties): 'XMLHttpRequest' is restricted from being used. help: No XMLHttpRequest outside src/lib/api (frontend-architecture §1). Use the API client.
+src/features/lintdemo/network.ts:5:51: error eslint(no-restricted-properties): 'EventSource' is restricted from being used. help: No EventSource outside src/lib/api (frontend-architecture §1). Use the API client.
+src/features/lintdemo/network.ts:6:33: error eslint(no-restricted-properties): 'sendBeacon' is restricted from being used. help: No sendBeacon outside src/lib/api (frontend-architecture §1). Use the API client.
+src/features/lintdemo/network.ts:7:49: error eslint(no-restricted-properties): 'sendBeacon' is restricted from being used. help: No sendBeacon outside src/lib/api (frontend-architecture §1). Use the API client.
+src/features/lintdemo/fetch-t-m1.13.ts:2:27: error eslint(no-restricted-globals): Unexpected use of 'fetch'. No fetch outside src/lib/api (frontend-architecture §1). Use the API client. help: Use a local variable or function parameter instead of the restricted global.
+src/features/lintdemo/fetch-t-m1.13.ts:3:39: error eslint(no-restricted-properties): 'fetch' is restricted from being used. help: No fetch outside src/lib/api (frontend-architecture §1). Use the API client.
+src/features/lintdemo/fetch-t-m1.13.ts:4:47: error eslint(no-restricted-properties): 'fetch' is restricted from being used. help: No fetch outside src/lib/api (frontend-architecture §1). Use the API client.
+src/features/lintdemo/fetch-t-m1.13.ts:5:35: error eslint(no-restricted-properties): 'fetch' is restricted from being used. help: No fetch outside src/lib/api (frontend-architecture §1). Use the API client.
+src/features/lintdemo/fetch-t-m1.13.ts:6:60: error eslint(no-restricted-properties): 'fetch' is restricted from being used. help: No fetch outside src/lib/api (frontend-architecture §1). Use the API client.
+src/features/lintdemo/fetch-t-m1.13.ts:7:59: error eslint(no-restricted-properties): 'fetch' is restricted from being used. help: No fetch outside src/lib/api (frontend-architecture §1). Use the API client.
+src/features/lintdemo/fetch-t-m1.13.ts:8:67: error eslint(no-restricted-properties): 'fetch' is restricted from being used. help: No fetch outside src/lib/api (frontend-architecture §1). Use the API client.
+src/features/lintdemo/fetch-t-m1.13.ts:9:38: error eslint(no-restricted-properties): 'fetch' is restricted from being used. help: No fetch outside src/lib/api (frontend-architecture §1). Use the API client.
+src/features/lintdemo/fetch-t-m1.13.ts:11:11: error eslint(no-restricted-properties): 'fetch' is restricted from being used. help: No fetch outside src/lib/api (frontend-architecture §1). Use the API client.
+src/features/lintdemo/fetch-t-m1.13.ts:14:54: error eslint(no-restricted-properties): 'fetch' is restricted from being used. help: No fetch outside src/lib/api (frontend-architecture §1). Use the API client.
+[ELIFECYCLE] Command failed with exit code 1.
+exit: 1
+
+## 3. AFTER: the directive step on its own (pnpm lint stops at the first failing step)
+$ sh scripts/no-lint-directives.sh
+./src/features/lintdemo/directives.ts:2:// eslint-disable-next-line no-restricted-globals
+./src/features/lintdemo/directives.ts:4:export const b = fetch // oxlint-disable-line no-restricted-globals
+./src/features/lintdemo/directives.ts:5:/* oxlint-disable */
+./src/features/lintdemo/directives.ts:8: * eslint-disable no-restricted-globals
+no-lint-directives: lint-disable directives are not allowed outside src/lib/api; fix the code instead
+exit: 1
+
+## 4. AFTER: only the directive fixture left in src/features/: oxlint passes (the directives hide its three fetch uses), pnpm lint still fails (directive step)
+$ ./node_modules/.bin/oxlint --deny-warnings src/features/lintdemo
+exit: 0
+$ pnpm lint
+$ oxlint --deny-warnings && sh scripts/no-lint-directives.sh && stylelint "src/**/*.css" && prettier --check .
+./src/features/lintdemo/directives.ts:2:// eslint-disable-next-line no-restricted-globals
+./src/features/lintdemo/directives.ts:4:export const b = fetch // oxlint-disable-line no-restricted-globals
+./src/features/lintdemo/directives.ts:5:/* oxlint-disable */
+./src/features/lintdemo/directives.ts:8: * eslint-disable no-restricted-globals
+no-lint-directives: lint-disable directives are not allowed outside src/lib/api; fix the code instead
+[ELIFECYCLE] Command failed with exit code 1.
+exit: 1
+
+## 5. AFTER: the same code in src/lib/api/ passes (src/features fixtures removed; accepted forms added in src/features/)
+--- src/features/lintdemo/accepted.ts
+// T-M1.16 AC4 throwaway lint fixture (deleted after the demo): must pass. Prose may say we never disable eslint; a
+// string may hold 'eslint-disable'. Dynamic keys and Reflect.get stay accepted (DEC-079).
+export const word = 'eslint-disable'
+const key = ['XMLHttp', 'Request'].join('')
+export const dynamic = (window as unknown as Record<string, unknown>)[key]
+export const reflected = Reflect.get(window, 'fetch')
+export const notABeacon = { send: () => 0 }.send()
+--- src/lib/api/lintdemo/directives.ts
+// T-M1.16 AC4 throwaway lint fixture (deleted after the demo): disable directives, each hiding a restricted global
+// eslint-disable-next-line no-restricted-globals
+export const a = fetch
+export const b = fetch // oxlint-disable-line no-restricted-globals
+/* oxlint-disable */
+export const c = fetch
+/*
+ * eslint-disable no-restricted-globals
+ */
+--- src/lib/api/lintdemo/fetch-t-m1.13.ts
+// T-M1.16 AC4 throwaway lint fixture (deleted after the demo): the T-M1.13 fetch probes
+export const bare = () => fetch('/api/v1/meta')
+export const viaWindow = () => window.fetch('/api/v1/meta')
+export const viaGlobalThis = () => globalThis.fetch('/api/v1/meta')
+export const viaSelf = () => self.fetch('/api/v1/meta')
+export const viaGlobalThisWindow = () => globalThis.window.fetch('/api/v1/meta')
+export const viaDefaultView = () => document.defaultView!.fetch('/api/v1/meta')
+export const viaDefaultViewOptional = () => document.defaultView?.fetch('/api/v1/meta')
+export const computed = () => window['fetch']('/api/v1/meta')
+export function destructured() {
+  const { fetch: f } = window
+  return f
+}
+export const sequence = () => (0, globalThis.window).fetch('/api/v1/meta')
+--- src/lib/api/lintdemo/network.ts
+// T-M1.16 AC4 throwaway lint fixture (deleted after the demo): the listed network forms
+export const xhr = new XMLHttpRequest()
+export const xhrViaWindow = new window.XMLHttpRequest()
+export const events = new EventSource('/api/v1/events')
+export const eventsViaGlobalThis = new globalThis.EventSource('/api/v1/events')
+export const beacon = navigator.sendBeacon('/api/v1/log')
+export const beaconViaWindow = window.navigator.sendBeacon('/api/v1/log')
+src/features/lintdemo/accepted.ts
+src/lib/api/lintdemo/directives.ts
+src/lib/api/lintdemo/fetch-t-m1.13.ts
+src/lib/api/lintdemo/network.ts
+$ pnpm lint
+$ oxlint --deny-warnings && sh scripts/no-lint-directives.sh && stylelint "src/**/*.css" && prettier --check .
+All matched files use Prettier code style!
+exit: 0
+
+## 6. AFTER: the current code base (all fixtures removed) passes
+$ git status --short --untracked-files=all src
+ M src/app/routes/Page.module.css
+ M src/app/routes/RouteLoading.test.tsx
+ M src/app/routes/RouteLoading.tsx
+ M src/dev/DevUiPage.module.css
+ M src/dev/DevUiPage.tsx
+ M src/ui/SegmentedControl.tsx
+exit: 0
+$ pnpm lint
+$ oxlint --deny-warnings && sh scripts/no-lint-directives.sh && stylelint "src/**/*.css" && prettier --check .
+All matched files use Prettier code style!
+exit: 0

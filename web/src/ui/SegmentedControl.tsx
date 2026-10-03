@@ -26,6 +26,9 @@ export interface SegmentedControlProps<K extends string> {
  * shows a check icon **and** the accent-subtle background, so the state is not carried by colour alone. States: hover,
  * pressed, selected, focus-visible, disabled. Segment widths never change with the selection: the icon slot is always
  * laid out (hidden when not selected) and the label reserves its semibold width.
+ *
+ * Querying: the label text is in the DOM twice (the visible label and its hidden semibold copy), so `textContent` doubles
+ * it. Query segments by role and accessible name (`getByRole('radio', { name })`), which counts the label once.
  */
 export function SegmentedControl<K extends string>({
   label,
@@ -62,7 +65,6 @@ export function SegmentedControl<K extends string>({
               <Check
                 aria-hidden="true"
                 className={styles.check}
-                data-visible={isSelected || undefined}
                 style={isSelected ? undefined : { visibility: 'hidden' }}
               />
               <span className={styles.label}>

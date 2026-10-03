@@ -1,0 +1,101 @@
+{
+  "viewport": {
+    "width": 360,
+    "height": 740
+  },
+  "tolerancePx": 1,
+  "boxes": {
+    "Danh sách": [
+      {
+        "name": "Danh sách",
+        "x": 17,
+        "width": 132,
+        "checked": true,
+        "iconVisible": true
+      },
+      {
+        "name": "Tuần",
+        "x": 149,
+        "width": 88,
+        "checked": false,
+        "iconVisible": false
+      },
+      {
+        "name": "Tháng",
+        "x": 237,
+        "width": 100,
+        "checked": false,
+        "iconVisible": false
+      }
+    ],
+    "Tuần (after)": [
+      {
+        "name": "Danh sách",
+        "x": 17,
+        "width": 132,
+        "checked": false,
+        "iconVisible": false
+      },
+      {
+        "name": "Tuần",
+        "x": 149,
+        "width": 88,
+        "checked": true,
+        "iconVisible": true
+      },
+      {
+        "name": "Tháng",
+        "x": 237,
+        "width": 100,
+        "checked": false,
+        "iconVisible": false
+      }
+    ],
+    "Tháng (after)": [
+      {
+        "name": "Danh sách",
+        "x": 17,
+        "width": 132,
+        "checked": false,
+        "iconVisible": false
+      },
+      {
+        "name": "Tuần",
+        "x": 149,
+        "width": 88,
+        "checked": false,
+        "iconVisible": false
+      },
+      {
+        "name": "Tháng",
+        "x": 237,
+        "width": 100,
+        "checked": true,
+        "iconVisible": true
+      }
+    ],
+    "Danh sách (after)": [
+      {
+        "name": "Danh sách",
+        "x": 17,
+        "width": 132,
+        "checked": true,
+        "iconVisible": true
+      },
+      {
+        "name": "Tuần",
+        "x": 149,
+        "width": 88,
+        "checked": false,
+        "iconVisible": false
+      },
+      {
+        "name": "Tháng",
+        "x": 237,
+        "width": 100,
+        "checked": false,
+        "iconVisible": false
+      }
+    ]
+  }
+}

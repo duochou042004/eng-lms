@@ -46,7 +46,7 @@ RELEASE LOOP (owner LC + PO): release branch → G6 → master + tag → deploy 
 | Task end | Each merge | progress.json + handoff update, next packet ready |
 | Milestone gate | End of M1..M8 | QA regression report, retro, PO demo |
 | Replan | After each milestone | roadmap/backlog/risk updates |
-| Dependency batch | Monthly | `chore/deps-YYYY-MM` PR |
+| Dependency batch | Monthly | `chore/<task-id>-deps-YYYY-MM` PR (the batch gets a backlog task ID) |
 | Restore drill | Before each release | evidence/<release>/restore-drill.md |
 
 ## 4. Parallelism

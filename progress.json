@@ -16,7 +16,7 @@
       }
     ]
   },
-  "updatedAt": "2026-10-03T17:29:15Z",
+  "updatedAt": "2026-10-03T17:35:43Z",
   "updatedBy": "lead-coordinator (session 2026-10-03 #2, new device, Opus 5.5)",
   "phase": {
     "id": "P1",
@@ -32,13 +32,13 @@
   "currentTask": {
     "id": "T-M1.16",
     "title": "S4 polish from the T-M1.13 and T-M1.15 reviews; Maven 3.10.0 (DEC-079, DEC-082)",
-    "status": "ready",
+    "status": "in_review",
     "ownerRole": "FE",
     "branch": "feature/T-M1.16-review-polish",
     "packet": "docs/tasks/T-M1.16-review-polish.md",
     "pr": null,
-    "lastCommit": null,
-    "startedAt": null,
+    "lastCommit": "e4c11fb",
+    "startedAt": "2026-10-03T17:35:43Z",
     "entryGate": [
       "T-M1.13 merged — met (625c8fc)",
       "T-M1.15 merged — met (9a68eb7)",
@@ -46,9 +46,9 @@
       "PO start signal — met (DEC-084)"
     ],
     "nextSteps": [
-      "Merge the new-device setup record (docs/T-M1.16-new-device-setup)",
-      "Implement T-M1.16: FE items 1–5, 9 (frontend-implementer, own worktree); LC items 6–8",
-      "G3: QA + UX, then merge-gate"
+      "G3: QA-VERDICT (fresh qa-evaluator) + UX-REVIEW (ux-reviewer)",
+      "LC-APPROVED, merge-gate, gitlab-sync",
+      "M1 close-out (merge record, UX record, milestone status) and the T-M2.1 packet"
     ],
     "trace": [
       "DEC-079",
@@ -730,6 +730,11 @@
       "at": "2026-10-03T17:11:28Z",
       "actor": "lead-coordinator",
       "event": "New device set up by development-setup §0 (DEC-083): full gate PASS (12 steps, 194 s; backend 97, web 86, E2E 86 passed), englms:dev image built, gitlab-sync OK. PO start signal for T-M1.16 (DEC-084)."
+    },
+    {
+      "at": "2026-10-03T17:35:43Z",
+      "actor": "lead-coordinator",
+      "event": "T-M1.16 implemented (FE items 1–5, 9; LC items 6–8); gate PASS (12 steps). PR opened for G3."
     }
   ]
 }

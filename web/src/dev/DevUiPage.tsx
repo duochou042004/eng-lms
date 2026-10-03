@@ -46,7 +46,10 @@ function SegmentedSamples() {
         onChange={() => {}}
         isDisabled
       />
-      <LanguageSwitcher />
+      {/* Not stretched to the column (whose width follows the UI language), so its segments keep their size. */}
+      <div className={styles.fit}>
+        <LanguageSwitcher />
+      </div>
     </Stack>
   )
 }

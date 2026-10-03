@@ -19,13 +19,33 @@
     ],
     "no-restricted-globals": [
       "error",
-      { "name": "fetch", "message": "No fetch outside src/lib/api (frontend-architecture §1). Use the API client." }
+      { "name": "fetch", "message": "No fetch outside src/lib/api (frontend-architecture §1). Use the API client." },
+      {
+        "name": "XMLHttpRequest",
+        "message": "No XMLHttpRequest outside src/lib/api (frontend-architecture §1). Use the API client."
+      },
+      {
+        "name": "EventSource",
+        "message": "No EventSource outside src/lib/api (frontend-architecture §1). Use the API client."
+      }
     ],
     "no-restricted-properties": [
       "error",
       {
         "property": "fetch",
         "message": "No fetch outside src/lib/api (frontend-architecture §1). Use the API client."
+      },
+      {
+        "property": "XMLHttpRequest",
+        "message": "No XMLHttpRequest outside src/lib/api (frontend-architecture §1). Use the API client."
+      },
+      {
+        "property": "EventSource",
+        "message": "No EventSource outside src/lib/api (frontend-architecture §1). Use the API client."
+      },
+      {
+        "property": "sendBeacon",
+        "message": "No sendBeacon outside src/lib/api (frontend-architecture §1). Use the API client."
       }
     ]
   },

@@ -49,6 +49,19 @@ describe('RouteLoading (T-M1.9 AC4, AC6 N3)', () => {
     expect(toolbar.compareDocumentPosition(title!) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
   })
 
+  it.each(['/', '/tutor'])(
+    'sizes the switcher block on %s from the switcher’s own row: both endonyms, hidden (T-M1.16 AC1)',
+    (path) => {
+      renderLoading(path)
+      const switcher = screen.getByTestId('route-loading-switcher')
+      const sizer = switcher.querySelector('.switcherSizer')!
+      expect(sizer).toHaveAttribute('aria-hidden', 'true')
+      expect([...sizer.children].map((c) => c.textContent)).toEqual(['Tiếng Việt', 'English'])
+      const [block] = within(switcher).getAllByTestId('skeleton')
+      expect(block).toHaveStyle({ inlineSize: '100%', blockSize: 'var(--size-control-md)' })
+    },
+  )
+
   it.each(['/khong-co', '/tutorial', '/tutor', '/student/x'])('has no landing toolbar row on %s', (path) => {
     renderLoading(path)
     expect(screen.queryByTestId('route-loading-toolbar')).not.toBeInTheDocument()

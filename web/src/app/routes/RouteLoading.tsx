@@ -1,10 +1,29 @@
 import { useTranslation } from 'react-i18next'
 import { useLocation } from 'react-router'
+import { LOCALES } from '../../lib/i18n'
 import { DelayedSkeleton, Skeleton, Stack } from '../../ui'
 import shellStyles from '../shells/ShellLayout.module.css'
 import styles from './Page.module.css'
 
 const SHELL_PATH = /^\/(tutor|student)(\/|$)/
+
+/**
+ * A 44 px block as wide as the language switcher (T-M1.16): an invisible, zero-height row of its endonyms in the
+ * segments' own chrome (see `.switcherSizer`) sets the inline size; the block fills it.
+ */
+function SwitcherSkeleton() {
+  const { t } = useTranslation()
+  return (
+    <div className={styles.switcherSkeleton} data-testid="route-loading-switcher">
+      <div aria-hidden="true" className={styles.switcherSizer}>
+        {LOCALES.map((locale) => (
+          <span key={locale}>{t(`language.${locale}`)}</span>
+        ))}
+      </div>
+      <Skeleton shape="block" inlineSize="100%" blockSize="var(--size-control-md)" />
+    </div>
+  )
+}
 
 /**
  * The page part: a PageHeader-shaped title line and a content block. With `toolbar` (the landing page), first a 44 px,
@@ -15,7 +34,7 @@ function PageSkeleton({ toolbar = false }: { toolbar?: boolean }) {
     <Stack gap={6}>
       {toolbar ? (
         <div className={styles.toolbar} data-testid="route-loading-toolbar">
-          <Skeleton shape="block" inlineSize="13rem" blockSize="var(--size-control-md)" />
+          <SwitcherSkeleton />
         </div>
       ) : null}
       <div className={styles.headerSkeleton} data-testid="route-loading-title">
@@ -46,7 +65,7 @@ export function RouteLoading() {
                 <Skeleton inlineSize="4.5em" />
                 <Skeleton inlineSize="8em" />
               </div>
-              <Skeleton shape="block" inlineSize="13rem" blockSize="var(--size-control-md)" />
+              <SwitcherSkeleton />
             </div>
             <div className={shellStyles.main}>
               <PageSkeleton />
