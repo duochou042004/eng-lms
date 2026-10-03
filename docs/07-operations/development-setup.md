@@ -10,14 +10,14 @@ Every step is idempotent; check each one with the command after `→`.
 1. **Toolchain present:** `source ~/.sdkman/bin/sdkman-init.sh && sdk env install && sdk default java 25.0.4-tem && sdk default springboot 4.1.0`
    (`.sdkmanrc`; the defaults matter because `sdkman_auto_env` may be off) → `java -version` **in a new shell** shows 25.0.4;
    `source ~/.nvm/nvm.sh && nvm install && corepack enable` (`.nvmrc`: Node 24.21.0; pnpm 12.6.0 from `packageManager`) → `pnpm -v`;
-   Podman 5.8.x rootless → `podman info --format '{{.Host.Security.Rootless}}'` = `true`, and its compose provider (`podman-compose`) → `podman compose version`;
+   Podman 5.7+ rootless (5.8.6 on the first machine, 5.7.0 from Ubuntu 26.04 on the second, DEC-084) → `podman info --format '{{.Host.Security.Rootless}}'` = `true`, and its compose provider (`podman-compose`) → `podman compose version`;
    `jq`, `curl` (E2E readiness probe), `python3` with `jsonschema` (check-docs), `gh`, `glab`, `git` (`shellcheck` optional).
    If SDKMAN, nvm, Podman, `podman-compose` or any other tool is missing, ask the PO to install it: agents don't run `sudo` or download-and-run installers.
 2. **Accounts (PO):** `gh auth status` (repo, workflow scopes) and `glab auth status` (gitlab.com) must show `duochou042004`; git identity
    (`git config user.name` / `user.email`) as on GitHub; git push credentials for both hosts (the PO runs `gh auth setup-git` and sets glab's helper, e.g.
-   `git config --global credential.https://gitlab.com.helper '!glab auth git-credential'`) → `git config --get-regexp '^credential\.'`. Agents never enter credentials.
+   `git config --global credential.https://gitlab.com.helper '!glab auth git-credential'`; with a snap `glab`, give its full path `!/snap/bin/glab`) → `git config --get-regexp '^credential\.'`. Agents never enter credentials.
 3. **Clone setup:** `./scripts/install-hooks.sh` → `git config --get core.hooksPath` = `scripts/hooks`; `git remote add gitlab https://gitlab.com/duochou042004/eng-lms.git`
-   (if missing) → `git remote -v`; `cp .env.example .env` (dev-only values) → `test -f .env`.
+   (if missing) → `git remote -v`; `cp .env.example .env` (dev-only values; **the PO runs it**: the agent deny rule `Read(./.env.*)` blocks the copy) → `test -f .env`.
 4. **Podman socket (once per machine, as DEC-044):** `systemctl --user enable --now podman.socket` → `source scripts/env.sh` prints `DOCKER_HOST=…`.
 5. **Dev database:** `./scripts/dev-up.sh` (pulls the digest-pinned `postgres:18`, waits for health) → `podman ps` shows it healthy.
 6. **Installs:** `(cd web && pnpm install --frozen-lockfile)`, `(cd e2e && pnpm install --frozen-lockfile && pnpm browsers)`, `(cd qa && pnpm install --frozen-lockfile)`.

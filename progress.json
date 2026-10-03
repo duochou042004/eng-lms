@@ -3,7 +3,7 @@
   "project": {
     "name": "Eng-LMS",
     "description": "Private 1:1 teaching workspace for a single English tutor and their students (flexible LMS; not a school/centre LMS, SaaS, marketplace, booking, payment, chat, conferencing, Drive clone or AI tutor).",
-    "repoLocal": "/home/kali/App_sources/Eng-LMS",
+    "repoLocal": "/home/kali/App_sources/eng-lms",
     "repoRemote": "https://github.com/duochou042004/eng-lms",
     "sources": [
       {
@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-10-03T09:50:42Z",
-  "updatedBy": "lead-coordinator (session 2026-10-03 #1, Opus 5.5)",
+  "updatedAt": "2026-10-03T17:11:28Z",
+  "updatedBy": "lead-coordinator (session 2026-10-03 #2, new device, Opus 5.5)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -43,16 +43,18 @@
       "T-M1.13 merged — met (625c8fc)",
       "T-M1.15 merged — met (9a68eb7)",
       "Packet G0 — met (PR #40, a5d6ed5; DOCS-REVIEW round 4 PASS)",
-      "PO start signal — pending"
+      "PO start signal — met (DEC-084)"
     ],
     "nextSteps": [
-      "New device: run development-setup §0 and verify with the full gate",
-      "PO start signal for T-M1.16, then implement (FE items 1–5, 9; LC items 6–8)"
+      "Merge the new-device setup record (docs/T-M1.16-new-device-setup)",
+      "Implement T-M1.16: FE items 1–5, 9 (frontend-implementer, own worktree); LC items 6–8",
+      "G3: QA + UX, then merge-gate"
     ],
     "trace": [
       "DEC-079",
       "DEC-082",
-      "DEC-083"
+      "DEC-083",
+      "DEC-084"
     ]
   },
   "nextTask": {
@@ -255,7 +257,8 @@
       "DEC-080",
       "DEC-081",
       "DEC-082",
-      "DEC-083"
+      "DEC-083",
+      "DEC-084"
     ],
     "pendingPO": [
       "OQ-03",
@@ -403,21 +406,29 @@
       "status": "approved",
       "at": null,
       "ref": "DEC-083"
+    },
+    {
+      "what": "T-M1.16 start signal",
+      "by": "PO",
+      "status": "approved",
+      "at": "2026-10-03T17:11:28Z",
+      "ref": "DEC-084"
     }
   ],
   "environment": {
-    "jdk": "Temurin 25.0.4 (SDKMAN; source ~/.sdkman/bin/sdkman-init.sh)",
-    "springBootCli": "4.1.0 (Initializr default Boot 4.1.1)",
-    "buildTool": "Maven Wrapper (no global mvn/gradle installed)",
+    "jdk": "Temurin 25.0.4 (SDKMAN; source ~/.sdkman/bin/sdkman-init.sh; sdk default set)",
+    "springBootCli": "4.1.0 (sdk default set)",
+    "buildTool": "Maven Wrapper 3.9.16 (no global mvn/gradle installed)",
     "node": "24.21.0 via nvm (source ~/.nvm/nvm.sh; not on non-interactive PATH)",
     "pnpm": "12.6.0 (corepack 0.36.0)",
-    "podman": "5.8.6 rootless; the user podman.socket is ENABLED (DEC-044). Testcontainers works with DOCKER_HOST=unix://$XDG_RUNTIME_DIR/podman/podman.sock and TESTCONTAINERS_RYUK_DISABLED=true (83/83 backend tests locally at T-M1.5). Images: podman build --format docker -f deploy/Containerfile",
-    "gh": "2.101.0, authenticated as duochou042004 (scopes: repo, workflow, read:org, gist)",
-    "host": "Kali Linux 7.1.5, 16 cores, 22 GB RAM, 92 GB free",
-    "python": "3.14.7 with jsonschema 4.26.0 (used by scripts/check_docs.py)",
-    "githubActionsStorage": "PO freed the account's artifact storage on 2026-09-26; artifacts are kept 5 days (DEC-056).",
-    "gitlab": "Private mirror gitlab.com/duochou042004/eng-lms (project 86941168), remote 'gitlab', glab 1.118.0 authenticated as duochou042004; GitLab CI stores reports 5 days (DEC-060). Sync: ./scripts/gitlab-sync.sh",
-    "note": "Recorded on the previous device (Kali, 2026-09/10). The PO moves development to a new device (DEC-083): re-verify every entry there with development-setup §0 and update this section."
+    "podman": "5.7.0 rootless (Ubuntu 26.04 package), podman-compose 1.5.0; the user podman.socket is ENABLED (DEC-044, DEC-083). Testcontainers via scripts/env.sh (DOCKER_HOST=unix://$XDG_RUNTIME_DIR/podman/podman.sock, TESTCONTAINERS_RYUK_DISABLED=true). Image englms:dev builds (416 MB)",
+    "gh": "2.46.0, authenticated as duochou042004 (scopes: repo, workflow, read:org, gist); git credential helper for github.com",
+    "host": "Ubuntu 26.04.1 LTS (kernel 7.0.0), 16 cores, 22 GB RAM, 114 GB free",
+    "python": "3.14.4 with jsonschema 4.19.2 (used by scripts/check_docs.py)",
+    "playwright": "Chrome Headless Shell 153.0.8010.12 (pnpm browsers in e2e)",
+    "githubActionsStorage": "PO freed the account artifact storage on 2026-09-26; artifacts are kept 5 days (DEC-056).",
+    "gitlab": "Private mirror gitlab.com/duochou042004/eng-lms (project 86941168), remote gitlab, glab 1.120.0 (snap) authenticated as duochou042004; git credential helper !/snap/bin/glab auth git-credential; GitLab CI stores reports 5 days (DEC-060). Sync: ./scripts/gitlab-sync.sh",
+    "note": "Verified on the new device on 2026-10-03 with development-setup §0 (DEC-083): ./scripts/gate.sh PASS."
   },
   "history": [
     {
@@ -714,6 +725,11 @@
       "at": "2026-10-03T09:45:33Z",
       "actor": "lead-coordinator",
       "event": "PO: T-M1.10 does not block closing M1; development moves to a new device (DEC-083). New-machine checklist in development-setup §0; handoff for the new device."
+    },
+    {
+      "at": "2026-10-03T17:11:28Z",
+      "actor": "lead-coordinator",
+      "event": "New device set up by development-setup §0 (DEC-083): full gate PASS (12 steps, 194 s; backend 97, web 86, E2E 86 passed), englms:dev image built, gitlab-sync OK. PO start signal for T-M1.16 (DEC-084)."
     }
   ]
 }
