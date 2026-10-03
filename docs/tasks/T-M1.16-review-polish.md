@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Milestone | M1 |
-| Status | **ready** (G0: DOCS-REVIEW on the packet PR, recorded in `evidence/T-M1.16/review/docs.md`; dependencies merged); **the PO start signal is still needed** |
+| Status | **in_progress** (G0: DOCS-REVIEW on the packet PR, recorded in `evidence/T-M1.16/review/docs.md`; dependencies merged; PO start signal DEC-084) |
 | Owner role | FE (frontend-implementer) for items 1–5 and 9; LC for items 6 and 8 (harness, docs) and, by the exception in DEC-082, for the one-line item 7 in `backend/.mvn/wrapper/` |
 | Branch | `feature/T-M1.16-review-polish` (from `develop`) |
 | Depends on | T-M1.13 (`625c8fc`), T-M1.15 (`9a68eb7`) merged |
