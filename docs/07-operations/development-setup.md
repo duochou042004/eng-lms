@@ -11,7 +11,7 @@ Every step is idempotent; check each one with the command after `→`.
    (`.sdkmanrc`; the defaults matter because `sdkman_auto_env` may be off) → `java -version` **in a new shell** shows 25.0.4;
    `source ~/.nvm/nvm.sh && nvm install && corepack enable` (`.nvmrc`: Node 24.21.0; pnpm 12.6.0 from `packageManager`) → `pnpm -v`;
    Podman 5.7+ rootless (5.8.6 on the first machine, 5.7.0 from Ubuntu 26.04 on the second, DEC-084) → `podman info --format '{{.Host.Security.Rootless}}'` = `true`, and its compose provider (`podman-compose`) → `podman compose version`;
-   `jq`, `curl` (E2E readiness probe), `python3` with `jsonschema` (check-docs), `gh`, `glab`, `git` (`shellcheck` optional).
+   `jq`, `curl` (E2E readiness probe), `python3` with `jsonschema` (check-docs), `gh` **≥ 2.101** (merge-gate needs `gh pr checks --json`; distribution packages can be older, e.g. Ubuntu 26.04's 2.46.0, so use GitHub's apt repository, DEC-084), `glab`, `git` (`shellcheck` optional).
    If SDKMAN, nvm, Podman, `podman-compose` or any other tool is missing, ask the PO to install it: agents don't run `sudo` or download-and-run installers.
 2. **Accounts (PO):** `gh auth status` (repo, workflow scopes) and `glab auth status` (gitlab.com) must show `duochou042004`; git identity
    (`git config user.name` / `user.email`) as on GitHub; git push credentials for both hosts (the PO runs `gh auth setup-git` and sets glab's helper, e.g.

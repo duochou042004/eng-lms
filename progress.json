@@ -16,7 +16,7 @@
       }
     ]
   },
-  "updatedAt": "2026-10-03T17:11:28Z",
+  "updatedAt": "2026-10-03T17:29:15Z",
   "updatedBy": "lead-coordinator (session 2026-10-03 #2, new device, Opus 5.5)",
   "phase": {
     "id": "P1",
@@ -422,7 +422,7 @@
     "node": "24.21.0 via nvm (source ~/.nvm/nvm.sh; not on non-interactive PATH)",
     "pnpm": "12.6.0 (corepack 0.36.0)",
     "podman": "5.7.0 rootless (Ubuntu 26.04 package), podman-compose 1.5.0; the user podman.socket is ENABLED (DEC-044, DEC-083). Testcontainers via scripts/env.sh (DOCKER_HOST=unix://$XDG_RUNTIME_DIR/podman/podman.sock, TESTCONTAINERS_RYUK_DISABLED=true). Image englms:dev builds (416 MB)",
-    "gh": "2.46.0, authenticated as duochou042004 (scopes: repo, workflow, read:org, gist); git credential helper for github.com",
+    "gh": "2.102.0 (GitHub apt repository; Ubuntu 2.46.0 lacks gh pr checks --json), authenticated as duochou042004 (scopes: repo, workflow, read:org, gist); git credential helper for github.com",
     "host": "Ubuntu 26.04.1 LTS (kernel 7.0.0), 16 cores, 22 GB RAM, 114 GB free",
     "python": "3.14.4 with jsonschema 4.19.2 (used by scripts/check_docs.py)",
     "playwright": "Chrome Headless Shell 153.0.8010.12 (pnpm browsers in e2e)",
