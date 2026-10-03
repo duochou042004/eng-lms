@@ -1,0 +1,79 @@
+# T-M1.16 AC2 (item 2): the /dev/ui LanguageSwitcher example (dev build) at 360/768/1280: a UI language change vi -> en -> vi
+# 2026-10-03T17:25:49Z at e855d18 + working tree; vite dev server on :5173 (started for this run, stopped afterwards)
+# Per segment: offset from the group's inline start / inline size, in px (records/<project>/t-m1.16-ac2-devui-switcher.json):
+#   phone-small (360): vi [Tiếng Việt 1/131, English 132/105]  en [Tiếng Việt 1/131, English 132/105]  vi again [Tiếng Việt 1/131, English 132/105]
+#   tablet (768): vi [Tiếng Việt 1/131, English 132/105]  en [Tiếng Việt 1/131, English 132/105]  vi again [Tiếng Việt 1/131, English 132/105]
+#   laptop (1280): vi [Tiếng Việt 1/131, English 132/105]  en [Tiếng Việt 1/131, English 132/105]  vi again [Tiếng Việt 1/131, English 132/105]
+
+## AFTER (the example in a flex row, sizes to its content)
+$ ENGLMS_TASK=T-M1.16 E2E_BASE_URL=http://localhost:5173 pnpm exec playwright test tests/polish.spec.ts -g "dev/ui" --project=phone-small --project=tablet --project=laptop
+
+Running 9 tests using 8 workers
+
+  ✓  1 [phone-small] › tests/polish.spec.ts:147:3 › AC2 (/dev/ui, dev build) [vi]: the 3-option example keeps its segment boundaries (8.2s)
+  ✓  5 [phone-small] › tests/polish.spec.ts:147:3 › AC2 (/dev/ui, dev build) [en]: the 3-option example keeps its segment boundaries (8.2s)
+  ✓  2 [tablet] › tests/polish.spec.ts:147:3 › AC2 (/dev/ui, dev build) [en]: the 3-option example keeps its segment boundaries (8.3s)
+  ✓  6 [tablet] › tests/polish.spec.ts:147:3 › AC2 (/dev/ui, dev build) [vi]: the 3-option example keeps its segment boundaries (8.4s)
+  ✓  4 [laptop] › tests/polish.spec.ts:147:3 › AC2 (/dev/ui, dev build) [vi]: the 3-option example keeps its segment boundaries (8.4s)
+  ✓  8 [tablet] › tests/polish.spec.ts:184:1 › T-M1.16 AC2 (/dev/ui, dev build): a UI language change keeps the LanguageSwitcher example's segments (8.3s)
+  ✓  7 [phone-small] › tests/polish.spec.ts:184:1 › T-M1.16 AC2 (/dev/ui, dev build): a UI language change keeps the LanguageSwitcher example's segments (8.3s)
+  ✓  3 [laptop] › tests/polish.spec.ts:147:3 › AC2 (/dev/ui, dev build) [en]: the 3-option example keeps its segment boundaries (8.8s)
+  ✓  9 [laptop] › tests/polish.spec.ts:184:1 › T-M1.16 AC2 (/dev/ui, dev build): a UI language change keeps the LanguageSwitcher example's segments (2.7s)
+
+  9 passed (12.6s)
+exit: 0
+
+## BEFORE (develop's web/src/dev/DevUiPage.tsx put back for this run only, then restored; no ENGLMS_TASK, so no records)
+$ E2E_BASE_URL=http://localhost:5173 pnpm exec playwright test tests/polish.spec.ts -g "dev/ui" --project=phone-small --project=tablet --project=laptop
+Running 9 tests using 8 workers
+  ✓  2 [phone-small] › tests/polish.spec.ts:147:3 › AC2 (/dev/ui, dev build) [en]: the 3-option example keeps its segment boundaries (7.1s)
+  ✓  3 [tablet] › tests/polish.spec.ts:147:3 › AC2 (/dev/ui, dev build) [en]: the 3-option example keeps its segment boundaries (7.6s)
+  ✘  4 [phone-small] › tests/polish.spec.ts:184:1 › T-M1.16 AC2 (/dev/ui, dev build): a UI language change keeps the LanguageSwitcher example's segments (7.2s)
+  ✓  5 [tablet] › tests/polish.spec.ts:147:3 › AC2 (/dev/ui, dev build) [vi]: the 3-option example keeps its segment boundaries (8.1s)
+  ✓  8 [laptop] › tests/polish.spec.ts:147:3 › AC2 (/dev/ui, dev build) [en]: the 3-option example keeps its segment boundaries (8.1s)
+  ✘  1 [tablet] › tests/polish.spec.ts:184:1 › T-M1.16 AC2 (/dev/ui, dev build): a UI language change keeps the LanguageSwitcher example's segments (7.6s)
+  ✓  7 [laptop] › tests/polish.spec.ts:147:3 › AC2 (/dev/ui, dev build) [vi]: the 3-option example keeps its segment boundaries (8.2s)
+  ✓  6 [phone-small] › tests/polish.spec.ts:147:3 › AC2 (/dev/ui, dev build) [vi]: the 3-option example keeps its segment boundaries (8.5s)
+  ✘  9 [laptop] › tests/polish.spec.ts:184:1 › T-M1.16 AC2 (/dev/ui, dev build): a UI language change keeps the LanguageSwitcher example's segments (2.7s)
+  1) [phone-small] › tests/polish.spec.ts:184:1 › T-M1.16 AC2 (/dev/ui, dev build): a UI language change keeps the LanguageSwitcher example's segments 
+    Error: inline size of segment 0
+    expect(received).toBeLessThanOrEqual(expected)
+    Expected: <= 1
+    Received:    24.5
+      216 |     expect(after).toHaveLength(vi.length)
+      217 |     vi.forEach((b, i) => {
+    > 218 |       expect(Math.abs(after[i]!.width - b.width), `inline size of segment ${i}`).toBeLessThanOrEqual(1)
+          |                                                                                  ^
+      219 |       expect(
+      220 |         Math.abs(after[i]!.offsetPx - b.offsetPx),
+      221 |         `offset of segment ${i} from the group start`,
+  2) [tablet] › tests/polish.spec.ts:184:1 › T-M1.16 AC2 (/dev/ui, dev build): a UI language change keeps the LanguageSwitcher example's segments 
+    Error: inline size of segment 0
+    expect(received).toBeLessThanOrEqual(expected)
+    Expected: <= 1
+    Received:    24.5
+      216 |     expect(after).toHaveLength(vi.length)
+      217 |     vi.forEach((b, i) => {
+    > 218 |       expect(Math.abs(after[i]!.width - b.width), `inline size of segment ${i}`).toBeLessThanOrEqual(1)
+          |                                                                                  ^
+      219 |       expect(
+      220 |         Math.abs(after[i]!.offsetPx - b.offsetPx),
+      221 |         `offset of segment ${i} from the group start`,
+  3) [laptop] › tests/polish.spec.ts:184:1 › T-M1.16 AC2 (/dev/ui, dev build): a UI language change keeps the LanguageSwitcher example's segments 
+    Error: inline size of segment 0
+    expect(received).toBeLessThanOrEqual(expected)
+    Expected: <= 1
+    Received:    24.5
+      216 |     expect(after).toHaveLength(vi.length)
+      217 |     vi.forEach((b, i) => {
+    > 218 |       expect(Math.abs(after[i]!.width - b.width), `inline size of segment ${i}`).toBeLessThanOrEqual(1)
+          |                                                                                  ^
+      219 |       expect(
+      220 |         Math.abs(after[i]!.offsetPx - b.offsetPx),
+      221 |         `offset of segment ${i} from the group start`,
+  3 failed
+    [phone-small] › tests/polish.spec.ts:184:1 › T-M1.16 AC2 (/dev/ui, dev build): a UI language change keeps the LanguageSwitcher example's segments 
+    [tablet] › tests/polish.spec.ts:184:1 › T-M1.16 AC2 (/dev/ui, dev build): a UI language change keeps the LanguageSwitcher example's segments 
+    [laptop] › tests/polish.spec.ts:184:1 › T-M1.16 AC2 (/dev/ui, dev build): a UI language change keeps the LanguageSwitcher example's segments 
+  6 passed (12.0s)
+exit: 1

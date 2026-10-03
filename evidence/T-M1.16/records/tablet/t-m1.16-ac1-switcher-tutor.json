@@ -1,0 +1,27 @@
+{
+  "viewport": {
+    "width": 768,
+    "height": 1024
+  },
+  "skeleton": {
+    "x": 514,
+    "y": 12,
+    "width": 238,
+    "height": 44
+  },
+  "switcher": {
+    "x": 514,
+    "y": 12,
+    "width": 238,
+    "height": 46
+  },
+  "inlineSizeDeltaPx": 0,
+  "inlineSizeLimitPx": 8,
+  "inlineEndDeltaPx": 0,
+  "inlineEndLimitPx": 1,
+  "layoutShift": {
+    "total": 0.00010068342089653015,
+    "entries": 1
+  },
+  "clsLimit": 0.05
+}

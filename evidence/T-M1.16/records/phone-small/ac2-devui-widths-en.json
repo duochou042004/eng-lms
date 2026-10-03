@@ -1,0 +1,101 @@
+{
+  "viewport": {
+    "width": 360,
+    "height": 740
+  },
+  "tolerancePx": 1,
+  "boxes": {
+    "List": [
+      {
+        "name": "List",
+        "x": 17,
+        "width": 78,
+        "checked": true,
+        "iconVisible": true
+      },
+      {
+        "name": "Week",
+        "x": 95,
+        "width": 94,
+        "checked": false,
+        "iconVisible": false
+      },
+      {
+        "name": "Month",
+        "x": 189,
+        "width": 99,
+        "checked": false,
+        "iconVisible": false
+      }
+    ],
+    "Week (after)": [
+      {
+        "name": "List",
+        "x": 17,
+        "width": 78,
+        "checked": false,
+        "iconVisible": false
+      },
+      {
+        "name": "Week",
+        "x": 95,
+        "width": 94,
+        "checked": true,
+        "iconVisible": true
+      },
+      {
+        "name": "Month",
+        "x": 189,
+        "width": 99,
+        "checked": false,
+        "iconVisible": false
+      }
+    ],
+    "Month (after)": [
+      {
+        "name": "List",
+        "x": 17,
+        "width": 78,
+        "checked": false,
+        "iconVisible": false
+      },
+      {
+        "name": "Week",
+        "x": 95,
+        "width": 94,
+        "checked": false,
+        "iconVisible": false
+      },
+      {
+        "name": "Month",
+        "x": 189,
+        "width": 99,
+        "checked": true,
+        "iconVisible": true
+      }
+    ],
+    "List (after)": [
+      {
+        "name": "List",
+        "x": 17,
+        "width": 78,
+        "checked": true,
+        "iconVisible": true
+      },
+      {
+        "name": "Week",
+        "x": 95,
+        "width": 94,
+        "checked": false,
+        "iconVisible": false
+      },
+      {
+        "name": "Month",
+        "x": 189,
+        "width": 99,
+        "checked": false,
+        "iconVisible": false
+      }
+    ]
+  }
+}
