@@ -193,6 +193,11 @@ I ran `./scripts/check-docs.sh` on a `git archive` export of `origin/docs/T-M1.1
   - The two DEC-083 approvals have `"at": null`; other PO approvals carry a timestamp.
 - **F-9 (S4), step 7:** the `englms:dev` image build isn't needed by `gate.sh`. That's fine as a Containerfile check, but label it optional or "not part of the gate". Also, the session's auto-memory rule (short sessions) lives under `~/.claude` and won't move to the new machine. The handoff gotcha already copies it, which is good.
 
-No S1 or S2. Under quality-gates.md, S3 findings allow the merge if they are fixed or deferred to a follow-up task. All of them are one-line edits to one file, so fixing F-1 to F-5 in this PR, before leaving the old machine, is cheapest. If they are deferred, the prompt's "Fix setup-doc gaps you hit in the same PR" needs a DEC or backlog reference. As instructed, I didn't write the `evidence/T-M1.16/review/docs.md` file; this message is the review record.
+
+DOCS-REVIEW T-M1.16: PASS
+
+### PR #41 round 2, head `6d74ef6`: PASS
+
+The same reviewer verified F-1..F-9 fixed (ref-based reads; check-docs PASS on an export) and agreed with `at: null` on the DEC-083 approvals. New S4s, fixed in the next commit: N-1 the prompt marks the image step optional; N-2 this record drops the reviewer's 'didn't write the file' remark and adds this round.
 
 DOCS-REVIEW T-M1.16: PASS
