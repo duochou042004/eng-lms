@@ -1,26 +1,30 @@
 # Development Setup
 
-> Verified against this machine on 2026-09-25 (tech-stack.md §1). Commands marked *(M1)* start working once their M1 packet has merged.
+> §1–§5 were verified on the first development machine on 2026-09-25 (tech-stack.md §1); on a new machine run §0 first. Commands marked *(M1)* start working once their M1 packet has merged.
 
 ## 0. New machine checklist (DEC-083)
 
 The PO clones the repository; the agent does the rest, in this order, and stops to ask the PO for anything that needs `sudo`, an account or a credential.
 Every step is idempotent; check each one with the command after `→`.
 
-1. **Toolchain present:** `source ~/.sdkman/bin/sdkman-init.sh && sdk env install` (`.sdkmanrc`: Java 25.0.4-tem, Boot CLI 4.1.0) → `java -version`;
+1. **Toolchain present:** `source ~/.sdkman/bin/sdkman-init.sh && sdk env install && sdk default java 25.0.4-tem && sdk default springboot 4.1.0`
+   (`.sdkmanrc`; the defaults matter because `sdkman_auto_env` may be off) → `java -version` **in a new shell** shows 25.0.4;
    `source ~/.nvm/nvm.sh && nvm install && corepack enable` (`.nvmrc`: Node 24.21.0; pnpm 12.6.0 from `packageManager`) → `pnpm -v`;
-   Podman 5.8.x rootless with `podman compose` → `podman info --format '{{.Host.Security.Rootless}}'`; `jq`, `python3` with `jsonschema` (check-docs), `gh`, `glab`, `git`.
-   Missing system packages: ask the PO (no `sudo` for agents).
+   Podman 5.8.x rootless → `podman info --format '{{.Host.Security.Rootless}}'` = `true`, and its compose provider (`podman-compose`) → `podman compose version`;
+   `jq`, `curl` (E2E readiness probe), `python3` with `jsonschema` (check-docs), `gh`, `glab`, `git` (`shellcheck` optional).
+   If SDKMAN, nvm, Podman, `podman-compose` or any other tool is missing, ask the PO to install it: agents don't run `sudo` or download-and-run installers.
 2. **Accounts (PO):** `gh auth status` (repo, workflow scopes) and `glab auth status` (gitlab.com) must show `duochou042004`; git identity
-   (`git config user.name` / `user.email`) as on GitHub. Agents never enter credentials.
-3. **Clone setup:** `./scripts/install-hooks.sh` → `git config core.hooksPath` = `scripts/hooks`; `git remote add gitlab https://gitlab.com/duochou042004/eng-lms.git`
+   (`git config user.name` / `user.email`) as on GitHub; git push credentials for both hosts (the PO runs `gh auth setup-git` and sets glab's helper, e.g.
+   `git config --global credential.https://gitlab.com.helper '!glab auth git-credential'`) → `git config --get-regexp '^credential\.'`. Agents never enter credentials.
+3. **Clone setup:** `./scripts/install-hooks.sh` → `git config --get core.hooksPath` = `scripts/hooks`; `git remote add gitlab https://gitlab.com/duochou042004/eng-lms.git`
    (if missing) → `git remote -v`; `cp .env.example .env` (dev-only values) → `test -f .env`.
 4. **Podman socket (once per machine, as DEC-044):** `systemctl --user enable --now podman.socket` → `source scripts/env.sh` prints `DOCKER_HOST=…`.
 5. **Dev database:** `./scripts/dev-up.sh` (pulls the digest-pinned `postgres:18`, waits for health) → `podman ps` shows it healthy.
 6. **Installs:** `(cd web && pnpm install --frozen-lockfile)`, `(cd e2e && pnpm install --frozen-lockfile && pnpm browsers)`, `(cd qa && pnpm install --frozen-lockfile)`.
-7. **Image:** `podman build --format docker -f deploy/Containerfile -t englms:dev .` → `podman images englms`.
-8. **Verify:** `./scripts/gate.sh` (all steps green, including Testcontainers and E2E) and `./scripts/gitlab-sync.sh` (mirror reachable). Record the versions in
-   `progress.json` `environment` and the result in the handoff.
+   If Chromium fails to launch for missing system libraries, ask the PO to run `(cd e2e && pnpm exec playwright install-deps chromium)` (needs `sudo`).
+7. **Image (optional; not part of the gate, checks the Containerfile):** `podman build --format docker -f deploy/Containerfile -t englms:dev .` → `podman images englms`.
+8. **Verify:** `./scripts/gate.sh` (all steps green, including Testcontainers and E2E) and `./scripts/gitlab-sync.sh` (mirror reachable). Record the versions and the
+   host in `progress.json` `environment`, the clone path in `project.repoLocal`, and the result in the handoff.
 
 ## 1. Toolchain
 

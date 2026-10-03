@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-10-03T09:45:33Z",
-  "updatedBy": "lead-coordinator (session 2026-10-02 #2, Opus 5.5)",
+  "updatedAt": "2026-10-03T09:50:42Z",
+  "updatedBy": "lead-coordinator (session 2026-10-03 #1, Opus 5.5)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -42,7 +42,7 @@
     "entryGate": [
       "T-M1.13 merged — met (625c8fc)",
       "T-M1.15 merged — met (9a68eb7)",
-      "Packet G0 — DOCS-REVIEW on the docs/T-M1.16-packet PR",
+      "Packet G0 — met (PR #40, a5d6ed5; DOCS-REVIEW round 4 PASS)",
       "PO start signal — pending"
     ],
     "nextSteps": [
@@ -51,7 +51,8 @@
     ],
     "trace": [
       "DEC-079",
-      "DEC-082"
+      "DEC-082",
+      "DEC-083"
     ]
   },
   "nextTask": {
