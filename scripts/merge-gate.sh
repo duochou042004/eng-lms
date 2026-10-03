@@ -64,10 +64,12 @@ TS_DEF='def ts: if type == "string" and test("^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{
 commit_time=$(jq -r "$TS_DEF"' [.commits[] | .committedDate | ts] | if length == 0 then "" elif any(. == "INVALID") then "INVALID" else max end' <<<"$pr_json")
 [[ -n "$commit_time" ]] || fail "cannot determine the head commit time (empty commit list)"
 [[ "$commit_time" != "INVALID" ]] || { fail "unparsable commit time (fail closed)"; commit_time=""; }
+# Every page of a paginated REST listing must be a JSON array (an error object or other JSON fails closed; review T-M1.15 F1).
+pages_are_arrays() { jq -en '[inputs | type == "array"] | length > 0 and all' <<<"$1" >/dev/null 2>&1; }
 act_out=""; act_time=""
 branch_uri=$(jq -rn --arg b "refs/heads/$head" '$b | @uri')
 if act_out=$($GH api --paginate "repos/{owner}/{repo}/activity?ref=${branch_uri}&per_page=100" 2>/dev/null) \
-   && jq -en '[inputs | type == "array"] | length > 0 and all' <<<"$act_out" >/dev/null 2>&1; then
+   && pages_are_arrays "$act_out"; then
   act_time=$(jq -rn --arg sha "$head_oid" "$TS_DEF"' [inputs | .[] | select(.after == $sha) | .timestamp | ts] | if any(. == "INVALID") then "" else (max // "") end' <<<"$act_out")
   [[ -n "$act_time" ]] || fail "cannot determine when head ${head_oid:0:7} arrived: no push of it to '$head' in the repository activity (fail closed)"
 else
@@ -192,7 +194,7 @@ dependabot_checks() {
   fi
   # c) the file allow-list, modifications only, and workflow edits limited to `uses:` SHA bumps (judged on the diff content)
   if ! files_out=$($GH api --paginate "repos/{owner}/{repo}/pulls/${PR}/files?per_page=100" 2>/dev/null) \
-     || [[ $(jq -rn '[inputs | .[]?] | length' <<<"$files_out") -eq 0 ]]; then
+     || ! pages_are_arrays "$files_out" || [[ $(jq -rn '[inputs | .[]] | length' <<<"$files_out") -eq 0 ]]; then
     fail "cannot list the dependabot PR's files (fail closed)"; return
   fi
   bad=$(jq -rn --arg re "$DEPENDABOT_FILES_RE" '[inputs | .[]? | .filename | select(test($re) | not)] | join(", ")' <<<"$files_out")
@@ -316,13 +318,14 @@ if [[ -n "$id" ]]; then
 fi
 
 # 5. Bookkeeping: progress.json must change in every task PR. `gh pr view --json files` returns only the first 100 files, so the
-# paginated REST listing is used (T-M1.15); an API error fails closed, and deleting progress.json does not count.
+# paginated REST listing is used (T-M1.15); an API error or a page that is not an array fails closed, and only a status that
+# changes the file counts (added, modified, renamed, copied, changed; not removed, unchanged or missing; review T-M1.15 F1, F2).
 case "$kind" in
   feature|fix|docs|chore|release|hotfix)
-    if ! all_files=$($GH api --paginate "repos/{owner}/{repo}/pulls/${PR}/files?per_page=100" 2>/dev/null); then
+    if ! all_files=$($GH api --paginate "repos/{owner}/{repo}/pulls/${PR}/files?per_page=100" 2>/dev/null) || ! pages_are_arrays "$all_files"; then
       fail "cannot list the PR's files (fail closed)"
     else
-      jq -en '[inputs | .[]? | select(.filename == "progress.json" and .status != "removed")] | length > 0' <<<"$all_files" >/dev/null \
+      jq -en '[inputs | .[] | select(.filename == "progress.json" and ((.status // "") | IN("added", "modified", "renamed", "copied", "changed")))] | length > 0' <<<"$all_files" >/dev/null \
         || fail "progress.json not updated in this PR"
     fi;;
 esac

@@ -1,0 +1,33 @@
+# merge-gate tests with the T-M1.16 gate (2026-10-03T17:18:48Z)
+  ok   - (T-M1.16) refuses a file page that is a JSON object (step 5, fail closed)
+  ok   - (T-M1.16) refuses progress.json with status 'unchanged'
+  ok   - (T-M1.16) refuses progress.json with status 'none'
+  ok   - (T-M1.16) accepts progress.json with status 'added'
+  ok   - (T-M1.16) accepts progress.json with status 'renamed'
+  ok   - (T-M1.16) accepts progress.json with status 'copied'
+  ok   - (T-M1.16) accepts progress.json with status 'changed'
+  ok   - (T-M1.16) refuses a dependabot file page that is a JSON object (fail closed)
+  ok   - AC2: QA-VERDICT FAIL blocks a chore PR even though DOCS-REVIEW passed
+  ok   - AC2: DOCS-REVIEW CHANGES REQUESTED blocks a feature PR even though QA passed
+  ok   - AC2: UX-REVIEW CHANGES REQUESTED blocks although QA and SEC passed
+  -> 311 passed, 0 failed
+
+# the same tests against develop's scripts/merge-gate.sh (negative demo)
+  FAIL - (T-M1.16) refuses a file page that is a JSON object (step 5, fail closed) (expected exit 1, got 0)
+         merge-gate: all gates passed for PR #7 (T-M9.9: chore/T-M9.9-x → develop @ abc1234)
+         merge-gate: all gates passed for PR #7 (T-M9.9: chore/T-M9.9-x → develop @ abc1234)
+  FAIL - (T-M1.16) refuses progress.json with status 'unchanged' (expected exit 1, got 0)
+         merge-gate: all gates passed for PR #7 (T-M9.9: chore/T-M9.9-x → develop @ abc1234)
+  FAIL - (T-M1.16) refuses progress.json with status 'none' (expected exit 1, got 0)
+         merge-gate: all gates passed for PR #7 (T-M9.9: chore/T-M9.9-x → develop @ abc1234)
+  ok   - (T-M1.16) accepts progress.json with status 'added'
+  ok   - (T-M1.16) accepts progress.json with status 'renamed'
+  ok   - (T-M1.16) accepts progress.json with status 'copied'
+  ok   - (T-M1.16) accepts progress.json with status 'changed'
+  FAIL - (T-M1.16) refuses a dependabot file page that is a JSON object (fail closed) (expected exit 1, got 0)
+         merge-gate: all gates passed for PR #7 (PR-7: dependabot/github_actions/actions-abc → develop @ abc1234)
+         merge-gate: all gates passed for PR #7 (PR-7: dependabot/github_actions/actions-abc → develop @ abc1234)
+  ok   - AC2: QA-VERDICT FAIL blocks a chore PR even though DOCS-REVIEW passed
+  ok   - AC2: DOCS-REVIEW CHANGES REQUESTED blocks a feature PR even though QA passed
+  ok   - AC2: UX-REVIEW CHANGES REQUESTED blocks although QA and SEC passed
+  -> 305 passed, 6 failed

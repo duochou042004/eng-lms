@@ -120,6 +120,22 @@ write_fixture chore/T-M9.9-x develop CLEAN "$GOOD" "$FILES" "$OK_CHECKS" 0
 touch "$MOCK_DIR/pr-files.json.fail"
 expect_exit 1 "(T-M1.15) refuses when the PR's files cannot be listed (fail closed)" -- gate --dry-run 7
 expect_output_contains "cannot list the PR's files (fail closed)" "reports the listing failure"
+# T-M1.16 (review T-M1.15 F1, F2): every file page must be an array; progress.json counts only with a status that changes it
+PRFILES='[{"filename":"docs/README.md","status":"modified"}]
+{"x":{"filename":"progress.json","status":"modified"}}'
+write_fixture chore/T-M9.9-x develop CLEAN "$GOOD" "$FILES" "$OK_CHECKS" 0
+expect_exit 1 "(T-M1.16) refuses a file page that is a JSON object (step 5, fail closed)" -- gate --dry-run 7
+expect_output_contains "cannot list the PR's files (fail closed)" "reports the non-array page"
+for st in unchanged ""; do
+  PRFILES=$(jq -cn --arg st "$st" '[{filename:"progress.json"} + (if $st == "" then {} else {status:$st} end)]')
+  write_fixture chore/T-M9.9-x develop CLEAN "$GOOD" "$FILES" "$OK_CHECKS" 0
+  expect_exit 1 "(T-M1.16) refuses progress.json with status '${st:-none}'" -- gate --dry-run 7
+done
+for st in added renamed copied changed; do
+  PRFILES="[{\"filename\":\"progress.json\",\"status\":\"$st\"}]"
+  write_fixture chore/T-M9.9-x develop CLEAN "$GOOD" "$FILES" "$OK_CHECKS" 0
+  expect_exit 0 "(T-M1.16) accepts progress.json with status '$st'" -- gate --dry-run 7
+done
 write_fixture wip-branch develop CLEAN "$GOOD" "$FILES" "$OK_CHECKS" 0
 expect_exit 1 "refuses a branch kind without a merge path" -- gate --dry-run 7
 write_fixture feature/T-M9.9-x master CLEAN "$(cs "$(c 'LC-APPROVED T-M9.9')" "$(c 'QA-VERDICT T-M9.9: PASS')")" "$FILES" "$OK_CHECKS" 0
@@ -128,6 +144,10 @@ expect_exit 1 "refuses a task branch targeting master" -- gate --dry-run 7
 # other merge paths (review F4)
 write_fixture dependabot/github_actions/actions-abc develop CLEAN "$(cs "$(c 'LC-APPROVED PR-7')")" '[{"path":".github/workflows/docs-check.yml"}]' "$OK_CHECKS" 0 app/dependabot
 expect_exit 0 "F4: dependabot PR (by the Dependabot app) merges with checks + 'LC-APPROVED PR-<n>'" -- gate --dry-run 7
+PRFILES=$(jq -cn --arg bump "$USES_BUMP" '{x:{filename:".github/workflows/docs-check.yml",status:"modified",patch:$bump}}')
+write_fixture dependabot/github_actions/actions-abc develop CLEAN "$(cs "$(c 'LC-APPROVED PR-7')")" '[{"path":".github/workflows/docs-check.yml"}]' "$OK_CHECKS" 0 app/dependabot
+expect_exit 1 "(T-M1.16) refuses a dependabot file page that is a JSON object (fail closed)" -- gate --dry-run 7
+expect_output_contains "cannot list the dependabot PR's files (fail closed)" "reports the non-array dependabot page"
 write_fixture dependabot/github_actions/actions-abc develop CLEAN "$(cs "$(c 'LC-APPROVED PR-7')")" '[{"path":".github/workflows/docs-check.yml"}]' "$OK_CHECKS" 0 duochou042004
 expect_exit 1 "R2-1: a hand-made dependabot/* branch (human author) is refused" -- gate --dry-run 7
 expect_output_contains "not authored by Dependabot" "explains the author check"
