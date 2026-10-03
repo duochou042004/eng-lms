@@ -18,7 +18,8 @@ Phase/Milestone: P1 / M1 · Current task: **T-M1.16 (PO start signal given, DEC-
 ## Gotchas
 - `.env*` files are unreadable by rule: the PO creates `.env` (`cp .env.example .env`); `glab` is a snap (`/snap/bin/glab`).
 - Branch names must be `<kind>/<task-id>-<slug>`; verdict tokens: QA `PASS`/`PASS WITH MINOR`, DOCS `PASS`, SEC/UX `APPROVED`.
-- `git merge` is denied: `gh pr update-branch <n>`. Subagents share the working tree: give each a worktree or forbid checkouts.
+- `git merge` is denied: `gh pr update-branch <n>`; update before editing `progress.json` if it would conflict. Dependabot PRs: `@dependabot rebase`.
+- Subagents share the working tree: give each a worktree or forbid checkouts; `gh pr close -d` switches the current checkout.
 - Run `./scripts/check-docs.sh` bare; timestamps from `date -u`; `./scripts/gitlab-sync.sh` after merges; stage explicit paths.
 - Short sessions: hand off at ~300–400k tokens with a goal-mode prompt (≤ 4000 chars) in `docs/handoff/next-session-prompt.md`.
 
