@@ -88,7 +88,7 @@ any analytics or tracking script.
 
 - Pin exact versions: the Maven BOM via the Boot parent; `pnpm-lock.yaml`; container images by tag **and** digest in production units.
 - Use the Boot-managed version of every dependency the BOM covers. Pin non-BOM libraries explicitly and list them in §7.
-- Upgrades: monthly Dependabot batch PR (`chore/deps-YYYY-MM`) with the full gate. Major upgrades need a packet.
+- Upgrades: monthly Dependabot batch PR (`chore/<task-id>-deps-YYYY-MM`; the batch gets a backlog task ID, as merge-gate requires `<kind>/<task-id>-<slug>`) with the full gate. Major upgrades need a packet.
 - **Boot 4 / Java 25 pitfalls for agents** are listed in `docs/09-harness/coding-agent-rules.md` §9.
 
 ## 7. Pinned versions (filled in by the packet that introduces each dependency)
