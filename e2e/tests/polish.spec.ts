@@ -66,13 +66,21 @@ interface SegmentBox {
   iconVisible: boolean
 }
 
+/** The accessible name, as assistive technology gets it (`textContent` would double the label: SegmentedControl keeps a
+ *  hidden semibold copy of it). Read from the ARIA snapshot line `- radio "<name>"`. */
+async function accessibleName(element: Locator) {
+  const name = /^- \w+ "(.*)"/.exec(await element.ariaSnapshot())?.[1]
+  expect(name, 'element has an accessible name').toBeTruthy()
+  return name!
+}
+
 async function segmentBoxes(group: Locator): Promise<SegmentBox[]> {
   const result: SegmentBox[] = []
   for (const radio of await group.getByRole('radio').all()) {
     const box = await radio.boundingBox()
     expect(box, 'segment has a layout box').not.toBeNull()
     result.push({
-      name: (await radio.textContent()) ?? '',
+      name: await accessibleName(radio),
       x: round(box!.x),
       width: round(box!.width),
       checked: (await radio.getAttribute('aria-checked')) === 'true',
@@ -170,6 +178,52 @@ for (const lang of ['vi', 'en'] as const) {
     })
   })
 }
+
+// T-M1.16 AC2: the gallery's LanguageSwitcher example sizes to its content, so a language change (which changes the
+// column width) moves no segment boundary inside it; the whole example may move.
+test("T-M1.16 AC2 (/dev/ui, dev build): a UI language change keeps the LanguageSwitcher example's segments", async ({
+  page,
+}, testInfo) => {
+  test.skip(!DEV_SERVER, 'needs the dev server: E2E_BASE_URL=http://localhost:5173 (no /dev/ui in the packaged build)')
+  await useLanguage(page, 'vi')
+  await page.goto('/dev/ui')
+  // The page header has a switcher too; the gallery example is the last one.
+  const example = page.getByRole('radiogroup', { name: /^(Ngôn ngữ|Language)$/ }).last()
+  const measure = async () => {
+    await page.evaluate(() => document.fonts.ready)
+    const group = (await example.boundingBox())!
+    return (await segmentBoxes(example)).map((s) => ({ name: s.name, offsetPx: round(s.x - group.x), width: s.width }))
+  }
+  await expect(example.getByRole('radio', { name: ENDONYM.vi })).toBeChecked()
+  const vi = await measure()
+  await example.getByRole('radio', { name: ENDONYM.en }).click()
+  await expect(page.locator('html')).toHaveAttribute('lang', 'en')
+  await expect(example.getByRole('radio', { name: ENDONYM.en })).toBeChecked()
+  const en = await measure()
+  await example.scrollIntoViewIfNeeded()
+  await evidenceShot(page, testInfo, 't-m1.16-ac2-devui-switcher-en')
+  await example.getByRole('radio', { name: ENDONYM.vi }).click()
+  await expect(page.locator('html')).toHaveAttribute('lang', 'vi')
+  const viAgain = await measure()
+  await evidenceRecord(testInfo, 't-m1.16-ac2-devui-switcher', {
+    viewport: page.viewportSize(),
+    tolerancePx: 1,
+    vi,
+    en,
+    viAgain,
+  })
+  for (const after of [en, viAgain]) {
+    expect(after).toHaveLength(vi.length)
+    vi.forEach((b, i) => {
+      expect(Math.abs(after[i]!.width - b.width), `inline size of segment ${i}`).toBeLessThanOrEqual(1)
+      expect(
+        Math.abs(after[i]!.offsetPx - b.offsetPx),
+        `offset of segment ${i} from the group start`,
+      ).toBeLessThanOrEqual(1)
+    })
+  }
+  await expectNoHorizontalScroll(page)
+})
 
 // ---- AC3: the landing loading skeleton matches the page ------------------------------------------------------------
 
