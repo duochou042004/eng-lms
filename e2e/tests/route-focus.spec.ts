@@ -147,8 +147,11 @@ test.describe('UX step budgets (T-M1.9 design notes)', () => {
       record[`pointer ${path}`] = steps.count
       await page.evaluate(() => localStorage.clear())
     }
-    // Keyboard on the landing page (the switcher is its first Tab stop): Tab into the group, arrow, Space.
+    // Keyboard on the landing page (the switcher is its first Tab stop): Tab into the group, arrow, Space. The landing
+    // page is lazy and a first load moves no focus: wait for its h1 before the first Tab, or Tab can run on the loading
+    // region (DEC-082).
     await page.goto('/')
+    await expect(h1(page, COPY.vi.landing)).toBeVisible()
     const steps = new StepCounter()
     await steps.step('Tab into the group, ArrowRight, Space', async () => {
       await page.keyboard.press('Tab')
