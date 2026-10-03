@@ -42,6 +42,32 @@
   display: block;
 }
 
+/* RouteLoading's language-switcher block takes its inline size from .switcherSizer, which rebuilds the switcher's row
+   from SegmentedControl.module.css: per segment the inline padding, the check icon slot and its gap around the semibold
+   label; a border around the group and between the segments. Zero block size: the row stays 44 px. */
+.switcherSkeleton {
+  display: flex;
+  flex-direction: column;
+}
+
+.switcherSizer {
+  display: flex;
+  block-size: 0;
+  overflow: hidden;
+  visibility: hidden;
+  border-inline: var(--border-width) solid;
+  font-weight: var(--font-weight-semibold);
+  white-space: nowrap;
+}
+
+.switcherSizer > * {
+  padding-inline: calc(var(--space-3) + var(--size-icon) + var(--space-1)) var(--space-3);
+}
+
+.switcherSizer > * + * {
+  border-inline-start: var(--border-width) solid;
+}
+
 /* The shell brand row is as tall as its 44 px home link. */
 .brandSkeleton {
   min-block-size: var(--size-control-md);
