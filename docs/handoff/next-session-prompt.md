@@ -4,10 +4,10 @@ PRODUCT: a private 1:1 teaching workspace for ONE English tutor and their studen
 
 START: read CLAUDE.md, progress.json, docs/handoff/HANDOFF.md, docs/06-quality/quality-gates.md (§G5), docs/01-product/roadmap.md (M1, M2) and docs/tasks/backlog.md (M2).
 
-STATE: device set up and verified (DEC-084; clone /home/kali/App_sources/eng-lms). All M1 packets merged; T-M1.16 merged as 1dbd7e3 (DEC-085). M1 is in_review for G5. T-M1.10 upstream-gated; T-M1.17 (merge-gate: report an unsupported gh) is a small LC backlog chore. No open PRs expected (check `gh pr list`).
+STATE: device set up and verified (DEC-084; clone /home/kali/App_sources/eng-lms). All M1 packets merged; T-M1.16 merged as 1dbd7e3 (DEC-085). M1 is in_review for G5. T-M1.10 upstream-gated; T-M1.17 (merge-gate: report an unsupported gh) is a small LC backlog chore. PR #44 (qa/T-M1.16, QA record) may still be open: merge it first (gh pr update-branch 44, CI green, `LC-APPROVED T-M1.16`, merge-gate). Check `gh pr list`.
 
 DO:
-1. M1 G5: a fresh qa-evaluator runs the milestone regression (full E2E on all 6 viewports with Chromium; smoke on Firefox and WebKit; install those browsers in e2e if missing: ask the PO if system deps need sudo) and returns a QA milestone report; you record it in evidence/M1/ and write evidence/M1/retro.md (risk register, decision log, roadmap reviewed). Commit on a docs/T-M1.16-m1-g5 (or qa/M1) branch per git-governance, fresh DOCS-REVIEW, merge via merge-gate. Ask the PO to sign off M1 (record a DEC); then milestone.status = done.
+1. M1 G5 (quality-gates §G5): a fresh qa-evaluator runs the milestone regression: full E2E on all 6 viewports (Chromium) with ./scripts/e2e-run.sh; Firefox/WebKit smoke in qa/ (pnpm browsers once; qa/regression/ is empty, so the evaluator writes smoke scenarios; QA_ENGINES=all pnpm test regression/; ask the PO if system deps need sudo). Record its report as evidence/M1/qa-regression.md (qa-protocol §5) and write evidence/M1/retro.md (risk register, decision log, roadmap reviewed). Branch docs/T-M1.16-m1-g5 (merge-gate needs <kind>/<task-id>-<slug>), fresh DOCS-REVIEW, merge via merge-gate. Ask the PO to sign off M1 (record a DEC); then milestone.status = done.
 2. T-M2.1 packet with the task-packet skill (identity core; SEC review required at G3; trace FR-AUTH-01..06, 09, 10; ADR-0005; the DEC-054/069/070 items listed in the backlog row). DOCS-REVIEW on the packet PR, merge via merge-gate, then ask the PO for the start signal.
 3. Optional if time allows: T-M1.17 (packet first).
 

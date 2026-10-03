@@ -16,7 +16,7 @@
       }
     ]
   },
-  "updatedAt": "2026-10-03T18:00:39Z",
+  "updatedAt": "2026-10-03T18:04:10Z",
   "updatedBy": "lead-coordinator (session 2026-10-03 #2, new device, Opus 5.5)",
   "phase": {
     "id": "P1",
@@ -45,8 +45,9 @@
       "Packet G0 — pending (task-packet skill; SEC review applies)"
     ],
     "nextSteps": [
-      "M1 G5: milestone regression (6 viewports + Firefox/WebKit smoke) by a fresh qa-evaluator, retro, PO sign-off",
-      "Write the T-M2.1 packet (G0, DOCS-REVIEW) and ask the PO for the start signal"
+      "Merge PR #44 (qa/T-M1.16, QA record) via merge-gate if still open",
+      "M1 G5 first: milestone regression by a fresh qa-evaluator, retro, PO sign-off",
+      "Then write the T-M2.1 packet (G0, DOCS-REVIEW) and ask the PO for the start signal"
     ],
     "trace": [
       "FR-AUTH-01..06",
@@ -61,7 +62,7 @@
     "status": "draft",
     "ownerRole": "LC",
     "branch": "chore/T-M1.17-merge-gate-gh-version",
-    "packet": "docs/tasks/backlog.md#m1--walking-skeleton-and-delivery-pipeline",
+    "packet": "docs/tasks/backlog.md#carried-past-m1-unscheduled",
     "pr": null,
     "lastCommit": null,
     "startedAt": null,
@@ -205,8 +206,8 @@
     }
   ],
   "tests": {
-    "lastRun": "2026-09-28T09:58:54Z",
-    "summary": "At T-M1.12 merge (9866f26): gate.sh PASS (12 steps, 133 s at ebc23cb); merge-gate 295/295; CI 7/7 at 0123d7f. T-M1.9: E2E 62 passed/10 skipped on the 3 mandatory projects.",
+    "lastRun": "2026-10-03T17:29:37Z",
+    "summary": "At T-M1.16 (fb73e87): gate.sh PASS (12 steps, 284 s; evidence/T-M1.16/gate-20261003T172937Z.log); backend 97, web 88, E2E 86 passed on the 3 mandatory projects; merge-gate 311/311; CI 7/7.",
     "suites": [
       {
         "name": "backend (./mvnw -B verify)",
@@ -232,24 +233,28 @@
   },
   "gates": {
     "G0": {
-      "status": "pending",
-      "note": "T-M1.16: packet DOCS-REVIEW on the docs/T-M1.16-packet PR; PO start signal pending"
+      "status": "pass",
+      "note": "T-M1.16: packet PR #40 DOCS-REVIEW PASS; PO start DEC-084. Next: T-M2.1 packet"
     },
     "G1": {
-      "status": "pending",
-      "note": "T-M1.16 not started"
+      "status": "pass",
+      "note": "T-M1.16: tests with every change (unit, E2E, merge-gate 311)"
     },
     "G2": {
-      "status": "pending",
-      "note": "T-M1.16 not started"
+      "status": "pass",
+      "note": "T-M1.16: gate.sh PASS (12 steps), CI 7/7 at fb73e87"
     },
     "G3": {
-      "status": "pending",
-      "note": "T-M1.16: QA + UX (UI changes)"
+      "status": "pass",
+      "note": "T-M1.16: QA PASS WITH MINOR, UX APPROVED (DEC-085)"
     },
     "G4": {
+      "status": "pass",
+      "note": "T-M1.16: merged via merge-gate as 1dbd7e3 (PR #43)"
+    },
+    "G5": {
       "status": "pending",
-      "note": "T-M1.16: merge via merge-gate"
+      "note": "M1 milestone gate: regression (e2e 6 viewports Chromium; qa/ Firefox+WebKit smoke), evidence/M1/qa-regression.md, retro, PO sign-off"
     }
   },
   "blockers": [],
@@ -395,8 +400,9 @@
     {
       "what": "Start T-M1.16 (review polish; Maven 3.10.0)",
       "by": "PO",
-      "status": "pending",
-      "at": null
+      "status": "approved",
+      "at": "2026-10-03T17:11:28Z",
+      "ref": "DEC-084"
     },
     {
       "what": "T-M1.10 does not block closing M1",
@@ -418,6 +424,13 @@
       "status": "approved",
       "at": "2026-10-03T17:11:28Z",
       "ref": "DEC-084"
+    },
+    {
+      "what": "M1 G5 sign-off (incl. T-M1.17 carried past M1)",
+      "by": "PO",
+      "status": "pending",
+      "at": null,
+      "ref": "DEC-085"
     }
   ],
   "environment": {

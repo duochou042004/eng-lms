@@ -1,17 +1,25 @@
-# Handoff — 2026-10-03 (T-M1.16 merged; all M1 packets merged; M1 awaits G5)
+# Handoff — 2026-10-03T18:10Z (T-M1.16 merged; M1 exit-criteria packets merged; M1 awaits G5)
 
-Phase/Milestone: P1 / M1 (in review for G5) · Current task: **T-M2.1 (draft; packet not written)** · Remote: https://github.com/duochou042004/eng-lms (mirror: gitlab.com/duochou042004/eng-lms)
+Phase/Milestone: P1 / M1 (in review for G5) · Current task: **T-M2.1 (draft; packet not written)** · Branch: `docs/T-M1.16-m1-close-out` (PR #45) · Last commit on develop: `1dbd7e3` (T-M1.16) · Remote: https://github.com/duochou042004/eng-lms (mirror: gitlab.com/duochou042004/eng-lms)
 
 ## Where we are
 - **New device** (Ubuntu 26.04.1, clone `/home/kali/App_sources/eng-lms`) set up by development-setup §0 and proven by the full gate (DEC-084); versions in `progress.json` `environment`.
 - **T-M1.16 merged** as `1dbd7e3` (PR #43, merge-gate, CI 7/7): switcher skeletons sized from the switcher, `/dev/ui` example, lint loopholes, merge-gate file pages,
   Maven 3.10.0, deps-batch branch name, and the flaky route-focus test fixed. QA PASS WITH MINOR (record PR #44), UX APPROVED (`evidence/T-M1.16/review/ux.md`).
   S4s accepted; review R2-1 → backlog **T-M1.17** (merge-gate should report an unsupported `gh`), not an M1 exit criterion (DEC-085).
-- **All M1 packets are merged.** M1 is `in_review`: gate G5 (quality-gates §G5) is still open. T-M1.10 stays upstream-gated (DEC-083).
+- **All M1 exit-criteria packets are merged.** T-M1.10 (DEC-083) and T-M1.17 (DEC-085) sit in the backlog's "Carried past M1" section. M1 is `in_review`: gate G5
+  (quality-gates §G5) is still open (`progress.json` `gates.G5`, pending PO approval).
+
+## In flight
+- PR #44 (`qa/T-M1.16`, the QA record `evidence/T-M1.16/qa/report.md`): its docs-check needs DEC-085 from this PR (#45); after #45 merges, `gh pr update-branch 44`, CI, `LC-APPROVED T-M1.16`, merge-gate.
+- PR #45 (this close-out). Nothing uncommitted.
 
 ## Next steps
-1. M1 G5: a fresh qa-evaluator runs the milestone regression (full E2E on all 6 viewports × Chromium, smoke on Firefox and WebKit; `evidence/M1/`), the LC writes
-   `evidence/M1/retro.md` (risk register, decision log, roadmap reviewed), the PO signs off; then `milestone.status` = `done`.
+0. If still open: merge PR #44 (above).
+1. M1 G5: a fresh qa-evaluator runs the milestone regression: full E2E on all 6 viewports (Chromium): `./scripts/e2e-run.sh`; Firefox/WebKit smoke in `qa/`
+   (`pnpm browsers` once, write smoke scenarios in the empty `qa/regression/`, `QA_ENGINES=all pnpm test regression/`). The LC records the report as
+   `evidence/M1/qa-regression.md` (qa-protocol §5) and writes `evidence/M1/retro.md` (risk register, decision log, roadmap reviewed); branch e.g. `docs/T-M1.16-m1-g5`
+   (merge-gate needs `<kind>/<task-id>-<slug>`); the PO signs off (DEC); then `milestone.status` = `done`.
 2. T-M2.1 packet (identity core; task-packet skill; SEC review at G3), DOCS-REVIEW, PO start signal.
 3. T-M1.17 when convenient (small LC chore).
 
