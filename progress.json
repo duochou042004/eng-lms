@@ -16,7 +16,7 @@
       }
     ]
   },
-  "updatedAt": "2026-10-03T17:35:43Z",
+  "updatedAt": "2026-10-03T18:04:10Z",
   "updatedBy": "lead-coordinator (session 2026-10-03 #2, new device, Opus 5.5)",
   "phase": {
     "id": "P1",
@@ -26,38 +26,10 @@
   "milestone": {
     "id": "M1",
     "name": "Walking skeleton and delivery pipeline",
-    "status": "in_progress",
+    "status": "in_review",
     "exitCriteria": "scripts/gate.sh green locally and in CI; backend skeleton with Modulith verify + Flyway V1; SPA served same-origin; Playwright smoke at 3 viewports with axe; contract drift check; Testcontainers on rootless Podman or documented fallback (docs/01-product/roadmap.md)."
   },
   "currentTask": {
-    "id": "T-M1.16",
-    "title": "S4 polish from the T-M1.13 and T-M1.15 reviews; Maven 3.10.0 (DEC-079, DEC-082)",
-    "status": "in_review",
-    "ownerRole": "FE",
-    "branch": "feature/T-M1.16-review-polish",
-    "packet": "docs/tasks/T-M1.16-review-polish.md",
-    "pr": null,
-    "lastCommit": "e4c11fb",
-    "startedAt": "2026-10-03T17:35:43Z",
-    "entryGate": [
-      "T-M1.13 merged — met (625c8fc)",
-      "T-M1.15 merged — met (9a68eb7)",
-      "Packet G0 — met (PR #40, a5d6ed5; DOCS-REVIEW round 4 PASS)",
-      "PO start signal — met (DEC-084)"
-    ],
-    "nextSteps": [
-      "G3: QA-VERDICT (fresh qa-evaluator) + UX-REVIEW (ux-reviewer)",
-      "LC-APPROVED, merge-gate, gitlab-sync",
-      "M1 close-out (merge record, UX record, milestone status) and the T-M2.1 packet"
-    ],
-    "trace": [
-      "DEC-079",
-      "DEC-082",
-      "DEC-083",
-      "DEC-084"
-    ]
-  },
-  "nextTask": {
     "id": "T-M2.1",
     "title": "Identity core: accounts, tutor bootstrap, login/logout/session",
     "status": "draft",
@@ -68,14 +40,39 @@
     "lastCommit": null,
     "startedAt": null,
     "entryGate": [
-      "M1 exit criteria met"
+      "M1 exit criteria met — met (all M1 packets merged, DEC-085)",
+      "M1 gate G5 (milestone regression, retro, PO) — pending",
+      "Packet G0 — pending (task-packet skill; SEC review applies)"
     ],
-    "nextSteps": [],
+    "nextSteps": [
+      "Merge PR #44 (qa/T-M1.16, QA record) via merge-gate if still open",
+      "M1 G5 first: milestone regression by a fresh qa-evaluator, retro, PO sign-off",
+      "Then write the T-M2.1 packet (G0, DOCS-REVIEW) and ask the PO for the start signal"
+    ],
     "trace": [
       "FR-AUTH-01..06",
       "FR-AUTH-09",
       "FR-AUTH-10",
       "ADR-0005"
+    ]
+  },
+  "nextTask": {
+    "id": "T-M1.17",
+    "title": "merge-gate reports an unsupported gh instead of missing checks",
+    "status": "draft",
+    "ownerRole": "LC",
+    "branch": "chore/T-M1.17-merge-gate-gh-version",
+    "packet": "docs/tasks/backlog.md#carried-past-m1-unscheduled",
+    "pr": null,
+    "lastCommit": null,
+    "startedAt": null,
+    "entryGate": [
+      "T-M1.16 merged — met (1dbd7e3)"
+    ],
+    "nextSteps": [],
+    "trace": [
+      "DEC-084",
+      "DEC-085"
     ]
   },
   "completed": [
@@ -198,11 +195,19 @@
       "mergeCommit": "3a405ce",
       "evidence": "evidence/T-M1.14/summary.md",
       "note": "PO start DEC-080. Packet PR #28 (14e820d). Merged via merge-gate (PR #37) at 0de5bb0; CI 7/7. Test-only: strict UUIDv7 header, body requestId == header, no echo of bad<id>/<. QA-VERDICT PASS (record PR #38); S4s accepted/recorded (DEC-081). gate PASS; 50/50 runs."
+    },
+    {
+      "id": "T-M1.16",
+      "title": "S4 polish from the T-M1.13 and T-M1.15 reviews; Maven 3.10.0 (DEC-079, DEC-082)",
+      "completedAt": "2026-10-03T18:00:39Z",
+      "mergeCommit": "1dbd7e3",
+      "evidence": "evidence/T-M1.16/summary.md",
+      "note": "PO start DEC-084. Merged via merge-gate (PR #43) at fb73e87; CI 7/7; gate PASS (12 steps). QA PASS WITH MINOR (record PR #44), UX APPROVED (evidence/T-M1.16/review/ux.md). S4s accepted; R2-1 -> T-M1.17 (DEC-085). Flaky route-focus test fixed (60/60, 120/120)."
     }
   ],
   "tests": {
-    "lastRun": "2026-09-28T09:58:54Z",
-    "summary": "At T-M1.12 merge (9866f26): gate.sh PASS (12 steps, 133 s at ebc23cb); merge-gate 295/295; CI 7/7 at 0123d7f. T-M1.9: E2E 62 passed/10 skipped on the 3 mandatory projects.",
+    "lastRun": "2026-10-03T17:29:37Z",
+    "summary": "At T-M1.16 (fb73e87): gate.sh PASS (12 steps, 284 s; evidence/T-M1.16/gate-20261003T172937Z.log); backend 97, web 88, E2E 86 passed on the 3 mandatory projects; merge-gate 311/311; CI 7/7.",
     "suites": [
       {
         "name": "backend (./mvnw -B verify)",
@@ -228,24 +233,28 @@
   },
   "gates": {
     "G0": {
-      "status": "pending",
-      "note": "T-M1.16: packet DOCS-REVIEW on the docs/T-M1.16-packet PR; PO start signal pending"
+      "status": "pass",
+      "note": "T-M1.16: packet PR #40 DOCS-REVIEW PASS; PO start DEC-084. Next: T-M2.1 packet"
     },
     "G1": {
-      "status": "pending",
-      "note": "T-M1.16 not started"
+      "status": "pass",
+      "note": "T-M1.16: tests with every change (unit, E2E, merge-gate 311)"
     },
     "G2": {
-      "status": "pending",
-      "note": "T-M1.16 not started"
+      "status": "pass",
+      "note": "T-M1.16: gate.sh PASS (12 steps), CI 7/7 at fb73e87"
     },
     "G3": {
-      "status": "pending",
-      "note": "T-M1.16: QA + UX (UI changes)"
+      "status": "pass",
+      "note": "T-M1.16: QA PASS WITH MINOR, UX APPROVED (DEC-085)"
     },
     "G4": {
+      "status": "pass",
+      "note": "T-M1.16: merged via merge-gate as 1dbd7e3 (PR #43)"
+    },
+    "G5": {
       "status": "pending",
-      "note": "T-M1.16: merge via merge-gate"
+      "note": "M1 milestone gate: regression (e2e 6 viewports Chromium; qa/ Firefox+WebKit smoke), evidence/M1/qa-regression.md, retro, PO sign-off"
     }
   },
   "blockers": [],
@@ -258,7 +267,8 @@
       "DEC-081",
       "DEC-082",
       "DEC-083",
-      "DEC-084"
+      "DEC-084",
+      "DEC-085"
     ],
     "pendingPO": [
       "OQ-03",
@@ -390,8 +400,9 @@
     {
       "what": "Start T-M1.16 (review polish; Maven 3.10.0)",
       "by": "PO",
-      "status": "pending",
-      "at": null
+      "status": "approved",
+      "at": "2026-10-03T17:11:28Z",
+      "ref": "DEC-084"
     },
     {
       "what": "T-M1.10 does not block closing M1",
@@ -413,6 +424,13 @@
       "status": "approved",
       "at": "2026-10-03T17:11:28Z",
       "ref": "DEC-084"
+    },
+    {
+      "what": "M1 G5 sign-off (incl. T-M1.17 carried past M1)",
+      "by": "PO",
+      "status": "pending",
+      "at": null,
+      "ref": "DEC-085"
     }
   ],
   "environment": {
@@ -735,6 +753,11 @@
       "at": "2026-10-03T17:35:43Z",
       "actor": "lead-coordinator",
       "event": "T-M1.16 implemented (FE items 1–5, 9; LC items 6–8); gate PASS (12 steps). PR opened for G3."
+    },
+    {
+      "at": "2026-10-03T18:00:39Z",
+      "actor": "lead-coordinator",
+      "event": "T-M1.16 merged via merge-gate (PR #43, 1dbd7e3); QA PASS WITH MINOR (PR #44), UX APPROVED; S4s accepted, R2-1 -> T-M1.17 (DEC-085). All M1 packets merged; M1 in review for G5."
     }
   ]
 }
