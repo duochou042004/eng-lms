@@ -159,3 +159,45 @@ Round 4 at head `d48064f`: **PASS**. All five round-3 findings are fixed and the
 - /home/kali/App_sources/Eng-LMS/evidence/T-M1.16/review/docs.md
 
 DOCS-REVIEW T-M1.16: PASS
+
+## PR #41 (DEC-083; new-device checklist and handoff), head `8bbb88b`: PASS
+
+Fresh docs-reviewer. Dispositions: F-1..F-5 (S3) fixed before merge (`git config --get core.hooksPath`; `sdk default` + a new-shell check; PO-side git push credentials for both hosts; `podman compose version` and the provider; ask the PO for missing tools and for `playwright install-deps`); F-6 `curl` listed; F-7 the 'verified' line, `project.repoLocal` in step 8, the protocol template path; F-8 entry gate, trace, `updatedBy` fixed (the two DEC-083 approvals keep `at: null`, as the exact time was not recorded; DEC-083 carries the date); F-9 the image step marked optional.
+
+I ran `./scripts/check-docs.sh` on a `git archive` export of `origin/docs/T-M1.16-new-device-handoff` (head `8bbb88b`, no checkout) and it passed: 159 markdown files, `progress.json` valid, sources intact, prompt within limit. `docs/handoff/next-session-prompt.md` is 3607 chars. I checked the §0 checklist against `.sdkmanrc`, `.nvmrc`, the `packageManager` pins, the hook and helper scripts, `deploy/compose.dev.yaml`, `deploy/Containerfile`, `.claude/settings.json` and `tech-stack.md`.
+
+**Answer to the key question:** mostly yes. A fresh agent on a new machine could rebuild the environment and pass `./scripts/gate.sh` with this checklist. The versions match `tech-stack.md` and the step order is right (`.env` before `dev-up`, hooks before any push, the gitlab remote before `gitlab-sync`, browsers before the e2e step). Credentials, accounts and `sudo` stay with the PO. Turning on the `podman.socket` is a host setting, and DEC-083 explicitly allows it. The gaps below would cost the agent friction but none stops the setup.
+
+**Consistency:** fine.
+- DEC-083 fits DEC-044 (the same per-user socket, now on the new machine), DEC-056 (T-M1.10 was never an M1 exit criterion) and DEC-080 (the GitLab mirror is kept).
+- The backlog T-M1.10 row, the handoff, the prompt and `progress.json` approvals all agree.
+- The old handoff is archived unchanged, nothing is out of scope, and there are no broken links.
+
+**Findings, all in `docs/07-operations/development-setup.md` §0 unless noted:**
+
+- **F-1 (S3), step 3:** the check command `git config core.hooksPath` is blocked by the deny rule `Bash(git config core.hooksPath:*)` in `.claude/settings.json`, so the agent's own check gets refused. Fix: use `git config --get core.hooksPath`, which doesn't match that rule.
+- **F-2 (S3), step 1:** SDKMAN. This machine runs `sdkman_auto_env=false` and relies on 25.0.4-tem being the SDKMAN *default*. `sdk env install` switches Java only in the current shell, so `java -version` in the same shell passes even if a fresh shell would pick another JDK. Fix: add `sdk default java 25.0.4-tem && sdk default springboot 4.1.0`, and check `java -version` in a new shell.
+- **F-3 (S3), steps 1–2:** nothing checks git push credentials. Here, pushes to `github.com` and `gitlab.com` work through helpers (`gh auth git-credential`, `glab auth git-credential`). Without the GitLab one, `gitlab-sync.sh` fails at the push in step 8. Fix: add `gh auth setup-git` and glab's git-credential setup, checked with `git config --get-regexp '^credential\.'`.
+- **F-4 (S3), step 1:** the check only proves Podman is rootless. `podman compose` hands off to a separate `podman-compose` (1.6.0 here, `/usr/bin/podman-compose`), and `dev-up.sh` needs it. Fix: add `podman compose version`, and treat a missing provider as an install request to the PO.
+- **F-5 (S3), steps 1 and 6:**
+  - It doesn't say what to do if SDKMAN, nvm or Podman are missing entirely (the `source ~/.sdkman/...` call fails). Fix: say whether the agent may install SDKMAN/nvm user-level or must ask the PO.
+  - `pnpm browsers` runs `playwright install chromium` without system libraries. On a different distro, Chromium may need `playwright install-deps`, which uses `sudo`. Fix: add "if Chromium fails to launch, ask the PO to run `pnpm exec playwright install-deps chromium`".
+- **F-6 (S4), step 1 tool list:** `curl` is missing. `e2e-run.sh` uses it for the readiness probe. `shellcheck` is only referenced in comments, so it is optional.
+- **F-7 (S4), stale paths:**
+  - `progress.json:6` `repoLocal` (`/home/kali/App_sources/Eng-LMS`) and `docs/09-harness/session-handoff-protocol.md:54` hard-code the old path. Fix: add `repoLocal` to step 8's "record in `progress.json`".
+  - The line "Verified against this machine on 2026-09-25" above §0 is now ambiguous.
+- **F-8 (S4), `progress.json`:**
+  - `currentTask.entryGate` still says "Packet G0 — DOCS-REVIEW on the docs/T-M1.16-packet PR" although PR #40 has merged. Mark it met.
+  - `updatedBy` is still "session 2026-10-02 #2".
+  - `currentTask.trace` lacks DEC-083.
+  - The two DEC-083 approvals have `"at": null`; other PO approvals carry a timestamp.
+- **F-9 (S4), step 7:** the `englms:dev` image build isn't needed by `gate.sh`. That's fine as a Containerfile check, but label it optional or "not part of the gate". Also, the session's auto-memory rule (short sessions) lives under `~/.claude` and won't move to the new machine. The handoff gotcha already copies it, which is good.
+
+
+DOCS-REVIEW T-M1.16: PASS
+
+### PR #41 round 2, head `6d74ef6`: PASS
+
+The same reviewer verified F-1..F-9 fixed (ref-based reads; check-docs PASS on an export) and agreed with `at: null` on the DEC-083 approvals. New S4s, fixed in the next commit: N-1 the prompt marks the image step optional; N-2 this record drops the reviewer's 'didn't write the file' remark and adds this round.
+
+DOCS-REVIEW T-M1.16: PASS

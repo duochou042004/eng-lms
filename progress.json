@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-10-02T06:43:46Z",
-  "updatedBy": "lead-coordinator (session 2026-10-02 #2, Opus 5.5)",
+  "updatedAt": "2026-10-03T09:50:42Z",
+  "updatedBy": "lead-coordinator (session 2026-10-03 #1, Opus 5.5)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -42,16 +42,17 @@
     "entryGate": [
       "T-M1.13 merged — met (625c8fc)",
       "T-M1.15 merged — met (9a68eb7)",
-      "Packet G0 — DOCS-REVIEW on the docs/T-M1.16-packet PR",
+      "Packet G0 — met (PR #40, a5d6ed5; DOCS-REVIEW round 4 PASS)",
       "PO start signal — pending"
     ],
     "nextSteps": [
-      "PO start signal for T-M1.16",
-      "frontend-implementer (items 1–5) + LC (items 6–8) on feature/T-M1.16-review-polish; G3 = QA + UX"
+      "New device: run development-setup §0 and verify with the full gate",
+      "PO start signal for T-M1.16, then implement (FE items 1–5, 9; LC items 6–8)"
     ],
     "trace": [
       "DEC-079",
-      "DEC-082"
+      "DEC-082",
+      "DEC-083"
     ]
   },
   "nextTask": {
@@ -249,12 +250,12 @@
   "decisions": {
     "log": "docs/10-governance/decision-log.md",
     "recent": [
-      "DEC-077",
       "DEC-078",
       "DEC-079",
       "DEC-080",
       "DEC-081",
-      "DEC-082"
+      "DEC-082",
+      "DEC-083"
     ],
     "pendingPO": [
       "OQ-03",
@@ -388,6 +389,20 @@
       "by": "PO",
       "status": "pending",
       "at": null
+    },
+    {
+      "what": "T-M1.10 does not block closing M1",
+      "by": "PO",
+      "status": "approved",
+      "at": null,
+      "ref": "DEC-083"
+    },
+    {
+      "what": "Move to a new device; the next session sets up the environment (development-setup §0)",
+      "by": "PO",
+      "status": "approved",
+      "at": null,
+      "ref": "DEC-083"
     }
   ],
   "environment": {
@@ -401,7 +416,8 @@
     "host": "Kali Linux 7.1.5, 16 cores, 22 GB RAM, 92 GB free",
     "python": "3.14.7 with jsonschema 4.26.0 (used by scripts/check_docs.py)",
     "githubActionsStorage": "PO freed the account's artifact storage on 2026-09-26; artifacts are kept 5 days (DEC-056).",
-    "gitlab": "Private mirror gitlab.com/duochou042004/eng-lms (project 86941168), remote 'gitlab', glab 1.118.0 authenticated as duochou042004; GitLab CI stores reports 5 days (DEC-060). Sync: ./scripts/gitlab-sync.sh"
+    "gitlab": "Private mirror gitlab.com/duochou042004/eng-lms (project 86941168), remote 'gitlab', glab 1.118.0 authenticated as duochou042004; GitLab CI stores reports 5 days (DEC-060). Sync: ./scripts/gitlab-sync.sh",
+    "note": "Recorded on the previous device (Kali, 2026-09/10). The PO moves development to a new device (DEC-083): re-verify every entry there with development-setup §0 and update this section."
   },
   "history": [
     {
@@ -693,6 +709,11 @@
       "at": "2026-10-02T06:43:46Z",
       "actor": "lead-coordinator",
       "event": "Dependabot #33/#29/#30/#34/#32 merged via merge-gate (DEC-082 outcome); #31 closed. T-M1.16 packet DOCS-REVIEW round 4 PASS."
+    },
+    {
+      "at": "2026-10-03T09:45:33Z",
+      "actor": "lead-coordinator",
+      "event": "PO: T-M1.10 does not block closing M1; development moves to a new device (DEC-083). New-machine checklist in development-setup §0; handoff for the new device."
     }
   ]
 }

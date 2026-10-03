@@ -51,7 +51,7 @@ Phase/Milestone: … · Task: <id> (<status>) · Branch: … · Last commit: <sh
 ## 5. Next-session prompt template (≤ 4,000 characters)
 
 ```text
-You are resuming the Eng-LMS project (private 1:1 tutor teaching workspace) as <ROLE> in /home/kali/App_sources/Eng-LMS.
+You are resuming the Eng-LMS project (private 1:1 tutor teaching workspace) as <ROLE> in <the repository's working directory>.
 Read in order: CLAUDE.md, progress.json, docs/handoff/HANDOFF.md, docs/tasks/<current packet>.md.
 State: <phase/milestone>, task <id> <status> on branch <branch> (last commit <sha>).
 Do next: <1–5 concrete steps>.
