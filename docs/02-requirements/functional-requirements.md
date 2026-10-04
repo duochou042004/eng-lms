@@ -46,7 +46,7 @@
 - On success, all **other** sessions of that user are invalidated and an audit event is recorded.
 
 **AC FR-AUTH-06**
-- While `mustChangePassword=true`, every API except `GET /auth/session`, `POST /auth/password` and `POST /auth/logout` returns 403 with `code=PASSWORD_CHANGE_REQUIRED`, and the SPA routes to `/change-password`.
+- While `mustChangePassword=true`, every API except `GET /auth/session`, `POST /auth/password`, `POST /auth/logout` and the public `GET /meta` (no user data; the SPA shell needs it, DEC-089) returns 403 with `code=PASSWORD_CHANGE_REQUIRED`, and the SPA routes to `/change-password`.
 
 **AC FR-AUTH-07**
 - T clicks "Reset password" on a student. A generated temporary password is shown **once**, with a copy button and a copyable message. S's sessions end. `mustChangePassword=true` is set. The temporary password expires after 7 days if unused (A-021).

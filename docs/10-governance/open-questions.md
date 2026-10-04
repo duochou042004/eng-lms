@@ -15,7 +15,7 @@
 | OQ-07 | Permanent student deletion and a data export feature in the MVP? (privacy, minors) | include both in M8 · export only · neither | **Include both in M8** (small effort, reduces legal risk) | M7 | R-12 |
 | OQ-08 | Is the "plugin store" meant as the internal extension registry described in plugin-store-spec.md? | yes · something else (please describe) | **Yes** | M6 | FR-EXT |
 | OQ-09 | Upload limits and storage budget (video sizes; legacy .doc/.ppt support)? | defaults per A-011 · larger · smaller | **Defaults per A-011; no legacy .doc/.ppt** | M4 | FR-FILE-01 |
-| OQ-10 | Session policy: 12 h idle, with an optional 30-day "keep me signed in"? | as proposed · shorter · no remember-me | **As proposed** | M2 | FR-AUTH-03 |
+| OQ-10 | Session policy: 12 h idle, with an optional 30-day "keep me signed in"? | as proposed · shorter · no remember-me | **As proposed** (default in use by T-M2.1, DEC-089; PO may still change it) | M2 | FR-AUTH-03 |
 | OQ-11 | Product name or brand shown in the UI (workspace display name)? | free text in Settings | **Configurable; default "Eng-LMS"** | M2 | — |
 | OQ-12 | May students check off self-study (TASK) items in their plan? | no · per-item toggle | **No in the MVP** (read-only) | M7 | FR-PLAN-06 |
 | OQ-13 | Add a "Duplicate lesson to next week" quick action in the MVP (not full recurrence)? | yes · no (wait for P2 recurrence) | **Yes** (small; big daily saving) | M3 | FR-LES scope |
