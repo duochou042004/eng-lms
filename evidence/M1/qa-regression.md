@@ -38,7 +38,7 @@ Permissions-Policy, COOP; `no-cache` HTML; `immutable` hashed assets; Problem De
 | F-5 | S4 (tracked) | Header error copy says "tên lớp"; the header repeats "Eng-LMS Eng-LMS" | Already in T-M2.4 | Tracked |
 | F-6 | S4 (QA workspace) | `pnpm typecheck` in `qa/` failed on develop (3 type errors in `qa/e2e/T-M1.13.spec.ts`), and nothing runs it | Fixed on the QA branch (type-only); gate/CI step → T-M1.18 | Fixed; T-M1.18 (DEC-087) |
 
-## Exploratory session (about 45 min; small surface)
+## Exploratory session (about 45 min instead of 90; accepted for M1's small surface, DEC-087)
 Invalid stored languages (`fr`, empty, `EN`, `en-US`, JSON) fall back to vi with one segment selected; ten quick toggles settle correctly. `/tutor/`, `/TUTOR`,
 `/index.html`, double slashes, a 3000-character path and `/%E2%9C%93` return the SPA (200, `no-cache`); `/assets/nope.js`, `/api`, `/api/`, `/actuator` and
 `/robots.txt` return Problem Details 404; POST/PUT/DELETE/OPTIONS on `/tutor` return Problem Details 404 with the security headers, HEAD 200. `/api/v1/meta`
@@ -58,7 +58,7 @@ history: V `202609250001` "platform extensions", success. Nothing outside M1's t
 | OpenAPI drift check works | Met | contract-drift in the gate and CI |
 | Testcontainers on rootless Podman | Met | Gate backend step |
 | Docs describe how to reproduce every command | Met (spot-checked) | development-setup §0 and its command table |
-| Every M1 packet merged | Met | T-M1.10 and T-M1.17 are carried past M1 (DEC-083, DEC-085) |
+| Every M1 packet merged | Met | T-M1.10, T-M1.17 and T-M1.18 are carried past M1 (DEC-083, DEC-085, DEC-087) |
 | G5: full E2E on 6 viewports × Chromium, Firefox and WebKit smoke | Met | 161 passed on 6 viewports; regression 132/132 per engine, 396/396 ×3 |
 
 QA-VERDICT T-M1.16: PASS WITH MINOR

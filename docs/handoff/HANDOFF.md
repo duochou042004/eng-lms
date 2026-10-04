@@ -1,6 +1,6 @@
 # Handoff — 2026-10-04T00:31Z (M1 G5 regression done; M1 awaits the PO sign-off)
 
-Phase/Milestone: P1 / M1 (`awaiting_approval`) · Current task: **T-M2.1 (draft; packet not written)** · Branch: `docs/T-M1.16-m1-g5` · Last commit on develop: `fc288b3` · Remote: https://github.com/duochou042004/eng-lms (mirror: gitlab.com/duochou042004/eng-lms)
+Phase/Milestone: P1 / M1 (`awaiting_approval`) · Current task: **T-M2.1 (draft; packet not written)** · Branch: `docs/T-M1.16-m1-g5` · Last commit on develop: `2fc6935` (regression suite; build under test `fc288b3`) · Remote: https://github.com/duochou042004/eng-lms (mirror: gitlab.com/duochou042004/eng-lms)
 
 ## Where we are
 - **M1 G5 regression done** (DEC-087): QA-VERDICT PASS WITH MINOR at `fc288b3`: 22 regression scenarios × 6 viewports × Chromium, Firefox and WebKit, 132/132 per
@@ -10,7 +10,8 @@ Phase/Milestone: P1 / M1 (`awaiting_approval`) · Current task: **T-M2.1 (draft;
 - WebKit's system libraries are installed on this device now (the PO ran `playwright install-deps webkit`).
 
 ## In flight
-- PR #46 (`qa/T-M1.16-m1-regression`: the regression suite and `evidence/M1/qa/`) and this docs PR (the report, retro, DEC-086/087). Merge both via merge-gate.
+- PR #46 (`qa/T-M1.16-m1-regression`: the regression suite and `evidence/M1/qa/`) is merged (`2fc6935`); this docs PR (#47: the report, retro, DEC-086/087)
+  cites its files and merges after it via merge-gate.
 
 ## Next steps
 1. Ask the PO to sign off M1's G5 (record a DEC); then `milestone.status` = `done`, `gates.G5` = pass.
