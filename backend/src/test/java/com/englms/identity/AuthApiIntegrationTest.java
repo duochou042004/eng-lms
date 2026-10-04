@@ -386,6 +386,40 @@ class AuthApiIntegrationTest {
 		assertThat(response.setCookie(Browser.REMEMBER_ME)).contains("Expires=Thu, 01 Jan 1970");
 	}
 
+	/** QA F1: on an HTML route a replayed (rotated) remember-me token gets the SPA shell, not an error page. */
+	@Test
+	void aReusedRememberMeTokenOnAnHtmlRouteGetsTheSpaShell() {
+		Browser browser = signedIn("tutor.one", true);
+		String original = browser.cookies.get(Browser.REMEMBER_ME);
+		jdbc.update("DELETE FROM spring_session");
+		assertThat(browser.get("/api/v1/auth/session").status()).isEqualTo(200);
+
+		Browser replay = browser();
+		replay.accept = "text/html,application/xhtml+xml,*/*;q=0.8";
+		replay.cookies.put(Browser.REMEMBER_ME, original);
+		Response response = replay.get("/");
+
+		assertThat(response.status()).isEqualTo(200);
+		assertThat(response.header("Content-Type")).startsWith("text/html");
+		assertThat(response.body()).contains("Eng-LMS test SPA").doesNotContain("Whitelabel");
+	}
+
+	/** QA F2: the CSRF cookie is issued on /api/** only, so cacheable static responses carry no Set-Cookie. */
+	@Test
+	void staticResponsesCarryNoSetCookie() {
+		Browser browser = browser();
+		Response asset = browser.get("/assets/index-Ab12Cd34.js");
+		browser.accept = "text/html";
+		Response index = browser.get("/index.html");
+		Response route = browser.get("/tutor");
+
+		assertThat(List.of(asset, index, route)).allSatisfy(response -> {
+			assertThat(response.status()).isEqualTo(200);
+			assertThat(response.setCookies()).isEmpty();
+		});
+		assertThat(browser().get("/api/v1/auth/session").setCookie(Browser.XSRF)).isNotNull();
+	}
+
 	@Test
 	void parallelRequestsWithOneRememberMeCookieNeverAnswer500() throws Exception {
 		for (int round = 0; round < 5; round++) {

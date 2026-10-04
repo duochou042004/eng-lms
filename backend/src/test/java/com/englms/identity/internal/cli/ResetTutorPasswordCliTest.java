@@ -133,6 +133,23 @@ class ResetTutorPasswordCliTest {
 		assertThat(jdbc.queryForObject("SELECT count(*) FROM audit_event", Integer.class)).isZero();
 	}
 
+	/** QA F5: an unknown command exits 1 with one stderr line naming the known commands, and changes nothing. */
+	@Test
+	void anUnknownCommandExitsWithOneAndNamesTheKnownCommands(CapturedOutput output) {
+		IdentityFixtures.insert(jdbc, "Tutor.One", PASSWORD, Role.TUTOR, false);
+		Throwable failure = org.assertj.core.api.Assertions.catchThrowable(() -> new SpringApplicationBuilder(
+				EnglmsApplication.class).run("--spring.datasource.url=" + postgres.getJdbcUrl(),
+						"--spring.datasource.username=" + postgres.getUsername(),
+						"--spring.datasource.password=" + postgres.getPassword(), "--englms.cli=reset-tutor-pasword",
+						"--spring.main.web-application-type=none"));
+
+		assertThat(exitCode(failure)).isEqualTo(1);
+		assertThat(output.getErr().lines().filter(line -> line.contains("Unknown --englms.cli command")))
+			.containsExactly("Unknown --englms.cli command; known commands: reset-tutor-password");
+		assertThat(jdbc.queryForObject("SELECT must_change_password FROM user_account", Boolean.class)).isFalse();
+		assertThat(jdbc.queryForObject("SELECT count(*) FROM audit_event", Integer.class)).isZero();
+	}
+
 	/** The exit code Spring Boot uses for a failed run: the first {@link ExitCodeGenerator} in the cause chain. */
 	static int exitCode(Throwable failure) {
 		for (Throwable t = failure; t != null; t = t.getCause()) {

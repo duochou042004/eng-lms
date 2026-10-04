@@ -49,7 +49,7 @@ Actors: anonymous internet users, an authenticated student (curious or malicious
   `persistent_logins` (cookie `ENGLMS_REMEMBER_ME`, `HttpOnly; Secure; SameSite=Lax`, 30 days, token rotated on every use); logout deletes this device's token,
   a password change, a reset, a disable or a lock through the password change deletes all of them. `Secure` can be turned off only under the `local` Spring profile
   (`server.servlet.session.cookie.secure=false` without it, or with the `prod` profile, fails startup, NFR-SEC-04). CSRF: `CookieCsrfTokenRepository` (`XSRF-TOKEN`, readable by JavaScript,
-  `Secure; SameSite=Lax`) → header `X-XSRF-TOKEN`, Spring Security's SPA handler; `GET /auth/session` primes the cookie, login rotates it. Concurrent sessions are allowed (A-018).
+  `Secure; SameSite=Lax`) → header `X-XSRF-TOKEN`, Spring Security's SPA handler; `GET /auth/session` primes the cookie, login rotates it. The cookie is written on `/api/**` responses only, so hashed assets and `index.html` (cacheable) never carry a `Set-Cookie` (QA F2). On an HTML route a remember-me cookie that no longer authenticates is ignored and the SPA shell is served (QA F1). Concurrent sessions are allowed (A-018).
   The idle timeout is `server.servlet.session.timeout`; lockout, throttle and remember-me validity are `englms.security.*`.
 - **Password policy (NFR-SEC-06):** 10–128 characters, not in `common-passwords.txt` (top 10k, bundled), not equal to the username. No composition rules (per NIST 800-63B).
   Generated temporary passwords: 3 random words from a bundled word list + 2 digits (≥ 12 characters, easy to type on a phone), from a `SecureRandom` source.

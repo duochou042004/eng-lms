@@ -39,7 +39,7 @@ It prints **one** temporary password to stdout (three words and two digits, e.g.
 of the tutor ends**, and a `PASSWORD_RESET_BY_OPERATOR` audit event is written (no secret in it). The command's context runs no bootstrap and no scheduled job.
 Give the password to the tutor over a separate channel. **Verify:** login with it succeeds and the SPA forces a password change (any other API call answers 403
 `PASSWORD_CHANGE_REQUIRED`). **Note:** the CLI refuses to run when the database has no tutor (exit code 2, nothing created); it never creates a tutor. Exit code 1:
-any other failure (e.g. the database is unreachable); nothing changed. A disabled tutor stays disabled.
+any other failure (e.g. the database is unreachable, or an unknown `--englms.cli` value, which prints one stderr line naming the known commands); nothing changed. A disabled tutor stays disabled.
 
 ## 5. Student cannot log in
 Check the student's status in the tutor UI (ARCHIVED → reactivate). If the account is locked (`locked_until`), a tutor password reset unlocks it. If a temporary password

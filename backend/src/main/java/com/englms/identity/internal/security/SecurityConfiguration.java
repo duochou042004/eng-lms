@@ -78,11 +78,11 @@ class SecurityConfiguration {
 
 	/** SPA CSRF (ADR-0005): {@code XSRF-TOKEN} readable by JavaScript, echoed in {@code X-XSRF-TOKEN}. */
 	@Bean
-	CookieCsrfTokenRepository csrfTokenRepository(
+	ApiCsrfTokenRepository csrfTokenRepository(
 			@Value("${server.servlet.session.cookie.secure:true}") boolean secureCookies) {
 		CookieCsrfTokenRepository repository = CookieCsrfTokenRepository.withHttpOnlyFalse();
 		repository.setCookieCustomizer(cookie -> cookie.secure(secureCookies).sameSite("Lax").path("/"));
-		return repository;
+		return new ApiCsrfTokenRepository(repository);
 	}
 
 	/**
@@ -138,7 +138,7 @@ class SecurityConfiguration {
 		 */
 		@Bean
 		SecurityFilterChain securityFilterChain(HttpSecurity http, HttpSessionSecurityContextRepository contexts,
-				CookieCsrfTokenRepository csrfTokens, AccountRememberMeServices rememberMe, ServletContext application) {
+				ApiCsrfTokenRepository csrfTokens, AccountRememberMeServices rememberMe, ServletContext application) {
 			// Boot also registers this filter on the management port (its child context reuses the bean). The chain
 			// applies to the application port only: :8081 (health/info, never proxied) has no sessions, CSRF or
 			// security headers (DEC-050).

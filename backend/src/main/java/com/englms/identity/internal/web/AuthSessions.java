@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpSession;
 
 import com.englms.identity.CurrentUser;
 import com.englms.identity.internal.security.AccountRememberMeServices;
+import com.englms.identity.internal.security.ApiCsrfTokenRepository;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -17,7 +18,6 @@ import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.security.web.authentication.session.ChangeSessionIdAuthenticationStrategy;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
-import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.csrf.CsrfAuthenticationStrategy;
 import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.stereotype.Component;
@@ -33,11 +33,11 @@ class AuthSessions {
 
 	private final HttpSessionSecurityContextRepository contexts;
 
-	private final CookieCsrfTokenRepository csrfTokens;
+	private final ApiCsrfTokenRepository csrfTokens;
 
 	private final AccountRememberMeServices rememberMe;
 
-	AuthSessions(HttpSessionSecurityContextRepository contexts, CookieCsrfTokenRepository csrfTokens,
+	AuthSessions(HttpSessionSecurityContextRepository contexts, ApiCsrfTokenRepository csrfTokens,
 			AccountRememberMeServices rememberMe) {
 		this.contexts = contexts;
 		this.csrfTokens = csrfTokens;

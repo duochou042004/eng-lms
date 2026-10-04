@@ -36,6 +36,8 @@ public final class Browser {
 
 	public final Map<String, String> cookies = new LinkedHashMap<>();
 
+	public String accept = "application/json";
+
 	public Browser(int port) {
 		this.base = "http://localhost:" + port;
 	}
@@ -60,7 +62,7 @@ public final class Browser {
 	public Response send(String method, String path, String json, String csrfHeader) {
 		HttpRequest.Builder request = HttpRequest.newBuilder(URI.create(base + path))
 			.method(method, (json != null) ? BodyPublishers.ofString(json) : BodyPublishers.noBody())
-			.header("Accept", "application/json")
+			.header("Accept", accept)
 			.header("User-Agent", "englms-it-browser");
 		if (json != null) {
 			request.header("Content-Type", "application/json");
