@@ -1,0 +1,23 @@
+$ playwright install chromium firefox webkit
+Playwright Host validation warning: 
+╔══════════════════════════════════════════════════════╗
+║ Host system is missing dependencies to run browsers. ║
+║ Please install them with the following command:      ║
+║                                                      ║
+║     sudo pnpm exec playwright install-deps           ║
+║                                                      ║
+║ Alternatively, use apt:                              ║
+║     sudo apt-get install libevent-2.1-7t64\          ║
+║         libflite1\                                   ║
+║         libavif16\                                   ║
+║         libmanette-0.2-0\                            ║
+║         gstreamer1.0-libav                           ║
+║                                                      ║
+║ <3 Playwright Team                                   ║
+╚══════════════════════════════════════════════════════╝
+    at validateDependenciesLinux (/home/kali/App_sources/eng-lms-m1-qa/qa/node_modules/.pnpm/playwright-core@1.63.0/node_modules/playwright-core/lib/coreBundle.js:32259:9)
+    at async Registry._validateHostRequirements (/home/kali/App_sources/eng-lms-m1-qa/qa/node_modules/.pnpm/playwright-core@1.63.0/node_modules/playwright-core/lib/coreBundle.js:33519:18)
+    at async Registry._validateHostRequirementsForExecutableIfNeeded (/home/kali/App_sources/eng-lms-m1-qa/qa/node_modules/.pnpm/playwright-core@1.63.0/node_modules/playwright-core/lib/coreBundle.js:33641:11)
+    at async Registry.validateHostRequirementsForExecutablesIfNeeded (/home/kali/App_sources/eng-lms-m1-qa/qa/node_modules/.pnpm/playwright-core@1.63.0/node_modules/playwright-core/lib/coreBundle.js:33630:11)
+    at async installBrowsers (/home/kali/App_sources/eng-lms-m1-qa/qa/node_modules/.pnpm/playwright-core@1.63.0/node_modules/playwright-core/lib/coreBundle.js:70097:5)
+    at async _Command.<anonymous> (/home/kali/App_sources/eng-lms-m1-qa/qa/node_modules/.pnpm/playwright-core@1.63.0/node_modules/playwright-core/lib/coreBundle.js:73670:7)

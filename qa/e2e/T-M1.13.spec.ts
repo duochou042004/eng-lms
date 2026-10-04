@@ -15,7 +15,7 @@ async function iconVisible(radios: Locator) {
   }))
 }
 function diff(a: { x: number; w: number }[], b: { x: number; w: number }[]) {
-  return Math.max(...a.map((s, i) => Math.max(Math.abs(s.x - b[i].x), Math.abs(s.w - b[i].w))))
+  return Math.max(...a.map((s, i) => Math.max(Math.abs(s.x - b[i]!.x), Math.abs(s.w - b[i]!.w))))
 }
 async function noHScroll(page: Page) {
   const r = await page.evaluate(() => ({ s: document.scrollingElement!.scrollWidth, v: document.documentElement.clientWidth }))
@@ -46,7 +46,7 @@ test.describe('packaged', () => {
       await page.locator('body').click({ position: { x: 1, y: 1 } }).catch(() => {})
       await page.evaluate(() => (document.activeElement as HTMLElement)?.blur())
       let guard = 0
-      while (!(await radios.evaluateAll((els) => els.includes(document.activeElement as Element))) && guard++ < 15) await page.keyboard.press('Tab')
+      while (!(await radios.evaluateAll((els) => (els as Element[]).includes(document.activeElement as Element))) && guard++ < 15) await page.keyboard.press('Tab')
       const focused1 = await page.evaluate(() => document.activeElement?.textContent)
       await page.keyboard.press('ArrowLeft'); await page.keyboard.press('ArrowRight'); await page.keyboard.press('ArrowLeft')
       const focused2 = await page.evaluate(() => document.activeElement?.textContent)
