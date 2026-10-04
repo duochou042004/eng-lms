@@ -13,7 +13,8 @@
 
 ## 2. Scope and traceability
 
-1. MUST implement only what the packet's acceptance criteria require. MUST NOT add "nice to have" features. Propose them as OQs instead.
+1. MUST implement only what the packet's acceptance criteria require. MUST NOT add "nice to have" features. Propose them as OQs instead. Exception: an AC
+   the LC adds under quality-gates G3 for a cheap S3/S4 fix (DEC-088) is in scope.
 2. MUST reference FR/NFR/DEC IDs in the commit trailer (`Task: T-M2.3`, `Refs: FR-STU-01`) and in the PR.
 3. MUST apply the scope guardrail (scope.md §6) whenever something seems useful but is untraced. **Stop and ask**, don't build.
 4. MUST record assumptions in the packet (and in `docs/01-product/assumptions.md` if they are product-level). Never guess silently.

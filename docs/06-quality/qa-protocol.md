@@ -39,6 +39,9 @@ comes from `scripts/e2e-run.sh` (the jar with the SPA) or the image; the e2e pro
 - **Responsive:** no horizontal scroll; sticky footers do not cover inputs with the keyboard open (mobile emulation); long Vietnamese names wrap.
 - **i18n:** switch to en and vi. No missing keys, and no English leaking into the vi UI.
 - **Budgets:** step count for the affected critical flows.
+- **Repeat runs (DEC-088):** for any E2E change, run the new or changed specs ×3 (`--repeat-each=3`, no retries); specs covering changed focus, loading or
+  keyboard behaviour (step budgets) ×20 on `phone-small`, `tablet` and `laptop`, even if the spec itself is unchanged. An intermittent failure is a
+  flaky-test finding under test-strategy §3; a consistent failure is a defect.
 - **Scope:** anything present that is not in the ACs is flagged `SCOPE`.
 
 ## 4. Report template (`evidence/<task-id>/qa/report.md`)
