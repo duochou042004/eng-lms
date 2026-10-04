@@ -11,7 +11,10 @@ public record LoginFailed(UUID userId, Reason reason, ClientInfo client) {
 	public enum Reason {
 
 		UNKNOWN_USERNAME, BAD_PASSWORD, ACCOUNT_LOCKED, ACCOUNT_DISABLED, TEMPORARY_PASSWORD_EXPIRED,
-		CURRENT_PASSWORD_INCORRECT
+		CURRENT_PASSWORD_INCORRECT,
+
+		/** A username or password longer than any account can have (never looked up or hashed). */
+		REJECTED_INPUT
 
 	}
 

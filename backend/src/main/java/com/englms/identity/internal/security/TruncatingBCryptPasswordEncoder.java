@@ -13,6 +13,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
  * {@code encode} refuses longer input. NFR-SEC-06 allows 128 characters (up to 512 UTF-8 bytes), so this encoder hashes
  * the first 72 bytes: the result is a standard bcrypt hash that the stock {@link BCryptPasswordEncoder} verifies.
  * The consequence (classic bcrypt behaviour): two passwords that share their first 72 bytes are equivalent.
+ * Kept after the SEC review (OQ-a verdict, T-M2.1).
  */
 class TruncatingBCryptPasswordEncoder extends BCryptPasswordEncoder {
 
@@ -34,6 +35,24 @@ class TruncatingBCryptPasswordEncoder extends BCryptPasswordEncoder {
 			return super.encodeNonNullPassword(rawPassword);
 		}
 		return BCrypt.hashpw(Arrays.copyOf(bytes, BCRYPT_MAX_BYTES), BCrypt.gensalt("$2a", STRENGTH, random));
+	}
+
+	/**
+	 * Truncates explicitly as well (SEC review OQ-a): the comparison doesn't rely on {@code checkpw}'s implicit
+	 * 72-byte cut, so a future change there cannot lock out the users with long passwords.
+	 */
+	@Override
+	protected boolean matchesNonNull(String rawPassword, String encodedPassword) {
+		byte[] bytes = rawPassword.getBytes(StandardCharsets.UTF_8);
+		if (bytes.length <= BCRYPT_MAX_BYTES) {
+			return super.matchesNonNull(rawPassword, encodedPassword);
+		}
+		try {
+			return BCrypt.checkpw(Arrays.copyOf(bytes, BCRYPT_MAX_BYTES), encodedPassword);
+		}
+		catch (IllegalArgumentException ex) {
+			return false;
+		}
 	}
 
 }

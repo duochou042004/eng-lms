@@ -33,7 +33,8 @@ class MustChangePasswordFilter extends OncePerRequestFilter {
 			PathPatternRequestMatcher.pathPattern(HttpMethod.GET, "/api/v1/auth/session"),
 			PathPatternRequestMatcher.pathPattern(HttpMethod.POST, "/api/v1/auth/password"),
 			PathPatternRequestMatcher.pathPattern(HttpMethod.POST, "/api/v1/auth/logout"),
-			PathPatternRequestMatcher.pathPattern(HttpMethod.GET, "/api/v1/meta"));
+			PathPatternRequestMatcher.pathPattern(HttpMethod.GET, "/api/v1/meta"),
+			PathPatternRequestMatcher.pathPattern(HttpMethod.HEAD, "/api/v1/meta"));
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)

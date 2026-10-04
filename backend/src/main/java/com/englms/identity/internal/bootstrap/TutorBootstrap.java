@@ -95,7 +95,7 @@ class TutorBootstrap implements SmartInitializingSingleton {
 			throw new IllegalStateException("ENGLMS_BOOTSTRAP_TUTOR_USERNAME must be 3-40 characters of a-z, 0-9, '.', "
 					+ "'_' or '-' (validation-rules.md)");
 		}
-		String password = readPassword();
+		String password = PasswordPolicy.normalize(readPassword());
 		List<ProblemCodes> violations = policy.violations(password, username);
 		if (!violations.isEmpty()) {
 			throw new IllegalStateException("The tutor bootstrap password violates the password policy: " + violations);

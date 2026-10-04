@@ -14,10 +14,10 @@ import org.springframework.data.jpa.repository.Query;
 public interface UserAccountRepository extends JpaRepository<UserAccount, UUID> {
 
 	/** Row-locked: concurrent sign-in attempts on one account are serialised, so the failure count stays exact. */
-	@Lock(LockModeType.PESSIMISTIC_WRITE)
-	@Query("select a from UserAccount a where a.usernameNormalized = :usernameNormalized")
-	Optional<UserAccount> findForUpdateByUsernameNormalized(String usernameNormalized);
+	/** No lock: sign-in reads the account, checks the password, then locks by ID only to write (SEC review S2-1). */
+	Optional<UserAccount> findByUsernameNormalized(String usernameNormalized);
 
+	/** Row-locked: concurrent writes to one account (failure count, lock, password) are serialised. */
 	@Lock(LockModeType.PESSIMISTIC_WRITE)
 	@Query("select a from UserAccount a where a.id = :id")
 	Optional<UserAccount> findForUpdateById(UUID id);

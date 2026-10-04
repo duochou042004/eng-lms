@@ -16,7 +16,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Loads an account by its user ID for remember-me sign-in (the token owner is the user ID). A disabled account is
- * not enabled, so Spring Security's account-status check rejects its cookie (FR-AUTH-10). The password hash is not
+ * not enabled, so Spring Security's account-status check rejects its cookie (FR-AUTH-10); neither is one that must
+ * change its password. The password hash is not
  * handed out: remember-me never checks a password.
  */
 @Component
@@ -39,7 +40,8 @@ class AccountUserDetailsService implements UserDetailsService {
 			throw new UsernameNotFoundException("Not a user ID");
 		}
 		UserAccount account = accounts.findById(id).orElseThrow(() -> new UsernameNotFoundException("No such user"));
-		return new AccountUserDetails(account.toCurrentUser(), account.isActive());
+		// A must-change account never signs in by remember-me (SEC review S4-3): only with its temporary password.
+		return new AccountUserDetails(account.toCurrentUser(), account.isActive() && !account.mustChangePassword());
 	}
 
 	static final class AccountUserDetails extends User {

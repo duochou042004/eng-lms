@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
+import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -34,9 +35,18 @@ public class PasswordPolicy {
 		this.common = readLines(COMMON_PASSWORDS).stream().map(PasswordPolicy::fold).collect(Collectors.toUnmodifiableSet());
 	}
 
+	/**
+	 * Unicode NFC, applied to every password before the policy check, hashing and comparison, so a Vietnamese password
+	 * typed with combining marks (decomposed) equals the same password typed precomposed (SEC review S4-4).
+	 */
+	public static String normalize(String password) {
+		return Normalizer.normalize(password, Normalizer.Form.NFC);
+	}
+
 	/** The violated rules, in a stable order; empty when the password is acceptable. */
 	public List<ProblemCodes> violations(String password, String username) {
 		List<ProblemCodes> codes = new ArrayList<>();
+		password = normalize(password);
 		int length = password.codePointCount(0, password.length());
 		if (length < MIN_LENGTH) {
 			codes.add(ProblemCodes.PASSWORD_TOO_SHORT);

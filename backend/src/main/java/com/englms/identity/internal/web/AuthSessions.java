@@ -44,14 +44,19 @@ class AuthSessions {
 		this.rememberMe = rememberMe;
 	}
 
-	/** After a successful login: rotate the session ID and the CSRF token, store the context, maybe remember-me. */
+	/**
+	 * After a successful login: rotate the session ID and the CSRF token, store the context, maybe remember-me.
+	 * A remember-me token presented with the login (e.g. a previous user's on a shared device) is deleted first (SEC
+	 * review S4-2); a new one is issued only on request and never while the password must be changed (S4-3).
+	 */
 	void signIn(CurrentUser user, boolean rememberMeRequested, HttpServletRequest request,
 			HttpServletResponse response) {
+		rememberMe.logout(request, response, null);
 		Authentication authentication = authentication(user);
 		new ChangeSessionIdAuthenticationStrategy().onAuthentication(authentication, request, response);
 		new CsrfAuthenticationStrategy(csrfTokens).onAuthentication(authentication, request, response);
 		store(authentication, request, response);
-		if (rememberMeRequested) {
+		if (rememberMeRequested && !user.mustChangePassword()) {
 			request.setAttribute(AccountRememberMeServices.REQUESTED_ATTRIBUTE, Boolean.TRUE);
 			rememberMe.loginSuccess(request, response, authentication);
 		}

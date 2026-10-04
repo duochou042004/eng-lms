@@ -9,6 +9,9 @@ import javax.sql.DataSource;
 
 import jakarta.servlet.ServletContext;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.englms.identity.internal.domain.PasswordPolicy;
 import com.englms.identity.internal.domain.TemporaryPasswordGenerator;
 import com.englms.shared.web.ProblemResponses;
@@ -106,14 +109,24 @@ class SecurityConfiguration {
 	@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 	static class Web {
 
+		private static final Logger log = LoggerFactory.getLogger(Web.class);
+
 		/**
 		 * NFR-SEC-04: cookies are {@code Secure}. Turning that off is only for a browser engine that refuses Secure
-		 * cookies on {@code http://localhost}, under the {@code local} profile; anywhere else startup fails.
+		 * cookies on {@code http://localhost}, under the {@code local} profile and never with {@code prod}
+		 * (deployment.md §3); anywhere else startup fails. Outside {@code local}, a missing
+		 * {@code server.forward-headers-strategy} is warned about: behind Caddy every client would share Caddy's IP in
+		 * the throttle and the audit log (SEC review S4-7, S4-8).
 		 */
 		Web(Environment environment, @Value("${server.servlet.session.cookie.secure:true}") boolean secureCookies) {
-			if (!secureCookies && !environment.matchesProfiles("local")) {
+			boolean local = environment.matchesProfiles("local");
+			if (!secureCookies && (!local || environment.matchesProfiles("prod"))) {
 				throw new IllegalStateException("server.servlet.session.cookie.secure=false is only allowed with the "
-						+ "'local' Spring profile (NFR-SEC-04)");
+						+ "'local' Spring profile, never with 'prod' (NFR-SEC-04)");
+			}
+			if (!local && environment.getProperty("server.forward-headers-strategy") == null) {
+				log.warn("server.forward-headers-strategy is not set: behind the reverse proxy every client has the "
+						+ "proxy's IP (login throttle, audit). Set SERVER_FORWARDHEADERSSTRATEGY=native (deployment.md §3)");
 			}
 		}
 
@@ -154,6 +167,8 @@ class SecurityConfiguration {
 					.requestMatchers("/api/v1/auth/**")
 					.permitAll()
 					.requestMatchers(HttpMethod.GET, "/api/v1/meta")
+					.permitAll()
+					.requestMatchers(HttpMethod.HEAD, "/api/v1/meta")
 					.permitAll()
 					.requestMatchers("/api/**")
 					.authenticated()

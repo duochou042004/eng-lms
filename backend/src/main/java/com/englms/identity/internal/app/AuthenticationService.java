@@ -26,18 +26,28 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionTemplate;
 
 /**
  * Sign-in (FR-AUTH-03, NFR-SEC-05, T16) and the own-password change (FR-AUTH-05, FR-AUTH-06).
  * <p>
- * Account changes commit in a short transaction holding the account's row lock; the events are published after the
- * commit, and the audit module writes them in its own transaction. So a failed attempt is counted and audited even
- * though the request ends in a 401 or 422, and a request never holds two pool connections at once.
+ * bcrypt (~0.3 s) never runs while a row lock, a transaction or a pool connection is held (SEC review S2-1): the account
+ * is read without a lock, the password is checked, and only then a short {@code REQUIRES_NEW} transaction locks the
+ * row, re-checks status, lock, expiry and the hash against the current state, and writes the outcome. The events are
+ * published after that commit; the audit module writes them in its own transaction. So a failed attempt is counted
+ * and audited although the request ends in a 401 or 422, the answer time doesn't depend on concurrent attempts on the
+ * same account (no username oracle), and a burst on one account doesn't hold connections other sign-ins need.
  */
 @Service
 public class AuthenticationService {
+
+	/** Inputs longer than these are never looked up or hashed (SEC review S2-2); no account can match them. */
+	static final int MAX_USERNAME_INPUT = 64;
+
+	static final int MAX_PASSWORD_INPUT = 1024;
 
 	private final UserAccountRepository accounts;
 
@@ -62,7 +72,7 @@ public class AuthenticationService {
 
 	AuthenticationService(UserAccountRepository accounts, PasswordEncoder encoder, PasswordPolicy policy,
 			LoginThrottle throttle, SessionTerminator sessions, IdentityProperties properties,
-			ApplicationEventPublisher events, TransactionTemplate transactions, Clock clock) {
+			ApplicationEventPublisher events, PlatformTransactionManager transactionManager, Clock clock) {
 		this.accounts = accounts;
 		this.encoder = encoder;
 		this.policy = policy;
@@ -70,7 +80,8 @@ public class AuthenticationService {
 		this.sessions = sessions;
 		this.properties = properties;
 		this.events = events;
-		this.transactions = transactions;
+		this.transactions = new TransactionTemplate(transactionManager);
+		this.transactions.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
 		this.clock = clock;
 		this.dummyHash = encoder.encode(UUID.randomUUID().toString());
 	}
@@ -79,15 +90,14 @@ public class AuthenticationService {
 	 * @return the signed-in account
 	 * @throws ProblemException 429 {@code RATE_LIMITED} past the per-IP throttle; otherwise one generic 401
 	 * {@code UNAUTHENTICATED} for every failure (unknown user, wrong password, locked, disabled, expired temporary
-	 * password), so the answer never reveals whether an account exists (T16, DEC-089 (6))
+	 * password, over-long input), so the answer never reveals whether an account exists (T16, DEC-089 (6))
 	 */
 	public AccountView login(String username, String password, ClientInfo client) {
 		throttle.tryAcquire(client.ip()).ifPresent(wait -> {
 			throw new ProblemException(HttpStatus.TOO_MANY_REQUESTS, ProblemCodes.RATE_LIMITED, List.of(), wait);
 		});
-		String raw = (password != null) ? password : "";
 		List<Object> published = new ArrayList<>();
-		AccountView view = transactions.execute(status -> attempt(username, raw, client, published));
+		AccountView view = attempt(username, password, client, published);
 		published.forEach(events::publishEvent);
 		if (view == null) {
 			throw new ProblemException(HttpStatus.UNAUTHORIZED, ProblemCodes.UNAUTHENTICATED);
@@ -95,53 +105,92 @@ public class AuthenticationService {
 		return view;
 	}
 
-	private AccountView attempt(String username, String raw, ClientInfo client, List<Object> published) {
-		Instant now = clock.instant();
-		Optional<UserAccount> found = (username == null) ? Optional.empty()
-				: accounts.findForUpdateByUsernameNormalized(Usernames.normalize(username));
+	private AccountView attempt(String username, String password, ClientInfo client, List<Object> published) {
+		if (username == null || password == null || username.length() > MAX_USERNAME_INPUT
+				|| password.length() > MAX_PASSWORD_INPUT) {
+			encoder.matches("", dummyHash);
+			published.add(new LoginFailed(null, LoginFailed.Reason.REJECTED_INPUT, client));
+			return null;
+		}
+		String raw = PasswordPolicy.normalize(password);
+		Optional<UserAccount> found = accounts.findByUsernameNormalized(Usernames.normalize(username));
 		if (found.isEmpty()) {
 			encoder.matches(raw, dummyHash);
 			published.add(new LoginFailed(null, LoginFailed.Reason.UNKNOWN_USERNAME, client));
 			return null;
 		}
-		UserAccount account = found.get();
-		boolean matches = encoder.matches(raw, account.passwordHash());
-		LoginFailed.Reason failure = null;
-		if (!account.isActive()) {
-			failure = LoginFailed.Reason.ACCOUNT_DISABLED;
-		}
-		else if (account.isLocked(now)) {
-			failure = LoginFailed.Reason.ACCOUNT_LOCKED;
-		}
-		else if (!matches) {
-			failure = LoginFailed.Reason.BAD_PASSWORD;
-			if (account.recordFailure(properties.lockout().maxFailures(), properties.lockout().duration(), now)) {
-				published.add(new AccountLocked(account.id(), account.lockedUntil(), client));
+		UUID id = found.get().id();
+		String checkedHash = found.get().passwordHash();
+		boolean matches = encoder.matches(raw, checkedHash);
+		return transactions.execute(status -> {
+			Instant now = clock.instant();
+			UserAccount account = accounts.findForUpdateById(id).orElse(null);
+			LoginFailed.Reason failure = null;
+			if (account == null) {
+				failure = LoginFailed.Reason.UNKNOWN_USERNAME;
 			}
-		}
-		else if (account.isTemporaryPasswordExpired(now)) {
-			failure = LoginFailed.Reason.TEMPORARY_PASSWORD_EXPIRED;
-		}
-		if (failure != null) {
-			published.addFirst(new LoginFailed(account.id(), failure, client));
-			return null;
-		}
-		account.recordSuccessfulLogin(now);
-		published.add(new LoginSucceeded(account.id(), client));
-		return AccountView.of(account);
+			else if (!account.isActive()) {
+				failure = LoginFailed.Reason.ACCOUNT_DISABLED;
+			}
+			else if (account.isLocked(now)) {
+				failure = LoginFailed.Reason.ACCOUNT_LOCKED;
+			}
+			else if (!account.passwordHash().equals(checkedHash)) {
+				// The password changed while this attempt was being checked: the attempt proved nothing.
+				failure = LoginFailed.Reason.BAD_PASSWORD;
+			}
+			else if (!matches) {
+				failure = LoginFailed.Reason.BAD_PASSWORD;
+				if (account.recordFailure(properties.lockout().maxFailures(), properties.lockout().duration(), now)) {
+					published.add(new AccountLocked(account.id(), account.lockedUntil(), client));
+				}
+			}
+			else if (account.isTemporaryPasswordExpired(now)) {
+				failure = LoginFailed.Reason.TEMPORARY_PASSWORD_EXPIRED;
+			}
+			if (failure != null) {
+				published.addFirst(new LoginFailed(id, failure, client));
+				return null;
+			}
+			account.recordSuccessfulLogin(now);
+			published.add(new LoginSucceeded(account.id(), client));
+			return AccountView.of(account);
+		});
 	}
 
 	/**
-	 * Changes the signed-in user's password. A wrong current password counts toward the lockout; reaching the lock
-	 * that way ends all of the user's sessions and remember-me tokens (AC7). On success every other session and every
-	 * remember-me token of the user ends; {@code keepSessionId} (the caller's session) stays.
+	 * Changes the signed-in user's password. A wrong current password (or an expired temporary one) counts toward the
+	 * lockout; reaching the lock that way ends all of the user's sessions and remember-me tokens (AC7). On success every
+	 * other session and every remember-me token of the user ends; {@code keepSessionId} (the caller's session) stays.
 	 * @return the updated account
 	 * @throws ProblemException 401 when the account is gone; 422 {@code VALIDATION_FAILED} with field codes
 	 */
 	public AccountView changePassword(UUID userId, String currentPassword, String newPassword, ClientInfo client,
 			String keepSessionId) {
+		UserAccount snapshot = accounts.findById(userId).filter(UserAccount::isActive).orElse(null);
+		if (snapshot == null) {
+			throw new ProblemException(HttpStatus.UNAUTHORIZED, ProblemCodes.UNAUTHENTICATED);
+		}
+		String checkedHash = snapshot.passwordHash();
 		String current = (currentPassword != null) ? currentPassword : "";
-		String replacement = (newPassword != null) ? newPassword : "";
+		boolean currentOk = current.length() <= MAX_PASSWORD_INPUT
+				&& encoder.matches(PasswordPolicy.normalize(current), checkedHash)
+				&& !snapshot.isTemporaryPasswordExpired(clock.instant());
+		List<FieldProblem> problems = new ArrayList<>();
+		String newHash = null;
+		if (currentOk) {
+			String replacement = PasswordPolicy.normalize((newPassword != null) ? newPassword : "");
+			policy.violations(replacement, snapshot.username())
+				.forEach(code -> problems.add(new FieldProblem("newPassword", code, describe(code))));
+			if (problems.isEmpty() && encoder.matches(replacement, checkedHash)) {
+				problems.add(new FieldProblem("newPassword", ProblemCodes.PASSWORD_UNCHANGED,
+						describe(ProblemCodes.PASSWORD_UNCHANGED)));
+			}
+			if (problems.isEmpty()) {
+				newHash = encoder.encode(replacement);
+			}
+		}
+		String hashToStore = newHash;
 		List<Object> published = new ArrayList<>();
 		ChangeOutcome outcome = transactions.execute(status -> {
 			Instant now = clock.instant();
@@ -149,7 +198,7 @@ public class AuthenticationService {
 			if (account == null || !account.isActive()) {
 				return new ChangeOutcome(null, List.of(), false, true);
 			}
-			if (!encoder.matches(current, account.passwordHash())) {
+			if (!currentOk || !account.passwordHash().equals(checkedHash)) {
 				published.add(new LoginFailed(userId, LoginFailed.Reason.CURRENT_PASSWORD_INCORRECT, client));
 				boolean locked = account.recordFailure(properties.lockout().maxFailures(),
 						properties.lockout().duration(), now);
@@ -160,17 +209,10 @@ public class AuthenticationService {
 				return new ChangeOutcome(null, List.of(new FieldProblem("currentPassword",
 						ProblemCodes.CURRENT_PASSWORD_INCORRECT, "The current password is incorrect")), locked, false);
 			}
-			List<FieldProblem> problems = new ArrayList<>();
-			policy.violations(replacement, account.username())
-				.forEach(code -> problems.add(new FieldProblem("newPassword", code, describe(code))));
-			if (encoder.matches(replacement, account.passwordHash())) {
-				problems.add(new FieldProblem("newPassword", ProblemCodes.PASSWORD_UNCHANGED,
-						describe(ProblemCodes.PASSWORD_UNCHANGED)));
-			}
 			if (!problems.isEmpty()) {
 				return new ChangeOutcome(null, problems, false, false);
 			}
-			account.changePassword(encoder.encode(replacement), now);
+			account.changePassword(hashToStore, now);
 			sessions.endOtherSessions(userId, keepSessionId);
 			published.add(new PasswordChanged(userId, client));
 			return new ChangeOutcome(AccountView.of(account), List.of(), false, false);
