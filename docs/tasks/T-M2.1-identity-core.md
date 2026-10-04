@@ -59,62 +59,80 @@ explicitly public or authenticated, and the student and tutor namespaces are rol
 - **Packages:** `com.englms.identity` (public API: `AccountApi`, `CurrentUser`, `SessionTerminator`, events `LoginSucceeded`, `LoginFailed`, `PasswordChanged`,
   `PasswordReset`, `AccountDisabled`), `identity.internal.{domain,persistence,web,security,bootstrap,cli}`; `com.englms.audit` (`AuditApi`),
   `audit.internal.*`. Dependencies follow module-boundaries (identity → shared, settings; audit → shared + events). Login-time audit writes are synchronous
-  through `AuditApi.record` (security.md §8), so a failed login is audited even though the request fails. `ModularityTests` stays green.
+  through events (module-boundaries §audit, "Listens"): identity publishes `LoginSucceeded`, `LoginFailed`, `AccountLocked`, `PasswordChanged`, `PasswordReset`,
+  `TutorBootstrapped` from its `identity.events` package; `audit` records them in a **synchronous** `@EventListener` that writes in its own transaction
+  (`REQUIRES_NEW`), so a failed-login row survives the failed request. Identity never calls `AuditApi` (no `identity → audit` edge, no cycle; DOCS-REVIEW S2-1).
+  `ModularityTests` stays green.
 - **Migrations** (db-migration skill; timestamped names like `V1`): identity (`user_account`, `ux_user_account__single_tutor`, the Spring Session JDBC
   PostgreSQL schema as shipped by the Spring Session version on the classpath, `persistent_logins` as `JdbcTokenRepositoryImpl` expects) and audit (`audit_event`
   with `ix (occurred_at DESC)`, `ix (action)`). The tables live in schema `app` like V1. Session and remember-me tables must work with the
   `app` search path (verify Spring Session's table-name property). `username_normalized` = `lower(unaccent(trim(username)))` computed by the application
   (the same function `students` will reuse) and checked by the unique index.
+- **Principal name:** the stable `userId` (UUID string), never the username. It is the Spring Session principal-name index and the `persistent_logins.username`
+  value, so `endAllSessions(userId)` finds every session and token whatever case the user typed and after a later username change (T-M2.3; DOCS-REVIEW S3-2).
 - **Remember-me and Spring Session:** ADR-0005 names `persistent_logins` (`PersistentTokenBasedRememberMeServices` + `JdbcTokenRepositoryImpl`). Ending a
   user's sessions must also delete their remember-me tokens, otherwise a cookie would revive a disabled or reset account. If the implementer finds that
   Spring Session's own `SpringSessionRememberMeServices` meets A-021 better, that is an ADR-0005 amendment and needs a DEC before code (not an in-task choice).
-- **Session cookie:** `ENGLMS_SESSION`, `HttpOnly; Secure; SameSite=Lax; Path=/`. `Secure` is the default; a property may turn it off only for the
-  local/E2E profile if a browser engine refuses Secure cookies on `http://localhost` (record which in the summary). Production config cannot turn it off silently
-  (startup WARN at least).
+- **Session cookie:** `ENGLMS_SESSION`, `HttpOnly; Secure; SameSite=Lax; Path=/`. `Secure` is the default; a property may turn it off only under a `local` Spring
+  profile (introduced here for `dev-up`/`e2e-run`) if a browser engine refuses Secure cookies on `http://localhost` (record which in the summary). With the property
+  set and no `local` profile, startup fails (NFR-SEC-04; DOCS-REVIEW S3-5).
 - **CSRF:** Spring Security's SPA setup (`CookieCsrfTokenRepository` readable by JS, `X-XSRF-TOKEN` header). `GET /auth/session` primes the cookie (also for
   anonymous callers, who get 401 plus the cookie). Login itself requires the token. A missing or wrong token → 403 `CSRF_INVALID` Problem Details.
 - **Login timing:** an unknown username still runs one password-encoder `matches` against a fixed dummy hash, so wrong-username and wrong-password take
-  similar time (T16). Locked, disabled and expired-temporary-password accounts get the same generic 401 body as a wrong password.
+  similar time (T16). Locked, disabled and expired-temporary-password accounts get the same generic 401 body as a wrong password. Login answers 401, not
+  api-conventions' `423 ACCOUNT_LOCKED`, while an account is locked, because a 423 would reveal that the account exists (T16); api-conventions §5 is updated.
+  Login neither accepts nor returns a redirect target (T18: the SPA picks the landing route from the session's role in T-M2.4).
 - **Throttle:** a sliding window keyed by the client IP. The IP comes from `request.getRemoteAddr()`; Caddy's `X-Forwarded-For` is honoured only through Boot's
-  `server.forward-headers-strategy` with the proxy trusted per deployment.md (do not parse the header by hand). Exceeding it → 429 with a Problem Details code
-  (add `TOO_MANY_REQUESTS` or reuse a documented code; update api-conventions §5).
+  `server.forward-headers-strategy` with the proxy trusted per deployment.md (do not parse the header by hand). Exceeding it → 429 `RATE_LIMITED` with `Retry-After`
+  (api-conventions §5).
 - **Headers:** security.md §5 values are unchanged (`frame-src 'none'` until the embed registry). Hashed `/assets/**` keep `max-age=31536000, immutable` and
   `index.html` keeps `no-cache` (T-M1.5): Spring Security's default cache-control writer must not override them. `ProblemDetailsErrorReportValve` keeps setting the
   same headers for responses Tomcat rejects before the filter chain (one source of the header values, shared by both).
+- **L1 matching:** `/api/v1/auth/**` is permitted as a whole at L1 and the real handlers decide (so an unknown auth path such as `register` is a 404);
+  `/api/v1/meta` is public; any other `/api/**` path is "denied": 401 for an anonymous caller, 404 for an authenticated one (nothing reveals which paths exist);
+  security.md §4 gets this wording (DOCS-REVIEW S3-3).
+- **401 codes:** no session cookie → `UNAUTHENTICATED`; a cookie that names no live session (unknown, idle-expired, logged out) → `SESSION_EXPIRED`, so T-M2.4
+  can say "your session ended" (DOCS-REVIEW S3-4).
+- **Must-change gate and `/meta`:** besides the three FR-AUTH-06 endpoints, the gate lets the public `GET /api/v1/meta` through: it carries no user data and the
+  SPA shell needs it on `/change-password` (DEC-089; FR-AUTH-06 AC amended; DOCS-REVIEW S4-7).
 - **Endpoints and contract:** springdoc picks up the four endpoints; `api/openapi.json` is regenerated and `pnpm api:generate` keeps contract-drift green.
   `GET /auth/session` returns `{userId, username, role, displayName, locale, timeZone, mustChangePassword}` (no hash, no lock fields).
-- **CLI (FR-AUTH-09):** runs with `--spring.main.web-application-type=none`, prints a generated temporary password once to stdout (security.md §3 generator: 3 words + 2
+- **CLI (FR-AUTH-09):** its context runs only the reset: no bootstrap runner, no `@Scheduled` jobs (DOCS-REVIEW S4-3). It runs with `--spring.main.web-application-type=none`, prints a generated temporary password once to stdout (security.md §3 generator: 3 words + 2
   digits, `SecureRandom`), sets `mustChangePassword=true` and `temp_password_expires_at = now + 7 days`, clears the lockout, ends the tutor's sessions, writes an
-  audit event, exits non-zero when no tutor exists, never creates a tutor. The bundled word list and common-password list need a licence compatible with the
+  audit event, exits non-zero when no tutor exists, never creates a tutor. The 7-day expiry extends A-021 (written for tutor-reset student passwords) to the
+  operator reset (DEC-089). The bundled word list and common-password list need a licence compatible with the
   repository (record source and licence in tech-stack).
 - **Decisions needed:** none blocking. OQ-10 runs on its default (12 h idle, optional 30-day remember-me).
 
 ## Acceptance criteria
 - **AC1 (FR-AUTH-02, I-01):** Given an empty `user_account` and both bootstrap variables set (the password read from the file), startup creates one TUTOR with
   `mustChangePassword=true` and writes a `BOOTSTRAP_TUTOR_CREATED` audit event (no secret in its details). When a tutor exists, the variables are ignored and
-  startup logs one INFO line. A missing/unreadable file or a password failing the policy stops bootstrap with an error that does not print the password.
+  startup logs one INFO line. With an empty table, a missing/unreadable file or a password failing the policy makes startup fail (the context does not start,
+  non-zero exit) with an error that does not print the password (DOCS-REVIEW S3-6).
   An integration test shows the database rejects a second TUTOR row.
 - **AC2 (FR-AUTH-03, NFR-SEC-04):** `POST /auth/login` with a valid username (case-insensitive, trimmed) and password returns 200 with the session body, rotates the
-  session ID (the pre-login ID no longer authenticates), sets `ENGLMS_SESSION` with `HttpOnly`, `Secure` (default config), `SameSite=Lax`, `Path=/`, and stores the
+  session ID (the pre-login ID no longer authenticates), sets `ENGLMS_SESSION` with `HttpOnly`, `Secure` (default config; the insecure-cookie property without the `local` profile fails startup), `SameSite=Lax`, `Path=/`, and stores the
   session in the Spring Session JDBC tables (a restarted application context still accepts it). Concurrent sessions of one user are allowed (A-018).
-  `LOGIN_SUCCEEDED` is audited and `last_login_at` set.
+  `LOGIN_SUCCEEDED` is audited and `last_login_at` set. The response has no redirect target and a `next` parameter is ignored (T18).
 - **AC3 (FR-AUTH-03, T16):** Unknown username, wrong password, disabled account and expired temporary password all return the same 401 body; the unknown-username
   path runs the encoder (test: the encoder is invoked, and timing is within a documented tolerance on CI). `LOGIN_FAILED` is audited without the attempted password.
 - **AC4 (NFR-SEC-05):** After 10 consecutive failures the account is locked for 15 minutes (both configurable): a correct password during the lock gets the same
   generic 401, `ACCOUNT_LOCKED` is audited once, and after the lock expires a correct password succeeds and resets the counter. More than 30 login attempts
-  from one IP within 5 minutes (configurable) get 429 regardless of username (throttle state is instance-local; documented in security.md).
+  from one IP within 5 minutes (configurable) get 429 `RATE_LIMITED` with `Retry-After` regardless of username (throttle state is instance-local; documented in security.md).
 - **AC5 (FR-AUTH-03, A-021):** `rememberMe=true` issues a remember-me cookie backed by `persistent_logins`; after the server session is gone (deleted or idle-expired),
   the cookie re-authenticates within 30 days and rotates its token. Idle timeout defaults to 12 h. Without `rememberMe`, no remember-me cookie is set.
 - **AC6 (FR-AUTH-04, DEC-070):** `POST /auth/logout` (with CSRF) invalidates the session, deletes the user's current remember-me token, expires `ENGLMS_SESSION`
-  and the remember-me cookie, and returns 204; the old cookie then gets 401 on `GET /auth/session`. Every `/api/**` response (200, 4xx, 5xx, Problem Details)
+  and the remember-me cookie, and returns 204; the old cookie then gets 401 `SESSION_EXPIRED` on `GET /auth/session`, and a request without any cookie gets 401
+  `UNAUTHENTICATED`. Every `/api/**` response (200, 4xx, 5xx, Problem Details)
   carries `Cache-Control` including `no-store`; `/assets/**` and `index.html` keep their T-M1.5 cache headers.
-- **AC7 (FR-AUTH-05, NFR-SEC-06):** `POST /auth/password` requires the current password; the new one must meet the policy (10–128, not in the common list, ≠
-  username, ≠ current) or 400 `VALIDATION_FAILED` with field codes. On success: the hash is updated, `mustChangePassword=false`, `temp_password_expires_at` cleared,
+- **AC7 (FR-AUTH-05, NFR-SEC-06):** `POST /auth/password` requires the current password: a wrong one → 422 `VALIDATION_FAILED` with field code
+  `CURRENT_PASSWORD_INCORRECT`, counted as a failed attempt toward the lockout. The new one must meet the policy (10–128, not in the common list, ≠ username,
+  ≠ current) or 422 `VALIDATION_FAILED` with `errors[]` field codes (api-conventions §5). On success: the hash is updated, `mustChangePassword=false`, `temp_password_expires_at` cleared,
   the session ID rotates, **all other** sessions and remember-me tokens of the user end, `PASSWORD_CHANGED` is audited. Hashes are `{bcrypt}` with strength 12.
-- **AC8 (FR-AUTH-06):** While `mustChangePassword=true`, every `/api/**` request except `GET /auth/session`, `POST /auth/password` and `POST /auth/logout`
-  returns 403 `PASSWORD_CHANGE_REQUIRED` (tested on `GET /api/v1/meta` with the must-change session, a tutor path and a student path); the session body reports `mustChangePassword`.
-- **AC9 (FR-AUTH-01, FR-AUTH-10, NFR-SEC-07, T11):** No registration route exists (`/register`, `/signup`, `POST /api/v1/auth/register` → 404, the last as Problem
-  Details). Anonymous `/api/v1/tutor/**` and `/api/v1/student/**` → 401 `UNAUTHENTICATED`; a student on a tutor path and a tutor on a student path → 403
+- **AC8 (FR-AUTH-06):** While `mustChangePassword=true`, every `/api/**` request except `GET /auth/session`, `POST /auth/password`, `POST /auth/logout` and the
+  public `GET /api/v1/meta` returns 403 `PASSWORD_CHANGE_REQUIRED` (tested on a tutor path and a student path; `/meta` answers 200); the session body reports `mustChangePassword`.
+- **AC9 (FR-AUTH-01, FR-AUTH-10, NFR-SEC-07, T11):** No registration route exists: `/register` and `/signup` → 404, and `POST /api/v1/auth/register` with a
+  valid CSRF token → 404 Problem Details. Anonymous `/api/v1/tutor/**` and `/api/v1/student/**` → 401 `UNAUTHENTICATED`; a student on a tutor path and a tutor on a student path → 403
   `FORBIDDEN_ROLE`; an unmapped `/api/**` path stays 404 for an authenticated caller and 401 for an anonymous one. POST/PUT/PATCH/DELETE without a valid
   CSRF token → 403 `CSRF_INVALID`. `AccountApi.disable(userId)` makes that user's next request 401 (including via a remember-me cookie) and their login fail
   with the generic message; `enable` restores login.
@@ -125,19 +143,20 @@ explicitly public or authenticated, and the student and tutor namespaces are rol
   no Whitelabel page and no reflected path.
 - **AC11 (FR-AUTH-09, NFR-SEC-11):** The runbooks §4 command prints one temporary password, sets `mustChangePassword=true` with a 7-day expiry, clears the
   lockout, ends the tutor's sessions and writes an audit event (security.md §8 gets the action name); it exits non-zero without creating anyone when no tutor exists.
-  `audit_event` rows carry no password, hash, token or session ID; rows older than 365 days are purged by a scheduled job (integration test with a fixed clock).
+  The CLI test asserts that no bootstrap runner or scheduled job ran in its context. `audit_event` rows carry no password, hash, token or session ID; rows older than 365 days are purged by a scheduled job (integration test with a fixed clock).
 
 ## Test plan
 - **Implementation:**
   - Unit: password policy (boundaries 9/10/128/129, common-list hit, = username, = current), temporary-password generator (shape, length ≥ 12, `SecureRandom`),
     username normalisation (case, trim, accents), throttle window (fixed clock), lockout transitions.
   - Integration (Testcontainers PostgreSQL 18, `container` tag): migrations on an empty DB and on the M1 schema (`FlywayMigrationTest`); single-tutor index;
-    bootstrap (empty / existing tutor / bad file); JDBC session persistence across context restart; `endAllSessions` + remember-me deletion; audit retention purge.
+    bootstrap (empty / existing tutor / bad file → context fails); JDBC session persistence across context restart; `endAllSessions` + remember-me deletion for
+    sessions created through mixed-case logins (principal = `userId`); the audit listener keeps the failed-login row when the request fails; audit retention purge.
   - API (MockMvc or a real port where cookies/firewall matter): AC2–AC10 one by one, including session-ID rotation, cookie flags, CSRF on every state-changing auth
     endpoint, must-change gate, 401/403 codes, `Cache-Control`, header values, raw dot-segment paths and `TRACE` on a real Tomcat port (MockMvc bypasses Tomcat).
   - CLI: run the command in a test context with web type `none` (AC11).
   - Architecture: `ModularityTests`, ArchUnit base rules, `ForbiddenIdentifiersTest` and the OpenAPI contract test green; contract-drift green after regeneration.
-  - Authz/isolation: no harness yet (T-M2.2). This task's tests cover anonymous / tutor / student / must-change on each of its endpoints and the L1 gate;
+  - Authz/isolation (authz-isolation skill, for the L1 cases and the hand-over list): no harness yet (T-M2.2). This task's tests cover anonymous / tutor / student / must-change on each of its endpoints and the L1 gate;
     T-M2.2 must register the four endpoints in the policy registry.
 - **Independent QA focus:** black-box over HTTP against the packaged image or `./scripts/dev-up.sh` stack: bootstrap from a secret file; login/logout with cookie
   inspection; session survives an app restart; remember-me after the session row is deleted; lockout and IP throttle (including the generic message);
@@ -152,10 +171,11 @@ explicitly public or authenticated, and the student and tutor namespaces are rol
   personal data, new endpoints; security-review skill). No UX review (no UI change); the SPA smoke screenshots at phone-small/tablet/laptop show the app still loads.
 
 ## Docs to update
-- `docs/04-backend/api-catalog.md` (auth rows → live), `api-conventions.md` §5 (new codes, the 429 code), `security.md` §3 (as implemented), §5 (headers via Spring
-  Security; the TRACE exception closed), §8 (operator-reset action name), `docs/03-architecture/data-model.md` §4 (the new migrations), `module-boundaries.md` (as built),
-  `tech-stack.md` (Spring Security, Spring Session JDBC; word-list and common-password sources and licences), `docs/07-operations/runbooks.md` §1/§4 and
-  `deployment.md` (bootstrap secret, cookie-secure property, forwarded headers), `docs/07-operations/development-setup.md` (dev bootstrap of a local tutor),
+- `docs/04-backend/api-catalog.md` (auth rows → live), `api-conventions.md` §5 (the 423 row: login answers 401 while locked, T16; `CURRENT_PASSWORD_INCORRECT`),
+  `security.md` §3 (as implemented, principal = `userId`), §4 (what "deny" means), §5 (headers via Spring Security; the TRACE exception closed), §8 (operator-reset
+  action name), §10 (dev row: the local secret file, no `scripts/dev-bootstrap`), `docs/02-requirements/functional-requirements.md` AC FR-AUTH-06 (`/meta` passes the gate, DEC-089), `docs/03-architecture/data-model.md` §4 (the new migrations), `module-boundaries.md` (as built, including the `AccountLocked` and `TutorBootstrapped` events),
+  `tech-stack.md` (Spring Security, Spring Session JDBC; word-list and common-password sources and licences), `docs/07-operations/runbooks.md` §1 and §4 (expiry, lockout cleared, sessions ended) and
+  `deployment.md` (bootstrap secret, cookie-secure property, forwarded headers), `docs/07-operations/development-setup.md` (dev bootstrap of a local tutor from a git-ignored secret file and the `local` profile),
   `.env.example` (variable names only; the PO handles `.env`), traceability matrix rows for the FRs above, `progress.json`.
 
 ## Risks & assumptions
