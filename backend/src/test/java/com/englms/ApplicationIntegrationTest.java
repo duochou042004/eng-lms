@@ -124,6 +124,8 @@ class ApplicationIntegrationTest {
 			.valueEquals("Cache-Control", "max-age=31536000, public, immutable");
 	}
 
+	// T-M2.1 AC9: an anonymous caller gets 401 on any /api/** path without a public handler (the authenticated 404 is
+	// AuthApiIntegrationTest's); still Problem Details with the headers, never the SPA.
 	@Test
 	void unknownApiPathIsProblemDetailsNotTheSpa() {
 		api.get()
@@ -131,14 +133,78 @@ class ApplicationIntegrationTest {
 			.header("Accept", "text/html,*/*;q=0.8")
 			.exchange()
 			.expectStatus()
-			.isNotFound()
+			.isUnauthorized()
 			.expectHeader()
 			.contentTypeCompatibleWith(MediaType.APPLICATION_PROBLEM_JSON)
 			.expectHeader()
 			.valueEquals("Content-Security-Policy", CSP)
+			.expectHeader()
+			.valueEquals("Cache-Control", "no-store")
 			.expectBody()
 			.jsonPath("$.code")
-			.isEqualTo("NOT_FOUND");
+			.isEqualTo("UNAUTHENTICATED");
+	}
+
+	// T-M2.1 AC10: the headers come from Spring Security, with the same values on API JSON as everywhere else.
+	@Test
+	void apiJsonCarriesTheSecurityHeadersAndNoStore() {
+		api.get()
+			.uri("/api/v1/meta")
+			.exchange()
+			.expectStatus()
+			.isOk()
+			.expectHeader()
+			.valueEquals("Content-Security-Policy", CSP)
+			.expectHeader()
+			.valueEquals("X-Content-Type-Options", "nosniff")
+			.expectHeader()
+			.valueEquals("Referrer-Policy", "strict-origin-when-cross-origin")
+			.expectHeader()
+			.valueEquals("Permissions-Policy", "microphone=(self), camera=(), geolocation=(), payment=()")
+			.expectHeader()
+			.valueEquals("Cross-Origin-Opener-Policy", "same-origin")
+			.expectHeader()
+			.valueEquals("Cache-Control", "no-store")
+			.expectHeader()
+			.doesNotExist("X-Frame-Options");
+	}
+
+	// T-M2.1 AC10 (DEC-054, T-M1.5 QA F3): raw dot-segments are rejected by the firewall, not answered with the shell.
+	@ParameterizedTest
+	@ValueSource(strings = { "/./api/v1/meta", "/x/../actuator/health", "/./tutor", "/api/v1/../v1/meta" })
+	void rawDotSegmentPathsAreRejectedWithProblemDetails(String target) throws IOException {
+		RawResponse response = raw(port, "GET " + target + " HTTP/1.1", "Accept: text/html\r\n");
+
+		assertThat(response.status()).isEqualTo(400);
+		assertRejectedProblem(response, 400, "MALFORMED_REQUEST");
+	}
+
+	// T-M2.1 AC10 (DEC-069, T-M1.8 SEC S4-3): TRACE no longer reaches Boot's /error page.
+	@ParameterizedTest
+	@ValueSource(strings = { "/", "/api/v1/meta" })
+	void traceIsRefusedWithProblemDetailsAndTheHeaders(String target) throws IOException {
+		for (String accept : new String[] { "", "Accept: text/html\r\n" }) {
+			RawResponse response = raw(port, "TRACE " + target + " HTTP/1.1", accept + "X-Probe: reflected-value\r\n");
+
+			assertThat(response.status()).isEqualTo(405);
+			assertRejectedProblem(response, 405, "METHOD_NOT_ALLOWED");
+			assertThat(response.body()).doesNotContain("reflected-value", "X-Probe", "Whitelabel", "TRACE");
+		}
+	}
+
+	static void assertRejectedProblem(RawResponse response, int status, String code) {
+		assertThat(response.header("content-type")).startsWith("application/problem+json");
+		assertThat(response.header("cache-control")).isEqualTo("no-store");
+		assertThat(response.header("content-security-policy")).isEqualTo(CSP);
+		assertThat(response.header("x-content-type-options")).isEqualTo("nosniff");
+		assertThat(response.header("referrer-policy")).isEqualTo("strict-origin-when-cross-origin");
+		assertThat(response.header("permissions-policy")).isEqualTo("microphone=(self), camera=(), geolocation=(), payment=()");
+		assertThat(response.header("cross-origin-opener-policy")).isEqualTo("same-origin");
+		String requestId = response.header("x-request-id");
+		assertThat(requestId).matches("[0-9a-f-]{36}");
+		assertThat(response.body()).contains("\"status\":" + status, "\"code\":\"" + code + "\"",
+				"\"requestId\":\"" + requestId + "\"");
+		assertThat(response.body()).doesNotContain("<", "html", "instance", "meta", "actuator", "..");
 	}
 
 	// T-M1.8 AC1: the management port carries request IDs (only; no security headers there, DEC-050).
@@ -250,7 +316,8 @@ class ApplicationIntegrationTest {
 	@Test
 	void anApplicationPortRequestIsLoggedOnceWithItsRequestId(CapturedOutput output) {
 		String path = "/api/v1/single-log-" + java.util.UUID.randomUUID();
-		api.get().uri(path).exchange().expectStatus().isNotFound();
+		// 401 since T-M2.1 (anonymous on /api/**); the point here is the single log line.
+		api.get().uri(path).exchange().expectStatus().isUnauthorized();
 
 		assertThat(output.getOut().lines().filter(line -> line.contains("GET " + path + " ->")))
 			.singleElement()
