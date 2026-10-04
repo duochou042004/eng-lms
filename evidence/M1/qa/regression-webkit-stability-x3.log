@@ -1,0 +1,401 @@
+
+Running 396 tests using 8 workers
+
+[1/396] [webkit-tablet] › regression/M1.spec.ts:93:1 › fresh visit starts in Vietnamese
+[2/396] [webkit-phone] › regression/M1.spec.ts:93:1 › fresh visit starts in Vietnamese
+[3/396] [webkit-phone-small] › regression/M1.spec.ts:93:1 › fresh visit starts in Vietnamese
+[4/396] [webkit-tablet] › regression/M1.spec.ts:93:1 › fresh visit starts in Vietnamese
+[5/396] [webkit-phone-small] › regression/M1.spec.ts:93:1 › fresh visit starts in Vietnamese
+[6/396] [webkit-phone] › regression/M1.spec.ts:93:1 › fresh visit starts in Vietnamese
+[7/396] [webkit-phone] › regression/M1.spec.ts:93:1 › fresh visit starts in Vietnamese
+[8/396] [webkit-phone-small] › regression/M1.spec.ts:93:1 › fresh visit starts in Vietnamese
+[9/396] [webkit-phone] › regression/M1.spec.ts:101:5 › [vi] › every route: titled, focus on body, no overflow, 44 px targets, axe clean, localised
+[10/396] [webkit-tablet] › regression/M1.spec.ts:101:5 › [vi] › every route: titled, focus on body, no overflow, 44 px targets, axe clean, localised
+[11/396] [webkit-tablet] › regression/M1.spec.ts:101:5 › [vi] › every route: titled, focus on body, no overflow, 44 px targets, axe clean, localised
+[12/396] [webkit-phone] › regression/M1.spec.ts:101:5 › [vi] › every route: titled, focus on body, no overflow, 44 px targets, axe clean, localised
+[13/396] [webkit-phone-small] › regression/M1.spec.ts:101:5 › [vi] › every route: titled, focus on body, no overflow, 44 px targets, axe clean, localised
+[14/396] [webkit-phone-small] › regression/M1.spec.ts:101:5 › [vi] › every route: titled, focus on body, no overflow, 44 px targets, axe clean, localised
+[15/396] [webkit-phone-small] › regression/M1.spec.ts:101:5 › [vi] › every route: titled, focus on body, no overflow, 44 px targets, axe clean, localised
+[16/396] [webkit-phone] › regression/M1.spec.ts:101:5 › [vi] › every route: titled, focus on body, no overflow, 44 px targets, axe clean, localised
+[17/396] [webkit-phone] › regression/M1.spec.ts:122:5 › [vi] › shells: banner, skip link is the first Tab stop and moves focus into main, workspace name shown
+[18/396] [webkit-tablet] › regression/M1.spec.ts:122:5 › [vi] › shells: banner, skip link is the first Tab stop and moves focus into main, workspace name shown
+[19/396] [webkit-tablet] › regression/M1.spec.ts:122:5 › [vi] › shells: banner, skip link is the first Tab stop and moves focus into main, workspace name shown
+[20/396] [webkit-phone] › regression/M1.spec.ts:122:5 › [vi] › shells: banner, skip link is the first Tab stop and moves focus into main, workspace name shown
+[21/396] [webkit-phone-small] › regression/M1.spec.ts:122:5 › [vi] › shells: banner, skip link is the first Tab stop and moves focus into main, workspace name shown
+[22/396] [webkit-phone-small] › regression/M1.spec.ts:122:5 › [vi] › shells: banner, skip link is the first Tab stop and moves focus into main, workspace name shown
+[23/396] [webkit-phone-small] › regression/M1.spec.ts:122:5 › [vi] › shells: banner, skip link is the first Tab stop and moves focus into main, workspace name shown
+[24/396] [webkit-phone] › regression/M1.spec.ts:122:5 › [vi] › shells: banner, skip link is the first Tab stop and moves focus into main, workspace name shown
+[25/396] [webkit-phone] › regression/M1.spec.ts:139:5 › [vi] › client navigation: h1 focused + title, back/forward, 404 and its start-page link (keyboard)
+[26/396] [webkit-tablet] › regression/M1.spec.ts:139:5 › [vi] › client navigation: h1 focused + title, back/forward, 404 and its start-page link (keyboard)
+[27/396] [webkit-tablet] › regression/M1.spec.ts:139:5 › [vi] › client navigation: h1 focused + title, back/forward, 404 and its start-page link (keyboard)
+[28/396] [webkit-phone] › regression/M1.spec.ts:139:5 › [vi] › client navigation: h1 focused + title, back/forward, 404 and its start-page link (keyboard)
+[29/396] [webkit-phone-small] › regression/M1.spec.ts:139:5 › [vi] › client navigation: h1 focused + title, back/forward, 404 and its start-page link (keyboard)
+[30/396] [webkit-phone-small] › regression/M1.spec.ts:139:5 › [vi] › client navigation: h1 focused + title, back/forward, 404 and its start-page link (keyboard)
+[31/396] [webkit-phone-small] › regression/M1.spec.ts:139:5 › [vi] › client navigation: h1 focused + title, back/forward, 404 and its start-page link (keyboard)
+[32/396] [webkit-phone] › regression/M1.spec.ts:139:5 › [vi] › client navigation: h1 focused + title, back/forward, 404 and its start-page link (keyboard)
+[33/396] [webkit-phone] › regression/M1.spec.ts:168:5 › [vi] › language switch on landing and both shells: strings, lang, title, persistence over reload and navigation
+[34/396] [webkit-tablet] › regression/M1.spec.ts:168:5 › [vi] › language switch on landing and both shells: strings, lang, title, persistence over reload and navigation
+[35/396] [webkit-phone] › regression/M1.spec.ts:168:5 › [vi] › language switch on landing and both shells: strings, lang, title, persistence over reload and navigation
+[36/396] [webkit-tablet] › regression/M1.spec.ts:168:5 › [vi] › language switch on landing and both shells: strings, lang, title, persistence over reload and navigation
+[37/396] [webkit-phone-small] › regression/M1.spec.ts:168:5 › [vi] › language switch on landing and both shells: strings, lang, title, persistence over reload and navigation
+[38/396] [webkit-phone-small] › regression/M1.spec.ts:168:5 › [vi] › language switch on landing and both shells: strings, lang, title, persistence over reload and navigation
+[39/396] [webkit-phone-small] › regression/M1.spec.ts:168:5 › [vi] › language switch on landing and both shells: strings, lang, title, persistence over reload and navigation
+[40/396] [webkit-phone] › regression/M1.spec.ts:168:5 › [vi] › language switch on landing and both shells: strings, lang, title, persistence over reload and navigation
+[41/396] [webkit-phone] › regression/M1.spec.ts:195:5 › [vi] › route error page: failed lazy chunk shows a titled error with a working start-page link
+[42/396] [webkit-tablet] › regression/M1.spec.ts:195:5 › [vi] › route error page: failed lazy chunk shows a titled error with a working start-page link
+[43/396] [webkit-phone] › regression/M1.spec.ts:195:5 › [vi] › route error page: failed lazy chunk shows a titled error with a working start-page link
+[44/396] [webkit-tablet] › regression/M1.spec.ts:195:5 › [vi] › route error page: failed lazy chunk shows a titled error with a working start-page link
+[45/396] [webkit-phone-small] › regression/M1.spec.ts:195:5 › [vi] › route error page: failed lazy chunk shows a titled error with a working start-page link
+[46/396] [webkit-phone] › regression/M1.spec.ts:211:5 › [vi] › shell header: /api/v1/meta failure shows an alert, not a blank or a crash
+[47/396] [webkit-phone-small] › regression/M1.spec.ts:195:5 › [vi] › route error page: failed lazy chunk shows a titled error with a working start-page link
+[48/396] [webkit-phone-small] › regression/M1.spec.ts:195:5 › [vi] › route error page: failed lazy chunk shows a titled error with a working start-page link
+[49/396] [webkit-phone] › regression/M1.spec.ts:195:5 › [vi] › route error page: failed lazy chunk shows a titled error with a working start-page link
+[50/396] [webkit-phone] › regression/M1.spec.ts:211:5 › [vi] › shell header: /api/v1/meta failure shows an alert, not a blank or a crash
+[51/396] [webkit-tablet] › regression/M1.spec.ts:211:5 › [vi] › shell header: /api/v1/meta failure shows an alert, not a blank or a crash
+[52/396] [webkit-tablet] › regression/M1.spec.ts:211:5 › [vi] › shell header: /api/v1/meta failure shows an alert, not a blank or a crash
+[53/396] [webkit-phone-small] › regression/M1.spec.ts:211:5 › [vi] › shell header: /api/v1/meta failure shows an alert, not a blank or a crash
+[54/396] [webkit-phone-small] › regression/M1.spec.ts:211:5 › [vi] › shell header: /api/v1/meta failure shows an alert, not a blank or a crash
+[55/396] [webkit-phone-small] › regression/M1.spec.ts:211:5 › [vi] › shell header: /api/v1/meta failure shows an alert, not a blank or a crash
+[56/396] [webkit-phone] › regression/M1.spec.ts:211:5 › [vi] › shell header: /api/v1/meta failure shows an alert, not a blank or a crash
+[57/396] [webkit-phone] › regression/M1.spec.ts:101:5 › [en] › every route: titled, focus on body, no overflow, 44 px targets, axe clean, localised
+[58/396] [webkit-tablet] › regression/M1.spec.ts:101:5 › [en] › every route: titled, focus on body, no overflow, 44 px targets, axe clean, localised
+[59/396] [webkit-phone] › regression/M1.spec.ts:101:5 › [en] › every route: titled, focus on body, no overflow, 44 px targets, axe clean, localised
+[60/396] [webkit-tablet] › regression/M1.spec.ts:101:5 › [en] › every route: titled, focus on body, no overflow, 44 px targets, axe clean, localised
+[61/396] [webkit-phone-small] › regression/M1.spec.ts:101:5 › [en] › every route: titled, focus on body, no overflow, 44 px targets, axe clean, localised
+[62/396] [webkit-phone-small] › regression/M1.spec.ts:101:5 › [en] › every route: titled, focus on body, no overflow, 44 px targets, axe clean, localised
+[63/396] [webkit-phone-small] › regression/M1.spec.ts:101:5 › [en] › every route: titled, focus on body, no overflow, 44 px targets, axe clean, localised
+[64/396] [webkit-phone] › regression/M1.spec.ts:101:5 › [en] › every route: titled, focus on body, no overflow, 44 px targets, axe clean, localised
+[65/396] [webkit-phone] › regression/M1.spec.ts:122:5 › [en] › shells: banner, skip link is the first Tab stop and moves focus into main, workspace name shown
+[66/396] [webkit-phone] › regression/M1.spec.ts:122:5 › [en] › shells: banner, skip link is the first Tab stop and moves focus into main, workspace name shown
+[67/396] [webkit-tablet] › regression/M1.spec.ts:122:5 › [en] › shells: banner, skip link is the first Tab stop and moves focus into main, workspace name shown
+[68/396] [webkit-phone-small] › regression/M1.spec.ts:122:5 › [en] › shells: banner, skip link is the first Tab stop and moves focus into main, workspace name shown
+[69/396] [webkit-tablet] › regression/M1.spec.ts:122:5 › [en] › shells: banner, skip link is the first Tab stop and moves focus into main, workspace name shown
+[70/396] [webkit-phone-small] › regression/M1.spec.ts:122:5 › [en] › shells: banner, skip link is the first Tab stop and moves focus into main, workspace name shown
+[71/396] [webkit-phone] › regression/M1.spec.ts:122:5 › [en] › shells: banner, skip link is the first Tab stop and moves focus into main, workspace name shown
+[72/396] [webkit-phone] › regression/M1.spec.ts:139:5 › [en] › client navigation: h1 focused + title, back/forward, 404 and its start-page link (keyboard)
+[73/396] [webkit-phone-small] › regression/M1.spec.ts:122:5 › [en] › shells: banner, skip link is the first Tab stop and moves focus into main, workspace name shown
+[74/396] [webkit-phone] › regression/M1.spec.ts:139:5 › [en] › client navigation: h1 focused + title, back/forward, 404 and its start-page link (keyboard)
+[75/396] [webkit-tablet] › regression/M1.spec.ts:139:5 › [en] › client navigation: h1 focused + title, back/forward, 404 and its start-page link (keyboard)
+[76/396] [webkit-phone-small] › regression/M1.spec.ts:139:5 › [en] › client navigation: h1 focused + title, back/forward, 404 and its start-page link (keyboard)
+[77/396] [webkit-tablet] › regression/M1.spec.ts:139:5 › [en] › client navigation: h1 focused + title, back/forward, 404 and its start-page link (keyboard)
+[78/396] [webkit-phone-small] › regression/M1.spec.ts:139:5 › [en] › client navigation: h1 focused + title, back/forward, 404 and its start-page link (keyboard)
+[79/396] [webkit-phone] › regression/M1.spec.ts:168:5 › [en] › language switch on landing and both shells: strings, lang, title, persistence over reload and navigation
+[80/396] [webkit-phone] › regression/M1.spec.ts:139:5 › [en] › client navigation: h1 focused + title, back/forward, 404 and its start-page link (keyboard)
+[81/396] [webkit-phone-small] › regression/M1.spec.ts:139:5 › [en] › client navigation: h1 focused + title, back/forward, 404 and its start-page link (keyboard)
+[82/396] [webkit-phone] › regression/M1.spec.ts:168:5 › [en] › language switch on landing and both shells: strings, lang, title, persistence over reload and navigation
+[83/396] [webkit-tablet] › regression/M1.spec.ts:168:5 › [en] › language switch on landing and both shells: strings, lang, title, persistence over reload and navigation
+[84/396] [webkit-phone-small] › regression/M1.spec.ts:168:5 › [en] › language switch on landing and both shells: strings, lang, title, persistence over reload and navigation
+[85/396] [webkit-tablet] › regression/M1.spec.ts:168:5 › [en] › language switch on landing and both shells: strings, lang, title, persistence over reload and navigation
+[86/396] [webkit-phone-small] › regression/M1.spec.ts:168:5 › [en] › language switch on landing and both shells: strings, lang, title, persistence over reload and navigation
+[87/396] [webkit-phone] › regression/M1.spec.ts:168:5 › [en] › language switch on landing and both shells: strings, lang, title, persistence over reload and navigation
+[88/396] [webkit-phone-small] › regression/M1.spec.ts:168:5 › [en] › language switch on landing and both shells: strings, lang, title, persistence over reload and navigation
+[89/396] [webkit-phone] › regression/M1.spec.ts:195:5 › [en] › route error page: failed lazy chunk shows a titled error with a working start-page link
+[90/396] [webkit-phone] › regression/M1.spec.ts:195:5 › [en] › route error page: failed lazy chunk shows a titled error with a working start-page link
+[91/396] [webkit-tablet] › regression/M1.spec.ts:195:5 › [en] › route error page: failed lazy chunk shows a titled error with a working start-page link
+[92/396] [webkit-phone-small] › regression/M1.spec.ts:195:5 › [en] › route error page: failed lazy chunk shows a titled error with a working start-page link
+[93/396] [webkit-tablet] › regression/M1.spec.ts:195:5 › [en] › route error page: failed lazy chunk shows a titled error with a working start-page link
+[94/396] [webkit-phone-small] › regression/M1.spec.ts:195:5 › [en] › route error page: failed lazy chunk shows a titled error with a working start-page link
+[95/396] [webkit-phone] › regression/M1.spec.ts:211:5 › [en] › shell header: /api/v1/meta failure shows an alert, not a blank or a crash
+[96/396] [webkit-phone] › regression/M1.spec.ts:211:5 › [en] › shell header: /api/v1/meta failure shows an alert, not a blank or a crash
+[97/396] [webkit-phone] › regression/M1.spec.ts:195:5 › [en] › route error page: failed lazy chunk shows a titled error with a working start-page link
+[98/396] [webkit-phone-small] › regression/M1.spec.ts:195:5 › [en] › route error page: failed lazy chunk shows a titled error with a working start-page link
+[99/396] [webkit-tablet] › regression/M1.spec.ts:211:5 › [en] › shell header: /api/v1/meta failure shows an alert, not a blank or a crash
+[100/396] [webkit-phone-small] › regression/M1.spec.ts:211:5 › [en] › shell header: /api/v1/meta failure shows an alert, not a blank or a crash
+[101/396] [webkit-tablet] › regression/M1.spec.ts:211:5 › [en] › shell header: /api/v1/meta failure shows an alert, not a blank or a crash
+[102/396] [webkit-phone-small] › regression/M1.spec.ts:211:5 › [en] › shell header: /api/v1/meta failure shows an alert, not a blank or a crash
+[103/396] [webkit-phone] › regression/M1.spec.ts:211:5 › [en] › shell header: /api/v1/meta failure shows an alert, not a blank or a crash
+[104/396] [webkit-phone-small] › regression/M1.spec.ts:211:5 › [en] › shell header: /api/v1/meta failure shows an alert, not a blank or a crash
+[105/396] [webkit-phone] › regression/M1.spec.ts:225:1 › deep links survive reload (SPA fallback) and /dev/ui is not in the production build
+[106/396] [webkit-phone] › regression/M1.spec.ts:225:1 › deep links survive reload (SPA fallback) and /dev/ui is not in the production build
+[107/396] [webkit-phone-small] › regression/M1.spec.ts:225:1 › deep links survive reload (SPA fallback) and /dev/ui is not in the production build
+[108/396] [webkit-tablet] › regression/M1.spec.ts:225:1 › deep links survive reload (SPA fallback) and /dev/ui is not in the production build
+[109/396] [webkit-phone-small] › regression/M1.spec.ts:225:1 › deep links survive reload (SPA fallback) and /dev/ui is not in the production build
+[110/396] [webkit-tablet] › regression/M1.spec.ts:225:1 › deep links survive reload (SPA fallback) and /dev/ui is not in the production build
+[111/396] [webkit-phone] › regression/M1.spec.ts:225:1 › deep links survive reload (SPA fallback) and /dev/ui is not in the production build
+[112/396] [webkit-phone-small] › regression/M1.spec.ts:225:1 › deep links survive reload (SPA fallback) and /dev/ui is not in the production build
+[113/396] [webkit-phone] › regression/M1.spec.ts:240:5 › HTTP surface › security headers on /
+[114/396] [webkit-phone] › regression/M1.spec.ts:240:5 › HTTP surface › security headers on /
+[115/396] [webkit-phone] › regression/M1.spec.ts:240:5 › HTTP surface › security headers on /tutor
+[116/396] [webkit-phone-small] › regression/M1.spec.ts:240:5 › HTTP surface › security headers on /
+[117/396] [webkit-phone] › regression/M1.spec.ts:240:5 › HTTP surface › security headers on /tutor
+[118/396] [webkit-tablet] › regression/M1.spec.ts:240:5 › HTTP surface › security headers on /
+[119/396] [webkit-phone] › regression/M1.spec.ts:240:5 › HTTP surface › security headers on /qa-missing
+[120/396] [webkit-phone-small] › regression/M1.spec.ts:240:5 › HTTP surface › security headers on /tutor
+[121/396] [webkit-phone-small] › regression/M1.spec.ts:240:5 › HTTP surface › security headers on /
+[122/396] [webkit-phone] › regression/M1.spec.ts:240:5 › HTTP surface › security headers on /qa-missing
+[123/396] [webkit-tablet] › regression/M1.spec.ts:240:5 › HTTP surface › security headers on /
+[124/396] [webkit-tablet] › regression/M1.spec.ts:240:5 › HTTP surface › security headers on /tutor
+[125/396] [webkit-phone] › regression/M1.spec.ts:240:5 › HTTP surface › security headers on /api/v1/meta
+[126/396] [webkit-phone-small] › regression/M1.spec.ts:240:5 › HTTP surface › security headers on /qa-missing
+[127/396] [webkit-phone-small] › regression/M1.spec.ts:240:5 › HTTP surface › security headers on /tutor
+[128/396] [webkit-phone] › regression/M1.spec.ts:240:5 › HTTP surface › security headers on /api/v1/meta
+[129/396] [webkit-tablet] › regression/M1.spec.ts:240:5 › HTTP surface › security headers on /tutor
+[130/396] [webkit-phone] › regression/M1.spec.ts:240:5 › HTTP surface › security headers on /
+[131/396] [webkit-phone-small] › regression/M1.spec.ts:240:5 › HTTP surface › security headers on /
+[132/396] [webkit-tablet] › regression/M1.spec.ts:240:5 › HTTP surface › security headers on /qa-missing
+[133/396] [webkit-phone] › regression/M1.spec.ts:240:5 › HTTP surface › security headers on /api/v1/qa-unknown
+[134/396] [webkit-phone-small] › regression/M1.spec.ts:240:5 › HTTP surface › security headers on /qa-missing
+[135/396] [webkit-phone-small] › regression/M1.spec.ts:240:5 › HTTP surface › security headers on /api/v1/meta
+[136/396] [webkit-phone] › regression/M1.spec.ts:240:5 › HTTP surface › security headers on /api/v1/qa-unknown
+[137/396] [webkit-phone] › regression/M1.spec.ts:240:5 › HTTP surface › security headers on /tutor
+[138/396] [webkit-tablet] › regression/M1.spec.ts:240:5 › HTTP surface › security headers on /qa-missing
+[139/396] [webkit-phone-small] › regression/M1.spec.ts:240:5 › HTTP surface › security headers on /tutor
+[140/396] [webkit-phone] › regression/M1.spec.ts:256:3 › HTTP surface › API: meta JSON, unknown API path is Problem Details 404 (not the SPA), actuator not on :8080
+[141/396] [webkit-tablet] › regression/M1.spec.ts:240:5 › HTTP surface › security headers on /api/v1/meta
+[142/396] [webkit-phone-small] › regression/M1.spec.ts:240:5 › HTTP surface › security headers on /api/v1/meta
+[143/396] [webkit-phone-small] › regression/M1.spec.ts:240:5 › HTTP surface › security headers on /api/v1/qa-unknown
+[144/396] [webkit-phone] › regression/M1.spec.ts:256:3 › HTTP surface › API: meta JSON, unknown API path is Problem Details 404 (not the SPA), actuator not on :8080
+[145/396] [webkit-phone-small] › regression/M1.spec.ts:240:5 › HTTP surface › security headers on /qa-missing
+[146/396] [webkit-phone] › regression/M1.spec.ts:240:5 › HTTP surface › security headers on /qa-missing
+[147/396] [webkit-tablet] › regression/M1.spec.ts:240:5 › HTTP surface › security headers on /api/v1/meta
+[148/396] [webkit-phone] › regression/M1.spec.ts:269:3 › HTTP surface › hashed assets are immutable
+[149/396] [webkit-tablet] › regression/M1.spec.ts:240:5 › HTTP surface › security headers on /api/v1/qa-unknown
+[150/396] [webkit-phone-small] › regression/M1.spec.ts:240:5 › HTTP surface › security headers on /api/v1/qa-unknown
+[151/396] [webkit-phone-small] › regression/M1.spec.ts:256:3 › HTTP surface › API: meta JSON, unknown API path is Problem Details 404 (not the SPA), actuator not on :8080
+[152/396] [webkit-phone] › regression/M1.spec.ts:269:3 › HTTP surface › hashed assets are immutable
+[153/396] [webkit-phone-small] › regression/M1.spec.ts:240:5 › HTTP surface › security headers on /api/v1/meta
+[154/396] [webkit-phone] › regression/M1.spec.ts:240:5 › HTTP surface › security headers on /api/v1/meta
+[155/396] [webkit-tablet] › regression/M1.spec.ts:240:5 › HTTP surface › security headers on /api/v1/qa-unknown
+[156/396] [webkit-tablet] › regression/M1.spec.ts:256:3 › HTTP surface › API: meta JSON, unknown API path is Problem Details 404 (not the SPA), actuator not on :8080
+[157/396] [webkit-phone-small] › regression/M1.spec.ts:256:3 › HTTP surface › API: meta JSON, unknown API path is Problem Details 404 (not the SPA), actuator not on :8080
+[158/396] [webkit-phone-small] › regression/M1.spec.ts:269:3 › HTTP surface › hashed assets are immutable
+[159/396] [webkit-phone] › regression/M1.spec.ts:279:3 › HTTP surface › isolation: student/tutor API paths return no data and no SECRET-* marker
+[160/396] [webkit-phone-small] › regression/M1.spec.ts:240:5 › HTTP surface › security headers on /api/v1/qa-unknown
+[161/396] [webkit-phone] › regression/M1.spec.ts:240:5 › HTTP surface › security headers on /api/v1/qa-unknown
+[162/396] [webkit-phone] › regression/M1.spec.ts:279:3 › HTTP surface › isolation: student/tutor API paths return no data and no SECRET-* marker
+[163/396] [webkit-tablet] › regression/M1.spec.ts:256:3 › HTTP surface › API: meta JSON, unknown API path is Problem Details 404 (not the SPA), actuator not on :8080
+[164/396] [webkit-phone-small] › regression/M1.spec.ts:269:3 › HTTP surface › hashed assets are immutable
+[165/396] [webkit-tablet] › regression/M1.spec.ts:269:3 › HTTP surface › hashed assets are immutable
+[166/396] [webkit-phone] › regression/M1.spec.ts:256:3 › HTTP surface › API: meta JSON, unknown API path is Problem Details 404 (not the SPA), actuator not on :8080
+[167/396] [webkit-phone-small] › regression/M1.spec.ts:256:3 › HTTP surface › API: meta JSON, unknown API path is Problem Details 404 (not the SPA), actuator not on :8080
+[168/396] [webkit-phone-small] › regression/M1.spec.ts:279:3 › HTTP surface › isolation: student/tutor API paths return no data and no SECRET-* marker
+[169/396] [webkit-tablet] › regression/M1.spec.ts:269:3 › HTTP surface › hashed assets are immutable
+[170/396] [webkit-tablet] › regression/M1.spec.ts:93:1 › fresh visit starts in Vietnamese
+[171/396] [webkit-phone] › regression/M1.spec.ts:269:3 › HTTP surface › hashed assets are immutable
+[172/396] [webkit-phone-small] › regression/M1.spec.ts:269:3 › HTTP surface › hashed assets are immutable
+[173/396] [webkit-phone-small] › regression/M1.spec.ts:279:3 › HTTP surface › isolation: student/tutor API paths return no data and no SECRET-* marker
+[174/396] [webkit-tablet-land] › regression/M1.spec.ts:93:1 › fresh visit starts in Vietnamese
+[175/396] [webkit-tablet] › regression/M1.spec.ts:279:3 › HTTP surface › isolation: student/tutor API paths return no data and no SECRET-* marker
+[176/396] [webkit-tablet] › regression/M1.spec.ts:279:3 › HTTP surface › isolation: student/tutor API paths return no data and no SECRET-* marker
+[177/396] [webkit-tablet-land] › regression/M1.spec.ts:93:1 › fresh visit starts in Vietnamese
+[178/396] [webkit-tablet] › regression/M1.spec.ts:101:5 › [vi] › every route: titled, focus on body, no overflow, 44 px targets, axe clean, localised
+[179/396] [webkit-phone] › regression/M1.spec.ts:279:3 › HTTP surface › isolation: student/tutor API paths return no data and no SECRET-* marker
+[180/396] [webkit-phone-small] › regression/M1.spec.ts:279:3 › HTTP surface › isolation: student/tutor API paths return no data and no SECRET-* marker
+[181/396] [webkit-tablet-land] › regression/M1.spec.ts:93:1 › fresh visit starts in Vietnamese
+[182/396] [webkit-tablet-land] › regression/M1.spec.ts:101:5 › [vi] › every route: titled, focus on body, no overflow, 44 px targets, axe clean, localised
+[183/396] [webkit-laptop] › regression/M1.spec.ts:93:1 › fresh visit starts in Vietnamese
+[184/396] [webkit-laptop] › regression/M1.spec.ts:93:1 › fresh visit starts in Vietnamese
+[185/396] [webkit-tablet-land] › regression/M1.spec.ts:101:5 › [vi] › every route: titled, focus on body, no overflow, 44 px targets, axe clean, localised
+[186/396] [webkit-laptop] › regression/M1.spec.ts:93:1 › fresh visit starts in Vietnamese
+[187/396] [webkit-tablet-land] › regression/M1.spec.ts:101:5 › [vi] › every route: titled, focus on body, no overflow, 44 px targets, axe clean, localised
+[188/396] [webkit-desktop] › regression/M1.spec.ts:93:1 › fresh visit starts in Vietnamese
+[189/396] [webkit-laptop] › regression/M1.spec.ts:101:5 › [vi] › every route: titled, focus on body, no overflow, 44 px targets, axe clean, localised
+[190/396] [webkit-laptop] › regression/M1.spec.ts:101:5 › [vi] › every route: titled, focus on body, no overflow, 44 px targets, axe clean, localised
+[191/396] [webkit-laptop] › regression/M1.spec.ts:101:5 › [vi] › every route: titled, focus on body, no overflow, 44 px targets, axe clean, localised
+[192/396] [webkit-desktop] › regression/M1.spec.ts:101:5 › [vi] › every route: titled, focus on body, no overflow, 44 px targets, axe clean, localised
+[193/396] [webkit-tablet] › regression/M1.spec.ts:122:5 › [vi] › shells: banner, skip link is the first Tab stop and moves focus into main, workspace name shown
+[194/396] [webkit-tablet-land] › regression/M1.spec.ts:122:5 › [vi] › shells: banner, skip link is the first Tab stop and moves focus into main, workspace name shown
+[195/396] [webkit-tablet-land] › regression/M1.spec.ts:122:5 › [vi] › shells: banner, skip link is the first Tab stop and moves focus into main, workspace name shown
+[196/396] [webkit-tablet-land] › regression/M1.spec.ts:122:5 › [vi] › shells: banner, skip link is the first Tab stop and moves focus into main, workspace name shown
+[197/396] [webkit-laptop] › regression/M1.spec.ts:122:5 › [vi] › shells: banner, skip link is the first Tab stop and moves focus into main, workspace name shown
+[198/396] [webkit-tablet] › regression/M1.spec.ts:139:5 › [vi] › client navigation: h1 focused + title, back/forward, 404 and its start-page link (keyboard)
+[199/396] [webkit-laptop] › regression/M1.spec.ts:122:5 › [vi] › shells: banner, skip link is the first Tab stop and moves focus into main, workspace name shown
+[200/396] [webkit-tablet-land] › regression/M1.spec.ts:139:5 › [vi] › client navigation: h1 focused + title, back/forward, 404 and its start-page link (keyboard)
+[201/396] [webkit-laptop] › regression/M1.spec.ts:122:5 › [vi] › shells: banner, skip link is the first Tab stop and moves focus into main, workspace name shown
+[202/396] [webkit-tablet-land] › regression/M1.spec.ts:139:5 › [vi] › client navigation: h1 focused + title, back/forward, 404 and its start-page link (keyboard)
+[203/396] [webkit-desktop] › regression/M1.spec.ts:122:5 › [vi] › shells: banner, skip link is the first Tab stop and moves focus into main, workspace name shown
+[204/396] [webkit-tablet-land] › regression/M1.spec.ts:139:5 › [vi] › client navigation: h1 focused + title, back/forward, 404 and its start-page link (keyboard)
+[205/396] [webkit-tablet] › regression/M1.spec.ts:168:5 › [vi] › language switch on landing and both shells: strings, lang, title, persistence over reload and navigation
+[206/396] [webkit-laptop] › regression/M1.spec.ts:139:5 › [vi] › client navigation: h1 focused + title, back/forward, 404 and its start-page link (keyboard)
+[207/396] [webkit-laptop] › regression/M1.spec.ts:139:5 › [vi] › client navigation: h1 focused + title, back/forward, 404 and its start-page link (keyboard)
+[208/396] [webkit-tablet-land] › regression/M1.spec.ts:168:5 › [vi] › language switch on landing and both shells: strings, lang, title, persistence over reload and navigation
+[209/396] [webkit-laptop] › regression/M1.spec.ts:139:5 › [vi] › client navigation: h1 focused + title, back/forward, 404 and its start-page link (keyboard)
+[210/396] [webkit-tablet-land] › regression/M1.spec.ts:168:5 › [vi] › language switch on landing and both shells: strings, lang, title, persistence over reload and navigation
+[211/396] [webkit-desktop] › regression/M1.spec.ts:139:5 › [vi] › client navigation: h1 focused + title, back/forward, 404 and its start-page link (keyboard)
+[212/396] [webkit-tablet-land] › regression/M1.spec.ts:168:5 › [vi] › language switch on landing and both shells: strings, lang, title, persistence over reload and navigation
+[213/396] [webkit-laptop] › regression/M1.spec.ts:168:5 › [vi] › language switch on landing and both shells: strings, lang, title, persistence over reload and navigation
+[214/396] [webkit-laptop] › regression/M1.spec.ts:168:5 › [vi] › language switch on landing and both shells: strings, lang, title, persistence over reload and navigation
+[215/396] [webkit-laptop] › regression/M1.spec.ts:168:5 › [vi] › language switch on landing and both shells: strings, lang, title, persistence over reload and navigation
+[216/396] [webkit-desktop] › regression/M1.spec.ts:168:5 › [vi] › language switch on landing and both shells: strings, lang, title, persistence over reload and navigation
+[217/396] [webkit-tablet] › regression/M1.spec.ts:195:5 › [vi] › route error page: failed lazy chunk shows a titled error with a working start-page link
+[218/396] [webkit-tablet-land] › regression/M1.spec.ts:195:5 › [vi] › route error page: failed lazy chunk shows a titled error with a working start-page link
+[219/396] [webkit-tablet-land] › regression/M1.spec.ts:195:5 › [vi] › route error page: failed lazy chunk shows a titled error with a working start-page link
+[220/396] [webkit-tablet-land] › regression/M1.spec.ts:195:5 › [vi] › route error page: failed lazy chunk shows a titled error with a working start-page link
+[221/396] [webkit-laptop] › regression/M1.spec.ts:195:5 › [vi] › route error page: failed lazy chunk shows a titled error with a working start-page link
+[222/396] [webkit-tablet] › regression/M1.spec.ts:211:5 › [vi] › shell header: /api/v1/meta failure shows an alert, not a blank or a crash
+[223/396] [webkit-laptop] › regression/M1.spec.ts:195:5 › [vi] › route error page: failed lazy chunk shows a titled error with a working start-page link
+[224/396] [webkit-tablet-land] › regression/M1.spec.ts:211:5 › [vi] › shell header: /api/v1/meta failure shows an alert, not a blank or a crash
+[225/396] [webkit-laptop] › regression/M1.spec.ts:195:5 › [vi] › route error page: failed lazy chunk shows a titled error with a working start-page link
+[226/396] [webkit-tablet-land] › regression/M1.spec.ts:211:5 › [vi] › shell header: /api/v1/meta failure shows an alert, not a blank or a crash
+[227/396] [webkit-tablet-land] › regression/M1.spec.ts:211:5 › [vi] › shell header: /api/v1/meta failure shows an alert, not a blank or a crash
+[228/396] [webkit-desktop] › regression/M1.spec.ts:195:5 › [vi] › route error page: failed lazy chunk shows a titled error with a working start-page link
+[229/396] [webkit-laptop] › regression/M1.spec.ts:211:5 › [vi] › shell header: /api/v1/meta failure shows an alert, not a blank or a crash
+[230/396] [webkit-laptop] › regression/M1.spec.ts:211:5 › [vi] › shell header: /api/v1/meta failure shows an alert, not a blank or a crash
+[231/396] [webkit-laptop] › regression/M1.spec.ts:211:5 › [vi] › shell header: /api/v1/meta failure shows an alert, not a blank or a crash
+[232/396] [webkit-tablet] › regression/M1.spec.ts:101:5 › [en] › every route: titled, focus on body, no overflow, 44 px targets, axe clean, localised
+[233/396] [webkit-desktop] › regression/M1.spec.ts:211:5 › [vi] › shell header: /api/v1/meta failure shows an alert, not a blank or a crash
+[234/396] [webkit-tablet-land] › regression/M1.spec.ts:101:5 › [en] › every route: titled, focus on body, no overflow, 44 px targets, axe clean, localised
+[235/396] [webkit-tablet-land] › regression/M1.spec.ts:101:5 › [en] › every route: titled, focus on body, no overflow, 44 px targets, axe clean, localised
+[236/396] [webkit-tablet-land] › regression/M1.spec.ts:101:5 › [en] › every route: titled, focus on body, no overflow, 44 px targets, axe clean, localised
+[237/396] [webkit-laptop] › regression/M1.spec.ts:101:5 › [en] › every route: titled, focus on body, no overflow, 44 px targets, axe clean, localised
+[238/396] [webkit-laptop] › regression/M1.spec.ts:101:5 › [en] › every route: titled, focus on body, no overflow, 44 px targets, axe clean, localised
+[239/396] [webkit-laptop] › regression/M1.spec.ts:101:5 › [en] › every route: titled, focus on body, no overflow, 44 px targets, axe clean, localised
+[240/396] [webkit-desktop] › regression/M1.spec.ts:101:5 › [en] › every route: titled, focus on body, no overflow, 44 px targets, axe clean, localised
+[241/396] [webkit-tablet] › regression/M1.spec.ts:122:5 › [en] › shells: banner, skip link is the first Tab stop and moves focus into main, workspace name shown
+[242/396] [webkit-tablet-land] › regression/M1.spec.ts:122:5 › [en] › shells: banner, skip link is the first Tab stop and moves focus into main, workspace name shown
+[243/396] [webkit-tablet-land] › regression/M1.spec.ts:122:5 › [en] › shells: banner, skip link is the first Tab stop and moves focus into main, workspace name shown
+[244/396] [webkit-tablet-land] › regression/M1.spec.ts:122:5 › [en] › shells: banner, skip link is the first Tab stop and moves focus into main, workspace name shown
+[245/396] [webkit-laptop] › regression/M1.spec.ts:122:5 › [en] › shells: banner, skip link is the first Tab stop and moves focus into main, workspace name shown
+[246/396] [webkit-laptop] › regression/M1.spec.ts:122:5 › [en] › shells: banner, skip link is the first Tab stop and moves focus into main, workspace name shown
+[247/396] [webkit-tablet] › regression/M1.spec.ts:139:5 › [en] › client navigation: h1 focused + title, back/forward, 404 and its start-page link (keyboard)
+[248/396] [webkit-laptop] › regression/M1.spec.ts:122:5 › [en] › shells: banner, skip link is the first Tab stop and moves focus into main, workspace name shown
+[249/396] [webkit-tablet-land] › regression/M1.spec.ts:139:5 › [en] › client navigation: h1 focused + title, back/forward, 404 and its start-page link (keyboard)
+[250/396] [webkit-tablet-land] › regression/M1.spec.ts:139:5 › [en] › client navigation: h1 focused + title, back/forward, 404 and its start-page link (keyboard)
+[251/396] [webkit-tablet-land] › regression/M1.spec.ts:139:5 › [en] › client navigation: h1 focused + title, back/forward, 404 and its start-page link (keyboard)
+[252/396] [webkit-laptop] › regression/M1.spec.ts:139:5 › [en] › client navigation: h1 focused + title, back/forward, 404 and its start-page link (keyboard)
+[253/396] [webkit-desktop] › regression/M1.spec.ts:122:5 › [en] › shells: banner, skip link is the first Tab stop and moves focus into main, workspace name shown
+[254/396] [webkit-laptop] › regression/M1.spec.ts:139:5 › [en] › client navigation: h1 focused + title, back/forward, 404 and its start-page link (keyboard)
+[255/396] [webkit-tablet] › regression/M1.spec.ts:168:5 › [en] › language switch on landing and both shells: strings, lang, title, persistence over reload and navigation
+[256/396] [webkit-laptop] › regression/M1.spec.ts:139:5 › [en] › client navigation: h1 focused + title, back/forward, 404 and its start-page link (keyboard)
+[257/396] [webkit-tablet-land] › regression/M1.spec.ts:168:5 › [en] › language switch on landing and both shells: strings, lang, title, persistence over reload and navigation
+[258/396] [webkit-tablet-land] › regression/M1.spec.ts:168:5 › [en] › language switch on landing and both shells: strings, lang, title, persistence over reload and navigation
+[259/396] [webkit-tablet-land] › regression/M1.spec.ts:168:5 › [en] › language switch on landing and both shells: strings, lang, title, persistence over reload and navigation
+[260/396] [webkit-laptop] › regression/M1.spec.ts:168:5 › [en] › language switch on landing and both shells: strings, lang, title, persistence over reload and navigation
+[261/396] [webkit-desktop] › regression/M1.spec.ts:139:5 › [en] › client navigation: h1 focused + title, back/forward, 404 and its start-page link (keyboard)
+[262/396] [webkit-laptop] › regression/M1.spec.ts:168:5 › [en] › language switch on landing and both shells: strings, lang, title, persistence over reload and navigation
+[263/396] [webkit-laptop] › regression/M1.spec.ts:168:5 › [en] › language switch on landing and both shells: strings, lang, title, persistence over reload and navigation
+[264/396] [webkit-desktop] › regression/M1.spec.ts:168:5 › [en] › language switch on landing and both shells: strings, lang, title, persistence over reload and navigation
+[265/396] [webkit-tablet] › regression/M1.spec.ts:195:5 › [en] › route error page: failed lazy chunk shows a titled error with a working start-page link
+[266/396] [webkit-tablet-land] › regression/M1.spec.ts:195:5 › [en] › route error page: failed lazy chunk shows a titled error with a working start-page link
+[267/396] [webkit-tablet-land] › regression/M1.spec.ts:195:5 › [en] › route error page: failed lazy chunk shows a titled error with a working start-page link
+[268/396] [webkit-tablet-land] › regression/M1.spec.ts:195:5 › [en] › route error page: failed lazy chunk shows a titled error with a working start-page link
+[269/396] [webkit-laptop] › regression/M1.spec.ts:195:5 › [en] › route error page: failed lazy chunk shows a titled error with a working start-page link
+[270/396] [webkit-laptop] › regression/M1.spec.ts:195:5 › [en] › route error page: failed lazy chunk shows a titled error with a working start-page link
+[271/396] [webkit-tablet] › regression/M1.spec.ts:211:5 › [en] › shell header: /api/v1/meta failure shows an alert, not a blank or a crash
+[272/396] [webkit-tablet-land] › regression/M1.spec.ts:211:5 › [en] › shell header: /api/v1/meta failure shows an alert, not a blank or a crash
+[273/396] [webkit-laptop] › regression/M1.spec.ts:195:5 › [en] › route error page: failed lazy chunk shows a titled error with a working start-page link
+[274/396] [webkit-tablet-land] › regression/M1.spec.ts:211:5 › [en] › shell header: /api/v1/meta failure shows an alert, not a blank or a crash
+[275/396] [webkit-tablet-land] › regression/M1.spec.ts:211:5 › [en] › shell header: /api/v1/meta failure shows an alert, not a blank or a crash
+[276/396] [webkit-laptop] › regression/M1.spec.ts:211:5 › [en] › shell header: /api/v1/meta failure shows an alert, not a blank or a crash
+[277/396] [webkit-desktop] › regression/M1.spec.ts:195:5 › [en] › route error page: failed lazy chunk shows a titled error with a working start-page link
+[278/396] [webkit-laptop] › regression/M1.spec.ts:211:5 › [en] › shell header: /api/v1/meta failure shows an alert, not a blank or a crash
+[279/396] [webkit-laptop] › regression/M1.spec.ts:211:5 › [en] › shell header: /api/v1/meta failure shows an alert, not a blank or a crash
+[280/396] [webkit-tablet] › regression/M1.spec.ts:225:1 › deep links survive reload (SPA fallback) and /dev/ui is not in the production build
+[281/396] [webkit-tablet-land] › regression/M1.spec.ts:225:1 › deep links survive reload (SPA fallback) and /dev/ui is not in the production build
+[282/396] [webkit-desktop] › regression/M1.spec.ts:211:5 › [en] › shell header: /api/v1/meta failure shows an alert, not a blank or a crash
+[283/396] [webkit-tablet-land] › regression/M1.spec.ts:225:1 › deep links survive reload (SPA fallback) and /dev/ui is not in the production build
+[284/396] [webkit-tablet-land] › regression/M1.spec.ts:225:1 › deep links survive reload (SPA fallback) and /dev/ui is not in the production build
+[285/396] [webkit-laptop] › regression/M1.spec.ts:225:1 › deep links survive reload (SPA fallback) and /dev/ui is not in the production build
+[286/396] [webkit-laptop] › regression/M1.spec.ts:225:1 › deep links survive reload (SPA fallback) and /dev/ui is not in the production build
+[287/396] [webkit-tablet] › regression/M1.spec.ts:240:5 › HTTP surface › security headers on /
+[288/396] [webkit-laptop] › regression/M1.spec.ts:225:1 › deep links survive reload (SPA fallback) and /dev/ui is not in the production build
+[289/396] [webkit-tablet-land] › regression/M1.spec.ts:240:5 › HTTP surface › security headers on /
+[290/396] [webkit-tablet] › regression/M1.spec.ts:240:5 › HTTP surface › security headers on /tutor
+[291/396] [webkit-tablet-land] › regression/M1.spec.ts:240:5 › HTTP surface › security headers on /tutor
+[292/396] [webkit-tablet] › regression/M1.spec.ts:240:5 › HTTP surface › security headers on /qa-missing
+[293/396] [webkit-desktop] › regression/M1.spec.ts:225:1 › deep links survive reload (SPA fallback) and /dev/ui is not in the production build
+[294/396] [webkit-tablet-land] › regression/M1.spec.ts:240:5 › HTTP surface › security headers on /
+[295/396] [webkit-tablet-land] › regression/M1.spec.ts:240:5 › HTTP surface › security headers on /
+[296/396] [webkit-tablet-land] › regression/M1.spec.ts:240:5 › HTTP surface › security headers on /qa-missing
+[297/396] [webkit-laptop] › regression/M1.spec.ts:240:5 › HTTP surface › security headers on /
+[298/396] [webkit-tablet] › regression/M1.spec.ts:240:5 › HTTP surface › security headers on /api/v1/meta
+[299/396] [webkit-tablet-land] › regression/M1.spec.ts:240:5 › HTTP surface › security headers on /tutor
+[300/396] [webkit-laptop] › regression/M1.spec.ts:240:5 › HTTP surface › security headers on /
+[301/396] [webkit-tablet-land] › regression/M1.spec.ts:240:5 › HTTP surface › security headers on /tutor
+[302/396] [webkit-laptop] › regression/M1.spec.ts:240:5 › HTTP surface › security headers on /tutor
+[303/396] [webkit-tablet-land] › regression/M1.spec.ts:240:5 › HTTP surface › security headers on /api/v1/meta
+[304/396] [webkit-tablet] › regression/M1.spec.ts:240:5 › HTTP surface › security headers on /api/v1/qa-unknown
+[305/396] [webkit-tablet-land] › regression/M1.spec.ts:240:5 › HTTP surface › security headers on /qa-missing
+[306/396] [webkit-tablet-land] › regression/M1.spec.ts:240:5 › HTTP surface › security headers on /qa-missing
+[307/396] [webkit-laptop] › regression/M1.spec.ts:240:5 › HTTP surface › security headers on /tutor
+[308/396] [webkit-laptop] › regression/M1.spec.ts:240:5 › HTTP surface › security headers on /
+[309/396] [webkit-laptop] › regression/M1.spec.ts:240:5 › HTTP surface › security headers on /qa-missing
+[310/396] [webkit-tablet-land] › regression/M1.spec.ts:240:5 › HTTP surface › security headers on /api/v1/qa-unknown
+[311/396] [webkit-tablet] › regression/M1.spec.ts:256:3 › HTTP surface › API: meta JSON, unknown API path is Problem Details 404 (not the SPA), actuator not on :8080
+[312/396] [webkit-tablet-land] › regression/M1.spec.ts:240:5 › HTTP surface › security headers on /api/v1/meta
+[313/396] [webkit-tablet-land] › regression/M1.spec.ts:240:5 › HTTP surface › security headers on /api/v1/meta
+[314/396] [webkit-laptop] › regression/M1.spec.ts:240:5 › HTTP surface › security headers on /qa-missing
+[315/396] [webkit-laptop] › regression/M1.spec.ts:240:5 › HTTP surface › security headers on /tutor
+[316/396] [webkit-tablet-land] › regression/M1.spec.ts:256:3 › HTTP surface › API: meta JSON, unknown API path is Problem Details 404 (not the SPA), actuator not on :8080
+[317/396] [webkit-laptop] › regression/M1.spec.ts:240:5 › HTTP surface › security headers on /api/v1/meta
+[318/396] [webkit-tablet] › regression/M1.spec.ts:269:3 › HTTP surface › hashed assets are immutable
+[319/396] [webkit-tablet-land] › regression/M1.spec.ts:240:5 › HTTP surface › security headers on /api/v1/qa-unknown
+[320/396] [webkit-tablet-land] › regression/M1.spec.ts:240:5 › HTTP surface › security headers on /api/v1/qa-unknown
+[321/396] [webkit-desktop] › regression/M1.spec.ts:240:5 › HTTP surface › security headers on /
+[322/396] [webkit-laptop] › regression/M1.spec.ts:240:5 › HTTP surface › security headers on /api/v1/meta
+[323/396] [webkit-laptop] › regression/M1.spec.ts:240:5 › HTTP surface › security headers on /qa-missing
+[324/396] [webkit-tablet-land] › regression/M1.spec.ts:269:3 › HTTP surface › hashed assets are immutable
+[325/396] [webkit-laptop] › regression/M1.spec.ts:240:5 › HTTP surface › security headers on /api/v1/qa-unknown
+[326/396] [webkit-tablet-land] › regression/M1.spec.ts:256:3 › HTTP surface › API: meta JSON, unknown API path is Problem Details 404 (not the SPA), actuator not on :8080
+[327/396] [webkit-tablet-land] › regression/M1.spec.ts:256:3 › HTTP surface › API: meta JSON, unknown API path is Problem Details 404 (not the SPA), actuator not on :8080
+[328/396] [webkit-desktop] › regression/M1.spec.ts:240:5 › HTTP surface › security headers on /tutor
+[329/396] [webkit-laptop] › regression/M1.spec.ts:240:5 › HTTP surface › security headers on /api/v1/qa-unknown
+[330/396] [webkit-laptop] › regression/M1.spec.ts:240:5 › HTTP surface › security headers on /api/v1/meta
+[331/396] [webkit-tablet] › regression/M1.spec.ts:279:3 › HTTP surface › isolation: student/tutor API paths return no data and no SECRET-* marker
+[332/396] [webkit-laptop] › regression/M1.spec.ts:256:3 › HTTP surface › API: meta JSON, unknown API path is Problem Details 404 (not the SPA), actuator not on :8080
+[333/396] [webkit-tablet-land] › regression/M1.spec.ts:269:3 › HTTP surface › hashed assets are immutable
+[334/396] [webkit-tablet-land] › regression/M1.spec.ts:269:3 › HTTP surface › hashed assets are immutable
+[335/396] [webkit-tablet-land] › regression/M1.spec.ts:279:3 › HTTP surface › isolation: student/tutor API paths return no data and no SECRET-* marker
+[336/396] [webkit-desktop] › regression/M1.spec.ts:240:5 › HTTP surface › security headers on /qa-missing
+[337/396] [webkit-laptop] › regression/M1.spec.ts:256:3 › HTTP surface › API: meta JSON, unknown API path is Problem Details 404 (not the SPA), actuator not on :8080
+[338/396] [webkit-laptop] › regression/M1.spec.ts:240:5 › HTTP surface › security headers on /api/v1/qa-unknown
+[339/396] [webkit-laptop] › regression/M1.spec.ts:269:3 › HTTP surface › hashed assets are immutable
+[340/396] [webkit-tablet-land] › regression/M1.spec.ts:279:3 › HTTP surface › isolation: student/tutor API paths return no data and no SECRET-* marker
+[341/396] [webkit-desktop] › regression/M1.spec.ts:93:1 › fresh visit starts in Vietnamese
+[342/396] [webkit-tablet-land] › regression/M1.spec.ts:279:3 › HTTP surface › isolation: student/tutor API paths return no data and no SECRET-* marker
+[343/396] [webkit-desktop] › regression/M1.spec.ts:240:5 › HTTP surface › security headers on /api/v1/meta
+[344/396] [webkit-desktop] › regression/M1.spec.ts:93:1 › fresh visit starts in Vietnamese
+[345/396] [webkit-laptop] › regression/M1.spec.ts:269:3 › HTTP surface › hashed assets are immutable
+[346/396] [webkit-laptop] › regression/M1.spec.ts:256:3 › HTTP surface › API: meta JSON, unknown API path is Problem Details 404 (not the SPA), actuator not on :8080
+[347/396] [webkit-laptop] › regression/M1.spec.ts:279:3 › HTTP surface › isolation: student/tutor API paths return no data and no SECRET-* marker
+[348/396] [webkit-desktop] › regression/M1.spec.ts:240:5 › HTTP surface › security headers on /api/v1/qa-unknown
+[349/396] [webkit-laptop] › regression/M1.spec.ts:269:3 › HTTP surface › hashed assets are immutable
+[350/396] [webkit-desktop] › regression/M1.spec.ts:101:5 › [vi] › every route: titled, focus on body, no overflow, 44 px targets, axe clean, localised
+[351/396] [webkit-laptop] › regression/M1.spec.ts:279:3 › HTTP surface › isolation: student/tutor API paths return no data and no SECRET-* marker
+[352/396] [webkit-desktop] › regression/M1.spec.ts:256:3 › HTTP surface › API: meta JSON, unknown API path is Problem Details 404 (not the SPA), actuator not on :8080
+[353/396] [webkit-desktop] › regression/M1.spec.ts:101:5 › [vi] › every route: titled, focus on body, no overflow, 44 px targets, axe clean, localised
+[354/396] [webkit-laptop] › regression/M1.spec.ts:279:3 › HTTP surface › isolation: student/tutor API paths return no data and no SECRET-* marker
+[355/396] [webkit-desktop] › regression/M1.spec.ts:269:3 › HTTP surface › hashed assets are immutable
+[356/396] [webkit-desktop] › regression/M1.spec.ts:279:3 › HTTP surface › isolation: student/tutor API paths return no data and no SECRET-* marker
+[357/396] [webkit-desktop] › regression/M1.spec.ts:122:5 › [vi] › shells: banner, skip link is the first Tab stop and moves focus into main, workspace name shown
+[358/396] [webkit-desktop] › regression/M1.spec.ts:122:5 › [vi] › shells: banner, skip link is the first Tab stop and moves focus into main, workspace name shown
+[359/396] [webkit-desktop] › regression/M1.spec.ts:139:5 › [vi] › client navigation: h1 focused + title, back/forward, 404 and its start-page link (keyboard)
+[360/396] [webkit-desktop] › regression/M1.spec.ts:139:5 › [vi] › client navigation: h1 focused + title, back/forward, 404 and its start-page link (keyboard)
+[361/396] [webkit-desktop] › regression/M1.spec.ts:168:5 › [vi] › language switch on landing and both shells: strings, lang, title, persistence over reload and navigation
+[362/396] [webkit-desktop] › regression/M1.spec.ts:168:5 › [vi] › language switch on landing and both shells: strings, lang, title, persistence over reload and navigation
+[363/396] [webkit-desktop] › regression/M1.spec.ts:195:5 › [vi] › route error page: failed lazy chunk shows a titled error with a working start-page link
+[364/396] [webkit-desktop] › regression/M1.spec.ts:195:5 › [vi] › route error page: failed lazy chunk shows a titled error with a working start-page link
+[365/396] [webkit-desktop] › regression/M1.spec.ts:211:5 › [vi] › shell header: /api/v1/meta failure shows an alert, not a blank or a crash
+[366/396] [webkit-desktop] › regression/M1.spec.ts:211:5 › [vi] › shell header: /api/v1/meta failure shows an alert, not a blank or a crash
+[367/396] [webkit-desktop] › regression/M1.spec.ts:101:5 › [en] › every route: titled, focus on body, no overflow, 44 px targets, axe clean, localised
+[368/396] [webkit-desktop] › regression/M1.spec.ts:101:5 › [en] › every route: titled, focus on body, no overflow, 44 px targets, axe clean, localised
+[369/396] [webkit-desktop] › regression/M1.spec.ts:122:5 › [en] › shells: banner, skip link is the first Tab stop and moves focus into main, workspace name shown
+[370/396] [webkit-desktop] › regression/M1.spec.ts:122:5 › [en] › shells: banner, skip link is the first Tab stop and moves focus into main, workspace name shown
+[371/396] [webkit-desktop] › regression/M1.spec.ts:139:5 › [en] › client navigation: h1 focused + title, back/forward, 404 and its start-page link (keyboard)
+[372/396] [webkit-desktop] › regression/M1.spec.ts:139:5 › [en] › client navigation: h1 focused + title, back/forward, 404 and its start-page link (keyboard)
+[373/396] [webkit-desktop] › regression/M1.spec.ts:168:5 › [en] › language switch on landing and both shells: strings, lang, title, persistence over reload and navigation
+[374/396] [webkit-desktop] › regression/M1.spec.ts:168:5 › [en] › language switch on landing and both shells: strings, lang, title, persistence over reload and navigation
+[375/396] [webkit-desktop] › regression/M1.spec.ts:195:5 › [en] › route error page: failed lazy chunk shows a titled error with a working start-page link
+[376/396] [webkit-desktop] › regression/M1.spec.ts:195:5 › [en] › route error page: failed lazy chunk shows a titled error with a working start-page link
+[377/396] [webkit-desktop] › regression/M1.spec.ts:211:5 › [en] › shell header: /api/v1/meta failure shows an alert, not a blank or a crash
+[378/396] [webkit-desktop] › regression/M1.spec.ts:211:5 › [en] › shell header: /api/v1/meta failure shows an alert, not a blank or a crash
+[379/396] [webkit-desktop] › regression/M1.spec.ts:225:1 › deep links survive reload (SPA fallback) and /dev/ui is not in the production build
+[380/396] [webkit-desktop] › regression/M1.spec.ts:225:1 › deep links survive reload (SPA fallback) and /dev/ui is not in the production build
+[381/396] [webkit-desktop] › regression/M1.spec.ts:240:5 › HTTP surface › security headers on /
+[382/396] [webkit-desktop] › regression/M1.spec.ts:240:5 › HTTP surface › security headers on /
+[383/396] [webkit-desktop] › regression/M1.spec.ts:240:5 › HTTP surface › security headers on /tutor
+[384/396] [webkit-desktop] › regression/M1.spec.ts:240:5 › HTTP surface › security headers on /tutor
+[385/396] [webkit-desktop] › regression/M1.spec.ts:240:5 › HTTP surface › security headers on /qa-missing
+[386/396] [webkit-desktop] › regression/M1.spec.ts:240:5 › HTTP surface › security headers on /qa-missing
+[387/396] [webkit-desktop] › regression/M1.spec.ts:240:5 › HTTP surface › security headers on /api/v1/meta
+[388/396] [webkit-desktop] › regression/M1.spec.ts:240:5 › HTTP surface › security headers on /api/v1/meta
+[389/396] [webkit-desktop] › regression/M1.spec.ts:240:5 › HTTP surface › security headers on /api/v1/qa-unknown
+[390/396] [webkit-desktop] › regression/M1.spec.ts:240:5 › HTTP surface › security headers on /api/v1/qa-unknown
+[391/396] [webkit-desktop] › regression/M1.spec.ts:256:3 › HTTP surface › API: meta JSON, unknown API path is Problem Details 404 (not the SPA), actuator not on :8080
+[392/396] [webkit-desktop] › regression/M1.spec.ts:256:3 › HTTP surface › API: meta JSON, unknown API path is Problem Details 404 (not the SPA), actuator not on :8080
+[393/396] [webkit-desktop] › regression/M1.spec.ts:269:3 › HTTP surface › hashed assets are immutable
+[394/396] [webkit-desktop] › regression/M1.spec.ts:269:3 › HTTP surface › hashed assets are immutable
+[395/396] [webkit-desktop] › regression/M1.spec.ts:279:3 › HTTP surface › isolation: student/tutor API paths return no data and no SECRET-* marker
+[396/396] [webkit-desktop] › regression/M1.spec.ts:279:3 › HTTP surface › isolation: student/tutor API paths return no data and no SECRET-* marker
+  396 passed (4.9m)
+EXIT 0
