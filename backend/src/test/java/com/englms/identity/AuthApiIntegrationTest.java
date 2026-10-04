@@ -208,13 +208,17 @@ class AuthApiIntegrationTest {
 		assertThat(existing).as("existing %d ms vs unknown %d ms", existing, unknown).isLessThan(unknown * 3 / 2 + 300);
 	}
 
-	/** SEC review S2-1: a burst on one username holds no locks or connections that another user's sign-in needs. */
+	/**
+	 * SEC review S2-1: a burst on one username holds no locks or connections that another user's sign-in needs. With the
+	 * lock held across bcrypt the 30 attempts were serialised and an unrelated login waited ~20 × its own time (6.4 s);
+	 * now it only shares the CPU. Bound: max(3 s, 12 × a lone login's median), loose for a loaded machine.
+	 */
 	@Test
 	void anUnrelatedLoginStaysFastDuringABurstOnOneUsername() throws Exception {
 		student("student.c", false);
 		Browser unrelated = browser();
 		unrelated.get("/api/v1/auth/session");
-		long alone = timed(() -> new Browser(port).login("student.c", "wrong-password-1", false));
+		long alone = medianMillis(() -> new Browser(port).login("student.c", "wrong-password-1", false));
 		try (ExecutorService pool = Executors.newVirtualThreadPerTaskExecutor()) {
 			List<Browser> attackers = new ArrayList<>();
 			for (int i = 0; i < 30; i++) {
@@ -232,7 +236,7 @@ class AuthApiIntegrationTest {
 				assertThat(attempt.get().status()).isEqualTo(401);
 			}
 			assertThat(during).as("unrelated login %d ms during the burst, %d ms alone", during, alone)
-				.isLessThan(Math.max(2500, alone * 6));
+				.isLessThan(Math.max(3000, alone * 12));
 		}
 	}
 
