@@ -8,9 +8,10 @@ common-passwords.txt
 
 temporary-password-words.txt
   Source: BIP-0039 English word list, bip-0039/english.txt
-  https://github.com/bitcoin/bips (commit ce1862ac6bcffa1dd20aad858380e51e66e949ea, sha256
-  2f5eed53a4727b4bf8880d8f3f199efc90e58503646d9ff8eff3a2ed3b24dbda). Two words removed (2046 remain) because
-  they are on the forbidden-identifier list of ForbiddenIdentifiersTest.
+  https://github.com/bitcoin/bips, file blob 942040ed50f7205cafc465496229128ba4f78e75 (unchanged since commit
+  ce1862ac6bcffa1dd20aad858380e51e66e949ea; sha256 2f5eed53a4727b4bf8880d8f3f199efc90e58503646d9ff8eff3a2ed3b24dbda). The licence is
+  stated in bip-0039.mediawiki at commit 0d1b892ddb21c22def4af4541bfed7a2a3480e4a ("License: MIT"). Two words removed (2046
+  remain) because they are on the forbidden-identifier list of ForbiddenIdentifiersTest.
   Licence: MIT (BIP-0039 header: "License: MIT"). Authors: Marek Palatinus, Pavol Rusnak, Aaron Voisine, Sean Bowe.
 
 MIT License

@@ -9,7 +9,7 @@
 
 | Method | Path | Aud | Purpose | FR | M |
 |---|---|---|---|---|---|
-| GET | `/meta` | P | `{name, version, locales, displayName}` from `englms.meta.*` config; locales `["vi","en"]` (DEC-039). **Live** (T-M1.2, `api/openapi.json`) | — | M1 |
+| GET | `/meta` | P | `{name, version, locales, displayName}` from `englms.meta.*` config; locales `["vi","en"]` (DEC-039). `HEAD` is public too. **Live** (T-M1.2, `api/openapi.json`) | — | M1 |
 | GET | `/auth/session` | P | `{userId, username, role, displayName, locale, timeZone, mustChangePassword}` or 401 (`UNAUTHENTICATED` without a session cookie, `SESSION_EXPIRED` when the cookie names no live session). Also primes the `XSRF-TOKEN` cookie, for anonymous callers too. Passes the must-change gate. **Live** (T-M2.1) | FR-AUTH-03 | M2 |
 | POST | `/auth/login` | P | `{username, password, rememberMe}` → 200 with the session body; rotates the session ID; `rememberMe` sets the 30-day `ENGLMS_REMEMBER_ME` cookie. One generic 401 `UNAUTHENTICATED` for every failure (also while locked, DEC-089 (6)); 429 `RATE_LIMITED` + `Retry-After` past the per-IP throttle; no redirect target (T18). CSRF required. **Live** (T-M2.1) | FR-AUTH-03 | M2 |
 | POST | `/auth/logout` | P | 204; ends this session and this device's remember-me token, expires both cookies; idempotent for anonymous callers. CSRF required; passes the must-change gate. **Live** (T-M2.1) | FR-AUTH-04 | M2 |

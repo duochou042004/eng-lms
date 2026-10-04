@@ -48,7 +48,7 @@ Actors: anonymous internet users, an authenticated student (curious or malicious
   `SessionTerminator.endAllSessions(userId)` finds every session and token whatever case was typed. Remember-me: `PersistentTokenBasedRememberMeServices` with
   `persistent_logins` (cookie `ENGLMS_REMEMBER_ME`, `HttpOnly; Secure; SameSite=Lax`, 30 days, token rotated on every use); logout deletes this device's token,
   a password change, a reset, a disable or a lock through the password change deletes all of them. `Secure` can be turned off only under the `local` Spring profile
-  (`server.servlet.session.cookie.secure=false` without it fails startup, NFR-SEC-04). CSRF: `CookieCsrfTokenRepository` (`XSRF-TOKEN`, readable by JavaScript,
+  (`server.servlet.session.cookie.secure=false` without it, or with the `prod` profile, fails startup, NFR-SEC-04). CSRF: `CookieCsrfTokenRepository` (`XSRF-TOKEN`, readable by JavaScript,
   `Secure; SameSite=Lax`) → header `X-XSRF-TOKEN`, Spring Security's SPA handler; `GET /auth/session` primes the cookie, login rotates it. Concurrent sessions are allowed (A-018).
   The idle timeout is `server.servlet.session.timeout`; lockout, throttle and remember-me validity are `englms.security.*`.
 - **Password policy (NFR-SEC-06):** 10–128 characters, not in `common-passwords.txt` (top 10k, bundled), not equal to the username. No composition rules (per NIST 800-63B).
@@ -62,8 +62,24 @@ Actors: anonymous internet users, an authenticated student (curious or malicious
   An unknown username runs one bcrypt comparison against a fixed dummy hash, so it takes about as long as a wrong password (T16). Disabled accounts and expired
   temporary passwords get the same 401.
 - Per-IP throttle: an in-memory sliding window (30 attempts per 5 minutes per IP). Adequate for a single instance; documented as instance-local. The IP is
-  `request.getRemoteAddr()`; behind Caddy it is the client's only with `server.forward-headers-strategy=native` (deployment.md §3). Past the limit: 429 `RATE_LIMITED` + `Retry-After`.
-- `mustChangePassword` gate: a filter lets only `GET /auth/session`, `POST /auth/password`, `POST /auth/logout` and the public `GET /meta` (DEC-089) through. It runs after the
+  `request.getRemoteAddr()`; behind Caddy it is the client's only with `server.forward-headers-strategy=native` (deployment.md §3; a startup WARN names a missing setting
+  outside the `local` profile). Past the limit: 429 `RATE_LIMITED` + `Retry-After`.
+- **Accepted risk (NFR-SEC-05 trade-off, SEC review S4-9):** anyone who knows the tutor's username can keep the account locked by failing 10 times every
+  15 minutes (the per-IP throttle slows one IP, not a distributed attacker). Existing sessions and remember-me tokens survive a login lock, and the operator
+  CLI (runbooks §4) clears the lock. Accepted for a single-tutor workspace; revisit if it is ever observed (the audit shows `ACCOUNT_LOCKED` bursts).
+- **bcrypt never runs under a lock (T-M2.1, SEC review S2-1):** sign-in and the password change read the account without a lock, compare with bcrypt while no
+  transaction or pool connection is held, then lock the row by ID in a short transaction that re-checks status, lock, temporary-password expiry and that the hash
+  is still the one compared, and only then counts the failure or records the success. Parallel attempts on one account therefore take no longer than on an
+  unknown username (no timing oracle) and a burst on one account doesn't hold connections other sign-ins need.
+- **Input bounds (SEC review S2-2):** JSON bodies are limited to 1 MB by the parser (§6). Login usernames over 64 or passwords over 1024 characters are never looked
+  up or hashed in full and get the generic 401 (audited as `LOGIN_FAILED`, reason `REJECTED_INPUT`).
+- **Unicode (SEC review S4-4):** passwords are NFC-normalised before the policy check, hashing and comparison, so precomposed and decomposed Vietnamese input are equal.
+- **Remember-me details (SEC review S3-1, S4-2, S4-3):** a login first deletes any remember-me token sent with it (a previous user's on a shared device); no token
+  is issued or honoured while the password must change; an expired temporary password is not accepted as the current one. A token presented after it was already
+  rotated (Spring Security's theft signal: two parallel requests with the same cookie, or a stolen cookie) deletes all of the user's tokens and answers 401
+  `SESSION_EXPIRED` with a WARN log, never a 500. **LC decision:** no grace window (no extra column); the SPA contract for T-M2.4 is that one
+  `GET /auth/session` completes before any parallel API call, so the rotation happens once.
+- `mustChangePassword` gate: a filter lets only `GET /auth/session`, `POST /auth/password`, `POST /auth/logout` and the public `GET`/`HEAD /meta` (DEC-089) through. It runs after the
   L1 role check and before handler lookup, so it also answers paths without a handler (403 `PASSWORD_CHANGE_REQUIRED`). The SPA's own files are not gated.
 - Tutor bootstrap (FR-AUTH-02): the password is read from a **file path** (`ENGLMS_BOOTSTRAP_TUTOR_PASSWORD_FILE`, a Podman secret), never from an env value in production.
 
@@ -104,7 +120,9 @@ The **authz matrix test** enumerates `RequestMappingHandlerMapping`. For each ha
 
 ## 6. Input handling
 
-- Bean Validation on every DTO. Size limits on every string (validation-rules.md). JSON body limit 1 MB (except uploads).
+- Bean Validation on every DTO. Size limits on every string (validation-rules.md). JSON body limit 1 MB (except uploads). **As implemented (T-M2.1):** Jackson's
+  `StreamReadConstraints.maxDocumentLength` = 1 MB (`shared.web.JsonLimitsConfiguration`), enforced while streaming, so chunked bodies are covered too; a longer body
+  answers 400 `MALFORMED_REQUEST` without reaching the handler.
 - Rich text: OWASP Java HTML Sanitizer policy `RichTextPolicy` allows p, br, strong, em, u, s, h2–h4, ul, ol, li, blockquote, code, pre,
   a[href http/https/mailto; rel=noopener noreferrer; target=_blank], img[src=/api/v1/…/files/… only], table, thead, tbody, tr, th, td.
   Everything else is stripped. The sanitised output is stored, and sanitisation is idempotent.
@@ -128,7 +146,7 @@ Recorded actions: `LOGIN_SUCCEEDED`, `LOGIN_FAILED`, `ACCOUNT_LOCKED`, `PASSWORD
 
 **As implemented (T-M2.1):** `audit_event` (append-only: a trigger rejects `UPDATE`; only the retention job deletes), written by `AuditApi.record` in its own
 transaction (`REQUIRES_NEW`). The audit module records identity's events in a synchronous listener; identity never calls audit. Live actions: `LOGIN_SUCCEEDED`,
-`LOGIN_FAILED` (`details.reason`: `UNKNOWN_USERNAME`, `BAD_PASSWORD`, `ACCOUNT_LOCKED`, `ACCOUNT_DISABLED`, `TEMPORARY_PASSWORD_EXPIRED`, `CURRENT_PASSWORD_INCORRECT`;
+`LOGIN_FAILED` (`details.reason`: `UNKNOWN_USERNAME`, `BAD_PASSWORD`, `ACCOUNT_LOCKED`, `ACCOUNT_DISABLED`, `TEMPORARY_PASSWORD_EXPIRED`, `CURRENT_PASSWORD_INCORRECT`, `REJECTED_INPUT`;
 never the attempted username or password), `ACCOUNT_LOCKED`, `PASSWORD_CHANGED`, `PASSWORD_RESET_BY_OPERATOR`, `BOOTSTRAP_TUTOR_CREATED` (`PASSWORD_RESET_BY_TUTOR` is mapped,
 emitted from T-M2.3). Rows carry the client IP and user agent (personal data, data-model §3). The purge runs daily at 03:30 (server time).
 
