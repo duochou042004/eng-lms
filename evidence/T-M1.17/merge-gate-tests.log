@@ -12,9 +12,15 @@ merge-gate.sh
   ok   - T-M1.17 AC1: does not report the required checks as missing
   ok   - T-M1.17 AC1: refuses on an API error from 'gh pr checks'
   ok   - T-M1.17 AC1: shows gh's error text
+  ok   - T-M1.17 AC1: an API error is not reported as missing checks
   ok   - T-M1.17 AC2: refuses when the checks output is not a JSON array
-  ok   - T-M1.17 AC2: reports unreadable checks
+  ok   - T-M1.17 AC2: shows the unexpected output when gh printed no error
   ok   - T-M1.17 AC2: does not report the required checks as missing
+  ok   - T-M1.17 AC2: refuses an empty checks output (review F3)
+  ok   - T-M1.17 AC2: says the output was empty
+  ok   - T-M1.17 AC2: empty output is not reported as missing checks
+  ok   - T-M1.17 AC2: refuses several JSON documents (review F4)
+  ok   - T-M1.17 AC2: several documents are unreadable checks
   ok   - (b) refuses without LC-APPROVED
   ok   - reports missing LC approval
   ok   - (b) LC approval must be the exact line
@@ -318,4 +324,4 @@ merge-gate.sh
   ok   - T-M1.12 AC4: arguments '٧' exit 2 (caller locale en_US.UTF-8)
   ok   - T-M1.12 AC4: '٧' prints the usage
   ok   - T-M1.12 AC4: '٧' made no gh call
-  -> 319 passed, 0 failed
+  -> 325 passed, 0 failed

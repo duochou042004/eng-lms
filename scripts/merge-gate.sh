@@ -254,8 +254,11 @@ behind=$($GH api "repos/{owner}/{repo}/compare/${base}...${head}" --jq .behind_b
 # `gh pr checks --json` exits 0 with a JSON array even while checks are pending or failing. Any other outcome (a gh too old for --json, an API
 # or auth error, output that is not an array) is reported as such, not as "every required check is missing" (T-M1.17, DEC-084 R2-1).
 checks_err=$(mktemp); trap 'rm -f "$checks_err"' EXIT
-if ! checks_json=$($GH pr checks "$PR" --json name,bucket 2>"$checks_err") || ! jq -e 'type == "array"' <<<"$checks_json" >/dev/null 2>&1; then
-  fail "cannot read the PR's checks with 'gh pr checks --json' (needs gh >= 2.101, development-setup §0): $(head -c 300 "$checks_err" | tr '\n' ' ')"
+if ! checks_json=$($GH pr checks "$PR" --json name,bucket 2>"$checks_err") \
+   || ! jq -se 'length == 1 and (.[0] | type == "array")' <<<"$checks_json" >/dev/null 2>&1; then
+  checks_why=$(head -c 300 "$checks_err" | tr '\n' ' ')
+  [[ -n "$checks_why" ]] || checks_why="output: $(head -c 300 <<<"${checks_json:-(empty)}" | tr '\n' ' ')"
+  fail "cannot read the PR's checks with 'gh pr checks --json' (needs gh >= 2.101, development-setup §0): $checks_why"
 else
   while IFS= read -r req; do
     [[ -z "$req" || "$req" == \#* ]] && continue

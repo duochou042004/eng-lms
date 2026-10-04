@@ -71,10 +71,20 @@ write_fixture chore/T-M9.9-x develop CLEAN "$GOOD" "$FILES" "$OK_CHECKS" 0
 touch "$MOCK_DIR/checks.json.fail"
 expect_exit 1 "T-M1.17 AC1: refuses on an API error from 'gh pr checks'" -- gate --dry-run 7
 expect_output_contains "HTTP 502 for checks.json" "T-M1.17 AC1: shows gh's error text"
+expect_output_not_contains "is missing" "T-M1.17 AC1: an API error is not reported as missing checks"
 write_fixture chore/T-M9.9-x develop CLEAN "$GOOD" "$FILES" '{"message":"Bad credentials"}' 0
 expect_exit 1 "T-M1.17 AC2: refuses when the checks output is not a JSON array" -- gate --dry-run 7
-expect_output_contains "cannot read the PR's checks" "T-M1.17 AC2: reports unreadable checks"
+expect_output_contains "cannot read the PR's checks with 'gh pr checks --json' (needs gh >= 2.101, development-setup §0): output: {\"message\":\"Bad credentials\"}" "T-M1.17 AC2: shows the unexpected output when gh printed no error"
 expect_output_not_contains "is missing" "T-M1.17 AC2: does not report the required checks as missing"
+write_fixture chore/T-M9.9-x develop CLEAN "$GOOD" "$FILES" "$OK_CHECKS" 0
+: >"$MOCK_DIR/checks.json"
+expect_exit 1 "T-M1.17 AC2: refuses an empty checks output (review F3)" -- gate --dry-run 7
+expect_output_contains "output: (empty)" "T-M1.17 AC2: says the output was empty"
+expect_output_not_contains "is missing" "T-M1.17 AC2: empty output is not reported as missing checks"
+write_fixture chore/T-M9.9-x develop CLEAN "$GOOD" "$FILES" "$OK_CHECKS" 0
+printf '{"x":1}\n%s\n' "$OK_CHECKS" >"$MOCK_DIR/checks.json"
+expect_exit 1 "T-M1.17 AC2: refuses several JSON documents (review F4)" -- gate --dry-run 7
+expect_output_contains "cannot read the PR's checks" "T-M1.17 AC2: several documents are unreadable checks"
 
 # (b) LC approval
 write_fixture chore/T-M9.9-x develop CLEAN "$(cs "$(c 'DOCS-REVIEW T-M9.9: PASS')")" "$FILES" "$OK_CHECKS" 0
