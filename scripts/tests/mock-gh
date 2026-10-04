@@ -5,10 +5,11 @@
 #   A fixture file named <name>.fail makes that call exit non-zero (API error → the gate must fail closed).
 set -euo pipefail
 echo "$*" >>"$MOCK_DIR/calls.txt"   # every call (T-M1.12 AC4: argument errors must make none)
-serve() { if [[ -f "$MOCK_DIR/$1.fail" ]]; then echo "mock-gh: HTTP 502 for $1" >&2; exit 1; fi; cat "$MOCK_DIR/$1"; }
+#   A non-empty .fail file is printed to stderr instead of the default message (e.g. an old gh's "unknown flag: --json").
+serve() { if [[ -f "$MOCK_DIR/$1.fail" ]]; then if [[ -s "$MOCK_DIR/$1.fail" ]]; then cat "$MOCK_DIR/$1.fail" >&2; else echo "mock-gh: HTTP 502 for $1" >&2; fi; exit 1; fi; cat "$MOCK_DIR/$1"; }
 case "$1 $2" in
   "pr view")   cat "$MOCK_DIR/pr.json" ;;
-  "pr checks") cat "$MOCK_DIR/checks.json" ;;
+  "pr checks") serve checks.json ;;
   "pr merge")  echo "$*" >>"$MOCK_DIR/merged.txt"; echo "merged" ;;
   "api "*)
     case "$*" in

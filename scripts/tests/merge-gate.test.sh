@@ -61,6 +61,20 @@ write_fixture chore/T-M9.9-x develop CLEAN "$GOOD" "$FILES" '[{"name":"docs-chec
 expect_exit 1 "(a) refuses when a required check is pending" -- gate --dry-run 7
 write_fixture chore/T-M9.9-x develop CLEAN "$GOOD" "$FILES" '[{"name":"docs-check","bucket":"pass"}]' 0
 expect_exit 1 "(a) refuses when a required check is missing" -- gate --dry-run 7
+# T-M1.17: a gh that cannot run `pr checks --json` (too old, API error) or returns a non-array is reported as such, not as missing checks
+write_fixture chore/T-M9.9-x develop CLEAN "$GOOD" "$FILES" "$OK_CHECKS" 0
+printf 'unknown flag: --json\n\nUsage:  gh pr checks [<number> | <url> | <branch>] [flags]\n' >"$MOCK_DIR/checks.json.fail"
+expect_exit 1 "T-M1.17 AC1: refuses when 'gh pr checks --json' fails (old gh)" -- gate --dry-run 7
+expect_output_contains "cannot read the PR's checks with 'gh pr checks --json' (needs gh >= 2.101, development-setup §0): unknown flag: --json" "T-M1.17 AC1: names the cause, the needed gh and gh's error"
+expect_output_not_contains "is missing" "T-M1.17 AC1: does not report the required checks as missing"
+write_fixture chore/T-M9.9-x develop CLEAN "$GOOD" "$FILES" "$OK_CHECKS" 0
+touch "$MOCK_DIR/checks.json.fail"
+expect_exit 1 "T-M1.17 AC1: refuses on an API error from 'gh pr checks'" -- gate --dry-run 7
+expect_output_contains "HTTP 502 for checks.json" "T-M1.17 AC1: shows gh's error text"
+write_fixture chore/T-M9.9-x develop CLEAN "$GOOD" "$FILES" '{"message":"Bad credentials"}' 0
+expect_exit 1 "T-M1.17 AC2: refuses when the checks output is not a JSON array" -- gate --dry-run 7
+expect_output_contains "cannot read the PR's checks" "T-M1.17 AC2: reports unreadable checks"
+expect_output_not_contains "is missing" "T-M1.17 AC2: does not report the required checks as missing"
 
 # (b) LC approval
 write_fixture chore/T-M9.9-x develop CLEAN "$(cs "$(c 'DOCS-REVIEW T-M9.9: PASS')")" "$FILES" "$OK_CHECKS" 0

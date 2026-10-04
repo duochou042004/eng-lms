@@ -251,15 +251,20 @@ behind=$($GH api "repos/{owner}/{repo}/compare/${base}...${head}" --jq .behind_b
 [[ "$behind" == "0" ]] || fail "branch is $behind commit(s) behind $base — update it first"
 
 # 3. CI checks: every required check present and passing; no other check failing or pending
-checks_json=$($GH pr checks "$PR" --json name,bucket 2>/dev/null || true)
-[[ -n "$checks_json" ]] || checks_json='[]'
-while IFS= read -r req; do
-  [[ -z "$req" || "$req" == \#* ]] && continue
-  bucket=$(jq -r --arg n "$req" '[.[] | select(.name == $n) | .bucket][0] // "missing"' <<<"$checks_json")
-  [[ "$bucket" == "pass" ]] || fail "required check '$req' is $bucket"
-done <"$REQUIRED_CHECKS_FILE"
-bad=$(jq -r '[.[] | select(.bucket == "fail" or .bucket == "pending" or .bucket == "cancel") | "\(.name)=\(.bucket)"] | join(", ")' <<<"$checks_json")
-[[ -z "$bad" ]] || fail "non-passing checks: $bad"
+# `gh pr checks --json` exits 0 with a JSON array even while checks are pending or failing. Any other outcome (a gh too old for --json, an API
+# or auth error, output that is not an array) is reported as such, not as "every required check is missing" (T-M1.17, DEC-084 R2-1).
+checks_err=$(mktemp); trap 'rm -f "$checks_err"' EXIT
+if ! checks_json=$($GH pr checks "$PR" --json name,bucket 2>"$checks_err") || ! jq -e 'type == "array"' <<<"$checks_json" >/dev/null 2>&1; then
+  fail "cannot read the PR's checks with 'gh pr checks --json' (needs gh >= 2.101, development-setup §0): $(head -c 300 "$checks_err" | tr '\n' ' ')"
+else
+  while IFS= read -r req; do
+    [[ -z "$req" || "$req" == \#* ]] && continue
+    bucket=$(jq -r --arg n "$req" '[.[] | select(.name == $n) | .bucket][0] // "missing"' <<<"$checks_json")
+    [[ "$bucket" == "pass" ]] || fail "required check '$req' is $bucket"
+  done <"$REQUIRED_CHECKS_FILE"
+  bad=$(jq -r '[.[] | select(.bucket == "fail" or .bucket == "pending" or .bucket == "cancel") | "\(.name)=\(.bucket)"] | join(", ")' <<<"$checks_json")
+  [[ -z "$bad" ]] || fail "non-passing checks: $bad"
+fi
 
 # 4. Verdicts: exact tokens only; the latest fresh comment of each type wins within its type
 # A verdict/approval is the FIRST line of a comment (so quoted or code-block text never counts), posted strictly after the head commit arrived (step 0).
