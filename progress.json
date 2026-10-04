@@ -16,7 +16,7 @@
       }
     ]
   },
-  "updatedAt": "2026-10-04T14:17:49Z",
+  "updatedAt": "2026-10-04T14:18:18Z",
   "updatedBy": "backend-implementer (T-M2.1 SEC round 1 fixes, Opus 5.5)",
   "phase": {
     "id": "P1",
@@ -32,12 +32,12 @@
   "currentTask": {
     "id": "T-M2.1",
     "title": "Identity core: accounts, tutor bootstrap, login/logout/session",
-    "status": "in_progress",
+    "status": "in_review",
     "ownerRole": "BE",
     "branch": "feature/T-M2.1-identity-core",
     "packet": "docs/tasks/T-M2.1-identity-core.md",
-    "pr": null,
-    "lastCommit": "11990d0",
+    "pr": "#52",
+    "lastCommit": "ced08f0",
     "startedAt": "2026-10-04T08:26:09Z",
     "entryGate": [
       "M1 done — met (DEC-088)",
@@ -45,11 +45,8 @@
       "PO start signal — met (DEC-091; DEC-089 (6)-(8) confirmed)"
     ],
     "nextSteps": [
-      "SEC round 1 (S2-1, S2-2, S3-1, S4-2..S4-9, OQ-a) and QA add-ons F1/F2/F5 fixed with tests (backend 214 tests green, contract-drift OK); timing set x20 re-run incl. parallel-login tests 20/20 (evidence/T-M2.1/repeat-x20.txt); gate.sh --from scripts PASS at 11990d0 (evidence/T-M2.1/gate-20261004T141119Z.log); the docs step passes on a clean HEAD (the LC's uncommitted review/security.md references DEC-092, not yet in the decision log)",
-      "LC: SEC round 2 and QA re-check on the fix head; record DEC-092; commit review/ and qa/ verdicts",
-      "LC/PO: add ENGLMS_BOOTSTRAP_TUTOR_USERNAME / ENGLMS_BOOTSTRAP_TUTOR_PASSWORD_FILE to .env.example (unreadable to agents)",
-      "T-M2.2 must register GET /auth/session, POST /auth/login, POST /auth/logout, POST /auth/password in the policy registry; T-M2.4: one GET /auth/session before parallel API calls (remember-me rotation, security.md §3)",
-      "CI green, verdicts, LC-APPROVED, merge-gate, gitlab-sync"
+      "SEC delta re-review of round-1 fixes (ced08f0..) and QA re-test of F1/F2/F5 (DEC-092)",
+      "CI green on the final head, verdicts, LC-APPROVED, merge-gate, gitlab-sync; QA record PR (qa/ branch)"
     ],
     "trace": [
       "FR-AUTH-01..06",
@@ -256,16 +253,16 @@
       "note": "T-M2.1: packet G0 (DEC-090) + PO start signal (DEC-091)"
     },
     "G1": {
-      "status": "pending",
-      "note": "T-M2.1 implementation"
+      "status": "pass",
+      "note": "T-M2.1 implemented (AC1-AC11), gate PASS"
     },
     "G2": {
-      "status": "n/a",
-      "note": "T-M2.1 not started"
+      "status": "pass",
+      "note": "T-M2.1 CI 7/7 at 57c9cfe"
     },
     "G3": {
-      "status": "n/a",
-      "note": "T-M2.1: QA + SEC (identity) pending"
+      "status": "pending",
+      "note": "T-M2.1 round 1: SEC CHANGES REQUESTED (fixed at ced08f0), QA PASS WITH MINOR; delta re-review pending (DEC-092)"
     },
     "G4": {
       "status": "n/a",
@@ -280,7 +277,6 @@
   "decisions": {
     "log": "docs/10-governance/decision-log.md",
     "recent": [
-      "DEC-081",
       "DEC-082",
       "DEC-083",
       "DEC-084",
@@ -290,7 +286,8 @@
       "DEC-088",
       "DEC-089",
       "DEC-090",
-      "DEC-091"
+      "DEC-091",
+      "DEC-092"
     ],
     "pendingPO": [
       "OQ-03",
@@ -809,6 +806,11 @@
       "at": "2026-10-04T08:26:09Z",
       "actor": "lead-coordinator",
       "event": "T-M1.18 merged (PR #51, 20625d9), mirror synced. PO start signal for T-M2.1 with DEC-089 (6)-(8) confirmed (DEC-091); packet ready (D5-1 folded in); implementation starts."
+    },
+    {
+      "at": "2026-10-04T14:18:18Z",
+      "actor": "lead-coordinator",
+      "event": "T-M2.1 PR #52: G3 round 1 SEC CHANGES REQUESTED (S2-1, S2-2, S3-1), QA PASS WITH MINOR; all fixed in-task at ced08f0 (DEC-092); delta re-review next."
     }
   ]
 }

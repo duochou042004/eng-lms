@@ -73,3 +73,29 @@ ENGLMS_TASK=T-M2.1 ./scripts/gate.sh
 ### Docs updated
 api-catalog, api-conventions §5/§7, security.md §2/§3/§4/§5/§8/§10, data-model §3/§4, module-boundaries, tech-stack, runbooks §1/§4, deployment §3, development-setup §2,
 traceability matrix (FR-AUTH-06 and A-021 already amended). Web: regenerated API types only.
+
+## G3 round 1 fixes (DEC-092) — head `ced08f0`
+SEC round 1 CHANGES REQUESTED and QA PASS WITH MINOR at `57c9cfe` (records: `review/security.md`, `qa/report.md` via the QA record PR). Fixed in-task (DEC-088):
+
+| Finding | Fix | Test (`AuthApiIntegrationTest` unless named) |
+|---|---|---|
+| S2-1 | Login and password change read the account without a lock and run bcrypt with no transaction/connection; a short `REQUIRES_NEW` tx locks by ID, re-checks status, lock, expiry and an unchanged hash, then writes. The locking lookup by username is removed | `parallelFailedLoginsTakeSimilarTimeForUnknownAndExistingUsernames`, `anUnrelatedLoginStaysFastDuringABurstOnOneUsername` (both in the ×20 set) |
+| S2-2 | JSON parsing stops at 1 MB (chunked too) → 400 `MALFORMED_REQUEST`; login username > 64 or password > 1024 characters → generic 401, no lookup, one dummy bcrypt, audit reason `REJECTED_INPUT` | `anOversizedBodyIsRefusedAndOverLongFieldsGetTheGeneric401`, `AuthenticationServiceTest.overLongInputIsNeverLookedUpButStillRunsTheEncoder` |
+| S3-1 / QA F1 | Reused or rejected remember-me → 401 `SESSION_EXPIRED` (WARN, no 500); SPA shell on HTML routes; race handled by the T-M2.4 SPA contract (security.md §3) | `aReusedRememberMeTokenIs401SessionExpiredNotA500`, `parallelRequestsWithOneRememberMeCookieNeverAnswer500`, `aReusedRememberMeTokenOnAnHtmlRouteGetsTheSpaShell` |
+| S4-2 | Login deletes a remember-me token it was sent with; logout sends no cancel cookie when there was none | `aLoginDeletesTheRememberMeTokenItWasSentWith` |
+| S4-3 | No remember-me issued or honoured while must-change; an expired temporary password is rejected as current | `aMustChangeUserGetsNoRememberMe`, `anExpiredTemporaryPasswordIsNotAcceptedAsTheCurrentPassword` |
+| S4-4 | NFC normalisation before policy, hash and compare (incl. bootstrap) | `PasswordPolicyTest.normalisesToNfc`, `passwordsAreComparedInUnicodeNfc` |
+| S4-5 | `HEAD /api/v1/meta` public and through the gate | `headMetaIsPublicAndPassesTheGate` |
+| S4-6 | BIP-0039 provenance: blob `942040ed…`, MIT header at bitcoin/bips `0d1b892d…` (notices + tech-stack §7) | — |
+| S4-7 | Insecure cookies refused under `prod` even with `local` | `StartupScenariosTest.insecureCookiesAreRefusedUnderTheProdProfileEvenWithLocal` |
+| S4-8 | Startup WARN outside `local` without `server.forward-headers-strategy`; deployment.md §3 (`SERVER_FORWARDHEADERSSTRATEGY=native`, trusted ranges, Caddy overwrites `X-Forwarded-For`) | `StartupScenariosTest.aMissingForwardHeadersStrategyIsWarnedAbout` |
+| S4-9 | Lock-out by a username-knower documented as accepted risk (security.md §3) | — |
+| OQ-a | Keep truncation; the encoder's `matches` truncates to 72 bytes explicitly | `TruncatingBCryptPasswordEncoderTest.itsOwnMatchesTruncatesExplicitly` |
+| QA F2 | `XSRF-TOKEN` written only on `/api/**` responses | `staticResponsesCarryNoSetCookie` |
+| QA F5 | Unknown `--englms.cli` value → one stderr line naming the commands, exit 1 (runbooks §4) | `ResetTutorPasswordCliTest.anUnknownCommandExitsWithOneAndNamesTheKnownCommands` |
+
+Results: `./mvnw verify` 214 tests green; contract-drift green (no DTO change); timing set ×20: 20/20 runs, 18 tests each (now with the parallel-login and burst
+tests), appended to `repeat-x20.txt`; `ENGLMS_TASK=T-M2.1 ./scripts/gate.sh --from scripts` PASS at `11990d0` (12 steps, E2E 86 passed): `gate-20261004T141119Z.log`
+(docs step run by the LC; it failed in the worktree only on the then-unrecorded DEC-092 reference). Notes: the burst bound is relative to a lone login's median
+(an absolute 2.5 s bound failed once at 2.9 s under QA's concurrent E2E; the old lock behaviour was ≈ 20× the median). A password change now reports only the first
+kind of problem (`PASSWORD_UNCHANGED` is not added to policy errors; saves one bcrypt). Deferred: S4-1 → T-M2.3, QA F3 → T-M2.4 (backlog), F4 accepted (DEC-092).
