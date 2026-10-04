@@ -14,7 +14,7 @@ import org.springframework.scheduling.annotation.Scheduled;
  */
 @Configuration(proxyBeanMethods = false)
 @EnableScheduling
-@ConditionalOnExpression("'${englms.cli:}'.isEmpty()")
+@ConditionalOnExpression("environment.getProperty('englms.cli', '').isEmpty()")
 class AuditRetentionJob {
 
 	private static final Logger log = LoggerFactory.getLogger(AuditRetentionJob.class);

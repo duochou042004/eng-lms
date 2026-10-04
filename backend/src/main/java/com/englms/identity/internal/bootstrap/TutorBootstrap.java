@@ -35,7 +35,7 @@ import org.springframework.transaction.support.TransactionTemplate;
  * ignored. Not part of the operator CLI's context.
  */
 @Component
-@ConditionalOnExpression("'${englms.cli:}'.isEmpty()")
+@ConditionalOnExpression("environment.getProperty('englms.cli', '').isEmpty()")
 class TutorBootstrap implements SmartInitializingSingleton {
 
 	private static final Logger log = LoggerFactory.getLogger(TutorBootstrap.class);

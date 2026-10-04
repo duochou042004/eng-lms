@@ -18,6 +18,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import com.englms.EnglmsApplication;
 import com.englms.TestcontainersConfiguration;
@@ -133,14 +135,18 @@ class ResetTutorPasswordCliTest {
 		assertThat(jdbc.queryForObject("SELECT count(*) FROM audit_event", Integer.class)).isZero();
 	}
 
-	/** QA F5: an unknown command exits 1 with one stderr line naming the known commands, and changes nothing. */
-	@Test
-	void anUnknownCommandExitsWithOneAndNamesTheKnownCommands(CapturedOutput output) {
+	/**
+	 * QA F5: an unknown command exits 1 with one stderr line naming the known commands, and changes nothing. A quote in the
+	 * value is data, never SpEL (SEC S4-11).
+	 */
+	@ParameterizedTest
+	@ValueSource(strings = { "reset-tutor-pasword", "x' + 'y" })
+	void anUnknownCommandExitsWithOneAndNamesTheKnownCommands(String command, CapturedOutput output) {
 		IdentityFixtures.insert(jdbc, "Tutor.One", PASSWORD, Role.TUTOR, false);
 		Throwable failure = org.assertj.core.api.Assertions.catchThrowable(() -> new SpringApplicationBuilder(
 				EnglmsApplication.class).run("--spring.datasource.url=" + postgres.getJdbcUrl(),
 						"--spring.datasource.username=" + postgres.getUsername(),
-						"--spring.datasource.password=" + postgres.getPassword(), "--englms.cli=reset-tutor-pasword",
+						"--spring.datasource.password=" + postgres.getPassword(), "--englms.cli=" + command,
 						"--spring.main.web-application-type=none"));
 
 		assertThat(exitCode(failure)).isEqualTo(1);

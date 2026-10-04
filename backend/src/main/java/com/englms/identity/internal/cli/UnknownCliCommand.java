@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
  * (runbooks §4: 1 = any other failure; QA F5). Nothing is changed.
  */
 @Component
-@ConditionalOnExpression("!'${englms.cli:}'.isEmpty() && '${englms.cli:}' != 'reset-tutor-password'")
+@ConditionalOnExpression("!environment.getProperty('englms.cli', '').isEmpty() && environment.getProperty('englms.cli', '') != 'reset-tutor-password'")
 class UnknownCliCommand implements ApplicationRunner {
 
 	static final String KNOWN = "reset-tutor-password";

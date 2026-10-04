@@ -57,3 +57,37 @@ Checks that passed (security.md §11 and the focus list):
 - Management port (DEC-050): chain excluded; :8081 exposes only `/actuator`, health, info; the app port's `/actuator/health` → 404.
 - TRACE/dot-segments (live): `TRACE /api/v1/meta` + `Accept: text/html` → 405 `application/problem+json`; raw `/x/../actuator/health` → 400.
 - Tests/fixtures: dummy passwords and runtime-generated hashes only.
+
+## Round 2 — head `79f995c` (delta from `57c9cfe`), 2026-10-04 — `SEC-REVIEW T-M2.1: APPROVED`
+
+Ran 16 test classes (181 tests, green) and probes against the packaged jar on 18080/18081 (`-Xmx512m`, `postgres:18` on 55433; throttle raised only for timing).
+
+| ID | Status | Evidence |
+|---|---|---|
+| S2-1 | Fixed | 6 parallel wrong logins: unknown 0.37 / 0.31 s, existing 0.35 / 0.33 s, no staircase (was 1.93 s); unrelated login during a 30-burst 0.37 s (was 6.4 s) |
+| S2-1 TOCTOU | OK | 25 parallel wrong logins on one account: exactly 10 `BAD_PASSWORD`, one lock, one `ACCOUNT_LOCKED`, 15 rejected as locked; the `REQUIRES_NEW` re-check (status, lock, unchanged hash, then count) rejects an attempt whose hash changed between read and write; `changePassword` likewise |
+| S2-2 | Fixed | 2 MB → 400 in 0.01 s; chunked 3 MB → 400; 90 MB → answered after 1 MB, connection closed; 6 × 90 MB parallel → no OOM, health 200; username 65 / password 1025 → 401 identical to unknown-user, audited `REJECTED_INPUT` |
+| S3-1 | Fixed as decided (DEC-092) | Reused rotated token → 401 `SESSION_EXPIRED`, WARN, no ERROR; 4 parallel → no 500; HTML route → SPA shell by test `aReusedRememberMeTokenOnAnHtmlRouteGetsTheSpaShell` (probe jar had no `static/`) |
+| S4-1 | Deferred to T-M2.3 (DEC-092) | Accepted |
+| S4-2 | Fixed | B logging in with A's cookie deletes A's series and cancels the cookie; A's old cookie → 401 |
+| S4-3 | Fixed | Must-change login with `rememberMe` → no cookie; existing token refused; expired temp password rejected and counted |
+| S4-4 | Fixed | NFC in login, change, bootstrap and policy |
+| S4-5 | Fixed | HEAD `/meta` 200, passes the gate |
+| S4-6 | Fixed | Blob `942040ed…`, MIT header at `0d1b892d` |
+| S4-7 | Fixed | Refused with `prod` (test) |
+| S4-8 | Fixed (WARN) | Startup WARN outside `local` (test); deployment.md |
+| S4-9 | Accepted risk | security.md §3 |
+| OQ-a | Kept; `matchesNonNull` truncates explicitly | `itsOwnMatchesTruncatesExplicitly` |
+
+Other changes checked: `ApiCsrfTokenRepository` restricts only `saveToken` to `/api/**`; `loadToken` and the check still run on every unsafe request, login still
+rotates the token (no weakening). CLI: unknown command → exit 1, one stderr line, no change; reset → exit 0, password once on stdout, in no log line. NFC vs existing
+hashes: no production data yet (go-live M8), fixtures and temp passwords are ASCII; accepted.
+
+New findings (S4 only):
+| ID | Sev | Finding | Disposition |
+|---|---|---|---|
+| S4-10 | S4 | The over-long-input branch calls `encoder.matches("", dummyHash)`, which returns immediately (0.01 s vs 0.31 s); not an oracle (depends only on the attacker's input length, same for existing and unknown accounts), but the comment, docs and test name claim equal cost | Fixed in-task (see the summary) |
+| S4-11 | S4 | `@ConditionalOnExpression` splices `${englms.cli}` into SpEL (`UnknownCliCommand`, `TutorBootstrap`, `AuditRetentionJob`): a `'` in the value is evaluated as SpEL; only the operator controls JVM args/env (no privilege boundary) | Fixed in-task (see the summary) |
+| S4-12 | S4 | A failed login carrying A's remember-me cookie first auto-logs A in and rotates A's cookie (stock filter order); a successful login by B deletes A's series (verified) | Note for T-M2.4 shared-device UX; no action |
+
+Verdict: all round-1 S2/S3 fixed and confirmed black-box; **APPROVED**, provided CI is green on the final head.

@@ -99,3 +99,11 @@ tests), appended to `repeat-x20.txt`; `ENGLMS_TASK=T-M2.1 ./scripts/gate.sh --fr
 (docs step run by the LC; it failed in the worktree only on the then-unrecorded DEC-092 reference). Notes: the burst bound is relative to a lone login's median
 (an absolute 2.5 s bound failed once at 2.9 s under QA's concurrent E2E; the old lock behaviour was ≈ 20× the median). A password change now reports only the first
 kind of problem (`PASSWORD_UNCHANGED` is not added to policy errors; saves one bcrypt). Deferred: S4-1 → T-M2.3, QA F3 → T-M2.4 (backlog), F4 accepted (DEC-092).
+
+## G3 round 2 (SEC APPROVED at `79f995c`; S4s fixed in-task by the LC)
+- S4-10: the over-long-input branch now matches a non-empty probe string against the dummy hash (the encoder short-circuits an empty password), so it pays one
+  full bcrypt like any failure; `AuthenticationServiceTest.overLongInputIsNeverLookedUpButStillRunsTheEncoder` verifies the probe; security.md §3 wording.
+- S4-11: the CLI conditions (`UnknownCliCommand`, `TutorBootstrap`, `AuditRetentionJob`) read `environment.getProperty('englms.cli', '')` instead of splicing
+  `${englms.cli}` into SpEL; `ResetTutorPasswordCliTest.anUnknownCommandExitsWithOneAndNamesTheKnownCommands` is parameterised with a quote-containing value.
+- S4-12: note for T-M2.4 (shared-device UX), no change. Targeted run: ResetTutorPasswordCliTest 4, AuthenticationServiceTest 2, StartupScenariosTest 11,
+  AuditIntegrationTest 4, ModularityTests green; full verification by CI.

@@ -44,10 +44,12 @@ import org.springframework.transaction.support.TransactionTemplate;
 @Service
 public class AuthenticationService {
 
-	/** Inputs longer than these are never looked up or hashed (SEC review S2-2); no account can match them. */
+	/** Inputs longer than these are never looked up or hashed (SEC review S2-2); no account can match them, and the login still pays one dummy bcrypt. */
 	static final int MAX_USERNAME_INPUT = 64;
 
 	static final int MAX_PASSWORD_INPUT = 1024;
+
+	static final String REJECTED_INPUT_PROBE = "rejected-input";
 
 	private final UserAccountRepository accounts;
 
@@ -108,7 +110,8 @@ public class AuthenticationService {
 	private AccountView attempt(String username, String password, ClientInfo client, List<Object> published) {
 		if (username == null || password == null || username.length() > MAX_USERNAME_INPUT
 				|| password.length() > MAX_PASSWORD_INPUT) {
-			encoder.matches("", dummyHash);
+			// non-empty: the encoder short-circuits an empty password, so this pays one full bcrypt like any other failure (SEC S4-10)
+			encoder.matches(REJECTED_INPUT_PROBE, dummyHash);
 			published.add(new LoginFailed(null, LoginFailed.Reason.REJECTED_INPUT, client));
 			return null;
 		}
