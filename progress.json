@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-10-04T01:52:37Z",
-  "updatedBy": "lead-coordinator (session 2026-10-03 #2, new device, Opus 5.5)",
+  "updatedAt": "2026-10-04T02:55:00Z",
+  "updatedBy": "lead-coordinator (session 2026-10-04 #1, Opus 5.5)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -35,18 +35,19 @@
     "status": "draft",
     "ownerRole": "BE",
     "branch": "feature/T-M2.1-identity-core",
-    "packet": "docs/tasks/backlog.md#m2--identity-and-students",
+    "packet": "docs/tasks/T-M2.1-identity-core.md",
     "pr": null,
     "lastCommit": null,
     "startedAt": null,
     "entryGate": [
       "M1 done — met (DEC-088)",
-      "Packet G0 — pending (task-packet skill; SEC review applies at G3)",
-      "PO start signal — pending"
+      "Packet G0 — met on merge of docs/T-M2.1-packet (DEC-089; SEC review required at G3)",
+      "PO start signal — pending (requested, DEC-089)"
     ],
     "nextSteps": [
-      "Write the T-M2.1 packet (G0), DOCS-REVIEW, merge-gate; ask the PO for the start signal",
-      "T-M1.17 first among the carried items (DEC-086), then T-M1.18"
+      "DOCS-REVIEW + merge-gate for docs/T-M2.1-packet",
+      "Ask the PO for the T-M2.1 start signal; do not start implementation without it",
+      "Meanwhile: T-M1.17 (DEC-086), then T-M1.18"
     ],
     "trace": [
       "FR-AUTH-01..06",
@@ -261,7 +262,6 @@
   "decisions": {
     "log": "docs/10-governance/decision-log.md",
     "recent": [
-      "DEC-078",
       "DEC-079",
       "DEC-080",
       "DEC-081",
@@ -271,9 +271,11 @@
       "DEC-085",
       "DEC-086",
       "DEC-087",
-      "DEC-088"
+      "DEC-088",
+      "DEC-089"
     ],
     "pendingPO": [
+      "DEC-089",
       "OQ-03",
       "OQ-04",
       "OQ-05",
