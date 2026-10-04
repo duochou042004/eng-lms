@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-10-04T09:54:57Z",
-  "updatedBy": "backend-implementer (T-M2.1, Opus 5.5)",
+  "updatedAt": "2026-10-04T14:17:49Z",
+  "updatedBy": "backend-implementer (T-M2.1 SEC round 1 fixes, Opus 5.5)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -37,7 +37,7 @@
     "branch": "feature/T-M2.1-identity-core",
     "packet": "docs/tasks/T-M2.1-identity-core.md",
     "pr": null,
-    "lastCommit": "9b8382a",
+    "lastCommit": "11990d0",
     "startedAt": "2026-10-04T08:26:09Z",
     "entryGate": [
       "M1 done — met (DEC-088)",
@@ -45,10 +45,10 @@
       "PO start signal — met (DEC-091; DEC-089 (6)-(8) confirmed)"
     ],
     "nextSteps": [
-      "BE done on feature/T-M2.1-identity-core: AC1-AC11 implemented and tested; ENGLMS_TASK=T-M2.1 gate.sh PASS at 9b8382a (13 steps, 364s; backend 196 tests, contract-drift OK, E2E 86 passed) in evidence/T-M2.1/gate-20261004T094833Z.log; timing tests x20 20/20 green; the implementation summary is in the implementer's report (the harness blocked writing evidence/T-M2.1/summary.md) - LC to commit it",
-      "LC: open the PR; LC/PO: add ENGLMS_BOOTSTRAP_TUTOR_USERNAME / ENGLMS_BOOTSTRAP_TUTOR_PASSWORD_FILE to .env.example (unreadable to agents)",
-      "G3: fresh qa-evaluator + security-reviewer (own worktrees); SEC verdict on OQ-a (bcrypt 72-byte truncation for 73-128-character passwords); timing tests x20 recorded in evidence/T-M2.1/repeat-x20.txt",
-      "T-M2.2 must register GET /auth/session, POST /auth/login, POST /auth/logout, POST /auth/password in the policy registry",
+      "SEC round 1 (S2-1, S2-2, S3-1, S4-2..S4-9, OQ-a) and QA add-ons F1/F2/F5 fixed with tests (backend 214 tests green, contract-drift OK); timing set x20 re-run incl. parallel-login tests 20/20 (evidence/T-M2.1/repeat-x20.txt); gate.sh --from scripts PASS at 11990d0 (evidence/T-M2.1/gate-20261004T141119Z.log); the docs step passes on a clean HEAD (the LC's uncommitted review/security.md references DEC-092, not yet in the decision log)",
+      "LC: SEC round 2 and QA re-check on the fix head; record DEC-092; commit review/ and qa/ verdicts",
+      "LC/PO: add ENGLMS_BOOTSTRAP_TUTOR_USERNAME / ENGLMS_BOOTSTRAP_TUTOR_PASSWORD_FILE to .env.example (unreadable to agents)",
+      "T-M2.2 must register GET /auth/session, POST /auth/login, POST /auth/logout, POST /auth/password in the policy registry; T-M2.4: one GET /auth/session before parallel API calls (remember-me rotation, security.md §3)",
       "CI green, verdicts, LC-APPROVED, merge-gate, gitlab-sync"
     ],
     "trace": [
