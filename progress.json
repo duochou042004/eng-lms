@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-10-04T03:18:30Z",
-  "updatedBy": "lead-coordinator (session 2026-10-04 #1, Opus 5.5)",
+  "updatedAt": "2026-10-04T08:26:09Z",
+  "updatedBy": "lead-coordinator (session 2026-10-04 #2, Opus 5.5)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -26,27 +26,28 @@
   "milestone": {
     "id": "M2",
     "name": "Identity and student management",
-    "status": "not_started",
+    "status": "in_progress",
     "exitCriteria": "FR-AUTH-01..10 and FR-STU-01..07 accepted; authorization-matrix and student-isolation harnesses fail on any unregistered endpoint; add-student flow E2E at 360/768/1280 within its step budget; security review of authentication passed (docs/01-product/roadmap.md)."
   },
   "currentTask": {
     "id": "T-M2.1",
     "title": "Identity core: accounts, tutor bootstrap, login/logout/session",
-    "status": "draft",
+    "status": "in_progress",
     "ownerRole": "BE",
     "branch": "feature/T-M2.1-identity-core",
     "packet": "docs/tasks/T-M2.1-identity-core.md",
     "pr": null,
     "lastCommit": null,
-    "startedAt": null,
+    "startedAt": "2026-10-04T08:26:09Z",
     "entryGate": [
       "M1 done — met (DEC-088)",
       "Packet G0 — met (PR #49, bb6fbd5; DOCS-REVIEW rounds 1-4, final PASS)",
-      "PO start signal — pending (requested, DEC-090)"
+      "PO start signal — met (DEC-091; DEC-089 (6)-(8) confirmed)"
     ],
     "nextSteps": [
-      "PO start signal for T-M2.1 (requested, DEC-089/DEC-090); the PO is also asked to confirm DEC-089 (6)-(8)",
-      "On the start signal: set the packet ready, fold in DOCS-REVIEW R4 D5-1 (S4), branch feature/T-M2.1-identity-core, backend-implementer in its own worktree; SEC review at G3"
+      "backend-implementer in its own worktree: AC1-AC11, gate.sh green, evidence/T-M2.1/summary.md",
+      "G3: fresh qa-evaluator + security-reviewer (own worktrees), timing tests x20; fix S1/S2, cheap S3/S4 in-task (DEC-088)",
+      "CI green, verdicts, LC-APPROVED, merge-gate, gitlab-sync; fallback split AC11 -> T-M2.1b (DEC) if AC1-AC10 not green at ~1.5 agent-days"
     ],
     "trace": [
       "FR-AUTH-01..06",
@@ -56,24 +57,23 @@
     ]
   },
   "nextTask": {
-    "id": "T-M1.18",
-    "title": "qa/ typecheck in gate.sh and CI (after T-M1.17, DEC-087)",
-    "status": "in_review",
+    "id": "T-M2.2",
+    "title": "Authorization matrix + student-isolation harness (registers T-M2.1's auth endpoints)",
+    "status": "draft",
     "ownerRole": "LC",
-    "branch": "chore/T-M1.18-qa-typecheck",
-    "packet": "docs/tasks/T-M1.18-qa-typecheck.md",
-    "pr": "#51",
+    "branch": null,
+    "packet": null,
+    "pr": null,
     "lastCommit": null,
-    "startedAt": "2026-10-04T03:08:14Z",
+    "startedAt": null,
     "entryGate": [
-      "T-M1.17 merged — met (077f4e4)"
+      "T-M2.1 merged"
     ],
     "nextSteps": [
-      "CI green, DOCS-REVIEW verdict, LC-APPROVED, merge-gate, gitlab-sync"
+      "Write the packet to G0 (task-packet skill) with a fresh DOCS-REVIEW"
     ],
     "trace": [
-      "DEC-087",
-      "DEC-088"
+      "backlog M2"
     ]
   },
   "completed": [
@@ -212,6 +212,14 @@
       "mergeCommit": "077f4e4",
       "evidence": "evidence/T-M1.17/summary.md",
       "note": "Merged via scripts/merge-gate.sh (PR #50) at head 4ee8f93; CI 7/7 green; local gate PASS. DOCS-REVIEW round 1 PASS (F1 S3, F2-F5 S4 fixed in-task, DEC-088 rule), round 2 delta PASS (D2-1, D2-2 S4 fixed in T-M1.18's PR). merge-gate tests 311 -> 325 (DEC-090)."
+    },
+    {
+      "id": "T-M1.18",
+      "title": "qa/ typecheck in gate.sh and CI (after T-M1.17, DEC-087)",
+      "completedAt": "2026-10-04T03:24:16Z",
+      "mergeCommit": "20625d9",
+      "evidence": "evidence/T-M1.18/summary.md",
+      "note": "Merged via scripts/merge-gate.sh (PR #51) at head 41dbee5; CI 7/7 green; DOCS-REVIEW PASS (F1-F4 fixed in-task, DEC-088 rule). GitLab mirror synced (DEC-091)."
     }
   ],
   "tests": {
@@ -242,12 +250,12 @@
   },
   "gates": {
     "G0": {
-      "status": "pending",
-      "note": "T-M2.1: packet to write (task-packet skill), DOCS-REVIEW, PO start signal"
+      "status": "pass",
+      "note": "T-M2.1: packet G0 (DEC-090) + PO start signal (DEC-091)"
     },
     "G1": {
-      "status": "n/a",
-      "note": "T-M2.1 not started"
+      "status": "pending",
+      "note": "T-M2.1 implementation"
     },
     "G2": {
       "status": "n/a",
@@ -255,7 +263,7 @@
     },
     "G3": {
       "status": "n/a",
-      "note": "T-M2.1: QA + SEC (identity)"
+      "note": "T-M2.1: QA + SEC (identity) pending"
     },
     "G4": {
       "status": "n/a",
@@ -270,7 +278,6 @@
   "decisions": {
     "log": "docs/10-governance/decision-log.md",
     "recent": [
-      "DEC-080",
       "DEC-081",
       "DEC-082",
       "DEC-083",
@@ -280,10 +287,10 @@
       "DEC-087",
       "DEC-088",
       "DEC-089",
-      "DEC-090"
+      "DEC-090",
+      "DEC-091"
     ],
     "pendingPO": [
-      "DEC-089",
       "OQ-03",
       "OQ-04",
       "OQ-05",
@@ -451,6 +458,13 @@
       "status": "approved",
       "at": "2026-10-04T00:31:17Z",
       "ref": "DEC-086"
+    },
+    {
+      "what": "Start T-M2.1 (identity core); confirm DEC-089 (6)-(8)",
+      "by": "PO",
+      "status": "approved",
+      "at": "2026-10-04T08:26:09Z",
+      "ref": "DEC-091"
     }
   ],
   "environment": {
@@ -788,6 +802,11 @@
       "at": "2026-10-04T01:50:25Z",
       "actor": "lead-coordinator",
       "event": "PO signed off M1 G5 (DEC-088): M1 done; 45-min exploratory accepted; retro proposals made binding (qa-protocol §3 repeat runs, quality-gates G3 cheap S3/S4 fixes in-task). Next: M2 / T-M2.1 packet; T-M1.17 first among carried items."
+    },
+    {
+      "at": "2026-10-04T08:26:09Z",
+      "actor": "lead-coordinator",
+      "event": "T-M1.18 merged (PR #51, 20625d9), mirror synced. PO start signal for T-M2.1 with DEC-089 (6)-(8) confirmed (DEC-091); packet ready (D5-1 folded in); implementation starts."
     }
   ]
 }
