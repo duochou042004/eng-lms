@@ -48,7 +48,7 @@ Actors: anonymous internet users, an authenticated student (curious or malicious
 - Hashing: `DelegatingPasswordEncoder` (default `{bcrypt}`, strength 12). Upgrading to argon2id is a later ADR (rehash on login).
 - Lockout: after 10 consecutive failures → `locked_until = now + 15 min`. A successful login resets the count. The tutor sees lock status on the student page and can unlock through a password reset.
 - Per-IP throttle: an in-memory sliding window (30 attempts per 5 minutes per IP). Adequate for a single instance; documented as instance-local.
-- `mustChangePassword` gate: a filter lets only `/auth/session`, `/auth/password` and `/auth/logout` through.
+- `mustChangePassword` gate: a filter lets only `/auth/session`, `/auth/password`, `/auth/logout` and the public `/meta` (DEC-089) through.
 - Tutor bootstrap (FR-AUTH-02): the password is read from a **file path** (`ENGLMS_BOOTSTRAP_TUTOR_PASSWORD_FILE`, a Podman secret), never from an env value in production.
 
 ## 4. Authorization model
