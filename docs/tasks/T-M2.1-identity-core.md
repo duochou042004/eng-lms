@@ -60,7 +60,8 @@ explicitly public or authenticated, and the student and tutor namespaces are rol
 - **Packages:** `com.englms.identity` (public API: `AccountApi`, `CurrentUser`, `SessionTerminator`; events in `identity.events`: `LoginSucceeded`, `LoginFailed`,
   `AccountLocked`, `PasswordChanged`, `PasswordReset`, `TutorBootstrapped`, `AccountDisabled`), `identity.internal.{domain,persistence,web,security,bootstrap,cli}`; `com.englms.audit` (`AuditApi`),
   `audit.internal.*`. Dependencies follow module-boundaries (identity → shared, settings; audit → shared + events). Login-time audit writes are synchronous
-  through events (module-boundaries §audit, "Listens"): identity publishes these `identity.events`; `audit` records them in a **synchronous** `@EventListener` that writes in its own transaction
+  through events (module-boundaries §audit, "Listens"): identity publishes these `identity.events` (`PasswordReset` carries the actor kind, OPERATOR or TUTOR, which audit maps to
+  `PASSWORD_RESET_BY_OPERATOR` or `PASSWORD_RESET_BY_TUTOR`; R3 D4-1); `audit` records them in a **synchronous** `@EventListener` that writes in its own transaction
   (`REQUIRES_NEW`), so a failed-login row survives the failed request. Identity never calls `AuditApi` (no `identity → audit` edge, no cycle; DOCS-REVIEW S2-1).
   `ModularityTests` stays green.
 - **Migrations** (db-migration skill; timestamped names like `V1`): identity (`user_account`, `ux_user_account__single_tutor`, the Spring Session JDBC
@@ -93,7 +94,8 @@ explicitly public or authenticated, and the student and tutor namespaces are rol
   security.md §4 gets this wording (DOCS-REVIEW S3-3).
 - **Filter order and test users:** CSRF (403 `CSRF_INVALID`) → authentication (401) → L1 role (403 `FORBIDDEN_ROLE`) → must-change gate (403
   `PASSWORD_CHANGE_REQUIRED`) → handler lookup (404). So an anonymous POST without a token gets `CSRF_INVALID`, a must-change tutor on `/api/v1/tutor/x` gets
-  `PASSWORD_CHANGE_REQUIRED` and on `/api/v1/student/x` gets `FORBIDDEN_ROLE`; the gate and the L1 check apply to paths without handlers. Tests create STUDENT
+  `PASSWORD_CHANGE_REQUIRED` and on `/api/v1/student/x` gets `FORBIDDEN_ROLE`; the gate and the L1 check apply to paths without handlers. A must-change user on an unmapped `/api/**` path
+  outside the two namespaces, or on `POST /auth/register`, gets 403 `PASSWORD_CHANGE_REQUIRED` (the gate runs before handler lookup; R3 D3-1). Tests create STUDENT
   users with a test fixture that inserts into `user_account` (no students module yet). Anonymous `POST /auth/password` (valid CSRF) → 401 `UNAUTHENTICATED`;
   anonymous `POST /auth/logout` (valid CSRF) → 204 (idempotent) (DOCS-REVIEW R2 S3-2, S3-4).
 - **401 codes:** no session cookie → `UNAUTHENTICATED`; a cookie that names no live session (unknown, idle-expired, logged out) → `SESSION_EXPIRED`, so T-M2.4
@@ -136,7 +138,7 @@ explicitly public or authenticated, and the student and tutor namespaces are rol
   ≠ current) or 422 `VALIDATION_FAILED` with `errors[]` field codes (api-conventions §5). On success: the hash is updated, `mustChangePassword=false`, `temp_password_expires_at` cleared,
   the session ID rotates, **all other** sessions and remember-me tokens of the user end, `PASSWORD_CHANGED` is audited. Hashes are `{bcrypt}` with strength 12.
 - **AC8 (FR-AUTH-06):** While `mustChangePassword=true`, every `/api/**` request except `GET /auth/session`, `POST /auth/password`, `POST /auth/logout` and the
-  public `GET /api/v1/meta` returns 403 `PASSWORD_CHANGE_REQUIRED` (tested on a tutor path and a student path; `/meta` answers 200); the session body reports `mustChangePassword`.
+  public `GET /api/v1/meta` returns 403 `PASSWORD_CHANGE_REQUIRED` (tested with a must-change tutor on a tutor path and a must-change student on a student path; `/meta` answers 200); the session body reports `mustChangePassword`.
 - **AC9 (FR-AUTH-01, FR-AUTH-10, NFR-SEC-07, T11):** No registration route exists: `/register` and `/signup` → 404, and `POST /api/v1/auth/register` with a
   valid CSRF token → 404 Problem Details. Anonymous `/api/v1/tutor/**` and `/api/v1/student/**` → 401 `UNAUTHENTICATED`; a student on a tutor path and a tutor on a student path → 403
   `FORBIDDEN_ROLE`; an unmapped `/api/**` path stays 404 for an authenticated caller and 401 for an anonymous one. POST/PUT/PATCH/DELETE without a valid
@@ -177,7 +179,8 @@ explicitly public or authenticated, and the student and tutor namespaces are rol
   personal data, new endpoints; security-review skill). No UX review (no UI change); the SPA smoke screenshots at phone-small/tablet/laptop show the app still loads.
 
 ## Docs to update
-- `docs/04-backend/api-catalog.md` (auth rows → live), `api-conventions.md` §5 (the 423 row: login answers 401 while locked, T16; `CURRENT_PASSWORD_INCORRECT`),
+- `docs/04-backend/api-catalog.md` (auth rows → live), `api-conventions.md` §5 (the 423 row: login answers 401 while locked, T16; the field codes `PASSWORD_TOO_SHORT`, `PASSWORD_TOO_LONG`,
+  `PASSWORD_TOO_COMMON`, `PASSWORD_EQUALS_USERNAME`, `PASSWORD_UNCHANGED`, `CURRENT_PASSWORD_INCORRECT`; `RATE_LIMITED` live),
   `security.md` §2 (T12: the operator reset; T18: the landing route comes from the session's role in the SPA, the `?next=` allow-list is T-M2.4's),
   §3 (as implemented, principal = `userId`; the gate lets `/meta` through), §4 (what "deny" means), §5 (headers via Spring Security; the TRACE exception closed), §8 (operator-reset
   action name), §10 (dev row: the local secret file, no `scripts/dev-bootstrap`), `docs/02-requirements/functional-requirements.md` AC FR-AUTH-06 (`/meta` passes the gate, DEC-089; done in the packet PR),

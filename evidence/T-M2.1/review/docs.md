@@ -47,3 +47,16 @@ All 15 round-1 fixes verified (S4-7 completed by updating security.md §3 in rou
 | R2 S4-6 | S4 | Lock reached via `/auth/password` during a live session | Ends all sessions and tokens (AC7) |
 
 Verdict line: `DOCS-REVIEW T-M2.1: PASS`
+
+## Round 3 — delta `2c9bf5e..6f4fdf4` — PASS
+
+All 10 round-2 findings verified fixed; consistency with security.md, api-conventions §5, api-catalog, module-boundaries, FR-AUTH-05/06/09 and DEC-089 confirmed.
+New, non-blocking (fixed in-task, DEC-088 rule):
+
+| ID | Sev | Finding | Fix |
+|---|---|---|---|
+| D3-1 | S4 | AC8 "a tutor path and a student path" vs. L1-before-gate; must-change user on an unmapped path undefined | AC8 tests each role on its own namespace; design note: 403 `PASSWORD_CHANGE_REQUIRED` on unmapped paths and `register` |
+| D4-1 | S4 | One `PasswordReset` event for two audit actions | The event carries the actor kind; audit maps it |
+| D4-2 | S4 | api-conventions §5 entry lists only one of six field codes | All six + `RATE_LIMITED` listed |
+
+Verdict line: `DOCS-REVIEW T-M2.1: PASS`
