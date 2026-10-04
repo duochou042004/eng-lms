@@ -69,6 +69,18 @@ LAST_OUTPUT=$(cut -d' ' -f1 "$calls" | paste -sd' ')
 
 expect_exit 0 "--list prints the steps" -- gate --list
 expect_output_contains "contract-drift" "--list includes contract-drift"
+grep -qE 'contract-drift.*qa-typecheck.*e2e' <<<"$(tr '\n' ' ' <<<"$LAST_OUTPUT")" \
+  && { PASS_COUNT=$((PASS_COUNT + 1)); echo "  ok   - T-M1.18: --list shows qa-typecheck between contract-drift and e2e"; } \
+  || { FAIL_COUNT=$((FAIL_COUNT + 1)); echo "  FAIL - T-M1.18: --list order: $LAST_OUTPUT"; }
+
+# T-M1.18 (review F1): a failing qa install or typecheck fails the gate at qa-typecheck, and e2e does not run
+for at in qa-typecheck qa-install; do
+  : >"$calls"
+  expect_exit 1 "T-M1.18: a failing $at fails the gate" -- env GATE_FAIL_AT=$at PATH="$work/bin:$PATH" "$repo/scripts/gate.sh"
+  expect_output_contains "gate: FAIL at step 'qa-typecheck' (exit 7)" "T-M1.18: $at failure is reported at step qa-typecheck"
+  grep -q '^e2e ' "$calls" && { FAIL_COUNT=$((FAIL_COUNT + 1)); echo "  FAIL - T-M1.18: e2e ran after a failing $at"; } \
+    || { PASS_COUNT=$((PASS_COUNT + 1)); echo "  ok   - T-M1.18: e2e did not run after a failing $at"; }
+done
 expect_exit 2 "--from without a step is a usage error" -- gate --from
 expect_exit 2 "--from with an unknown step is a usage error" -- gate --from nope
 expect_output_contains "unknown step: nope" "names the unknown step"

@@ -8,10 +8,10 @@ Phase/Milestone: P1 / M2 (started: packet only) · Current task: **T-M2.1 (packe
   filter order CSRF → 401 → L1 role → must-change → 404; fallback split of AC11 (CLI + retention) into T-M2.1b by DEC.
 - **The PO start signal for T-M2.1 was requested in chat**, with confirmation of DEC-089 (6)–(8). Not received yet.
 - **T-M1.17 done** (`077f4e4`): merge-gate names an unusable `gh pr checks --json` (gh's error, gh ≥ 2.101) instead of "missing checks".
-- **T-M1.18** (LC): `qa-typecheck` step in `gate.sh` (before `e2e`), "Typecheck the QA suite" in `e2e-smoke` and the GitLab `web` job; PR from this branch (check `gh pr list`).
+- **T-M1.18** (LC): `qa-typecheck` step in `gate.sh` (before `e2e`), "Typecheck the QA suite" in `e2e-smoke` and the GitLab `web` job; PR #51 (DOCS-REVIEW PASS; merged if `gh pr list` no longer shows it).
 
 ## Next steps
-1. If T-M1.18's PR is still open: CI green → DOCS-REVIEW verdict → LC-APPROVED → merge-gate → gitlab-sync.
+1. If PR #51 (T-M1.18) is still open: CI green → DOCS-REVIEW verdict → LC-APPROVED → merge-gate → gitlab-sync.
 2. On the PO start signal (record a DEC): set the T-M2.1 packet `ready` (also fold in DOCS-REVIEW R4 **D5-1**: the authenticated 404 for unmapped `/api/**` comes from
    handler lookup after the must-change gate), `progress.json` → `in_progress`, branch `feature/T-M2.1-identity-core`, backend-implementer in its own worktree,
    then QA (fresh) + SEC review at G3, merge-gate.

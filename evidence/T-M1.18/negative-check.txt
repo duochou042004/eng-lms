@@ -1,4 +1,4 @@
-$ pnpm typecheck  # with a deliberate type error in a scratch copy of e2e/T-M1.13.spec.ts
+$ pnpm typecheck  # with a deliberate type error in a scratch copy of qa/e2e/T-M1.13.spec.ts (cwd qa/)
 $ tsc --noEmit
 e2e/zz-negative-check.spec.ts(176,7): error TS2322: Type 'string' is not assignable to type 'number'.
 [ELIFECYCLE] Command failed with exit code 2.
