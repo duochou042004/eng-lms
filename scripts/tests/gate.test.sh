@@ -6,7 +6,7 @@ source "$(dirname "$0")/lib.sh"
 echo "gate.sh"
 work=$(mktemp -d); trap 'rm -rf "$work"' EXIT
 repo="$work/repo"
-mkdir -p "$repo/scripts/tests" "$repo/backend" "$repo/web" "$work/bin"
+mkdir -p "$repo/scripts/tests" "$repo/backend" "$repo/web" "$repo/qa" "$work/bin"
 cp "$ROOT/scripts/gate.sh" "$repo/scripts/gate.sh"
 calls="$work/calls"
 # A stub records "<name> <args>" and fails when its name equals $GATE_FAIL_AT.
@@ -20,10 +20,10 @@ stub "$repo/backend/mvnw" backend
 stub "$repo/scripts/contract-drift.sh" contract-drift
 stub "$repo/scripts/e2e-run.sh" e2e
 printf 'echo "env.sh: stub"\n' >"$repo/scripts/env.sh"
-# pnpm stub: its name is "web-<script>" ("web-install" for install), matching the gate's step names.
+# pnpm stub: its name is "<dir>-<script>" ("web-install" for install in web/, "qa-typecheck" in qa/), matching the gate's step names.
 cat >"$work/bin/pnpm" <<STUB
 #!/usr/bin/env bash
-name="web-\$1"; [[ "\$1" == test ]] && name=web-test
+name="\$(basename "\$PWD")-\$1"
 echo "\$name \$*" >>"$calls"
 [[ "\${GATE_FAIL_AT:-}" == "\$name" ]] && exit 7
 exit 0
@@ -33,15 +33,17 @@ gate() { env PATH="$work/bin:$PATH" "$repo/scripts/gate.sh" "$@"; }
 
 : >"$calls"
 expect_exit 0 "passes when every step passes" -- gate
-expect_output_contains "gate: PASS (12 steps" "reports PASS with the step count"
+expect_output_contains "gate: PASS (13 steps" "reports PASS with the step count"
 LAST_OUTPUT=$(cut -d' ' -f1 "$calls" | paste -sd' ')
-expect_output_contains "docs scripts backend web-install web-lint web-typecheck web-test web-build web-budget web-contrast contract-drift e2e" \
+expect_output_contains "docs scripts backend web-install web-lint web-typecheck web-test web-build web-budget web-contrast contract-drift qa-install qa-typecheck e2e" \
   "runs every step in CI order"
 LAST_OUTPUT=$(cat "$calls")
 expect_output_contains "backend -B -ntp verify" "backend runs ./mvnw -B -ntp verify"
 expect_output_contains "web-install install --frozen-lockfile" "web install uses the frozen lockfile"
 expect_output_contains "web-test test --run" "web tests run once (no watch mode)"
 expect_output_contains "e2e --project=phone-small --project=tablet --project=laptop" "e2e runs the mandatory viewports"
+expect_output_contains "qa-install install --frozen-lockfile" "T-M1.18: qa install uses the frozen lockfile"
+expect_output_contains "qa-typecheck typecheck" "T-M1.18: the qa suite is typechecked"
 
 : >"$calls"
 expect_exit 1 "fails fast on the first failing step" -- env GATE_FAIL_AT=web-typecheck PATH="$work/bin:$PATH" "$repo/scripts/gate.sh"
@@ -63,7 +65,7 @@ LAST_OUTPUT=$(cat "$calls")
 : >"$calls"
 expect_exit 0 "--from resumes at a step" -- gate --from web-budget
 LAST_OUTPUT=$(cut -d' ' -f1 "$calls" | paste -sd' ')
-[[ "$LAST_OUTPUT" == "web-budget web-contrast contract-drift e2e" ]] && { PASS_COUNT=$((PASS_COUNT + 1)); echo "  ok   - --from runs that step and the rest"; } || { FAIL_COUNT=$((FAIL_COUNT + 1)); echo "  FAIL - --from ran: $LAST_OUTPUT"; }
+[[ "$LAST_OUTPUT" == "web-budget web-contrast contract-drift qa-install qa-typecheck e2e" ]] && { PASS_COUNT=$((PASS_COUNT + 1)); echo "  ok   - --from runs that step and the rest"; } || { FAIL_COUNT=$((FAIL_COUNT + 1)); echo "  FAIL - --from ran: $LAST_OUTPUT"; }
 
 expect_exit 0 "--list prints the steps" -- gate --list
 expect_output_contains "contract-drift" "--list includes contract-drift"

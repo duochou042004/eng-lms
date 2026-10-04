@@ -9,7 +9,7 @@
 set -uo pipefail
 ROOT=$(cd "$(dirname "$0")/.." && pwd)
 
-STEPS=(docs scripts backend web-install web-lint web-typecheck web-test web-build web-budget web-contrast contract-drift e2e)
+STEPS=(docs scripts backend web-install web-lint web-typecheck web-test web-build web-budget web-contrast contract-drift qa-typecheck e2e)
 
 usage() { sed -n '2,7p' "$0" | sed 's/^# \{0,1\}//'; }
 
@@ -26,6 +26,8 @@ run_step() {
     web-budget) (cd "$ROOT/web" && pnpm budget) ;;
     web-contrast) (cd "$ROOT/web" && pnpm contrast) ;;
     contract-drift) "$ROOT/scripts/contract-drift.sh" ;;
+    # The QA suite's specs typecheck, so they cannot rot unnoticed (T-M1.18, M1 G5 QA F-6).
+    qa-typecheck) (cd "$ROOT/qa" && pnpm install --frozen-lockfile && pnpm typecheck) ;;
     # The mandatory viewports against the packaged app (T-M1.6); needs ports 8080/8081 free and the dev DB.
     e2e) "$ROOT/scripts/e2e-run.sh" --project=phone-small --project=tablet --project=laptop ;;
   esac
