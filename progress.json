@@ -16,7 +16,7 @@
       }
     ]
   },
-  "updatedAt": "2026-10-03T18:04:10Z",
+  "updatedAt": "2026-10-04T00:31:17Z",
   "updatedBy": "lead-coordinator (session 2026-10-03 #2, new device, Opus 5.5)",
   "phase": {
     "id": "P1",
@@ -26,7 +26,7 @@
   "milestone": {
     "id": "M1",
     "name": "Walking skeleton and delivery pipeline",
-    "status": "in_review",
+    "status": "awaiting_approval",
     "exitCriteria": "scripts/gate.sh green locally and in CI; backend skeleton with Modulith verify + Flyway V1; SPA served same-origin; Playwright smoke at 3 viewports with axe; contract drift check; Testcontainers on rootless Podman or documented fallback (docs/01-product/roadmap.md)."
   },
   "currentTask": {
@@ -41,13 +41,13 @@
     "startedAt": null,
     "entryGate": [
       "M1 exit criteria met — met (all M1 packets merged, DEC-085)",
-      "M1 gate G5 (milestone regression, retro, PO) — pending",
+      "M1 gate G5 — regression, retro, risk review done (DEC-087); PO sign-off pending",
       "Packet G0 — pending (task-packet skill; SEC review applies)"
     ],
     "nextSteps": [
-      "Merge PR #44 (qa/T-M1.16, QA record) via merge-gate if still open",
-      "M1 G5 first: milestone regression by a fresh qa-evaluator, retro, PO sign-off",
-      "Then write the T-M2.1 packet (G0, DOCS-REVIEW) and ask the PO for the start signal"
+      "PO signs off M1 G5 (DEC); then milestone.status = done",
+      "Write the T-M2.1 packet (G0, DOCS-REVIEW) and ask the PO for the start signal",
+      "T-M1.17 first among the carried items (DEC-086), then T-M1.18"
     ],
     "trace": [
       "FR-AUTH-01..06",
@@ -58,7 +58,7 @@
   },
   "nextTask": {
     "id": "T-M1.17",
-    "title": "merge-gate reports an unsupported gh instead of missing checks",
+    "title": "merge-gate reports an unsupported gh instead of missing checks (first of the carried items, DEC-086)",
     "status": "draft",
     "ownerRole": "LC",
     "branch": "chore/T-M1.17-merge-gate-gh-version",
@@ -72,7 +72,8 @@
     "nextSteps": [],
     "trace": [
       "DEC-084",
-      "DEC-085"
+      "DEC-085",
+      "DEC-086"
     ]
   },
   "completed": [
@@ -206,8 +207,8 @@
     }
   ],
   "tests": {
-    "lastRun": "2026-10-03T17:29:37Z",
-    "summary": "At T-M1.16 (fb73e87): gate.sh PASS (12 steps, 284 s; evidence/T-M1.16/gate-20261003T172937Z.log); backend 97, web 88, E2E 86 passed on the 3 mandatory projects; merge-gate 311/311; CI 7/7.",
+    "lastRun": "2026-10-04T00:31:17Z",
+    "summary": "M1 G5 regression at fc288b3: QA regression 132/132 per engine (Chromium, Firefox, WebKit x 6 viewports), 396/396 x3; implementer E2E 161 passed on 6 viewports; gate.sh PASS (12 steps; backend 97, web 88, E2E 86); CI 7/7 (DEC-087).",
     "suites": [
       {
         "name": "backend (./mvnw -B verify)",
@@ -254,7 +255,7 @@
     },
     "G5": {
       "status": "pending",
-      "note": "M1 milestone gate: regression (e2e 6 viewports Chromium; qa/ Firefox+WebKit smoke), evidence/M1/qa-regression.md, retro, PO sign-off"
+      "note": "M1: regression PASS WITH MINOR (evidence/M1/qa-regression.md; 3 engines x 6 viewports), retro evidence/M1/retro.md, risk register reviewed (DEC-087); PO sign-off pending"
     }
   },
   "blockers": [],
@@ -268,7 +269,9 @@
       "DEC-082",
       "DEC-083",
       "DEC-084",
-      "DEC-085"
+      "DEC-085",
+      "DEC-086",
+      "DEC-087"
     ],
     "pendingPO": [
       "OQ-03",
@@ -430,7 +433,14 @@
       "by": "PO",
       "status": "pending",
       "at": null,
-      "ref": "DEC-085"
+      "ref": "DEC-087"
+    },
+    {
+      "what": "T-M1.17 captures the gh issue; prioritise it first among the carried items",
+      "by": "PO",
+      "status": "approved",
+      "at": "2026-10-04T00:31:17Z",
+      "ref": "DEC-086"
     }
   ],
   "environment": {
@@ -758,6 +768,11 @@
       "at": "2026-10-03T18:00:39Z",
       "actor": "lead-coordinator",
       "event": "T-M1.16 merged via merge-gate (PR #43, 1dbd7e3); QA PASS WITH MINOR (PR #44), UX APPROVED; S4s accepted, R2-1 -> T-M1.17 (DEC-085). All M1 packets merged; M1 in review for G5."
+    },
+    {
+      "at": "2026-10-04T00:31:17Z",
+      "actor": "lead-coordinator",
+      "event": "M1 G5 milestone regression PASS WITH MINOR (3 engines x 6 viewports; DEC-087); retro written; R-07 closed. PO confirmed T-M1.17 and its priority (DEC-086). M1 awaits the PO G5 sign-off."
     }
   ]
 }
