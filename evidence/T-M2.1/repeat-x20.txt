@@ -22,3 +22,27 @@ run 18 2026-10-04T09:41:23Z exit=0 [INFO] Tests run: 15, Failures: 0, Errors: 0,
 run 19 2026-10-04T09:42:28Z exit=0 [INFO] Tests run: 15, Failures: 0, Errors: 0, Skipped: 0
 run 20 2026-10-04T09:43:34Z exit=0 [INFO] Tests run: 15, Failures: 0, Errors: 0, Skipped: 0
 # Result: 20/20 runs green, 15 tests each, 0 failures, 0 errors
+
+# SEC round 1 re-run (S2-1 adds the parallel-login and burst tests) at 4c27ec0, 2026-10-04T14:07:53Z
+# Per run: ./mvnw -B -ntp test -Djacoco.skip=true -Dtest='LoginThrottleTest,UserAccountTest,AuthenticationServiceTest,LoginThrottleApiTest,AuditIntegrationTest,AuthApiIntegrationTest#tenConsecutiveFailuresLockTheAccountWhichUnlocksAfterTheLockExpires+unknownUsernameAndWrongPasswordTakeSimilarTime+parallelFailedLoginsTakeSimilarTimeForUnknownAndExistingUsernames+anUnrelatedLoginStaysFastDuringABurstOnOneUsername'
+run 1 2026-10-04T13:37:46Z exit=0 [INFO] Tests run: 18, Failures: 0, Errors: 0, Skipped: 0
+run 2 2026-10-04T13:38:54Z exit=0 [INFO] Tests run: 18, Failures: 0, Errors: 0, Skipped: 0
+run 3 2026-10-04T13:40:04Z exit=0 [INFO] Tests run: 18, Failures: 0, Errors: 0, Skipped: 0
+run 4 2026-10-04T13:41:11Z exit=0 [INFO] Tests run: 18, Failures: 0, Errors: 0, Skipped: 0
+run 5 2026-10-04T13:42:23Z exit=0 [INFO] Tests run: 18, Failures: 0, Errors: 0, Skipped: 0
+run 6 2026-10-04T13:43:32Z exit=0 [INFO] Tests run: 18, Failures: 0, Errors: 0, Skipped: 0
+run 7 2026-10-04T13:44:40Z exit=0 [INFO] Tests run: 18, Failures: 0, Errors: 0, Skipped: 0
+run 8 2026-10-04T13:45:53Z exit=0 [INFO] Tests run: 18, Failures: 0, Errors: 0, Skipped: 0
+run 9 2026-10-04T13:47:04Z exit=0 [INFO] Tests run: 18, Failures: 0, Errors: 0, Skipped: 0
+run 10 2026-10-04T13:48:18Z exit=0 [INFO] Tests run: 18, Failures: 0, Errors: 0, Skipped: 0
+run 11 2026-10-04T13:49:26Z exit=0 [INFO] Tests run: 18, Failures: 0, Errors: 0, Skipped: 0
+run 12 2026-10-04T13:50:39Z exit=0 [INFO] Tests run: 18, Failures: 0, Errors: 0, Skipped: 0
+run 13 2026-10-04T13:51:47Z exit=0 [INFO] Tests run: 18, Failures: 0, Errors: 0, Skipped: 0
+run 14 2026-10-04T13:52:58Z exit=0 [INFO] Tests run: 18, Failures: 0, Errors: 0, Skipped: 0
+run 15 2026-10-04T13:54:08Z exit=0 [INFO] Tests run: 18, Failures: 0, Errors: 0, Skipped: 0
+run 16 2026-10-04T13:55:17Z exit=0 [INFO] Tests run: 18, Failures: 0, Errors: 0, Skipped: 0
+run 17 2026-10-04T13:56:25Z exit=0 [INFO] Tests run: 18, Failures: 0, Errors: 0, Skipped: 0
+run 18 2026-10-04T13:57:38Z exit=0 [INFO] Tests run: 18, Failures: 0, Errors: 0, Skipped: 0
+run 19 2026-10-04T13:58:47Z exit=0 [INFO] Tests run: 18, Failures: 0, Errors: 0, Skipped: 0
+run 20 2026-10-04T13:59:55Z exit=0 [INFO] Tests run: 18, Failures: 0, Errors: 0, Skipped: 0
+# Result: 20/20 runs green, 18 tests each, 0 failures, 0 errors (QA's E2E ran on the same machine during part of it)
