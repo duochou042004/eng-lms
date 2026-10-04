@@ -69,6 +69,8 @@ web:
     - pnpm build
     - pnpm budget
     - pnpm contrast
+    # The QA suite's specs must keep compiling (T-M1.18).
+    - cd ../qa && pnpm install --frozen-lockfile && pnpm typecheck
 
 e2e-smoke:
   stage: e2e

@@ -60,3 +60,13 @@ New, non-blocking (fixed in-task, DEC-088 rule):
 | D4-2 | S4 | api-conventions §5 entry lists only one of six field codes | All six + `RATE_LIMITED` listed |
 
 Verdict line: `DOCS-REVIEW T-M2.1: PASS`
+
+## Round 4 — delta `6f4fdf4..2057520` — PASS (merged as `bb6fbd5`)
+
+D3-1, D4-1 and D4-2 verified fixed and consistent with AC8/AC9, security.md §8 and api-conventions §5; `check-docs.sh` PASS.
+
+| ID | Sev | Finding | Disposition |
+|---|---|---|---|
+| D5-1 | S4 | Packet L1 bullet (line 93) makes unmapped `/api/**` paths an L1 "deny" (404 for a signed-in caller) while the filter-order note says the gate runs before handler lookup; if L1 is built as `denyAll` + 404, a must-change user would get 404, contradicting AC8 | Folded into the packet by the LC when it is set to `ready` (L1 "deny" only requires authentication; the 404 comes from handler lookup after the gate), DEC-090 |
+
+Verdict line: `DOCS-REVIEW T-M2.1: PASS`

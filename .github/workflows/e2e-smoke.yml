@@ -59,6 +59,12 @@ jobs:
       - name: Typecheck the e2e suite
         working-directory: e2e
         run: pnpm typecheck
+      # The QA suite (qa/) is not run here, but its specs must keep compiling (T-M1.18, M1 G5 QA F-6).
+      - name: Typecheck the QA suite
+        working-directory: qa
+        run: |
+          pnpm install --frozen-lockfile
+          pnpm typecheck
       # Builds web/dist + the jar with the SPA, starts it on :8080/:8081, runs Playwright, always stops the app.
       - name: Smoke on the mandatory viewports (phone-small, tablet, laptop)
         run: ./scripts/e2e-run.sh --project=phone-small --project=tablet --project=laptop

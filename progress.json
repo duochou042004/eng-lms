@@ -16,7 +16,7 @@
       }
     ]
   },
-  "updatedAt": "2026-10-04T03:45:00Z",
+  "updatedAt": "2026-10-04T03:18:30Z",
   "updatedBy": "lead-coordinator (session 2026-10-04 #1, Opus 5.5)",
   "phase": {
     "id": "P1",
@@ -41,13 +41,12 @@
     "startedAt": null,
     "entryGate": [
       "M1 done — met (DEC-088)",
-      "Packet G0 — met on merge of docs/T-M2.1-packet (DEC-089; SEC review required at G3)",
-      "PO start signal — pending (requested, DEC-089)"
+      "Packet G0 — met (PR #49, bb6fbd5; DOCS-REVIEW rounds 1-4, final PASS)",
+      "PO start signal — pending (requested, DEC-090)"
     ],
     "nextSteps": [
-      "DOCS-REVIEW + merge-gate for docs/T-M2.1-packet",
-      "Ask the PO for the T-M2.1 start signal; do not start implementation without it",
-      "Meanwhile: T-M1.17 (DEC-086), then T-M1.18"
+      "PO start signal for T-M2.1 (requested, DEC-089/DEC-090); the PO is also asked to confirm DEC-089 (6)-(8)",
+      "On the start signal: set the packet ready, fold in DOCS-REVIEW R4 D5-1 (S4), branch feature/T-M2.1-identity-core, backend-implementer in its own worktree; SEC review at G3"
     ],
     "trace": [
       "FR-AUTH-01..06",
@@ -57,26 +56,24 @@
     ]
   },
   "nextTask": {
-    "id": "T-M1.17",
-    "title": "merge-gate reports an unsupported gh instead of missing checks (first of the carried items, DEC-086)",
+    "id": "T-M1.18",
+    "title": "qa/ typecheck in gate.sh and CI (after T-M1.17, DEC-087)",
     "status": "in_review",
     "ownerRole": "LC",
-    "branch": "chore/T-M1.17-merge-gate-gh-version",
-    "packet": "docs/tasks/T-M1.17-merge-gate-gh-version.md",
-    "pr": "#50",
+    "branch": "chore/T-M1.18-qa-typecheck",
+    "packet": "docs/tasks/T-M1.18-qa-typecheck.md",
+    "pr": "#51",
     "lastCommit": null,
-    "startedAt": "2026-10-04T03:00:00Z",
+    "startedAt": "2026-10-04T03:08:14Z",
     "entryGate": [
-      "T-M1.16 merged — met (1dbd7e3)"
+      "T-M1.17 merged — met (077f4e4)"
     ],
     "nextSteps": [
-      "DOCS-REVIEW delta after the review fixes, LC-APPROVED, merge-gate, gitlab-sync",
-      "Then T-M1.18 (qa/ typecheck in gate.sh and CI; branch chore/T-M1.18-qa-typecheck prepared)"
+      "CI green, DOCS-REVIEW verdict, LC-APPROVED, merge-gate, gitlab-sync"
     ],
     "trace": [
-      "DEC-084",
-      "DEC-085",
-      "DEC-086"
+      "DEC-087",
+      "DEC-088"
     ]
   },
   "completed": [
@@ -207,6 +204,14 @@
       "mergeCommit": "1dbd7e3",
       "evidence": "evidence/T-M1.16/summary.md",
       "note": "PO start DEC-084. Merged via merge-gate (PR #43) at fb73e87; CI 7/7; gate PASS (12 steps). QA PASS WITH MINOR (record PR #44), UX APPROVED (evidence/T-M1.16/review/ux.md). S4s accepted; R2-1 -> T-M1.17 (DEC-085). Flaky route-focus test fixed (60/60, 120/120)."
+    },
+    {
+      "id": "T-M1.17",
+      "title": "merge-gate reports an unsupported gh instead of missing checks (first of the carried items, DEC-086)",
+      "completedAt": "2026-10-04T03:07:30Z",
+      "mergeCommit": "077f4e4",
+      "evidence": "evidence/T-M1.17/summary.md",
+      "note": "Merged via scripts/merge-gate.sh (PR #50) at head 4ee8f93; CI 7/7 green; local gate PASS. DOCS-REVIEW round 1 PASS (F1 S3, F2-F5 S4 fixed in-task, DEC-088 rule), round 2 delta PASS (D2-1, D2-2 S4 fixed in T-M1.18's PR). merge-gate tests 311 -> 325 (DEC-090)."
     }
   ],
   "tests": {
@@ -265,7 +270,6 @@
   "decisions": {
     "log": "docs/10-governance/decision-log.md",
     "recent": [
-      "DEC-079",
       "DEC-080",
       "DEC-081",
       "DEC-082",
@@ -275,7 +279,8 @@
       "DEC-086",
       "DEC-087",
       "DEC-088",
-      "DEC-089"
+      "DEC-089",
+      "DEC-090"
     ],
     "pendingPO": [
       "DEC-089",

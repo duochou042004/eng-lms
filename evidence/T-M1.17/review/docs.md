@@ -15,6 +15,19 @@ Trace DEC-084/085/086; scope limited to step 3.
 | F2 | S4 | With empty stderr the message ends with a dangling colon | Shows `output: <start of stdout>` or `output: (empty)`; AC2 test asserts it |
 | F3 | S4 | Missing assertions: API error not "missing"; exit 0 with empty output | Both added |
 | F4 | S4 | Several JSON documents pass the type guard (cosmetic; still refused) | `jq -se 'length == 1 and (.[0] | type == "array")'` + test |
-| F5 | S4 | `progress.json` PR fields stale | `pr: 50`, status `in_review` |
+| F5 | S4 | `progress.json` PR fields stale | `pr: "#50"`, status `in_review` |
 
 Verdict line: `DOCS-REVIEW T-M1.17: PASS`
+
+## Round 2 — delta `d3ba78b..4ee8f93` — PASS (merged as `077f4e4`)
+
+`check-docs.sh` PASS; `run-all.sh` PASS (merge-gate 325 passed). F1–F5 verified: the HANDOFF line; `checks_why` fallback (quoting and `set -euo pipefail` safe);
+the two new assertions; `jq -se` one-document check (empty → refused, invalid JSON → refused, the `{"x":1}` + array test would pass under the old `jq -e`);
+bookkeeping consistent with develop after `bb6fbd5`.
+
+| ID | Sev | Finding | Fix |
+|---|---|---|---|
+| D2-1 | S4 | The F5 row said `pr: 50`; progress.json holds `"#50"` | Row corrected (T-M1.18 PR) |
+| D2-2 | S4 | HANDOFF header and next steps stale on develop (not caused by this PR) | HANDOFF refreshed in T-M1.18's PR |
+
+Local gate at `4ee8f93`: PASS (12 steps, 280 s), `gate-20261004T030239Z.log`. Verdict line: `DOCS-REVIEW T-M1.17: PASS`
