@@ -1,0 +1,1103 @@
+$ playwright test regression/ '--project=firefox-*' '--project=chromium-*' --repeat-each=2
+
+Running 528 tests using 8 workers
+
+  ✓    6 [chromium-phone] › regression/M1.spec.ts:82:1 › fresh visit starts in Vietnamese (1.6s)
+  ✓    3 [chromium-phone] › regression/M1.spec.ts:82:1 › fresh visit starts in Vietnamese (1.7s)
+  ✓    1 [chromium-tablet] › regression/M1.spec.ts:82:1 › fresh visit starts in Vietnamese (1.8s)
+  ✓    4 [chromium-phone-small] › regression/M1.spec.ts:82:1 › fresh visit starts in Vietnamese (1.8s)
+  ✓    2 [chromium-phone-small] › regression/M1.spec.ts:82:1 › fresh visit starts in Vietnamese (1.8s)
+  ✓    8 [chromium-tablet-land] › regression/M1.spec.ts:82:1 › fresh visit starts in Vietnamese (1.7s)
+  ✓    7 [chromium-tablet-land] › regression/M1.spec.ts:82:1 › fresh visit starts in Vietnamese (1.6s)
+  ✓    5 [chromium-tablet] › regression/M1.spec.ts:82:1 › fresh visit starts in Vietnamese (1.7s)
+  ✓    9 [chromium-phone] › regression/M1.spec.ts:90:5 › [vi] › every route: titled, focus on body, no overflow, 44 px targets, axe clean, localised (5.5s)
+  ✓   11 [chromium-tablet] › regression/M1.spec.ts:90:5 › [vi] › every route: titled, focus on body, no overflow, 44 px targets, axe clean, localised (5.6s)
+  ✓   12 [chromium-phone-small] › regression/M1.spec.ts:90:5 › [vi] › every route: titled, focus on body, no overflow, 44 px targets, axe clean, localised (5.8s)
+  ✓   10 [chromium-phone] › regression/M1.spec.ts:90:5 › [vi] › every route: titled, focus on body, no overflow, 44 px targets, axe clean, localised (5.9s)
+  ✓   13 [chromium-phone-small] › regression/M1.spec.ts:90:5 › [vi] › every route: titled, focus on body, no overflow, 44 px targets, axe clean, localised (6.0s)
+  ✓   16 [chromium-tablet] › regression/M1.spec.ts:90:5 › [vi] › every route: titled, focus on body, no overflow, 44 px targets, axe clean, localised (6.0s)
+  ✓   14 [chromium-tablet-land] › regression/M1.spec.ts:90:5 › [vi] › every route: titled, focus on body, no overflow, 44 px targets, axe clean, localised (6.1s)
+  ✓   15 [chromium-tablet-land] › regression/M1.spec.ts:90:5 › [vi] › every route: titled, focus on body, no overflow, 44 px targets, axe clean, localised (6.1s)
+  ✓   17 [chromium-phone] › regression/M1.spec.ts:111:5 › [vi] › shells: banner, skip link is the first Tab stop and moves focus into main, workspace name shown (2.2s)
+  ✓   18 [chromium-tablet] › regression/M1.spec.ts:111:5 › [vi] › shells: banner, skip link is the first Tab stop and moves focus into main, workspace name shown (2.3s)
+  ✓   19 [chromium-phone-small] › regression/M1.spec.ts:111:5 › [vi] › shells: banner, skip link is the first Tab stop and moves focus into main, workspace name shown (2.2s)
+  ✓   20 [chromium-phone] › regression/M1.spec.ts:111:5 › [vi] › shells: banner, skip link is the first Tab stop and moves focus into main, workspace name shown (2.2s)
+  ✓   21 [chromium-phone-small] › regression/M1.spec.ts:111:5 › [vi] › shells: banner, skip link is the first Tab stop and moves focus into main, workspace name shown (2.2s)
+  ✓   22 [chromium-tablet] › regression/M1.spec.ts:111:5 › [vi] › shells: banner, skip link is the first Tab stop and moves focus into main, workspace name shown (2.2s)
+  ✓   23 [chromium-tablet-land] › regression/M1.spec.ts:111:5 › [vi] › shells: banner, skip link is the first Tab stop and moves focus into main, workspace name shown (2.2s)
+  ✓   24 [chromium-tablet-land] › regression/M1.spec.ts:111:5 › [vi] › shells: banner, skip link is the first Tab stop and moves focus into main, workspace name shown (2.3s)
+  ✓   25 [chromium-phone] › regression/M1.spec.ts:128:5 › [vi] › client navigation: h1 focused + title, back/forward, 404 and its start-page link (keyboard) (1.8s)
+  ✓   26 [chromium-tablet] › regression/M1.spec.ts:128:5 › [vi] › client navigation: h1 focused + title, back/forward, 404 and its start-page link (keyboard) (1.7s)
+  ✓   27 [chromium-phone-small] › regression/M1.spec.ts:128:5 › [vi] › client navigation: h1 focused + title, back/forward, 404 and its start-page link (keyboard) (1.8s)
+  ✓   28 [chromium-phone] › regression/M1.spec.ts:128:5 › [vi] › client navigation: h1 focused + title, back/forward, 404 and its start-page link (keyboard) (1.7s)
+  ✓   29 [chromium-phone-small] › regression/M1.spec.ts:128:5 › [vi] › client navigation: h1 focused + title, back/forward, 404 and its start-page link (keyboard) (1.8s)
+  ✓   30 [chromium-tablet] › regression/M1.spec.ts:128:5 › [vi] › client navigation: h1 focused + title, back/forward, 404 and its start-page link (keyboard) (1.8s)
+  ✓   31 [chromium-tablet-land] › regression/M1.spec.ts:128:5 › [vi] › client navigation: h1 focused + title, back/forward, 404 and its start-page link (keyboard) (1.8s)
+  ✓   32 [chromium-tablet-land] › regression/M1.spec.ts:128:5 › [vi] › client navigation: h1 focused + title, back/forward, 404 and its start-page link (keyboard) (1.8s)
+  ✓   33 [chromium-phone] › regression/M1.spec.ts:157:5 › [vi] › language switch on landing and both shells: strings, lang, title, persistence over reload and navigation (4.2s)
+  ✓   34 [chromium-tablet] › regression/M1.spec.ts:157:5 › [vi] › language switch on landing and both shells: strings, lang, title, persistence over reload and navigation (4.2s)
+  ✓   35 [chromium-phone-small] › regression/M1.spec.ts:157:5 › [vi] › language switch on landing and both shells: strings, lang, title, persistence over reload and navigation (4.2s)
+  ✓   36 [chromium-phone] › regression/M1.spec.ts:157:5 › [vi] › language switch on landing and both shells: strings, lang, title, persistence over reload and navigation (4.2s)
+  ✓   37 [chromium-phone-small] › regression/M1.spec.ts:157:5 › [vi] › language switch on landing and both shells: strings, lang, title, persistence over reload and navigation (4.2s)
+  ✓   38 [chromium-tablet] › regression/M1.spec.ts:157:5 › [vi] › language switch on landing and both shells: strings, lang, title, persistence over reload and navigation (4.3s)
+  ✓   39 [chromium-tablet-land] › regression/M1.spec.ts:157:5 › [vi] › language switch on landing and both shells: strings, lang, title, persistence over reload and navigation (4.4s)
+  ✓   40 [chromium-tablet-land] › regression/M1.spec.ts:157:5 › [vi] › language switch on landing and both shells: strings, lang, title, persistence over reload and navigation (4.4s)
+  ✓   41 [chromium-phone] › regression/M1.spec.ts:184:5 › [vi] › route error page: failed lazy chunk shows a titled error with a working start-page link (1.6s)
+  ✓   42 [chromium-tablet] › regression/M1.spec.ts:184:5 › [vi] › route error page: failed lazy chunk shows a titled error with a working start-page link (1.7s)
+  ✓   44 [chromium-phone] › regression/M1.spec.ts:184:5 › [vi] › route error page: failed lazy chunk shows a titled error with a working start-page link (1.7s)
+  ✓   43 [chromium-phone-small] › regression/M1.spec.ts:184:5 › [vi] › route error page: failed lazy chunk shows a titled error with a working start-page link (1.7s)
+  ✓   45 [chromium-phone-small] › regression/M1.spec.ts:184:5 › [vi] › route error page: failed lazy chunk shows a titled error with a working start-page link (1.7s)
+  ✓   46 [chromium-tablet] › regression/M1.spec.ts:184:5 › [vi] › route error page: failed lazy chunk shows a titled error with a working start-page link (1.7s)
+  ✓   47 [chromium-tablet-land] › regression/M1.spec.ts:184:5 › [vi] › route error page: failed lazy chunk shows a titled error with a working start-page link (1.7s)
+  ✓   48 [chromium-tablet-land] › regression/M1.spec.ts:184:5 › [vi] › route error page: failed lazy chunk shows a titled error with a working start-page link (1.6s)
+  ✓   49 [chromium-phone] › regression/M1.spec.ts:200:5 › [vi] › shell header: /api/v1/meta failure shows an alert, not a blank or a crash (5.0s)
+  ✓   50 [chromium-tablet] › regression/M1.spec.ts:200:5 › [vi] › shell header: /api/v1/meta failure shows an alert, not a blank or a crash (5.1s)
+  ✓   52 [chromium-phone-small] › regression/M1.spec.ts:200:5 › [vi] › shell header: /api/v1/meta failure shows an alert, not a blank or a crash (5.1s)
+  ✓   51 [chromium-phone] › regression/M1.spec.ts:200:5 › [vi] › shell header: /api/v1/meta failure shows an alert, not a blank or a crash (5.1s)
+  ✓   53 [chromium-phone-small] › regression/M1.spec.ts:200:5 › [vi] › shell header: /api/v1/meta failure shows an alert, not a blank or a crash (5.1s)
+  ✓   54 [chromium-tablet] › regression/M1.spec.ts:200:5 › [vi] › shell header: /api/v1/meta failure shows an alert, not a blank or a crash (5.1s)
+  ✓   55 [chromium-tablet-land] › regression/M1.spec.ts:200:5 › [vi] › shell header: /api/v1/meta failure shows an alert, not a blank or a crash (5.1s)
+  ✓   56 [chromium-tablet-land] › regression/M1.spec.ts:200:5 › [vi] › shell header: /api/v1/meta failure shows an alert, not a blank or a crash (5.2s)
+  ✓   57 [chromium-phone] › regression/M1.spec.ts:90:5 › [en] › every route: titled, focus on body, no overflow, 44 px targets, axe clean, localised (5.3s)
+  ✓   58 [chromium-tablet] › regression/M1.spec.ts:90:5 › [en] › every route: titled, focus on body, no overflow, 44 px targets, axe clean, localised (5.2s)
+  ✓   59 [chromium-phone-small] › regression/M1.spec.ts:90:5 › [en] › every route: titled, focus on body, no overflow, 44 px targets, axe clean, localised (5.2s)
+  ✓   60 [chromium-phone] › regression/M1.spec.ts:90:5 › [en] › every route: titled, focus on body, no overflow, 44 px targets, axe clean, localised (5.3s)
+  ✓   61 [chromium-phone-small] › regression/M1.spec.ts:90:5 › [en] › every route: titled, focus on body, no overflow, 44 px targets, axe clean, localised (5.3s)
+  ✓   62 [chromium-tablet] › regression/M1.spec.ts:90:5 › [en] › every route: titled, focus on body, no overflow, 44 px targets, axe clean, localised (5.3s)
+  ✓   63 [chromium-tablet-land] › regression/M1.spec.ts:90:5 › [en] › every route: titled, focus on body, no overflow, 44 px targets, axe clean, localised (5.3s)
+  ✓   64 [chromium-tablet-land] › regression/M1.spec.ts:90:5 › [en] › every route: titled, focus on body, no overflow, 44 px targets, axe clean, localised (5.3s)
+  ✓   65 [chromium-phone] › regression/M1.spec.ts:111:5 › [en] › shells: banner, skip link is the first Tab stop and moves focus into main, workspace name shown (2.2s)
+  ✓   66 [chromium-tablet] › regression/M1.spec.ts:111:5 › [en] › shells: banner, skip link is the first Tab stop and moves focus into main, workspace name shown (2.1s)
+  ✓   67 [chromium-phone-small] › regression/M1.spec.ts:111:5 › [en] › shells: banner, skip link is the first Tab stop and moves focus into main, workspace name shown (2.1s)
+  ✓   68 [chromium-phone] › regression/M1.spec.ts:111:5 › [en] › shells: banner, skip link is the first Tab stop and moves focus into main, workspace name shown (2.2s)
+  ✓   69 [chromium-phone-small] › regression/M1.spec.ts:111:5 › [en] › shells: banner, skip link is the first Tab stop and moves focus into main, workspace name shown (2.1s)
+  ✓   70 [chromium-tablet] › regression/M1.spec.ts:111:5 › [en] › shells: banner, skip link is the first Tab stop and moves focus into main, workspace name shown (2.1s)
+  ✓   71 [chromium-tablet-land] › regression/M1.spec.ts:111:5 › [en] › shells: banner, skip link is the first Tab stop and moves focus into main, workspace name shown (2.1s)
+  ✓   72 [chromium-tablet-land] › regression/M1.spec.ts:111:5 › [en] › shells: banner, skip link is the first Tab stop and moves focus into main, workspace name shown (2.2s)
+  ✓   73 [chromium-phone] › regression/M1.spec.ts:128:5 › [en] › client navigation: h1 focused + title, back/forward, 404 and its start-page link (keyboard) (1.7s)
+  ✓   74 [chromium-tablet] › regression/M1.spec.ts:128:5 › [en] › client navigation: h1 focused + title, back/forward, 404 and its start-page link (keyboard) (1.8s)
+  ✓   75 [chromium-phone-small] › regression/M1.spec.ts:128:5 › [en] › client navigation: h1 focused + title, back/forward, 404 and its start-page link (keyboard) (1.8s)
+  ✓   76 [chromium-phone] › regression/M1.spec.ts:128:5 › [en] › client navigation: h1 focused + title, back/forward, 404 and its start-page link (keyboard) (1.8s)
+  ✓   77 [chromium-phone-small] › regression/M1.spec.ts:128:5 › [en] › client navigation: h1 focused + title, back/forward, 404 and its start-page link (keyboard) (1.8s)
+  ✓   78 [chromium-tablet] › regression/M1.spec.ts:128:5 › [en] › client navigation: h1 focused + title, back/forward, 404 and its start-page link (keyboard) (1.8s)
+  ✓   79 [chromium-tablet-land] › regression/M1.spec.ts:128:5 › [en] › client navigation: h1 focused + title, back/forward, 404 and its start-page link (keyboard) (1.8s)
+  ✓   80 [chromium-tablet-land] › regression/M1.spec.ts:128:5 › [en] › client navigation: h1 focused + title, back/forward, 404 and its start-page link (keyboard) (1.8s)
+  ✓   81 [chromium-phone] › regression/M1.spec.ts:157:5 › [en] › language switch on landing and both shells: strings, lang, title, persistence over reload and navigation (4.1s)
+  ✓   82 [chromium-tablet] › regression/M1.spec.ts:157:5 › [en] › language switch on landing and both shells: strings, lang, title, persistence over reload and navigation (4.2s)
+  ✓   83 [chromium-phone-small] › regression/M1.spec.ts:157:5 › [en] › language switch on landing and both shells: strings, lang, title, persistence over reload and navigation (4.3s)
+  ✓   84 [chromium-phone] › regression/M1.spec.ts:157:5 › [en] › language switch on landing and both shells: strings, lang, title, persistence over reload and navigation (4.2s)
+  ✓   85 [chromium-phone-small] › regression/M1.spec.ts:157:5 › [en] › language switch on landing and both shells: strings, lang, title, persistence over reload and navigation (4.3s)
+  ✓   86 [chromium-tablet] › regression/M1.spec.ts:157:5 › [en] › language switch on landing and both shells: strings, lang, title, persistence over reload and navigation (4.3s)
+  ✓   87 [chromium-tablet-land] › regression/M1.spec.ts:157:5 › [en] › language switch on landing and both shells: strings, lang, title, persistence over reload and navigation (4.3s)
+  ✓   88 [chromium-tablet-land] › regression/M1.spec.ts:157:5 › [en] › language switch on landing and both shells: strings, lang, title, persistence over reload and navigation (4.4s)
+  ✓   89 [chromium-phone] › regression/M1.spec.ts:184:5 › [en] › route error page: failed lazy chunk shows a titled error with a working start-page link (1.8s)
+  ✓   90 [chromium-tablet] › regression/M1.spec.ts:184:5 › [en] › route error page: failed lazy chunk shows a titled error with a working start-page link (1.7s)
+  ✓   91 [chromium-phone-small] › regression/M1.spec.ts:184:5 › [en] › route error page: failed lazy chunk shows a titled error with a working start-page link (1.7s)
+  ✓   92 [chromium-phone] › regression/M1.spec.ts:184:5 › [en] › route error page: failed lazy chunk shows a titled error with a working start-page link (1.8s)
+  ✓   93 [chromium-phone-small] › regression/M1.spec.ts:184:5 › [en] › route error page: failed lazy chunk shows a titled error with a working start-page link (1.8s)
+  ✓   94 [chromium-tablet] › regression/M1.spec.ts:184:5 › [en] › route error page: failed lazy chunk shows a titled error with a working start-page link (1.8s)
+  ✓   95 [chromium-tablet-land] › regression/M1.spec.ts:184:5 › [en] › route error page: failed lazy chunk shows a titled error with a working start-page link (1.7s)
+  ✓   96 [chromium-tablet-land] › regression/M1.spec.ts:184:5 › [en] › route error page: failed lazy chunk shows a titled error with a working start-page link (1.7s)
+  ✓   97 [chromium-phone] › regression/M1.spec.ts:200:5 › [en] › shell header: /api/v1/meta failure shows an alert, not a blank or a crash (5.1s)
+  ✓   98 [chromium-tablet] › regression/M1.spec.ts:200:5 › [en] › shell header: /api/v1/meta failure shows an alert, not a blank or a crash (5.1s)
+  ✓   99 [chromium-phone-small] › regression/M1.spec.ts:200:5 › [en] › shell header: /api/v1/meta failure shows an alert, not a blank or a crash (5.1s)
+  ✓  100 [chromium-phone] › regression/M1.spec.ts:200:5 › [en] › shell header: /api/v1/meta failure shows an alert, not a blank or a crash (5.1s)
+  ✓  101 [chromium-phone-small] › regression/M1.spec.ts:200:5 › [en] › shell header: /api/v1/meta failure shows an alert, not a blank or a crash (5.2s)
+  ✓  102 [chromium-tablet] › regression/M1.spec.ts:200:5 › [en] › shell header: /api/v1/meta failure shows an alert, not a blank or a crash (5.1s)
+  ✓  103 [chromium-tablet-land] › regression/M1.spec.ts:200:5 › [en] › shell header: /api/v1/meta failure shows an alert, not a blank or a crash (5.1s)
+  ✓  104 [chromium-tablet-land] › regression/M1.spec.ts:200:5 › [en] › shell header: /api/v1/meta failure shows an alert, not a blank or a crash (5.2s)
+  ✓  105 [chromium-phone] › regression/M1.spec.ts:214:1 › deep links survive reload (SPA fallback) and /dev/ui is not in the production build (3.5s)
+  ✓  106 [chromium-tablet] › regression/M1.spec.ts:214:1 › deep links survive reload (SPA fallback) and /dev/ui is not in the production build (3.5s)
+  ✓  107 [chromium-phone-small] › regression/M1.spec.ts:214:1 › deep links survive reload (SPA fallback) and /dev/ui is not in the production build (3.5s)
+  ✓  113 [chromium-phone] › regression/M1.spec.ts:229:5 › HTTP surface › security headers on / (577ms)
+  ✓  108 [chromium-phone] › regression/M1.spec.ts:214:1 › deep links survive reload (SPA fallback) and /dev/ui is not in the production build (3.5s)
+  ✓  109 [chromium-phone-small] › regression/M1.spec.ts:214:1 › deep links survive reload (SPA fallback) and /dev/ui is not in the production build (3.4s)
+  ✓  114 [chromium-tablet] › regression/M1.spec.ts:229:5 › HTTP surface › security headers on / (571ms)
+  ✓  110 [chromium-tablet] › regression/M1.spec.ts:214:1 › deep links survive reload (SPA fallback) and /dev/ui is not in the production build (3.5s)
+  ✓  115 [chromium-phone-small] › regression/M1.spec.ts:229:5 › HTTP surface › security headers on / (556ms)
+  ✓  116 [chromium-phone] › regression/M1.spec.ts:229:5 › HTTP surface › security headers on /tutor (559ms)
+  ✓  111 [chromium-tablet-land] › regression/M1.spec.ts:214:1 › deep links survive reload (SPA fallback) and /dev/ui is not in the production build (3.5s)
+  ✓  117 [chromium-phone] › regression/M1.spec.ts:229:5 › HTTP surface › security headers on / (555ms)
+  ✓  118 [chromium-phone-small] › regression/M1.spec.ts:229:5 › HTTP surface › security headers on / (557ms)
+  ✓  112 [chromium-tablet-land] › regression/M1.spec.ts:214:1 › deep links survive reload (SPA fallback) and /dev/ui is not in the production build (3.4s)
+  ✓  119 [chromium-tablet] › regression/M1.spec.ts:229:5 › HTTP surface › security headers on /tutor (571ms)
+  ✓  121 [chromium-phone-small] › regression/M1.spec.ts:229:5 › HTTP surface › security headers on /tutor (549ms)
+  ✓  120 [chromium-tablet] › regression/M1.spec.ts:229:5 › HTTP surface › security headers on / (571ms)
+  ✓  122 [chromium-phone] › regression/M1.spec.ts:229:5 › HTTP surface › security headers on /qa-missing (555ms)
+  ✓  124 [chromium-phone] › regression/M1.spec.ts:229:5 › HTTP surface › security headers on /tutor (554ms)
+  ✓  123 [chromium-tablet-land] › regression/M1.spec.ts:229:5 › HTTP surface › security headers on / (565ms)
+  ✓  125 [chromium-phone-small] › regression/M1.spec.ts:229:5 › HTTP surface › security headers on /tutor (554ms)
+  ✓  126 [chromium-tablet-land] › regression/M1.spec.ts:229:5 › HTTP surface › security headers on / (563ms)
+  ✓  127 [chromium-tablet] › regression/M1.spec.ts:229:5 › HTTP surface › security headers on /qa-missing (572ms)
+  ✓  128 [chromium-phone-small] › regression/M1.spec.ts:229:5 › HTTP surface › security headers on /qa-missing (551ms)
+  ✓  129 [chromium-tablet] › regression/M1.spec.ts:229:5 › HTTP surface › security headers on /tutor (574ms)
+  ✓  130 [chromium-phone] › regression/M1.spec.ts:229:5 › HTTP surface › security headers on /api/v1/meta (552ms)
+  ✓  131 [chromium-phone] › regression/M1.spec.ts:229:5 › HTTP surface › security headers on /qa-missing (552ms)
+  ✓  132 [chromium-tablet-land] › regression/M1.spec.ts:229:5 › HTTP surface › security headers on /tutor (563ms)
+  ✓  133 [chromium-phone-small] › regression/M1.spec.ts:229:5 › HTTP surface › security headers on /qa-missing (548ms)
+  ✓  134 [chromium-tablet-land] › regression/M1.spec.ts:229:5 › HTTP surface › security headers on /tutor (562ms)
+  ✓  135 [chromium-tablet] › regression/M1.spec.ts:229:5 › HTTP surface › security headers on /api/v1/meta (576ms)
+  ✓  136 [chromium-phone-small] › regression/M1.spec.ts:229:5 › HTTP surface › security headers on /api/v1/meta (554ms)
+  ✓  137 [chromium-tablet] › regression/M1.spec.ts:229:5 › HTTP surface › security headers on /qa-missing (575ms)
+  ✓  138 [chromium-phone] › regression/M1.spec.ts:229:5 › HTTP surface › security headers on /api/v1/qa-unknown (548ms)
+  ✓  139 [chromium-phone] › regression/M1.spec.ts:229:5 › HTTP surface › security headers on /api/v1/meta (557ms)
+  ✓  140 [chromium-tablet-land] › regression/M1.spec.ts:229:5 › HTTP surface › security headers on /qa-missing (560ms)
+  ✓  141 [chromium-phone-small] › regression/M1.spec.ts:229:5 › HTTP surface › security headers on /api/v1/meta (551ms)
+  ✓  142 [chromium-tablet-land] › regression/M1.spec.ts:229:5 › HTTP surface › security headers on /qa-missing (558ms)
+  ✓  143 [chromium-tablet] › regression/M1.spec.ts:229:5 › HTTP surface › security headers on /api/v1/qa-unknown (572ms)
+  ✓  144 [chromium-phone-small] › regression/M1.spec.ts:229:5 › HTTP surface › security headers on /api/v1/qa-unknown (550ms)
+  ✓  145 [chromium-tablet] › regression/M1.spec.ts:229:5 › HTTP surface › security headers on /api/v1/meta (574ms)
+  ✓  146 [chromium-phone] › regression/M1.spec.ts:245:3 › HTTP surface › API: meta JSON, unknown API path is Problem Details 404 (not the SPA), actuator not on :8080 (552ms)
+  ✓  147 [chromium-phone] › regression/M1.spec.ts:229:5 › HTTP surface › security headers on /api/v1/qa-unknown (551ms)
+  ✓  148 [chromium-tablet-land] › regression/M1.spec.ts:229:5 › HTTP surface › security headers on /api/v1/meta (568ms)
+  ✓  149 [chromium-phone-small] › regression/M1.spec.ts:229:5 › HTTP surface › security headers on /api/v1/qa-unknown (547ms)
+  ✓  150 [chromium-tablet-land] › regression/M1.spec.ts:229:5 › HTTP surface › security headers on /api/v1/meta (560ms)
+  ✓  152 [chromium-phone-small] › regression/M1.spec.ts:245:3 › HTTP surface › API: meta JSON, unknown API path is Problem Details 404 (not the SPA), actuator not on :8080 (549ms)
+  ✓  151 [chromium-tablet] › regression/M1.spec.ts:245:3 › HTTP surface › API: meta JSON, unknown API path is Problem Details 404 (not the SPA), actuator not on :8080 (574ms)
+  ✓  153 [chromium-tablet] › regression/M1.spec.ts:229:5 › HTTP surface › security headers on /api/v1/qa-unknown (584ms)
+  ✓  155 [chromium-phone] › regression/M1.spec.ts:245:3 › HTTP surface › API: meta JSON, unknown API path is Problem Details 404 (not the SPA), actuator not on :8080 (564ms)
+  ✓  156 [chromium-tablet-land] › regression/M1.spec.ts:229:5 › HTTP surface › security headers on /api/v1/qa-unknown (566ms)
+  ✓  154 [chromium-phone] › regression/M1.spec.ts:258:3 › HTTP surface › hashed assets are immutable (754ms)
+  ✓  157 [chromium-phone-small] › regression/M1.spec.ts:245:3 › HTTP surface › API: meta JSON, unknown API path is Problem Details 404 (not the SPA), actuator not on :8080 (549ms)
+  ✓  158 [chromium-tablet-land] › regression/M1.spec.ts:229:5 › HTTP surface › security headers on /api/v1/qa-unknown (561ms)
+  ✓  161 [chromium-tablet] › regression/M1.spec.ts:245:3 › HTTP surface › API: meta JSON, unknown API path is Problem Details 404 (not the SPA), actuator not on :8080 (577ms)
+  ✓  159 [chromium-phone-small] › regression/M1.spec.ts:258:3 › HTTP surface › hashed assets are immutable (787ms)
+  ✓  160 [chromium-tablet] › regression/M1.spec.ts:258:3 › HTTP surface › hashed assets are immutable (808ms)
+  ✓  163 [chromium-tablet-land] › regression/M1.spec.ts:245:3 › HTTP surface › API: meta JSON, unknown API path is Problem Details 404 (not the SPA), actuator not on :8080 (573ms)
+  ✓  164 [chromium-phone] › regression/M1.spec.ts:268:3 › HTTP surface › isolation: student/tutor API paths return no data and no SECRET-* marker (560ms)
+  ✓  162 [chromium-phone] › regression/M1.spec.ts:258:3 › HTTP surface › hashed assets are immutable (781ms)
+  ✓  166 [chromium-tablet-land] › regression/M1.spec.ts:245:3 › HTTP surface › API: meta JSON, unknown API path is Problem Details 404 (not the SPA), actuator not on :8080 (579ms)
+  ✓  165 [chromium-phone-small] › regression/M1.spec.ts:258:3 › HTTP surface › hashed assets are immutable (752ms)
+  ✓  168 [chromium-phone-small] › regression/M1.spec.ts:268:3 › HTTP surface › isolation: student/tutor API paths return no data and no SECRET-* marker (562ms)
+  ✓  169 [chromium-tablet] › regression/M1.spec.ts:268:3 › HTTP surface › isolation: student/tutor API paths return no data and no SECRET-* marker (582ms)
+  ✓  167 [chromium-tablet] › regression/M1.spec.ts:258:3 › HTTP surface › hashed assets are immutable (781ms)
+  ✓  171 [chromium-phone] › regression/M1.spec.ts:268:3 › HTTP surface › isolation: student/tutor API paths return no data and no SECRET-* marker (560ms)
+  ✓  170 [chromium-tablet-land] › regression/M1.spec.ts:258:3 › HTTP surface › hashed assets are immutable (813ms)
+  ✓  173 [chromium-phone-small] › regression/M1.spec.ts:268:3 › HTTP surface › isolation: student/tutor API paths return no data and no SECRET-* marker (561ms)
+  ✓  172 [chromium-tablet-land] › regression/M1.spec.ts:258:3 › HTTP surface › hashed assets are immutable (773ms)
+  ✓  174 [chromium-tablet] › regression/M1.spec.ts:268:3 › HTTP surface › isolation: student/tutor API paths return no data and no SECRET-* marker (582ms)
+  ✓  176 [chromium-tablet-land] › regression/M1.spec.ts:268:3 › HTTP surface › isolation: student/tutor API paths return no data and no SECRET-* marker (589ms)
+  ✓  177 [chromium-tablet-land] › regression/M1.spec.ts:268:3 › HTTP surface › isolation: student/tutor API paths return no data and no SECRET-* marker (649ms)
+  ✓  175 [chromium-laptop] › regression/M1.spec.ts:82:1 › fresh visit starts in Vietnamese (988ms)
+  ✓  178 [chromium-laptop] › regression/M1.spec.ts:82:1 › fresh visit starts in Vietnamese (1.0s)
+  ✓  179 [chromium-desktop] › regression/M1.spec.ts:82:1 › fresh visit starts in Vietnamese (1.1s)
+  ✓  180 [chromium-desktop] › regression/M1.spec.ts:82:1 › fresh visit starts in Vietnamese (1.1s)
+  ✓  181 [firefox-phone-small] › regression/M1.spec.ts:82:1 › fresh visit starts in Vietnamese (2.1s)
+  ✓  183 [firefox-phone-small] › regression/M1.spec.ts:82:1 › fresh visit starts in Vietnamese (2.2s)
+  ✓  186 [firefox-phone] › regression/M1.spec.ts:82:1 › fresh visit starts in Vietnamese (2.3s)
+  ✓  184 [firefox-phone] › regression/M1.spec.ts:82:1 › fresh visit starts in Vietnamese (2.3s)
+  ✓  182 [chromium-laptop] › regression/M1.spec.ts:90:5 › [vi] › every route: titled, focus on body, no overflow, 44 px targets, axe clean, localised (5.7s)
+  ✓  185 [chromium-laptop] › regression/M1.spec.ts:90:5 › [vi] › every route: titled, focus on body, no overflow, 44 px targets, axe clean, localised (5.5s)
+  ✓  187 [chromium-desktop] › regression/M1.spec.ts:90:5 › [vi] › every route: titled, focus on body, no overflow, 44 px targets, axe clean, localised (5.7s)
+  ✓  188 [chromium-desktop] › regression/M1.spec.ts:90:5 › [vi] › every route: titled, focus on body, no overflow, 44 px targets, axe clean, localised (5.7s)
+  ✓  193 [chromium-laptop] › regression/M1.spec.ts:111:5 › [vi] › shells: banner, skip link is the first Tab stop and moves focus into main, workspace name shown (2.2s)
+  ✓  194 [chromium-laptop] › regression/M1.spec.ts:111:5 › [vi] › shells: banner, skip link is the first Tab stop and moves focus into main, workspace name shown (2.2s)
+  ✓  195 [chromium-desktop] › regression/M1.spec.ts:111:5 › [vi] › shells: banner, skip link is the first Tab stop and moves focus into main, workspace name shown (2.2s)
+  ✓  196 [chromium-desktop] › regression/M1.spec.ts:111:5 › [vi] › shells: banner, skip link is the first Tab stop and moves focus into main, workspace name shown (2.1s)
+  ✓  197 [chromium-laptop] › regression/M1.spec.ts:128:5 › [vi] › client navigation: h1 focused + title, back/forward, 404 and its start-page link (keyboard) (1.8s)
+  ✓  198 [chromium-laptop] › regression/M1.spec.ts:128:5 › [vi] › client navigation: h1 focused + title, back/forward, 404 and its start-page link (keyboard) (1.8s)
+  ✓  199 [chromium-desktop] › regression/M1.spec.ts:128:5 › [vi] › client navigation: h1 focused + title, back/forward, 404 and its start-page link (keyboard) (1.8s)
+  ✓  200 [chromium-desktop] › regression/M1.spec.ts:128:5 › [vi] › client navigation: h1 focused + title, back/forward, 404 and its start-page link (keyboard) (1.9s)
+  ✓  190 [firefox-phone-small] › regression/M1.spec.ts:90:5 › [vi] › every route: titled, focus on body, no overflow, 44 px targets, axe clean, localised (7.2s)
+  ✓  191 [firefox-phone] › regression/M1.spec.ts:90:5 › [vi] › every route: titled, focus on body, no overflow, 44 px targets, axe clean, localised (7.2s)
+  ✓  192 [firefox-phone] › regression/M1.spec.ts:90:5 › [vi] › every route: titled, focus on body, no overflow, 44 px targets, axe clean, localised (7.2s)
+  ✓  205 [firefox-phone-small] › regression/M1.spec.ts:111:5 › [vi] › shells: banner, skip link is the first Tab stop and moves focus into main, workspace name shown (3.0s)
+  ✓  201 [chromium-laptop] › regression/M1.spec.ts:157:5 › [vi] › language switch on landing and both shells: strings, lang, title, persistence over reload and navigation (4.4s)
+  ✓  206 [firefox-phone] › regression/M1.spec.ts:111:5 › [vi] › shells: banner, skip link is the first Tab stop and moves focus into main, workspace name shown (3.0s)
+  ✓  202 [chromium-laptop] › regression/M1.spec.ts:157:5 › [vi] › language switch on landing and both shells: strings, lang, title, persistence over reload and navigation (4.4s)
+  ✓  203 [chromium-desktop] › regression/M1.spec.ts:157:5 › [vi] › language switch on landing and both shells: strings, lang, title, persistence over reload and navigation (4.3s)
+  ✓  204 [chromium-desktop] › regression/M1.spec.ts:157:5 › [vi] › language switch on landing and both shells: strings, lang, title, persistence over reload and navigation (4.5s)
+  ✓  207 [firefox-phone] › regression/M1.spec.ts:111:5 › [vi] › shells: banner, skip link is the first Tab stop and moves focus into main, workspace name shown (3.1s)
+  ✓  209 [chromium-laptop] › regression/M1.spec.ts:184:5 › [vi] › route error page: failed lazy chunk shows a titled error with a working start-page link (1.8s)
+  ✓  211 [chromium-laptop] › regression/M1.spec.ts:184:5 › [vi] › route error page: failed lazy chunk shows a titled error with a working start-page link (1.7s)
+  ✓  208 [firefox-phone-small] › regression/M1.spec.ts:128:5 › [vi] › client navigation: h1 focused + title, back/forward, 404 and its start-page link (keyboard) (2.4s)
+  ✓  212 [chromium-desktop] › regression/M1.spec.ts:184:5 › [vi] › route error page: failed lazy chunk shows a titled error with a working start-page link (1.6s)
+  ✓  213 [chromium-desktop] › regression/M1.spec.ts:184:5 › [vi] › route error page: failed lazy chunk shows a titled error with a working start-page link (1.7s)
+  ✓  210 [firefox-phone] › regression/M1.spec.ts:128:5 › [vi] › client navigation: h1 focused + title, back/forward, 404 and its start-page link (keyboard) (2.5s)
+  ✓  214 [firefox-phone] › regression/M1.spec.ts:128:5 › [vi] › client navigation: h1 focused + title, back/forward, 404 and its start-page link (keyboard) (2.4s)
+  ✓  215 [chromium-laptop] › regression/M1.spec.ts:200:5 › [vi] › shell header: /api/v1/meta failure shows an alert, not a blank or a crash (5.2s)
+  ✓  216 [chromium-laptop] › regression/M1.spec.ts:200:5 › [vi] › shell header: /api/v1/meta failure shows an alert, not a blank or a crash (5.2s)
+  ✓  218 [chromium-desktop] › regression/M1.spec.ts:200:5 › [vi] › shell header: /api/v1/meta failure shows an alert, not a blank or a crash (5.2s)
+  ✓  219 [chromium-desktop] › regression/M1.spec.ts:200:5 › [vi] › shell header: /api/v1/meta failure shows an alert, not a blank or a crash (5.2s)
+  ✓  217 [firefox-phone-small] › regression/M1.spec.ts:157:5 › [vi] › language switch on landing and both shells: strings, lang, title, persistence over reload and navigation (6.4s)
+  ✓  220 [firefox-phone] › regression/M1.spec.ts:157:5 › [vi] › language switch on landing and both shells: strings, lang, title, persistence over reload and navigation (6.4s)
+  ✓  221 [firefox-phone] › regression/M1.spec.ts:157:5 › [vi] › language switch on landing and both shells: strings, lang, title, persistence over reload and navigation (6.4s)
+  ✓  226 [firefox-phone-small] › regression/M1.spec.ts:184:5 › [vi] › route error page: failed lazy chunk shows a titled error with a working start-page link (2.1s)
+  ✓  227 [firefox-phone] › regression/M1.spec.ts:184:5 › [vi] › route error page: failed lazy chunk shows a titled error with a working start-page link (2.1s)
+  ✓  228 [firefox-phone] › regression/M1.spec.ts:184:5 › [vi] › route error page: failed lazy chunk shows a titled error with a working start-page link (2.1s)
+  ✓  222 [chromium-laptop] › regression/M1.spec.ts:90:5 › [en] › every route: titled, focus on body, no overflow, 44 px targets, axe clean, localised (5.5s)
+  ✓  223 [chromium-laptop] › regression/M1.spec.ts:90:5 › [en] › every route: titled, focus on body, no overflow, 44 px targets, axe clean, localised (5.6s)
+  ✓  224 [chromium-desktop] › regression/M1.spec.ts:90:5 › [en] › every route: titled, focus on body, no overflow, 44 px targets, axe clean, localised (5.7s)
+  ✓  225 [chromium-desktop] › regression/M1.spec.ts:90:5 › [en] › every route: titled, focus on body, no overflow, 44 px targets, axe clean, localised (5.5s)
+  ✓  232 [chromium-laptop] › regression/M1.spec.ts:111:5 › [en] › shells: banner, skip link is the first Tab stop and moves focus into main, workspace name shown (2.2s)
+  ✓  233 [chromium-laptop] › regression/M1.spec.ts:111:5 › [en] › shells: banner, skip link is the first Tab stop and moves focus into main, workspace name shown (2.1s)
+  ✓  234 [chromium-desktop] › regression/M1.spec.ts:111:5 › [en] › shells: banner, skip link is the first Tab stop and moves focus into main, workspace name shown (2.1s)
+  ✓  235 [chromium-desktop] › regression/M1.spec.ts:111:5 › [en] › shells: banner, skip link is the first Tab stop and moves focus into main, workspace name shown (2.1s)
+  ✓  236 [chromium-laptop] › regression/M1.spec.ts:128:5 › [en] › client navigation: h1 focused + title, back/forward, 404 and its start-page link (keyboard) (1.8s)
+  ✓  229 [firefox-phone-small] › regression/M1.spec.ts:200:5 › [vi] › shell header: /api/v1/meta failure shows an alert, not a blank or a crash (5.9s)
+  ✓  237 [chromium-laptop] › regression/M1.spec.ts:128:5 › [en] › client navigation: h1 focused + title, back/forward, 404 and its start-page link (keyboard) (1.8s)
+  ✓  238 [chromium-desktop] › regression/M1.spec.ts:128:5 › [en] › client navigation: h1 focused + title, back/forward, 404 and its start-page link (keyboard) (1.8s)
+  ✓  239 [chromium-desktop] › regression/M1.spec.ts:128:5 › [en] › client navigation: h1 focused + title, back/forward, 404 and its start-page link (keyboard) (1.8s)
+  ✓  230 [firefox-phone] › regression/M1.spec.ts:200:5 › [vi] › shell header: /api/v1/meta failure shows an alert, not a blank or a crash (6.3s)
+  ✓  231 [firefox-phone] › regression/M1.spec.ts:200:5 › [vi] › shell header: /api/v1/meta failure shows an alert, not a blank or a crash (6.0s)
+  ✘  189 [firefox-phone-small] › regression/M1.spec.ts:90:5 › [vi] › every route: titled, focus on body, no overflow, 44 px targets, axe clean, localised (30.4s)
+  ✓  240 [chromium-laptop] › regression/M1.spec.ts:157:5 › [en] › language switch on landing and both shells: strings, lang, title, persistence over reload and navigation (4.4s)
+  ✓  242 [chromium-laptop] › regression/M1.spec.ts:157:5 › [en] › language switch on landing and both shells: strings, lang, title, persistence over reload and navigation (4.5s)
+  ✓  243 [chromium-desktop] › regression/M1.spec.ts:157:5 › [en] › language switch on landing and both shells: strings, lang, title, persistence over reload and navigation (4.5s)
+  ✓  244 [chromium-desktop] › regression/M1.spec.ts:157:5 › [en] › language switch on landing and both shells: strings, lang, title, persistence over reload and navigation (4.6s)
+  ✓  248 [chromium-laptop] › regression/M1.spec.ts:184:5 › [en] › route error page: failed lazy chunk shows a titled error with a working start-page link (1.9s)
+  ✓  249 [chromium-laptop] › regression/M1.spec.ts:184:5 › [en] › route error page: failed lazy chunk shows a titled error with a working start-page link (2.0s)
+  ✓  250 [chromium-desktop] › regression/M1.spec.ts:184:5 › [en] › route error page: failed lazy chunk shows a titled error with a working start-page link (2.0s)
+  ✓  251 [chromium-desktop] › regression/M1.spec.ts:184:5 › [en] › route error page: failed lazy chunk shows a titled error with a working start-page link (1.9s)
+  ✓  241 [firefox-phone-small] › regression/M1.spec.ts:90:5 › [en] › every route: titled, focus on body, no overflow, 44 px targets, axe clean, localised (8.5s)
+  ✓  247 [firefox-phone-small] › regression/M1.spec.ts:111:5 › [vi] › shells: banner, skip link is the first Tab stop and moves focus into main, workspace name shown (4.4s)
+  ✓  245 [firefox-phone] › regression/M1.spec.ts:90:5 › [en] › every route: titled, focus on body, no overflow, 44 px targets, axe clean, localised (8.7s)
+  ✓  246 [firefox-phone] › regression/M1.spec.ts:90:5 › [en] › every route: titled, focus on body, no overflow, 44 px targets, axe clean, localised (8.9s)
+  ✓  252 [chromium-laptop] › regression/M1.spec.ts:200:5 › [en] › shell header: /api/v1/meta failure shows an alert, not a blank or a crash (5.3s)
+  ✓  256 [firefox-phone-small] › regression/M1.spec.ts:111:5 › [en] › shells: banner, skip link is the first Tab stop and moves focus into main, workspace name shown (3.3s)
+  ✓  253 [chromium-laptop] › regression/M1.spec.ts:200:5 › [en] › shell header: /api/v1/meta failure shows an alert, not a blank or a crash (5.2s)
+  ✓  257 [firefox-phone-small] › regression/M1.spec.ts:128:5 › [vi] › client navigation: h1 focused + title, back/forward, 404 and its start-page link (keyboard) (2.8s)
+  ✓  254 [chromium-desktop] › regression/M1.spec.ts:200:5 › [en] › shell header: /api/v1/meta failure shows an alert, not a blank or a crash (5.2s)
+  ✓  255 [chromium-desktop] › regression/M1.spec.ts:200:5 › [en] › shell header: /api/v1/meta failure shows an alert, not a blank or a crash (5.3s)
+  ✓  259 [firefox-phone] › regression/M1.spec.ts:111:5 › [en] › shells: banner, skip link is the first Tab stop and moves focus into main, workspace name shown (2.9s)
+  ✓  260 [chromium-laptop] › regression/M1.spec.ts:214:1 › deep links survive reload (SPA fallback) and /dev/ui is not in the production build (3.7s)
+  ✓  261 [firefox-phone-small] › regression/M1.spec.ts:128:5 › [en] › client navigation: h1 focused + title, back/forward, 404 and its start-page link (keyboard) (3.7s)
+  ✓  262 [chromium-laptop] › regression/M1.spec.ts:214:1 › deep links survive reload (SPA fallback) and /dev/ui is not in the production build (3.6s)
+  ✓  264 [chromium-desktop] › regression/M1.spec.ts:214:1 › deep links survive reload (SPA fallback) and /dev/ui is not in the production build (3.6s)
+  ✓  267 [chromium-laptop] › regression/M1.spec.ts:229:5 › HTTP surface › security headers on / (585ms)
+  ✓  265 [chromium-desktop] › regression/M1.spec.ts:214:1 › deep links survive reload (SPA fallback) and /dev/ui is not in the production build (3.6s)
+  ✓  269 [chromium-laptop] › regression/M1.spec.ts:229:5 › HTTP surface › security headers on / (585ms)
+  ✓  270 [chromium-desktop] › regression/M1.spec.ts:229:5 › HTTP surface › security headers on / (584ms)
+  ✓  271 [chromium-laptop] › regression/M1.spec.ts:229:5 › HTTP surface › security headers on /tutor (579ms)
+  ✓  272 [chromium-desktop] › regression/M1.spec.ts:229:5 › HTTP surface › security headers on / (586ms)
+  ✓  273 [chromium-laptop] › regression/M1.spec.ts:229:5 › HTTP surface › security headers on /tutor (583ms)
+  ✓  266 [firefox-phone] › regression/M1.spec.ts:128:5 › [en] › client navigation: h1 focused + title, back/forward, 404 and its start-page link (keyboard) (3.6s)
+  ✓  274 [chromium-desktop] › regression/M1.spec.ts:229:5 › HTTP surface › security headers on /tutor (578ms)
+  ✓  275 [chromium-laptop] › regression/M1.spec.ts:229:5 › HTTP surface › security headers on /qa-missing (575ms)
+  ✓  276 [chromium-desktop] › regression/M1.spec.ts:229:5 › HTTP surface › security headers on /tutor (590ms)
+  ✓  277 [chromium-laptop] › regression/M1.spec.ts:229:5 › HTTP surface › security headers on /qa-missing (579ms)
+  ✓  279 [chromium-desktop] › regression/M1.spec.ts:229:5 › HTTP surface › security headers on /qa-missing (586ms)
+  ✓  280 [chromium-laptop] › regression/M1.spec.ts:229:5 › HTTP surface › security headers on /api/v1/meta (579ms)
+  ✓  263 [firefox-phone-small] › regression/M1.spec.ts:157:5 › [vi] › language switch on landing and both shells: strings, lang, title, persistence over reload and navigation (5.7s)
+  ✓  282 [chromium-laptop] › regression/M1.spec.ts:229:5 › HTTP surface › security headers on /api/v1/meta (580ms)
+  ✓  281 [chromium-desktop] › regression/M1.spec.ts:229:5 › HTTP surface › security headers on /qa-missing (607ms)
+  ✓  283 [chromium-desktop] › regression/M1.spec.ts:229:5 › HTTP surface › security headers on /api/v1/meta (603ms)
+  ✓  284 [chromium-laptop] › regression/M1.spec.ts:229:5 › HTTP surface › security headers on /api/v1/qa-unknown (603ms)
+  ✓  286 [chromium-laptop] › regression/M1.spec.ts:229:5 › HTTP surface › security headers on /api/v1/qa-unknown (578ms)
+  ✓  287 [chromium-desktop] › regression/M1.spec.ts:229:5 › HTTP surface › security headers on /api/v1/meta (585ms)
+  ✓  288 [chromium-desktop] › regression/M1.spec.ts:229:5 › HTTP surface › security headers on /api/v1/qa-unknown (589ms)
+  ✓  289 [chromium-laptop] › regression/M1.spec.ts:245:3 › HTTP surface › API: meta JSON, unknown API path is Problem Details 404 (not the SPA), actuator not on :8080 (582ms)
+  ✓  290 [chromium-laptop] › regression/M1.spec.ts:245:3 › HTTP surface › API: meta JSON, unknown API path is Problem Details 404 (not the SPA), actuator not on :8080 (577ms)
+  ✓  291 [chromium-desktop] › regression/M1.spec.ts:229:5 › HTTP surface › security headers on /api/v1/qa-unknown (589ms)
+  ✓  292 [chromium-desktop] › regression/M1.spec.ts:245:3 › HTTP surface › API: meta JSON, unknown API path is Problem Details 404 (not the SPA), actuator not on :8080 (587ms)
+  ✓  293 [chromium-laptop] › regression/M1.spec.ts:258:3 › HTTP surface › hashed assets are immutable (791ms)
+  ✓  295 [chromium-desktop] › regression/M1.spec.ts:245:3 › HTTP surface › API: meta JSON, unknown API path is Problem Details 404 (not the SPA), actuator not on :8080 (584ms)
+  ✓  294 [chromium-laptop] › regression/M1.spec.ts:258:3 › HTTP surface › hashed assets are immutable (819ms)
+  ✓  297 [chromium-laptop] › regression/M1.spec.ts:268:3 › HTTP surface › isolation: student/tutor API paths return no data and no SECRET-* marker (573ms)
+  ✓  296 [chromium-desktop] › regression/M1.spec.ts:258:3 › HTTP surface › hashed assets are immutable (799ms)
+  ✓  299 [chromium-laptop] › regression/M1.spec.ts:268:3 › HTTP surface › isolation: student/tutor API paths return no data and no SECRET-* marker (574ms)
+  ✓  298 [chromium-desktop] › regression/M1.spec.ts:258:3 › HTTP surface › hashed assets are immutable (786ms)
+  ✓  300 [chromium-desktop] › regression/M1.spec.ts:268:3 › HTTP surface › isolation: student/tutor API paths return no data and no SECRET-* marker (576ms)
+  ✓  301 [chromium-desktop] › regression/M1.spec.ts:268:3 › HTTP surface › isolation: student/tutor API paths return no data and no SECRET-* marker (594ms)
+  ✓  302 [firefox-tablet] › regression/M1.spec.ts:82:1 › fresh visit starts in Vietnamese (1.8s)
+  ✓  303 [firefox-tablet] › regression/M1.spec.ts:82:1 › fresh visit starts in Vietnamese (1.9s)
+  ✓  305 [firefox-tablet-land] › regression/M1.spec.ts:82:1 › fresh visit starts in Vietnamese (1.9s)
+  ✓  304 [firefox-tablet-land] › regression/M1.spec.ts:82:1 › fresh visit starts in Vietnamese (2.0s)
+  ✓  306 [firefox-tablet] › regression/M1.spec.ts:90:5 › [vi] › every route: titled, focus on body, no overflow, 44 px targets, axe clean, localised (6.5s)
+  ✓  307 [firefox-tablet] › regression/M1.spec.ts:90:5 › [vi] › every route: titled, focus on body, no overflow, 44 px targets, axe clean, localised (6.6s)
+  ✓  308 [firefox-tablet-land] › regression/M1.spec.ts:90:5 › [vi] › every route: titled, focus on body, no overflow, 44 px targets, axe clean, localised (6.5s)
+  ✓  309 [firefox-tablet-land] › regression/M1.spec.ts:90:5 › [vi] › every route: titled, focus on body, no overflow, 44 px targets, axe clean, localised (6.6s)
+  ✓  310 [firefox-tablet] › regression/M1.spec.ts:111:5 › [vi] › shells: banner, skip link is the first Tab stop and moves focus into main, workspace name shown (2.5s)
+  ✓  311 [firefox-tablet] › regression/M1.spec.ts:111:5 › [vi] › shells: banner, skip link is the first Tab stop and moves focus into main, workspace name shown (2.5s)
+  ✓  313 [firefox-tablet-land] › regression/M1.spec.ts:111:5 › [vi] › shells: banner, skip link is the first Tab stop and moves focus into main, workspace name shown (2.4s)
+  ✓  315 [firefox-tablet] › regression/M1.spec.ts:128:5 › [vi] › client navigation: h1 focused + title, back/forward, 404 and its start-page link (keyboard) (1.9s)
+  ✓  316 [firefox-tablet-land] › regression/M1.spec.ts:128:5 › [vi] › client navigation: h1 focused + title, back/forward, 404 and its start-page link (keyboard) (2.0s)
+  ✓  317 [firefox-tablet] › regression/M1.spec.ts:157:5 › [vi] › language switch on landing and both shells: strings, lang, title, persistence over reload and navigation (4.7s)
+  ✘  258 [firefox-phone] › regression/M1.spec.ts:111:5 › [en] › shells: banner, skip link is the first Tab stop and moves focus into main, workspace name shown (30.2s)
+  ✓  319 [firefox-tablet] › regression/M1.spec.ts:184:5 › [vi] › route error page: failed lazy chunk shows a titled error with a working start-page link (1.7s)
+  ✓  320 [firefox-phone] › regression/M1.spec.ts:128:5 › [en] › client navigation: h1 focused + title, back/forward, 404 and its start-page link (keyboard) (2.8s)
+  ✘  268 [firefox-phone-small] › regression/M1.spec.ts:157:5 › [en] › language switch on landing and both shells: strings, lang, title, persistence over reload and navigation (30.3s)
+  ✓  321 [firefox-tablet] › regression/M1.spec.ts:200:5 › [vi] › shell header: /api/v1/meta failure shows an alert, not a blank or a crash (5.3s)
+  ✘  278 [firefox-phone] › regression/M1.spec.ts:157:5 › [en] › language switch on landing and both shells: strings, lang, title, persistence over reload and navigation (30.4s)
+  ✘  285 [firefox-phone-small] › regression/M1.spec.ts:184:5 › [vi] › route error page: failed lazy chunk shows a titled error with a working start-page link (30.2s)
+  ✓  324 [firefox-phone-small] › regression/M1.spec.ts:184:5 › [en] › route error page: failed lazy chunk shows a titled error with a working start-page link (2.8s)
+  ✓  325 [firefox-phone] › regression/M1.spec.ts:184:5 › [en] › route error page: failed lazy chunk shows a titled error with a working start-page link (2.8s)
+  ✓  323 [firefox-tablet] › regression/M1.spec.ts:90:5 › [en] › every route: titled, focus on body, no overflow, 44 px targets, axe clean, localised (6.4s)
+  ✓  329 [firefox-tablet] › regression/M1.spec.ts:111:5 › [en] › shells: banner, skip link is the first Tab stop and moves focus into main, workspace name shown (2.3s)
+  ✓  327 [firefox-phone-small] › regression/M1.spec.ts:200:5 › [en] › shell header: /api/v1/meta failure shows an alert, not a blank or a crash (5.3s)
+  ✓  326 [firefox-phone-small] › regression/M1.spec.ts:200:5 › [vi] › shell header: /api/v1/meta failure shows an alert, not a blank or a crash (6.2s)
+  ✓  328 [firefox-phone] › regression/M1.spec.ts:200:5 › [en] › shell header: /api/v1/meta failure shows an alert, not a blank or a crash (5.2s)
+  ✓  331 [firefox-phone-small] › regression/M1.spec.ts:214:1 › deep links survive reload (SPA fallback) and /dev/ui is not in the production build (4.0s)
+  ✓  334 [firefox-phone-small] › regression/M1.spec.ts:229:5 › HTTP surface › security headers on / (783ms)
+  ✓  335 [firefox-phone-small] › regression/M1.spec.ts:229:5 › HTTP surface › security headers on /tutor (780ms)
+  ✓  333 [firefox-phone] › regression/M1.spec.ts:214:1 › deep links survive reload (SPA fallback) and /dev/ui is not in the production build (4.1s)
+  ✘  312 [firefox-tablet-land] › regression/M1.spec.ts:111:5 › [vi] › shells: banner, skip link is the first Tab stop and moves focus into main, workspace name shown (30.2s)
+  ✓  336 [firefox-phone-small] › regression/M1.spec.ts:229:5 › HTTP surface › security headers on /qa-missing (752ms)
+  ✓  337 [firefox-phone] › regression/M1.spec.ts:229:5 › HTTP surface › security headers on / (753ms)
+  ✓  332 [firefox-phone-small] › regression/M1.spec.ts:90:5 › [en] › every route: titled, focus on body, no overflow, 44 px targets, axe clean, localised (6.2s)
+  ✓  338 [firefox-phone-small] › regression/M1.spec.ts:229:5 › HTTP surface › security headers on /api/v1/meta (774ms)
+  ✓  339 [firefox-phone] › regression/M1.spec.ts:229:5 › HTTP surface › security headers on /tutor (800ms)
+  ✘  314 [firefox-tablet] › regression/M1.spec.ts:128:5 › [vi] › client navigation: h1 focused + title, back/forward, 404 and its start-page link (keyboard) (30.2s)
+  ✓  342 [firefox-phone-small] › regression/M1.spec.ts:229:5 › HTTP surface › security headers on /api/v1/qa-unknown (791ms)
+  ✓  343 [firefox-phone] › regression/M1.spec.ts:229:5 › HTTP surface › security headers on /qa-missing (799ms)
+  ✓  345 [firefox-phone-small] › regression/M1.spec.ts:245:3 › HTTP surface › API: meta JSON, unknown API path is Problem Details 404 (not the SPA), actuator not on :8080 (800ms)
+  ✓  346 [firefox-phone] › regression/M1.spec.ts:229:5 › HTTP surface › security headers on /api/v1/meta (796ms)
+  ✓  340 [firefox-phone-small] › regression/M1.spec.ts:111:5 › [en] › shells: banner, skip link is the first Tab stop and moves focus into main, workspace name shown (2.5s)
+  ✓  348 [firefox-phone] › regression/M1.spec.ts:229:5 › HTTP surface › security headers on /api/v1/qa-unknown (824ms)
+  ✓  341 [firefox-tablet-land] › regression/M1.spec.ts:128:5 › [vi] › client navigation: h1 focused + title, back/forward, 404 and its start-page link (keyboard) (3.0s)
+  ✓  350 [firefox-phone] › regression/M1.spec.ts:245:3 › HTTP surface › API: meta JSON, unknown API path is Problem Details 404 (not the SPA), actuator not on :8080 (828ms)
+  ✓  347 [firefox-phone-small] › regression/M1.spec.ts:258:3 › HTTP surface › hashed assets are immutable (2.3s)
+  ✓  349 [firefox-phone-small] › regression/M1.spec.ts:128:5 › [en] › client navigation: h1 focused + title, back/forward, 404 and its start-page link (keyboard) (2.2s)
+  ✘  318 [firefox-tablet-land] › regression/M1.spec.ts:157:5 › [vi] › language switch on landing and both shells: strings, lang, title, persistence over reload and navigation (30.3s)
+  ✓  353 [firefox-phone-small] › regression/M1.spec.ts:268:3 › HTTP surface › isolation: student/tutor API paths return no data and no SECRET-* marker (926ms)
+  ✓  352 [firefox-phone] › regression/M1.spec.ts:258:3 › HTTP surface › hashed assets are immutable (2.5s)
+  ✓  356 [firefox-phone] › regression/M1.spec.ts:268:3 › HTTP surface › isolation: student/tutor API paths return no data and no SECRET-* marker (881ms)
+  ✓  344 [firefox-tablet] › regression/M1.spec.ts:157:5 › [vi] › language switch on landing and both shells: strings, lang, title, persistence over reload and navigation (6.7s)
+  ✓  355 [firefox-tablet-land] › regression/M1.spec.ts:184:5 › [vi] › route error page: failed lazy chunk shows a titled error with a working start-page link (3.3s)
+  ✓  351 [firefox-tablet-land] › regression/M1.spec.ts:157:5 › [vi] › language switch on landing and both shells: strings, lang, title, persistence over reload and navigation (5.9s)
+  ✓  357 [firefox-laptop] › regression/M1.spec.ts:82:1 › fresh visit starts in Vietnamese (2.3s)
+  ✓  354 [firefox-phone-small] › regression/M1.spec.ts:157:5 › [en] › language switch on landing and both shells: strings, lang, title, persistence over reload and navigation (6.0s)
+  ✓  359 [firefox-tablet] › regression/M1.spec.ts:184:5 › [vi] › route error page: failed lazy chunk shows a titled error with a working start-page link (2.4s)
+  ✓  358 [firefox-laptop] › regression/M1.spec.ts:82:1 › fresh visit starts in Vietnamese (2.4s)
+  ✓  361 [firefox-tablet-land] › regression/M1.spec.ts:184:5 › [vi] › route error page: failed lazy chunk shows a titled error with a working start-page link (2.4s)
+  ✓  363 [firefox-phone-small] › regression/M1.spec.ts:184:5 › [en] › route error page: failed lazy chunk shows a titled error with a working start-page link (2.3s)
+  ✘  322 [firefox-phone] › regression/M1.spec.ts:157:5 › [en] › language switch on landing and both shells: strings, lang, title, persistence over reload and navigation (30.4s)
+  ✓  360 [firefox-tablet-land] › regression/M1.spec.ts:200:5 › [vi] › shell header: /api/v1/meta failure shows an alert, not a blank or a crash (5.6s)
+  ✓  364 [firefox-tablet] › regression/M1.spec.ts:200:5 › [vi] › shell header: /api/v1/meta failure shows an alert, not a blank or a crash (5.7s)
+  ✓  362 [firefox-laptop] › regression/M1.spec.ts:90:5 › [vi] › every route: titled, focus on body, no overflow, 44 px targets, axe clean, localised (7.3s)
+  ✓  368 [firefox-phone] › regression/M1.spec.ts:184:5 › [en] › route error page: failed lazy chunk shows a titled error with a working start-page link (3.3s)
+  ✓  366 [firefox-tablet-land] › regression/M1.spec.ts:200:5 › [vi] › shell header: /api/v1/meta failure shows an alert, not a blank or a crash (6.0s)
+  ✓  365 [firefox-laptop] › regression/M1.spec.ts:90:5 › [vi] › every route: titled, focus on body, no overflow, 44 px targets, axe clean, localised (7.4s)
+  ✓  367 [firefox-phone-small] › regression/M1.spec.ts:200:5 › [en] › shell header: /api/v1/meta failure shows an alert, not a blank or a crash (6.3s)
+  ✓  371 [firefox-laptop] › regression/M1.spec.ts:111:5 › [vi] › shells: banner, skip link is the first Tab stop and moves focus into main, workspace name shown (2.9s)
+  ✓  374 [firefox-laptop] › regression/M1.spec.ts:111:5 › [vi] › shells: banner, skip link is the first Tab stop and moves focus into main, workspace name shown (2.9s)
+  ✓  376 [firefox-laptop] › regression/M1.spec.ts:128:5 › [vi] › client navigation: h1 focused + title, back/forward, 404 and its start-page link (keyboard) (2.3s)
+  ✓  369 [firefox-tablet-land] › regression/M1.spec.ts:90:5 › [en] › every route: titled, focus on body, no overflow, 44 px targets, axe clean, localised (8.0s)
+  ✓  375 [firefox-phone-small] › regression/M1.spec.ts:214:1 › deep links survive reload (SPA fallback) and /dev/ui is not in the production build (4.7s)
+  ✓  370 [firefox-tablet] › regression/M1.spec.ts:90:5 › [en] › every route: titled, focus on body, no overflow, 44 px targets, axe clean, localised (7.7s)
+  ✓  377 [firefox-laptop] › regression/M1.spec.ts:128:5 › [vi] › client navigation: h1 focused + title, back/forward, 404 and its start-page link (keyboard) (2.5s)
+  ✘  330 [firefox-tablet] › regression/M1.spec.ts:128:5 › [en] › client navigation: h1 focused + title, back/forward, 404 and its start-page link (keyboard) (31.0s)
+  ✓  380 [firefox-phone-small] › regression/M1.spec.ts:229:5 › HTTP surface › security headers on / (877ms)
+  ✓  373 [firefox-tablet-land] › regression/M1.spec.ts:90:5 › [en] › every route: titled, focus on body, no overflow, 44 px targets, axe clean, localised (7.5s)
+  ✓  379 [firefox-tablet-land] › regression/M1.spec.ts:111:5 › [en] › shells: banner, skip link is the first Tab stop and moves focus into main, workspace name shown (2.9s)
+  ✓  383 [firefox-phone-small] › regression/M1.spec.ts:229:5 › HTTP surface › security headers on /tutor (2.2s)
+  ✓  387 [firefox-phone-small] › regression/M1.spec.ts:229:5 › HTTP surface › security headers on /qa-missing (957ms)
+  ✓  378 [firefox-laptop] › regression/M1.spec.ts:157:5 › [vi] › language switch on landing and both shells: strings, lang, title, persistence over reload and navigation (6.0s)
+  ✓  384 [firefox-tablet-land] › regression/M1.spec.ts:111:5 › [en] › shells: banner, skip link is the first Tab stop and moves focus into main, workspace name shown (2.7s)
+  ✓  386 [firefox-tablet-land] › regression/M1.spec.ts:128:5 › [en] › client navigation: h1 focused + title, back/forward, 404 and its start-page link (keyboard) (2.4s)
+  ✓  388 [firefox-phone-small] › regression/M1.spec.ts:229:5 › HTTP surface › security headers on /api/v1/meta (836ms)
+  ✓  392 [firefox-phone-small] › regression/M1.spec.ts:229:5 › HTTP surface › security headers on /api/v1/qa-unknown (842ms)
+  ✓  389 [firefox-laptop] › regression/M1.spec.ts:184:5 › [vi] › route error page: failed lazy chunk shows a titled error with a working start-page link (2.3s)
+  ✓  382 [firefox-laptop] › regression/M1.spec.ts:157:5 › [vi] › language switch on landing and both shells: strings, lang, title, persistence over reload and navigation (6.1s)
+  ✓  390 [firefox-tablet-land] › regression/M1.spec.ts:128:5 › [en] › client navigation: h1 focused + title, back/forward, 404 and its start-page link (keyboard) (2.5s)
+  ✓  393 [firefox-phone-small] › regression/M1.spec.ts:245:3 › HTTP surface › API: meta JSON, unknown API path is Problem Details 404 (not the SPA), actuator not on :8080 (926ms)
+  ✓  397 [firefox-phone-small] › regression/M1.spec.ts:258:3 › HTTP surface › hashed assets are immutable (1.2s)
+  ✓  395 [firefox-laptop] › regression/M1.spec.ts:184:5 › [vi] › route error page: failed lazy chunk shows a titled error with a working start-page link (2.1s)
+  ✓  398 [firefox-phone-small] › regression/M1.spec.ts:268:3 › HTTP surface › isolation: student/tutor API paths return no data and no SECRET-* marker (854ms)
+  ✓  385 [firefox-tablet] › regression/M1.spec.ts:157:5 › [en] › language switch on landing and both shells: strings, lang, title, persistence over reload and navigation (7.5s)
+  ✓  391 [firefox-tablet-land] › regression/M1.spec.ts:157:5 › [en] › language switch on landing and both shells: strings, lang, title, persistence over reload and navigation (6.0s)
+  ✓  400 [firefox-tablet] › regression/M1.spec.ts:184:5 › [en] › route error page: failed lazy chunk shows a titled error with a working start-page link (2.2s)
+  ✓  394 [firefox-laptop] › regression/M1.spec.ts:200:5 › [vi] › shell header: /api/v1/meta failure shows an alert, not a blank or a crash (5.8s)
+  ✓  396 [firefox-tablet-land] › regression/M1.spec.ts:157:5 › [en] › language switch on landing and both shells: strings, lang, title, persistence over reload and navigation (6.0s)
+  ✓  402 [firefox-tablet-land] › regression/M1.spec.ts:184:5 › [en] › route error page: failed lazy chunk shows a titled error with a working start-page link (2.3s)
+  ✓  401 [firefox-desktop] › regression/M1.spec.ts:82:1 › fresh visit starts in Vietnamese (2.2s)
+  ✓  399 [firefox-laptop] › regression/M1.spec.ts:200:5 › [vi] › shell header: /api/v1/meta failure shows an alert, not a blank or a crash (5.9s)
+  ✓  403 [firefox-tablet] › regression/M1.spec.ts:200:5 › [en] › shell header: /api/v1/meta failure shows an alert, not a blank or a crash (5.7s)
+  ✓  404 [firefox-laptop] › regression/M1.spec.ts:90:5 › [en] › every route: titled, focus on body, no overflow, 44 px targets, axe clean, localised (6.7s)
+  ✓  407 [firefox-desktop] › regression/M1.spec.ts:90:5 › [vi] › every route: titled, focus on body, no overflow, 44 px targets, axe clean, localised (6.7s)
+  ✓  408 [firefox-laptop] › regression/M1.spec.ts:90:5 › [en] › every route: titled, focus on body, no overflow, 44 px targets, axe clean, localised (6.6s)
+  ✓  409 [firefox-tablet] › regression/M1.spec.ts:214:1 › deep links survive reload (SPA fallback) and /dev/ui is not in the production build (4.2s)
+  ✓  410 [firefox-laptop] › regression/M1.spec.ts:111:5 › [en] › shells: banner, skip link is the first Tab stop and moves focus into main, workspace name shown (2.9s)
+  ✓  411 [firefox-desktop] › regression/M1.spec.ts:111:5 › [vi] › shells: banner, skip link is the first Tab stop and moves focus into main, workspace name shown (2.6s)
+  ✓  413 [firefox-tablet] › regression/M1.spec.ts:229:5 › HTTP surface › security headers on / (783ms)
+  ✓  416 [firefox-tablet] › regression/M1.spec.ts:229:5 › HTTP surface › security headers on /tutor (792ms)
+  ✓  412 [firefox-laptop] › regression/M1.spec.ts:111:5 › [en] › shells: banner, skip link is the first Tab stop and moves focus into main, workspace name shown (2.5s)
+  ✓  417 [firefox-tablet] › regression/M1.spec.ts:229:5 › HTTP surface › security headers on /qa-missing (787ms)
+  ✓  415 [firefox-desktop] › regression/M1.spec.ts:128:5 › [vi] › client navigation: h1 focused + title, back/forward, 404 and its start-page link (keyboard) (2.0s)
+  ✘  372 [firefox-phone] › regression/M1.spec.ts:200:5 › [en] › shell header: /api/v1/meta failure shows an alert, not a blank or a crash (30.2s)
+  ✓  419 [firefox-tablet] › regression/M1.spec.ts:229:5 › HTTP surface › security headers on /api/v1/meta (820ms)
+  ✓  414 [firefox-laptop] › regression/M1.spec.ts:128:5 › [en] › client navigation: h1 focused + title, back/forward, 404 and its start-page link (keyboard) (3.4s)
+  ✓  422 [firefox-tablet] › regression/M1.spec.ts:229:5 › HTTP surface › security headers on /api/v1/qa-unknown (818ms)
+  ✓  418 [firefox-laptop] › regression/M1.spec.ts:128:5 › [en] › client navigation: h1 focused + title, back/forward, 404 and its start-page link (keyboard) (3.6s)
+  ✓  424 [firefox-tablet] › regression/M1.spec.ts:245:3 › HTTP surface › API: meta JSON, unknown API path is Problem Details 404 (not the SPA), actuator not on :8080 (2.4s)
+  ✓  426 [firefox-tablet] › regression/M1.spec.ts:258:3 › HTTP surface › hashed assets are immutable (1.0s)
+  ✓  420 [firefox-desktop] › regression/M1.spec.ts:157:5 › [vi] › language switch on landing and both shells: strings, lang, title, persistence over reload and navigation (5.4s)
+  ✓  427 [firefox-tablet] › regression/M1.spec.ts:268:3 › HTTP surface › isolation: student/tutor API paths return no data and no SECRET-* marker (868ms)
+  ✓  421 [firefox-phone] › regression/M1.spec.ts:214:1 › deep links survive reload (SPA fallback) and /dev/ui is not in the production build (5.4s)
+  ✘  381 [firefox-tablet] › regression/M1.spec.ts:111:5 › [en] › shells: banner, skip link is the first Tab stop and moves focus into main, workspace name shown (30.2s)
+  ✓  428 [firefox-desktop] › regression/M1.spec.ts:184:5 › [vi] › route error page: failed lazy chunk shows a titled error with a working start-page link (1.9s)
+  ✓  429 [firefox-phone] › regression/M1.spec.ts:229:5 › HTTP surface › security headers on / (841ms)
+  ✓  433 [firefox-phone] › regression/M1.spec.ts:229:5 › HTTP surface › security headers on /tutor (833ms)
+  ✓  425 [firefox-laptop] › regression/M1.spec.ts:157:5 › [en] › language switch on landing and both shells: strings, lang, title, persistence over reload and navigation (5.6s)
+  ✓  434 [firefox-phone] › regression/M1.spec.ts:229:5 › HTTP surface › security headers on /qa-missing (820ms)
+  ✓  430 [firefox-desktop] › regression/M1.spec.ts:82:1 › fresh visit starts in Vietnamese (2.0s)
+  ✓  436 [firefox-phone] › regression/M1.spec.ts:229:5 › HTTP surface › security headers on /api/v1/meta (784ms)
+  ✓  435 [firefox-laptop] › regression/M1.spec.ts:184:5 › [en] › route error page: failed lazy chunk shows a titled error with a working start-page link (2.0s)
+  ✓  438 [firefox-phone] › regression/M1.spec.ts:229:5 › HTTP surface › security headers on /api/v1/qa-unknown (804ms)
+  ✓  432 [firefox-tablet] › regression/M1.spec.ts:128:5 › [en] › client navigation: h1 focused + title, back/forward, 404 and its start-page link (keyboard) (3.2s)
+  ✓  440 [firefox-phone] › regression/M1.spec.ts:245:3 › HTTP surface › API: meta JSON, unknown API path is Problem Details 404 (not the SPA), actuator not on :8080 (828ms)
+  ✓  431 [firefox-desktop] › regression/M1.spec.ts:200:5 › [vi] › shell header: /api/v1/meta failure shows an alert, not a blank or a crash (5.5s)
+  ✓  442 [firefox-phone] › regression/M1.spec.ts:258:3 › HTTP surface › hashed assets are immutable (1.1s)
+  ✓  444 [firefox-phone] › regression/M1.spec.ts:268:3 › HTTP surface › isolation: student/tutor API paths return no data and no SECRET-* marker (798ms)
+  ✓  437 [firefox-desktop] › regression/M1.spec.ts:90:5 › [vi] › every route: titled, focus on body, no overflow, 44 px targets, axe clean, localised (6.6s)
+  ✓  439 [firefox-laptop] › regression/M1.spec.ts:200:5 › [en] › shell header: /api/v1/meta failure shows an alert, not a blank or a crash (5.7s)
+  ✓  441 [firefox-tablet] › regression/M1.spec.ts:157:5 › [en] › language switch on landing and both shells: strings, lang, title, persistence over reload and navigation (5.4s)
+  ✓  445 [firefox-desktop] › regression/M1.spec.ts:111:5 › [vi] › shells: banner, skip link is the first Tab stop and moves focus into main, workspace name shown (2.5s)
+  ✓  447 [firefox-tablet] › regression/M1.spec.ts:184:5 › [en] › route error page: failed lazy chunk shows a titled error with a working start-page link (2.1s)
+  ✘  405 [firefox-tablet-land] › regression/M1.spec.ts:184:5 › [en] › route error page: failed lazy chunk shows a titled error with a working start-page link (30.3s)
+  ✘  406 [firefox-tablet-land] › regression/M1.spec.ts:200:5 › [en] › shell header: /api/v1/meta failure shows an alert, not a blank or a crash (30.3s)
+  ✓  443 [firefox-desktop] › regression/M1.spec.ts:90:5 › [en] › every route: titled, focus on body, no overflow, 44 px targets, axe clean, localised (6.8s)
+  ✓  446 [firefox-laptop] › regression/M1.spec.ts:214:1 › deep links survive reload (SPA fallback) and /dev/ui is not in the production build (4.5s)
+  ✓  448 [firefox-desktop] › regression/M1.spec.ts:128:5 › [vi] › client navigation: h1 focused + title, back/forward, 404 and its start-page link (keyboard) (2.3s)
+  ✓  453 [firefox-laptop] › regression/M1.spec.ts:229:5 › HTTP surface › security headers on / (858ms)
+  ✓  450 [firefox-desktop] › regression/M1.spec.ts:111:5 › [en] › shells: banner, skip link is the first Tab stop and moves focus into main, workspace name shown (2.7s)
+  ✓  455 [firefox-laptop] › regression/M1.spec.ts:229:5 › HTTP surface › security headers on /tutor (813ms)
+  ✓  457 [firefox-laptop] › regression/M1.spec.ts:229:5 › HTTP surface › security headers on /qa-missing (867ms)
+  ✓  458 [firefox-laptop] › regression/M1.spec.ts:229:5 › HTTP surface › security headers on /api/v1/meta (821ms)
+  ✓  449 [firefox-tablet] › regression/M1.spec.ts:200:5 › [en] › shell header: /api/v1/meta failure shows an alert, not a blank or a crash (5.8s)
+  ✓  459 [firefox-laptop] › regression/M1.spec.ts:229:5 › HTTP surface › security headers on /api/v1/qa-unknown (806ms)
+  ✓  456 [firefox-desktop] › regression/M1.spec.ts:128:5 › [en] › client navigation: h1 focused + title, back/forward, 404 and its start-page link (keyboard) (3.2s)
+  ✓  452 [firefox-tablet-land] › regression/M1.spec.ts:214:1 › deep links survive reload (SPA fallback) and /dev/ui is not in the production build (5.1s)
+  ✓  451 [firefox-tablet-land] › regression/M1.spec.ts:200:5 › [en] › shell header: /api/v1/meta failure shows an alert, not a blank or a crash (6.5s)
+  ✓  461 [firefox-laptop] › regression/M1.spec.ts:245:3 › HTTP surface › API: meta JSON, unknown API path is Problem Details 404 (not the SPA), actuator not on :8080 (2.1s)
+  ✓  463 [firefox-tablet-land] › regression/M1.spec.ts:229:5 › HTTP surface › security headers on / (799ms)
+  ✓  466 [firefox-tablet-land] › regression/M1.spec.ts:229:5 › HTTP surface › security headers on /tutor (874ms)
+  ✓  465 [firefox-laptop] › regression/M1.spec.ts:258:3 › HTTP surface › hashed assets are immutable (1.1s)
+  ✓  467 [firefox-tablet-land] › regression/M1.spec.ts:229:5 › HTTP surface › security headers on /qa-missing (839ms)
+  ✓  460 [firefox-tablet] › regression/M1.spec.ts:214:1 › deep links survive reload (SPA fallback) and /dev/ui is not in the production build (4.4s)
+  ✓  468 [firefox-laptop] › regression/M1.spec.ts:268:3 › HTTP surface › isolation: student/tutor API paths return no data and no SECRET-* marker (846ms)
+  ✓  469 [firefox-tablet-land] › regression/M1.spec.ts:229:5 › HTTP surface › security headers on /api/v1/meta (829ms)
+  ✓  470 [firefox-tablet] › regression/M1.spec.ts:229:5 › HTTP surface › security headers on / (847ms)
+  ✓  471 [firefox-tablet-land] › regression/M1.spec.ts:229:5 › HTTP surface › security headers on /api/v1/qa-unknown (817ms)
+  ✓  472 [firefox-tablet] › regression/M1.spec.ts:229:5 › HTTP surface › security headers on /tutor (779ms)
+  ✓  462 [firefox-desktop] › regression/M1.spec.ts:157:5 › [en] › language switch on landing and both shells: strings, lang, title, persistence over reload and navigation (5.4s)
+  ✓  464 [firefox-tablet-land] › regression/M1.spec.ts:214:1 › deep links survive reload (SPA fallback) and /dev/ui is not in the production build (4.3s)
+  ✓  473 [firefox-tablet-land] › regression/M1.spec.ts:245:3 › HTTP surface › API: meta JSON, unknown API path is Problem Details 404 (not the SPA), actuator not on :8080 (825ms)
+  ✓  474 [firefox-tablet] › regression/M1.spec.ts:229:5 › HTTP surface › security headers on /qa-missing (783ms)
+  ✘  423 [firefox-laptop] › regression/M1.spec.ts:157:5 › [en] › language switch on landing and both shells: strings, lang, title, persistence over reload and navigation (30.3s)
+  ✓  476 [firefox-tablet-land] › regression/M1.spec.ts:229:5 › HTTP surface › security headers on / (812ms)
+  ✓  478 [firefox-tablet] › regression/M1.spec.ts:229:5 › HTTP surface › security headers on /api/v1/meta (808ms)
+  ✓  477 [firefox-tablet-land] › regression/M1.spec.ts:258:3 › HTTP surface › hashed assets are immutable (1.1s)
+  ✓  475 [firefox-desktop] › regression/M1.spec.ts:184:5 › [en] › route error page: failed lazy chunk shows a titled error with a working start-page link (1.9s)
+  ✓  479 [firefox-tablet-land] › regression/M1.spec.ts:229:5 › HTTP surface › security headers on /tutor (778ms)
+  ✓  482 [firefox-tablet-land] › regression/M1.spec.ts:268:3 › HTTP surface › isolation: student/tutor API paths return no data and no SECRET-* marker (811ms)
+  ✓  484 [firefox-tablet-land] › regression/M1.spec.ts:229:5 › HTTP surface › security headers on /qa-missing (815ms)
+  ✓  480 [firefox-tablet] › regression/M1.spec.ts:229:5 › HTTP surface › security headers on /api/v1/qa-unknown (1.9s)
+  ✓  485 [firefox-tablet-land] › regression/M1.spec.ts:229:5 › HTTP surface › security headers on /api/v1/meta (799ms)
+  ✓  486 [firefox-tablet] › regression/M1.spec.ts:245:3 › HTTP surface › API: meta JSON, unknown API path is Problem Details 404 (not the SPA), actuator not on :8080 (812ms)
+  ✓  487 [firefox-tablet-land] › regression/M1.spec.ts:229:5 › HTTP surface › security headers on /api/v1/qa-unknown (769ms)
+  ✓  481 [firefox-laptop] › regression/M1.spec.ts:184:5 › [en] › route error page: failed lazy chunk shows a titled error with a working start-page link (2.8s)
+  ✓  488 [firefox-tablet] › regression/M1.spec.ts:258:3 › HTTP surface › hashed assets are immutable (928ms)
+  ✓  489 [firefox-tablet-land] › regression/M1.spec.ts:245:3 › HTTP surface › API: meta JSON, unknown API path is Problem Details 404 (not the SPA), actuator not on :8080 (805ms)
+  ✓  491 [firefox-tablet] › regression/M1.spec.ts:268:3 › HTTP surface › isolation: student/tutor API paths return no data and no SECRET-* marker (780ms)
+  ✓  492 [firefox-tablet-land] › regression/M1.spec.ts:258:3 › HTTP surface › hashed assets are immutable (910ms)
+  ✓  483 [firefox-desktop] › regression/M1.spec.ts:200:5 › [en] › shell header: /api/v1/meta failure shows an alert, not a blank or a crash (5.3s)
+  ✓  493 [firefox-tablet-land] › regression/M1.spec.ts:268:3 › HTTP surface › isolation: student/tutor API paths return no data and no SECRET-* marker (1.9s)
+  ✓  490 [firefox-laptop] › regression/M1.spec.ts:200:5 › [en] › shell header: /api/v1/meta failure shows an alert, not a blank or a crash (5.2s)
+  ✓  494 [firefox-desktop] › regression/M1.spec.ts:214:1 › deep links survive reload (SPA fallback) and /dev/ui is not in the production build (3.9s)
+  ✓  496 [firefox-desktop] › regression/M1.spec.ts:229:5 › HTTP surface › security headers on / (794ms)
+  ✓  497 [firefox-desktop] › regression/M1.spec.ts:229:5 › HTTP surface › security headers on /tutor (782ms)
+  ✓  498 [firefox-desktop] › regression/M1.spec.ts:229:5 › HTTP surface › security headers on /qa-missing (764ms)
+  ✓  495 [firefox-laptop] › regression/M1.spec.ts:214:1 › deep links survive reload (SPA fallback) and /dev/ui is not in the production build (3.9s)
+  ✓  499 [firefox-desktop] › regression/M1.spec.ts:229:5 › HTTP surface › security headers on /api/v1/meta (770ms)
+  ✓  500 [firefox-laptop] › regression/M1.spec.ts:229:5 › HTTP surface › security headers on / (760ms)
+  ✓  501 [firefox-desktop] › regression/M1.spec.ts:229:5 › HTTP surface › security headers on /api/v1/qa-unknown (758ms)
+  ✓  502 [firefox-laptop] › regression/M1.spec.ts:229:5 › HTTP surface › security headers on /tutor (757ms)
+  ✓  504 [firefox-laptop] › regression/M1.spec.ts:229:5 › HTTP surface › security headers on /qa-missing (753ms)
+  ✓  503 [firefox-desktop] › regression/M1.spec.ts:245:3 › HTTP surface › API: meta JSON, unknown API path is Problem Details 404 (not the SPA), actuator not on :8080 (2.1s)
+  ✓  505 [firefox-laptop] › regression/M1.spec.ts:229:5 › HTTP surface › security headers on /api/v1/meta (749ms)
+  ✓  507 [firefox-laptop] › regression/M1.spec.ts:229:5 › HTTP surface › security headers on /api/v1/qa-unknown (744ms)
+  ✓  506 [firefox-desktop] › regression/M1.spec.ts:258:3 › HTTP surface › hashed assets are immutable (951ms)
+  ✓  508 [firefox-laptop] › regression/M1.spec.ts:245:3 › HTTP surface › API: meta JSON, unknown API path is Problem Details 404 (not the SPA), actuator not on :8080 (764ms)
+  ✓  509 [firefox-desktop] › regression/M1.spec.ts:268:3 › HTTP surface › isolation: student/tutor API paths return no data and no SECRET-* marker (760ms)
+  ✓  510 [firefox-laptop] › regression/M1.spec.ts:258:3 › HTTP surface › hashed assets are immutable (1.9s)
+  ✘  454 [firefox-desktop] › regression/M1.spec.ts:157:5 › [vi] › language switch on landing and both shells: strings, lang, title, persistence over reload and navigation (30.2s)
+  ✓  511 [firefox-laptop] › regression/M1.spec.ts:268:3 › HTTP surface › isolation: student/tutor API paths return no data and no SECRET-* marker (785ms)
+  ✓  512 [firefox-desktop] › regression/M1.spec.ts:184:5 › [vi] › route error page: failed lazy chunk shows a titled error with a working start-page link (2.4s)
+  ✓  513 [firefox-desktop] › regression/M1.spec.ts:200:5 › [vi] › shell header: /api/v1/meta failure shows an alert, not a blank or a crash (5.1s)
+  ✓  514 [firefox-desktop] › regression/M1.spec.ts:90:5 › [en] › every route: titled, focus on body, no overflow, 44 px targets, axe clean, localised (5.8s)
+  ✓  515 [firefox-desktop] › regression/M1.spec.ts:111:5 › [en] › shells: banner, skip link is the first Tab stop and moves focus into main, workspace name shown (2.3s)
+  ✓  516 [firefox-desktop] › regression/M1.spec.ts:128:5 › [en] › client navigation: h1 focused + title, back/forward, 404 and its start-page link (keyboard) (1.9s)
+  ✓  517 [firefox-desktop] › regression/M1.spec.ts:157:5 › [en] › language switch on landing and both shells: strings, lang, title, persistence over reload and navigation (4.8s)
+  ✓  518 [firefox-desktop] › regression/M1.spec.ts:184:5 › [en] › route error page: failed lazy chunk shows a titled error with a working start-page link (1.7s)
+  ✓  519 [firefox-desktop] › regression/M1.spec.ts:200:5 › [en] › shell header: /api/v1/meta failure shows an alert, not a blank or a crash (5.5s)
+  ✓  520 [firefox-desktop] › regression/M1.spec.ts:214:1 › deep links survive reload (SPA fallback) and /dev/ui is not in the production build (3.8s)
+  ✓  521 [firefox-desktop] › regression/M1.spec.ts:229:5 › HTTP surface › security headers on / (1.4s)
+  ✓  522 [firefox-desktop] › regression/M1.spec.ts:229:5 › HTTP surface › security headers on /tutor (783ms)
+  ✓  523 [firefox-desktop] › regression/M1.spec.ts:229:5 › HTTP surface › security headers on /qa-missing (751ms)
+  ✓  524 [firefox-desktop] › regression/M1.spec.ts:229:5 › HTTP surface › security headers on /api/v1/meta (747ms)
+  ✓  525 [firefox-desktop] › regression/M1.spec.ts:229:5 › HTTP surface › security headers on /api/v1/qa-unknown (745ms)
+  ✓  526 [firefox-desktop] › regression/M1.spec.ts:245:3 › HTTP surface › API: meta JSON, unknown API path is Problem Details 404 (not the SPA), actuator not on :8080 (750ms)
+  ✓  527 [firefox-desktop] › regression/M1.spec.ts:258:3 › HTTP surface › hashed assets are immutable (900ms)
+  ✓  528 [firefox-desktop] › regression/M1.spec.ts:268:3 › HTTP surface › isolation: student/tutor API paths return no data and no SECRET-* marker (756ms)
+
+
+  1) [firefox-phone-small] › regression/M1.spec.ts:90:5 › [vi] › every route: titled, focus on body, no overflow, 44 px targets, axe clean, localised 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: page.goto: Test timeout of 30000ms exceeded.
+    Call log:
+      - navigating to "http://localhost:8080/", waiting until "commit"
+
+
+      35 |
+      36 | async function open(page: Page, path: string) {
+    > 37 |   await page.goto(path, { waitUntil: 'commit' }) // Firefox: 'load' is occasionally never reported after the router's startup replaceState (see the M1 QA notes)
+         |              ^
+      38 |   await expect(page.locator('main h1')).toBeVisible()
+      39 |   await page.waitForLoadState('networkidle')
+      40 | }
+        at open (/home/kali/App_sources/eng-lms-m1-qa/qa/regression/M1.spec.ts:37:14)
+        at setLocale (/home/kali/App_sources/eng-lms-m1-qa/qa/regression/M1.spec.ts:42:9)
+        at /home/kali/App_sources/eng-lms-m1-qa/qa/regression/M1.spec.ts:91:13
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/regression-M1--vi-every-ro-889d8-targets-axe-clean-localised-firefox-phone-small/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/regression-M1--vi-every-ro-889d8-targets-axe-clean-localised-firefox-phone-small/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/regression-M1--vi-every-ro-889d8-targets-axe-clean-localised-firefox-phone-small/trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace test-results/regression-M1--vi-every-ro-889d8-targets-axe-clean-localised-firefox-phone-small/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [firefox-phone-small] › regression/M1.spec.ts:184:5 › [vi] › route error page: failed lazy chunk shows a titled error with a working start-page link 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: page.goto: Test timeout of 30000ms exceeded.
+    Call log:
+      - navigating to "http://localhost:8080/", waiting until "commit"
+
+
+      35 |
+      36 | async function open(page: Page, path: string) {
+    > 37 |   await page.goto(path, { waitUntil: 'commit' }) // Firefox: 'load' is occasionally never reported after the router's startup replaceState (see the M1 QA notes)
+         |              ^
+      38 |   await expect(page.locator('main h1')).toBeVisible()
+      39 |   await page.waitForLoadState('networkidle')
+      40 | }
+        at open (/home/kali/App_sources/eng-lms-m1-qa/qa/regression/M1.spec.ts:37:14)
+        at setLocale (/home/kali/App_sources/eng-lms-m1-qa/qa/regression/M1.spec.ts:42:9)
+        at /home/kali/App_sources/eng-lms-m1-qa/qa/regression/M1.spec.ts:185:13
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/regression-M1--vi-route-er-25489-h-a-working-start-page-link-firefox-phone-small/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/regression-M1--vi-route-er-25489-h-a-working-start-page-link-firefox-phone-small/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/regression-M1--vi-route-er-25489-h-a-working-start-page-link-firefox-phone-small/trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace test-results/regression-M1--vi-route-er-25489-h-a-working-start-page-link-firefox-phone-small/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  3) [firefox-phone-small] › regression/M1.spec.ts:157:5 › [en] › language switch on landing and both shells: strings, lang, title, persistence over reload and navigation 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: page.goto: Test timeout of 30000ms exceeded.
+    Call log:
+      - navigating to "http://localhost:8080/qa-no-such-page", waiting until "commit"
+
+
+      173 |         // the choice carries over to a fresh tab (same origin storage)
+      174 |         const tab = await page.context().newPage()
+    > 175 |         await tab.goto('/qa-no-such-page', { waitUntil: 'commit' })
+          |                   ^
+      176 |         await expect(tab.locator('html')).toHaveAttribute('lang', other)
+      177 |         await tab.close()
+      178 |         await page.getByRole('radio', { name: NAME[locale], exact: true }).click()
+        at /home/kali/App_sources/eng-lms-m1-qa/qa/regression/M1.spec.ts:175:19
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/regression-M1--en-language-fcc17--over-reload-and-navigation-firefox-phone-small-repeat1/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/regression-M1--en-language-fcc17--over-reload-and-navigation-firefox-phone-small-repeat1/test-failed-2.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/regression-M1--en-language-fcc17--over-reload-and-navigation-firefox-phone-small-repeat1/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/regression-M1--en-language-fcc17--over-reload-and-navigation-firefox-phone-small-repeat1/trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace test-results/regression-M1--en-language-fcc17--over-reload-and-navigation-firefox-phone-small-repeat1/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  4) [firefox-phone] › regression/M1.spec.ts:157:5 › [en] › language switch on landing and both shells: strings, lang, title, persistence over reload and navigation 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: page.goto: Test timeout of 30000ms exceeded.
+    Call log:
+      - navigating to "http://localhost:8080/qa-no-such-page", waiting until "commit"
+
+
+      173 |         // the choice carries over to a fresh tab (same origin storage)
+      174 |         const tab = await page.context().newPage()
+    > 175 |         await tab.goto('/qa-no-such-page', { waitUntil: 'commit' })
+          |                   ^
+      176 |         await expect(tab.locator('html')).toHaveAttribute('lang', other)
+      177 |         await tab.close()
+      178 |         await page.getByRole('radio', { name: NAME[locale], exact: true }).click()
+        at /home/kali/App_sources/eng-lms-m1-qa/qa/regression/M1.spec.ts:175:19
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/regression-M1--en-language-fcc17--over-reload-and-navigation-firefox-phone/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/regression-M1--en-language-fcc17--over-reload-and-navigation-firefox-phone/test-failed-2.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/regression-M1--en-language-fcc17--over-reload-and-navigation-firefox-phone/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/regression-M1--en-language-fcc17--over-reload-and-navigation-firefox-phone/trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace test-results/regression-M1--en-language-fcc17--over-reload-and-navigation-firefox-phone/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  5) [firefox-phone] › regression/M1.spec.ts:111:5 › [en] › shells: banner, skip link is the first Tab stop and moves focus into main, workspace name shown 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: page.goto: Test timeout of 30000ms exceeded.
+    Call log:
+      - navigating to "http://localhost:8080/", waiting until "commit"
+
+
+      35 |
+      36 | async function open(page: Page, path: string) {
+    > 37 |   await page.goto(path, { waitUntil: 'commit' }) // Firefox: 'load' is occasionally never reported after the router's startup replaceState (see the M1 QA notes)
+         |              ^
+      38 |   await expect(page.locator('main h1')).toBeVisible()
+      39 |   await page.waitForLoadState('networkidle')
+      40 | }
+        at open (/home/kali/App_sources/eng-lms-m1-qa/qa/regression/M1.spec.ts:37:14)
+        at setLocale (/home/kali/App_sources/eng-lms-m1-qa/qa/regression/M1.spec.ts:42:9)
+        at /home/kali/App_sources/eng-lms-m1-qa/qa/regression/M1.spec.ts:112:13
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/regression-M1--en-shells-b-60ef5-o-main-workspace-name-shown-firefox-phone-repeat1/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/regression-M1--en-shells-b-60ef5-o-main-workspace-name-shown-firefox-phone-repeat1/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/regression-M1--en-shells-b-60ef5-o-main-workspace-name-shown-firefox-phone-repeat1/trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace test-results/regression-M1--en-shells-b-60ef5-o-main-workspace-name-shown-firefox-phone-repeat1/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  6) [firefox-phone] › regression/M1.spec.ts:157:5 › [en] › language switch on landing and both shells: strings, lang, title, persistence over reload and navigation 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: page.goto: Test timeout of 30000ms exceeded.
+    Call log:
+      - navigating to "http://localhost:8080/", waiting until "commit"
+
+
+      35 |
+      36 | async function open(page: Page, path: string) {
+    > 37 |   await page.goto(path, { waitUntil: 'commit' }) // Firefox: 'load' is occasionally never reported after the router's startup replaceState (see the M1 QA notes)
+         |              ^
+      38 |   await expect(page.locator('main h1')).toBeVisible()
+      39 |   await page.waitForLoadState('networkidle')
+      40 | }
+        at open (/home/kali/App_sources/eng-lms-m1-qa/qa/regression/M1.spec.ts:37:14)
+        at setLocale (/home/kali/App_sources/eng-lms-m1-qa/qa/regression/M1.spec.ts:42:9)
+        at /home/kali/App_sources/eng-lms-m1-qa/qa/regression/M1.spec.ts:158:13
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/regression-M1--en-language-fcc17--over-reload-and-navigation-firefox-phone-repeat1/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/regression-M1--en-language-fcc17--over-reload-and-navigation-firefox-phone-repeat1/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/regression-M1--en-language-fcc17--over-reload-and-navigation-firefox-phone-repeat1/trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace test-results/regression-M1--en-language-fcc17--over-reload-and-navigation-firefox-phone-repeat1/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  7) [firefox-phone] › regression/M1.spec.ts:200:5 › [en] › shell header: /api/v1/meta failure shows an alert, not a blank or a crash 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: page.goto: Test timeout of 30000ms exceeded.
+    Call log:
+      - navigating to "http://localhost:8080/", waiting until "commit"
+
+
+      35 |
+      36 | async function open(page: Page, path: string) {
+    > 37 |   await page.goto(path, { waitUntil: 'commit' }) // Firefox: 'load' is occasionally never reported after the router's startup replaceState (see the M1 QA notes)
+         |              ^
+      38 |   await expect(page.locator('main h1')).toBeVisible()
+      39 |   await page.waitForLoadState('networkidle')
+      40 | }
+        at open (/home/kali/App_sources/eng-lms-m1-qa/qa/regression/M1.spec.ts:37:14)
+        at setLocale (/home/kali/App_sources/eng-lms-m1-qa/qa/regression/M1.spec.ts:42:9)
+        at /home/kali/App_sources/eng-lms-m1-qa/qa/regression/M1.spec.ts:201:13
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/regression-M1--en-shell-he-720f3-lert-not-a-blank-or-a-crash-firefox-phone-repeat1/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/regression-M1--en-shell-he-720f3-lert-not-a-blank-or-a-crash-firefox-phone-repeat1/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/regression-M1--en-shell-he-720f3-lert-not-a-blank-or-a-crash-firefox-phone-repeat1/trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace test-results/regression-M1--en-shell-he-720f3-lert-not-a-blank-or-a-crash-firefox-phone-repeat1/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  8) [firefox-tablet] › regression/M1.spec.ts:128:5 › [vi] › client navigation: h1 focused + title, back/forward, 404 and its start-page link (keyboard) 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: page.goto: Test timeout of 30000ms exceeded.
+    Call log:
+      - navigating to "http://localhost:8080/", waiting until "commit"
+
+
+      35 |
+      36 | async function open(page: Page, path: string) {
+    > 37 |   await page.goto(path, { waitUntil: 'commit' }) // Firefox: 'load' is occasionally never reported after the router's startup replaceState (see the M1 QA notes)
+         |              ^
+      38 |   await expect(page.locator('main h1')).toBeVisible()
+      39 |   await page.waitForLoadState('networkidle')
+      40 | }
+        at open (/home/kali/App_sources/eng-lms-m1-qa/qa/regression/M1.spec.ts:37:14)
+        at setLocale (/home/kali/App_sources/eng-lms-m1-qa/qa/regression/M1.spec.ts:42:9)
+        at /home/kali/App_sources/eng-lms-m1-qa/qa/regression/M1.spec.ts:129:13
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/regression-M1--vi-client-n-0efc8-s-start-page-link-keyboard--firefox-tablet/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/regression-M1--vi-client-n-0efc8-s-start-page-link-keyboard--firefox-tablet/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/regression-M1--vi-client-n-0efc8-s-start-page-link-keyboard--firefox-tablet/trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace test-results/regression-M1--vi-client-n-0efc8-s-start-page-link-keyboard--firefox-tablet/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  9) [firefox-tablet] › regression/M1.spec.ts:111:5 › [en] › shells: banner, skip link is the first Tab stop and moves focus into main, workspace name shown 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: page.goto: Test timeout of 30000ms exceeded.
+    Call log:
+      - navigating to "http://localhost:8080/", waiting until "commit"
+
+
+      35 |
+      36 | async function open(page: Page, path: string) {
+    > 37 |   await page.goto(path, { waitUntil: 'commit' }) // Firefox: 'load' is occasionally never reported after the router's startup replaceState (see the M1 QA notes)
+         |              ^
+      38 |   await expect(page.locator('main h1')).toBeVisible()
+      39 |   await page.waitForLoadState('networkidle')
+      40 | }
+        at open (/home/kali/App_sources/eng-lms-m1-qa/qa/regression/M1.spec.ts:37:14)
+        at setLocale (/home/kali/App_sources/eng-lms-m1-qa/qa/regression/M1.spec.ts:42:9)
+        at /home/kali/App_sources/eng-lms-m1-qa/qa/regression/M1.spec.ts:112:13
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/regression-M1--en-shells-b-60ef5-o-main-workspace-name-shown-firefox-tablet/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/regression-M1--en-shells-b-60ef5-o-main-workspace-name-shown-firefox-tablet/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/regression-M1--en-shells-b-60ef5-o-main-workspace-name-shown-firefox-tablet/trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace test-results/regression-M1--en-shells-b-60ef5-o-main-workspace-name-shown-firefox-tablet/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  10) [firefox-tablet] › regression/M1.spec.ts:128:5 › [en] › client navigation: h1 focused + title, back/forward, 404 and its start-page link (keyboard) 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: page.goto: Test timeout of 30000ms exceeded.
+    Call log:
+      - navigating to "http://localhost:8080/", waiting until "commit"
+
+
+      35 |
+      36 | async function open(page: Page, path: string) {
+    > 37 |   await page.goto(path, { waitUntil: 'commit' }) // Firefox: 'load' is occasionally never reported after the router's startup replaceState (see the M1 QA notes)
+         |              ^
+      38 |   await expect(page.locator('main h1')).toBeVisible()
+      39 |   await page.waitForLoadState('networkidle')
+      40 | }
+        at open (/home/kali/App_sources/eng-lms-m1-qa/qa/regression/M1.spec.ts:37:14)
+        at setLocale (/home/kali/App_sources/eng-lms-m1-qa/qa/regression/M1.spec.ts:42:9)
+        at /home/kali/App_sources/eng-lms-m1-qa/qa/regression/M1.spec.ts:129:13
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/regression-M1--en-client-n-9f3a2-s-start-page-link-keyboard--firefox-tablet-repeat1/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/regression-M1--en-client-n-9f3a2-s-start-page-link-keyboard--firefox-tablet-repeat1/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/regression-M1--en-client-n-9f3a2-s-start-page-link-keyboard--firefox-tablet-repeat1/trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace test-results/regression-M1--en-client-n-9f3a2-s-start-page-link-keyboard--firefox-tablet-repeat1/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  11) [firefox-tablet-land] › regression/M1.spec.ts:157:5 › [vi] › language switch on landing and both shells: strings, lang, title, persistence over reload and navigation 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: page.goto: Test timeout of 30000ms exceeded.
+    Call log:
+      - navigating to "http://localhost:8080/", waiting until "commit"
+
+
+      35 |
+      36 | async function open(page: Page, path: string) {
+    > 37 |   await page.goto(path, { waitUntil: 'commit' }) // Firefox: 'load' is occasionally never reported after the router's startup replaceState (see the M1 QA notes)
+         |              ^
+      38 |   await expect(page.locator('main h1')).toBeVisible()
+      39 |   await page.waitForLoadState('networkidle')
+      40 | }
+        at open (/home/kali/App_sources/eng-lms-m1-qa/qa/regression/M1.spec.ts:37:14)
+        at setLocale (/home/kali/App_sources/eng-lms-m1-qa/qa/regression/M1.spec.ts:42:9)
+        at /home/kali/App_sources/eng-lms-m1-qa/qa/regression/M1.spec.ts:158:13
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/regression-M1--vi-language-7adba--over-reload-and-navigation-firefox-tablet-land/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/regression-M1--vi-language-7adba--over-reload-and-navigation-firefox-tablet-land/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/regression-M1--vi-language-7adba--over-reload-and-navigation-firefox-tablet-land/trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace test-results/regression-M1--vi-language-7adba--over-reload-and-navigation-firefox-tablet-land/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  12) [firefox-tablet-land] › regression/M1.spec.ts:200:5 › [en] › shell header: /api/v1/meta failure shows an alert, not a blank or a crash 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: page.goto: Test timeout of 30000ms exceeded.
+    Call log:
+      - navigating to "http://localhost:8080/", waiting until "commit"
+
+
+      35 |
+      36 | async function open(page: Page, path: string) {
+    > 37 |   await page.goto(path, { waitUntil: 'commit' }) // Firefox: 'load' is occasionally never reported after the router's startup replaceState (see the M1 QA notes)
+         |              ^
+      38 |   await expect(page.locator('main h1')).toBeVisible()
+      39 |   await page.waitForLoadState('networkidle')
+      40 | }
+        at open (/home/kali/App_sources/eng-lms-m1-qa/qa/regression/M1.spec.ts:37:14)
+        at setLocale (/home/kali/App_sources/eng-lms-m1-qa/qa/regression/M1.spec.ts:42:9)
+        at /home/kali/App_sources/eng-lms-m1-qa/qa/regression/M1.spec.ts:201:13
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/regression-M1--en-shell-he-720f3-lert-not-a-blank-or-a-crash-firefox-tablet-land/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/regression-M1--en-shell-he-720f3-lert-not-a-blank-or-a-crash-firefox-tablet-land/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/regression-M1--en-shell-he-720f3-lert-not-a-blank-or-a-crash-firefox-tablet-land/trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace test-results/regression-M1--en-shell-he-720f3-lert-not-a-blank-or-a-crash-firefox-tablet-land/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  13) [firefox-tablet-land] › regression/M1.spec.ts:111:5 › [vi] › shells: banner, skip link is the first Tab stop and moves focus into main, workspace name shown 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: page.goto: Test timeout of 30000ms exceeded.
+    Call log:
+      - navigating to "http://localhost:8080/", waiting until "commit"
+
+
+      35 |
+      36 | async function open(page: Page, path: string) {
+    > 37 |   await page.goto(path, { waitUntil: 'commit' }) // Firefox: 'load' is occasionally never reported after the router's startup replaceState (see the M1 QA notes)
+         |              ^
+      38 |   await expect(page.locator('main h1')).toBeVisible()
+      39 |   await page.waitForLoadState('networkidle')
+      40 | }
+        at open (/home/kali/App_sources/eng-lms-m1-qa/qa/regression/M1.spec.ts:37:14)
+        at setLocale (/home/kali/App_sources/eng-lms-m1-qa/qa/regression/M1.spec.ts:42:9)
+        at /home/kali/App_sources/eng-lms-m1-qa/qa/regression/M1.spec.ts:112:13
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/regression-M1--vi-shells-b-cda94-o-main-workspace-name-shown-firefox-tablet-land-repeat1/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/regression-M1--vi-shells-b-cda94-o-main-workspace-name-shown-firefox-tablet-land-repeat1/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/regression-M1--vi-shells-b-cda94-o-main-workspace-name-shown-firefox-tablet-land-repeat1/trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace test-results/regression-M1--vi-shells-b-cda94-o-main-workspace-name-shown-firefox-tablet-land-repeat1/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  14) [firefox-tablet-land] › regression/M1.spec.ts:184:5 › [en] › route error page: failed lazy chunk shows a titled error with a working start-page link 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: page.goto: Test timeout of 30000ms exceeded.
+    Call log:
+      - navigating to "http://localhost:8080/", waiting until "commit"
+
+
+      35 |
+      36 | async function open(page: Page, path: string) {
+    > 37 |   await page.goto(path, { waitUntil: 'commit' }) // Firefox: 'load' is occasionally never reported after the router's startup replaceState (see the M1 QA notes)
+         |              ^
+      38 |   await expect(page.locator('main h1')).toBeVisible()
+      39 |   await page.waitForLoadState('networkidle')
+      40 | }
+        at open (/home/kali/App_sources/eng-lms-m1-qa/qa/regression/M1.spec.ts:37:14)
+        at setLocale (/home/kali/App_sources/eng-lms-m1-qa/qa/regression/M1.spec.ts:42:9)
+        at /home/kali/App_sources/eng-lms-m1-qa/qa/regression/M1.spec.ts:185:13
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/regression-M1--en-route-er-8e7d6-h-a-working-start-page-link-firefox-tablet-land-repeat1/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/regression-M1--en-route-er-8e7d6-h-a-working-start-page-link-firefox-tablet-land-repeat1/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/regression-M1--en-route-er-8e7d6-h-a-working-start-page-link-firefox-tablet-land-repeat1/trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace test-results/regression-M1--en-route-er-8e7d6-h-a-working-start-page-link-firefox-tablet-land-repeat1/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  15) [firefox-laptop] › regression/M1.spec.ts:157:5 › [en] › language switch on landing and both shells: strings, lang, title, persistence over reload and navigation 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: page.goto: Test timeout of 30000ms exceeded.
+    Call log:
+      - navigating to "http://localhost:8080/qa-no-such-page", waiting until "commit"
+
+
+      173 |         // the choice carries over to a fresh tab (same origin storage)
+      174 |         const tab = await page.context().newPage()
+    > 175 |         await tab.goto('/qa-no-such-page', { waitUntil: 'commit' })
+          |                   ^
+      176 |         await expect(tab.locator('html')).toHaveAttribute('lang', other)
+      177 |         await tab.close()
+      178 |         await page.getByRole('radio', { name: NAME[locale], exact: true }).click()
+        at /home/kali/App_sources/eng-lms-m1-qa/qa/regression/M1.spec.ts:175:19
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/regression-M1--en-language-fcc17--over-reload-and-navigation-firefox-laptop/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/regression-M1--en-language-fcc17--over-reload-and-navigation-firefox-laptop/test-failed-2.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/regression-M1--en-language-fcc17--over-reload-and-navigation-firefox-laptop/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/regression-M1--en-language-fcc17--over-reload-and-navigation-firefox-laptop/trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace test-results/regression-M1--en-language-fcc17--over-reload-and-navigation-firefox-laptop/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  16) [firefox-desktop] › regression/M1.spec.ts:157:5 › [vi] › language switch on landing and both shells: strings, lang, title, persistence over reload and navigation 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: page.goto: Test timeout of 30000ms exceeded.
+    Call log:
+      - navigating to "http://localhost:8080/", waiting until "commit"
+
+
+      35 |
+      36 | async function open(page: Page, path: string) {
+    > 37 |   await page.goto(path, { waitUntil: 'commit' }) // Firefox: 'load' is occasionally never reported after the router's startup replaceState (see the M1 QA notes)
+         |              ^
+      38 |   await expect(page.locator('main h1')).toBeVisible()
+      39 |   await page.waitForLoadState('networkidle')
+      40 | }
+        at open (/home/kali/App_sources/eng-lms-m1-qa/qa/regression/M1.spec.ts:37:14)
+        at setLocale (/home/kali/App_sources/eng-lms-m1-qa/qa/regression/M1.spec.ts:42:9)
+        at /home/kali/App_sources/eng-lms-m1-qa/qa/regression/M1.spec.ts:158:13
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/regression-M1--vi-language-7adba--over-reload-and-navigation-firefox-desktop-repeat1/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/regression-M1--vi-language-7adba--over-reload-and-navigation-firefox-desktop-repeat1/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/regression-M1--vi-language-7adba--over-reload-and-navigation-firefox-desktop-repeat1/trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace test-results/regression-M1--vi-language-7adba--over-reload-and-navigation-firefox-desktop-repeat1/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  16 failed
+    [firefox-phone-small] › regression/M1.spec.ts:90:5 › [vi] › every route: titled, focus on body, no overflow, 44 px targets, axe clean, localised 
+    [firefox-phone-small] › regression/M1.spec.ts:184:5 › [vi] › route error page: failed lazy chunk shows a titled error with a working start-page link 
+    [firefox-phone-small] › regression/M1.spec.ts:157:5 › [en] › language switch on landing and both shells: strings, lang, title, persistence over reload and navigation 
+    [firefox-phone] › regression/M1.spec.ts:157:5 › [en] › language switch on landing and both shells: strings, lang, title, persistence over reload and navigation 
+    [firefox-phone] › regression/M1.spec.ts:111:5 › [en] › shells: banner, skip link is the first Tab stop and moves focus into main, workspace name shown 
+    [firefox-phone] › regression/M1.spec.ts:157:5 › [en] › language switch on landing and both shells: strings, lang, title, persistence over reload and navigation 
+    [firefox-phone] › regression/M1.spec.ts:200:5 › [en] › shell header: /api/v1/meta failure shows an alert, not a blank or a crash 
+    [firefox-tablet] › regression/M1.spec.ts:128:5 › [vi] › client navigation: h1 focused + title, back/forward, 404 and its start-page link (keyboard) 
+    [firefox-tablet] › regression/M1.spec.ts:111:5 › [en] › shells: banner, skip link is the first Tab stop and moves focus into main, workspace name shown 
+    [firefox-tablet] › regression/M1.spec.ts:128:5 › [en] › client navigation: h1 focused + title, back/forward, 404 and its start-page link (keyboard) 
+    [firefox-tablet-land] › regression/M1.spec.ts:157:5 › [vi] › language switch on landing and both shells: strings, lang, title, persistence over reload and navigation 
+    [firefox-tablet-land] › regression/M1.spec.ts:200:5 › [en] › shell header: /api/v1/meta failure shows an alert, not a blank or a crash 
+    [firefox-tablet-land] › regression/M1.spec.ts:111:5 › [vi] › shells: banner, skip link is the first Tab stop and moves focus into main, workspace name shown 
+    [firefox-tablet-land] › regression/M1.spec.ts:184:5 › [en] › route error page: failed lazy chunk shows a titled error with a working start-page link 
+    [firefox-laptop] › regression/M1.spec.ts:157:5 › [en] › language switch on landing and both shells: strings, lang, title, persistence over reload and navigation 
+    [firefox-desktop] › regression/M1.spec.ts:157:5 › [vi] › language switch on landing and both shells: strings, lang, title, persistence over reload and navigation 
+  512 passed (4.8m)
+[ELIFECYCLE] Test failed. See above for more details.
