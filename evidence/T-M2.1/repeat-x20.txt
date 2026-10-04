@@ -1,0 +1,24 @@
+# T-M2.1 timing-sensitive tests x20 (qa-protocol §3, DEC-088) at e9bdcc5, 2026-10-04T09:48:18Z
+# Per run: ./mvnw -B -ntp test -Djacoco.skip=true -Dtest='LoginThrottleTest,UserAccountTest,AuthenticationServiceTest,LoginThrottleApiTest,AuditIntegrationTest,AuthApiIntegrationTest#tenConsecutiveFailuresLockTheAccountWhichUnlocksAfterTheLockExpires+unknownUsernameAndWrongPasswordTakeSimilarTime'
+# = throttle window (unit + API), lockout transitions/expiry (unit + API), retention purge with a fixed clock, login timing (deterministic encoder call + wall-clock tolerance)
+run 1 2026-10-04T09:22:54Z exit=0 [INFO] Tests run: 15, Failures: 0, Errors: 0, Skipped: 0
+run 2 2026-10-04T09:24:01Z exit=0 [INFO] Tests run: 15, Failures: 0, Errors: 0, Skipped: 0
+run 3 2026-10-04T09:25:06Z exit=0 [INFO] Tests run: 15, Failures: 0, Errors: 0, Skipped: 0
+run 4 2026-10-04T09:26:11Z exit=0 [INFO] Tests run: 15, Failures: 0, Errors: 0, Skipped: 0
+run 5 2026-10-04T09:27:17Z exit=0 [INFO] Tests run: 15, Failures: 0, Errors: 0, Skipped: 0
+run 6 2026-10-04T09:28:23Z exit=0 [INFO] Tests run: 15, Failures: 0, Errors: 0, Skipped: 0
+run 7 2026-10-04T09:29:27Z exit=0 [INFO] Tests run: 15, Failures: 0, Errors: 0, Skipped: 0
+run 8 2026-10-04T09:30:33Z exit=0 [INFO] Tests run: 15, Failures: 0, Errors: 0, Skipped: 0
+run 9 2026-10-04T09:31:39Z exit=0 [INFO] Tests run: 15, Failures: 0, Errors: 0, Skipped: 0
+run 10 2026-10-04T09:32:45Z exit=0 [INFO] Tests run: 15, Failures: 0, Errors: 0, Skipped: 0
+run 11 2026-10-04T09:33:50Z exit=0 [INFO] Tests run: 15, Failures: 0, Errors: 0, Skipped: 0
+run 12 2026-10-04T09:34:54Z exit=0 [INFO] Tests run: 15, Failures: 0, Errors: 0, Skipped: 0
+run 13 2026-10-04T09:35:59Z exit=0 [INFO] Tests run: 15, Failures: 0, Errors: 0, Skipped: 0
+run 14 2026-10-04T09:37:03Z exit=0 [INFO] Tests run: 15, Failures: 0, Errors: 0, Skipped: 0
+run 15 2026-10-04T09:38:08Z exit=0 [INFO] Tests run: 15, Failures: 0, Errors: 0, Skipped: 0
+run 16 2026-10-04T09:39:13Z exit=0 [INFO] Tests run: 15, Failures: 0, Errors: 0, Skipped: 0
+run 17 2026-10-04T09:40:18Z exit=0 [INFO] Tests run: 15, Failures: 0, Errors: 0, Skipped: 0
+run 18 2026-10-04T09:41:23Z exit=0 [INFO] Tests run: 15, Failures: 0, Errors: 0, Skipped: 0
+run 19 2026-10-04T09:42:28Z exit=0 [INFO] Tests run: 15, Failures: 0, Errors: 0, Skipped: 0
+run 20 2026-10-04T09:43:34Z exit=0 [INFO] Tests run: 15, Failures: 0, Errors: 0, Skipped: 0
+# Result: 20/20 runs green, 15 tests each, 0 failures, 0 errors

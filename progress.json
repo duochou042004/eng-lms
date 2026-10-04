@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-10-04T08:26:09Z",
-  "updatedBy": "lead-coordinator (session 2026-10-04 #2, Opus 5.5)",
+  "updatedAt": "2026-10-04T09:28:09Z",
+  "updatedBy": "backend-implementer (T-M2.1, Opus 5.5)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -37,7 +37,7 @@
     "branch": "feature/T-M2.1-identity-core",
     "packet": "docs/tasks/T-M2.1-identity-core.md",
     "pr": null,
-    "lastCommit": null,
+    "lastCommit": "e9bdcc5",
     "startedAt": "2026-10-04T08:26:09Z",
     "entryGate": [
       "M1 done — met (DEC-088)",
@@ -45,9 +45,11 @@
       "PO start signal — met (DEC-091; DEC-089 (6)-(8) confirmed)"
     ],
     "nextSteps": [
-      "backend-implementer in its own worktree: AC1-AC11, gate.sh green, evidence/T-M2.1/summary.md",
-      "G3: fresh qa-evaluator + security-reviewer (own worktrees), timing tests x20; fix S1/S2, cheap S3/S4 in-task (DEC-088)",
-      "CI green, verdicts, LC-APPROVED, merge-gate, gitlab-sync; fallback split AC11 -> T-M2.1b (DEC) if AC1-AC10 not green at ~1.5 agent-days"
+      "BE done on feature/T-M2.1-identity-core: AC1-AC11 implemented and tested (backend 196 tests green, contract-drift green, E2E smoke 86 passed), docs updated; gate log in evidence/T-M2.1/; the implementation summary is in the implementer's report (the harness blocked writing evidence/T-M2.1/summary.md) - LC to commit it",
+      "LC: open the PR; LC/PO: add ENGLMS_BOOTSTRAP_TUTOR_USERNAME / ENGLMS_BOOTSTRAP_TUTOR_PASSWORD_FILE to .env.example (unreadable to agents)",
+      "G3: fresh qa-evaluator + security-reviewer (own worktrees); SEC verdict on OQ-a (bcrypt 72-byte truncation for 73-128-character passwords); timing tests x20 recorded in evidence/T-M2.1/repeat-x20.txt",
+      "T-M2.2 must register GET /auth/session, POST /auth/login, POST /auth/logout, POST /auth/password in the policy registry",
+      "CI green, verdicts, LC-APPROVED, merge-gate, gitlab-sync"
     ],
     "trace": [
       "FR-AUTH-01..06",
