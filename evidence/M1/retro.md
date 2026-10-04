@@ -40,4 +40,4 @@ Reviewed `docs/10-governance/risk-register.md` at G5:
 - [x] Every packet in the milestone merged; exit criteria met (`qa-regression.md`).
 - [x] Milestone regression: 6 viewports × Chromium, Firefox and WebKit (`qa-regression.md`, `qa/`); exploratory session about 45 min instead of 90, accepted for M1's small surface (DEC-087).
 - [x] Risk register, decision log and roadmap reviewed (this file).
-- [ ] PO sign-off (M1 is not user-facing, so no demo is required).
+- [x] PO sign-off (M1 is not user-facing, so no demo is required): DEC-088; both proposals accepted and made binding.

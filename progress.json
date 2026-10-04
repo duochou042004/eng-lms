@@ -16,7 +16,7 @@
       }
     ]
   },
-  "updatedAt": "2026-10-04T00:35:34Z",
+  "updatedAt": "2026-10-04T01:50:25Z",
   "updatedBy": "lead-coordinator (session 2026-10-03 #2, new device, Opus 5.5)",
   "phase": {
     "id": "P1",
@@ -24,10 +24,10 @@
     "status": "in_progress"
   },
   "milestone": {
-    "id": "M1",
-    "name": "Walking skeleton and delivery pipeline",
-    "status": "awaiting_approval",
-    "exitCriteria": "scripts/gate.sh green locally and in CI; backend skeleton with Modulith verify + Flyway V1; SPA served same-origin; Playwright smoke at 3 viewports with axe; contract drift check; Testcontainers on rootless Podman or documented fallback (docs/01-product/roadmap.md)."
+    "id": "M2",
+    "name": "Identity and student management",
+    "status": "not_started",
+    "exitCriteria": "FR-AUTH-01..10 and FR-STU-01..07 accepted; authorization-matrix and student-isolation harnesses fail on any unregistered endpoint; add-student flow E2E at 360/768/1280 within its step budget; security review of authentication passed (docs/01-product/roadmap.md). M1 done (DEC-088)."
   },
   "currentTask": {
     "id": "T-M2.1",
@@ -40,13 +40,12 @@
     "lastCommit": null,
     "startedAt": null,
     "entryGate": [
-      "M1 exit criteria met — met (all M1 packets merged, DEC-085)",
-      "M1 gate G5 — regression, retro, risk review done (DEC-087); PO sign-off pending",
-      "Packet G0 — pending (task-packet skill; SEC review applies)"
+      "M1 done — met (DEC-088)",
+      "Packet G0 — pending (task-packet skill; SEC review applies at G3)",
+      "PO start signal — pending"
     ],
     "nextSteps": [
-      "PO signs off M1 G5 (DEC); then milestone.status = done",
-      "Write the T-M2.1 packet (G0, DOCS-REVIEW) and ask the PO for the start signal",
+      "Write the T-M2.1 packet (G0), DOCS-REVIEW, merge-gate; ask the PO for the start signal",
       "T-M1.17 first among the carried items (DEC-086), then T-M1.18"
     ],
     "trace": [
@@ -234,28 +233,28 @@
   },
   "gates": {
     "G0": {
-      "status": "pass",
-      "note": "T-M1.16: packet PR #40 DOCS-REVIEW PASS; PO start DEC-084. Next: T-M2.1 packet"
+      "status": "pending",
+      "note": "T-M2.1: packet to write (task-packet skill), DOCS-REVIEW, PO start signal"
     },
     "G1": {
-      "status": "pass",
-      "note": "T-M1.16: tests with every change (unit, E2E, merge-gate 311)"
+      "status": "n/a",
+      "note": "T-M2.1 not started"
     },
     "G2": {
-      "status": "pass",
-      "note": "T-M1.16: gate.sh PASS (12 steps), CI 7/7 at fb73e87"
+      "status": "n/a",
+      "note": "T-M2.1 not started"
     },
     "G3": {
-      "status": "pass",
-      "note": "T-M1.16: QA PASS WITH MINOR, UX APPROVED (DEC-085)"
+      "status": "n/a",
+      "note": "T-M2.1: QA + SEC (identity)"
     },
     "G4": {
-      "status": "pass",
-      "note": "T-M1.16: merged via merge-gate as 1dbd7e3 (PR #43)"
+      "status": "n/a",
+      "note": "T-M2.1: merge via merge-gate"
     },
     "G5": {
-      "status": "pending",
-      "note": "M1: regression PASS WITH MINOR (evidence/M1/qa-regression.md; 3 engines x 6 viewports), retro evidence/M1/retro.md, risk register reviewed (DEC-087); PO sign-off pending"
+      "status": "pass",
+      "note": "M1 closed by the PO (DEC-088); regression DEC-087"
     }
   },
   "blockers": [],
@@ -271,7 +270,8 @@
       "DEC-084",
       "DEC-085",
       "DEC-086",
-      "DEC-087"
+      "DEC-087",
+      "DEC-088"
     ],
     "pendingPO": [
       "OQ-03",
@@ -431,9 +431,9 @@
     {
       "what": "M1 G5 sign-off (incl. T-M1.17 carried past M1)",
       "by": "PO",
-      "status": "pending",
-      "at": null,
-      "ref": "DEC-087"
+      "status": "approved",
+      "at": "2026-10-04T01:50:25Z",
+      "ref": "DEC-088"
     },
     {
       "what": "T-M1.17 captures the gh issue; prioritise it first among the carried items",
@@ -773,6 +773,11 @@
       "at": "2026-10-04T00:31:17Z",
       "actor": "lead-coordinator",
       "event": "M1 G5 milestone regression PASS WITH MINOR (3 engines x 6 viewports; DEC-087); retro written; R-07 closed. PO confirmed T-M1.17 and its priority (DEC-086). M1 awaits the PO G5 sign-off."
+    },
+    {
+      "at": "2026-10-04T01:50:25Z",
+      "actor": "lead-coordinator",
+      "event": "PO signed off M1 G5 (DEC-088): M1 done; 45-min exploratory accepted; retro proposals made binding (qa-protocol §3 repeat runs, quality-gates G3 cheap S3/S4 fixes in-task). Next: M2 / T-M2.1 packet; T-M1.17 first among carried items."
     }
   ]
 }

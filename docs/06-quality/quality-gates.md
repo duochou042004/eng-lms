@@ -33,6 +33,8 @@
 - [ ] **SEC sign-off** when the PR touches `identity`, `web.student`, `files`, sanitisation, `SecurityConfig`, migrations with personal data, or adds an endpoint.
 - [ ] **UX sign-off** when the PR changes UI: design-system compliance, states, responsive rules, the accessibility checklist, step budgets for affected flows.
 - [ ] Findings are resolved or explicitly deferred through a DEC entry with a follow-up task ID. **Severity S1/S2 findings cannot be deferred.**
+  A cheap S3/S4 fix to a piece that later tasks reuse is made in the same task (the LC adds it to the PR's scope and records it) rather than deferred to a
+  polish packet (DEC-088).
 - **Docs and chore packets (no product behaviour change):** G3 is satisfied by a **docs review**. A fresh-context reviewer checks consistency, links,
   traceability and that no scope was added, and posts `DOCS-REVIEW <task-id>: PASS`. Planning baselines and scope changes additionally require
   **PO approval** (`PO-APPROVED <task-id>`, recorded in the decision log).
