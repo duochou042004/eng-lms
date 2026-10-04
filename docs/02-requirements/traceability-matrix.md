@@ -6,12 +6,12 @@
 
 | SPEC § | Topic | Planned implementation | Requirement IDs | Module(s) | M | Phase |
 |---|---|---|---|---|---|---|
-| 1 | Overview: 1:1, one tutor | Single-tenant, one-tutor deployment | FR-AUTH-02, ADR-0006 | identity | M2 | MVP |
+| 1 | Overview: 1:1, one tutor | Single-tenant, one-tutor deployment (live T-M2.1: `ux_user_account__single_tutor`, tutor bootstrap) | FR-AUTH-02, ADR-0006 | identity | M2 | MVP |
 | 2 | Tutor builds everything; no hard-coded curriculum | Generic engines; forbidden-identifier test | FR-STU-04, FR-ACT-03 AC, coding-agent-rules §7 | all | M1+ | MVP |
-| 3 | Two roles | `Role {TUTOR, STUDENT}`; one-tutor constraint | FR-AUTH-02 | identity | M2 | MVP |
-| 4.1 | No public registration | No route or endpoint | FR-AUTH-01 | identity | M2 | MVP |
+| 3 | Two roles | `Role {TUTOR, STUDENT}`; one-tutor constraint (live T-M2.1: `identity.Role`, L1 URL gate) | FR-AUTH-02 | identity | M2 | MVP |
+| 4.1 | No public registration | No route or endpoint (verified T-M2.1: `/api/v1/auth/register` → 404) | FR-AUTH-01 | identity | M2 | MVP |
 | 4.2 | Tutor creates student account | Create student + account + credentials card | FR-STU-01, FR-AUTH-06 | students, identity | M2 | MVP |
-| 4.3 | Login, logout, change password, forgot (later) | Session auth; tutor reset | FR-AUTH-03..08 | identity | M2 | MVP |
+| 4.3 | Login, logout, change password, forgot (later) | Session auth; tutor reset (live T-M2.1: `/auth/session`, `/auth/login`, `/auth/logout`, `/auth/password`, must-change gate, lockout, throttle, operator reset CLI FR-AUTH-09, disable FR-AUTH-10; UI in T-M2.4, student reset in T-M2.3) | FR-AUTH-03..08 | identity | M2 | MVP |
 | 5.1 | No enrolment | — | scope.md §4 | — | — | NEVER |
 | 5.2 | No payment | — | scope.md §4 | — | — | NEVER |
 | 5.3 | No marketplace or SaaS | Single tenant | ADR-0006 | — | — | NEVER |
@@ -49,7 +49,7 @@
 | 34 | Data model direction (to be re-analysed) | `docs/03-architecture/data-model.md` | — | all | M0 | MVP |
 | 35 | Modular monolith | Spring Modulith | ADR-0001 | all | M1 | MVP |
 | 36 | Technology must be justified | tech-stack.md + ADRs | NFR-MNT-02 | — | M0+ | MVP |
-| 37 | Security: A ≠ B; private data | Namespace isolation, authz matrix, scans | NFR-SEC-01..03, ADR-0016 | all | M2+ | MVP |
+| 37 | Security: A ≠ B; private data | Namespace isolation, authz matrix, scans (T-M2.1: L1 role gate on `/api/v1/tutor/**` and `/api/v1/student/**`, CSRF, security headers via Spring Security, audit v1 NFR-SEC-11; matrix and isolation harness T-M2.2) | NFR-SEC-01..03, ADR-0016 | all | M2+ | MVP |
 | 38 | File and material management, not Drive | Files module, limits, access checks | FR-FILE-01..04 | files, library | M4 | MVP |
 | 39 | Notifications (useful events; in-app first) | Derived dashboard items in the MVP | DEC-006 | notifications (future) | — | P2 |
 | 40 | UX principles | Design system, step budgets, progressive disclosure | NFR-UX-01..04 | web | all | MVP |

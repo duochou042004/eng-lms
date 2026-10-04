@@ -21,8 +21,15 @@
 - **Owns:** `user_account`, Spring Session tables, `persistent_logins`, login throttling state.
 - **API:** `AccountApi.createStudentAccount(username, rawTempPassword, locale)`, `resetPassword(userId)`, `disable/enable(userId)`,
   `changeUsername`, `CurrentUser` (principal accessor: `userId`, `role`, `studentId?`), `SessionTerminator.endAllSessions(userId)`.
-- **Events:** `LoginSucceeded`, `LoginFailed`, `PasswordChanged`, `PasswordReset`, `AccountDisabled`.
+- **Events:** `LoginSucceeded`, `LoginFailed`, `AccountLocked`, `PasswordChanged`, `PasswordReset`, `TutorBootstrapped`, `AccountDisabled`.
 - **Depends on:** shared, settings.
+- **As built (T-M2.1):** public API `AccountApi.disable/enable(userId)` (the create/reset/username methods arrive with T-M2.3), `CurrentUser` (record
+  `{userId, role, mustChangePassword}`, the Spring Security principal; its name is the user ID), `Role {TUTOR, STUDENT}`, `SessionTerminator` (`endAllSessions`,
+  `endOtherSessions`), `Usernames.normalize` (`lower(unaccent(trim))`, for `students`). Events in `identity.events` (`@NamedInterface("events")`, with `ClientInfo {ip, userAgent}`):
+  the seven above; `PasswordReset` carries the actor (`OPERATOR` or `TUTOR`). Internal packages: `internal.domain` (`UserAccount`, `PasswordPolicy`,
+  `TemporaryPasswordGenerator`), `internal.persistence`, `internal.app` (`AuthenticationService`, `AccountService`), `internal.security` (Spring Security
+  configuration, remember-me, throttle, must-change gate), `internal.web` (`AuthController`), `internal.bootstrap` (`TutorBootstrap`), `internal.cli`
+  (`ResetTutorPasswordCommand`). Allowed dependencies as built: `shared` only (no `settings` use yet). **Identity never calls `audit`.**
 
 ## students
 - **Owns:** `student`, `student_guardian`, `student_learning_profile`.
@@ -105,6 +112,9 @@
 - **API:** `AuditApi.record(...)` (for synchronous security events such as login), `recent(filter)`.
 - **Listens:** security and content events from the other modules.
 - **Depends on:** shared (and `*.events` packages).
+- **As built (T-M2.1):** `AuditApi.record(AuditEntry)` (writes in its own transaction, `REQUIRES_NEW`), `AuditAction`, `AuditEntry`; `recent` is not built (no audit UI in M2).
+  `internal.IdentityEventsListener` records `identity.events` in a **synchronous** `@EventListener` (not after commit), so a failed-login row survives the failed request;
+  `internal.AuditRetentionJob` purges rows older than 365 days daily. Allowed dependencies: `shared`, `identity :: events` (Modulith-verified; no `identity → audit` edge).
 
 ## shared (kernel, `@ApplicationModule(type = OPEN)` or a shared module per the Spring Modulith docs)
 - IDs (`StudentId`, `UserId`, … as records wrapping UUIDs), `Clock` provider, `ProblemCodes`, paging types, `HtmlSanitizer`,
@@ -124,7 +134,7 @@ goals     → students
 notes     → students
 library   → files, students
 students  → identity
-identity  → settings
-audit     → (events only)
+identity  → settings          (as built in T-M2.1: shared only)
+audit     → (events only)     (as built in T-M2.1: identity :: events)
 all       → shared
 ```

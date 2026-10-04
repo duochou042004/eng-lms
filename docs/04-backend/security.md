@@ -31,31 +31,47 @@ Actors: anonymous internet users, an authenticated student (curious or malicious
 | T9 | Malicious upload (HTML or SVG script, polyglot, zip bomb, huge file) | Tika sniff + allow-list; SVG and HTML rejected; size limits; never inline except safe types; `nosniff`; no archive extraction | File tests |
 | T10 | Embed injection (arbitrary iframe) | Only allow-listed providers; the URL is parsed and re-built into a canonical embed URL; iframe `sandbox`; CSP `frame-src` | Embed tests |
 | T11 | Privilege escalation to tutor | No self-registration; one TUTOR (DB constraint); role never taken from the client | Authz matrix |
-| T12 | Account takeover through the password reset flow | Tutor-only reset; temporary passwords expire (7 days) and require a change; sessions revoked | Tests |
+| T12 | Account takeover through the password reset flow | Tutor-only reset of student passwords; the tutor's own password only by the operator on the host (runbooks §4, FR-AUTH-09); temporary passwords expire (7 days, also the operator's reset: DEC-089 (8)) and require a change; sessions and remember-me tokens revoked | Tests (T-M2.1 CLI test) |
 | T13 | Data loss (disk failure, bad migration) | Backups + restore drill; forward-only migrations; pre-deploy backup | Release gate |
 | T14 | Secrets leak (repo, logs) | gitleaks; Podman secrets; log masking; no secrets in `application.yml` | CI, review |
 | T15 | Vulnerable dependency | Dependabot, `pnpm audit`, Trivy at release | Release gate |
 | T16 | Enumerating usernames | Same login response and timing for unknown and wrong-password; availability check is tutor-only | Tests |
 | T17 | Clickjacking | `frame-ancestors 'none'` | Header test |
-| T18 | Open redirect after login | Redirect target resolved server-side by role; `?next=` accepts only relative app paths from an allow-list | Test |
+| T18 | Open redirect after login | Login neither accepts nor returns a redirect target (T-M2.1); the SPA picks the landing route from the session's role, and its `?next=` accepts only relative app paths from an allow-list (T-M2.4) | Tests |
 
 ## 3. Authentication
 
-- Spring Security, JSON login (`/api/v1/auth/login`). Session per ADR-0005: `JSESSIONID`-equivalent cookie `ENGLMS_SESSION`, `HttpOnly; Secure; SameSite=Lax`.
+- Spring Security, JSON login (`/api/v1/auth/login`). Session per ADR-0005: `JSESSIONID`-equivalent cookie `ENGLMS_SESSION`, `HttpOnly; Secure; SameSite=Lax; Path=/`.
 - Session ID rotated on login and on privilege change (password change). Idle timeout 12 h (configurable). Remember-me 30 days (optional; OQ-10).
+- **As implemented (T-M2.1):** sessions in PostgreSQL (Spring Session JDBC, `spring_session*`), so they survive restarts. The principal is a `CurrentUser {userId, role,
+  mustChangePassword}` whose **name is the user ID**, never the username: it is Spring Session's principal-name index and the owner of the remember-me tokens, so
+  `SessionTerminator.endAllSessions(userId)` finds every session and token whatever case was typed. Remember-me: `PersistentTokenBasedRememberMeServices` with
+  `persistent_logins` (cookie `ENGLMS_REMEMBER_ME`, `HttpOnly; Secure; SameSite=Lax`, 30 days, token rotated on every use); logout deletes this device's token,
+  a password change, a reset, a disable or a lock through the password change deletes all of them. `Secure` can be turned off only under the `local` Spring profile
+  (`server.servlet.session.cookie.secure=false` without it fails startup, NFR-SEC-04). CSRF: `CookieCsrfTokenRepository` (`XSRF-TOKEN`, readable by JavaScript,
+  `Secure; SameSite=Lax`) → header `X-XSRF-TOKEN`, Spring Security's SPA handler; `GET /auth/session` primes the cookie, login rotates it. Concurrent sessions are allowed (A-018).
+  The idle timeout is `server.servlet.session.timeout`; lockout, throttle and remember-me validity are `englms.security.*`.
 - **Password policy (NFR-SEC-06):** 10–128 characters, not in `common-passwords.txt` (top 10k, bundled), not equal to the username. No composition rules (per NIST 800-63B).
   Generated temporary passwords: 3 random words from a bundled word list + 2 digits (≥ 12 characters, easy to type on a phone), from a `SecureRandom` source.
-- Hashing: `DelegatingPasswordEncoder` (default `{bcrypt}`, strength 12). Upgrading to argon2id is a later ADR (rehash on login).
+- Hashing: `DelegatingPasswordEncoder` (default `{bcrypt}`, strength 12). Upgrading to argon2id is a later ADR (rehash on login). bcrypt reads at most 72 bytes; a
+  longer password (the policy allows 128 characters) is hashed over its first 72 UTF-8 bytes, as classic bcrypt does (Spring Security's encoder would refuse it;
+  `TruncatingBCryptPasswordEncoder`, T-M2.1).
 - Lockout: after 10 consecutive failures → `locked_until = now + 15 min`. A successful login resets the count. The tutor sees lock status on the student page and can unlock through a password reset.
-- Per-IP throttle: an in-memory sliding window (30 attempts per 5 minutes per IP). Adequate for a single instance; documented as instance-local.
-- `mustChangePassword` gate: a filter lets only `/auth/session`, `/auth/password`, `/auth/logout` and the public `/meta` (DEC-089) through.
+  As implemented (T-M2.1): the count restarts when the lock is set, so `ACCOUNT_LOCKED` is audited once per lock; a wrong current password on `POST /auth/password` counts too,
+  and reaching the lock that way ends all of the user's sessions and remember-me tokens. While locked, login answers the same generic 401 as a wrong password (no 423, T16).
+  An unknown username runs one bcrypt comparison against a fixed dummy hash, so it takes about as long as a wrong password (T16). Disabled accounts and expired
+  temporary passwords get the same 401.
+- Per-IP throttle: an in-memory sliding window (30 attempts per 5 minutes per IP). Adequate for a single instance; documented as instance-local. The IP is
+  `request.getRemoteAddr()`; behind Caddy it is the client's only with `server.forward-headers-strategy=native` (deployment.md §3). Past the limit: 429 `RATE_LIMITED` + `Retry-After`.
+- `mustChangePassword` gate: a filter lets only `GET /auth/session`, `POST /auth/password`, `POST /auth/logout` and the public `GET /meta` (DEC-089) through. It runs after the
+  L1 role check and before handler lookup, so it also answers paths without a handler (403 `PASSWORD_CHANGE_REQUIRED`). The SPA's own files are not gated.
 - Tutor bootstrap (FR-AUTH-02): the password is read from a **file path** (`ENGLMS_BOOTSTRAP_TUTOR_PASSWORD_FILE`, a Podman secret), never from an env value in production.
 
 ## 4. Authorization model
 
 | Layer | Mechanism |
 |---|---|
-| L1 URL gate | `/api/v1/tutor/**` → `hasRole('TUTOR')`; `/api/v1/student/**` → `hasRole('STUDENT')`; `/api/v1/auth/**` and `/meta` → permitAll/authenticated as listed; everything else under `/api/**` → deny |
+| L1 URL gate | `/api/v1/tutor/**` → `hasRole('TUTOR')`; `/api/v1/student/**` → `hasRole('STUDENT')`; `/api/v1/auth/**` → permitAll (each handler decides: an unknown auth path such as `register` is a 404); `GET /api/v1/meta` → permitAll; everything else under `/api/**` → "deny", which at L1 **only requires authentication**: an anonymous caller gets 401, an authenticated one passes the must-change gate and then gets the handler lookup's 404, so nothing reveals which paths exist (not `denyAll`; T-M2.1, DOCS-REVIEW S3-3, R4 D5-1). Order: CSRF (403 `CSRF_INVALID`) → authentication (401) → role (403 `FORBIDDEN_ROLE`) → must-change gate (403) → handler lookup (404) |
 | L2 Audience annotation | `@Audience` on every handler; a startup verifier cross-checks it with the path prefix |
 | L3 Ownership | Student services take `CurrentStudent` and use owner-scoped queries. Tutor services can access everything (single tutor), but still validate that referenced IDs exist and belong together (e.g. a note's lesson belongs to the note's student) |
 | L4 Data shaping | Audience DTOs; handler redaction; release rules |
@@ -73,12 +89,15 @@ The **authz matrix test** enumerates `RequestMappingHandlerMapping`. For each ha
   (`style-src` may need `'unsafe-inline'` only if a library requires it. That needs a DEC entry; the default is none.)
 - `X-Content-Type-Options: nosniff`, `Referrer-Policy: strict-origin-when-cross-origin`,
   `Permissions-Policy: microphone=(self), camera=(), geolocation=(), payment=()`, `Cross-Origin-Opener-Policy: same-origin`.
-- **As implemented (T-M1.5):** `shared.web.SecurityHeadersFilter` (a servlet filter; Spring Security arrives in T-M2.1) sets the CSP above with
-  `frame-src 'none'` (until the embed allow-list exists) and the four headers on **every response of the application port** (HTML, API JSON, Problem Details, assets),
-  including requests Tomcat rejects before the filter chain: `ProblemDetailsErrorReportValve` sets the same headers on those (T-M1.8, `SecurityHeadersFilter.apply`).
-  **Known exception:** `TRACE` requests. Tomcat refuses them (`allowTrace=false`) with a 405 that Boot's `/error` page answers before the valve and outside the filters, so that
-  response has no security headers or request ID: it reflects the path JSON-encoded, or, with `Accept: text/html`, it is Boot's Whitelabel HTML page (naming the framework). Browsers can't send `TRACE`, so it isn't exploitable. This predates T-M1.8 and is closed with
-  Spring Security's firewall in T-M2.1 (T-M1.8 SEC review S4-3).
+- **As implemented (T-M2.1, DEC-054):** Spring Security's header configuration writes the CSP above with `frame-src 'none'` (until the embed allow-list exists) and the
+  four headers (and nothing else: its defaults are off, so no `X-Frame-Options`, HSTS or `X-XSS-Protection`) on **every response of the application port** (HTML,
+  API JSON, Problem Details, assets). The values have one source, `shared.web.SecurityHeaders`, which also writes them where Spring Security's writers don't run:
+  requests Tomcat rejects before any filter (`ProblemDetailsErrorReportValve`, T-M1.8) and requests the firewall rejects. Every `/api/**` response also gets
+  `Cache-Control: no-store` (DEC-070); assets and `index.html` keep their own `Cache-Control` (T-M1.5). (T-M1.5 to T-M2.1: `shared.web.SecurityHeadersFilter`, now removed.)
+- **Firewall (T-M2.1):** Spring Security's `StrictHttpFirewall` rejects raw dot-segments (`/./api/v1/meta`, `/x/../actuator/health`), `;` path parameters and forbidden
+  methods before the SPA fallback (which now runs after the security chain), with 400 (405 for a method) Problem Details, the headers above and `X-Request-Id`, without
+  echoing the request. **The `TRACE` exception is closed** (T-M1.8 SEC review S4-3, DEC-069): Tomcat now lets `TRACE` through its connector (`allowTrace`) to the
+  firewall, which answers 405 Problem Details JSON (with or without `Accept: text/html`) instead of Boot's `/error`/Whitelabel page.
   The management port (:8081, never proxied by Caddy) serves only health/info JSON and does not carry them (DEC-050). HSTS stays with Caddy.
   The SPA runs under `style-src 'self'` with no violations (evidence/T-M1.5): React Aria's runtime `<style>` injection is pre-empted by a marker in `index.html` and its rule ships in `global.css` (DEC-052). `Permissions-Policy: payment=()` disables the browser payment API; it is the one
   allowed occurrence of "payment" in production sources (ForbiddenIdentifiersTest, DEC-049).
@@ -105,7 +124,13 @@ authorised endpoints, `inline` only for images, PDF, audio and video, `attachmen
 
 Recorded actions: `LOGIN_SUCCEEDED`, `LOGIN_FAILED`, `ACCOUNT_LOCKED`, `PASSWORD_CHANGED`, `PASSWORD_RESET_BY_TUTOR`,
 `STUDENT_CREATED`, `STUDENT_STATUS_CHANGED`, `USERNAME_CHANGED`, `GRADE_OVERRIDDEN`, `RESULT_PUBLISHED`, `RESULT_UNPUBLISHED`,
-`CONTENT_DELETED`, `SETTINGS_CHANGED`, `BOOTSTRAP_TUTOR_CREATED`. Details never include secrets. Retention: 365 days (a daily job purges older rows).
+`CONTENT_DELETED`, `SETTINGS_CHANGED`, `BOOTSTRAP_TUTOR_CREATED`, `PASSWORD_RESET_BY_OPERATOR` (the runbooks §4 CLI, T-M2.1). Details never include secrets. Retention: 365 days (a daily job purges older rows).
+
+**As implemented (T-M2.1):** `audit_event` (append-only: a trigger rejects `UPDATE`; only the retention job deletes), written by `AuditApi.record` in its own
+transaction (`REQUIRES_NEW`). The audit module records identity's events in a synchronous listener; identity never calls audit. Live actions: `LOGIN_SUCCEEDED`,
+`LOGIN_FAILED` (`details.reason`: `UNKNOWN_USERNAME`, `BAD_PASSWORD`, `ACCOUNT_LOCKED`, `ACCOUNT_DISABLED`, `TEMPORARY_PASSWORD_EXPIRED`, `CURRENT_PASSWORD_INCORRECT`;
+never the attempted username or password), `ACCOUNT_LOCKED`, `PASSWORD_CHANGED`, `PASSWORD_RESET_BY_OPERATOR`, `BOOTSTRAP_TUTOR_CREATED` (`PASSWORD_RESET_BY_TUTOR` is mapped,
+emitted from T-M2.3). Rows carry the client IP and user agent (personal data, data-model §3). The purge runs daily at 03:30 (server time).
 
 ## 9. Privacy (NFR-PRIV)
 
@@ -121,7 +146,7 @@ Recorded actions: `LOGIN_SUCCEEDED`, `LOGIN_FAILED`, `ACCOUNT_LOCKED`, `PASSWORD
 | Secret | Source (prod) | Dev |
 |---|---|---|
 | DB password | Podman secret → `SPRING_DATASOURCE_PASSWORD_FILE` → read via a config property | `.env` (git-ignored); an example exists in `.env.example` |
-| Tutor bootstrap password | Podman secret file | Generated by `scripts/dev-bootstrap` |
+| Tutor bootstrap password | Podman secret file (`ENGLMS_BOOTSTRAP_TUTOR_PASSWORD_FILE`) | A git-ignored local file the developer writes, named by the same variable (development-setup.md §2); no `scripts/dev-bootstrap` (T-M2.1) |
 | Backup encryption key | Operator-held key file (offline copy) | n/a |
 
 Never commit a secret. gitleaks runs in pre-commit (optional locally) and in CI (required).
