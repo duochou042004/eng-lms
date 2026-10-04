@@ -23,6 +23,7 @@ Phase/Milestone: P1 / M2 (not started) · Current task: **T-M2.1 (draft; packet 
 - Branch names must be `<kind>/<task-id>-<slug>`; qa/ branches may only change `qa/**` and `evidence/*/qa/**`.
 - Verdict tokens: QA `PASS`/`PASS WITH MINOR`, DOCS `PASS`, SEC/UX `APPROVED`; post them after CI is green for the final head.
 - `git merge` is denied: `gh pr update-branch <n>`. Give each subagent its own git worktree. Only one E2E run at a time (ports 8080/8081).
+- `check-docs.sh` also scans `.claude/worktrees/*` copies (a subagent worktree on another branch makes it fail): remove finished subagent worktrees (`git worktree remove --force …`) before running the gate (T-M1.17).
 - Run `./scripts/check-docs.sh` bare; timestamps from `date -u`; `./scripts/gitlab-sync.sh` after merges; stage explicit paths.
 
 ## Files to read first

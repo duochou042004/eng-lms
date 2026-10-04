@@ -16,7 +16,7 @@
       }
     ]
   },
-  "updatedAt": "2026-10-04T02:55:00Z",
+  "updatedAt": "2026-10-04T03:45:00Z",
   "updatedBy": "lead-coordinator (session 2026-10-04 #1, Opus 5.5)",
   "phase": {
     "id": "P1",
@@ -59,17 +59,20 @@
   "nextTask": {
     "id": "T-M1.17",
     "title": "merge-gate reports an unsupported gh instead of missing checks (first of the carried items, DEC-086)",
-    "status": "draft",
+    "status": "in_review",
     "ownerRole": "LC",
     "branch": "chore/T-M1.17-merge-gate-gh-version",
-    "packet": "docs/tasks/backlog.md#carried-past-m1-unscheduled",
-    "pr": null,
+    "packet": "docs/tasks/T-M1.17-merge-gate-gh-version.md",
+    "pr": "#50",
     "lastCommit": null,
-    "startedAt": null,
+    "startedAt": "2026-10-04T03:00:00Z",
     "entryGate": [
       "T-M1.16 merged — met (1dbd7e3)"
     ],
-    "nextSteps": [],
+    "nextSteps": [
+      "DOCS-REVIEW delta after the review fixes, LC-APPROVED, merge-gate, gitlab-sync",
+      "Then T-M1.18 (qa/ typecheck in gate.sh and CI; branch chore/T-M1.18-qa-typecheck prepared)"
+    ],
     "trace": [
       "DEC-084",
       "DEC-085",

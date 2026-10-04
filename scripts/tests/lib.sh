@@ -25,6 +25,15 @@ expect_output_contains() {
   fi
 }
 
+# expect_output_not_contains <substring> <description>
+expect_output_not_contains() {
+  if ! grep -qF -- "$1" <<<"$LAST_OUTPUT"; then
+    PASS_COUNT=$((PASS_COUNT + 1)); echo "  ok   - $2"
+  else
+    FAIL_COUNT=$((FAIL_COUNT + 1)); echo "  FAIL - $2 (unexpected: $1)"; echo "$LAST_OUTPUT" | sed 's/^/         /'
+  fi
+}
+
 finish() {
   echo "  -> $PASS_COUNT passed, $FAIL_COUNT failed"
   ((FAIL_COUNT == 0))
