@@ -6,6 +6,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
@@ -191,6 +194,96 @@ class AuthApiIntegrationTest {
 		return times.get(2);
 	}
 
+	/**
+	 * SEC review S2-1: bcrypt runs without the account's row lock, so parallel wrong-password attempts on an existing
+	 * username take about as long as on an unknown one (no staircase, no username oracle). Loose tolerance: the
+	 * existing-user burst may take at most 1.5 × the unknown-user burst + 300 ms (with the lock it was ~5×).
+	 */
+	@Test
+	void parallelFailedLoginsTakeSimilarTimeForUnknownAndExistingUsernames() throws Exception {
+		parallelLoginsMillis("nobody.here", 6);
+		long unknown = parallelLoginsMillis("nobody.here", 6);
+		long existing = parallelLoginsMillis("tutor.one", 6);
+
+		assertThat(existing).as("existing %d ms vs unknown %d ms", existing, unknown).isLessThan(unknown * 3 / 2 + 300);
+	}
+
+	/** SEC review S2-1: a burst on one username holds no locks or connections that another user's sign-in needs. */
+	@Test
+	void anUnrelatedLoginStaysFastDuringABurstOnOneUsername() throws Exception {
+		student("student.c", false);
+		Browser unrelated = browser();
+		unrelated.get("/api/v1/auth/session");
+		long alone = timed(() -> new Browser(port).login("student.c", "wrong-password-1", false));
+		try (ExecutorService pool = Executors.newVirtualThreadPerTaskExecutor()) {
+			List<Browser> attackers = new ArrayList<>();
+			for (int i = 0; i < 30; i++) {
+				Browser attacker = browser();
+				attacker.get("/api/v1/auth/session");
+				attackers.add(attacker);
+			}
+			List<Future<Response>> burst = new ArrayList<>();
+			for (Browser attacker : attackers) {
+				burst.add(pool.submit(() -> attacker.login("tutor.one", "wrong-password-1", false)));
+			}
+			Thread.sleep(100);
+			long during = timed(() -> assertThat(unrelated.login("student.c", PASSWORD, false).status()).isEqualTo(200));
+			for (Future<Response> attempt : burst) {
+				assertThat(attempt.get().status()).isEqualTo(401);
+			}
+			assertThat(during).as("unrelated login %d ms during the burst, %d ms alone", during, alone)
+				.isLessThan(Math.max(2500, alone * 6));
+		}
+	}
+
+	long parallelLoginsMillis(String username, int n) throws Exception {
+		List<Browser> browsers = new ArrayList<>();
+		for (int i = 0; i < n; i++) {
+			Browser browser = browser();
+			browser.get("/api/v1/auth/session");
+			browsers.add(browser);
+		}
+		try (ExecutorService pool = Executors.newVirtualThreadPerTaskExecutor()) {
+			long start = System.nanoTime();
+			List<Future<Response>> attempts = new ArrayList<>();
+			for (Browser browser : browsers) {
+				attempts.add(pool.submit(() -> browser.login(username, "wrong-password-1", false)));
+			}
+			for (Future<Response> attempt : attempts) {
+				assertThat(attempt.get().status()).isEqualTo(401);
+			}
+			return (System.nanoTime() - start) / 1_000_000;
+		}
+	}
+
+	static long timed(Runnable action) {
+		long start = System.nanoTime();
+		action.run();
+		return (System.nanoTime() - start) / 1_000_000;
+	}
+
+	/** SEC review S2-2: a body over the 1 MB JSON limit is refused before the service; over-long fields get the generic 401. */
+	@Test
+	void anOversizedBodyIsRefusedAndOverLongFieldsGetTheGeneric401() {
+		Response huge = browser().post("/api/v1/auth/login",
+				"{\"username\":\"" + "u".repeat(2_000_000) + "\",\"password\":\"x\"}");
+		assertThat(huge.status()).isEqualTo(400);
+		assertThat(huge.code()).isEqualTo("MALFORMED_REQUEST");
+		assertThat(count("SELECT count(*) FROM audit_event")).as("never reached the service").isZero();
+
+		Response longUsername = browser().login("u".repeat(100_000), PASSWORD, false);
+		Response longPassword = browser().login("tutor.one", "p".repeat(2000), false);
+		Response wrong = browser().login("tutor.one", "wrong-password-1", false);
+
+		assertThat(List.of(longUsername, longPassword)).allSatisfy(response -> {
+			assertThat(response.status()).isEqualTo(401);
+			assertThat(response.bodyWithoutRequestId()).isEqualTo(wrong.bodyWithoutRequestId());
+		});
+		assertThat(jdbc.queryForList("SELECT details->>'reason' FROM audit_event", String.class))
+			.containsExactlyInAnyOrder("REJECTED_INPUT", "REJECTED_INPUT", "BAD_PASSWORD");
+		assertThat(count("SELECT failed_login_count FROM user_account WHERE id = ?", tutorId)).isOne();
+	}
+
 	// ---- AC4 -------------------------------------------------------------------------------------------------
 
 	@Test
@@ -270,6 +363,73 @@ class AuthApiIntegrationTest {
 		Response response = browser.get("/api/v1/auth/session");
 		assertThat(response.status()).isEqualTo(401);
 		assertThat(response.code()).isEqualTo("SESSION_EXPIRED");
+	}
+
+	/** SEC review S3-1: an already-rotated token (parallel requests, or theft) is a 401 SESSION_EXPIRED, never a 500. */
+	@Test
+	void aReusedRememberMeTokenIs401SessionExpiredNotA500() {
+		Browser browser = signedIn("tutor.one", true);
+		String original = browser.cookies.get(Browser.REMEMBER_ME);
+		jdbc.update("DELETE FROM spring_session");
+		assertThat(browser.get("/api/v1/auth/session").status()).isEqualTo(200);
+
+		Browser replay = browser();
+		replay.cookies.put(Browser.REMEMBER_ME, original);
+		Response response = replay.get("/api/v1/auth/session");
+
+		assertThat(response.status()).isEqualTo(401);
+		assertThat(response.code()).isEqualTo("SESSION_EXPIRED");
+		assertThat(response.setCookie(Browser.REMEMBER_ME)).contains("Expires=Thu, 01 Jan 1970");
+	}
+
+	@Test
+	void parallelRequestsWithOneRememberMeCookieNeverAnswer500() throws Exception {
+		for (int round = 0; round < 5; round++) {
+			Browser browser = signedIn("tutor.one", true);
+			String cookie = browser.cookies.get(Browser.REMEMBER_ME);
+			jdbc.update("DELETE FROM spring_session");
+			try (ExecutorService pool = Executors.newVirtualThreadPerTaskExecutor()) {
+				List<Future<Response>> responses = new ArrayList<>();
+				for (int i = 0; i < 4; i++) {
+					Browser copy = browser();
+					copy.cookies.put(Browser.REMEMBER_ME, cookie);
+					responses.add(pool.submit(() -> copy.get("/api/v1/auth/session")));
+				}
+				for (Future<Response> response : responses) {
+					Response r = response.get();
+					assertThat(r.status()).isIn(200, 401);
+					if (r.status() == 401) {
+						assertThat(r.code()).isEqualTo("SESSION_EXPIRED");
+					}
+				}
+			}
+		}
+	}
+
+	/** SEC review S4-2: a login on a device that still carries another user's remember-me cookie deletes that token. */
+	@Test
+	void aLoginDeletesTheRememberMeTokenItWasSentWith() {
+		student("student.d", false);
+		Browser shared = signedIn("tutor.one", true);
+		assertThat(count("SELECT count(*) FROM persistent_logins")).isOne();
+
+		Response response = shared.login("student.d", PASSWORD, false);
+
+		assertThat(response.status()).isEqualTo(200);
+		assertThat(response.setCookie(Browser.REMEMBER_ME)).contains("Expires=Thu, 01 Jan 1970");
+		assertThat(shared.cookies).doesNotContainKey(Browser.REMEMBER_ME);
+		assertThat(count("SELECT count(*) FROM persistent_logins")).isZero();
+	}
+
+	/** SEC review S4-3: no remember-me while the password must change. */
+	@Test
+	void aMustChangeUserGetsNoRememberMe() {
+		student("new.student", true);
+		Response response = browser().login("new.student", PASSWORD, true);
+
+		assertThat(response.status()).isEqualTo(200);
+		assertThat(response.setCookie(Browser.REMEMBER_ME)).isNull();
+		assertThat(count("SELECT count(*) FROM persistent_logins")).isZero();
 	}
 
 	// ---- AC6 -------------------------------------------------------------------------------------------------
@@ -418,6 +578,36 @@ class AuthApiIntegrationTest {
 		assertThat(browser().login("tutor.one", PASSWORD, false).status()).isEqualTo(401);
 	}
 
+	/** SEC review S4-3: an expired temporary password is not accepted as the current one. */
+	@Test
+	void anExpiredTemporaryPasswordIsNotAcceptedAsTheCurrentPassword() {
+		UUID id = student("temp.student", true);
+		jdbc.update("UPDATE user_account SET temp_password_expires_at = now() + interval '1 hour' WHERE id = ?", id);
+		Browser browser = signedIn("temp.student", false);
+		jdbc.update("UPDATE user_account SET temp_password_expires_at = now() - interval '1 minute' WHERE id = ?", id);
+
+		Response response = browser.post("/api/v1/auth/password",
+				"{\"currentPassword\":\"" + PASSWORD + "\",\"newPassword\":\"a-brand-new-secret\"}");
+
+		assertThat(response.status()).isEqualTo(422);
+		assertThat(response.json().path("errors").get(0).path("code").asString()).isEqualTo("CURRENT_PASSWORD_INCORRECT");
+	}
+
+	/** SEC review S4-4: a password set with combining marks signs in when typed precomposed, and the reverse. */
+	@Test
+	void passwordsAreComparedInUnicodeNfc() {
+		String decomposed = "Me\u0302\u0323t-qua\u0301-roi-nhe\u0301";
+		String precomposed = java.text.Normalizer.normalize(decomposed, java.text.Normalizer.Form.NFC);
+		assertThat(precomposed).isNotEqualTo(decomposed);
+		Browser browser = signedIn("tutor.one", false);
+
+		assertThat(browser.post("/api/v1/auth/password", "{\"currentPassword\":\"" + PASSWORD + "\",\"newPassword\":"
+				+ Browser.quote(decomposed) + "}").status()).isEqualTo(204);
+
+		assertThat(browser().login("tutor.one", precomposed, false).status()).isEqualTo(200);
+		assertThat(browser().login("tutor.one", decomposed, false).status()).isEqualTo(200);
+	}
+
 	@Test
 	void anonymousPasswordChangeWithCsrfIs401() {
 		Response response = browser().post("/api/v1/auth/password",
@@ -451,6 +641,16 @@ class AuthApiIntegrationTest {
 				"{\"currentPassword\":\"" + PASSWORD + "\",\"newPassword\":\"a-brand-new-secret\"}").status()).isEqualTo(204);
 		assertThat(tutor.get("/api/v1/tutor/x").status()).isEqualTo(404);
 		assertThat(tutor.post("/api/v1/auth/logout", null).status()).isEqualTo(204);
+	}
+
+	/** SEC review S4-5: HEAD /api/v1/meta is public like GET, also through the must-change gate. */
+	@Test
+	void headMetaIsPublicAndPassesTheGate() {
+		jdbc.update("UPDATE user_account SET must_change_password = true WHERE id = ?", tutorId);
+		Browser tutor = signedIn("tutor.one", false);
+
+		assertThat(browser().send("HEAD", "/api/v1/meta", null, false).status()).isEqualTo(200);
+		assertThat(tutor.send("HEAD", "/api/v1/meta", null, false).status()).isEqualTo(200);
 	}
 
 	@Test

@@ -179,6 +179,28 @@ class StartupScenariosTest {
 	// ---- AC2 -------------------------------------------------------------------------------------------------
 
 	@Test
+	void insecureCookiesAreRefusedUnderTheProdProfileEvenWithLocal() {
+		assertThatThrownBy(() -> start(WebApplicationType.SERVLET, Map.of("server.servlet.session.cookie.secure", false,
+				"spring.profiles.active", "local,prod")))
+			.rootCause()
+			.hasMessageContaining("never with 'prod'");
+	}
+
+	/** SEC review S4-8: a server without server.forward-headers-strategy (outside 'local') warns at startup. */
+	@Test
+	void aMissingForwardHeadersStrategyIsWarnedAbout(CapturedOutput output) {
+		close(start(WebApplicationType.SERVLET, Map.of()));
+		assertThat(output.getOut().lines().filter(line -> line.contains("server.forward-headers-strategy is not set")))
+			.singleElement()
+			.asString()
+			.contains("\"level\":\"WARN\"");
+
+		close(start(WebApplicationType.SERVLET, Map.of("server.forward-headers-strategy", "native")));
+		assertThat(output.getOut().lines().filter(line -> line.contains("server.forward-headers-strategy is not set")))
+			.hasSize(1);
+	}
+
+	@Test
 	void aSessionSurvivesAnApplicationRestart() {
 		IdentityFixtures.insert(jdbc, "tutor.one", PASSWORD, Role.TUTOR, false);
 		ConfigurableApplicationContext first = start(WebApplicationType.SERVLET, Map.of());

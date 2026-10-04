@@ -33,4 +33,16 @@ class TruncatingBCryptPasswordEncoderTest {
 		assertThat(stock.matches("ă".repeat(35), hash)).isFalse();
 	}
 
+	/** OQ-a: the encoder's own matches truncates explicitly, with the same result as the stock check. */
+	@Test
+	void itsOwnMatchesTruncatesExplicitly() {
+		TruncatingBCryptPasswordEncoder encoder = new TruncatingBCryptPasswordEncoder(new SecureRandom());
+		String hash = encoder.encode("ă".repeat(128));
+
+		assertThat(encoder.matches("ă".repeat(128), hash)).isTrue();
+		assertThat(encoder.matches("ă".repeat(36) + "different-tail", hash)).isTrue();
+		assertThat(encoder.matches("ă".repeat(35) + "b".repeat(80), hash)).isFalse();
+		assertThat(encoder.matches("x".repeat(100), "not-a-bcrypt-hash")).isFalse();
+	}
+
 }
