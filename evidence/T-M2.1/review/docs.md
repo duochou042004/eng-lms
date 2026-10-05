@@ -70,3 +70,28 @@ D3-1, D4-1 and D4-2 verified fixed and consistent with AC8/AC9, security.md §8 
 | D5-1 | S4 | Packet L1 bullet (line 93) makes unmapped `/api/**` paths an L1 "deny" (404 for a signed-in caller) while the filter-order note says the gate runs before handler lookup; if L1 is built as `denyAll` + 404, a must-change user would get 404, contradicting AC8 | Folded into the packet by the LC when it is set to `ready` (L1 "deny" only requires authentication; the 404 comes from handler lookup after the gate), DEC-090 |
 
 Verdict line: `DOCS-REVIEW T-M2.1: PASS`
+
+## Merge-record PR #54 (`chore/T-M2.1-merge-record`, base `a93bcc1`) — recorded by the LC from the docs-reviewer's replies
+
+### Round 1 — head `59b7452` — CHANGES REQUESTED
+Checks passed: check-docs and path ownership; merged state (PR #52 `a93bcc1`/`a6deca2`, CI 7/7, 215 tests, mirror at `a93bcc1`); `review/security.md`
+byte-identical to the version at `3c8b882`, its numbers and dispositions match the PR #52 comments, the summary and DEC-092; DEC-093 numbers; progress.json
+current/next task; HANDOFF and prompt (3499 characters) consistent with CLAUDE.md and the merge-gate paths; no scope added.
+
+| ID | Sev | Finding | Disposition |
+|---|---|---|---|
+| F1 | S3 | HANDOFF says S4-12 is in the backlog (it was not); backlog rows T-M2.1 (still "waits for the PO start signal") and T-M1.18 ("in review") stale | Fixed in-task (`36667c3`) |
+| F2 | S4 | progress.json claims a 13-step gate PASS at `a6deca2`; the last local gate was `11990d0` (12 steps) | Fixed |
+| F3 | S4 | `completedAt` 15:38:00Z vs merge 15:44:12Z | Fixed |
+| F4 | S4 | G4 entry mixes T-M2.1 and T-M2.2 | Fixed |
+| F5 | S4 | Security record does not name the S4-10/S4-11 fix commit | Recorder's note added |
+| F6 | S4 | Previous HANDOFF not archived (session-handoff-protocol §3) | Archived as `docs/handoff/archive/20261004T0320Z-T-M2.1-packet.md` |
+
+Note (no change): DEC-092 lists S4-9 among "fixed" S4s; it was an accepted risk (the security record is correct).
+
+### Round 2 — delta `59b7452..36667c3` — PASS
+All six findings fixed (backlog rows done, S4-12 on T-M2.4, HANDOFF cites DEC-092 and DEC-093; progress.json separates CI at `a6deca2`, the last local gate
+at `11990d0` and the QA re-test; `completedAt` matches `mergedAt`; G4 note; recorder's note accurate; archive byte-identical). The packet status → done is
+accurate. No new findings.
+
+Verdict line: `DOCS-REVIEW T-M2.1: PASS`
