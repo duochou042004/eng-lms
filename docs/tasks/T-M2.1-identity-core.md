@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Milestone | M2 |
-| Status | ready (PO start signal 2026-10-04, DEC-091) |
+| Status | done (`a93bcc1`, PR #52; DEC-091, DEC-093) |
 | Owner role | BE (backend-implementer) |
 | Branch | `feature/T-M2.1-identity-core` (from `develop`) |
 | Depends on | M1 done (DEC-088) |

@@ -222,15 +222,15 @@
     {
       "id": "T-M2.1",
       "title": "Identity core: accounts, tutor bootstrap, login/logout/session",
-      "completedAt": "2026-10-05T15:38:00Z",
+      "completedAt": "2026-10-05T15:44:12Z",
       "mergeCommit": "a93bcc1",
       "evidence": "evidence/T-M2.1/summary.md",
-      "note": "PO start DEC-091. Merged via merge-gate (PR #52) at a6deca2; CI 7/7; gate PASS. SEC round 1 CHANGES REQUESTED (S2-1 lock across bcrypt, S2-2 no body limit, S3-1 remember-me 500) -> fixed in-task, round 2 APPROVED (S4-10/S4-11 fixed by the LC). QA round 1 PASS WITH MINOR, re-test PASS at a6deca2 (x20: 20/20, 67 tests). Records: QA PR #53, security review in the merge-record PR (DEC-092, DEC-093)."
+      "note": "PO start DEC-091. Merged via merge-gate (PR #52) at a6deca2; CI 7/7 (backend 215 tests); last local gate PASS at 11990d0 (12 steps). SEC round 1 CHANGES REQUESTED (S2-1 lock across bcrypt, S2-2 no body limit, S3-1 remember-me 500) -> fixed in-task, round 2 APPROVED (S4-10/S4-11 fixed by the LC). QA round 1 PASS WITH MINOR, re-test PASS at a6deca2 (x20: 20/20, 67 tests). Records: QA PR #53, security review in the merge-record PR (DEC-092, DEC-093)."
     }
   ],
   "tests": {
     "lastRun": "2026-10-05T15:44:59Z",
-    "summary": "T-M2.1 at a6deca2: backend 215 tests (mvnw verify, CI); CI 7/7; gate PASS (13 steps); QA re-test PASS, timing set x20: 20/20 runs, 67 tests each (DEC-093).",
+    "summary": "T-M2.1: CI 7/7 at a6deca2 (backend 215 tests); last local gate PASS at 11990d0 (12 steps, evidence/T-M2.1/gate-20261004T141119Z.log); QA re-test PASS at a6deca2, timing set x20 20/20 (67 tests) (DEC-093).",
     "suites": [
       {
         "name": "backend (./mvnw -B verify)",
@@ -273,7 +273,7 @@
     },
     "G4": {
       "status": "n/a",
-      "note": "T-M2.1 merged via merge-gate (a93bcc1)"
+      "note": "T-M2.2 not started (T-M2.1 merged a93bcc1, DEC-093)"
     },
     "G5": {
       "status": "pass",

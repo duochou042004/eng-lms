@@ -7,7 +7,7 @@ Phase/Milestone: P1 / M2 (in progress) · Current task: **T-M2.2 (packet to writ
   login/logout/session (Spring Session JDBC), remember-me, CSRF, lockout + throttle, must-change gate, L1 role gate, headers in Spring Security, firewall/TRACE, operator CLI.
   G3: SEC round 1 CHANGES REQUESTED → fixed in-task → round 2 APPROVED; QA PASS WITH MINOR → re-test PASS; ×20 timing 20/20 (DEC-092, DEC-093).
 - **Records:** QA report via PR #53 (`qa/T-M2.1`, needs only LC-APPROVED); security review + this bookkeeping via the `chore/T-M2.1-merge-record` PR (needs DOCS-REVIEW PASS).
-- **Follow-ups recorded in the backlog (DEC-092):** T-M2.3 — a login racing `AccountApi.disable` (SEC S4-1). T-M2.4 — one `GET /auth/session` before parallel calls
+- **Follow-ups recorded in the backlog (DEC-092, DEC-093):** T-M2.3 — a login racing `AccountApi.disable` (SEC S4-1). T-M2.4 — one `GET /auth/session` before parallel calls
   (remember-me rotation race), log out before re-login while must-change (QA F3), shared-device remember-me note (SEC S4-12).
 
 ## Next steps

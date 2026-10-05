@@ -91,3 +91,5 @@ New findings (S4 only):
 | S4-12 | S4 | A failed login carrying A's remember-me cookie first auto-logs A in and rotates A's cookie (stock filter order); a successful login by B deletes A's series (verified) | Note for T-M2.4 shared-device UX; no action |
 
 Verdict: all round-1 S2/S3 fixed and confirmed black-box; **APPROVED**, provided CI is green on the final head.
+
+Recorder's note (LC): S4-10 and S4-11 were fixed by the LC at `3c8b882`; `SEC-REVIEW T-M2.1: APPROVED` was posted on PR #52 (2026-10-05T15:43Z) after CI was green on the final head `a6deca2` (DEC-093).
