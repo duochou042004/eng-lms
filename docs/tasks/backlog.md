@@ -46,6 +46,7 @@ Not M1 exit criteria and not part of M1's G5 (T-M1.10: PO, DEC-083; T-M1.17: DEC
 | T-M2.5 | Students UI: list (responsive DataList), **Add student flow F2** + credentials card, workspace shell (header, Overview, Profile), edit profile, guardians, learning profile, status, reset password | FE | FR-STU-01..07, ux-flows F2 | T-M2.3, T-M2.4 |
 | T-M2.6 | Settings v1 (workspace name, time zone, language; account preferences) | BE+FE | FR-SET-01, 02 | T-M2.4 |
 | T-M2.7 | Student Home v0 + Account page; M2 regression + milestone gate | FE+QA | FR-DASH-03 (shell) | T-M2.5 |
+| T-M2.8 | **done** (DEC-094) Development-phase harness (PO request): agents may read/edit `.env`, `.env.*`, `.data/**` (deny rules lifted in `.claude/settings.json`); no git worktrees, one checkout; `.env.example` gets the tutor-bootstrap variables | LC | DEC-094 | — |
 
 ## M3 — Schedule, lessons and notes
 | ID | Title | Owner | Trace | Deps |
@@ -109,4 +110,5 @@ Not M1 exit criteria and not part of M1's G5 (T-M1.10: PO, DEC-083; T-M1.17: DEC
 | T-M8.3 | Performance: seeded dataset, load run, Lighthouse, fixes | BE+FE | NFR-PERF | M7 |
 | T-M8.4 | Deployment: Quadlet, Caddy, backup/restore/upgrade scripts, staging rehearsal, restore drill (**PO: host, domain**) | LC+BE | ADR-0012, NFR-OPS | OQ-03 |
 | T-M8.5 | *(conditional on OQ-07)* Student data export + permanent delete | BE+FE | OQ-07, R-12 | M7 |
-| T-M8.6 | Tutor UAT #2 → release/1.0.0 → G6 → master + tag v1.0.0 → deploy | LC+PO | roadmap M8 | T-M8.1..5 |
+| T-M8.6 | Tutor UAT #2 → release/1.0.0 → G6 → master + tag v1.0.0 → deploy | LC+PO | roadmap M8 | T-M8.1..5, T-M8.7 |
+| T-M8.7 | **Restore the secrets harness** (DEC-094): re-add the deny rules `Read(./.env)`, `Read(./.env.*)`, `Read(./.data/**)` to `.claude/settings.json`, remove coding-agent-rules §3.5, re-check that no real secret ever entered `.env`/`.data` or git history (gitleaks), fine-tune the harness for staging/production. **Due before any real or production secret is used, and at the latest before T-M8.4 (staging rehearsal)** | LC+SEC+PO | DEC-094, R-21 | — |

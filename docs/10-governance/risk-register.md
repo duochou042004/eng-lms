@@ -25,5 +25,6 @@
 | R-18 | "Test theatre": agent tests that assert little | 3 | 4 | 12 | Independent QA; mutation testing on grading; review of assertion quality; fixture secret scans | QA finds defects that implementation tests "covered" | LC/QA | Mitigating |
 | R-19 | Supply chain: third-party agent plugins, MCP servers or npm packages | 2 | 4 | 8 | No third-party agent plugins without approval; pinned actions; lockfiles; Dependabot; Trivy | Unexpected new dependency in a PR | LC/SEC | Mitigating |
 | R-20 | Vietnamese UI copy quality (awkward machine translation) | 3 | 2 | 6 | Native vi copy written first; PO review at M5 and M8 | Tutor feedback | FE/PO | Open |
+| R-21 | Development-phase secrets relaxation (DEC-094) outlives development: agents can read `.env`/`.data`, so a real secret placed there would be exposed to agent context | 2 | 4 | 8 | Dev-only values rule (coding-agent-rules §3.5); `.env*` git-ignored + secrets-scan in CI; restore task T-M8.7 blocks the release (T-M8.6 depends on it) | A real API key, production credential or personal data is needed locally; staging work starts (T-M8.4) | LC/PO | Open |
 
 **Top risks (score ≥ 12):** R-01, R-02, R-14, R-04, R-06, R-09, R-12, R-18.

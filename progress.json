@@ -16,7 +16,7 @@
       }
     ]
   },
-  "updatedAt": "2026-10-05T15:44:59Z",
+  "updatedAt": "2026-10-05T16:35:01Z",
   "updatedBy": "lead-coordinator (session 2026-10-04 #2, Opus 5.5)",
   "phase": {
     "id": "P1",
@@ -226,6 +226,14 @@
       "mergeCommit": "a93bcc1",
       "evidence": "evidence/T-M2.1/summary.md",
       "note": "PO start DEC-091. Merged via merge-gate (PR #52) at a6deca2; CI 7/7 (backend 215 tests); last local gate PASS at 11990d0 (12 steps). SEC round 1 CHANGES REQUESTED (S2-1 lock across bcrypt, S2-2 no body limit, S3-1 remember-me 500) -> fixed in-task, round 2 APPROVED (S4-10/S4-11 fixed by the LC). QA round 1 PASS WITH MINOR, re-test PASS at a6deca2 (x20: 20/20, 67 tests). Records: QA PR #53, security review in the merge-record PR (DEC-092, DEC-093)."
+    },
+    {
+      "id": "T-M2.8",
+      "title": "Development-phase harness: .env/.data access for agents, no git worktrees (PO request)",
+      "completedAt": "2026-10-05T16:35:01Z",
+      "mergeCommit": null,
+      "evidence": "docs/10-governance/decision-log.md",
+      "note": "DEC-094 (PO). Deny rules Read(./.env), Read(./.env.*), Read(./.data/**) lifted; coding-agent-rules §3.4-3.5; restore task T-M8.7 (R-21). Merge commit in the next record."
     }
   ],
   "tests": {
@@ -284,7 +292,6 @@
   "decisions": {
     "log": "docs/10-governance/decision-log.md",
     "recent": [
-      "DEC-083",
       "DEC-084",
       "DEC-085",
       "DEC-086",
@@ -294,7 +301,8 @@
       "DEC-090",
       "DEC-091",
       "DEC-092",
-      "DEC-093"
+      "DEC-093",
+      "DEC-094"
     ],
     "pendingPO": [
       "OQ-03",
@@ -321,7 +329,8 @@
       "R-06",
       "R-09",
       "R-12",
-      "R-18"
+      "R-18",
+      "R-21"
     ]
   },
   "approvals": [
@@ -823,6 +832,11 @@
       "at": "2026-10-05T15:44:59Z",
       "actor": "lead-coordinator",
       "event": "T-M2.1 merged via merge-gate (PR #52, a93bcc1; QA PASS, SEC APPROVED, CI 7/7); mirror synced; QA record PR #53. Next: T-M2.2 packet (DEC-093)."
+    },
+    {
+      "at": "2026-10-05T16:35:01Z",
+      "actor": "lead-coordinator",
+      "event": "PO relaxed the secrets harness for development and asked for no git worktrees (DEC-094, T-M2.8); restore task T-M8.7 + R-21. Next: T-M2.2 packet."
     }
   ]
 }
