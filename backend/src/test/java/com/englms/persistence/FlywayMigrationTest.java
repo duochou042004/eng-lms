@@ -1,6 +1,12 @@
 package com.englms.persistence;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
+import java.util.UUID;
+
+import com.zaxxer.hikari.HikariDataSource;
+import org.flywaydb.core.Flyway;
 
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -9,10 +15,13 @@ import com.englms.TestcontainersConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 /**
- * AC6: Flyway V1 applies on PostgreSQL 18 and the context starts with {@code ddl-auto=validate}.
+ * AC6: Flyway V1 applies on PostgreSQL 18 and the context starts with {@code ddl-auto=validate}. T-M2.1: the
+ * identity and audit migrations apply on an empty database (this context) and on top of the M1 schema
+ * ({@link #upgradesTheM1SchemaToTheLatestVersion}); the database enforces the single tutor (I-01) and append-only audit.
  */
 @Tag("container")
 @SpringBootTest
@@ -29,8 +38,10 @@ class FlywayMigrationTest {
 
 	@Test
 	void appliesV1Successfully() {
-		assertThat(jdbc.queryForList("SELECT version FROM app.flyway_schema_history WHERE success AND version IS NOT NULL", String.class))
-			.containsExactly("202609250001");
+		assertThat(jdbc.queryForList("""
+				SELECT version FROM app.flyway_schema_history WHERE success AND version IS NOT NULL ORDER BY installed_rank""",
+				String.class))
+			.containsExactly("202609250001", "202610040001", "202610040002");
 	}
 
 	@Test
@@ -53,12 +64,64 @@ class FlywayMigrationTest {
 	}
 
 	@Test
-	void createsOnlyPlatformTables() {
+	void createsOnlyTheDocumentedTables() {
 		assertThat(jdbc.queryForList(
 				"SELECT table_name FROM information_schema.tables WHERE table_schema = 'app' ORDER BY table_name",
 				String.class))
-			.as("V1 has no domain or session tables (data-model.md §4, DEC-036)")
-			.containsExactly("event_publication", "flyway_schema_history");
+			.as("V1: platform tables only; T-M2.1: identity, Spring Session, remember-me and audit (data-model.md §4, DEC-036)")
+			.containsExactly("audit_event", "event_publication", "flyway_schema_history", "persistent_logins",
+					"spring_session", "spring_session_attributes", "user_account");
+	}
+
+	@Test
+	void theDatabaseRejectsASecondTutor() {
+		try {
+			insertAccount("tutor.one", "TUTOR");
+			assertThatThrownBy(() -> insertAccount("tutor.two", "TUTOR")).isInstanceOf(DataIntegrityViolationException.class)
+				.hasMessageContaining("ux_user_account__single_tutor");
+			insertAccount("student.one", "STUDENT");
+			insertAccount("student.two", "STUDENT");
+		}
+		finally {
+			jdbc.update("DELETE FROM app.user_account");
+		}
+	}
+
+	@Test
+	void auditEventsAreAppendOnly() {
+		UUID id = UUID.randomUUID();
+		jdbc.update("INSERT INTO app.audit_event (id, occurred_at, action) VALUES (?, now(), 'LOGIN_FAILED')", id);
+		try {
+			assertThatThrownBy(() -> jdbc.update("UPDATE app.audit_event SET action = 'X' WHERE id = ?", id))
+				.hasMessageContaining("audit_event is append-only");
+		}
+		finally {
+			assertThat(jdbc.update("DELETE FROM app.audit_event WHERE id = ?", id)).isOne();
+		}
+	}
+
+	@Test
+	void upgradesTheM1SchemaToTheLatestVersion() {
+		jdbc.execute("DROP DATABASE IF EXISTS m1_upgrade");
+		jdbc.execute("CREATE DATABASE m1_upgrade");
+		HikariDataSource dataSource = (HikariDataSource) jdbc.getDataSource();
+		String jdbcUrl = dataSource.getJdbcUrl().replaceFirst("/[^/?]+(\\?|$)", "/m1_upgrade$1");
+		String user = dataSource.getUsername();
+		String password = dataSource.getPassword();
+
+		Flyway m1 = Flyway.configure().dataSource(jdbcUrl, user, password).schemas("app").defaultSchema("app")
+			.target("202609250001").load();
+		assertThat(m1.migrate().migrationsExecuted).isOne();
+		Flyway latest = Flyway.configure().dataSource(jdbcUrl, user, password).schemas("app").defaultSchema("app").load();
+
+		assertThat(latest.migrate().migrationsExecuted).isEqualTo(2);
+		assertThat(latest.info().current().getVersion().getVersion()).isEqualTo("202610040002");
+	}
+
+	private void insertAccount(String username, String role) {
+		jdbc.update("""
+				INSERT INTO app.user_account (id, username, username_normalized, password_hash, role, status, created_at, updated_at)
+				VALUES (?, ?, ?, '{bcrypt}x', ?, 'ACTIVE', now(), now())""", UUID.randomUUID(), username, username, role);
 	}
 
 }

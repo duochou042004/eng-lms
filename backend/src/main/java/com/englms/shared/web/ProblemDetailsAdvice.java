@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.englms.shared.ProblemCodes;
+import com.englms.shared.ProblemException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -29,6 +30,20 @@ class ProblemDetailsAdvice extends ResponseEntityExceptionHandler {
 
 	static final String TYPE_PREFIX = "https://englms.local/problems/";
 
+	/** Typed application errors carry their own status, code, field errors and {@code Retry-After}. */
+	@ExceptionHandler(ProblemException.class)
+	ResponseEntity<Object> handleProblem(ProblemException ex, WebRequest request) {
+		ProblemDetail body = ProblemDetail.forStatus(ex.status());
+		if (!ex.errors().isEmpty()) {
+			body.setProperty("errors", ex.errors());
+		}
+		HttpHeaders headers = new HttpHeaders();
+		if (ex.retryAfter() != null) {
+			headers.set(HttpHeaders.RETRY_AFTER, Long.toString(Math.max(1, (ex.retryAfter().toMillis() + 999) / 1000)));
+		}
+		return handleExceptionInternal(ex, body, headers, ex.status(), request);
+	}
+
 	@ExceptionHandler(Exception.class)
 	ResponseEntity<Object> handleUnexpected(Exception ex, WebRequest request) {
 		log.error("Unhandled exception", ex);
@@ -40,8 +55,8 @@ class ProblemDetailsAdvice extends ResponseEntityExceptionHandler {
 	protected ResponseEntity<Object> handleExceptionInternal(Exception ex, Object body, HttpHeaders headers,
 			HttpStatusCode statusCode, WebRequest request) {
 		ProblemDetail problem = (body instanceof ProblemDetail pd) ? pd : ProblemDetail.forStatus(statusCode);
-		ProblemCodes code = codeFor(statusCode);
-		problem.setType(URI.create(TYPE_PREFIX + code.name().toLowerCase().replace('_', '-')));
+		ProblemCodes code = (ex instanceof ProblemException typed) ? typed.code() : codeFor(statusCode);
+		problem.setType(URI.create(TYPE_PREFIX + ProblemResponses.slug(code)));
 		problem.setDetail(null);
 		if (request instanceof ServletWebRequest servletWebRequest) {
 			problem.setInstance(URI.create(servletWebRequest.getRequest().getRequestURI()));

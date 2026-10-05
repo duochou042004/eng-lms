@@ -5,6 +5,12 @@
 
 ## 1. First production install
 **When:** go-live (M8). **Steps:** deployment.md §4. **Verify:** HTTPS works, tutor login and password change succeed, the backup timer is active, and a restore drill (§3) has passed.
+**Tutor bootstrap (FR-AUTH-02, T-M2.1):** the first start with an empty `user_account` reads `ENGLMS_BOOTSTRAP_TUTOR_USERNAME` (3–40 characters of `a-z 0-9 . _ -`) and the
+password from the file named by `ENGLMS_BOOTSTRAP_TUTOR_PASSWORD_FILE` (a Podman secret; one trailing line break is ignored; the password must meet the policy:
+10–128 characters, not a common password, not the username). It creates the one tutor with `mustChangePassword=true` (no expiry) and logs
+`Tutor account created from the bootstrap secret`. A missing or unreadable file, only one of the two variables, or a password failing the policy **stops startup**
+(the message names the problem, never the password). With a tutor present the variables are ignored (one INFO line), so remove the secret after the first login.
+With an empty table and neither variable set the app starts and logs a WARN: nobody can sign in.
 
 ## 2. Backups (nightly, `englms-backup.timer` at 02:30 local)
 **Steps (script `deploy/backup.sh`):**
@@ -24,10 +30,16 @@
 Record the timings in `evidence/<release>/restore-drill.md`.
 
 ## 4. Tutor password reset (FR-AUTH-09)
-**When:** the tutor has lost their password. **Steps:** on the host, run
-`podman exec -it englms-app java -jar /app/app.jar --englms.cli=reset-tutor-password --spring.main.web-application-type=none`,
-which prints a one-time temporary password (`mustChangePassword=true`) and writes an audit event. **Verify:** login forces a password change. **Note:** the CLI
-refuses to run when the database has no tutor. It never creates a second tutor.
+**When:** the tutor has lost their password (or is locked out and cannot wait 15 minutes). **Steps:** on the host, run a second JVM in the app container (same
+image, same database settings; the image runs the extracted jar from `/app` with Spring Boot's `JarLauncher`, T-M1.5):
+`podman exec -it englms-app java -XX:MaxRAMPercentage=25 -Djava.io.tmpdir=/tmp org.springframework.boot.loader.launch.JarLauncher --englms.cli=reset-tutor-password --spring.main.web-application-type=none`
+(outside a container: `java -jar englms-<version>.jar --englms.cli=reset-tutor-password --spring.main.web-application-type=none` with the same `SPRING_DATASOURCE_*`).
+It prints **one** temporary password to stdout (three words and two digits, e.g. `orbit-candle-mirror-47`; never written to the log), then exits 0. The reset
+(T-M2.1): `mustChangePassword=true`, the temporary password **expires after 7 days** (A-021, DEC-089 (8)), the lockout is cleared, **every session and remember-me token
+of the tutor ends**, and a `PASSWORD_RESET_BY_OPERATOR` audit event is written (no secret in it). The command's context runs no bootstrap and no scheduled job.
+Give the password to the tutor over a separate channel. **Verify:** login with it succeeds and the SPA forces a password change (any other API call answers 403
+`PASSWORD_CHANGE_REQUIRED`). **Note:** the CLI refuses to run when the database has no tutor (exit code 2, nothing created); it never creates a tutor. Exit code 1:
+any other failure (e.g. the database is unreachable, or an unknown `--englms.cli` value, which prints one stderr line naming the known commands); nothing changed. A disabled tutor stays disabled.
 
 ## 5. Student cannot log in
 Check the student's status in the tutor UI (ARCHIVED → reactivate). If the account is locked (`locked_until`), a tutor password reset unlocks it. If a temporary password

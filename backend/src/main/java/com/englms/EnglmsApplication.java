@@ -5,6 +5,7 @@ import org.springframework.boot.actuate.autoconfigure.web.ManagementContextConfi
 import org.springframework.boot.autoconfigure.AutoConfigurationExcludeFilter;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.TypeExcludeFilter;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.context.annotation.FilterType;
@@ -24,7 +25,11 @@ import org.springframework.context.annotation.FilterType;
 public class EnglmsApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(EnglmsApplication.class, args);
+		ConfigurableApplicationContext context = SpringApplication.run(EnglmsApplication.class, args);
+		// An operator command (--englms.cli=…, runbooks §4) has done its work in its runner: exit instead of serving.
+		if (context.getEnvironment().containsProperty("englms.cli")) {
+			System.exit(SpringApplication.exit(context));
+		}
 	}
 
 }

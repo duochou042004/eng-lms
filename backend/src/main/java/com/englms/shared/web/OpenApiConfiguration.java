@@ -5,6 +5,7 @@ import java.util.List;
 
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.media.ArraySchema;
 import io.swagger.v3.oas.models.media.IntegerSchema;
 import io.swagger.v3.oas.models.media.ObjectSchema;
 import io.swagger.v3.oas.models.media.Schema;
@@ -41,7 +42,12 @@ class OpenApiConfiguration {
 				.addProperty("status", new IntegerSchema())
 				.addProperty("instance", new StringSchema().format("uri"))
 				.addProperty("code", new Schema<>().$ref("#/components/schemas/ProblemCode"))
-				.addProperty("requestId", new StringSchema());
+				.addProperty("requestId", new StringSchema())
+				.addProperty("errors", new ArraySchema().description("Field errors of a 422 VALIDATION_FAILED")
+					.items(new ObjectSchema().required(List.of("field", "code"))
+						.addProperty("field", new StringSchema())
+						.addProperty("code", new Schema<>().$ref("#/components/schemas/ProblemCode"))
+						.addProperty("message", new StringSchema())));
 			openApi.getComponents().addSchemas("ProblemCode", code).addSchemas("Problem", problem);
 		};
 	}

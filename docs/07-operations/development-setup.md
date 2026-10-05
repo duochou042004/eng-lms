@@ -58,8 +58,22 @@ set -a; source .env; set +a                   # export the SPRING_DATASOURCE_* v
 ./scripts/dev-down.sh --purge                 # stop and delete the data volume
 ```
 
-Planned: `./scripts/seed-dev.sh` (dev tutor + sample students, dev profile only, not domain seed data) arrives with auth in M2. It will print the dev tutor
-credentials (random each time, stored in the git-ignored `.data/dev-credentials.txt`).
+**Dev tutor (T-M2.1).** The local tutor is created like in production, from a secret file (FR-AUTH-02; there is no `scripts/dev-bootstrap`). Once per database:
+
+```bash
+mkdir -p .data && umask 077 && printf '%s' 'choose-a-local-password' > .data/tutor-password   # git-ignored; 10–128 characters, not a common password
+ENGLMS_BOOTSTRAP_TUTOR_USERNAME=tutor ENGLMS_BOOTSTRAP_TUTOR_PASSWORD_FILE=$PWD/.data/tutor-password (cd backend && ./mvnw spring-boot:run)
+```
+
+The first start creates `tutor` with `mustChangePassword=true` (log: `Tutor account created from the bootstrap secret`); later starts ignore the variables. Lost the
+password: runbooks §4 (`java -jar backend/target/englms-*.jar --englms.cli=reset-tutor-password --spring.main.web-application-type=none` with the `SPRING_DATASOURCE_*` values).
+Sign-in needs the CSRF handshake (`GET /api/v1/auth/session` sets `XSRF-TOKEN`, send it back as `X-XSRF-TOKEN`).
+
+**Cookies on `http://localhost`.** Session, remember-me and CSRF cookies are `Secure` (NFR-SEC-04). Chromium and Firefox keep Secure cookies from `http://localhost`.
+For an engine that refuses them (WebKit), start with the `local` profile and `SERVER_SERVLET_SESSION_COOKIE_SECURE=false`
+(`SPRING_PROFILES_ACTIVE=local`); without the `local` profile that setting stops startup. Nothing else uses the `local` profile.
+
+Planned: `./scripts/seed-dev.sh` (sample students, dev profile only, not domain seed data) arrives with the students module (M2).
 
 ## 3. Testcontainers on rootless Podman
 

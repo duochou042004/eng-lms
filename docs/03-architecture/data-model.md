@@ -213,12 +213,21 @@ event_publication (Spring Modulith JDBC registry; schema as shipped)
 | `student.email`, `phone`, `contact_handles`, `student_guardian.*` | Personal data (possibly of minors) | Tutor-only DTOs; excluded from logs; part of export and delete (OQ-07) |
 | `student_learning_profile.*`, `teacher_note.body`, `plan_item.tutor_notes` | Tutor-private | Never mapped to student DTOs (NFR-SEC-02) |
 | `question.content` / snapshot answer keys | Answer secrets until release | Redacted by the type handler for the student audience |
-| `audit_event.ip`, `user_agent` | Personal data | 1-year retention job |
+| `audit_event.ip`, `user_agent` | Personal data | 1-year retention job (daily, T-M2.1) |
+| `persistent_logins.series`, `token` | Session secrets (remember-me) | Server-side only; deleted on logout (this device), password change, reset, disable |
+| `user_account.locked_until`, `failed_login_count`, `last_login_at` | Security state | Never in a DTO (`GET /auth/session` has no lock fields) |
 | Spring Session attributes | Session secrets | Server-side only; cookie holds an opaque ID |
 
 ## 4. Migration and seed policy
 
 - `V1` (T-M1.2, **applied**: `V202609250001__platform_extensions.sql`): the `unaccent` and `pg_trgm` extensions in schema `app`, the `app.simple_unaccent` text-search config, and `app.event_publication` (Spring Modulith 2.1 JDBC registry, v2 schema as shipped; the starter does not create it). Flyway creates the `app` schema and keeps its history table there. The Spring Session and `persistent_logins` tables arrive with T-M2.1 (DEC-036). Every other table arrives with its milestone.
+- T-M2.1 (**applied**): `V202610040001__identity_accounts_sessions.sql`: `app.user_account` as in §2 (named constraints `pk_user_account`, `ck_user_account__role`,
+  `ck_user_account__status`, `ck_user_account__failed_login_count`; `ux_user_account__username_normalized`; `ux_user_account__single_tutor` = I-01), the Spring Session JDBC
+  tables `app.spring_session` / `app.spring_session_attributes` copied from `spring-session-jdbc-4.1.1.jar` (`schema-postgresql.sql`, names as shipped; the repository uses the
+  unqualified default name through the connection's search path `app`; `spring.session.jdbc.initialize-schema=never`), and `app.persistent_logins` with the columns
+  `JdbcTokenRepositoryImpl` uses (`username` holds the user ID; `pk_persistent_logins`, `ix_persistent_logins__username`). `V202610040002__audit_events.sql`: `app.audit_event`
+  as in §2 with `ix_audit_event__occurred_at (occurred_at DESC)`, `ix_audit_event__action`, no foreign keys (a row outlives its subject; an insert never waits for the
+  account row lock), and the trigger `tr_audit_event__append_only` that rejects `UPDATE`. No seed data: the tutor comes from the bootstrap secret (FR-AUTH-02).
 - **No domain seed data** in migrations: no folders, no metrics, no tags. Dev/test fixtures live in `backend/src/test/resources/fixtures` and `scripts/seed-dev`.
 - Applied migrations are never edited. Destructive changes use expand → migrate → contract across two releases.
 - A snapshot schema change bumps `snapshot_schema_version`. Readers must support every version ever written (with an upcaster in `activities.internal.domain.snapshot`).

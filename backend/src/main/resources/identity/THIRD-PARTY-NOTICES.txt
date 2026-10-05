@@ -1,0 +1,30 @@
+Bundled data files of the identity module (T-M2.1; docs/03-architecture/tech-stack.md).
+
+common-passwords.txt
+  Source: SecLists, Passwords/Common-Credentials/10k-most-common.txt
+  https://github.com/danielmiessler/SecLists (commit 913b327317496d062bcc7cace524aaad8a693be2), unmodified,
+  sha256 68782d6a4a19a4768d5f15dd66bd534e7a33055cc755411e33f16d18c50fdcce.
+  Licence: MIT. Copyright (c) 2018 Daniel Miessler.
+
+temporary-password-words.txt
+  Source: BIP-0039 English word list, bip-0039/english.txt
+  https://github.com/bitcoin/bips, file blob 942040ed50f7205cafc465496229128ba4f78e75 (unchanged since commit
+  ce1862ac6bcffa1dd20aad858380e51e66e949ea; sha256 2f5eed53a4727b4bf8880d8f3f199efc90e58503646d9ff8eff3a2ed3b24dbda). The licence is
+  stated in bip-0039.mediawiki at commit 0d1b892ddb21c22def4af4541bfed7a2a3480e4a ("License: MIT"). Two words removed (2046
+  remain) because they are on the forbidden-identifier list of ForbiddenIdentifiersTest.
+  Licence: MIT (BIP-0039 header: "License: MIT"). Authors: Marek Palatinus, Pavol Rusnak, Aaron Voisine, Sean Bowe.
+
+MIT License
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
+documentation files (the "Software"), to deal in the Software without restriction, including without limitation the
+rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit
+persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the
+Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.

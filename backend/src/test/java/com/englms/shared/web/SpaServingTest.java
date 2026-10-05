@@ -8,14 +8,17 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-import com.englms.shared.SharedConfiguration;
+import com.englms.TestcontainersConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.context.annotation.Import;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
@@ -29,9 +32,15 @@ import org.springframework.web.bind.annotation.RestController;
  * {@code src/test/resources/static/}; the real {@code web/dist} is only copied in by the image build. MockMvc does not
  * execute forwards, so the served {@code index.html} of a client route is checked on the real server
  * (ApplicationIntegrationTest).
+ * <p>
+ * Since T-M2.1 the headers come from Spring Security's filter chain (DEC-054), so the whole application context runs
+ * (no longer a {@code @WebMvcTest} slice). {@code /api/**} paths are requested as a signed-in tutor: an anonymous
+ * caller now gets 401 there (T-M2.1 AC9, covered by AuthApiIntegrationTest). Unsafe methods carry a valid CSRF pair.
  */
-@WebMvcTest(SpaServingTest.ProbeController.class)
-@Import({ SharedConfiguration.class, SpaServingTest.ProbeController.class })
+@Tag("container")
+@SpringBootTest
+@AutoConfigureMockMvc
+@Import({ TestcontainersConfiguration.class, SpaServingTest.ProbeController.class })
 class SpaServingTest {
 
 	/** Written out literally (not the filter's constant) so a policy change must also change this test. */
@@ -80,6 +89,7 @@ class SpaServingTest {
 	}
 
 	@Test
+	@WithMockUser(roles = "TUTOR")
 	void apiHandlersAreUnaffected() {
 		expectSecurityHeaders(client.get().uri("/api/v1/probe").header("Accept", HTML_NAVIGATION).exchange())
 			.expectStatus()
@@ -102,7 +112,8 @@ class SpaServingTest {
 	}
 
 	@ParameterizedTest
-	@ValueSource(strings = { "/api", "/api/v1/x", "/api/v1/tutor/students", "/api;x=1/v1/x", "/actuator/health",
+	@WithMockUser(roles = "TUTOR")
+	@ValueSource(strings = { "/api", "/api/v1/x", "/api/v1/tutor/students", "/actuator/health",
 			"/actuator", "/assets/missing-00000000.js", "/assets/tutor" })
 	void apiActuatorAndAssetPathsNeverFallBack(String path) {
 		expectSecurityHeaders(client.get().uri(path).header("Accept", HTML_NAVIGATION).exchange()).expectStatus()
@@ -112,6 +123,21 @@ class SpaServingTest {
 			.expectBody()
 			.jsonPath("$.code")
 			.isEqualTo("NOT_FOUND");
+	}
+
+	/**
+	 * Path parameters on {@code /api}: since T-M2.1 Spring Security's firewall rejects the semicolon (400 Problem
+	 * Details with the security headers) before the SPA fallback could see it, which still means "never the shell".
+	 */
+	@Test
+	void apiWithPathParametersIsRejectedNotTheShell() {
+		expectSecurityHeaders(client.get().uri("/api;x=1/v1/x").header("Accept", HTML_NAVIGATION).exchange()).expectStatus()
+			.isBadRequest()
+			.expectHeader()
+			.contentTypeCompatibleWith(MediaType.APPLICATION_PROBLEM_JSON)
+			.expectBody()
+			.jsonPath("$.code")
+			.isEqualTo("MALFORMED_REQUEST");
 	}
 
 	@ParameterizedTest
@@ -131,6 +157,8 @@ class SpaServingTest {
 		client.method(HttpMethod.valueOf(method))
 			.uri("/tutor")
 			.header("Accept", HTML_NAVIGATION)
+			.cookie("XSRF-TOKEN", "t")
+			.header("X-XSRF-TOKEN", "t")
 			.exchange()
 			.expectStatus()
 			.value(status -> assertThat(status).isIn(404, 405));

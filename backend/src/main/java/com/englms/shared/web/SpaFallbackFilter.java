@@ -8,7 +8,6 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.InvalidMediaTypeException;
@@ -22,10 +21,17 @@ import org.springframework.web.util.UrlPathHelper;
  * with {@code index.html}, so a reload or a deep link works. Only GET/HEAD requests that accept HTML, for paths whose
  * last segment has no file extension, fall back. Nothing under {@code /api}, {@code /actuator} or {@code /assets}
  * ever does: unknown API paths stay Problem Details 404s and a missing asset stays a 404.
+ * <p>
+ * It runs after Spring Security's filter chain (order -100, T-M2.1), so the firewall rejects raw dot-segment paths
+ * ({@code /./api/v1/meta}) before they could be answered with the shell (DEC-054, T-M1.5 QA F3), and the security
+ * headers of the forwarded shell come from Spring Security's header writers.
  */
 @Component
-@Order(Ordered.HIGHEST_PRECEDENCE + 20)
+@Order(SpaFallbackFilter.ORDER)
 class SpaFallbackFilter extends OncePerRequestFilter {
+
+	/** Just after Spring Security's {@code springSecurityFilterChain} (Boot's default order -100). */
+	static final int ORDER = -90;
 
 	static final String INDEX = "/index.html";
 
@@ -46,8 +52,8 @@ class SpaFallbackFilter extends OncePerRequestFilter {
 		if (!"GET".equals(method) && !"HEAD".equals(method)) {
 			return false;
 		}
-		// Decoded and without ;path-parameters, as the handler mapping sees it. Raw dot-segments ("/./api") are not
-		// resolved here: such a path gets the SPA shell, never a handler (T-M1.5 QA F3); T-M2.1's firewall rejects them.
+		// Decoded and without ;path-parameters, as the handler mapping sees it. Raw dot-segments ("/./api") never get
+		// here: Spring Security's firewall rejects them first (T-M1.5 QA F3, T-M2.1).
 		String path = UrlPathHelper.defaultInstance.getPathWithinApplication(request);
 		for (String root : EXCLUDED_ROOTS) {
 			if (path.equals(root) || path.startsWith(root + "/")) {

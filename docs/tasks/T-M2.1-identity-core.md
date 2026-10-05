@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Milestone | M2 |
-| Status | draft (G0 checklist complete; waits for the PO start signal) |
+| Status | ready (PO start signal 2026-10-04, DEC-091) |
 | Owner role | BE (backend-implementer) |
 | Branch | `feature/T-M2.1-identity-core` (from `develop`) |
 | Depends on | M1 done (DEC-088) |
@@ -90,8 +90,9 @@ explicitly public or authenticated, and the student and tutor namespaces are rol
   `index.html` keeps `no-cache` (T-M1.5): Spring Security's default cache-control writer must not override them. `ProblemDetailsErrorReportValve` keeps setting the
   same headers for responses Tomcat rejects before the filter chain (one source of the header values, shared by both).
 - **L1 matching:** `/api/v1/auth/**` is permitted as a whole at L1 and the real handlers decide (so an unknown auth path such as `register` is a 404);
-  `/api/v1/meta` is public; any other `/api/**` path is "denied": 401 for an anonymous caller, 404 for an authenticated one (nothing reveals which paths exist);
-  security.md §4 gets this wording (DOCS-REVIEW S3-3).
+  `/api/v1/meta` is public; any other `/api/**` path is "denied": at L1 that only means authentication is required (401 for an anonymous caller); an authenticated
+  caller then passes the must-change gate and gets 404 from handler lookup (nothing reveals which paths exist). Do not build it as `denyAll`, which would answer
+  403/404 before the gate and contradict AC8; security.md §4 gets this wording (DOCS-REVIEW S3-3, R4 D5-1).
 - **Filter order and test users:** CSRF (403 `CSRF_INVALID`) → authentication (401) → L1 role (403 `FORBIDDEN_ROLE`) → must-change gate (403
   `PASSWORD_CHANGE_REQUIRED`) → handler lookup (404). So an anonymous POST without a token gets `CSRF_INVALID`, a must-change tutor on `/api/v1/tutor/x` gets
   `PASSWORD_CHANGE_REQUIRED` and on `/api/v1/student/x` gets `FORBIDDEN_ROLE`; the gate and the L1 check apply to paths without handlers. A must-change user on an unmapped `/api/**` path

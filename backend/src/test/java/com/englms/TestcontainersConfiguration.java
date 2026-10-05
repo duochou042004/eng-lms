@@ -18,7 +18,20 @@ public class TestcontainersConfiguration {
 	@Bean
 	@ServiceConnection
 	PostgreSQLContainer postgresContainer() {
-		return new PostgreSQLContainer(DockerImageName.parse(POSTGRES_IMAGE).asCompatibleSubstituteFor("postgres"));
+		return newPostgres();
+	}
+
+	/**
+	 * Up to three start attempts: the rootless Podman API service ({@code podman system service}, socket-activated)
+	 * exits after 5 s without requests, so the first Docker API call after a long-running test class can hit a
+	 * pooled connection that Podman has closed ("Broken pipe"). A new attempt opens a new connection (T-M2.1: the
+	 * suite now has enough long-running classes between container starts to meet this).
+	 */
+	public static PostgreSQLContainer newPostgres() {
+		PostgreSQLContainer container = new PostgreSQLContainer(
+				DockerImageName.parse(POSTGRES_IMAGE).asCompatibleSubstituteFor("postgres"));
+		container.withStartupAttempts(3);
+		return container;
 	}
 
 }

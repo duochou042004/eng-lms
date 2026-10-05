@@ -4,6 +4,74 @@
  */
 
 export interface paths {
+  '/api/v1/auth/login': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /** Sign in with username and password; rotates the session ID */
+    post: operations['login']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/v1/auth/logout': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /** End this session and this device's remember-me token (idempotent) */
+    post: operations['logout']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/v1/auth/password': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /** Change the own password; ends every other session and remember-me token */
+    post: operations['changePassword']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/v1/auth/session': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** The signed-in user; also sets the XSRF-TOKEN cookie, for anonymous callers too */
+    get: operations['session']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
   '/api/v1/meta': {
     parameters: {
       query?: never
@@ -24,6 +92,15 @@ export interface paths {
 export type webhooks = Record<string, never>
 export interface components {
   schemas: {
+    ChangePasswordRequest: {
+      currentPassword: string
+      newPassword: string
+    }
+    LoginRequest: {
+      password: string
+      rememberMe?: boolean
+      username: string
+    }
     MetaResponse: {
       displayName: string
       locales: string[]
@@ -33,6 +110,12 @@ export interface components {
     /** @description RFC 9457 Problem Details (api-conventions.md §5) */
     Problem: {
       code: components['schemas']['ProblemCode']
+      /** @description Field errors of a 422 VALIDATION_FAILED */
+      errors?: {
+        code: components['schemas']['ProblemCode']
+        field: string
+        message?: string
+      }[]
       /** Format: uri */
       instance?: string
       requestId: string
@@ -51,6 +134,29 @@ export interface components {
       | 'NOT_ACCEPTABLE'
       | 'VALIDATION_FAILED'
       | 'INTERNAL_ERROR'
+      | 'UNAUTHENTICATED'
+      | 'SESSION_EXPIRED'
+      | 'FORBIDDEN_ROLE'
+      | 'PASSWORD_CHANGE_REQUIRED'
+      | 'CSRF_INVALID'
+      | 'RATE_LIMITED'
+      | 'PASSWORD_TOO_SHORT'
+      | 'PASSWORD_TOO_LONG'
+      | 'PASSWORD_TOO_COMMON'
+      | 'PASSWORD_EQUALS_USERNAME'
+      | 'PASSWORD_UNCHANGED'
+      | 'CURRENT_PASSWORD_INCORRECT'
+    SessionResponse: {
+      displayName: string | null
+      locale: string
+      mustChangePassword: boolean
+      /** @enum {string} */
+      role: 'TUTOR' | 'STUDENT'
+      timeZone: string
+      /** Format: uuid */
+      userId: string
+      username: string
+    }
   }
   responses: never
   parameters: never
@@ -60,6 +166,162 @@ export interface components {
 }
 export type $defs = Record<string, never>
 export interface operations {
+  login: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['LoginRequest']
+      }
+    }
+    responses: {
+      /** @description Signed in */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['SessionResponse']
+        }
+      }
+      /** @description UNAUTHENTICATED: one generic answer for every failure */
+      401: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/problem+json': components['schemas']['Problem']
+        }
+      }
+      /** @description CSRF_INVALID */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/problem+json': components['schemas']['Problem']
+        }
+      }
+      /** @description RATE_LIMITED, with Retry-After */
+      429: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/problem+json': components['schemas']['Problem']
+        }
+      }
+    }
+  }
+  logout: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Signed out */
+      204: {
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
+      }
+      /** @description CSRF_INVALID */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/problem+json': components['schemas']['Problem']
+        }
+      }
+    }
+  }
+  changePassword: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['ChangePasswordRequest']
+      }
+    }
+    responses: {
+      /** @description Changed; the session ID rotated */
+      204: {
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
+      }
+      /** @description UNAUTHENTICATED or SESSION_EXPIRED */
+      401: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/problem+json': components['schemas']['Problem']
+        }
+      }
+      /** @description CSRF_INVALID */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/problem+json': components['schemas']['Problem']
+        }
+      }
+      /** @description VALIDATION_FAILED with errors[] (CURRENT_PASSWORD_INCORRECT, PASSWORD_TOO_SHORT, PASSWORD_TOO_LONG, PASSWORD_TOO_COMMON, PASSWORD_EQUALS_USERNAME, PASSWORD_UNCHANGED) */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/problem+json': components['schemas']['Problem']
+        }
+      }
+    }
+  }
+  session: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Signed in */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['SessionResponse']
+        }
+      }
+      /** @description UNAUTHENTICATED (no session cookie) or SESSION_EXPIRED */
+      401: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/problem+json': components['schemas']['Problem']
+        }
+      }
+    }
+  }
   meta: {
     parameters: {
       query?: never

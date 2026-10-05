@@ -12,7 +12,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * Public workspace metadata (api-catalog.md: {@code GET /api/v1/meta}). Public until Spring Security arrives in T-M2.1.
+ * Public workspace metadata (api-catalog.md: {@code GET /api/v1/meta}). Public at the URL gate and through the
+ * must-change gate (security.md §3, §4; DEC-089).
  */
 @RestController
 @RequestMapping(path = "/api/v1", produces = MediaType.APPLICATION_JSON_VALUE)

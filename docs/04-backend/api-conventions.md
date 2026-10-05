@@ -50,26 +50,33 @@ The version lives in the path (`v1`). Breaking changes → `v2` routes side by s
 | HTTP | `code` examples | When |
 |---|---|---|
 | 400 | `MALFORMED_REQUEST` | Unparseable JSON, wrong types |
-| 401 | `UNAUTHENTICATED`, `SESSION_EXPIRED` | No valid session |
-| 403 | `FORBIDDEN_ROLE`, `PASSWORD_CHANGE_REQUIRED`, `CSRF_INVALID` | Wrong namespace or role, gate |
+| 401 | `UNAUTHENTICATED`, `SESSION_EXPIRED` | No valid session: `UNAUTHENTICATED` without a session cookie (and for every failed login), `SESSION_EXPIRED` when the cookie names no live session (unknown, idle-expired, logged out). **Live** (T-M2.1) |
+| 403 | `FORBIDDEN_ROLE`, `PASSWORD_CHANGE_REQUIRED`, `CSRF_INVALID` | Wrong namespace or role, gate, missing or wrong `X-XSRF-TOKEN`. **Live** (T-M2.1) |
 | 404 | `NOT_FOUND` | Missing **or not owned** (students always get 404 for foreign resources) |
 | 409 | `STALE_VERSION`, `IN_USE`, `INVALID_STATE_TRANSITION`, `ORDER_MISMATCH`, `USERNAME_TAKEN`, `ATTEMPT_CLOSED`, `ATTEMPT_IN_PROGRESS`, `NO_ATTEMPTS_LEFT` | Conflicts with the current state |
 | 413 / 415 | `FILE_TOO_LARGE`, `FILE_TYPE_NOT_ALLOWED` | Upload limits |
 | 422 | `VALIDATION_FAILED` (+ `errors[]`) | Semantic validation |
-| 423 | `ACCOUNT_LOCKED` (generic message) | Lockout |
-| 429 | `RATE_LIMITED` (+ `Retry-After`) | Throttling |
+| 423 | — | **Not used.** Login answers the generic 401 `UNAUTHENTICATED` while an account is locked: a 423 would reveal that the account exists (security.md T16; DEC-089 (6), confirmed DEC-091) |
+| 429 | `RATE_LIMITED` (+ `Retry-After` in seconds) | Throttling: more than 30 login attempts from one IP within 5 minutes (instance-local). **Live** (T-M2.1) |
 | 500 | `INTERNAL_ERROR` (no stack traces; `requestId` for support) | Unexpected |
 
 The `code` values form a closed enum in `shared.ProblemCodes`, exported in OpenAPI. The frontend maps codes to i18n messages. **Do not show `detail` directly to users.**
 
+**Field codes** (`errors[].code`, also in `shared.ProblemCodes`; T-M2.1): `PASSWORD_TOO_SHORT`, `PASSWORD_TOO_LONG`, `PASSWORD_TOO_COMMON`, `PASSWORD_EQUALS_USERNAME`,
+`PASSWORD_UNCHANGED` (field `newPassword`) and `CURRENT_PASSWORD_INCORRECT` (field `currentPassword`). Each entry is `{field, code, message}`; `message` is English for developers.
+Application code throws `shared.ProblemException` (status, code, field errors, `Retry-After`); `ProblemDetailsAdvice` maps it.
+
 **Where Problem Details come from (T-M1.8):**
 - Errors inside the application: `shared.web.ProblemDetailsAdvice`.
+- Answers of the security filter chain (401/403 from the entry point, access-denied handler and must-change gate): `shared.web.ProblemResponses.write`, same shape.
+- Requests Spring Security's firewall rejects (raw dot-segments such as `/./api/v1/meta`, a `;` in the path, `TRACE`, …; T-M2.1): `ProblemResponses.writeRejected` with
+  400 `MALFORMED_REQUEST` (405 `METHOD_NOT_ALLOWED` for a forbidden method), the same headers and body as the valve below, no `instance`.
 - Requests Tomcat rejects on the application port before any filter runs (an encoded `/` in the path, a raw `<` in the query string, …): `shared.web.ProblemDetailsErrorReportValve`.
   It returns Tomcat's status (usually `400`; also e.g. `417` for a bad `Expect`, `501`/`505` for unsupported transfer codings or HTTP versions) with `MALFORMED_REQUEST` for
   4xx and `INTERNAL_ERROR` for 5xx, `Cache-Control: no-store`, the security headers and `X-Request-Id`, with no `instance` and no `detail`, so the rejected input is never echoed.
   It writes only for an error nobody has reported yet and with no body (Tomcat's own guard).
   Residual cases (T-M1.8 QA F4/F5): when Tomcat fails on the **request line** (a raw `<` in the query, a raw `\` in the path), it never parses the headers, so a valid incoming
-  `X-Request-Id` can't be reused and a new one is generated. `OPTIONS *` is answered by Tomcat itself with no request ID or headers. `TRACE`: see security.md §5.
+  `X-Request-Id` can't be reused and a new one is generated. `OPTIONS *` is answered by Tomcat itself with no request ID or headers. `TRACE`: 405 from the firewall (security.md §5, T-M2.1).
 - The management port (:8081) also carries `X-Request-Id`, and its Problem Details carry the `requestId`. It carries no security headers (DEC-050), and Tomcat-level rejections
   there keep Tomcat's minimal report (loopback/internal only).
 
@@ -82,7 +89,7 @@ The `code` values form a closed enum in `shared.ProblemCodes`, exported in OpenA
 
 ## 7. Security headers and caching
 
-- API responses: `Cache-Control: no-store`. Static hashed assets: `public, max-age=31536000, immutable`. `index.html`: `no-cache`.
+- API responses: `Cache-Control: no-store` (every `/api/**` response, also 4xx/5xx Problem Details; a Spring Security header writer since T-M2.1, DEC-070). Static hashed assets: `public, max-age=31536000, immutable`. `index.html`: `no-cache`.
 - CSRF header `X-XSRF-TOKEN` is required on unsafe methods (ADR-0005).
 - Every response carries `X-Request-Id` (generated if absent, also logged).
 

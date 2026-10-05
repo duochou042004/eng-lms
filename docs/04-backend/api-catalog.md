@@ -2,16 +2,18 @@
 
 > Design-level list. The authoritative contract is `api/openapi.json` once generated. Each packet that adds endpoints updates this file.
 > Prefix `/api/v1` omitted. **M** = milestone. Audience: T = tutor, S = student, P = public, A = any authenticated.
+> `/auth/**` is open at the URL gate and each handler decides (security.md §4); there is no registration route (`/auth/register` → 404, FR-AUTH-01).
+> T-M2.2 registers the four live auth endpoints in the policy registry.
 
 ## auth, meta (identity, settings)
 
 | Method | Path | Aud | Purpose | FR | M |
 |---|---|---|---|---|---|
-| GET | `/meta` | P | `{name, version, locales, displayName}` from `englms.meta.*` config; locales `["vi","en"]` (DEC-039). **Live** (T-M1.2, `api/openapi.json`) | — | M1 |
-| GET | `/auth/session` | P | Current user or 401. Also primes the CSRF cookie | FR-AUTH-03 | M2 |
-| POST | `/auth/login` | P | `{username, password, rememberMe}` | FR-AUTH-03 | M2 |
-| POST | `/auth/logout` | A | End session | FR-AUTH-04 | M2 |
-| POST | `/auth/password` | A | `{currentPassword, newPassword}` | FR-AUTH-05, 06 | M2 |
+| GET | `/meta` | P | `{name, version, locales, displayName}` from `englms.meta.*` config; locales `["vi","en"]` (DEC-039). `HEAD` is public too. **Live** (T-M1.2, `api/openapi.json`) | — | M1 |
+| GET | `/auth/session` | P | `{userId, username, role, displayName, locale, timeZone, mustChangePassword}` or 401 (`UNAUTHENTICATED` without a session cookie, `SESSION_EXPIRED` when the cookie names no live session). Also primes the `XSRF-TOKEN` cookie, for anonymous callers too. Passes the must-change gate. **Live** (T-M2.1) | FR-AUTH-03 | M2 |
+| POST | `/auth/login` | P | `{username, password, rememberMe}` → 200 with the session body; rotates the session ID; `rememberMe` sets the 30-day `ENGLMS_REMEMBER_ME` cookie. One generic 401 `UNAUTHENTICATED` for every failure (also while locked, DEC-089 (6)); 429 `RATE_LIMITED` + `Retry-After` past the per-IP throttle; no redirect target (T18). CSRF required. **Live** (T-M2.1) | FR-AUTH-03 | M2 |
+| POST | `/auth/logout` | P | 204; ends this session and this device's remember-me token, expires both cookies; idempotent for anonymous callers. CSRF required; passes the must-change gate. **Live** (T-M2.1) | FR-AUTH-04 | M2 |
+| POST | `/auth/password` | A (handler: 401 otherwise) | `{currentPassword, newPassword}` → 204; rotates the session ID, ends every other session and remember-me token. 422 `VALIDATION_FAILED` with `errors[]` field codes (`CURRENT_PASSWORD_INCORRECT`, `PASSWORD_TOO_SHORT`, `PASSWORD_TOO_LONG`, `PASSWORD_TOO_COMMON`, `PASSWORD_EQUALS_USERNAME`, `PASSWORD_UNCHANGED`). CSRF required; passes the must-change gate. **Live** (T-M2.1) | FR-AUTH-05, 06 | M2 |
 | PATCH | `/auth/preferences` | A | `{locale, timeZone, displayName?}` | FR-SET-02 | M2 |
 
 ## tutor: students, goals, plans

@@ -33,6 +33,7 @@
 | Persistence | **Spring Data JPA (Hibernate)** + **Flyway** | JSON mapping, auditing, optimistic locking; SQL-first migrations (ADR-0003) | jOOQ, Spring Data JDBC (see ADR-0003) |
 | Database | **PostgreSQL 18** | jsonb, full-text search, `unaccent`, `pg_trgm`, `uuidv7()`, `NULLS NOT DISTINCT`; one engine covers search too | SQL Server (licence, ops); Elasticsearch (SPEC §36) |
 | Auth | **Spring Security** + **Spring Session JDBC** | Server sessions survive restarts and are revocable per user (ADR-0005) | JWT (revocation, XSS token theft); Redis sessions (extra infrastructure) |
+| Password data (T-M2.1) | Bundled text files under `backend/src/main/resources/identity/`: the SecLists top-10k common passwords (NFR-SEC-06) and the BIP-0039 English word list for temporary passwords (security.md §3) | Offline, deterministic, no service; licences in §7 and `THIRD-PARTY-NOTICES.txt` | Have I Been Pwned API (network call, privacy); EFF word lists (CC BY 3.0, not on the §8 licence list) |
 | API docs/contract | **springdoc-openapi** (Boot 4-compatible line) | Generates the OpenAPI document for client generation and the drift check (ADR-0014) | Hand-written spec (drifts) |
 | Validation | Jakarta Bean Validation (Hibernate Validator) | Standard | — |
 | HTML sanitising | **OWASP Java HTML Sanitizer** | Allow-list sanitising of rich text (NFR-SEC-09) | jsoup Safelist (acceptable fallback) |
@@ -136,3 +137,7 @@ any analytics or tracking script.
 | GitLab CI: Playwright image | `mcr.microsoft.com/playwright:v1.63.0-noble@sha256:eff16c30e6f3f4af0a03fa4b706120d5e9b0891c344a27d64559aff5900a4a27` (multi-arch index) | T-M1.11 | 2026-09-27 |
 | GitLab CI: Temurin 25 JDK tarball | `OpenJDK25U-jdk_x64_linux_hotspot_25.0.4_7.tar.gz`, sha256 `e58fcdcd…d77f94` | T-M1.11 | 2026-09-27 |
 | glab (GitLab CLI) | 1.118.0 (local; the PO's gitlab.com account) | T-M1.11 | 2026-09-27 |
+| Spring Security (`spring-boot-starter-security`, `-security-test`) | Boot-managed 7.1.1 (Apache-2.0) | T-M2.1 | 2026-10-04 |
+| Spring Session JDBC (`spring-boot-starter-session-jdbc`, `-session-jdbc-test`) | Boot-managed 4.1.1 (Apache-2.0); schema copied into Flyway `V202610040001` | T-M2.1 | 2026-10-04 |
+| Common-password list (`identity/common-passwords.txt`) | SecLists `Passwords/Common-Credentials/10k-most-common.txt` @ `913b327317496d062bcc7cace524aaad8a693be2`, unmodified, sha256 `68782d6a…50fdcce` (MIT, © 2018 Daniel Miessler) | T-M2.1 | 2026-10-04 |
+| Temporary-password word list (`identity/temporary-password-words.txt`) | BIP-0039 `bip-0039/english.txt`, bitcoin/bips blob `942040ed50f7205cafc465496229128ba4f78e75` (sha256 `2f5eed53…8dbda`), minus 2 words that ForbiddenIdentifiersTest bans → 2046 words. Licence: MIT, as stated in the `bip-0039.mediawiki` header at bitcoin/bips `0d1b892ddb21c22def4af4541bfed7a2a3480e4a` (SEC review S4-6) | T-M2.1 | 2026-10-04 |

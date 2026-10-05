@@ -1,22 +1,29 @@
 package com.englms.settings.internal.web;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-import com.englms.settings.internal.SettingsConfiguration;
-import com.englms.shared.SharedConfiguration;
+import com.englms.TestcontainersConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.client.RestTestClient;
 
 /**
- * AC5: {@code GET /api/v1/meta} and Problem Details for unknown API paths.
+ * AC5: {@code GET /api/v1/meta} and Problem Details for unknown API paths. Since T-M2.1 the whole application
+ * context runs (Spring Security's filter chain is part of every response, DEC-054), so this is no longer a
+ * {@code @WebMvcTest} slice. {@code /meta} stays public; the unknown-path cases run as a signed-in user, because an
+ * anonymous caller now gets 401 on any {@code /api/**} path without a public handler (T-M2.1 AC9).
  */
-@WebMvcTest(MetaController.class)
-@Import({ SharedConfiguration.class, SettingsConfiguration.class })
+@Tag("container")
+@SpringBootTest
+@AutoConfigureMockMvc
+@Import(TestcontainersConfiguration.class)
 class MetaControllerTest {
 
 	@Autowired
@@ -51,6 +58,7 @@ class MetaControllerTest {
 	}
 
 	@Test
+	@WithMockUser
 	void unknownApiPathIsProblemDetailsWithCodeAndRequestId() {
 		client.get()
 			.uri("/api/v1/x")
@@ -69,9 +77,13 @@ class MetaControllerTest {
 	}
 
 	@Test
+	@WithMockUser
 	void wrongMethodIsProblemDetails() {
 		client.post()
 			.uri("/api/v1/meta")
+			// A valid CSRF pair (T-M2.1): without it the CSRF filter answers 403 before the handler lookup.
+			.cookie("XSRF-TOKEN", "t")
+			.header("X-XSRF-TOKEN", "t")
 			.exchange()
 			.expectStatus()
 			.isEqualTo(405)
@@ -80,6 +92,7 @@ class MetaControllerTest {
 	}
 
 	@Test
+	@WithMockUser
 	void wellFormedIncomingRequestIdIsEchoedEverywhere() {
 		client.get()
 			.uri("/api/v1/x")
