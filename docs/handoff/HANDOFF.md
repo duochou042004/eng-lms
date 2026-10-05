@@ -8,9 +8,8 @@ Phase/Milestone: P1 / M2 (in progress) · Current task: **T-M2.2 (packet to writ
   - Agents may read, create and edit `.env`, `.env.*` and `.data/**` (the three deny rules are gone from `.claude/settings.json`). **Dev-only values**:
     never a real secret, API key or personal data; never committed or pasted into evidence, PR comments or logs (coding-agent-rules §3.5).
   - **No git worktrees.** Everything happens in the main checkout `/home/kali/App_sources/eng-lms` (the PO watches it in VSCode). Subagents run there one at a
-    time on the task branch; QA and SEC may run together only on a fixed head with no branch switch or commits; the LC never switches branches while a
-    subagent runs (coding-agent-rules §3.4).
-  - Restore: **T-M8.7** re-adds the deny rules before any real secret is used, at the latest before T-M8.4; the release (T-M8.6) depends on it (risk R-21).
+    time on the task branch, QA and SEC included (shared build output and ports); only the LC switches branches, never while a subagent runs (coding-agent-rules §3.4).
+  - Restore: **T-M8.7** re-adds the deny rules before any real secret is used, at the latest before T-M8.4; T-M8.4 and the release T-M8.6 depend on it (risk R-21).
 - **Follow-ups in the backlog:** T-M2.3 (login racing a disable, SEC S4-1); T-M2.4 (one `GET /auth/session` before parallel calls, logout before re-login while
   must-change, shared-device remember-me note).
 
@@ -18,7 +17,7 @@ Phase/Milestone: P1 / M2 (in progress) · Current task: **T-M2.2 (packet to writ
 1. If the `chore/T-M2.8-dev-harness` PR is still open: CI green → DOCS-REVIEW PASS → LC-APPROVED → merge-gate → gitlab-sync.
 2. Write the **T-M2.2 packet** to G0 (task-packet skill): `@Audience`, policy registry + verifier, authz-matrix and student-isolation harnesses that fail on any
    unregistered endpoint, secret scan, ArchUnit student rules; register `GET /auth/session`, `POST /auth/login|logout|password`. Fresh DOCS-REVIEW, merge,
-   then ask the PO once for the start signal; implement only after it (backend-implementer, then QA + SEC at G3 — all in the main checkout).
+   then ask the PO once for the start signal; implement only after it (backend-implementer, then QA, then SEC at G3 — one at a time in the main checkout).
 
 ## Pending PO decisions / actions
 - Production needs `SERVER_FORWARDHEADERSSTRATEGY=native` (deployment.md §3) — at deployment time (M8).

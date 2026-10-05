@@ -16,7 +16,7 @@ and the PO-approved planning baseline** (quality gate G0).
 - **Scope:** implement only the packet's ACs. Anything untraced → an open question, not code (`docs/01-product/scope.md` §6).
 - **No hard-coded curricula or exam semantics** (TOEIC, IELTS, THPT…). These are tutor data. Generic engines only.
 - **Student isolation:** `/api/v1/student/**` handlers never take a `studentId`. Owner-scoped queries return 404. Audience DTOs. Private tutor data is never exposed (ADR-0016).
-- **Git:** branch from `develop` (`feature/|fix/|docs/|chore/<task-id>-<slug>`). Never commit to `develop` or `master`. No force-push. Only the Lead Coordinator merges, via `scripts/merge-gate.sh`.
+- **Git:** branch from `develop` (`feature/|fix/|docs/|chore/<task-id>-<slug>`). Never commit to `develop` or `master`. No force-push. Only the Lead Coordinator merges, via `scripts/merge-gate.sh`. One checkout, no git worktrees (DEC-094).
 - **Quality:** `./scripts/gate.sh` green; tests with every change; never weaken tests; evidence in `evidence/<task-id>/`; independent QA before merge.
 - **Frontend:** `web/src/ui/` components and tokens only; all states; vi + en strings; verify at 360 / 768 / 1280; WCAG 2.2 AA.
 - **Stack:** Java 25 + Spring Boot 4.1 (Modulith, JPA, Flyway, PostgreSQL 18), React + TS + Vite, Podman. No new infrastructure without an ADR.

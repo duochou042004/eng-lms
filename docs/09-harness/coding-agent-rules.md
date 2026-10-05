@@ -25,8 +25,8 @@
 2. Conventional Commits (`feat(students): add credentials card`). Small commits that each build. Trailers: `Task:`, `Refs:`, plus the co-author trailer if required.
 3. Only the LC merges, through the merge gate (git-governance.md).
 4. **One checkout, no git worktrees** (PO, DEC-094): all work happens in the main checkout `/home/kali/App_sources/eng-lms`, so the PO can follow it in VSCode.
-   Subagents run there one at a time on the task branch (QA and SEC may run together only while nobody changes the checkout: same head, no branch switch,
-   no commits). The LC does not switch branches while a subagent runs.
+   Subagents run there **one at a time** on the task branch, QA and SEC included (they build and run the app in the shared `backend/target`, `web/dist`
+   and ports 8080/8081). The LC alone switches branches, never while a subagent runs.
 5. **Development-phase secrets rule** (PO, DEC-094, until T-M8.7 restores it): agents may read, create and edit `.env`, `.env.*` and `.data/**` for local
    development. They hold **dev-only values**: never a real or production secret, API key or personal data. They stay git-ignored, are never committed or
    pasted into evidence, PR comments or logs, and anything that needs a real secret is a PO action.

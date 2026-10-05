@@ -16,7 +16,7 @@
 ## 2. Procedure per task
 
 ```text
-1. Prepare   : checkout the PR branch; ./scripts/dev-up (DB) ; build & run packaged app with e2e profile ; seed QA world (scripts/seed-e2e)
+1. Prepare   : verify the checkout is on the PR head (the LC switches branches, DEC-094); ./scripts/dev-up (DB) ; build & run packaged app with e2e profile ; seed QA world (scripts/seed-e2e)
 2. Plan      : write qa/plans/<task-id>.md — each AC → scenario(s) (happy, edge, negative, isolation), viewports, a11y checks, exploratory charter
 3. Execute   : automated scenarios (qa/e2e/<task-id>.spec.ts, Playwright) + manual exploratory session (timeboxed 30–60 min) with notes
 4. Evidence  : evidence/<task-id>/qa/{report.md, screenshots/*.png, playwright-report link or summary, a11y.json}
