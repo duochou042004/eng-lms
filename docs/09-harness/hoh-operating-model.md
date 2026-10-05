@@ -51,10 +51,10 @@ RELEASE LOOP (owner LC + PO): release branch → G6 → master + tag → deploy 
 
 ## 4. Parallelism
 
-- Backend and frontend packets of the same feature may run in parallel **after** the API contract for that feature is merged (a contract-first
-  sub-packet: an OpenAPI change + stub controller returning 501 + MSW handlers).
-- Two implementers never edit the same module in parallel. The LC serialises packets per module.
-- QA may evaluate task N while task N+1 is being implemented.
+- **One checkout, one subagent at a time** (PO, DEC-094; coding-agent-rules §3.4): packets, QA and reviews run one after another in the main checkout.
+  Running work in parallel (e.g. backend and frontend packets of one feature, or QA of task N while N+1 is implemented) would need separate checkouts and
+  therefore a new PO decision.
+- A frontend packet may still start from a merged API contract (a contract-first sub-packet: an OpenAPI change + stub controller returning 501 + MSW handlers).
 
 ## 5. Milestone retrospective (template: `evidence/<milestone>/retro.md`)
 

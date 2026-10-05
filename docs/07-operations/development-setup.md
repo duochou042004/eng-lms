@@ -17,7 +17,7 @@ Every step is idempotent; check each one with the command after `→`.
    (`git config user.name` / `user.email`) as on GitHub; git push credentials for both hosts (the PO runs `gh auth setup-git` and sets glab's helper, e.g.
    `git config --global credential.https://gitlab.com.helper '!glab auth git-credential'`; with a snap `glab`, give its full path `!/snap/bin/glab`; the agent may set the helper with the PO's OK, no secret is entered, DEC-084) → `git config --get-regexp '^credential\.'`. Agents never enter credentials.
 3. **Clone setup:** `./scripts/install-hooks.sh` → `git config --get core.hooksPath` = `scripts/hooks`; `git remote add gitlab https://gitlab.com/duochou042004/eng-lms.git`
-   (if missing) → `git remote -v`; `cp .env.example .env` (dev-only values; **the PO runs it**: the agent deny rule `Read(./.env.*)` blocks the copy) → `test -f .env`.
+   (if missing) → `git remote -v`; `cp .env.example .env` (dev-only values; agents may run it during development, DEC-094) → `test -f .env`.
 4. **Podman socket (once per machine, as DEC-044):** `systemctl --user enable --now podman.socket` → `source scripts/env.sh` prints `DOCKER_HOST=…`.
 5. **Dev database:** `./scripts/dev-up.sh` (pulls the digest-pinned `postgres:18`, waits for health) → `podman ps` shows it healthy.
 6. **Installs:** `(cd web && pnpm install --frozen-lockfile)`, `(cd e2e && pnpm install --frozen-lockfile && pnpm browsers)`, `(cd qa && pnpm install --frozen-lockfile)`.
