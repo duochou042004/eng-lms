@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-10-04T14:18:18Z",
-  "updatedBy": "backend-implementer (T-M2.1 SEC round 1 fixes, Opus 5.5)",
+  "updatedAt": "2026-10-05T15:44:59Z",
+  "updatedBy": "lead-coordinator (session 2026-10-04 #2, Opus 5.5)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -30,32 +30,6 @@
     "exitCriteria": "FR-AUTH-01..10 and FR-STU-01..07 accepted; authorization-matrix and student-isolation harnesses fail on any unregistered endpoint; add-student flow E2E at 360/768/1280 within its step budget; security review of authentication passed (docs/01-product/roadmap.md)."
   },
   "currentTask": {
-    "id": "T-M2.1",
-    "title": "Identity core: accounts, tutor bootstrap, login/logout/session",
-    "status": "in_review",
-    "ownerRole": "BE",
-    "branch": "feature/T-M2.1-identity-core",
-    "packet": "docs/tasks/T-M2.1-identity-core.md",
-    "pr": "#52",
-    "lastCommit": "ced08f0",
-    "startedAt": "2026-10-04T08:26:09Z",
-    "entryGate": [
-      "M1 done — met (DEC-088)",
-      "Packet G0 — met (PR #49, bb6fbd5; DOCS-REVIEW rounds 1-4, final PASS)",
-      "PO start signal — met (DEC-091; DEC-089 (6)-(8) confirmed)"
-    ],
-    "nextSteps": [
-      "SEC delta re-review of round-1 fixes (ced08f0..) and QA re-test of F1/F2/F5 (DEC-092)",
-      "CI green on the final head, verdicts, LC-APPROVED, merge-gate, gitlab-sync; QA record PR (qa/ branch)"
-    ],
-    "trace": [
-      "FR-AUTH-01..06",
-      "FR-AUTH-09",
-      "FR-AUTH-10",
-      "ADR-0005"
-    ]
-  },
-  "nextTask": {
     "id": "T-M2.2",
     "title": "Authorization matrix + student-isolation harness (registers T-M2.1's auth endpoints)",
     "status": "draft",
@@ -66,13 +40,38 @@
     "lastCommit": null,
     "startedAt": null,
     "entryGate": [
-      "T-M2.1 merged"
+      "T-M2.1 merged — met (a93bcc1)",
+      "Packet G0 — pending (to write, task-packet skill, fresh DOCS-REVIEW)",
+      "PO start signal — pending"
     ],
     "nextSteps": [
-      "Write the packet to G0 (task-packet skill) with a fresh DOCS-REVIEW"
+      "Write the T-M2.2 packet to G0: @Audience, policy registry + verifier, authz-matrix and student-isolation harnesses failing on any unregistered endpoint, secret scan, ArchUnit student rules; register GET /auth/session, POST /auth/login|logout|password (evidence/T-M2.1/summary.md table)",
+      "Fresh DOCS-REVIEW, merge the packet, ask the PO for the start signal"
     ],
     "trace": [
-      "backlog M2"
+      "backlog M2",
+      "T-M2.1 hand-over (evidence/T-M2.1/summary.md)"
+    ]
+  },
+  "nextTask": {
+    "id": "T-M2.3",
+    "title": "Students backend (create-with-account, username suggestion, status, password reset, search); also SEC S4-1 login-vs-disable race",
+    "status": "draft",
+    "ownerRole": "BE",
+    "branch": null,
+    "packet": null,
+    "pr": null,
+    "lastCommit": null,
+    "startedAt": null,
+    "entryGate": [
+      "T-M2.2 merged"
+    ],
+    "nextSteps": [
+      "Packet after T-M2.2"
+    ],
+    "trace": [
+      "backlog M2",
+      "DEC-092"
     ]
   },
   "completed": [
@@ -219,11 +218,19 @@
       "mergeCommit": "20625d9",
       "evidence": "evidence/T-M1.18/summary.md",
       "note": "Merged via scripts/merge-gate.sh (PR #51) at head 41dbee5; CI 7/7 green; DOCS-REVIEW PASS (F1-F4 fixed in-task, DEC-088 rule). GitLab mirror synced (DEC-091)."
+    },
+    {
+      "id": "T-M2.1",
+      "title": "Identity core: accounts, tutor bootstrap, login/logout/session",
+      "completedAt": "2026-10-05T15:38:00Z",
+      "mergeCommit": "a93bcc1",
+      "evidence": "evidence/T-M2.1/summary.md",
+      "note": "PO start DEC-091. Merged via merge-gate (PR #52) at a6deca2; CI 7/7; gate PASS. SEC round 1 CHANGES REQUESTED (S2-1 lock across bcrypt, S2-2 no body limit, S3-1 remember-me 500) -> fixed in-task, round 2 APPROVED (S4-10/S4-11 fixed by the LC). QA round 1 PASS WITH MINOR, re-test PASS at a6deca2 (x20: 20/20, 67 tests). Records: QA PR #53, security review in the merge-record PR (DEC-092, DEC-093)."
     }
   ],
   "tests": {
-    "lastRun": "2026-10-04T00:31:17Z",
-    "summary": "M1 G5 regression at fc288b3: QA regression 132/132 per engine (Chromium, Firefox, WebKit x 6 viewports), 396/396 x3; implementer E2E 161 passed on 6 viewports; gate.sh PASS (12 steps; backend 97, web 88, E2E 86); CI 7/7 (DEC-087).",
+    "lastRun": "2026-10-05T15:44:59Z",
+    "summary": "T-M2.1 at a6deca2: backend 215 tests (mvnw verify, CI); CI 7/7; gate PASS (13 steps); QA re-test PASS, timing set x20: 20/20 runs, 67 tests each (DEC-093).",
     "suites": [
       {
         "name": "backend (./mvnw -B verify)",
@@ -249,35 +256,34 @@
   },
   "gates": {
     "G0": {
-      "status": "pass",
-      "note": "T-M2.1: packet G0 (DEC-090) + PO start signal (DEC-091)"
+      "status": "pending",
+      "note": "T-M2.2: packet to write"
     },
     "G1": {
-      "status": "pass",
-      "note": "T-M2.1 implemented (AC1-AC11), gate PASS"
+      "status": "n/a",
+      "note": "T-M2.2 not started"
     },
     "G2": {
-      "status": "pass",
-      "note": "T-M2.1 CI 7/7 at 57c9cfe"
+      "status": "n/a",
+      "note": "T-M2.2 not started"
     },
     "G3": {
-      "status": "pending",
-      "note": "T-M2.1 round 1: SEC CHANGES REQUESTED (fixed at ced08f0), QA PASS WITH MINOR; delta re-review pending (DEC-092)"
+      "status": "n/a",
+      "note": "T-M2.2: DOCS-REVIEW for the packet"
     },
     "G4": {
       "status": "n/a",
-      "note": "T-M2.1: merge via merge-gate"
+      "note": "T-M2.1 merged via merge-gate (a93bcc1)"
     },
     "G5": {
       "status": "pass",
-      "note": "M1 closed by the PO (DEC-088); regression DEC-087"
+      "note": "M1 closed by the PO (DEC-088)"
     }
   },
   "blockers": [],
   "decisions": {
     "log": "docs/10-governance/decision-log.md",
     "recent": [
-      "DEC-082",
       "DEC-083",
       "DEC-084",
       "DEC-085",
@@ -287,7 +293,8 @@
       "DEC-089",
       "DEC-090",
       "DEC-091",
-      "DEC-092"
+      "DEC-092",
+      "DEC-093"
     ],
     "pendingPO": [
       "OQ-03",
@@ -811,6 +818,11 @@
       "at": "2026-10-04T14:18:18Z",
       "actor": "lead-coordinator",
       "event": "T-M2.1 PR #52: G3 round 1 SEC CHANGES REQUESTED (S2-1, S2-2, S3-1), QA PASS WITH MINOR; all fixed in-task at ced08f0 (DEC-092); delta re-review next."
+    },
+    {
+      "at": "2026-10-05T15:44:59Z",
+      "actor": "lead-coordinator",
+      "event": "T-M2.1 merged via merge-gate (PR #52, a93bcc1; QA PASS, SEC APPROVED, CI 7/7); mirror synced; QA record PR #53. Next: T-M2.2 packet (DEC-093)."
     }
   ]
 }
