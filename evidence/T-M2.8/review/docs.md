@@ -21,3 +21,11 @@ Independent QA stays possible without worktrees (independence = separate session
 | F8 | S4 | R-21 trigger misses tutor UAT #1 (T-M5.7) with real content | Fixed |
 | F9 | S4 | qa-protocol "checkout the PR branch" conflicts with LC-only branch switches | Fixed: "verify the checkout is on the PR head" |
 | — | note | CLAUDE.md Git non-negotiables could name the rule | Done: "One checkout, no git worktrees (DEC-094)" |
+
+## Round 2 — delta `49a8cc9..83bba21` — PASS
+check-docs PASS; path ownership PASS (15 files); prompt 3917 characters. F1–F9 and the CLAUDE.md note verified fixed (QA/SEC strictly sequential and stated
+consistently in coding-agent-rules §3.4, DEC-094, HANDOFF and the prompt; operating model §4; T-M8.4 depends on T-M8.7; DEC-085/DEC-091 cited; T-M8.7
+reverts development-setup §0 step 3; restore baseline named; R-21 out of `risks.top`; R-21 trigger includes T-M5.7; qa-protocol prepare step). The round-1
+record is accurate. No new findings; `.claude/settings.json` untouched by the delta.
+
+Verdict line: `DOCS-REVIEW T-M2.8: PASS`
