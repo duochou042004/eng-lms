@@ -107,3 +107,9 @@ kind of problem (`PASSWORD_UNCHANGED` is not added to policy errors; saves one b
   `${englms.cli}` into SpEL; `ResetTutorPasswordCliTest.anUnknownCommandExitsWithOneAndNamesTheKnownCommands` is parameterised with a quote-containing value.
 - S4-12: note for T-M2.4 (shared-device UX), no change. Targeted run: ResetTutorPasswordCliTest 4, AuthenticationServiceTest 2, StartupScenariosTest 11,
   AuditIntegrationTest 4, ModularityTests green; full verification by CI.
+- CI at `3c8b882`: `anUnrelatedLoginStaysFastDuringABurstOnOneUsername` failed on the 2-core runner (6316 ms during the burst vs 347 ms alone: 30 parallel
+  bcrypts are CPU-bound there). The test now compares the unrelated login during a burst on `tutor.one` with the same burst on unknown usernames (same CPU
+  load, no row to lock): bound `unknown × 1.5 + 1000 ms`. Mutation check (bcrypt moved back inside the locked transaction): this test fails at 6517 vs 708 ms
+  and `parallelFailedLoginsTakeSimilarTimeForUnknownAndExistingUsernames` at 1857 vs 309 ms; restored, `AuthApiIntegrationTest` 53/53 green.
+- `review/security.md` is not on this branch (path ownership: implementation branches must not write reviewer evidence); the LC records it in the post-merge
+  record PR together with the QA report.

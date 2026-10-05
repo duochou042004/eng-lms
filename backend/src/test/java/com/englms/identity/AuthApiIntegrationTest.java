@@ -210,33 +210,46 @@ class AuthApiIntegrationTest {
 
 	/**
 	 * SEC review S2-1: a burst on one username holds no locks or connections that another user's sign-in needs. With the
-	 * lock held across bcrypt the 30 attempts were serialised and an unrelated login waited ~20 × its own time (6.4 s);
-	 * now it only shares the CPU. Bound: max(3 s, 12 × a lone login's median), loose for a loaded machine.
+	 * lock held across bcrypt each queued attempt kept a pooled connection while it waited, so an unrelated login waited
+	 * for the whole serialised burst (6.4 s). Compared with the same burst on unknown usernames (same CPU load, no row to
+	 * lock), so the bound holds on a slow CI runner too, where 30 bcrypts alone take seconds.
 	 */
 	@Test
 	void anUnrelatedLoginStaysFastDuringABurstOnOneUsername() throws Exception {
 		student("student.c", false);
+		long unknownBurst = unrelatedLoginMillisDuringBurstOn(null);
+		long existingBurst = unrelatedLoginMillisDuringBurstOn("tutor.one");
+
+		assertThat(existingBurst).as("unrelated login %d ms during a burst on tutor.one, %d ms during one on unknown names",
+				existingBurst, unknownBurst)
+			.isLessThan(unknownBurst * 3 / 2 + 1000);
+	}
+
+	/** An unrelated user's sign-in time while 30 wrong-password logins run on {@code target} (null: 30 unknown names). */
+	long unrelatedLoginMillisDuringBurstOn(String target) throws Exception {
 		Browser unrelated = browser();
 		unrelated.get("/api/v1/auth/session");
-		long alone = medianMillis(() -> new Browser(port).login("student.c", "wrong-password-1", false));
+		List<Browser> attackers = new ArrayList<>();
+		for (int i = 0; i < 30; i++) {
+			Browser attacker = browser();
+			attacker.get("/api/v1/auth/session");
+			attackers.add(attacker);
+		}
 		try (ExecutorService pool = Executors.newVirtualThreadPerTaskExecutor()) {
-			List<Browser> attackers = new ArrayList<>();
-			for (int i = 0; i < 30; i++) {
-				Browser attacker = browser();
-				attacker.get("/api/v1/auth/session");
-				attackers.add(attacker);
-			}
 			List<Future<Response>> burst = new ArrayList<>();
 			for (Browser attacker : attackers) {
-				burst.add(pool.submit(() -> attacker.login("tutor.one", "wrong-password-1", false)));
+				String username = target != null ? target : "nobody." + UUID.randomUUID();
+				burst.add(pool.submit(() -> attacker.login(username, "wrong-password-1", false)));
 			}
 			Thread.sleep(100);
-			long during = timed(() -> assertThat(unrelated.login("student.c", PASSWORD, false).status()).isEqualTo(200));
+			long start = System.nanoTime();
+			assertThat(unrelated.login("student.c", PASSWORD, false).status()).isEqualTo(200);
+			long during = (System.nanoTime() - start) / 1_000_000;
 			for (Future<Response> attempt : burst) {
 				assertThat(attempt.get().status()).isEqualTo(401);
 			}
-			assertThat(during).as("unrelated login %d ms during the burst, %d ms alone", during, alone)
-				.isLessThan(Math.max(3000, alone * 12));
+			unrelated.post("/api/v1/auth/logout", "");
+			return during;
 		}
 	}
 
@@ -258,12 +271,6 @@ class AuthApiIntegrationTest {
 			}
 			return (System.nanoTime() - start) / 1_000_000;
 		}
-	}
-
-	static long timed(Runnable action) {
-		long start = System.nanoTime();
-		action.run();
-		return (System.nanoTime() - start) / 1_000_000;
 	}
 
 	/** SEC review S2-2: a body over the 1 MB JSON limit is refused before the service; over-long fields get the generic 401. */
