@@ -98,6 +98,8 @@ scans every student-reachable response for B's identifiers and `SECRET-*` marker
   `/api/v1/auth/**`; `AUTHENTICATED` or non-`GET` `PUBLIC` on `/api/v1/meta`; `PUBLIC` on a path the L1 gate does not open; a `com.englms` handler under an
   unknown `/api/**` prefix or outside `/api/**`; a handler without an explicit HTTP method; a multi-pattern handler where only one pattern breaks a rule.
   The real application starts and the CLI context (no web application) is unaffected. Each case is proven by a test context with a test-only controller.
+- AC2a (QA-S4-1, DEC-088 in-task): an `/api/**` pattern with an empty, `.` or `..` segment (e.g. `/api/v1/tutor/{x}/../../student/probe`,
+  `/api/v1/tutor//probe`) is refused at startup as an ambiguous path pattern; proven by two more `AudienceVerifierTest` cases.
 - AC3 (NFR-SEC-03): the policy registry has entries for exactly the five live mappings with the statuses in the design notes, and the matrix test makes
   every call (each actor signed in through `POST /api/v1/auth/login`, CSRF for unsafe methods) and asserts each status.
 - AC4 (NFR-SEC-03, M2 exit criterion): the completeness check fails, naming the mapping, when a handler mapping has no registry entry, and also when a

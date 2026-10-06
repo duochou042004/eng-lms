@@ -54,3 +54,8 @@ ENGLMS_TASK=T-M2.2 ./scripts/gate.sh
 - The scan matches B's UUIDs in their canonical text form only (not e.g. without dashes or base64-encoded).
 - No `CurrentStudent`, owner-scoped repositories or production student-owned resources yet (T-M2.3); B-on-A is N/A for all live entries.
 - The matrix signs in once per (entry, actor): 20 sign-ins today (bcrypt 12); revisit per the packet's risk note when the registry grows.
+
+## G3: QA fixes (LC, in-task per DEC-088)
+QA PASS WITH MINOR at `071aec6` (report recorded via the `qa/T-M2.2` PR). QA-S4-1 (the verifier accepted `/api/**` patterns with `.`/`..`/empty segments,
+e.g. `/api/v1/tutor/{x}/../../student/qa-dots`; unreachable today, defence in depth) fixed: `AudienceVerifier` refuses such patterns as ambiguous; packet
+AC2a; security.md §4. Proof: `AudienceVerifierTest` cases `DotSegments`, `EmptySegment` (21/21 green).

@@ -102,7 +102,7 @@ The **authz matrix test** enumerates `RequestMappingHandlerMapping`. For each ha
   a rule is broken. In scope: handlers whose bean class is in `com.englms..` or with a pattern under `/api/`. Rules, per pattern of a handler (a
   multi-pattern handler must satisfy each): `/api/v1/tutor/**` → `TUTOR`; `/api/v1/student/**` → `STUDENT`; `/api/v1/auth/**` → `PUBLIC` or
   `AUTHENTICATED`; `/api/v1/meta` → `PUBLIC` with `GET`/`HEAD` only (all that L1 opens there); any other `/api/**` path, or a `com.englms` handler
-  outside `/api/**` → error. Every in-scope handler needs `@Audience` (method or class; the method wins) and explicit HTTP methods. Third-party handlers
+  outside `/api/**` → error; so is an `/api/**` pattern with an empty, `.` or `..` segment (ambiguous namespace; T-M2.2 QA-S4-1). Every in-scope handler needs `@Audience` (method or class; the method wins) and explicit HTTP methods. Third-party handlers
   outside `/api/**` (Boot's `/error`, springdoc's `/v3/api-docs`) are ignored. `PUBLIC` is therefore only accepted where L1 permits anonymous access.
 - **Policy registry** `backend/src/test/java/com/englms/security/PolicyRegistry.java`: one entry per mapping (`METHOD /pattern`, no `HEAD`/`OPTIONS`
   entries: matched implicitly) with a sample request and the expected status for anonymous, tutor, student A, student B on A's resource (only when the

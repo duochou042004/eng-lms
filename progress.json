@@ -16,7 +16,7 @@
       }
     ]
   },
-  "updatedAt": "2026-10-06T04:32:24Z",
+  "updatedAt": "2026-10-06T04:58:28Z",
   "updatedBy": "lead-coordinator (session 2026-10-06, Opus 5.5)",
   "phase": {
     "id": "P1",
@@ -32,7 +32,7 @@
   "currentTask": {
     "id": "T-M2.2",
     "title": "Authorization matrix + student-isolation harness (registers T-M2.1's auth endpoints)",
-    "status": "in_review",
+    "status": "qa",
     "ownerRole": "BE",
     "branch": "feature/T-M2.2-authz-isolation-harness",
     "packet": "docs/tasks/T-M2.2-authz-isolation-harness.md",
@@ -45,8 +45,8 @@
       "PO start signal — given (DEC-095)"
     ],
     "nextSteps": [
-      "CI green on the PR → QA (fresh qa-evaluator) → SEC (fresh security-reviewer), one at a time in the main checkout",
-      "Verdicts, LC-APPROVED, merge-gate, gitlab-sync; QA report via qa/T-M2.2, SEC record via a chore merge-record PR"
+      "SEC review (fresh security-reviewer) at the QA-fix head",
+      "Verdicts after CI green, LC-APPROVED, merge-gate, gitlab-sync; QA report via qa/T-M2.2; SEC record via a chore merge-record PR"
     ],
     "trace": [
       "backlog M2",

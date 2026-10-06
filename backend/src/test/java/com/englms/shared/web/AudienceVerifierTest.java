@@ -48,6 +48,8 @@ class AudienceVerifierTest {
 				Arguments.of(PublicOnStudent.class, "PUBLIC on /api/v1/student/**"),
 				Arguments.of(PublicOnTutor.class, "PUBLIC on /api/v1/tutor/**"),
 				Arguments.of(UnknownApiPrefix.class, "/api/v1/probe: unknown /api/** prefix"),
+				Arguments.of(DotSegments.class, "/api/v1/tutor/{x}/../../student/probe: ambiguous path pattern"),
+				Arguments.of(EmptySegment.class, "/api/v1/tutor//probe: ambiguous path pattern"),
 				Arguments.of(OutsideApi.class, "/probe: a com.englms handler outside /api/**"),
 				Arguments.of(NoHttpMethod.class, "no explicit HTTP method"),
 				Arguments.of(MultiPattern.class, "/api/v1/student/probe: TUTOR on /api/v1/student/**"),
@@ -223,6 +225,28 @@ class AudienceVerifierTest {
 	static class UnknownApiPrefix {
 
 		@GetMapping("/api/v1/probe")
+		@Audience(TUTOR)
+		String probe() {
+			return "";
+		}
+
+	}
+
+	@RestController
+	static class DotSegments {
+
+		@GetMapping("/api/v1/tutor/{x}/../../student/probe")
+		@Audience(TUTOR)
+		String probe() {
+			return "";
+		}
+
+	}
+
+	@RestController
+	static class EmptySegment {
+
+		@GetMapping("/api/v1/tutor//probe")
 		@Audience(TUTOR)
 		String probe() {
 			return "";

@@ -1,6 +1,7 @@
 package com.englms.shared.web;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -23,9 +24,10 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
  * Rules, for each pattern: {@code /api/v1/tutor/**} → {@code TUTOR}; {@code /api/v1/student/**} → {@code STUDENT};
  * {@code /api/v1/auth/**} → {@code PUBLIC} or {@code AUTHENTICATED}; {@code /api/v1/meta} → {@code PUBLIC} with
  * {@code GET}/{@code HEAD} only (all the URL gate opens there); any other {@code /api/**} path, or a {@code com.englms}
- * handler outside {@code /api/**}, is an error. Every in-scope handler names its HTTP methods. Third-party handlers
- * outside {@code /api/**} (Boot's {@code /error}, springdoc) are ignored. The operator CLI has no web application, so
- * the check does not run there.
+ * handler outside {@code /api/**}, is an error, and so is an {@code /api/**} pattern with an empty, {@code .} or
+ * {@code ..} segment (its namespace is ambiguous; T-M2.2 QA-S4-1). Every in-scope handler names its HTTP methods.
+ * Third-party handlers outside {@code /api/**} (Boot's {@code /error}, springdoc) are ignored. The operator CLI has
+ * no web application, so the check does not run there.
  */
 @Component
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
@@ -117,6 +119,9 @@ public class AudienceVerifier implements SmartInitializingSingleton {
 		if (!isApi(pattern)) {
 			return englms ? "a com.englms handler outside /api/**" : null;
 		}
+		if (ambiguous(pattern)) {
+			return "ambiguous path pattern (an empty, '.' or '..' segment hides its namespace)";
+		}
 		if (under(pattern, TUTOR)) {
 			return expect(audience, Set.of(Kind.TUTOR), "/api/v1/tutor/**");
 		}
@@ -139,6 +144,11 @@ public class AudienceVerifier implements SmartInitializingSingleton {
 	private static String expect(Kind audience, Set<Kind> allowed, String namespace) {
 		return (audience == null || allowed.contains(audience)) ? null
 				: audience + " on " + namespace + " (allowed: " + new TreeSet<>(allowed) + ")";
+	}
+
+	private static boolean ambiguous(String pattern) {
+		String[] segments = pattern.substring(1).split("/", -1);
+		return Arrays.stream(segments).anyMatch(s -> s.isEmpty() || s.equals(".") || s.equals(".."));
 	}
 
 	private static boolean isApi(String pattern) {
