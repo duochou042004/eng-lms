@@ -36,8 +36,8 @@
     "ownerRole": "BE",
     "branch": "feature/T-M2.2-authz-isolation-harness",
     "packet": "docs/tasks/T-M2.2-authz-isolation-harness.md",
-    "pr": 57,
-    "lastCommit": "00987ba",
+    "pr": "#57",
+    "lastCommit": "1dd6805",
     "startedAt": "2026-10-06T04:05:46Z",
     "entryGate": [
       "T-M2.1 merged — met (a93bcc1)",
