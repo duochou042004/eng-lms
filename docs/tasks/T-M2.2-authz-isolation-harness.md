@@ -111,7 +111,9 @@ scans every student-reachable response for B's identifiers and `SECRET-*` marker
 - AC7 (ADR-0016 §3): for an entry with a student-owned sample resource, the harness calls it as B on A's resource and expects 404; proven with a
   test-only fixture handler and contributor (no production resource exists yet). C (disabled) cannot sign in (401), so C is never an acting student.
 - AC8 (api-conventions §9, authz-isolation skill): `./mvnw -B verify -Dgroups=security` runs the matrix, isolation and student ArchUnit tests (the
-  surefire report lists all three) and is green; the full `./mvnw verify` and `./scripts/gate.sh` are green; no existing test changed except to add `@Audience` expectations.
+  surefire report lists all three) and is green; the full `./mvnw verify` and `./scripts/gate.sh` are green; no existing test changed except to add `@Audience`
+  expectations and to move `SpaServingTest`'s test-only `ProbeController` from `/api/v1/probe` to `/api/v1/tutor/probe` with `@Audience(TUTOR)` (the test
+  already runs as a mock TUTOR, so L1 and the header assertions are unchanged; DOCS-REVIEW round 2 N1).
 
 ## Test plan
 - Implementation: unit tests of the verifier's rules on synthetic mappings plus context-start tests (AC2); the matrix test against the real app on a random

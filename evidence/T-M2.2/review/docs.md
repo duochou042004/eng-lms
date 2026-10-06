@@ -46,3 +46,25 @@ Recorded by the LC from the docs-reviewer's final report (the agent does not wri
 No S1, S2 or SCOPE findings. All findings fixed in-task (DEC-088, DEC-095).
 
 DOCS-REVIEW T-M2.2: PASS
+
+## Round 2
+
+- Reviewer: Docs Reviewer (fresh context; did not write the reviewed docs)
+- Date: 2026-10-06T03:57:35Z
+- Head SHA: `428495113047b994ba0d221c66f75f76a10e93fa`
+- `./scripts/check-docs.sh`: **PASS**
+
+F1–F13: all confirmed fixed (F1 throttle property real, `application.properties:53`, same pattern as `AuthApiIntegrationTest`; F2 `@ArchTag` present in
+`archunit-junit5-api` 1.5.1 and selected by `-Dgroups`; F3 every rule in AC2, all live mappings declare methods; F4 backlog T-M2.3 row; F5 `scripts/env.sh`;
+F6 servlet-only; F7 wording; F8 trace; F9 references; F10 every response scanned, random-suffix usernames; F11 main checkout; F12 method-aware `PUBLIC`
+matches `SecurityConfiguration` L1; F13 effective names, rule 4 scope). DEC-095 consistent with the record and `progress.json`; no scope creep, no broken references.
+
+### New findings
+
+| ID | Sev | Location | Finding | Fix | Resolution |
+|---|---|---|---|---|---|
+| N1 | S3 | AC2, AC8; `backend/src/test/java/com/englms/shared/web/SpaServingTest.java:167-174` | The test-only `ProbeController` (`/api/v1/probe`, no `@Audience`) will stop its context once the verifier exists (missing annotation and unknown prefix), contradicting AC8's "no existing test changed except to add `@Audience`" | Move the probe to `/api/v1/tutor/probe` with `@Audience(TUTOR)` (the test runs as a mock TUTOR); widen AC8's exception | Fixed in AC8 (DEC-088) |
+
+No S1, S2 or SCOPE findings.
+
+DOCS-REVIEW T-M2.2: PASS
