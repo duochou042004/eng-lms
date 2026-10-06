@@ -59,3 +59,26 @@ ENGLMS_TASK=T-M2.2 ./scripts/gate.sh
 QA PASS WITH MINOR at `071aec6` (report recorded via the `qa/T-M2.2` PR). QA-S4-1 (the verifier accepted `/api/**` patterns with `.`/`..`/empty segments,
 e.g. `/api/v1/tutor/{x}/../../student/qa-dots`; unreachable today, defence in depth) fixed: `AudienceVerifier` refuses such patterns as ambiguous; packet
 AC2a; security.md §4. Proof: `AudienceVerifierTest` cases `DotSegments`, `EmptySegment` (21/21 green).
+
+## G3 round 1 SEC fixes (backend-implementer, AC9, in-task per DEC-088)
+SEC APPROVED at `bc09303` with S3-1..S3-4 and S4-1..S4-3; all fixed in `11473e0` (code) and `0819571` (docs). Each has a failing-fixture proof.
+
+| Finding | Fix | Proof (test → fixture) |
+|---|---|---|
+| S3-1 only `RequestMappingHandlerMapping` seen | `AudienceVerifier` iterates every `HandlerMapping` bean: refuses a `RouterFunctionMapping` with a router function, and any `AbstractUrlHandlerMapping` key under `/api` or with a `com.englms` handler; SPA resource handlers allowed | `AudienceVerifierTest.refusesFunctionalRoutes` (`GET /api/v1/student/rf` route), `refusesAUrlHandlerMappingUnderApi`, `refusesAUrlHandlerMappingWithAnApplicationHandler`, `allowsTheSpaResourceHandlers` (`SpaWebConfiguration`) |
+| S3-2 keys collapse handlers differing by params/headers/consumes/produces | `SecurityHarness.liveKeys` returns key → handler methods; `assertComplete` fails naming a key with more than one handler method | `HarnessDetectionTest.completenessNamesAKeyServedByTwoHandlerMethods` (`SameKeyTwice`: `GET /api/v1/tutor/harness-twice` with and without `params = "full"`) |
+| S3-3 STUDENT not tied to `..web.student..` | Verifier: a `STUDENT` handler outside `..web.student..`, or a non-`STUDENT` handler in it, is refused | `AudienceVerifierTest` cases `StudentOutsideStudentWeb`, `StudentWebHandlers.TutorInStudentWeb`; valid `StudentWebHandlers.ValidStudent` starts. Test-only student handlers moved to `fixture/verifier/web/student/` and `fixture/harness/web/student/HarnessStudentHandlers` (+ `fixture/harness/HarnessItems`) |
+| S3-4 rule 4 misses types with a `@TutorPrivate` field | Rule 4 also matches classes with any `@TutorPrivate` field (inherited included) | `StudentIsolationRulesTest.ruleFourCatchesNotesLearningProfileAndTutorPrivateTypes` (`DependsOnTypeWithTutorPrivateField` → `PrivateTypes.LessonView.privateNote`) |
+| S4-1 literal `/api` scope | A pattern whose first segment is not a literal counts as API and is refused | `AudienceVerifierTest` cases `CatchAllHandler` (`fixture.verifier`, `/{*rest}`, third-party-like) and `WildcardFirstSegment` (`/*/v1/tutor/probe`) |
+| S4-2 `{studentId}` path variables | `/api/v1/student/**` patterns with a `{…studentId}` variable (case, `_`, `-` ignored) are refused | `AudienceVerifierTest` case `StudentWebHandlers.StudentIdVariable` (`{peer_StudentId}`) |
+| S4-3 parser not checked | Startup refused unless each `RequestMappingHandlerMapping` has a non-null, case-sensitive `PathPatternParser` | `AudienceVerifierTest.refusesACaseInsensitivePatternParser`, `refusesLegacyAntPathMatching` |
+
+Existing-test edits (no assertion weakened): `AudienceVerifierTest.Valid` lost its student handler (now `StudentWebHandlers.ValidStudent`, still in the
+start test); `MethodWins` proves method-over-class with `@Audience(PUBLIC)` on `POST /api/v1/auth/c` (class `TUTOR`), since a `STUDENT` method outside
+`..web.student..` is now refused; `HarnessDetectionTest` imports the moved fixtures and uses the `Map` returned by `liveKeys`.
+
+Results: `-Dgroups=security` BUILD SUCCESS, 75 tests (`security-groups.log`, at `0819571`). `ENGLMS_TASK=T-M2.2 ./scripts/gate.sh` PASS at `0819571`
+(13 steps, 394 s; backend 290 tests, E2E 86 passed / 19 skipped): `gate-20261006T051555Z.log`. Docs: security.md §4 (L2 rules, completeness),
+test-strategy §4 rule 4, authz-isolation skill (student handlers in `..web.student..`, one handler per key, no functional routes).
+
+Known limitation: URL-mapping handlers registered lazily by bean name (a `String` handler) are not resolved to their class; none exist.
