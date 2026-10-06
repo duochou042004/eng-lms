@@ -3,8 +3,11 @@ package com.englms.shared.web;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.englms.shared.web.Audience.Kind;
 import org.springframework.beans.factory.ObjectProvider;
@@ -12,9 +15,14 @@ import org.springframework.beans.factory.SmartInitializingSingleton;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.stereotype.Component;
+import org.springframework.util.ClassUtils;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.method.HandlerMethod;
+import org.springframework.web.servlet.HandlerMapping;
+import org.springframework.web.servlet.function.support.RouterFunctionMapping;
+import org.springframework.web.servlet.handler.AbstractUrlHandlerMapping;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
+import org.springframework.web.util.pattern.PathPatternParser;
 
 /**
  * Security.md §4 L2: refuses to start the application when a handler's {@link Audience} is missing or contradicts its
@@ -28,6 +36,15 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
  * {@code ..} segment (its namespace is ambiguous; T-M2.2 QA-S4-1). Every in-scope handler names its HTTP methods.
  * Third-party handlers outside {@code /api/**} (Boot's {@code /error}, springdoc) are ignored. The operator CLI has
  * no web application, so the check does not run there.
+ * <p>
+ * Since T-M2.2 SEC round 1: a pattern whose first segment is not a literal ({@code /{x}}, {@code /**},
+ * {@code /{*rest}}) counts as an API pattern (it can match {@code /api/**}) and is refused (S4-1); a
+ * {@code STUDENT} handler must live in a {@code ..web.student..} package and a {@code ..web.student..} handler must be
+ * {@code STUDENT} (S3-3); a {@code /api/v1/student/**} pattern must not carry a {@code {…studentId}} variable (S4-2);
+ * every request-mapping handler mapping must use a case-sensitive {@link PathPatternParser} (S4-3). Other handler
+ * mappings have no {@code @Audience}, so they are refused where they could serve the API: functional routes
+ * ({@link RouterFunctionMapping} with a router function) and URL mappings under {@code /api} or with a
+ * {@code com.englms} handler (S3-1). The SPA's resource handlers ({@code /**}, {@code /assets/**}) stay allowed.
  */
 @Component
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
@@ -43,20 +60,45 @@ public class AudienceVerifier implements SmartInitializingSingleton {
 
 	private static final Set<RequestMethod> META_METHODS = Set.of(RequestMethod.GET, RequestMethod.HEAD);
 
-	private final ObjectProvider<RequestMappingHandlerMapping> mappings;
+	private static final Pattern VARIABLE = Pattern.compile("\\{\\*?([^}:]+)");
 
-	AudienceVerifier(ObjectProvider<RequestMappingHandlerMapping> mappings) {
+	private final ObjectProvider<HandlerMapping> mappings;
+
+	AudienceVerifier(ObjectProvider<HandlerMapping> mappings) {
 		this.mappings = mappings;
 	}
 
 	@Override
 	public void afterSingletonsInstantiated() {
 		List<String> errors = new ArrayList<>();
-		mappings.orderedStream().flatMap(mapping -> handlers(mapping).stream()).forEach(handler -> {
-			Audience audience = audienceOf(handler.method());
-			violations((audience != null) ? audience.value() : null, handler.methods(), handler.patterns(),
-					handler.isEnglms())
-				.forEach(violation -> errors.add(handler + ": " + violation));
+		mappings.orderedStream().forEach(mapping -> {
+			switch (mapping) {
+				case RequestMappingHandlerMapping requestMappings -> {
+					PathPatternParser parser = requestMappings.getPatternParser();
+					if (parser == null || !parser.isCaseSensitive()) {
+						errors.add(mapping.getClass().getName()
+								+ ": not matching with a case-sensitive PathPatternParser (the URL gate's rules would not hold)");
+					}
+					handlers(requestMappings).forEach(handler -> {
+						Audience audience = audienceOf(handler.method());
+						violations((audience != null) ? audience.value() : null, handler.methods(), handler.patterns(),
+								handler.isEnglms(), handler.method().getBeanType())
+							.forEach(violation -> errors.add(handler + ": " + violation));
+					});
+				}
+				case RouterFunctionMapping routes when routes.getRouterFunction() != null -> errors.add(mapping.getClass()
+					.getName() + ": functional routes (RouterFunction beans) cannot carry @Audience; use @RestController handlers");
+				case AbstractUrlHandlerMapping urls -> urls.getHandlerMap().forEach((pattern, handler) -> {
+					String type = ClassUtils.getUserClass(handler).getName();
+					if (under(pattern, "/api") || type.startsWith("com.englms.")) {
+						errors.add(mapping.getClass().getName() + " " + pattern + " -> " + type
+								+ ": a URL handler mapping under /api or with a com.englms handler (no @Audience possible)");
+					}
+				});
+				default -> {
+					// Other mappings (e.g. a router-function mapping without routes) serve no application handler.
+				}
+			}
 		});
 		if (!errors.isEmpty()) {
 			throw new IllegalStateException("@Audience check failed (security.md §4 L2, ADR-0016 §5) for "
@@ -98,10 +140,18 @@ public class AudienceVerifier implements SmartInitializingSingleton {
 	}
 
 	/** The broken rules of one handler ({@code audience} null = not annotated); empty when it is fine. */
-	static List<String> violations(Kind audience, Set<RequestMethod> methods, Set<String> patterns, boolean englms) {
+	static List<String> violations(Kind audience, Set<RequestMethod> methods, Set<String> patterns, boolean englms,
+			Class<?> beanType) {
 		List<String> violations = new ArrayList<>();
 		if (audience == null) {
 			violations.add("no @Audience on the method or its class");
+		}
+		boolean studentWeb = ("." + beanType.getPackageName() + ".").contains(".web.student.");
+		if (audience == Kind.STUDENT && !studentWeb) {
+			violations.add("a STUDENT handler outside a ..web.student.. package (ADR-0016 §4)");
+		}
+		if (studentWeb && audience != null && audience != Kind.STUDENT) {
+			violations.add(audience + " on a ..web.student.. handler (STUDENT only)");
 		}
 		if (methods.isEmpty()) {
 			violations.add("no explicit HTTP method (a bare @RequestMapping matches every method)");
@@ -116,6 +166,9 @@ public class AudienceVerifier implements SmartInitializingSingleton {
 	}
 
 	private static String violation(Kind audience, Set<RequestMethod> methods, String pattern, boolean englms) {
+		if (!literalFirstSegment(pattern)) {
+			return "the first segment is not a literal, so the pattern can match /api/** paths";
+		}
 		if (!isApi(pattern)) {
 			return englms ? "a com.englms handler outside /api/**" : null;
 		}
@@ -126,6 +179,12 @@ public class AudienceVerifier implements SmartInitializingSingleton {
 			return expect(audience, Set.of(Kind.TUTOR), "/api/v1/tutor/**");
 		}
 		if (under(pattern, STUDENT)) {
+			Matcher variable = VARIABLE.matcher(pattern);
+			while (variable.find()) {
+				if (isStudentId(variable.group(1))) {
+					return "a student ID path variable {" + variable.group(1) + "} on /api/v1/student/** (ADR-0016 §2)";
+				}
+			}
 			return expect(audience, Set.of(Kind.STUDENT), "/api/v1/student/**");
 		}
 		if (under(pattern, AUTH)) {
@@ -151,8 +210,21 @@ public class AudienceVerifier implements SmartInitializingSingleton {
 		return Arrays.stream(segments).anyMatch(s -> s.isEmpty() || s.equals(".") || s.equals(".."));
 	}
 
+	/** Under {@code /api}, or with a first segment that is not a literal (it may match {@code /api/**} too). */
 	private static boolean isApi(String pattern) {
-		return under(pattern, "/api");
+		return under(pattern, "/api") || !literalFirstSegment(pattern);
+	}
+
+	private static boolean literalFirstSegment(String pattern) {
+		String first = pattern.startsWith("/") ? pattern.substring(1) : pattern;
+		int slash = first.indexOf('/');
+		first = (slash < 0) ? first : first.substring(0, slash);
+		return first.chars().noneMatch(c -> c == '{' || c == '*' || c == '?');
+	}
+
+	/** {@code studentId} or a name ending in it, ignoring case, {@code _} and {@code -} (as ArchUnit rule 3). */
+	static boolean isStudentId(String name) {
+		return name.replace("_", "").replace("-", "").toLowerCase(Locale.ROOT).endsWith("studentid");
 	}
 
 	private static boolean under(String pattern, String prefix) {

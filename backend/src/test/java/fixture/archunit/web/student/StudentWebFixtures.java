@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import com.englms.shared.web.TutorPrivate;
 import fixture.archunit.PrivateTypes.LearningProfileSummary;
+import fixture.archunit.PrivateTypes.LessonView;
 import fixture.archunit.PrivateTypes.PrivateRemark;
 import fixture.archunit.notes.FixtureNote;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -62,6 +63,9 @@ public final class StudentWebFixtures {
 	}
 
 	public record DependsOnTutorPrivateType(PrivateRemark remark) {
+	}
+
+	public record DependsOnTypeWithTutorPrivateField(LessonView lesson) {
 	}
 
 	public static class HoldsTutorPrivateField {

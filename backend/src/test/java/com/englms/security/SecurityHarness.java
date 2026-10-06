@@ -5,7 +5,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.regex.Matcher;
 
@@ -110,23 +112,36 @@ public final class SecurityHarness {
 		return hits;
 	}
 
-	/** {@code METHOD /pattern} of every handler mapping in L2 scope (the registry must list exactly these). */
-	public static Set<String> liveKeys(ApplicationContext context) {
-		Set<String> keys = new TreeSet<>();
+	/**
+	 * {@code METHOD /pattern} of every handler mapping in L2 scope (the registry must list exactly these), each with the
+	 * handler methods behind it. Handlers that differ only by params, headers, consumes or produces share a key.
+	 */
+	public static Map<String, List<String>> liveKeys(ApplicationContext context) {
+		Map<String, List<String>> keys = new TreeMap<>();
 		for (RequestMappingHandlerMapping mapping : context.getBeansOfType(RequestMappingHandlerMapping.class).values()) {
 			for (AudienceVerifier.Handler handler : AudienceVerifier.handlers(mapping)) {
-				handler.methods().forEach(method -> handler.patterns().forEach(pattern -> keys.add(method + " " + pattern)));
+				String name = handler.method().getBeanType().getName() + "#" + handler.method().getMethod().getName();
+				handler.methods()
+					.forEach(method -> handler.patterns()
+						.forEach(pattern -> keys.computeIfAbsent(method + " " + pattern, key -> new ArrayList<>()).add(name)));
 			}
 		}
 		return keys;
 	}
 
-	/** Fails naming each live mapping without a registry entry and each entry without a live mapping. */
-	public static void assertComplete(Set<String> live, Set<String> registered) {
-		Set<String> missing = new TreeSet<>(live);
+	/**
+	 * Fails naming each key served by more than one handler method (one registry entry could not cover them; T-M2.2 SEC
+	 * S3-2), each live mapping without a registry entry and each entry without a live mapping.
+	 */
+	public static void assertComplete(Map<String, List<String>> live, Set<String> registered) {
+		Map<String, List<String>> shared = new TreeMap<>(live);
+		shared.values().removeIf(handlers -> handlers.size() < 2);
+		assertThat(shared).as("keys served by more than one handler method (one policy-registry entry cannot cover both; "
+				+ "give each its own path)").isEmpty();
+		Set<String> missing = new TreeSet<>(live.keySet());
 		missing.removeAll(registered);
 		Set<String> stale = new TreeSet<>(registered);
-		stale.removeAll(live);
+		stale.removeAll(live.keySet());
 		assertThat(missing).as("handler mappings without a policy-registry entry (PolicyRegistry)").isEmpty();
 		assertThat(stale).as("policy-registry entries without a live handler mapping").isEmpty();
 	}

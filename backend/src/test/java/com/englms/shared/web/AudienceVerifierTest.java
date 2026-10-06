@@ -6,7 +6,11 @@ import static com.englms.shared.web.Audience.Kind.STUDENT;
 import static com.englms.shared.web.Audience.Kind.TUTOR;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.Map;
 import java.util.stream.Stream;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -14,8 +18,11 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import fixture.verifier.CatchAllHandler;
+import fixture.verifier.web.student.StudentWebHandlers;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.NestedExceptionUtils;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,7 +30,16 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.HttpRequestHandler;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.PathMatchConfigurer;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.servlet.function.RouterFunction;
+import org.springframework.web.servlet.function.RouterFunctions;
+import org.springframework.web.servlet.function.ServerResponse;
+import org.springframework.web.servlet.handler.SimpleUrlHandlerMapping;
+import org.springframework.web.servlet.mvc.ParameterizableViewController;
+import org.springframework.web.util.pattern.PathPatternParser;
 
 /**
  * T-M2.2 AC2: each L2 rule refuses the start of a servlet context holding one test-only controller, naming the
@@ -53,7 +69,13 @@ class AudienceVerifierTest {
 				Arguments.of(OutsideApi.class, "/probe: a com.englms handler outside /api/**"),
 				Arguments.of(NoHttpMethod.class, "no explicit HTTP method"),
 				Arguments.of(MultiPattern.class, "/api/v1/student/probe: TUTOR on /api/v1/student/**"),
-				Arguments.of(ClassLevelWrong.class, "STUDENT on /api/v1/tutor/**"));
+				Arguments.of(ClassLevelWrong.class, "STUDENT on /api/v1/tutor/**"),
+				// SEC round 1
+				Arguments.of(StudentOutsideStudentWeb.class, "a STUDENT handler outside a ..web.student.. package"),
+				Arguments.of(StudentWebHandlers.TutorInStudentWeb.class, "TUTOR on a ..web.student.. handler"),
+				Arguments.of(StudentWebHandlers.StudentIdVariable.class, "a student ID path variable {peer_StudentId}"),
+				Arguments.of(CatchAllHandler.class, "/{*rest}: the first segment is not a literal"),
+				Arguments.of(WildcardFirstSegment.class, "/*/v1/tutor/probe: the first segment is not a literal"));
 	}
 
 	@ParameterizedTest(name = "{0}")
@@ -81,7 +103,7 @@ class AudienceVerifierTest {
 
 	@Test
 	void startsWithValidHandlersAndTheMethodAnnotationWinsOverTheClass() {
-		web.withUserConfiguration(Valid.class, MethodWins.class).run(context -> {
+		web.withUserConfiguration(Valid.class, MethodWins.class, StudentWebHandlers.ValidStudent.class).run(context -> {
 			assertThat(context).hasNotFailed();
 			assertThat(context).hasSingleBean(AudienceVerifier.class);
 		});
@@ -95,9 +117,141 @@ class AudienceVerifierTest {
 		});
 	}
 
+	// ---- SEC round 1: other handler mappings (S3-1) and the pattern parser (S4-3) -------------------------------
+
+	@Test
+	void refusesFunctionalRoutes() {
+		web.withUserConfiguration(Routes.class).run(context -> assertThat(failure(context))
+			.hasMessageContaining("RouterFunctionMapping: functional routes"));
+	}
+
+	@Test
+	void refusesAUrlHandlerMappingUnderApi() {
+		web.withUserConfiguration(ApiUrlMapping.class).run(context -> assertThat(failure(context))
+			.hasMessageContaining("/api/v1/tutor/legacy -> org.springframework.web.servlet.mvc.ParameterizableViewController")
+			.hasMessageContaining("a URL handler mapping under /api"));
+	}
+
+	@Test
+	void refusesAUrlHandlerMappingWithAnApplicationHandler() {
+		web.withUserConfiguration(EnglmsUrlMapping.class).run(context -> assertThat(failure(context))
+			.hasMessageContaining("/legacy -> " + LegacyHandler.class.getName()));
+	}
+
+	@Test
+	void allowsTheSpaResourceHandlers() {
+		web.withUserConfiguration(SpaWebConfiguration.class, Valid.class).run(context -> {
+			assertThat(context).hasNotFailed();
+			assertThat(context).hasSingleBean(AudienceVerifier.class);
+		});
+	}
+
+	@Test
+	void refusesACaseInsensitivePatternParser() {
+		web.withUserConfiguration(CaseInsensitiveMatching.class, Valid.class).run(context -> assertThat(failure(context))
+			.hasMessageContaining("RequestMappingHandlerMapping: not matching with a case-sensitive PathPatternParser"));
+	}
+
+	@Test
+	@SuppressWarnings("removal")
+	void refusesLegacyAntPathMatching() {
+		web.withUserConfiguration(AntPathMatching.class, Valid.class).run(context -> assertThat(failure(context))
+			.hasMessageContaining("RequestMappingHandlerMapping: not matching with a case-sensitive PathPatternParser"));
+	}
+
+	static Throwable failure(org.springframework.boot.test.context.assertj.AssertableWebApplicationContext context) {
+		assertThat(context).hasFailed();
+		Throwable cause = NestedExceptionUtils.getMostSpecificCause(context.getStartupFailure());
+		assertThat(cause).isInstanceOf(IllegalStateException.class).hasMessageContaining("@Audience check failed");
+		return cause;
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class Routes {
+
+		@Bean
+		RouterFunction<ServerResponse> studentRoute() {
+			return RouterFunctions.route().GET("/api/v1/student/rf", request -> ServerResponse.ok().build()).build();
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class ApiUrlMapping {
+
+		@Bean
+		SimpleUrlHandlerMapping legacyApi() {
+			return new SimpleUrlHandlerMapping(Map.of("/api/v1/tutor/legacy", new ParameterizableViewController()));
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class EnglmsUrlMapping {
+
+		@Bean
+		SimpleUrlHandlerMapping legacy() {
+			return new SimpleUrlHandlerMapping(Map.of("/legacy", new LegacyHandler()));
+		}
+
+	}
+
+	static class LegacyHandler implements HttpRequestHandler {
+
+		@Override
+		public void handleRequest(HttpServletRequest request, HttpServletResponse response) {
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class CaseInsensitiveMatching implements WebMvcConfigurer {
+
+		@Override
+		public void configurePathMatch(PathMatchConfigurer configurer) {
+			PathPatternParser parser = new PathPatternParser();
+			parser.setCaseSensitive(false);
+			configurer.setPatternParser(parser);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@SuppressWarnings("removal")
+	static class AntPathMatching implements WebMvcConfigurer {
+
+		@Override
+		public void configurePathMatch(PathMatchConfigurer configurer) {
+			configurer.setPathMatcher(new org.springframework.util.AntPathMatcher());
+		}
+
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	@EnableWebMvc
 	static class Mvc {
+
+	}
+
+	@RestController
+	static class StudentOutsideStudentWeb {
+
+		@GetMapping("/api/v1/student/probe")
+		@Audience(STUDENT)
+		String probe() {
+			return "";
+		}
+
+	}
+
+	@RestController
+	static class WildcardFirstSegment {
+
+		@GetMapping("/*/v1/tutor/probe")
+		@Audience(TUTOR)
+		String probe() {
+			return "";
+		}
 
 	}
 
@@ -307,12 +461,6 @@ class AudienceVerifierTest {
 			return "";
 		}
 
-		@PostMapping("/api/v1/student/a")
-		@Audience(STUDENT)
-		String student() {
-			return "";
-		}
-
 		@PostMapping("/api/v1/auth/a")
 		@Audience(PUBLIC)
 		String authPublic() {
@@ -342,9 +490,9 @@ class AudienceVerifierTest {
 			return "";
 		}
 
-		@GetMapping("/api/v1/student/b")
-		@Audience(STUDENT)
-		String student() {
+		@PostMapping("/api/v1/auth/c")
+		@Audience(PUBLIC)
+		String auth() {
 			return "";
 		}
 

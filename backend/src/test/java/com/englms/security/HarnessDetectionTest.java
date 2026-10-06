@@ -1,6 +1,7 @@
 package com.englms.security;
 
 import static com.englms.security.PolicyRegistry.NA;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.ArrayList;
@@ -8,8 +9,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
@@ -18,38 +17,36 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 
 import com.englms.TestcontainersConfiguration;
-import com.englms.identity.CurrentUser;
+import fixture.harness.HarnessItems;
+import fixture.harness.web.student.HarnessStudentHandlers;
 import com.englms.security.PolicyRegistry.Actor;
 import com.englms.security.PolicyRegistry.Policy;
 import com.englms.shared.web.Audience;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Import;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.servlet.config.annotation.DelegatingWebMvcConfiguration;
 
 /**
  * Proves that the harness detects what it must (T-M2.2 AC4, AC6, AC7): test-only handlers and a world contributor
  * added to the application context make the completeness check, the isolation scan and the "B on A's resource" check
  * fail, naming the endpoint and the hit. No production resource is student-owned yet, so the owner-scoped handler is
- * a fixture too.
+ * a fixture too. The student handlers and the contributor live in {@code fixture.harness} (the L2 verifier requires
+ * {@code STUDENT} handlers in a {@code ..web.student..} package).
  */
 @Tag("security")
 @Tag("container")
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT,
 		properties = { "management.server.port=0", "englms.security.login-throttle.max-attempts=100000" })
-@Import({ TestcontainersConfiguration.class, HarnessDetectionTest.Items.class, HarnessDetectionTest.StudentFixtures.class,
+@Import({ TestcontainersConfiguration.class, HarnessItems.class, HarnessStudentHandlers.class,
 		HarnessDetectionTest.UnregisteredTutorProbe.class })
 class HarnessDetectionTest {
 
@@ -78,7 +75,7 @@ class HarnessDetectionTest {
 	ObjectProvider<IsolationWorldContributor> contributors;
 
 	@Autowired
-	Items items;
+	HarnessItems items;
 
 	SecurityHarness harness;
 
@@ -91,7 +88,7 @@ class HarnessDetectionTest {
 
 	@Test
 	void completenessNamesAHandlerMappingWithoutAnEntry() {
-		Set<String> live = SecurityHarness.liveKeys(context);
+		Map<String, List<String>> live = SecurityHarness.liveKeys(context);
 
 		assertThatThrownBy(() -> SecurityHarness.assertComplete(live, PolicyRegistry.keys(PolicyRegistry.ENTRIES)))
 			.hasMessageContaining("without a policy-registry entry")
@@ -110,6 +107,19 @@ class HarnessDetectionTest {
 		assertThatThrownBy(() -> SecurityHarness.assertComplete(SecurityHarness.liveKeys(context), registered))
 			.hasMessageContaining("without a live handler mapping")
 			.hasMessageContaining("DELETE /api/v1/tutor/harness-gone");
+	}
+
+	@Test
+	void completenessNamesAKeyServedByTwoHandlerMethods() {
+		new WebApplicationContextRunner().withUserConfiguration(DelegatingWebMvcConfiguration.class, SameKeyTwice.class).run(mvc -> {
+			assertThat(mvc).hasNotFailed();
+			assertThatThrownBy(() -> SecurityHarness.assertComplete(SecurityHarness.liveKeys(mvc),
+					Set.of("GET /api/v1/tutor/harness-twice")))
+				.hasMessageContaining("more than one handler method")
+				.hasMessageContaining("GET /api/v1/tutor/harness-twice")
+				.hasMessageContaining(SameKeyTwice.class.getName() + "#summary")
+				.hasMessageContaining(SameKeyTwice.class.getName() + "#full");
+		});
 	}
 
 	// ---- AC6 -------------------------------------------------------------------------------------------------
@@ -147,68 +157,19 @@ class HarnessDetectionTest {
 			.hasMessageContaining("404");
 	}
 
-	/** A world contributor: one item for A, one for B, and a secret marker in B's item. */
-	static class Items implements IsolationWorldContributor {
-
-		final Map<UUID, UUID> ownerOfItem = new ConcurrentHashMap<>();
-
-		volatile UUID studentB;
-
-		@Override
-		public void contribute(IsolationWorld world) {
-			UUID itemOfA = UUID.randomUUID();
-			UUID itemOfB = UUID.randomUUID();
-			ownerOfItem.put(itemOfA, world.studentA().id());
-			ownerOfItem.put(itemOfB, world.studentB().id());
-			studentB = world.studentB().id();
-			world.ownedByA("itemId", itemOfA);
-			world.ownedByB(itemOfB);
-			world.secret("SECRET-ITEM-B-7F3C");
-		}
-
-		@Override
-		public void reset() {
-			ownerOfItem.clear();
-		}
-
-	}
-
+	/** Two handlers on one {@code METHOD pattern}, told apart only by a request parameter (SEC S3-2). */
 	@RestController
-	@Audience(Audience.Kind.STUDENT)
-	@RequestMapping("/api/v1/student/harness")
-	static class StudentFixtures {
+	@Audience(Audience.Kind.TUTOR)
+	static class SameKeyTwice {
 
-		private final Items items;
-
-		StudentFixtures(Items items) {
-			this.items = items;
+		@GetMapping("/api/v1/tutor/harness-twice")
+		String summary() {
+			return "summary";
 		}
 
-		/** Leaks B's user ID, upper-cased, in the body. */
-		@GetMapping("/leak-id")
-		Map<String, String> leakId() {
-			return Map.of("peer", items.studentB.toString().toUpperCase());
-		}
-
-		/** Leaks a secret marker, lower-cased, in a header. */
-		@GetMapping("/leak-secret")
-		ResponseEntity<Void> leakSecret() {
-			return ResponseEntity.noContent().header("X-Fixture-Note", "secret-item-b-7f3c").build();
-		}
-
-		/** Owner-scoped: someone else's item is a 404 (ADR-0016 §3). */
-		@GetMapping("/items/{itemId}")
-		Map<String, UUID> item(@PathVariable UUID itemId, @AuthenticationPrincipal CurrentUser me) {
-			if (!me.userId().equals(items.ownerOfItem.get(itemId))) {
-				throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-			}
-			return Map.of("id", itemId);
-		}
-
-		/** Not owner-scoped: the bug the "B on A's resource" check exists for. */
-		@GetMapping("/unscoped-items/{itemId}")
-		Map<String, UUID> unscopedItem(@PathVariable UUID itemId) {
-			return Map.of("id", itemId);
+		@GetMapping(path = "/api/v1/tutor/harness-twice", params = "full")
+		String full() {
+			return "full";
 		}
 
 	}

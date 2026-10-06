@@ -15,4 +15,14 @@ public final class PrivateTypes {
 	public record PrivateRemark(String text) {
 	}
 
+	/** Not annotated itself, but holds a tutor-private field (T-M2.2 SEC S3-4). */
+	public static class LessonView {
+
+		public String title;
+
+		@TutorPrivate
+		public String privateNote;
+
+	}
+
 }

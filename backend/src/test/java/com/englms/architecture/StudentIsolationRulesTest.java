@@ -17,6 +17,8 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import com.englms.shared.web.TutorPrivate;
+import com.tngtech.archunit.base.DescribedPredicate;
+import com.tngtech.archunit.core.domain.JavaClass;
 import com.tngtech.archunit.core.domain.JavaClasses;
 import com.tngtech.archunit.core.domain.JavaMethod;
 import com.tngtech.archunit.core.importer.ClassFileImporter;
@@ -59,6 +61,11 @@ class StudentIsolationRulesTest {
 		.should(notTakeAStudentId())
 		.allowEmptyShould(true);
 
+	/** A type holding private tutor data in a field, inherited ones included (T-M2.2 SEC S3-4). */
+	static final DescribedPredicate<JavaClass> HAVE_A_TUTOR_PRIVATE_FIELD = DescribedPredicate.describe(
+			"have a @TutorPrivate field",
+			javaClass -> javaClass.getAllFields().stream().anyMatch(field -> field.isAnnotatedWith(TutorPrivate.class)));
+
 	/** Rule 4 for every {@code ..web.student..} class; {@code root} is {@code com.englms} (fixtures: their own root). */
 	static ArchRule noTutorPrivateDependency(String root) {
 		return noClasses().that()
@@ -67,8 +74,9 @@ class StudentIsolationRulesTest {
 			.dependOnClassesThat(resideInAPackage(root + ".notes..")
 				.or(simpleNameStartingWith("LearningProfile"))
 				.or(annotatedWith(TutorPrivate.class))
+				.or(HAVE_A_TUTOR_PRIVATE_FIELD)
 				.or(type(TutorPrivate.class))
-				.as("are in " + root + ".notes.., are LearningProfile* or are (or use) @TutorPrivate"))
+				.as("are in " + root + ".notes.., are LearningProfile*, are (or use) @TutorPrivate or have a @TutorPrivate field"))
 			.allowEmptyShould(true);
 	}
 
@@ -100,6 +108,7 @@ class StudentIsolationRulesTest {
 			.anySatisfy(line -> assertThat(line).contains("$DependsOnLearningProfile", "LearningProfileSummary"))
 			.anySatisfy(line -> assertThat(line).contains("$DependsOnTutorPrivateType", "PrivateRemark"))
 			.anySatisfy(line -> assertThat(line).contains("$HoldsTutorPrivateField", "TutorPrivate"))
+			.anySatisfy(line -> assertThat(line).contains("$DependsOnTypeWithTutorPrivateField", "LessonView"))
 			.noneSatisfy(line -> assertThat(line).contains("$Clean"));
 	}
 
