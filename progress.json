@@ -233,7 +233,7 @@
       "completedAt": "2026-10-05T16:35:01Z",
       "mergeCommit": "9a065b3",
       "evidence": "docs/10-governance/decision-log.md",
-      "note": "DEC-094 (PO). Deny rules Read(./.env), Read(./.env.*), Read(./.data/**) lifted; coding-agent-rules §3.4-3.5; restore task T-M8.7 (R-21). Merge commit in the next record."
+      "note": "DEC-094 (PO). Deny rules Read(./.env), Read(./.env.*), Read(./.data/**) lifted; coding-agent-rules §3.4-3.5; restore task T-M8.7 (R-21). PR #55, 9a065b3."
     },
     {
       "id": "T-M2.2",
@@ -489,7 +489,7 @@
       "ref": "DEC-091"
     },
     {
-      "what": "Start T-M2.2 (authz matrix + isolation harness) after G0",
+      "what": "Start T-M2.2 (authz matrix + isolation harness) after G0 (time approximate: PO answered in chat right after the packet PR opened)",
       "by": "PO",
       "status": "approved",
       "at": "2026-10-06T03:55:00Z",

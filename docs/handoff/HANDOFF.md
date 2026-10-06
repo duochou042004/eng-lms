@@ -1,10 +1,10 @@
 # Handoff — 2026-10-06T05:49Z (T-M2.2 done; next: T-M2.3 packet)
 
-Phase/Milestone: P1 / M2 (in progress) · Current task: **T-M2.3 (packet to write)** · Branch: `chore/T-M2.2-merge-record` · Last merge on develop: `04d90e4` (T-M2.2) · Remote: https://github.com/duochou042004/eng-lms (mirror: gitlab.com/duochou042004/eng-lms)
+Phase/Milestone: P1 / M2 (in progress) · Current task: **T-M2.3 (packet to write)** · Branch: `chore/T-M2.2-merge-record` · Last merge on develop: `35733c9` (PR #58, T-M2.2 QA record; T-M2.2 itself `04d90e4`) · Remote: https://github.com/duochou042004/eng-lms (mirror: gitlab.com/duochou042004/eng-lms)
 
 ## Where we are
 - **T-M2.2 done** (`04d90e4`, PR #57; packet PR #56; DEC-095 PO start signal, DEC-096 merge). QA PASS (re-test at `4ebae29`), SEC APPROVED in two rounds; every
-  finding fixed in-task (AC2a, AC9, AC10). QA report: PR #58 (`qa/T-M2.2`). SEC record + DEC-096: the `chore/T-M2.2-merge-record` PR.
+  finding fixed in-task (AC2a, AC9, AC10). QA report: PR #58 (`qa/T-M2.2`, merged `35733c9`). SEC record + DEC-096: the `chore/T-M2.2-merge-record` PR.
 - **What T-M2.2 gives every later endpoint packet** (authz-isolation skill, security.md §4):
   - `@Audience(TUTOR|STUDENT|PUBLIC|AUTHENTICATED)` on each handler; `AudienceVerifier` refuses startup on a missing/contradicting audience, unknown `/api`
     prefix, non-literal first segment, ambiguous segments, `{…studentId}` on student paths, STUDENT handlers (declared) outside `..web.student..`,
@@ -17,7 +17,7 @@ Phase/Milestone: P1 / M2 (in progress) · Current task: **T-M2.3 (packet to writ
   transitive; the scan matches canonical UUIDs only.
 
 ## Next steps
-1. Merge the open bookkeeping PRs if still open: #58 (`qa/T-M2.2`) and the `chore/T-M2.2-merge-record` PR (CI green → LC-APPROVED → merge-gate → gitlab-sync).
+1. If still open, merge the `chore/T-M2.2-merge-record` PR (#59) (CI green → LC-APPROVED → merge-gate → gitlab-sync).
 2. Write the **T-M2.3 packet** to G0 (task-packet skill): students backend per the backlog row (student, guardians, learning profile, create-with-account,
    username suggestion/availability, status, password reset, search; `CurrentStudent` + owner-scoped repositories; SEC S4-1 login vs disable; register every
    handler; contributors; decide the DEC-096 rule-3/4 limitations). Check its size (≤ 2 agent-days, ≤ ~10 ACs): it likely needs a split. Fresh DOCS-REVIEW,

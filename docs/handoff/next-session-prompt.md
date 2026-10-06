@@ -2,7 +2,7 @@ Resume Eng-LMS as Lead Coordinator. M2 is in progress: T-M2.1 (identity core, a9
 
 PRODUCT: a private 1:1 teaching workspace for ONE English tutor and their students; NOT a school LMS, SaaS, marketplace, booking, payment, chat, conferencing, Drive clone or AI tutor. No hard-coded TOEIC/IELTS curricula. Source of truth: docs/00-sources/ (immutable).
 
-START: read CLAUDE.md, progress.json, docs/handoff/HANDOFF.md, coding-agent-rules §3, backlog M2 (T-M2.3 row), evidence/T-M2.2/summary.md, DEC-094..096, quality-gates.md, skills task-packet, authz-isolation, backend-module, db-migration. `gh pr list`: first merge open #58 (qa/T-M2.2) and the chore/T-M2.2-merge-record PR.
+START: read CLAUDE.md, progress.json, docs/handoff/HANDOFF.md, coding-agent-rules §3, backlog M2 (T-M2.3 row), evidence/T-M2.2/summary.md, DEC-094..096, quality-gates.md, skills task-packet, authz-isolation, backend-module, db-migration. If `gh pr list` shows chore/T-M2.2-merge-record open, merge it first.
 
 DO:
 1. T-M2.3 packet (students backend): student, guardians, learning profile, create-with-account, username suggestion/availability, status, tutor password reset, accent-insensitive search; CurrentStudent resolver + owner-scoped repositories (ADR-0016); every handler in PolicyRegistry + isolation contributors with SECRET-* markers; SEC S4-1 (login racing a disable); decide the DEC-096 rule-3/4 limitations. Likely split (≤ 2 agent-days, ≤ ~10 ACs; update the backlog). Task-packet skill on docs/T-M2.3-<slug>; fresh docs-reviewer (fix S3/S4 in-task, DEC-088); CI green; verdict; LC-APPROVED; merge-gate; gitlab-sync.
