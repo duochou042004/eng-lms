@@ -1,5 +1,8 @@
 package com.englms.identity.internal.web;
 
+import static com.englms.shared.web.Audience.Kind.AUTHENTICATED;
+import static com.englms.shared.web.Audience.Kind.PUBLIC;
+
 import java.util.UUID;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -19,6 +22,7 @@ import com.englms.identity.internal.app.AccountView;
 import com.englms.identity.internal.app.AuthenticationService;
 import com.englms.identity.internal.app.AuthenticationService.PasswordChangeRejected;
 import com.englms.identity.internal.security.AuthProblems;
+import com.englms.shared.web.Audience;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -51,6 +55,7 @@ class AuthController {
 	}
 
 	@GetMapping("/session")
+	@Audience(PUBLIC)
 	@Operation(summary = "The signed-in user; also sets the XSRF-TOKEN cookie, for anonymous callers too")
 	@ApiResponse(responseCode = "200", description = "Signed in")
 	@ApiResponse(responseCode = "401", description = "UNAUTHENTICATED (no session cookie) or SESSION_EXPIRED",
@@ -65,6 +70,7 @@ class AuthController {
 			.orElseThrow(() -> AuthProblems.unauthenticated(request));
 	}
 
+	@Audience(PUBLIC)
 	@PostMapping(path = "/login", consumes = MediaType.APPLICATION_JSON_VALUE)
 	@Operation(summary = "Sign in with username and password; rotates the session ID")
 	@ApiResponse(responseCode = "200", description = "Signed in")
@@ -81,6 +87,7 @@ class AuthController {
 	}
 
 	@PostMapping("/logout")
+	@Audience(PUBLIC)
 	@Operation(summary = "End this session and this device's remember-me token (idempotent)")
 	@ApiResponse(responseCode = "204", description = "Signed out")
 	@ApiResponse(responseCode = "403", description = "CSRF_INVALID",
@@ -90,6 +97,7 @@ class AuthController {
 		return ResponseEntity.noContent().build();
 	}
 
+	@Audience(AUTHENTICATED)
 	@PostMapping(path = "/password", consumes = MediaType.APPLICATION_JSON_VALUE)
 	@Operation(summary = "Change the own password; ends every other session and remember-me token")
 	@ApiResponse(responseCode = "204", description = "Changed; the session ID rotated")

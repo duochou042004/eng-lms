@@ -91,7 +91,7 @@ class SpaServingTest {
 	@Test
 	@WithMockUser(roles = "TUTOR")
 	void apiHandlersAreUnaffected() {
-		expectSecurityHeaders(client.get().uri("/api/v1/probe").header("Accept", HTML_NAVIGATION).exchange())
+		expectSecurityHeaders(client.get().uri("/api/v1/tutor/probe").header("Accept", HTML_NAVIGATION).exchange())
 			.expectStatus()
 			.isOk()
 			.expectBody(String.class)
@@ -167,7 +167,8 @@ class SpaServingTest {
 	@RestController
 	static class ProbeController {
 
-		@GetMapping("/api/v1/probe")
+		@GetMapping("/api/v1/tutor/probe")
+		@Audience(Audience.Kind.TUTOR)
 		String probe() {
 			return "probe";
 		}
