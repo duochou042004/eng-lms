@@ -16,7 +16,7 @@
       }
     ]
   },
-  "updatedAt": "2026-10-06T05:32:22Z",
+  "updatedAt": "2026-10-06T05:49:06Z",
   "updatedBy": "lead-coordinator (session 2026-10-06, Opus 5.5)",
   "phase": {
     "id": "P1",
@@ -30,51 +30,48 @@
     "exitCriteria": "FR-AUTH-01..10 and FR-STU-01..07 accepted; authorization-matrix and student-isolation harnesses fail on any unregistered endpoint; add-student flow E2E at 360/768/1280 within its step budget; security review of authentication passed (docs/01-product/roadmap.md)."
   },
   "currentTask": {
-    "id": "T-M2.2",
-    "title": "Authorization matrix + student-isolation harness (registers T-M2.1's auth endpoints)",
-    "status": "qa",
-    "ownerRole": "BE",
-    "branch": "feature/T-M2.2-authz-isolation-harness",
-    "packet": "docs/tasks/T-M2.2-authz-isolation-harness.md",
-    "pr": "#57",
-    "lastCommit": "1dd6805",
-    "startedAt": "2026-10-06T04:05:46Z",
-    "entryGate": [
-      "T-M2.1 merged — met (a93bcc1)",
-      "Packet G0 — met (PR #56, 80dee8d; DOCS-REVIEW PASS)",
-      "PO start signal — given (DEC-095)"
-    ],
-    "nextSteps": [
-      "QA delta re-test of AC9/AC10 at the final head",
-      "CI green → verdicts → LC-APPROVED → merge-gate → gitlab-sync; then a chore merge-record PR (SEC record, DEC) and the QA PR #58"
-    ],
-    "trace": [
-      "backlog M2",
-      "NFR-SEC-01..03",
-      "ADR-0016",
-      "T-M2.1 hand-over (evidence/T-M2.1/summary.md)",
-      "DEC-095"
-    ]
-  },
-  "nextTask": {
     "id": "T-M2.3",
     "title": "Students backend (create-with-account, username suggestion, status, password reset, search); also SEC S4-1 login-vs-disable race",
     "status": "draft",
-    "ownerRole": "BE",
+    "ownerRole": "LC",
     "branch": null,
     "packet": null,
     "pr": null,
     "lastCommit": null,
     "startedAt": null,
     "entryGate": [
-      "T-M2.2 merged"
+      "T-M2.2 merged — met (04d90e4, DEC-096)",
+      "Packet G0 — pending (to write, task-packet skill, fresh DOCS-REVIEW)",
+      "PO start signal — pending"
     ],
     "nextSteps": [
-      "Packet after T-M2.2"
+      "Write the T-M2.3 packet to G0 (students backend + CurrentStudent resolver + owner-scoped repositories; register every handler in PolicyRegistry; isolation contributors; SEC S4-1 login vs disable race; DEC-096 rule-3/4 limitations decision)",
+      "Fresh DOCS-REVIEW, merge, ask the PO for the start signal"
     ],
     "trace": [
       "backlog M2",
-      "DEC-092"
+      "DEC-092",
+      "DEC-096"
+    ]
+  },
+  "nextTask": {
+    "id": "T-M2.4",
+    "title": "Auth UI + shells (login, password change, role redirect, tutor sidebar/drawer, student tabs)",
+    "status": "draft",
+    "ownerRole": "FE",
+    "branch": null,
+    "packet": null,
+    "pr": null,
+    "lastCommit": null,
+    "startedAt": null,
+    "entryGate": [
+      "T-M2.1 merged — met (a93bcc1)"
+    ],
+    "nextSteps": [
+      "Packet after T-M2.3 (or in parallel planning; depends only on T-M2.1)"
+    ],
+    "trace": [
+      "backlog M2"
     ]
   },
   "completed": [
@@ -234,14 +231,22 @@
       "id": "T-M2.8",
       "title": "Development-phase harness: .env/.data access for agents, no git worktrees (PO request)",
       "completedAt": "2026-10-05T16:35:01Z",
-      "mergeCommit": null,
+      "mergeCommit": "9a065b3",
       "evidence": "docs/10-governance/decision-log.md",
       "note": "DEC-094 (PO). Deny rules Read(./.env), Read(./.env.*), Read(./.data/**) lifted; coding-agent-rules §3.4-3.5; restore task T-M8.7 (R-21). Merge commit in the next record."
+    },
+    {
+      "id": "T-M2.2",
+      "title": "Authorization matrix + student-isolation harness (registers T-M2.1's auth endpoints)",
+      "completedAt": "2026-10-06T05:49:06Z",
+      "mergeCommit": "04d90e4",
+      "evidence": "evidence/T-M2.2/summary.md",
+      "note": "PO start DEC-095. Merged via scripts/merge-gate.sh (PR #57) at head 4ebae29; CI 7/7. QA PASS WITH MINOR (QA-S4-1 fixed) → re-test PASS; SEC APPROVED rounds 1 and 2 (S3-1..S3-4, S4-1..S4-3, N2-1..N2-3 all fixed in-task, AC9/AC10). QA report PR #58; SEC record + DEC-096 in the merge-record PR. Backend 293 tests."
     }
   ],
   "tests": {
-    "lastRun": "2026-10-05T15:44:59Z",
-    "summary": "T-M2.1: CI 7/7 at a6deca2 (backend 215 tests); last local gate PASS at 11990d0 (12 steps, evidence/T-M2.1/gate-20261004T141119Z.log); QA re-test PASS at a6deca2, timing set x20 20/20 (67 tests) (DEC-093).",
+    "lastRun": "2026-10-06T05:49:06Z",
+    "summary": "T-M2.2: CI 7/7 at 4ebae29; local gate PASS (QA re-test R14: 13 steps, backend 293 tests, e2e OK); -Dgroups=security 78 tests ×2 green (DEC-096).",
     "suites": [
       {
         "name": "backend (./mvnw -B verify)",
@@ -268,23 +273,23 @@
   "gates": {
     "G0": {
       "status": "pending",
-      "note": "T-M2.2: packet to write"
+      "note": "T-M2.3: packet to write"
     },
     "G1": {
       "status": "n/a",
-      "note": "T-M2.2 not started"
+      "note": "T-M2.3 not started"
     },
     "G2": {
       "status": "n/a",
-      "note": "T-M2.2 not started"
+      "note": "T-M2.3 not started"
     },
     "G3": {
       "status": "n/a",
-      "note": "T-M2.2: DOCS-REVIEW for the packet"
+      "note": "T-M2.3: DOCS-REVIEW for the packet"
     },
     "G4": {
       "status": "n/a",
-      "note": "T-M2.2 not started (T-M2.1 merged a93bcc1, DEC-093)"
+      "note": "T-M2.3 not started (T-M2.2 merged 04d90e4, DEC-096)"
     },
     "G5": {
       "status": "pass",
@@ -295,8 +300,6 @@
   "decisions": {
     "log": "docs/10-governance/decision-log.md",
     "recent": [
-      "DEC-084",
-      "DEC-085",
       "DEC-086",
       "DEC-087",
       "DEC-088",
@@ -305,7 +308,9 @@
       "DEC-091",
       "DEC-092",
       "DEC-093",
-      "DEC-094"
+      "DEC-094",
+      "DEC-095",
+      "DEC-096"
     ],
     "pendingPO": [
       "OQ-03",
@@ -482,6 +487,20 @@
       "status": "approved",
       "at": "2026-10-04T08:26:09Z",
       "ref": "DEC-091"
+    },
+    {
+      "what": "Start T-M2.2 (authz matrix + isolation harness) after G0",
+      "by": "PO",
+      "status": "approved",
+      "at": "2026-10-06T03:55:00Z",
+      "ref": "DEC-095"
+    },
+    {
+      "what": "LC-APPROVED T-M2.2 (PR #57)",
+      "by": "LC",
+      "status": "approved",
+      "at": "2026-10-06T05:49:06Z",
+      "ref": "DEC-096"
     }
   ],
   "environment": {
@@ -839,6 +858,11 @@
       "at": "2026-10-05T16:35:01Z",
       "actor": "lead-coordinator",
       "event": "PO relaxed the secrets harness for development and asked for no git worktrees (DEC-094, T-M2.8); restore task T-M8.7 + R-21. Next: T-M2.2 packet."
+    },
+    {
+      "at": "2026-10-06T05:49:06Z",
+      "actor": "lead-coordinator",
+      "event": "T-M2.2 packet merged at G0 (PR #56, DEC-095, PO start signal); T-M2.2 implemented and merged (PR #57, 04d90e4, DEC-096): QA PASS, SEC APPROVED x2, all findings fixed in-task. Next: T-M2.3 packet."
     }
   ]
 }

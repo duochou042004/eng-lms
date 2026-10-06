@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Milestone | M2 |
-| Status | in_progress (G0 met: PR #56, `80dee8d`; PO start signal DEC-095) |
+| Status | done (`04d90e4`, PR #57; DEC-095, DEC-096) |
 | Owner role | BE (backend-implementer; SEC review at G3) |
 | Branch | `feature/T-M2.2-authz-isolation-harness` (from `develop`) |
 | Depends on | T-M2.1 (merged, `a93bcc1`, DEC-093) |
