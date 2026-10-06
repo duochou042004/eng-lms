@@ -112,6 +112,12 @@ scans every student-reachable response for B's identifiers and `SECRET-*` marker
   returns B's user ID, and one that returns a `SECRET-` marker, each make the scan fail naming the endpoint and the hit.
 - AC7 (ADR-0016 §3): for an entry with a student-owned sample resource, the harness calls it as B on A's resource and expects 404; proven with a
   test-only fixture handler and contributor (no production resource exists yet). C (disabled) cannot sign in (401), so C is never an acting student.
+- AC9 (SEC round 1 at `bc09303`, APPROVED with S3/S4; fixed in-task per DEC-088): (S3-1) the verifier also inspects every other `HandlerMapping`
+  bean and refuses a `RouterFunctionMapping` with a router function and any `AbstractUrlHandlerMapping` key under `/api` or with a `com.englms` handler;
+  (S3-2) completeness fails when one `METHOD pattern` key maps to more than one handler method; (S3-3) a `STUDENT`-audience handler must reside in
+  `..web.student..` and a `..web.student..` handler must be `STUDENT`; (S3-4) ArchUnit rule 4 also catches dependencies on a type with a `@TutorPrivate`
+  field; (S4-1) a pattern whose first segment is not a literal counts as an API pattern; (S4-2) `/api/v1/student/**` patterns with a `{…studentId}`
+  variable are refused; (S4-3) startup is refused unless the mapping uses a case-sensitive `PathPatternParser`. Each is proven by a failing fixture case.
 - AC8 (api-conventions §9, authz-isolation skill): `./mvnw -B verify -Dgroups=security` runs the matrix, isolation and student ArchUnit tests (the
   surefire report lists all three) and is green; the full `./mvnw verify` and `./scripts/gate.sh` are green; no existing test changed except to add `@Audience`
   expectations and to move `SpaServingTest`'s test-only `ProbeController` from `/api/v1/probe` to `/api/v1/tutor/probe` with `@Audience(TUTOR)` (the test
