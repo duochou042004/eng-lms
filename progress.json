@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-10-05T16:35:01Z",
-  "updatedBy": "lead-coordinator (session 2026-10-04 #2, Opus 5.5)",
+  "updatedAt": "2026-10-06T03:57:21Z",
+  "updatedBy": "lead-coordinator (session 2026-10-06, Opus 5.5)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -32,25 +32,28 @@
   "currentTask": {
     "id": "T-M2.2",
     "title": "Authorization matrix + student-isolation harness (registers T-M2.1's auth endpoints)",
-    "status": "draft",
+    "status": "ready",
     "ownerRole": "LC",
     "branch": null,
-    "packet": null,
+    "packet": "docs/tasks/T-M2.2-authz-isolation-harness.md",
     "pr": null,
     "lastCommit": null,
     "startedAt": null,
     "entryGate": [
       "T-M2.1 merged — met (a93bcc1)",
-      "Packet G0 — pending (to write, task-packet skill, fresh DOCS-REVIEW)",
-      "PO start signal — pending"
+      "Packet G0 — DOCS-REVIEW PASS, F1–F13 fixed in-task (DEC-095); merge of PR #56 pending",
+      "PO start signal — given (DEC-095)"
     ],
     "nextSteps": [
-      "Write the T-M2.2 packet to G0: @Audience, policy registry + verifier, authz-matrix and student-isolation harnesses failing on any unregistered endpoint, secret scan, ArchUnit student rules; register GET /auth/session, POST /auth/login|logout|password (evidence/T-M2.1/summary.md table)",
-      "Fresh DOCS-REVIEW, merge the packet, ask the PO for the start signal"
+      "Merge PR #56 (LC-APPROVED, merge-gate, gitlab-sync)",
+      "feature/T-M2.2-authz-isolation-harness from develop; progress in_progress; backend-implementer; then QA, then SEC (one at a time, main checkout)"
     ],
     "trace": [
       "backlog M2",
-      "T-M2.1 hand-over (evidence/T-M2.1/summary.md)"
+      "NFR-SEC-01..03",
+      "ADR-0016",
+      "T-M2.1 hand-over (evidence/T-M2.1/summary.md)",
+      "DEC-095"
     ]
   },
   "nextTask": {
