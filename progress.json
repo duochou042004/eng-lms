@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-10-05T16:35:01Z",
-  "updatedBy": "lead-coordinator (session 2026-10-04 #2, Opus 5.5)",
+  "updatedAt": "2026-10-06T03:51:31Z",
+  "updatedBy": "lead-coordinator (session 2026-10-06, Opus 5.5)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -35,21 +35,23 @@
     "status": "draft",
     "ownerRole": "LC",
     "branch": null,
-    "packet": null,
+    "packet": "docs/tasks/T-M2.2-authz-isolation-harness.md",
     "pr": null,
     "lastCommit": null,
     "startedAt": null,
     "entryGate": [
       "T-M2.1 merged — met (a93bcc1)",
-      "Packet G0 — pending (to write, task-packet skill, fresh DOCS-REVIEW)",
+      "Packet G0 — in review (docs/T-M2.2-authz-isolation-harness, fresh DOCS-REVIEW)",
       "PO start signal — pending"
     ],
     "nextSteps": [
-      "Write the T-M2.2 packet to G0: @Audience, policy registry + verifier, authz-matrix and student-isolation harnesses failing on any unregistered endpoint, secret scan, ArchUnit student rules; register GET /auth/session, POST /auth/login|logout|password (evidence/T-M2.1/summary.md table)",
-      "Fresh DOCS-REVIEW, merge the packet, ask the PO for the start signal"
+      "DOCS-REVIEW of the packet, fix S3/S4 in-task (DEC-088), LC-APPROVED, merge-gate, gitlab-sync",
+      "Ask the PO once for the start signal (DEC); then feature/T-M2.2-authz-isolation-harness with backend-implementer, QA, SEC"
     ],
     "trace": [
       "backlog M2",
+      "NFR-SEC-01..03",
+      "ADR-0016",
       "T-M2.1 hand-over (evidence/T-M2.1/summary.md)"
     ]
   },
