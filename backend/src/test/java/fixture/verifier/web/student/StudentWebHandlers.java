@@ -25,6 +25,12 @@ public final class StudentWebHandlers {
 	}
 
 	@RestController
+	@Audience(Audience.Kind.STUDENT)
+	public static class InheritsFromOutside extends fixture.verifier.InheritedStudentHandlers {
+
+	}
+
+	@RestController
 	public static class TutorInStudentWeb {
 
 		@GetMapping("/api/v1/tutor/probe")

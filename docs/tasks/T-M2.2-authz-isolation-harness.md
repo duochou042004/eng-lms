@@ -118,6 +118,9 @@ scans every student-reachable response for B's identifiers and `SECRET-*` marker
   `..web.student..` and a `..web.student..` handler must be `STUDENT`; (S3-4) ArchUnit rule 4 also catches dependencies on a type with a `@TutorPrivate`
   field; (S4-1) a pattern whose first segment is not a literal counts as an API pattern; (S4-2) `/api/v1/student/**` patterns with a `{…studentId}`
   variable are refused; (S4-3) startup is refused unless the mapping uses a case-sensitive `PathPatternParser`. Each is proven by a failing fixture case.
+- AC10 (SEC round 2 at `c818b4f`, APPROVED with S4s; fixed in-task by the LC per DEC-088): (N2-1) an application-defined `HandlerMapping`
+  (`com.englms`, hidden or synthetic class) is refused; (N2-2) a URL-mapping handler kept as a bean name is checked by its resolved type; (N2-3) a
+  `STUDENT` handler method declared outside `..web.student..` (inherited) is refused. Proven by `AudienceVerifierTest` cases.
 - AC8 (api-conventions §9, authz-isolation skill): `./mvnw -B verify -Dgroups=security` runs the matrix, isolation and student ArchUnit tests (the
   surefire report lists all three) and is green; the full `./mvnw verify` and `./scripts/gate.sh` are green; no existing test changed except to add `@Audience`
   expectations and to move `SpaServingTest`'s test-only `ProbeController` from `/api/v1/probe` to `/api/v1/tutor/probe` with `@Audience(TUTOR)` (the test

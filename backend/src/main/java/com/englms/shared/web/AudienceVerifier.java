@@ -10,6 +10,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.englms.shared.web.Audience.Kind;
+import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.SmartInitializingSingleton;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
@@ -64,8 +65,11 @@ public class AudienceVerifier implements SmartInitializingSingleton {
 
 	private final ObjectProvider<HandlerMapping> mappings;
 
-	AudienceVerifier(ObjectProvider<HandlerMapping> mappings) {
+	private final BeanFactory beans;
+
+	AudienceVerifier(ObjectProvider<HandlerMapping> mappings, BeanFactory beans) {
 		this.mappings = mappings;
+		this.beans = beans;
 	}
 
 	@Override
@@ -82,21 +86,29 @@ public class AudienceVerifier implements SmartInitializingSingleton {
 					handlers(requestMappings).forEach(handler -> {
 						Audience audience = audienceOf(handler.method());
 						violations((audience != null) ? audience.value() : null, handler.methods(), handler.patterns(),
-								handler.isEnglms(), handler.method().getBeanType())
+								handler.isEnglms(), handler.method().getBeanType(),
+								handler.method().getMethod().getDeclaringClass())
 							.forEach(violation -> errors.add(handler + ": " + violation));
 					});
 				}
 				case RouterFunctionMapping routes when routes.getRouterFunction() != null -> errors.add(mapping.getClass()
 					.getName() + ": functional routes (RouterFunction beans) cannot carry @Audience; use @RestController handlers");
 				case AbstractUrlHandlerMapping urls -> urls.getHandlerMap().forEach((pattern, handler) -> {
-					String type = ClassUtils.getUserClass(handler).getName();
+					// A non-singleton handler stays a bean name; check the type it names (SEC round 2 N2-2).
+					Class<?> resolved = (handler instanceof String name) ? beans.getType(name) : handler.getClass();
+					String type = (resolved != null) ? ClassUtils.getUserClass(resolved).getName() : "unresolvable bean " + handler;
 					if (under(pattern, "/api") || type.startsWith("com.englms.")) {
 						errors.add(mapping.getClass().getName() + " " + pattern + " -> " + type
 								+ ": a URL handler mapping under /api or with a com.englms handler (no @Audience possible)");
 					}
 				});
 				default -> {
-					// Other mappings (e.g. a router-function mapping without routes) serve no application handler.
+					// Framework mappings (e.g. a router-function mapping without routes) serve no application handler; an
+					// application-defined mapping could serve anything unchecked (SEC round 2 N2-1).
+					Class<?> type = mapping.getClass();
+					if (type.getName().startsWith("com.englms.") || type.isHidden() || type.isSynthetic()) {
+						errors.add(type.getName() + ": an application-defined HandlerMapping (no @Audience possible)");
+					}
 				}
 			}
 		});
@@ -141,14 +153,19 @@ public class AudienceVerifier implements SmartInitializingSingleton {
 
 	/** The broken rules of one handler ({@code audience} null = not annotated); empty when it is fine. */
 	static List<String> violations(Kind audience, Set<RequestMethod> methods, Set<String> patterns, boolean englms,
-			Class<?> beanType) {
+			Class<?> beanType, Class<?> declaringClass) {
 		List<String> violations = new ArrayList<>();
 		if (audience == null) {
 			violations.add("no @Audience on the method or its class");
 		}
-		boolean studentWeb = ("." + beanType.getPackageName() + ".").contains(".web.student.");
+		boolean studentWeb = isStudentWeb(beanType);
 		if (audience == Kind.STUDENT && !studentWeb) {
 			violations.add("a STUDENT handler outside a ..web.student.. package (ADR-0016 §4)");
+		}
+		if (audience == Kind.STUDENT && studentWeb && !isStudentWeb(declaringClass)) {
+			// Rule 3 checks methods declared in ..web.student..; an inherited one would escape it (SEC round 2 N2-3).
+			violations.add("a STUDENT handler method declared outside a ..web.student.. package (" + declaringClass.getName()
+					+ ")");
 		}
 		if (studentWeb && audience != null && audience != Kind.STUDENT) {
 			violations.add(audience + " on a ..web.student.. handler (STUDENT only)");
@@ -211,6 +228,10 @@ public class AudienceVerifier implements SmartInitializingSingleton {
 	}
 
 	/** Under {@code /api}, or with a first segment that is not a literal (it may match {@code /api/**} too). */
+	private static boolean isStudentWeb(Class<?> type) {
+		return ("." + type.getPackageName() + ".").contains(".web.student.");
+	}
+
 	private static boolean isApi(String pattern) {
 		return under(pattern, "/api") || !literalFirstSegment(pattern);
 	}

@@ -109,7 +109,9 @@ The **authz matrix test** enumerates `RequestMappingHandlerMapping`. For each ha
   pattern must not carry a `{…studentId}` variable (case, `_` and `-` ignored); each `RequestMappingHandlerMapping` must match with a case-sensitive
   `PathPatternParser` (as L1 does). The verifier also inspects every other `HandlerMapping` bean, since those handlers cannot carry `@Audience`: functional
   routes (`RouterFunctionMapping` with a router function) are refused, and so is any URL handler mapping key under `/api` or with a `com.englms` handler.
-  The SPA's resource handlers (`/**`, `/assets/**`, Spring's `ResourceHttpRequestHandler`) stay allowed.
+  The SPA's resource handlers (`/**`, `/assets/**`, Spring's `ResourceHttpRequestHandler`) stay allowed. SEC round 2 (AC10): a URL-mapping handler
+  kept as a bean name (non-singleton) is checked by the type that name resolves to; an application-defined `HandlerMapping` (a `com.englms`, hidden or
+  synthetic class) is refused; a `STUDENT` handler method must also be *declared* in `..web.student..` (an inherited method would escape ArchUnit rule 3).
 - **Policy registry** `backend/src/test/java/com/englms/security/PolicyRegistry.java`: one entry per mapping (`METHOD /pattern`, no `HEAD`/`OPTIONS`
   entries: matched implicitly) with a sample request and the expected status for anonymous, tutor, student A, student B on A's resource (only when the
   sample names a student-owned resource) and a must-change student.

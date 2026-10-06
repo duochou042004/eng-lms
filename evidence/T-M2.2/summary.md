@@ -82,3 +82,15 @@ Results: `-Dgroups=security` BUILD SUCCESS, 75 tests (`security-groups.log`, at 
 test-strategy §4 rule 4, authz-isolation skill (student handlers in `..web.student..`, one handler per key, no functional routes).
 
 Known limitation: URL-mapping handlers registered lazily by bean name (a `String` handler) are not resolved to their class; none exist.
+
+## G3 round 2 SEC S4s (LC, in-task per DEC-088; AC10)
+SEC round 2 APPROVED at `c818b4f` (all round-1 findings confirmed fixed). Its three S4s were fixed by the LC in `AudienceVerifier`:
+- N2-1: the `default` branch refuses an application-defined `HandlerMapping` (a `com.englms`, hidden or synthetic class) —
+  `AudienceVerifierTest.refusesAnApplicationDefinedHandlerMapping` (a lambda `HandlerMapping` bean).
+- N2-2: a URL-mapping handler that stays a bean name (non-singleton) is checked by `BeanFactory.getType(name)` —
+  `resolvesABeanNameHandlerToItsType` (a prototype `com.englms` `HttpRequestHandler` at `/x-proto`).
+- N2-3: a `STUDENT` handler method must be declared in `..web.student..`, not inherited from outside —
+  `refusesAStudentHandlerMethodInheritedFromOutsideStudentWeb` (`fixture.verifier.InheritedStudentHandlers`).
+
+Results: `AudienceVerifierTest` 35/35; full `./mvnw -B -ntp verify` BUILD SUCCESS, 293 tests, 0 failures. Known limitation kept (SEC round 2): ArchUnit rule 4
+does not follow transitive dependencies (`Wrapper` → `LessonView`); the `SECRET-*` response scan is the runtime backstop.

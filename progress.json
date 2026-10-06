@@ -16,7 +16,7 @@
       }
     ]
   },
-  "updatedAt": "2026-10-06T04:58:28Z",
+  "updatedAt": "2026-10-06T05:32:22Z",
   "updatedBy": "lead-coordinator (session 2026-10-06, Opus 5.5)",
   "phase": {
     "id": "P1",
@@ -36,7 +36,7 @@
     "ownerRole": "BE",
     "branch": "feature/T-M2.2-authz-isolation-harness",
     "packet": "docs/tasks/T-M2.2-authz-isolation-harness.md",
-    "pr": null,
+    "pr": 57,
     "lastCommit": "00987ba",
     "startedAt": "2026-10-06T04:05:46Z",
     "entryGate": [
@@ -45,8 +45,8 @@
       "PO start signal — given (DEC-095)"
     ],
     "nextSteps": [
-      "SEC review (fresh security-reviewer) at the QA-fix head",
-      "Verdicts after CI green, LC-APPROVED, merge-gate, gitlab-sync; QA report via qa/T-M2.2; SEC record via a chore merge-record PR"
+      "QA delta re-test of AC9/AC10 at the final head",
+      "CI green → verdicts → LC-APPROVED → merge-gate → gitlab-sync; then a chore merge-record PR (SEC record, DEC) and the QA PR #58"
     ],
     "trace": [
       "backlog M2",

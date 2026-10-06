@@ -159,6 +159,53 @@ class AudienceVerifierTest {
 			.hasMessageContaining("RequestMappingHandlerMapping: not matching with a case-sensitive PathPatternParser"));
 	}
 
+	// ---- SEC round 2: application-defined mappings (N2-1), bean-name handlers (N2-2), inherited methods (N2-3) ----
+
+	@Test
+	void refusesAnApplicationDefinedHandlerMapping() {
+		web.withUserConfiguration(CustomMapping.class).run(context -> assertThat(failure(context))
+			.hasMessageContaining("an application-defined HandlerMapping"));
+	}
+
+	@Test
+	void resolvesABeanNameHandlerToItsType() {
+		web.withUserConfiguration(PrototypeUrlMapping.class).run(context -> assertThat(failure(context))
+			.hasMessageContaining("/x-proto -> " + LegacyHandler.class.getName()));
+	}
+
+	@Test
+	void refusesAStudentHandlerMethodInheritedFromOutsideStudentWeb() {
+		web.withUserConfiguration(StudentWebHandlers.InheritsFromOutside.class).run(context -> assertThat(failure(context))
+			.hasMessageContaining("a STUDENT handler method declared outside a ..web.student.. package ("
+					+ fixture.verifier.InheritedStudentHandlers.class.getName()));
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class CustomMapping {
+
+		@Bean
+		org.springframework.web.servlet.HandlerMapping custom() {
+			return request -> null;
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class PrototypeUrlMapping {
+
+		@Bean("protoHandler")
+		@org.springframework.context.annotation.Scope("prototype")
+		LegacyHandler protoHandler() {
+			return new LegacyHandler();
+		}
+
+		@Bean
+		SimpleUrlHandlerMapping proto() {
+			return new SimpleUrlHandlerMapping(Map.of("/x-proto", "protoHandler"));
+		}
+
+	}
+
 	static Throwable failure(org.springframework.boot.test.context.assertj.AssertableWebApplicationContext context) {
 		assertThat(context).hasFailed();
 		Throwable cause = NestedExceptionUtils.getMostSpecificCause(context.getStartupFailure());
