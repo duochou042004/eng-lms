@@ -14,16 +14,19 @@ description: Register endpoint authorization policies and add authz-matrix and s
 
 ## For every new handler
 1. Annotate with `@Audience(...)` on the method (or the class), matching its path namespace: `/api/v1/tutor/**` → `TUTOR`, `/api/v1/student/**` →
-   `STUDENT`, `/api/v1/auth/**` → `PUBLIC`/`AUTHENTICATED`, `GET /api/v1/meta` → `PUBLIC`. Name the HTTP method (`@GetMapping`, …). Otherwise the
-   application refuses to start, naming the handler.
+   `STUDENT`, `/api/v1/auth/**` → `PUBLIC`/`AUTHENTICATED`, `GET /api/v1/meta` → `PUBLIC`. Name the HTTP method (`@GetMapping`, …). **`STUDENT`
+   handlers live in a `..web.student..` package** (and nothing else does); patterns start with a literal segment; no `{…studentId}` variable on
+   `/api/v1/student/**`; `@RestController` handlers only (no `RouterFunction` beans or URL handler mappings for the API). Otherwise the application
+   refuses to start, naming the handler.
 2. Add a `PolicyRegistry.ENTRIES` entry, keyed exactly as Spring reports the mapping (`Policy.of("GET", "/api/v1/student/lessons/{lessonId}", body,
    anonymous, tutor, studentA, studentBOnA, mustChange)`). A student on a foreign resource gets **404**. The wrong role gets **403**. Anonymous gets **401**.
    The must-change student gets **403** outside the must-change allow-list. `studentBOnA` is `NA` unless the path names a student-owned resource.
-   Samples must not leave state the per-test world reset does not clear.
+   Samples must not leave state the per-test world reset does not clear. One handler per `METHOD /pattern`: two handlers told apart only by
+   `params`/`headers`/`consumes`/`produces` fail the completeness check (give each its own path).
 3. Student handler: **no** `studentId` parameter anywhere (name, `@PathVariable`, `@RequestParam`); use `CurrentStudent me` (T-M2.3); repository calls
    are owner-scoped.
-4. Student classes: in `..web.student..`; no dependency on `notes`, `LearningProfile*` types or `@TutorPrivate` types (mark private tutor types/fields
-   with `@TutorPrivate`).
+4. Student classes: in `..web.student..`; no dependency on `notes`, `LearningProfile*` types, `@TutorPrivate` types or types with a `@TutorPrivate`
+   field (mark private tutor types/fields with `@TutorPrivate`).
 5. Isolation fixture: if the handler exposes a new resource type, implement `IsolationWorldContributor` in test sources as a Spring bean (`@Component`
    under `com.englms`): insert an A-owned and a B-owned instance, call `world.ownedByA("<pathVariable>", id)` (the registry path's `{pathVariable}` is
    replaced by it), `world.ownedByB(id)`, and `world.secret("SECRET-…")` for each marker put in a tutor-private field; delete your rows in `reset()`.

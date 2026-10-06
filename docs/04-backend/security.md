@@ -104,11 +104,17 @@ The **authz matrix test** enumerates `RequestMappingHandlerMapping`. For each ha
   `AUTHENTICATED`; `/api/v1/meta` → `PUBLIC` with `GET`/`HEAD` only (all that L1 opens there); any other `/api/**` path, or a `com.englms` handler
   outside `/api/**` → error; so is an `/api/**` pattern with an empty, `.` or `..` segment (ambiguous namespace; T-M2.2 QA-S4-1). Every in-scope handler needs `@Audience` (method or class; the method wins) and explicit HTTP methods. Third-party handlers
   outside `/api/**` (Boot's `/error`, springdoc's `/v3/api-docs`) are ignored. `PUBLIC` is therefore only accepted where L1 permits anonymous access.
+  Added by T-M2.2 SEC round 1 (AC9): a pattern whose first segment is not a literal (`/{x}/…`, `/**`, `/{*rest}`) can match `/api/**` and is refused;
+  a `STUDENT` handler's class must reside in a `..web.student..` package and a `..web.student..` handler must be `STUDENT`; a `/api/v1/student/**`
+  pattern must not carry a `{…studentId}` variable (case, `_` and `-` ignored); each `RequestMappingHandlerMapping` must match with a case-sensitive
+  `PathPatternParser` (as L1 does). The verifier also inspects every other `HandlerMapping` bean, since those handlers cannot carry `@Audience`: functional
+  routes (`RouterFunctionMapping` with a router function) are refused, and so is any URL handler mapping key under `/api` or with a `com.englms` handler.
+  The SPA's resource handlers (`/**`, `/assets/**`, Spring's `ResourceHttpRequestHandler`) stay allowed.
 - **Policy registry** `backend/src/test/java/com/englms/security/PolicyRegistry.java`: one entry per mapping (`METHOD /pattern`, no `HEAD`/`OPTIONS`
   entries: matched implicitly) with a sample request and the expected status for anonymous, tutor, student A, student B on A's resource (only when the
   sample names a student-owned resource) and a must-change student.
 - **Authz matrix** `AuthzMatrixTest` (`@Tag("security")`): completeness both ways (a mapping without an entry and an entry without a mapping both fail,
-  named), then every entry × actor on the real port, each actor signed in through `POST /api/v1/auth/login` in a fresh fixture world.
+  named; so does a `METHOD /pattern` key served by more than one handler method, e.g. two handlers told apart only by `params`), then every entry × actor on the real port, each actor signed in through `POST /api/v1/auth/login` in a fresh fixture world.
 - **Isolation scan** `IsolationTest`: student A calls every entry; the headers and body of every response (any status) are searched, case-insensitively,
   for B's user ID, username and B-owned resource IDs, and for `SECRET-[A-Z0-9-]+`. `HarnessDetectionTest` proves each detection with test-only handlers.
 - Run: `cd backend && ./mvnw -B verify -Dgroups=security` (verifier, matrix, isolation, ArchUnit student rules); all of them also run in the normal `verify`.

@@ -51,7 +51,8 @@
 1. Controllers (`..internal.web..`) do not access `..internal.persistence..`.
 2. No class outside a module accesses its `..internal..` packages (also covered by Modulith).
 3. `..web.student..` handler methods have no parameter, `@PathVariable` or `@RequestParam` whose (effective) name is `studentId` or ends in `StudentId`.
-4. `..web.student..` classes (every class, not only DTOs) do not depend on `com.englms.notes..`, on `LearningProfile*`, or on types annotated `@TutorPrivate`.
+4. `..web.student..` classes (every class, not only DTOs) do not depend on `com.englms.notes..`, on `LearningProfile*`, on types annotated `@TutorPrivate`,
+   or on types with a `@TutorPrivate` field (inherited fields included; T-M2.2 SEC S3-4).
    Rules 3 and 4 are implemented (T-M2.2) in `architecture/StudentIsolationRulesTest` (`@Tag("security")`; parameter names by reflection, the build
    compiles with `-parameters`), proven against the violating classes in `src/test/java/fixture/archunit/`.
 5. No `@Transactional` on controllers. No field injection.
