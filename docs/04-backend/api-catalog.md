@@ -3,7 +3,7 @@
 > Design-level list. The authoritative contract is `api/openapi.json` once generated. Each packet that adds endpoints updates this file.
 > Prefix `/api/v1` omitted. **M** = milestone. Audience: T = tutor, S = student, P = public, A = any authenticated.
 > `/auth/**` is open at the URL gate and each handler decides (security.md §4); there is no registration route (`/auth/register` → 404, FR-AUTH-01).
-> T-M2.2 registers the four live auth endpoints in the policy registry.
+> Every handler carries `@Audience` (the column "Aud") and a policy-registry entry (security.md §4). Registered since T-M2.2: the four auth endpoints and `GET /meta`.
 
 ## auth, meta (identity, settings)
 

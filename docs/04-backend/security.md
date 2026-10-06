@@ -88,13 +88,30 @@ Actors: anonymous internet users, an authenticated student (curious or malicious
 | Layer | Mechanism |
 |---|---|
 | L1 URL gate | `/api/v1/tutor/**` → `hasRole('TUTOR')`; `/api/v1/student/**` → `hasRole('STUDENT')`; `/api/v1/auth/**` → permitAll (each handler decides: an unknown auth path such as `register` is a 404); `GET /api/v1/meta` → permitAll; everything else under `/api/**` → "deny", which at L1 **only requires authentication**: an anonymous caller gets 401, an authenticated one passes the must-change gate and then gets the handler lookup's 404, so nothing reveals which paths exist (not `denyAll`; T-M2.1, DOCS-REVIEW S3-3, R4 D5-1). Order: CSRF (403 `CSRF_INVALID`) → authentication (401) → role (403 `FORBIDDEN_ROLE`) → must-change gate (403) → handler lookup (404) |
-| L2 Audience annotation | `@Audience` on every handler; a startup verifier cross-checks it with the path prefix |
+| L2 Audience annotation | `@Audience` on every handler; a startup verifier cross-checks it with the path prefix (as built in T-M2.2, below) |
 | L3 Ownership | Student services take `CurrentStudent` and use owner-scoped queries. Tutor services can access everything (single tutor), but still validate that referenced IDs exist and belong together (e.g. a note's lesson belongs to the note's student) |
 | L4 Data shaping | Audience DTOs; handler redaction; release rules |
 | L5 Files | `FileAccessResolver` chain (a student is denied unless a resolver grants access) |
 
 The **authz matrix test** enumerates `RequestMappingHandlerMapping`. For each handler it performs a request as anonymous, tutor, student A and student B
 (on A's resources) and checks the expected outcome from the policy registry. A handler missing from the registry fails the build.
+
+**As built (T-M2.2).**
+- **L2 verifier** `com.englms.shared.web.AudienceVerifier` (servlet applications only; the operator CLI has no web application). After all singletons
+  exist and before the server listens, it enumerates every `RequestMappingHandlerMapping` and refuses to start, with one line per offending handler, when
+  a rule is broken. In scope: handlers whose bean class is in `com.englms..` or with a pattern under `/api/`. Rules, per pattern of a handler (a
+  multi-pattern handler must satisfy each): `/api/v1/tutor/**` → `TUTOR`; `/api/v1/student/**` → `STUDENT`; `/api/v1/auth/**` → `PUBLIC` or
+  `AUTHENTICATED`; `/api/v1/meta` → `PUBLIC` with `GET`/`HEAD` only (all that L1 opens there); any other `/api/**` path, or a `com.englms` handler
+  outside `/api/**` → error. Every in-scope handler needs `@Audience` (method or class; the method wins) and explicit HTTP methods. Third-party handlers
+  outside `/api/**` (Boot's `/error`, springdoc's `/v3/api-docs`) are ignored. `PUBLIC` is therefore only accepted where L1 permits anonymous access.
+- **Policy registry** `backend/src/test/java/com/englms/security/PolicyRegistry.java`: one entry per mapping (`METHOD /pattern`, no `HEAD`/`OPTIONS`
+  entries: matched implicitly) with a sample request and the expected status for anonymous, tutor, student A, student B on A's resource (only when the
+  sample names a student-owned resource) and a must-change student.
+- **Authz matrix** `AuthzMatrixTest` (`@Tag("security")`): completeness both ways (a mapping without an entry and an entry without a mapping both fail,
+  named), then every entry × actor on the real port, each actor signed in through `POST /api/v1/auth/login` in a fresh fixture world.
+- **Isolation scan** `IsolationTest`: student A calls every entry; the headers and body of every response (any status) are searched, case-insensitively,
+  for B's user ID, username and B-owned resource IDs, and for `SECRET-[A-Z0-9-]+`. `HarnessDetectionTest` proves each detection with test-only handlers.
+- Run: `cd backend && ./mvnw -B verify -Dgroups=security` (verifier, matrix, isolation, ArchUnit student rules); all of them also run in the normal `verify`.
 
 ## 5. Transport and headers
 

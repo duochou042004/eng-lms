@@ -27,6 +27,11 @@
 - **Fixture world** (`backend/src/test/resources/fixtures/world.sql` + builders): 1 tutor, students A (active), B (active), C (archived); materials
   shared with A only; private notes for A containing the unique marker `SECRET-NOTE-A-7f3c`; an answer key containing `SECRET-KEY-…`. Scans search
   student responses for every `SECRET-*` marker and for B's IDs.
+  **As built (T-M2.2):** the world is Java, not SQL: `backend/src/test/java/com/englms/security/IsolationWorld.java`, rebuilt for every test (the reset
+  deletes every session). Today it holds the tutor, A and B (active), C as a **disabled** account (archived arrives with the students module; C cannot
+  sign in, so it never acts) and a must-change student; usernames carry a random suffix (`student-b-<8 hex>`), so a scan hit is never a coincidence.
+  Later modules add A-owned and B-owned rows and `SECRET-*` markers through `IsolationWorldContributor` (a Spring bean in test sources). The scan
+  (`SecurityHarness.assertNoLeak`) searches the headers and body of student A's response to every registry entry, case-insensitively.
 - Builders (Java test data builders) for aggregates. Never depend on the order of generated IDs.
 - Time: tests inject a fixed `Clock`. Deadlines and overdue logic are tested at the boundaries (just before, at, and just after).
 - The web uses MSW handlers generated from `api/openapi.json` examples where possible.
@@ -45,8 +50,10 @@
 
 1. Controllers (`..internal.web..`) do not access `..internal.persistence..`.
 2. No class outside a module accesses its `..internal..` packages (also covered by Modulith).
-3. `..web.student..` handler methods have no parameter named `studentId` and no `@PathVariable` ending in `StudentId`.
-4. `..web.student..` DTO classes do not depend on `com.englms.notes..`, on `LearningProfile*`, or on types annotated `@TutorPrivate`.
+3. `..web.student..` handler methods have no parameter, `@PathVariable` or `@RequestParam` whose (effective) name is `studentId` or ends in `StudentId`.
+4. `..web.student..` classes (every class, not only DTOs) do not depend on `com.englms.notes..`, on `LearningProfile*`, or on types annotated `@TutorPrivate`.
+   Rules 3 and 4 are implemented (T-M2.2) in `architecture/StudentIsolationRulesTest` (`@Tag("security")`; parameter names by reflection, the build
+   compiles with `-parameters`), proven against the violating classes in `src/test/java/fixture/archunit/`.
 5. No `@Transactional` on controllers. No field injection.
 6. Forbidden identifiers in `src/main` (case-insensitive): `toeic`, `ielts`, `thpt`, `examtype`, `part5`, `tenant`, `payment`, `invoice`, `openai`, `anthropic`, `chatgpt`
    (the same list as coding-agent-rules §7; `examtype` and `part5` since T-M1.8).
