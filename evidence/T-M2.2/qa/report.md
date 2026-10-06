@@ -82,3 +82,30 @@ Not applicable (no UI change).
 (none)
 
 QA-VERDICT T-M2.2: PASS WITH MINOR
+
+## Re-test (round 2)
+
+Head `4ebae2921085811a5583690b17f95818b05f118d` · 2026-10-06 from 05:32:45 UTC · same evaluator, same method (uncommitted throwaway probes under
+`com.englms.qaprobe`, packaged and started against a throwaway `postgres:18`, then deleted; `git status` clean). Delta since `071aec6`: `bc09303` (AC2a),
+`be064ac`..`c818b4f` (AC9, SEC round 1), `1dd6805` (AC10, SEC round 2 S4s), `4ebae29`.
+
+| # | Check | Result |
+|---|---|---|
+| R1 | QA-S4-1 / AC2a: `/api/v1/tutor/{x}/../../student/qa-dots`, `/api/v1/tutor//qa-dslash`, `/api/v1/tutor/./qa-dot` | PASS: all refused as ambiguous path patterns; QA-S4-1 closed |
+| R2 | AC9 S3-1: `RouterFunction` on `/api/v1/tutor/qa-router`; `SimpleUrlHandlerMapping` key `/api/v1/tutor/qa-url` | PASS: both refused |
+| R3 | AC9 S3-3: `STUDENT` outside `..web.student..`; `TUTOR` inside `qaprobe.web.student` | PASS: each refused |
+| R4 | AC9 S4-2: `/api/v1/student/{otherStudentId}/qa` | PASS: refused |
+| R5 | AC9 S4-1: `/{x}/v1/tutor/qa-firstvar` | PASS: refused (non-literal first segment) |
+| R6 | AC10 N2-1: custom `HandlerMapping` bean | PASS: refused |
+| R7 | AC10 N2-2: `SimpleUrlHandlerMapping` → bean name of a `com.englms` `Controller` | PASS: refused after resolving the type |
+| R8 | AC10 N2-3: `STUDENT` method inherited from `com.englms.qaprobe.QaBase` | PASS: refused |
+| R9 | Round-1 probes (13 rule breaks + 6 pattern tricks) | PASS: all still refused; good patterns not flagged |
+| R10 | No false positives (valid student handler with `{itemId}`, class-level `TUTOR`) | PASS: starts; `GET /api/v1/meta` 200 |
+| R11 | Real app (clean jar) | PASS: starts |
+| R12 | Curl matrix 5 mappings × 5 actors | PASS: all 25 cells identical to round 1; no B UUID/username or `SECRET-` in A's responses |
+| R13 | `-Dgroups=security` ×2 | PASS: 78 tests, 0 failures, both runs (`AudienceVerifierTest` 35, `HarnessDetectionTest` 12, `AuthzMatrixTest` 22, `IsolationTest` 6, `StudentIsolationRulesTest` 3) |
+| R14 | `ENGLMS_TASK=T-M2.2 ./scripts/gate.sh` | PASS: 13 steps, 395 s, backend 293 tests, e2e OK |
+
+New findings: none. QA-S4-1: fixed in `bc09303`, verified by R1.
+
+QA-VERDICT T-M2.2: PASS
