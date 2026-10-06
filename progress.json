@@ -16,7 +16,7 @@
       }
     ]
   },
-  "updatedAt": "2026-10-06T03:57:21Z",
+  "updatedAt": "2026-10-06T04:05:46Z",
   "updatedBy": "lead-coordinator (session 2026-10-06, Opus 5.5)",
   "phase": {
     "id": "P1",
@@ -32,21 +32,21 @@
   "currentTask": {
     "id": "T-M2.2",
     "title": "Authorization matrix + student-isolation harness (registers T-M2.1's auth endpoints)",
-    "status": "ready",
-    "ownerRole": "LC",
-    "branch": null,
+    "status": "in_progress",
+    "ownerRole": "BE",
+    "branch": "feature/T-M2.2-authz-isolation-harness",
     "packet": "docs/tasks/T-M2.2-authz-isolation-harness.md",
     "pr": null,
     "lastCommit": null,
-    "startedAt": null,
+    "startedAt": "2026-10-06T04:05:46Z",
     "entryGate": [
       "T-M2.1 merged — met (a93bcc1)",
-      "Packet G0 — DOCS-REVIEW PASS, F1–F13 fixed in-task (DEC-095); merge of PR #56 pending",
+      "Packet G0 — met (PR #56, 80dee8d; DOCS-REVIEW PASS)",
       "PO start signal — given (DEC-095)"
     ],
     "nextSteps": [
-      "Merge PR #56 (LC-APPROVED, merge-gate, gitlab-sync)",
-      "feature/T-M2.2-authz-isolation-harness from develop; progress in_progress; backend-implementer; then QA, then SEC (one at a time, main checkout)"
+      "backend-implementer: AC1–AC8, gate green, evidence/T-M2.2/summary.md",
+      "PR → CI green → QA (qa-evaluator) → SEC (security-reviewer), one at a time in the main checkout"
     ],
     "trace": [
       "backlog M2",
