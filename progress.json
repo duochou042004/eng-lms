@@ -16,7 +16,7 @@
       }
     ]
   },
-  "updatedAt": "2026-10-06T04:05:46Z",
+  "updatedAt": "2026-10-06T04:32:24Z",
   "updatedBy": "lead-coordinator (session 2026-10-06, Opus 5.5)",
   "phase": {
     "id": "P1",
@@ -32,7 +32,7 @@
   "currentTask": {
     "id": "T-M2.2",
     "title": "Authorization matrix + student-isolation harness (registers T-M2.1's auth endpoints)",
-    "status": "in_progress",
+    "status": "in_review",
     "ownerRole": "BE",
     "branch": "feature/T-M2.2-authz-isolation-harness",
     "packet": "docs/tasks/T-M2.2-authz-isolation-harness.md",
@@ -45,10 +45,8 @@
       "PO start signal — given (DEC-095)"
     ],
     "nextSteps": [
-      "backend-implementer: AC1-AC8 done; gate PASS at 00987ba (evidence/T-M2.2/gate-20261006T042315Z.log), -Dgroups=security green (evidence/T-M2.2/security-groups.log)",
-      "LC: record evidence/T-M2.2/summary.md implementation section from the implementer's final report (the harness denied the agent the file), then open the PR",
-      "PR -> CI green -> QA (qa-evaluator) -> SEC (security-reviewer), one at a time in the main checkout",
-      "Open question for T-M2.3: ArchUnit rule 3 does not inspect @RequestBody DTO fields for a student ID (ADR-0016 §2 forbids it in the body too)"
+      "CI green on the PR → QA (fresh qa-evaluator) → SEC (fresh security-reviewer), one at a time in the main checkout",
+      "Verdicts, LC-APPROVED, merge-gate, gitlab-sync; QA report via qa/T-M2.2, SEC record via a chore merge-record PR"
     ],
     "trace": [
       "backlog M2",
