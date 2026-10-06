@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 import com.englms.settings.internal.MetaProperties;
+import com.englms.shared.web.Audience;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,6 +28,7 @@ class MetaController {
 	}
 
 	@GetMapping("/meta")
+	@Audience(Audience.Kind.PUBLIC)
 	MetaResponse meta() {
 		return new MetaResponse(properties.name(), properties.version(), List.copyOf(properties.locales()),
 				properties.displayName());
