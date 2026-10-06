@@ -49,7 +49,7 @@
 | 34 | Data model direction (to be re-analysed) | `docs/03-architecture/data-model.md` | — | all | M0 | MVP |
 | 35 | Modular monolith | Spring Modulith | ADR-0001 | all | M1 | MVP |
 | 36 | Technology must be justified | tech-stack.md + ADRs | NFR-MNT-02 | — | M0+ | MVP |
-| 37 | Security: A ≠ B; private data | Namespace isolation, authz matrix, scans (T-M2.1: L1 role gate on `/api/v1/tutor/**` and `/api/v1/student/**`, CSRF, security headers via Spring Security, audit v1 NFR-SEC-11; matrix and isolation harness T-M2.2) | NFR-SEC-01..03, ADR-0016 | all | M2+ | MVP |
+| 37 | Security: A ≠ B; private data | Namespace isolation, authz matrix, scans (T-M2.1: L1 role gate on `/api/v1/tutor/**` and `/api/v1/student/**`, CSRF, security headers via Spring Security, audit v1 NFR-SEC-11; T-M2.2: `@Audience` + startup verifier (L2), policy registry + authz matrix, isolation fixture world + response scan for B's IDs and `SECRET-*`, ArchUnit student rules 3–4; `CurrentStudent` + owner-scoped repositories T-M2.3) | NFR-SEC-01..03, ADR-0016 | all | M2+ | MVP |
 | 38 | File and material management, not Drive | Files module, limits, access checks | FR-FILE-01..04 | files, library | M4 | MVP |
 | 39 | Notifications (useful events; in-app first) | Derived dashboard items in the MVP | DEC-006 | notifications (future) | — | P2 |
 | 40 | UX principles | Design system, step budgets, progressive disclosure | NFR-UX-01..04 | web | all | MVP |

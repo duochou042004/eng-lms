@@ -118,7 +118,11 @@
 
 ## shared (kernel, `@ApplicationModule(type = OPEN)` or a shared module per the Spring Modulith docs)
 - IDs (`StudentId`, `UserId`, … as records wrapping UUIDs), `Clock` provider, `ProblemCodes`, paging types, `HtmlSanitizer`,
-  `Audience {TUTOR, STUDENT}`, `CurrentStudent` argument resolver, and the `extension` registry core (`ExtensionPoint`, `ExtensionManifest`).
+  `Audience {TUTOR, STUDENT, PUBLIC, AUTHENTICATED}`, `CurrentStudent` argument resolver, and the `extension` registry core (`ExtensionPoint`, `ExtensionManifest`).
+- **As built (T-M2.2):** `shared.web.Audience` (annotation, nested enum `Audience.Kind` with the four values; on the handler method or its class, the
+  method wins), `shared.web.TutorPrivate` (type and field marker for private tutor data, NFR-SEC-02; read by the ArchUnit rule 4) and
+  `shared.web.AudienceVerifier` (the L2 startup check, security.md §4; servlet applications only). It reads only Spring MVC metadata. `CurrentStudent`
+  and its argument resolver arrive with T-M2.3. Modules that annotate handlers declare `allowedDependencies = "shared"` (settings did so in T-M2.2).
 - **Rule:** shared contains **no business rules** of any module. Additions need LC review.
 
 ## Allowed dependency graph (checked in CI)

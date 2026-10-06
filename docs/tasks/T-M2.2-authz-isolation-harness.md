@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Milestone | M2 |
-| Status | ready (G0: DOCS-REVIEW PASS, findings F1–F13 fixed in-task; PO start signal DEC-095) |
+| Status | in_progress (G0 met: PR #56, `80dee8d`; PO start signal DEC-095) |
 | Owner role | BE (backend-implementer; SEC review at G3) |
 | Branch | `feature/T-M2.2-authz-isolation-harness` (from `develop`) |
 | Depends on | T-M2.1 (merged, `a93bcc1`, DEC-093) |
@@ -98,6 +98,8 @@ scans every student-reachable response for B's identifiers and `SECRET-*` marker
   `/api/v1/auth/**`; `AUTHENTICATED` or non-`GET` `PUBLIC` on `/api/v1/meta`; `PUBLIC` on a path the L1 gate does not open; a `com.englms` handler under an
   unknown `/api/**` prefix or outside `/api/**`; a handler without an explicit HTTP method; a multi-pattern handler where only one pattern breaks a rule.
   The real application starts and the CLI context (no web application) is unaffected. Each case is proven by a test context with a test-only controller.
+- AC2a (QA-S4-1, DEC-088 in-task): an `/api/**` pattern with an empty, `.` or `..` segment (e.g. `/api/v1/tutor/{x}/../../student/probe`,
+  `/api/v1/tutor//probe`) is refused at startup as an ambiguous path pattern; proven by two more `AudienceVerifierTest` cases.
 - AC3 (NFR-SEC-03): the policy registry has entries for exactly the five live mappings with the statuses in the design notes, and the matrix test makes
   every call (each actor signed in through `POST /api/v1/auth/login`, CSRF for unsafe methods) and asserts each status.
 - AC4 (NFR-SEC-03, M2 exit criterion): the completeness check fails, naming the mapping, when a handler mapping has no registry entry, and also when a
@@ -110,6 +112,15 @@ scans every student-reachable response for B's identifiers and `SECRET-*` marker
   returns B's user ID, and one that returns a `SECRET-` marker, each make the scan fail naming the endpoint and the hit.
 - AC7 (ADR-0016 §3): for an entry with a student-owned sample resource, the harness calls it as B on A's resource and expects 404; proven with a
   test-only fixture handler and contributor (no production resource exists yet). C (disabled) cannot sign in (401), so C is never an acting student.
+- AC9 (SEC round 1 at `bc09303`, APPROVED with S3/S4; fixed in-task per DEC-088): (S3-1) the verifier also inspects every other `HandlerMapping`
+  bean and refuses a `RouterFunctionMapping` with a router function and any `AbstractUrlHandlerMapping` key under `/api` or with a `com.englms` handler;
+  (S3-2) completeness fails when one `METHOD pattern` key maps to more than one handler method; (S3-3) a `STUDENT`-audience handler must reside in
+  `..web.student..` and a `..web.student..` handler must be `STUDENT`; (S3-4) ArchUnit rule 4 also catches dependencies on a type with a `@TutorPrivate`
+  field; (S4-1) a pattern whose first segment is not a literal counts as an API pattern; (S4-2) `/api/v1/student/**` patterns with a `{…studentId}`
+  variable are refused; (S4-3) startup is refused unless the mapping uses a case-sensitive `PathPatternParser`. Each is proven by a failing fixture case.
+- AC10 (SEC round 2 at `c818b4f`, APPROVED with S4s; fixed in-task by the LC per DEC-088): (N2-1) an application-defined `HandlerMapping`
+  (`com.englms`, hidden or synthetic class) is refused; (N2-2) a URL-mapping handler kept as a bean name is checked by its resolved type; (N2-3) a
+  `STUDENT` handler method declared outside `..web.student..` (inherited) is refused. Proven by `AudienceVerifierTest` cases.
 - AC8 (api-conventions §9, authz-isolation skill): `./mvnw -B verify -Dgroups=security` runs the matrix, isolation and student ArchUnit tests (the
   surefire report lists all three) and is green; the full `./mvnw verify` and `./scripts/gate.sh` are green; no existing test changed except to add `@Audience`
   expectations and to move `SpaServingTest`'s test-only `ProbeController` from `/api/v1/probe` to `/api/v1/tutor/probe` with `@Audience(TUTOR)` (the test
