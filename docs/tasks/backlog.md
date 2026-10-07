@@ -75,7 +75,7 @@ Not M1 exit criteria and not part of M1's G5 (T-M1.10: PO, DEC-083; T-M1.17: DEC
 | T-M5.1 | Activities core: assignment kind (text/file response modes), ad-hoc vs library, assign with snapshot, work-item lifecycle, excuse/withdraw/reopen; also the student list's open-work count and the "recently active" sort (FR-STU-02, DEC-097) | BE | FR-ACT-01, 04..07, ADR-0007/8, FR-STU-02 | M4 |
 | T-M5.2 | Attempts (text/file): start, autosave, submit, late; student work APIs; file resolver | BE | FR-ATT-01..03, 05, 07 | T-M5.1 |
 | T-M5.3 | Grading and feedback v1: manual grading, draft/publish, review queue, grade audit | BE | FR-GRD-02, 03, 06 | T-M5.2 |
-| T-M5.4 | Wrap-up composite command (atomic, idempotent) | BE | FR-LES-06 | T-M5.1, M3, M4 |
+| T-M5.4 | Wrap-up composite command (atomic, idempotent); also `Idempotency-Key` on `POST /tutor/students` (api-conventions §6; a replay never returns the temporary password in clear; DEC-099) | BE | FR-LES-06 | T-M5.1, M3, M4 |
 | T-M5.5 | Assignment builder v1 UI, assign dialog (F6), workspace Work tab | FE | FR-ACT-01, 05, 06 | T-M5.1 |
 | T-M5.6 | Student work UI: My work, attempt (text/file), save indicator + local buffer, result and feedback view | FE | FR-ATT-01..03, 07, NFR-OPS-05 | T-M5.2 |
 | T-M5.7 | Review UI v1 (F5), **Wrap-up UI (F1)**, Today review section; **tutor UAT #1** | FE (+PO) | FR-GRD, FR-LES-06, A-019 | T-M5.3..6 |

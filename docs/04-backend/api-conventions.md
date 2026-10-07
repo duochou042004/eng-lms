@@ -92,6 +92,8 @@ Application code throws `shared.ProblemException` (status, code, field errors, `
 - Aggregates expose `version`. Updates must send it (in the body for PUT/PATCH). A mismatch → 409 `STALE_VERSION`, and the UI offers reload or merge.
 - Composite or retry-prone commands (`/lessons/{id}/wrap-up`, `/tutor/students` create, `/attempts/{id}/submit`, uploads) accept the header
   `Idempotency-Key: <uuid>`. The same key and body within 24 h return the stored response. The same key with a different body → 422 `IDEMPOTENCY_KEY_REUSED`.
+  `/tutor/students` create gets it with the idempotency store (T-M5.4; until then a retried create answers 409 `USERNAME_TAKEN` and the tutor resets the
+  password): a replay must never return the stored temporary password in clear (T-M2.3 known limitation, DEC-099).
 - Autosave `PUT /student/attempts/{id}/responses/{itemKey}` is naturally idempotent (last write wins within an open attempt).
 
 ## 7. Security headers and caching
