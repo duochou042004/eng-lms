@@ -184,6 +184,20 @@ class HarnessDetectionTest {
 		harness.assertNoLeak(ME);
 	}
 
+	/** T-M2.3 G3 SEC-S3-2: request parameters never reach a bare CurrentStudent (the resolver wins over model binding). */
+	@Test
+	void requestParametersNamingStudentBDoNotChangeCurrentStudent() {
+		IsolationWorld world = harness.world();
+		UUID studentB = items.studentIdOf(world.studentB().id());
+		Response response = harness.signedIn(world.studentA())
+			.get(ME.path() + "?studentId=" + studentB + "&userId=" + world.studentB().id());
+
+		assertThat(response.status()).isEqualTo(200);
+		assertThat(response.json().path("studentId").asString())
+			.isEqualTo(items.studentIdOf(world.studentA().id()).toString());
+		assertThat(response.json().path("userId").asString()).isEqualTo(world.studentA().id().toString());
+	}
+
 	@Test
 	void aStudentAccountWithoutAStudentRowGets401SessionExpiredAndItsSessionEnds() {
 		harness.world();

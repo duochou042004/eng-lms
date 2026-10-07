@@ -99,6 +99,13 @@ class TutorStudentController {
 		if (size < 1 || size > MAX_PAGE_SIZE) {
 			problems.add(new FieldProblem("size", ProblemCodes.INVALID_VALUE, "1 to " + MAX_PAGE_SIZE));
 		}
+		else if (page > Integer.MAX_VALUE / size) {
+			// page * size is the query offset: it must fit an int (T-M2.3 G3 SEC-S4-3).
+			problems.add(new FieldProblem("page", ProblemCodes.INVALID_VALUE, "page * size beyond the last possible row"));
+		}
+		if (q != null && q.chars().anyMatch(c -> c < 0x20 && c != '\t' && c != '\n' && c != '\r')) {
+			problems.add(new FieldProblem("q", ProblemCodes.INVALID_FORMAT, "Control characters are not allowed"));
+		}
 		if (!problems.isEmpty()) {
 			throw ProblemException.validation(problems);
 		}
@@ -141,8 +148,11 @@ class TutorStudentController {
 			@AuthenticationPrincipal CurrentUser me) {
 		List<FieldProblem> problems = new ArrayList<>();
 		StudentStatus target = status(body.status(), "status", problems);
-		if (body.version() == null || body.version() < 0) {
+		if (body.version() == null) {
 			problems.add(new FieldProblem("version", ProblemCodes.REQUIRED, "The version read with the student"));
+		}
+		else if (body.version() < 0) {
+			problems.add(new FieldProblem("version", ProblemCodes.INVALID_VALUE, "0 or more"));
 		}
 		if (!problems.isEmpty()) {
 			throw ProblemException.validation(problems);

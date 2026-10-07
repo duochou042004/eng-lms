@@ -77,10 +77,13 @@ public class Student {
 	}
 
 	/**
-	 * Replaces the profile and contacts. {@code version} moves on at flush when a column changed (Hibernate dirty
-	 * checking); a PATCH that only renames the account leaves the row, and its version, as it was.
+	 * Replaces the profile and contacts, unless they equal the current ones: then nothing is touched, so a PATCH that
+	 * only renames the account (or changes nothing) keeps {@code updatedAt} and {@code version}.
 	 */
 	public void apply(StudentProfile profile, UUID actor, Instant now) {
+		if (fullName != null && profile.equals(profile())) {
+			return; // nothing in the row changes: keep updatedAt and version (T-M2.3 G3 QA-S3-2)
+		}
 		fullName = profile.fullName();
 		email = profile.email();
 		phone = profile.phone();

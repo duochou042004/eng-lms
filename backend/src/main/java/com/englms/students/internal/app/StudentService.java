@@ -127,8 +127,9 @@ public class StudentService implements StudentDirectory, StudentPrincipals {
 	@Transactional
 	public StudentView update(UUID studentId, StudentCommands.Update command, UUID tutorId) {
 		if (command.version() == null || command.version() < 0) {
-			throw ProblemException.validation(List.of(StudentFields.problem("version", ProblemCodes.REQUIRED,
-					"The version read with the student")));
+			throw ProblemException.validation(List.of((command.version() == null)
+					? StudentFields.problem("version", ProblemCodes.REQUIRED, "The version read with the student")
+					: StudentFields.problem("version", ProblemCodes.INVALID_VALUE, "0 or more")));
 		}
 		Student student = load(studentId);
 		checkVersion(student, command.version());

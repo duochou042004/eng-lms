@@ -1,5 +1,6 @@
 package com.englms.shared.web;
 
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -18,6 +19,18 @@ import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ClassUtils;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.core.MethodParameter;
+import org.springframework.core.annotation.MergedAnnotations;
+import org.springframework.web.bind.annotation.CookieValue;
+import org.springframework.web.bind.annotation.MatrixVariable;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestAttribute;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.function.support.RouterFunctionMapping;
@@ -89,6 +102,7 @@ public class AudienceVerifier implements SmartInitializingSingleton {
 								handler.isEnglms(), handler.method().getBeanType(),
 								handler.method().getMethod().getDeclaringClass())
 							.forEach(violation -> errors.add(handler + ": " + violation));
+						currentStudentBindings(handler.method()).forEach(violation -> errors.add(handler + ": " + violation));
 					});
 				}
 				case RouterFunctionMapping routes when routes.getRouterFunction() != null -> errors.add(mapping.getClass()
@@ -149,6 +163,32 @@ public class AudienceVerifier implements SmartInitializingSingleton {
 		Audience onMethod = method.getMethodAnnotation(Audience.class);
 		return (onMethod != null) ? onMethod
 				: AnnotatedElementUtils.findMergedAnnotation(method.getBeanType(), Audience.class);
+	}
+
+	/**
+	 * Spring runs its annotation-based argument resolvers before custom ones, so a binding annotation on a
+	 * {@link CurrentStudent} parameter would bind it from the request instead of the session (T-M2.3 G3 SEC-S3-2).
+	 */
+	static final List<Class<? extends Annotation>> BINDINGS = List.of(ModelAttribute.class, RequestBody.class,
+			RequestParam.class, PathVariable.class, RequestHeader.class, CookieValue.class, MatrixVariable.class,
+			RequestPart.class, RequestAttribute.class, SessionAttribute.class);
+
+	static List<String> currentStudentBindings(HandlerMethod method) {
+		List<String> violations = new ArrayList<>();
+		for (MethodParameter parameter : method.getMethodParameters()) {
+			if (parameter.getParameterType() != CurrentStudent.class) {
+				continue;
+			}
+			for (Annotation annotation : parameter.getParameterAnnotations()) {
+				BINDINGS.stream()
+					.filter(binding -> binding == annotation.annotationType()
+							|| MergedAnnotations.from(annotation.annotationType()).isPresent(binding))
+					.forEach(binding -> violations.add("CurrentStudent parameter #" + parameter.getParameterIndex()
+							+ " carries @" + binding.getSimpleName()
+							+ ": it would be bound from the request, not the session (ADR-0016 §2)"));
+			}
+		}
+		return violations;
 	}
 
 	/** The broken rules of one handler ({@code audience} null = not annotated); empty when it is fine. */

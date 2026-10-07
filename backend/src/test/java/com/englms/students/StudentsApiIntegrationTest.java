@@ -232,6 +232,60 @@ class StudentsApiIntegrationTest {
 		assertThat(create("{\"fullName\":\"Rollback Probe\",\"username\":\"rollback.probe\"}").status()).isEqualTo(201);
 	}
 
+	/** T-M2.3 G3 QA-S3-1 / SEC-S3-1: a NUL or other C0 control character is a 422, never a 500 or a logged value. */
+	@Test
+	void controlCharactersInFreeTextAre422NamingTheField(CapturedOutput output) {
+		Response response = create("{\"fullName\":\"An\\u0000\",\"username\":\"nul.probe\",\"email\":\"a\\u0000@b.org\","
+				+ "\"phone\":\"0901\\u0000234\",\"note\":\"x\\u001by\",\"contactHandles\":[{\"label\":\"Za\\u0000lo\","
+				+ "\"value\":\"SECRET-NUL-VALUE\\u0000\"}]}");
+
+		assertThat(response.status()).isEqualTo(422);
+		assertThat(fieldCodes(response)).containsExactlyInAnyOrder("fullName:INVALID_FORMAT", "email:INVALID_FORMAT",
+				"phone:INVALID_FORMAT", "note:INVALID_FORMAT", "contactHandles[0].label:INVALID_FORMAT",
+				"contactHandles[0].value:INVALID_FORMAT");
+		String sid = sid(createStudent("Tab Ok", "tab.ok"));
+		assertThat(patch(sid, "{\"version\":0,\"note\":\"line one\\nline\\ttwo\\r\"}").status()).as("tab, LF, CR allowed")
+			.isEqualTo(200);
+		assertThat(fieldCodes(patch(sid, "{\"version\":1,\"contactHandles\":[{\"label\":\"L\",\"value\":\"v\\u0000\"}]}")))
+			.containsExactly("contactHandles[0].value:INVALID_FORMAT");
+		Response search = tutor.get(STUDENTS + "?q=nul%00probe");
+		assertThat(search.status()).isEqualTo(422);
+		assertThat(fieldCodes(search)).containsExactly("q:INVALID_FORMAT");
+		assertThat(output.getAll()).doesNotContain("SECRET-NUL-VALUE").doesNotContain("Unhandled exception");
+	}
+
+	/** T-M2.3 G3 QA-S3-2 / SEC-S4-4: only a change of the row moves updatedAt and version (clock moving). */
+	@Test
+	void aUsernameOnlyOrNoOpPatchKeepsVersionAndUpdatedAt() {
+		String sid = sid(create("{\"fullName\":\"Stable Row\",\"username\":\"stable.row\",\"note\":\"n\","
+				+ "\"contactHandles\":[{\"label\":\"Zalo\",\"value\":\"0909\"}]}").json());
+		String created = tutor.get(STUDENTS + "/" + sid).json().path("updatedAt").asString();
+
+		clock.advance(Duration.ofHours(1));
+		Response renamed = patch(sid, "{\"version\":0,\"username\":\"stable.renamed\"}");
+		clock.advance(Duration.ofHours(1));
+		Response same = patch(sid, "{\"version\":0,\"fullName\":\" Stable Row \",\"note\":\"n\","
+				+ "\"contactHandles\":[{\"label\":\"Zalo\",\"value\":\"0909\"}]}");
+
+		assertThat(List.of(renamed, same)).allSatisfy(response -> {
+			assertThat(response.status()).isEqualTo(200);
+			assertThat(response.json().path("version").asLong()).isZero();
+			assertThat(response.json().path("updatedAt").asString()).isEqualTo(created);
+		});
+		assertThat(renamed.json().path("username").asString()).isEqualTo("stable.renamed");
+		Response changed = patch(sid, "{\"version\":0,\"note\":\"m\"}");
+		assertThat(changed.json().path("version").asLong()).isEqualTo(1);
+		assertThat(Instant.parse(changed.json().path("updatedAt").asString())).isEqualTo(NOW.plus(Duration.ofHours(2)));
+	}
+
+	@Test
+	void aNegativeVersionIsInvalidNotMissing() {
+		String sid = sid(createStudent("Negative Version", "negative.version"));
+
+		assertThat(fieldCodes(patch(sid, "{\"version\":-1,\"note\":\"x\"}"))).containsExactly("version:INVALID_VALUE");
+		assertThat(fieldCodes(status(sid, "PAUSED", -1))).containsExactly("version:INVALID_VALUE");
+	}
+
 	// ---- AC2 -------------------------------------------------------------------------------------------------
 
 	@Test
@@ -360,7 +414,8 @@ class StudentsApiIntegrationTest {
 	@Test
 	void anUnknownSortOrStatusOrAnOutOfRangePageIs422NamingTheField() {
 		for (String query : List.of("sort=nextLesson", "sort=fullName,up", "sort=email", "status=DELETED",
-				"status=active", "size=101", "size=0", "page=-1")) {
+				"status=active", "size=101", "size=0", "page=-1", "page=2147483647&size=100", "page=85899346", "q=a%00b",
+				"q=%07")) {
 			Response response = tutor.get(STUDENTS + "?" + query);
 			assertThat(response.status()).as(query).isEqualTo(422);
 			assertThat(response.code()).isEqualTo("VALIDATION_FAILED");

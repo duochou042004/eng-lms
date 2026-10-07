@@ -1,6 +1,9 @@
 package com.englms.shared.web;
 
 import java.net.URI;
+import java.sql.SQLException;
+import java.util.List;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,8 +54,20 @@ class ProblemDetailsAdvice extends ResponseEntityExceptionHandler {
 		return handleProblem(new ProblemException(HttpStatus.CONFLICT, ProblemCodes.STALE_VERSION), request);
 	}
 
+	/**
+	 * PostgreSQL refused a character of the input (22021 invalid byte sequence, e.g. a NUL in text; 22P05 untranslatable
+	 * character in jsonb). Input validation should have caught it (T-M2.3 G3 QA-S3-1); this backstop answers 422 and
+	 * logs neither the message nor the parameters, which carry the personal data that was refused.
+	 */
+	static final Set<String> REFUSED_INPUT_STATES = Set.of("22021", "22P05");
+
 	@ExceptionHandler(Exception.class)
 	ResponseEntity<Object> handleUnexpected(Exception ex, WebRequest request) {
+		String refused = refusedInputState(ex);
+		if (refused != null) {
+			log.warn("The database refused a character of the input (SQLState {}); input validation missed it", refused);
+			return handleProblem(ProblemException.validation(List.of()), request);
+		}
 		log.error("Unhandled exception", ex);
 		ProblemDetail body = ProblemDetail.forStatus(HttpStatus.INTERNAL_SERVER_ERROR);
 		return handleExceptionInternal(ex, body, new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR, request);
@@ -71,6 +86,15 @@ class ProblemDetailsAdvice extends ResponseEntityExceptionHandler {
 		problem.setProperty("code", code.name());
 		problem.setProperty("requestId", request.getAttribute(RequestIds.ATTRIBUTE, RequestAttributes.SCOPE_REQUEST));
 		return super.handleExceptionInternal(ex, problem, headers, statusCode, request);
+	}
+
+	static String refusedInputState(Throwable ex) {
+		for (Throwable cause = ex; cause != null; cause = cause.getCause()) {
+			if (cause instanceof SQLException sql && REFUSED_INPUT_STATES.contains(sql.getSQLState())) {
+				return sql.getSQLState();
+			}
+		}
+		return null;
 	}
 
 	static ProblemCodes codeFor(HttpStatusCode status) {

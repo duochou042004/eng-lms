@@ -848,6 +848,46 @@ class AuthApiIntegrationTest {
 		assertThat(remembered.cookies).as("the remember-me cookie is cleared").doesNotContainKey(Browser.REMEMBER_ME);
 	}
 
+	/** T-M2.3 G3 QA-S4-1: a refusal ends the account's tokens, so re-enabling the account does not revive them. */
+	@Test
+	void aRefusedRememberMeTokenIsDeletedAndDoesNotReviveTheAccountAfterReEnabling() {
+		UUID id = student("raced.revived", false);
+		Browser remembered = signedIn("raced.revived", true);
+		String token = remembered.cookies.get(Browser.REMEMBER_ME);
+		remembered.cookies.remove(Browser.SESSION);
+		jdbc.update("UPDATE user_account SET status = 'DISABLED' WHERE id = ?", id);
+
+		assertThat(remembered.get("/api/v1/auth/session").code()).isEqualTo("SESSION_EXPIRED");
+		assertThat(count("SELECT count(*) FROM persistent_logins WHERE username = ?", id.toString())).isZero();
+		assertThat(count("SELECT count(*) FROM spring_session WHERE principal_name = ?", id.toString())).isZero();
+		jdbc.update("UPDATE user_account SET status = 'ACTIVE' WHERE id = ?", id);
+
+		Browser replay = browser();
+		replay.cookies.put(Browser.REMEMBER_ME, token);
+		Response response = replay.get("/api/v1/auth/session");
+		assertThat(response.status()).isEqualTo(401);
+		assertThat(response.code()).isEqualTo("SESSION_EXPIRED");
+	}
+
+	@Test
+	void aRefusedSessionEndsTheAccountsOtherSessionsAndTokens() {
+		UUID id = student("raced.many", false);
+		Browser phone = signedIn("raced.many", false);
+		Browser remembered = signedIn("raced.many", true);
+		String token = remembered.cookies.get(Browser.REMEMBER_ME);
+		jdbc.update("UPDATE user_account SET status = 'DISABLED' WHERE id = ?", id);
+
+		assertThat(phone.get("/api/v1/auth/session").code()).isEqualTo("SESSION_EXPIRED");
+		assertThat(count("SELECT count(*) FROM spring_session WHERE principal_name = ?", id.toString())).isZero();
+		assertThat(count("SELECT count(*) FROM persistent_logins WHERE username = ?", id.toString())).isZero();
+		jdbc.update("UPDATE user_account SET status = 'ACTIVE' WHERE id = ?", id);
+
+		Browser replay = browser();
+		replay.cookies.put(Browser.REMEMBER_ME, token);
+		assertThat(replay.get("/api/v1/auth/session").status()).isEqualTo(401);
+		assertThat(remembered.get("/api/v1/auth/session").status()).as("the other session ended too").isEqualTo(401);
+	}
+
 	@Test
 	void aRefusedSessionDoesNotBlockSigningInAgainOnTheSameDevice() {
 		UUID id = student("raced.shared", false);

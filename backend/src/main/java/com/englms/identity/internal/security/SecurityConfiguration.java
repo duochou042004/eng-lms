@@ -12,6 +12,7 @@ import jakarta.servlet.ServletContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.englms.identity.SessionTerminator;
 import com.englms.identity.internal.domain.PasswordPolicy;
 import com.englms.identity.internal.domain.TemporaryPasswordGenerator;
 import com.englms.identity.internal.persistence.UserAccountRepository;
@@ -93,14 +94,14 @@ class SecurityConfiguration {
 	 */
 	@Bean
 	AccountRememberMeServices rememberMeServices(AccountUserDetailsService users, DataSource dataSource,
-			JdbcTemplate jdbc, IdentityProperties properties,
+			JdbcTemplate jdbc, IdentityProperties properties, SessionTerminator terminator,
 			@Value("${server.servlet.session.cookie.secure:true}") boolean secureCookies) {
 		JdbcTokenRepositoryImpl tokens = new JdbcTokenRepositoryImpl();
 		tokens.setDataSource(dataSource);
 		byte[] key = new byte[32];
 		new SecureRandom().nextBytes(key);
 		AccountRememberMeServices services = new AccountRememberMeServices(HexFormat.of().formatHex(key), users,
-				tokens, jdbc);
+				tokens, jdbc, terminator);
 		services.setTokenValiditySeconds((int) properties.rememberMe().validity().toSeconds());
 		services.setUseSecureCookie(secureCookies);
 		services.setCookieCustomizer(cookie -> cookie.setAttribute("SameSite", "Lax"));
@@ -142,7 +143,7 @@ class SecurityConfiguration {
 		@Bean
 		SecurityFilterChain securityFilterChain(HttpSecurity http, HttpSessionSecurityContextRepository contexts,
 				ApiCsrfTokenRepository csrfTokens, AccountRememberMeServices rememberMe, ServletContext application,
-				UserAccountRepository accounts) {
+				UserAccountRepository accounts, SessionTerminator terminator) {
 			// Boot also registers this filter on the management port (its child context reuses the bean). The chain
 			// applies to the application port only: :8081 (health/info, never proxied) has no sessions, CSRF or
 			// security headers (DEC-050).
@@ -178,7 +179,7 @@ class SecurityConfiguration {
 					.authenticated()
 					.anyRequest()
 					.permitAll())
-				.addFilterAfter(new AccountStatusFilter(accounts), RememberMeAuthenticationFilter.class)
+				.addFilterAfter(new AccountStatusFilter(accounts, terminator), RememberMeAuthenticationFilter.class)
 				.addFilterAfter(new MustChangePasswordFilter(), AuthorizationFilter.class);
 			return http.build();
 		}

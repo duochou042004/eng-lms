@@ -105,7 +105,9 @@ public class AccountService implements AccountApi {
 		if (!Usernames.isValid(username)) {
 			throw ProblemException.validation(List.of(usernameInvalid()));
 		}
-		UserAccount account = accounts.findForUpdateById(userId).orElseThrow(NoSuchElementException::new);
+		UserAccount account = accounts.findForUpdateById(userId)
+			.filter(found -> found.role() == Role.STUDENT)
+			.orElseThrow(NoSuchElementException::new);
 		String normalized = Usernames.normalize(username);
 		if (!normalized.equals(account.usernameNormalized()) && accounts.existsByUsernameNormalized(normalized)) {
 			throw usernameTaken();
@@ -117,13 +119,15 @@ public class AccountService implements AccountApi {
 	@Override
 	@Transactional
 	public TemporaryCredentials resetPasswordByTutor(UUID userId, UUID tutorUserId) {
+		// bcrypt before the row lock, so the lock is held only for the write (T-M2.3 G3 SEC-S4-6).
+		String temporary = generator.generate();
+		String hash = encoder.encode(temporary);
 		UserAccount student = accounts.findForUpdateById(userId)
 			.filter(account -> account.role() == Role.STUDENT)
 			.orElseThrow(NoSuchElementException::new);
 		Instant now = clock.instant();
-		String temporary = generator.generate();
 		Instant expiresAt = now.plus(TEMPORARY_PASSWORD_VALIDITY);
-		student.resetPassword(encoder.encode(temporary), expiresAt, now);
+		student.resetPassword(hash, expiresAt, now);
 		sessions.endAllSessions(userId);
 		events.publishEvent(new PasswordReset(userId, PasswordReset.Actor.TUTOR, tutorUserId));
 		return new TemporaryCredentials(userId, student.username(), temporary, expiresAt);

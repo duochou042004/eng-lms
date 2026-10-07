@@ -34,6 +34,14 @@ final class StudentFields {
 	private StudentFields() {
 	}
 
+	/** C0 control characters other than tab, line feed and carriage return (a NUL breaks PostgreSQL text and jsonb). */
+	private static final Pattern CONTROL = Pattern.compile("[\\x00-\\x08\\x0B\\x0C\\x0E-\\x1F]");
+
+	static boolean hasControlCharacters(String raw) {
+		return raw != null && CONTROL.matcher(raw).find();
+	}
+
+	/** Trimmed, empty → null. */
 	static String text(String raw) {
 		if (raw == null) {
 			return null;
@@ -42,8 +50,20 @@ final class StudentFields {
 		return stripped.isEmpty() ? null : stripped;
 	}
 
+	/** {@link #text(String)}, refusing control characters ({@code INVALID_FORMAT} on {@code field}; T-M2.3 G3 QA-S3-1). */
+	static String text(String raw, String field, List<FieldProblem> problems) {
+		if (hasControlCharacters(raw)) {
+			problems.add(problem(field, ProblemCodes.INVALID_FORMAT, "Control characters are not allowed"));
+		}
+		return text(raw);
+	}
+
 	static String fullName(String raw, List<FieldProblem> problems) {
-		String value = text(raw);
+		int before = problems.size();
+		String value = text(raw, "fullName", problems);
+		if (problems.size() > before) {
+			return value;
+		}
 		if (value == null) {
 			problems.add(problem("fullName", ProblemCodes.REQUIRED, "Required"));
 		}
@@ -54,6 +74,10 @@ final class StudentFields {
 	}
 
 	static String email(String raw, List<FieldProblem> problems) {
+		if (hasControlCharacters(raw)) {
+			problems.add(problem("email", ProblemCodes.INVALID_FORMAT, "Control characters are not allowed"));
+			return null;
+		}
 		String value = text(raw);
 		if (value != null && tooLong(value, EMAIL_MAX)) {
 			problems.add(problem("email", ProblemCodes.TOO_LONG, "At most " + EMAIL_MAX + " characters"));
@@ -66,6 +90,7 @@ final class StudentFields {
 
 	static String phone(String raw, List<FieldProblem> problems) {
 		String value = text(raw);
+		// The phone pattern already refuses control characters (INVALID_FORMAT).
 		if (value != null && !PHONE.matcher(value).matches()) {
 			problems.add(problem("phone", ProblemCodes.INVALID_FORMAT, "6-20 characters of 0-9, space, + ( ) . -"));
 		}
@@ -73,7 +98,7 @@ final class StudentFields {
 	}
 
 	static String note(String raw, List<FieldProblem> problems) {
-		String value = text(raw);
+		String value = text(raw, "note", problems);
 		if (value != null && tooLong(value, NOTE_MAX)) {
 			problems.add(problem("note", ProblemCodes.TOO_LONG, "At most " + NOTE_MAX + " characters"));
 		}
@@ -92,8 +117,14 @@ final class StudentFields {
 		for (int i = 0; i < raw.size(); i++) {
 			String field = "contactHandles[" + i + "]";
 			ContactHandle handle = raw.get(i);
-			String label = (handle != null) ? text(handle.label()) : null;
-			String value = (handle != null && text(handle.value()) != null) ? text(handle.value()) : "";
+			int before = problems.size();
+			String label = (handle != null) ? text(handle.label(), field + ".label", problems) : null;
+			String checkedValue = (handle != null) ? text(handle.value(), field + ".value", problems) : null;
+			String value = (checkedValue != null) ? checkedValue : "";
+			if (problems.size() > before) {
+				handles.add(new ContactHandle(label, value));
+				continue;
+			}
 			if (label == null) {
 				problems.add(problem(field + ".label", ProblemCodes.REQUIRED, "Required"));
 			}
