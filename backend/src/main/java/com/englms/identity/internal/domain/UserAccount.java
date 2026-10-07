@@ -81,6 +81,28 @@ public class UserAccount {
 		this.updatedAt = now;
 	}
 
+	/** A student account created by the tutor (FR-STU-01): its temporary password expires like a reset one (A-021, DEC-097). */
+	public static UserAccount newStudent(UUID id, String username, String temporaryHash, Instant expiresAt, Instant now) {
+		UserAccount account = new UserAccount(id, username, temporaryHash, Role.STUDENT, now);
+		account.tempPasswordExpiresAt = expiresAt;
+		return account;
+	}
+
+	/** FR-STU-03: a new username; the principal is the user ID, so sessions stay valid. */
+	public void rename(String newUsername, Instant now) {
+		username = newUsername.strip();
+		usernameNormalized = Usernames.normalize(newUsername);
+		updatedAt = now;
+	}
+
+	public String usernameNormalized() {
+		return usernameNormalized;
+	}
+
+	public AccountStatus status() {
+		return status;
+	}
+
 	public boolean isLocked(Instant now) {
 		return lockedUntil != null && lockedUntil.isAfter(now);
 	}

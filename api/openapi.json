@@ -188,6 +188,401 @@
         },
         "tags" : [ "meta" ]
       }
+    },
+    "/api/v1/tutor/students" : {
+      "get" : {
+        "operationId" : "list",
+        "parameters" : [ {
+          "in" : "query",
+          "name" : "q",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "in" : "query",
+          "name" : "status",
+          "required" : false,
+          "schema" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          }
+        }, {
+          "in" : "query",
+          "name" : "page",
+          "required" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32",
+            "default" : 0
+          }
+        }, {
+          "in" : "query",
+          "name" : "size",
+          "required" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32",
+            "default" : 25
+          }
+        }, {
+          "in" : "query",
+          "name" : "sort",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "default" : "fullName,asc"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/PageResponseStudentRow"
+                }
+              }
+            },
+            "description" : "A page of students"
+          },
+          "422" : {
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description" : "VALIDATION_FAILED: unknown status or sort, page or size out of range"
+          }
+        },
+        "summary" : "List students: q (accent-insensitive), status (repeatable; default ACTIVE, PAUSED), page, size, sort = fullName|createdAt[,asc|desc]",
+        "tags" : [ "tutor: students" ]
+      },
+      "post" : {
+        "operationId" : "create",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/CreateStudentRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "201" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/CreatedStudentResponse"
+                }
+              }
+            },
+            "description" : "Created; Location names the student"
+          },
+          "409" : {
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description" : "USERNAME_TAKEN (errors[0].field = username)"
+          },
+          "422" : {
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description" : "VALIDATION_FAILED with field codes"
+          }
+        },
+        "summary" : "Create a student with their STUDENT account; the credentials are in this response only",
+        "tags" : [ "tutor: students" ]
+      }
+    },
+    "/api/v1/tutor/students/{sid}" : {
+      "get" : {
+        "operationId" : "get",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "sid",
+          "required" : true,
+          "schema" : {
+            "type" : "string",
+            "format" : "uuid"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/StudentResponse"
+                }
+              }
+            },
+            "description" : "The student"
+          },
+          "404" : {
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description" : "NOT_FOUND"
+          }
+        },
+        "summary" : "A student's profile and contacts, with its version",
+        "tags" : [ "tutor: students" ]
+      },
+      "patch" : {
+        "operationId" : "update",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "sid",
+          "required" : true,
+          "schema" : {
+            "type" : "string",
+            "format" : "uuid"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/UpdateStudentRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/StudentResponse"
+                }
+              }
+            },
+            "description" : "The updated student"
+          },
+          "404" : {
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description" : "NOT_FOUND"
+          },
+          "409" : {
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description" : "STALE_VERSION or USERNAME_TAKEN"
+          },
+          "422" : {
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description" : "VALIDATION_FAILED with field codes"
+          }
+        },
+        "summary" : "Update the profile and contacts (and the username); version required",
+        "tags" : [ "tutor: students" ]
+      }
+    },
+    "/api/v1/tutor/students/{sid}/password-reset" : {
+      "post" : {
+        "operationId" : "resetPassword",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "sid",
+          "required" : true,
+          "schema" : {
+            "type" : "string",
+            "format" : "uuid"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/CredentialsResponse"
+                }
+              }
+            },
+            "description" : "The new credentials"
+          },
+          "404" : {
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description" : "NOT_FOUND"
+          },
+          "409" : {
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description" : "INVALID_STATE_TRANSITION: the student is archived"
+          }
+        },
+        "summary" : "A new temporary password, shown once; ends the student's sessions",
+        "tags" : [ "tutor: students" ]
+      }
+    },
+    "/api/v1/tutor/students/{sid}/status" : {
+      "post" : {
+        "operationId" : "changeStatus",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "sid",
+          "required" : true,
+          "schema" : {
+            "type" : "string",
+            "format" : "uuid"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/StatusRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/StudentResponse"
+                }
+              }
+            },
+            "description" : "The updated student"
+          },
+          "404" : {
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description" : "NOT_FOUND"
+          },
+          "409" : {
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description" : "INVALID_STATE_TRANSITION or STALE_VERSION"
+          },
+          "422" : {
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description" : "VALIDATION_FAILED (status, version)"
+          }
+        },
+        "summary" : "Change the status: ACTIVE ⇄ PAUSED, ACTIVE|PAUSED → ARCHIVED (ends the sessions), ARCHIVED → ACTIVE",
+        "tags" : [ "tutor: students" ]
+      }
+    },
+    "/api/v1/tutor/usernames/availability" : {
+      "get" : {
+        "operationId" : "usernameAvailability",
+        "parameters" : [ {
+          "in" : "query",
+          "name" : "username",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/UsernameAvailability"
+                }
+              }
+            },
+            "description" : "The answer"
+          }
+        },
+        "summary" : "Whether a username can be used: available, or reason INVALID / TAKEN",
+        "tags" : [ "tutor: students" ]
+      }
+    },
+    "/api/v1/tutor/usernames/suggestion" : {
+      "get" : {
+        "operationId" : "suggestUsername",
+        "parameters" : [ {
+          "in" : "query",
+          "name" : "fullName",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "default" : ""
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/UsernameSuggestion"
+                }
+              }
+            },
+            "description" : "The suggestion"
+          }
+        },
+        "summary" : "A free username suggested from a full name (accents removed, lowercase, numeric suffix)",
+        "tags" : [ "tutor: students" ]
+      }
     }
   },
   "components" : {
@@ -203,6 +598,76 @@
           }
         },
         "required" : [ "currentPassword", "newPassword" ]
+      },
+      "ContactHandle" : {
+        "type" : "object",
+        "properties" : {
+          "label" : {
+            "type" : "string"
+          },
+          "value" : {
+            "type" : "string"
+          }
+        }
+      },
+      "CreateStudentRequest" : {
+        "type" : "object",
+        "properties" : {
+          "contactHandles" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/ContactHandle"
+            }
+          },
+          "email" : {
+            "type" : "string"
+          },
+          "fullName" : {
+            "type" : "string"
+          },
+          "note" : {
+            "type" : "string"
+          },
+          "password" : {
+            "type" : "string",
+            "description" : "Optional: generated (shown once in credentials) when absent"
+          },
+          "phone" : {
+            "type" : "string"
+          },
+          "username" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "fullName", "username" ]
+      },
+      "CreatedStudentResponse" : {
+        "type" : "object",
+        "properties" : {
+          "credentials" : {
+            "$ref" : "#/components/schemas/CredentialsResponse"
+          },
+          "student" : {
+            "$ref" : "#/components/schemas/StudentResponse"
+          }
+        },
+        "required" : [ "credentials", "student" ]
+      },
+      "CredentialsResponse" : {
+        "type" : "object",
+        "properties" : {
+          "expiresAt" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "temporaryPassword" : {
+            "type" : "string"
+          },
+          "username" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "expiresAt", "temporaryPassword", "username" ]
       },
       "LoginRequest" : {
         "type" : "object",
@@ -239,6 +704,34 @@
           }
         },
         "required" : [ "displayName", "locales", "name", "version" ]
+      },
+      "PageResponseStudentRow" : {
+        "type" : "object",
+        "properties" : {
+          "items" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/StudentRow"
+            }
+          },
+          "page" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "size" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "totalItems" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "totalPages" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        },
+        "required" : [ "items", "page", "size", "totalItems", "totalPages" ]
       },
       "Problem" : {
         "type" : "object",
@@ -289,7 +782,7 @@
       },
       "ProblemCode" : {
         "type" : "string",
-        "enum" : [ "MALFORMED_REQUEST", "NOT_FOUND", "METHOD_NOT_ALLOWED", "UNSUPPORTED_MEDIA_TYPE", "NOT_ACCEPTABLE", "VALIDATION_FAILED", "INTERNAL_ERROR", "UNAUTHENTICATED", "SESSION_EXPIRED", "FORBIDDEN_ROLE", "PASSWORD_CHANGE_REQUIRED", "CSRF_INVALID", "RATE_LIMITED", "PASSWORD_TOO_SHORT", "PASSWORD_TOO_LONG", "PASSWORD_TOO_COMMON", "PASSWORD_EQUALS_USERNAME", "PASSWORD_UNCHANGED", "CURRENT_PASSWORD_INCORRECT" ]
+        "enum" : [ "MALFORMED_REQUEST", "NOT_FOUND", "METHOD_NOT_ALLOWED", "UNSUPPORTED_MEDIA_TYPE", "NOT_ACCEPTABLE", "VALIDATION_FAILED", "INTERNAL_ERROR", "UNAUTHENTICATED", "SESSION_EXPIRED", "FORBIDDEN_ROLE", "PASSWORD_CHANGE_REQUIRED", "CSRF_INVALID", "RATE_LIMITED", "PASSWORD_TOO_SHORT", "PASSWORD_TOO_LONG", "PASSWORD_TOO_COMMON", "PASSWORD_EQUALS_USERNAME", "PASSWORD_UNCHANGED", "CURRENT_PASSWORD_INCORRECT", "USERNAME_TAKEN", "STALE_VERSION", "INVALID_STATE_TRANSITION", "REQUIRED", "TOO_LONG", "TOO_MANY", "INVALID_FORMAT", "INVALID_VALUE", "USERNAME_INVALID" ]
       },
       "SessionResponse" : {
         "type" : "object",
@@ -319,6 +812,153 @@
           }
         },
         "required" : [ "displayName", "locale", "mustChangePassword", "role", "timeZone", "userId", "username" ]
+      },
+      "StatusRequest" : {
+        "type" : "object",
+        "properties" : {
+          "status" : {
+            "type" : "string",
+            "enum" : [ "ACTIVE", "PAUSED", "ARCHIVED" ]
+          },
+          "version" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        },
+        "required" : [ "status", "version" ]
+      },
+      "StudentResponse" : {
+        "type" : "object",
+        "properties" : {
+          "contactHandles" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/ContactHandle"
+            }
+          },
+          "createdAt" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "email" : {
+            "type" : [ "string", "null" ]
+          },
+          "fullName" : {
+            "type" : "string"
+          },
+          "id" : {
+            "type" : "string",
+            "format" : "uuid"
+          },
+          "note" : {
+            "type" : [ "string", "null" ]
+          },
+          "phone" : {
+            "type" : [ "string", "null" ]
+          },
+          "status" : {
+            "type" : "string",
+            "enum" : [ "ACTIVE", "PAUSED", "ARCHIVED" ]
+          },
+          "updatedAt" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "username" : {
+            "type" : "string"
+          },
+          "version" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        },
+        "required" : [ "contactHandles", "createdAt", "email", "fullName", "id", "note", "phone", "status", "updatedAt", "username", "version" ]
+      },
+      "StudentRow" : {
+        "type" : "object",
+        "properties" : {
+          "createdAt" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "email" : {
+            "type" : [ "string", "null" ]
+          },
+          "fullName" : {
+            "type" : "string"
+          },
+          "id" : {
+            "type" : "string",
+            "format" : "uuid"
+          },
+          "phone" : {
+            "type" : [ "string", "null" ]
+          },
+          "status" : {
+            "type" : "string",
+            "enum" : [ "ACTIVE", "PAUSED", "ARCHIVED" ]
+          },
+          "username" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "createdAt", "email", "fullName", "id", "phone", "status", "username" ]
+      },
+      "UpdateStudentRequest" : {
+        "type" : "object",
+        "properties" : {
+          "contactHandles" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/ContactHandle"
+            }
+          },
+          "email" : {
+            "type" : [ "string", "null" ]
+          },
+          "fullName" : {
+            "type" : "string"
+          },
+          "note" : {
+            "type" : [ "string", "null" ]
+          },
+          "phone" : {
+            "type" : [ "string", "null" ]
+          },
+          "username" : {
+            "type" : "string"
+          },
+          "version" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        },
+        "required" : [ "version" ]
+      },
+      "UsernameAvailability" : {
+        "type" : "object",
+        "properties" : {
+          "available" : {
+            "type" : "boolean"
+          },
+          "reason" : {
+            "type" : [ "string", "null" ],
+            "description" : "INVALID or TAKEN; null when available"
+          },
+          "username" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "available", "reason", "username" ]
+      },
+      "UsernameSuggestion" : {
+        "type" : "object",
+        "properties" : {
+          "username" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "username" ]
       }
     }
   }

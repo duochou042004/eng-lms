@@ -1,7 +1,8 @@
 # Validation Rules
 
 > Layering: api-conventions.md §8. Messages are i18n keys (`validation.<code>`). Strings are trimmed before validation; empty after
-> trim = absent. Lengths count Unicode code points. "text" = plain, "html" = sanitised rich text (the limit applies to the sanitised output).
+> trim = absent. Lengths count Unicode code points. Free text refuses C0 control characters other than tab, line feed and carriage
+> return (`INVALID_FORMAT` on the field, e.g. a NUL; as built for students and the list `q`, T-M2.3 G3). "text" = plain, "html" = sanitised rich text (the limit applies to the sanitised output).
 
 ## Common
 
@@ -25,6 +26,8 @@
 | username | 3–40, `^[a-z0-9._-]+$` after lowercasing, unique among normalised usernames (case- and accent-insensitive) |
 | password (new) | 10–128; not in the common list; ≠ username; ≠ current |
 | fullName | text 1–120 |
+| student note | text 0–2,000 (T-M2.3; the "Description" limit) |
+| student email / phone / contact handles | the "Common" rules (contact handles: label 1–60, value 0–500, ≤ 30 entries); field codes api-conventions §5 |
 | student status transition | per domain-model §4.1 |
 | guardian.name | 1–120; relationship 0–40 |
 | learningProfile.currentLevel | 0–40 |

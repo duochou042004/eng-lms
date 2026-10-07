@@ -3,7 +3,8 @@
 > Design-level list. The authoritative contract is `api/openapi.json` once generated. Each packet that adds endpoints updates this file.
 > Prefix `/api/v1` omitted. **M** = milestone. Audience: T = tutor, S = student, P = public, A = any authenticated.
 > `/auth/**` is open at the URL gate and each handler decides (security.md §4); there is no registration route (`/auth/register` → 404, FR-AUTH-01).
-> Every handler carries `@Audience` (the column "Aud") and a policy-registry entry (security.md §4). Registered since T-M2.2: the four auth endpoints and `GET /meta`.
+> Every handler carries `@Audience` (the column "Aud") and a policy-registry entry (security.md §4). Registered since T-M2.2: the four auth endpoints and `GET /meta`;
+> since T-M2.3 the eight live "tutor: students" endpoints below (all `@Audience(TUTOR)`).
 
 ## auth, meta (identity, settings)
 
@@ -20,15 +21,15 @@
 
 | Method | Path | Purpose | FR | M |
 |---|---|---|---|---|
-| GET | `/tutor/students` | List, search, filter, sort | FR-STU-02 | M2 |
-| POST | `/tutor/students` | Create student + account (+ optional first goal) → returns credentials once | FR-STU-01 | M2 |
-| GET | `/tutor/usernames/suggestion?fullName=` | Suggested username | FR-STU-01 | M2 |
-| GET | `/tutor/usernames/availability?username=` | Availability check | FR-STU-01 | M2 |
-| GET / PATCH | `/tutor/students/{sid}` | Profile and contacts | FR-STU-03 | M2 |
+| GET | `/tutor/students` | List, search, filter, sort. `q` (accent- and case-insensitive substring of the full name, username, email, phone or a handle value; `%`, `_`, `\` match literally), `status` (repeatable: `ACTIVE`, `PAUSED`, `ARCHIVED`; default `ACTIVE`+`PAUSED`), `page`, `size` (≤ 100), `sort` = `fullName` (default) or `createdAt`, `,asc`/`,desc`. Rows `{id, fullName, username, status, email, phone, createdAt}` in the page envelope (api-conventions §4). Unknown `status`/`sort` or out-of-range `page`/`size` → 422 naming the field. Row signals and the "next lesson"/"recently active" sorts: T-M3.1, T-M5.1, T-M7.7 (DEC-097 (5)). **Live** (T-M2.3) | FR-STU-02 | M2 |
+| POST | `/tutor/students` | Create student + account: `{fullName, username, password?, email?, phone?, contactHandles?: [{label, value}], note?}`. Without `password` the server generates one (≥ 14 characters, DEC-097 (2)/DEC-098); a supplied one must pass the policy (422 `password` field codes). The account is `STUDENT`, `mustChangePassword=true`, temporary password valid 7 days (A-021). `201` + `Location` with `{student: <student DTO>, credentials: {username, temporaryPassword, expiresAt}}`: the credentials appear **only** here. 409 `USERNAME_TAKEN` (`errors[0].field = "username"`, also when two creates race); 422 field codes. The first goal (FR-GOAL-02): T-M2.9. `Idempotency-Key` (api-conventions §6): not built yet. **Live** (T-M2.3) | FR-STU-01 | M2 |
+| GET | `/tutor/usernames/suggestion?fullName=` | `{username}`: the full name lowercased without accents and other characters (≤ 36), `student` when shorter than 3, then the first free of `base`, `base2`, … **Live** (T-M2.3) | FR-STU-01 | M2 |
+| GET | `/tutor/usernames/availability?username=` | `{username, available, reason}` with `reason` `INVALID`, `TAKEN` or `null`. **Live** (T-M2.3) | FR-STU-01 | M2 |
+| GET / PATCH | `/tutor/students/{sid}` | Profile and contacts. `GET` → the student DTO `{id, fullName, username, status, email, phone, contactHandles, note, createdAt, updatedAt, version}`. `PATCH` `{version, fullName?, username?, email?, phone?, contactHandles?, note?}`: absent = unchanged, `null` clears (not `fullName`/`username`); stale `version` → 409 `STALE_VERSION`; a username change keeps the student's sessions (409 `USERNAME_TAKEN`; audit `USERNAME_CHANGED`) and, alone, leaves `version` as it is (the username is the account's). Unknown `sid` → 404. Guardians: T-M2.9. **Live** (T-M2.3) | FR-STU-03 | M2 |
 | PUT | `/tutor/students/{sid}/learning-profile` | Learning profile | FR-STU-04 | M2 |
 | POST | `/tutor/students/{sid}/guardians` · PATCH/DELETE `/tutor/guardians/{gid}` | Guardians | FR-STU-03 | M2 |
-| POST | `/tutor/students/{sid}/status` | `{status}` | FR-STU-05 | M2 |
-| POST | `/tutor/students/{sid}/password-reset` | New temporary password (once) | FR-AUTH-07 | M2 |
+| POST | `/tutor/students/{sid}/status` | `{status, version}` → the student DTO. `ACTIVE ⇄ PAUSED`, `ACTIVE\|PAUSED → ARCHIVED` (disables the account: every session and remember-me token ends, sign-in answers the generic 401), `ARCHIVED → ACTIVE` (re-enables; `mustChangePassword` unchanged); others → 409 `INVALID_STATE_TRANSITION`; stale → 409 `STALE_VERSION`; audit `STUDENT_STATUS_CHANGED {from, to}`. **Live** (T-M2.3) | FR-STU-05 | M2 |
+| POST | `/tutor/students/{sid}/password-reset` | New temporary password (once): `200 {username, temporaryPassword, expiresAt}`; must change, 7-day expiry, lockout cleared, all sessions and remember-me tokens ended; audit `PASSWORD_RESET_BY_TUTOR` (actor = tutor). An `ARCHIVED` student → 409 `INVALID_STATE_TRANSITION`. **Live** (T-M2.3) | FR-AUTH-07 | M2 |
 | GET | `/tutor/students/{sid}/overview` | Workspace header + overview composition | FR-STU-06 | M2+ |
 | GET / POST | `/tutor/metrics` · PATCH `/tutor/metrics/{id}` · POST `/tutor/metrics/{id}/archive` | Metric definitions | FR-GOAL-01 | M7 |
 | GET / POST | `/tutor/students/{sid}/goals` · PATCH/DELETE `/tutor/goals/{id}` · PUT `/tutor/students/{sid}/goals/order` | Goals | FR-GOAL-02 | M7 |

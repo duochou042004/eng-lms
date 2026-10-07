@@ -12,8 +12,10 @@ import jakarta.servlet.ServletContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.englms.identity.SessionTerminator;
 import com.englms.identity.internal.domain.PasswordPolicy;
 import com.englms.identity.internal.domain.TemporaryPasswordGenerator;
+import com.englms.identity.internal.persistence.UserAccountRepository;
 import com.englms.shared.web.ProblemResponses;
 import com.englms.shared.web.SecurityHeaders;
 import org.springframework.beans.factory.annotation.Value;
@@ -33,6 +35,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.intercept.AuthorizationFilter;
 import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
+import org.springframework.security.web.authentication.rememberme.RememberMeAuthenticationFilter;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.header.writers.CrossOriginOpenerPolicyHeaderWriter.CrossOriginOpenerPolicy;
@@ -91,14 +94,14 @@ class SecurityConfiguration {
 	 */
 	@Bean
 	AccountRememberMeServices rememberMeServices(AccountUserDetailsService users, DataSource dataSource,
-			JdbcTemplate jdbc, IdentityProperties properties,
+			JdbcTemplate jdbc, IdentityProperties properties, SessionTerminator terminator,
 			@Value("${server.servlet.session.cookie.secure:true}") boolean secureCookies) {
 		JdbcTokenRepositoryImpl tokens = new JdbcTokenRepositoryImpl();
 		tokens.setDataSource(dataSource);
 		byte[] key = new byte[32];
 		new SecureRandom().nextBytes(key);
 		AccountRememberMeServices services = new AccountRememberMeServices(HexFormat.of().formatHex(key), users,
-				tokens, jdbc);
+				tokens, jdbc, terminator);
 		services.setTokenValiditySeconds((int) properties.rememberMe().validity().toSeconds());
 		services.setUseSecureCookie(secureCookies);
 		services.setCookieCustomizer(cookie -> cookie.setAttribute("SameSite", "Lax"));
@@ -131,14 +134,16 @@ class SecurityConfiguration {
 		}
 
 		/**
-		 * Order: CSRF (403 {@code CSRF_INVALID}) → authentication (401) → L1 role (403 {@code FORBIDDEN_ROLE}) →
+		 * Order: CSRF (403 {@code CSRF_INVALID}) → authentication (session, remember-me) → account still {@code ACTIVE}
+		 * (SEC S4-1, else anonymous) → 401 → L1 role (403 {@code FORBIDDEN_ROLE}) →
 		 * must-change gate (403 {@code PASSWORD_CHANGE_REQUIRED}) → handler lookup (404). "Everything else under
 		 * {@code /api/**}" only requires authentication, so an authenticated caller passes the gate and gets the
 		 * handler lookup's 404 (security.md §4, R4 D5-1); it is not {@code denyAll}.
 		 */
 		@Bean
 		SecurityFilterChain securityFilterChain(HttpSecurity http, HttpSessionSecurityContextRepository contexts,
-				ApiCsrfTokenRepository csrfTokens, AccountRememberMeServices rememberMe, ServletContext application) {
+				ApiCsrfTokenRepository csrfTokens, AccountRememberMeServices rememberMe, ServletContext application,
+				UserAccountRepository accounts, SessionTerminator terminator) {
 			// Boot also registers this filter on the management port (its child context reuses the bean). The chain
 			// applies to the application port only: :8081 (health/info, never proxied) has no sessions, CSRF or
 			// security headers (DEC-050).
@@ -174,6 +179,7 @@ class SecurityConfiguration {
 					.authenticated()
 					.anyRequest()
 					.permitAll())
+				.addFilterAfter(new AccountStatusFilter(accounts, terminator), RememberMeAuthenticationFilter.class)
 				.addFilterAfter(new MustChangePasswordFilter(), AuthorizationFilter.class);
 			return http.build();
 		}

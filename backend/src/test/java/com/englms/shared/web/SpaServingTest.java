@@ -113,7 +113,7 @@ class SpaServingTest {
 
 	@ParameterizedTest
 	@WithMockUser(roles = "TUTOR")
-	@ValueSource(strings = { "/api", "/api/v1/x", "/api/v1/tutor/students", "/actuator/health",
+	@ValueSource(strings = { "/api", "/api/v1/x", "/api/v1/tutor/nothing-here", "/actuator/health",
 			"/actuator", "/assets/missing-00000000.js", "/assets/tutor" })
 	void apiActuatorAndAssetPathsNeverFallBack(String path) {
 		expectSecurityHeaders(client.get().uri(path).header("Accept", HTML_NAVIGATION).exchange()).expectStatus()

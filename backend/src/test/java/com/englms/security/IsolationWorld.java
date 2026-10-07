@@ -18,8 +18,9 @@ import com.englms.identity.Role;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 /**
- * The isolation fixture world (test-strategy §2) as far as identity exists: the tutor, students A and B (active), C
- * (disabled; archived arrives with the students module) and a student who must change the password. Usernames carry a
+ * The isolation fixture world (test-strategy §2): the tutor, students A and B (active), C (account disabled; its
+ * student row is archived) and a student who must change the password. The student rows come from the students
+ * module's contributor ({@code com.englms.students.StudentsWorldContributor}). Usernames carry a
  * random suffix, so a substring hit in a scan is never a coincidence. All accounts use {@link IdentityFixtures#PASSWORD}.
  * Rebuilt for every test (the reset deletes every session).
  */
@@ -64,9 +65,12 @@ public final class IsolationWorld {
 		ownedByB(studentB.username());
 	}
 
-	/** Resets the database (contributors first) and builds a fresh world. */
+	/**
+	 * Resets the database (contributors first, in reverse order, so rows referencing an earlier contributor's rows go
+	 * first) and builds a fresh world (contributors in order: the students contributor runs first).
+	 */
 	public static IsolationWorld build(JdbcTemplate jdbc, List<IsolationWorldContributor> contributors) {
-		contributors.forEach(IsolationWorldContributor::reset);
+		contributors.reversed().forEach(IsolationWorldContributor::reset);
 		IdentityFixtures.reset(jdbc);
 		IsolationWorld world = new IsolationWorld(jdbc);
 		contributors.forEach(contributor -> contributor.contribute(world));

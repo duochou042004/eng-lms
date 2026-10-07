@@ -273,7 +273,7 @@ class AuthApiIntegrationTest {
 		}
 	}
 
-	/** SEC review S2-2: a body over the 1 MB JSON limit is refused before the service; over-long fields get the generic 401. */
+	/** SEC review S2-2: a body over the 1 MB JSON limit is refused before the service; over-long fields and (T-M2.3 SEC R2-1) a control character in the username get the generic 401. */
 	@Test
 	void anOversizedBodyIsRefusedAndOverLongFieldsGetTheGeneric401() {
 		Response huge = browser().post("/api/v1/auth/login",
@@ -284,14 +284,15 @@ class AuthApiIntegrationTest {
 
 		Response longUsername = browser().login("u".repeat(100_000), PASSWORD, false);
 		Response longPassword = browser().login("tutor.one", "p".repeat(2000), false);
+		Response nulUsername = browser().login("tutor\u0000.one", PASSWORD, false);
 		Response wrong = browser().login("tutor.one", "wrong-password-1", false);
 
-		assertThat(List.of(longUsername, longPassword)).allSatisfy(response -> {
+		assertThat(List.of(longUsername, longPassword, nulUsername)).allSatisfy(response -> {
 			assertThat(response.status()).isEqualTo(401);
 			assertThat(response.bodyWithoutRequestId()).isEqualTo(wrong.bodyWithoutRequestId());
 		});
 		assertThat(jdbc.queryForList("SELECT details->>'reason' FROM audit_event", String.class))
-			.containsExactlyInAnyOrder("REJECTED_INPUT", "REJECTED_INPUT", "BAD_PASSWORD");
+			.containsExactlyInAnyOrder("REJECTED_INPUT", "REJECTED_INPUT", "REJECTED_INPUT", "BAD_PASSWORD");
 		assertThat(count("SELECT failed_login_count FROM user_account WHERE id = ?", tutorId)).isOne();
 	}
 
@@ -749,7 +750,8 @@ class AuthApiIntegrationTest {
 		assertThat(student.get("/api/v1/tutor/students").code()).isEqualTo("FORBIDDEN_ROLE");
 		assertThat(student.get("/api/v1/tutor/students").status()).isEqualTo(403);
 		assertThat(tutor.get("/api/v1/student/home").code()).isEqualTo("FORBIDDEN_ROLE");
-		assertThat(tutor.get("/api/v1/tutor/students").status()).isEqualTo(404);
+		// /api/v1/tutor/students is a live handler since T-M2.3: an unmapped tutor path stands in for it.
+		assertThat(tutor.get("/api/v1/tutor/nothing-here").status()).isEqualTo(404);
 		assertThat(student.get("/api/v1/student/home").status()).isEqualTo(404);
 		assertThat(tutor.get("/api/v1/x").status()).isEqualTo(404);
 		assertThat(tutor.get("/api/v1/x").code()).isEqualTo("NOT_FOUND");
@@ -790,6 +792,111 @@ class AuthApiIntegrationTest {
 
 		accounts.enable(id);
 		assertThat(browser().login("student.b", PASSWORD, false).status()).isEqualTo(200);
+	}
+
+	// ---- T-M2.3 AC9 (DEC-092 SEC S4-1): a session of an account that is no longer ACTIVE ----------------------
+
+	/**
+	 * Deterministic form of the race (no sleeps, DEC-093): a login that commits just before {@code AccountApi.disable}
+	 * stores its session after the disable ended all sessions. That leaves an account {@code DISABLED} with a live
+	 * session row, which is set up here directly.
+	 */
+	@Test
+	void aSessionOfAnAccountNoLongerActiveIsRefusedWith401SessionExpiredAndInvalidated() {
+		UUID id = student("raced.student", false);
+		Browser browser = signedIn("raced.student", false);
+		String cookie = browser.cookies.get(Browser.SESSION);
+		jdbc.update("UPDATE user_account SET status = 'DISABLED' WHERE id = ?", id);
+		assertThat(count("SELECT count(*) FROM spring_session WHERE principal_name = ?", id.toString())).isOne();
+
+		Response refused = browser.get("/api/v1/auth/session");
+
+		assertThat(refused.status()).isEqualTo(401);
+		assertThat(refused.code()).isEqualTo("SESSION_EXPIRED");
+		assertThat(count("SELECT count(*) FROM spring_session WHERE principal_name = ?", id.toString())).isZero();
+		assertThat(browser.cookies).as("the session cookie is cleared").doesNotContainKey(Browser.SESSION);
+		Browser replay = browser();
+		replay.cookies.put(Browser.SESSION, cookie);
+		Response next = replay.get("/api/v1/student/home");
+		assertThat(next.status()).isEqualTo(401);
+		assertThat(next.code()).isEqualTo("SESSION_EXPIRED");
+	}
+
+	@Test
+	void aProtectedRequestOfAnAccountNoLongerActiveIs401SessionExpired() {
+		Browser tutor = signedIn("tutor.one", false);
+		jdbc.update("UPDATE user_account SET status = 'DISABLED' WHERE id = ?", tutorId);
+
+		Response refused = tutor.get("/api/v1/tutor/students");
+
+		assertThat(refused.status()).isEqualTo(401);
+		assertThat(refused.code()).isEqualTo("SESSION_EXPIRED");
+		assertThat(count("SELECT count(*) FROM spring_session WHERE principal_name = ?", tutorId.toString())).isZero();
+	}
+
+	@Test
+	void aRememberMeLoginOfAnAccountNoLongerActiveIs401SessionExpired() {
+		UUID id = student("raced.remembered", false);
+		Browser remembered = signedIn("raced.remembered", true);
+		remembered.cookies.remove(Browser.SESSION);
+		jdbc.update("UPDATE user_account SET status = 'DISABLED' WHERE id = ?", id);
+
+		Response refused = remembered.get("/api/v1/auth/session");
+
+		assertThat(refused.status()).isEqualTo(401);
+		assertThat(refused.code()).isEqualTo("SESSION_EXPIRED");
+		assertThat(refused.setCookie(Browser.SESSION)).as("no session is created").isNull();
+		assertThat(remembered.cookies).as("the remember-me cookie is cleared").doesNotContainKey(Browser.REMEMBER_ME);
+	}
+
+	/** T-M2.3 G3 QA-S4-1: a refusal ends the account's tokens, so re-enabling the account does not revive them. */
+	@Test
+	void aRefusedRememberMeTokenIsDeletedAndDoesNotReviveTheAccountAfterReEnabling() {
+		UUID id = student("raced.revived", false);
+		Browser remembered = signedIn("raced.revived", true);
+		String token = remembered.cookies.get(Browser.REMEMBER_ME);
+		remembered.cookies.remove(Browser.SESSION);
+		jdbc.update("UPDATE user_account SET status = 'DISABLED' WHERE id = ?", id);
+
+		assertThat(remembered.get("/api/v1/auth/session").code()).isEqualTo("SESSION_EXPIRED");
+		assertThat(count("SELECT count(*) FROM persistent_logins WHERE username = ?", id.toString())).isZero();
+		assertThat(count("SELECT count(*) FROM spring_session WHERE principal_name = ?", id.toString())).isZero();
+		jdbc.update("UPDATE user_account SET status = 'ACTIVE' WHERE id = ?", id);
+
+		Browser replay = browser();
+		replay.cookies.put(Browser.REMEMBER_ME, token);
+		Response response = replay.get("/api/v1/auth/session");
+		assertThat(response.status()).isEqualTo(401);
+		assertThat(response.code()).isEqualTo("SESSION_EXPIRED");
+	}
+
+	@Test
+	void aRefusedSessionEndsTheAccountsOtherSessionsAndTokens() {
+		UUID id = student("raced.many", false);
+		Browser phone = signedIn("raced.many", false);
+		Browser remembered = signedIn("raced.many", true);
+		String token = remembered.cookies.get(Browser.REMEMBER_ME);
+		jdbc.update("UPDATE user_account SET status = 'DISABLED' WHERE id = ?", id);
+
+		assertThat(phone.get("/api/v1/auth/session").code()).isEqualTo("SESSION_EXPIRED");
+		assertThat(count("SELECT count(*) FROM spring_session WHERE principal_name = ?", id.toString())).isZero();
+		assertThat(count("SELECT count(*) FROM persistent_logins WHERE username = ?", id.toString())).isZero();
+		jdbc.update("UPDATE user_account SET status = 'ACTIVE' WHERE id = ?", id);
+
+		Browser replay = browser();
+		replay.cookies.put(Browser.REMEMBER_ME, token);
+		assertThat(replay.get("/api/v1/auth/session").status()).isEqualTo(401);
+		assertThat(remembered.get("/api/v1/auth/session").status()).as("the other session ended too").isEqualTo(401);
+	}
+
+	@Test
+	void aRefusedSessionDoesNotBlockSigningInAgainOnTheSameDevice() {
+		UUID id = student("raced.shared", false);
+		Browser browser = signedIn("raced.shared", false);
+		jdbc.update("UPDATE user_account SET status = 'DISABLED' WHERE id = ?", id);
+
+		assertThat(browser.login("tutor.one", PASSWORD, false).status()).isEqualTo(200);
+		assertThat(browser.get("/api/v1/auth/session").json().path("userId").asString()).isEqualTo(tutorId.toString());
 	}
 
 	// ---- AC11 (audit content) ------------------------------------------------------------------------------

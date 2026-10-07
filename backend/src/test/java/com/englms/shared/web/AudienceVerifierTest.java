@@ -7,6 +7,7 @@ import static com.englms.shared.web.Audience.Kind.TUTOR;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Map;
+import java.util.List;
 import java.util.stream.Stream;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -171,6 +172,19 @@ class AudienceVerifierTest {
 	void resolvesABeanNameHandlerToItsType() {
 		web.withUserConfiguration(PrototypeUrlMapping.class).run(context -> assertThat(failure(context))
 			.hasMessageContaining("/x-proto -> " + LegacyHandler.class.getName()));
+	}
+
+	/** T-M2.3 G3 SEC-S3-2: a binding annotation would bind CurrentStudent from the request; a bare one is accepted (Valid start). */
+	@Test
+	void refusesEveryBindingAnnotationOnACurrentStudentParameter() {
+		web.withUserConfiguration(StudentWebHandlers.BoundCurrentStudent.class).run(context -> {
+			String failure = failure(context).getMessage();
+			for (String binding : List.of("ModelAttribute", "RequestBody", "RequestParam", "PathVariable", "RequestHeader",
+					"CookieValue", "MatrixVariable", "RequestPart", "RequestAttribute", "SessionAttribute")) {
+				assertThat(failure).contains("CurrentStudent parameter #0 carries @" + binding + ":");
+			}
+			assertThat(failure).contains("10 handler rule(s)");
+		});
 	}
 
 	@Test

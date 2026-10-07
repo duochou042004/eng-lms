@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.englms.identity.CurrentUser;
+import com.englms.identity.SessionTerminator;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.authentication.RememberMeAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -36,10 +37,13 @@ public class AccountRememberMeServices extends PersistentTokenBasedRememberMeSer
 
 	private final JdbcTemplate jdbc;
 
+	private final SessionTerminator sessions;
+
 	AccountRememberMeServices(String key, AccountUserDetailsService users, PersistentTokenRepository tokens,
-			JdbcTemplate jdbc) {
+			JdbcTemplate jdbc, SessionTerminator sessions) {
 		super(key, users, tokens);
 		this.jdbc = jdbc;
+		this.sessions = sessions;
 		setCookieName(COOKIE_NAME);
 	}
 
@@ -71,6 +75,21 @@ public class AccountRememberMeServices extends PersistentTokenBasedRememberMeSer
 			request.setAttribute(REJECTED_ATTRIBUTE, Boolean.TRUE);
 		}
 		return authentication;
+	}
+
+	/**
+	 * A valid token of an account that is no longer {@code ACTIVE}: Spring Security refuses it (the user is not
+	 * enabled) but would keep the token. Every session and token of the account is ended, so none revives it after a
+	 * re-enable (T-M2.3 G3 QA-S4-1). A must-change account is refused too, but keeps its tokens (it is active).
+	 */
+	@Override
+	protected UserDetails processAutoLoginCookie(String[] cookieTokens, HttpServletRequest request,
+			HttpServletResponse response) {
+		UserDetails user = super.processAutoLoginCookie(cookieTokens, request, response);
+		if (user instanceof AccountUserDetailsService.AccountUserDetails account && !account.active()) {
+			sessions.endAllSessions(account.currentUser().userId());
+		}
+		return user;
 	}
 
 	@Override

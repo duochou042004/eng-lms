@@ -23,11 +23,18 @@ description: Register endpoint authorization policies and add authz-matrix and s
    The must-change student gets **403** outside the must-change allow-list. `studentBOnA` is `NA` unless the path names a student-owned resource.
    Samples must not leave state the per-test world reset does not clear. One handler per `METHOD /pattern`: two handlers told apart only by
    `params`/`headers`/`consumes`/`produces` fail the completeness check (give each its own path).
-3. Student handler: **no** `studentId` parameter anywhere (name, `@PathVariable`, `@RequestParam`); use `CurrentStudent me` (T-M2.3); repository calls
-   are owner-scoped.
+3. Student handler: **no** `studentId` parameter anywhere (name, `@PathVariable`, `@RequestParam`, body field); declare `CurrentStudent me`
+   (`com.englms.shared.web.CurrentStudent`, as built T-M2.3: resolved by `CurrentStudentResolver` from the session principal through the
+   `StudentPrincipals` SPI; a student account without a student row → 401 `SESSION_EXPIRED` and the session ends). Repository calls are owner-scoped:
+   `findByIdAndStudentId(id, me.studentId())`, a mismatch → **404**. Reference: `fixture/harness/web/student/HarnessStudentHandlers#item`.
+   **Never annotate the `CurrentStudent` parameter** (`@ModelAttribute`, `@RequestBody`, `@RequestParam`, …): Spring would bind it from the request;
+   the L2 verifier refuses startup (T-M2.3 G3).
 4. Student classes: in `..web.student..`; no dependency on `notes`, `LearningProfile*` types, `@TutorPrivate` types or types with a `@TutorPrivate`
    field (mark private tutor types/fields with `@TutorPrivate`).
-5. Isolation fixture: if the handler exposes a new resource type, implement `IsolationWorldContributor` in test sources as a Spring bean (`@Component`
+5. Isolation fixture: the students contributor (`com.englms.students.StudentsWorldContributor`, `@Order(HIGHEST_PRECEDENCE)`, test sources)
+   already gives A, B, C (archived) and the must-change student a `student` row with `SECRET-*` markers in the note and a contact handle, and
+   registers `{sid}` = A's student ID. Contributors run in `@Order` (students first; resets in reverse), so yours can read `student.id` by `user_id`.
+   If the handler exposes a new resource type, implement `IsolationWorldContributor` in test sources as a Spring bean (`@Component`
    under `com.englms`): insert an A-owned and a B-owned instance, call `world.ownedByA("<pathVariable>", id)` (the registry path's `{pathVariable}` is
    replaced by it), `world.ownedByB(id)`, and `world.secret("SECRET-…")` for each marker put in a tutor-private field; delete your rows in `reset()`.
    The scan fails if student A's response (headers or body, any status) contains B's IDs or any `SECRET-*`.

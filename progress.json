@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-10-07T01:57:52Z",
-  "updatedBy": "lead-coordinator (session 2026-10-07, Opus 5.5)",
+  "updatedAt": "2026-10-07T03:41:30Z",
+  "updatedBy": "backend-implementer (T-M2.3, Opus 5.5)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -32,21 +32,21 @@
   "currentTask": {
     "id": "T-M2.3",
     "title": "Students core (create-with-account, usernames, list/search, profile, status, tutor password reset, CurrentStudent); also SEC S4-1 login-vs-disable",
-    "status": "ready",
-    "ownerRole": "LC",
-    "branch": "docs/T-M2.3-students-core",
+    "status": "awaiting_approval",
+    "ownerRole": "BE",
+    "branch": "feature/T-M2.3-students-core",
     "packet": "docs/tasks/T-M2.3-students-core.md",
-    "pr": "#60",
-    "lastCommit": null,
-    "startedAt": null,
+    "pr": "#61",
+    "lastCommit": "01319a0",
+    "startedAt": "2026-10-07T02:17:31Z",
     "entryGate": [
       "T-M2.2 merged — met (04d90e4, DEC-096)",
       "Packet G0 — met (DOCS-REVIEW PASS round 2, PR #60)",
       "PO start signal — met (DEC-098, 2026-10-07)"
     ],
     "nextSteps": [
-      "Merge PR #60 via merge-gate; gitlab-sync",
-      "Branch feature/T-M2.3-students-core from develop; backend-implementer; G3 QA then SEC"
+      "CI green at the final head; post QA PASS, SEC APPROVED, LC-APPROVED; merge-gate; gitlab-sync",
+      "qa/T-M2.3 PR (QA report); chore merge-record PR (SEC record, merge DEC)"
     ],
     "trace": [
       "backlog M2",
@@ -247,8 +247,8 @@
     }
   ],
   "tests": {
-    "lastRun": "2026-10-06T05:49:06Z",
-    "summary": "T-M2.2: CI 7/7 at 4ebae29; local gate PASS (QA re-test R14: 13 steps, backend 293 tests, e2e OK); -Dgroups=security 78 tests ×2 green (DEC-096).",
+    "lastRun": "2026-10-07T03:41:30Z",
+    "summary": "T-M2.3: local gate PASS at 01319a0 (13 steps, 449 s; backend 384 tests; e2e 86 passed, 19 skipped); -Dgroups=security 124 tests; StudentCreateRaceTest x20 20/20.",
     "suites": [
       {
         "name": "backend (./mvnw -B verify)",
@@ -870,6 +870,16 @@
       "at": "2026-10-07T01:57:52Z",
       "actor": "lead-coordinator",
       "event": "T-M2.3 split (DEC-097): T-M2.3 students core packet written; T-M2.9 (guardians, learning profile, first goal, DEC-096 rule extensions) added to the backlog."
+    },
+    {
+      "at": "2026-10-07T02:17:31Z",
+      "actor": "lead-coordinator",
+      "event": "T-M2.3 packet merged at G0 (PR #60, 3d53b68; DEC-098 PO start signal). Implementation starts on feature/T-M2.3-students-core."
+    },
+    {
+      "at": "2026-10-07T03:41:30Z",
+      "actor": "backend-implementer",
+      "event": "T-M2.3 implemented (AC1-AC10) on feature/T-M2.3-students-core: gate PASS at 01319a0 (13 steps, 449 s, backend 384 tests), -Dgroups=security 124 tests, StudentCreateRaceTest x20 20/20 (evidence/T-M2.3/); status in_review, PR to be opened by the LC."
     }
   ]
 }

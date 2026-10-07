@@ -8,8 +8,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 /**
- * Test accounts inserted straight into {@code user_account} (there is no students module yet, T-M2.1 design notes)
- * and the clean-up between tests. Hashes are real {@code {bcrypt}} strength-12 hashes, cached per password.
+ * Test accounts inserted straight into {@code user_account} (no student row: tests that need one add it, e.g. the
+ * students isolation contributor) and the clean-up between tests. Hashes are real {@code {bcrypt}} strength-12 hashes, cached per password.
  */
 public final class IdentityFixtures {
 
@@ -22,8 +22,9 @@ public final class IdentityFixtures {
 	private IdentityFixtures() {
 	}
 
-	/** Deletes every account, session, remember-me token and audit event. */
+	/** Deletes every student row (they reference accounts), account, session, remember-me token and audit event. */
 	public static void reset(JdbcTemplate jdbc) {
+		jdbc.update("DELETE FROM student");
 		jdbc.update("DELETE FROM spring_session");
 		jdbc.update("DELETE FROM persistent_logins");
 		jdbc.update("DELETE FROM user_account");

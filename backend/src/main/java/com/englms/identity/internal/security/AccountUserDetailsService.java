@@ -41,17 +41,25 @@ class AccountUserDetailsService implements UserDetailsService {
 		}
 		UserAccount account = accounts.findById(id).orElseThrow(() -> new UsernameNotFoundException("No such user"));
 		// A must-change account never signs in by remember-me (SEC review S4-3): only with its temporary password.
-		return new AccountUserDetails(account.toCurrentUser(), account.isActive() && !account.mustChangePassword());
+		return new AccountUserDetails(account.toCurrentUser(), account.isActive() && !account.mustChangePassword(),
+				account.isActive());
 	}
 
 	static final class AccountUserDetails extends User {
 
 		private final CurrentUser currentUser;
 
-		AccountUserDetails(CurrentUser currentUser, boolean enabled) {
+		private final boolean active;
+
+		AccountUserDetails(CurrentUser currentUser, boolean enabled, boolean active) {
 			super(currentUser.getName(), "", enabled, true, true, true,
 					List.of(new SimpleGrantedAuthority(currentUser.role().authority())));
 			this.currentUser = currentUser;
+			this.active = active;
+		}
+
+		boolean active() {
+			return active;
 		}
 
 		CurrentUser currentUser() {

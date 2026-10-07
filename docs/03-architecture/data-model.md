@@ -40,11 +40,20 @@ CREATE UNIQUE INDEX ux_user_account__single_tutor ON user_account ((role)) WHERE
 ```sql
 student (
   id uuid PK, user_id uuid NOT NULL UNIQUE REFERENCES user_account(id) ON DELETE RESTRICT,
-  full_name text NOT NULL, full_name_search text GENERATED (lower(unaccent(full_name))) STORED,
+  full_name text NOT NULL,
+  search_text text NOT NULL,   -- application-normalised (identity.Usernames.normalize) full name, email, phone, handle values
   email text NULL, phone text NULL, contact_handles jsonb NOT NULL DEFAULT '[]',   -- [{label, value}]
-  note text NULL, status text NOT NULL CHECK (status IN ('ACTIVE','PAUSED','ARCHIVED')), started_on date NULL,
-  + standard columns )
-  ix_student__status, GIN trigram on full_name_search
+  note text NULL, status text NOT NULL CHECK (status IN ('ACTIVE','PAUSED','ARCHIVED')),
+  + standard columns incl. version )   -- started_on date: deferred (no requirement uses it yet)
+  ux_student__user_id, ix_student__status, GIN trigram on search_text
+```
+As built (T-M2.3, `V202610070001__students_student.sql`): `pk_student`, `fk_student__user_id` (`ON DELETE RESTRICT`), `ck_student__status`,
+`ux_student__user_id` (one student per account; also the `CurrentStudent` lookup), `ix_student__status`, `ix_student__search_text`
+(`gin (search_text app.gin_trgm_ops)`). The designed `full_name_search` generated column is replaced by `search_text`, which the application
+recomputes on every write (lowercase, accents removed incl. `đ`, values joined with spaces; like `user_account.username_normalized`), so search covers
+the contacts too. A query `q` is normalised the same way and matched with `LIKE '%q%'` with `%`, `_` and `\` escaped. The username is matched in
+identity (no join). `contact_handles` is validated in code (label 1–60, value 0–500, ≤ 30). `created_by`/`updated_by` hold the tutor's user ID.
+```sql
 student_guardian ( id uuid PK, student_id uuid NOT NULL REFERENCES student ON DELETE CASCADE, name text NOT NULL,
   relationship text NULL, phone text NULL, email text NULL, notes text NULL, position int NOT NULL )
 student_learning_profile ( student_id uuid PK REFERENCES student ON DELETE CASCADE, current_level text NULL,
@@ -210,7 +219,8 @@ event_publication (Spring Modulith JDBC registry; schema as shipped)
 |---|---|---|
 | `user_account.password_hash` | Secret | Never serialised; excluded from `toString`; only the identity module reads it |
 | Temporary password (not stored in plain text) | Secret | Shown once in the create or reset response, sent with `Cache-Control: no-store`, never logged |
-| `student.email`, `phone`, `contact_handles`, `student_guardian.*` | Personal data (possibly of minors) | Tutor-only DTOs; excluded from logs; part of export and delete (OQ-07) |
+| `student.email`, `phone`, `contact_handles`, `search_text`, `student_guardian.*` | Personal data (possibly of minors) | Tutor-only DTOs (`search_text` in none); excluded from logs; part of export and delete (OQ-07) |
+| `student.note` | Tutor-private | Tutor DTO only; the isolation world puts a `SECRET-*` marker in it (T-M2.3) |
 | `student_learning_profile.*`, `teacher_note.body`, `plan_item.tutor_notes` | Tutor-private | Never mapped to student DTOs (NFR-SEC-02) |
 | `question.content` / snapshot answer keys | Answer secrets until release | Redacted by the type handler for the student audience |
 | `audit_event.ip`, `user_agent` | Personal data | 1-year retention job (daily, T-M2.1) |
@@ -228,6 +238,7 @@ event_publication (Spring Modulith JDBC registry; schema as shipped)
   `JdbcTokenRepositoryImpl` uses (`username` holds the user ID; `pk_persistent_logins`, `ix_persistent_logins__username`). `V202610040002__audit_events.sql`: `app.audit_event`
   as in §2 with `ix_audit_event__occurred_at (occurred_at DESC)`, `ix_audit_event__action`, no foreign keys (a row outlives its subject; an insert never waits for the
   account row lock), and the trigger `tr_audit_event__append_only` that rejects `UPDATE`. No seed data: the tutor comes from the bootstrap secret (FR-AUTH-02).
+- T-M2.3 (**applied**): `V202610070001__students_student.sql`: `app.student` as in §2 (as built note there). No seed data.
 - **No domain seed data** in migrations: no folders, no metrics, no tags. Dev/test fixtures live in `backend/src/test/resources/fixtures` and `scripts/seed-dev`.
 - Applied migrations are never edited. Destructive changes use expand → migrate → contract across two releases.
 - A snapshot schema change bumps `snapshot_schema_version`. Readers must support every version ever written (with an upcaster in `activities.internal.domain.snapshot`).

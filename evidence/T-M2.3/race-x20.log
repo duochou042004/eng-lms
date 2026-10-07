@@ -1,0 +1,62 @@
+race-x20: StudentCreateRaceTest x20 at 57de84f 2026-10-07T07:41:21Z
+=== run 1 07:41:21
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 20.19 s -- in com.englms.students.StudentCreateRaceTest
+[INFO] BUILD SUCCESS
+=== run 2 07:42:19
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 18.96 s -- in com.englms.students.StudentCreateRaceTest
+[INFO] BUILD SUCCESS
+=== run 3 07:43:16
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 19.04 s -- in com.englms.students.StudentCreateRaceTest
+[INFO] BUILD SUCCESS
+=== run 4 07:44:12
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 19.17 s -- in com.englms.students.StudentCreateRaceTest
+[INFO] BUILD SUCCESS
+=== run 5 07:45:09
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 19.01 s -- in com.englms.students.StudentCreateRaceTest
+[INFO] BUILD SUCCESS
+=== run 6 07:46:06
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 19.62 s -- in com.englms.students.StudentCreateRaceTest
+[INFO] BUILD SUCCESS
+=== run 7 07:47:03
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 19.00 s -- in com.englms.students.StudentCreateRaceTest
+[INFO] BUILD SUCCESS
+=== run 8 07:47:59
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 18.82 s -- in com.englms.students.StudentCreateRaceTest
+[INFO] BUILD SUCCESS
+=== run 9 07:48:56
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 19.06 s -- in com.englms.students.StudentCreateRaceTest
+[INFO] BUILD SUCCESS
+=== run 10 07:49:52
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 18.95 s -- in com.englms.students.StudentCreateRaceTest
+[INFO] BUILD SUCCESS
+=== run 11 07:50:49
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 18.96 s -- in com.englms.students.StudentCreateRaceTest
+[INFO] BUILD SUCCESS
+=== run 12 07:51:46
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 19.32 s -- in com.englms.students.StudentCreateRaceTest
+[INFO] BUILD SUCCESS
+=== run 13 07:52:43
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 19.38 s -- in com.englms.students.StudentCreateRaceTest
+[INFO] BUILD SUCCESS
+=== run 14 07:53:40
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 18.25 s -- in com.englms.students.StudentCreateRaceTest
+[INFO] BUILD SUCCESS
+=== run 15 07:54:35
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 18.35 s -- in com.englms.students.StudentCreateRaceTest
+[INFO] BUILD SUCCESS
+=== run 16 07:55:31
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 18.83 s -- in com.englms.students.StudentCreateRaceTest
+[INFO] BUILD SUCCESS
+=== run 17 07:56:27
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 19.33 s -- in com.englms.students.StudentCreateRaceTest
+[INFO] BUILD SUCCESS
+=== run 18 07:57:24
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 19.25 s -- in com.englms.students.StudentCreateRaceTest
+[INFO] BUILD SUCCESS
+=== run 19 07:58:21
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 19.15 s -- in com.englms.students.StudentCreateRaceTest
+[INFO] BUILD SUCCESS
+=== run 20 07:59:21
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 19.18 s -- in com.englms.students.StudentCreateRaceTest
+[INFO] BUILD SUCCESS
+race-x20: 20/20 passed 2026-10-07T08:00:17Z

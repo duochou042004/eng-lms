@@ -36,6 +36,10 @@ The version lives in the path (`v1`). Breaking changes → `v2` routes side by s
 - Query params: `page` (0-based), `size` (default 25, max 100), `sort=field,asc|desc` (allow-listed per endpoint), filter params per endpoint (e.g. `status`, `q`, `tag`).
 - Response: `{ "items": [...], "page": 0, "size": 25, "totalItems": 123, "totalPages": 5 }`.
 - Small bounded collections (e.g. goals of a student, folders tree) return plain arrays without paging, and are documented as bounded.
+- Unknown or invalid list parameters (T-M2.3): an unknown `sort` field or direction, an unknown filter value (e.g. `status`), `page < 0` or `size`
+  outside 1–100, or `page × size` beyond 2³¹ − 1 → 422 `VALIDATION_FAILED` with `errors[].field` = the parameter name (`sort`, `status`, `page`,
+  `size`) and code `INVALID_VALUE`; a `q` with a control character → `q` `INVALID_FORMAT`.
+  The parameters are bound as strings and checked by the handler. As built: `shared.web.PageResponse`.
 
 ## 5. Errors: RFC 9457 Problem Details
 
@@ -50,7 +54,7 @@ The version lives in the path (`v1`). Breaking changes → `v2` routes side by s
 | HTTP | `code` examples | When |
 |---|---|---|
 | 400 | `MALFORMED_REQUEST` | Unparseable JSON, wrong types |
-| 401 | `UNAUTHENTICATED`, `SESSION_EXPIRED` | No valid session: `UNAUTHENTICATED` without a session cookie (and for every failed login), `SESSION_EXPIRED` when the cookie names no live session (unknown, idle-expired, logged out). **Live** (T-M2.1) |
+| 401 | `UNAUTHENTICATED`, `SESSION_EXPIRED` | No valid session: `UNAUTHENTICATED` without a session cookie (and for every failed login), `SESSION_EXPIRED` when the cookie names no live session (unknown, idle-expired, logged out), when the session's account is no longer `ACTIVE` (the session is invalidated, SEC S4-1) and when a student principal has no student row (`CurrentStudent`; the session is invalidated). **Live** (T-M2.1; T-M2.3) |
 | 403 | `FORBIDDEN_ROLE`, `PASSWORD_CHANGE_REQUIRED`, `CSRF_INVALID` | Wrong namespace or role, gate, missing or wrong `X-XSRF-TOKEN`. **Live** (T-M2.1) |
 | 404 | `NOT_FOUND` | Missing **or not owned** (students always get 404 for foreign resources) |
 | 409 | `STALE_VERSION`, `IN_USE`, `INVALID_STATE_TRANSITION`, `ORDER_MISMATCH`, `USERNAME_TAKEN`, `ATTEMPT_CLOSED`, `ATTEMPT_IN_PROGRESS`, `NO_ATTEMPTS_LEFT` | Conflicts with the current state |
@@ -64,6 +68,12 @@ The `code` values form a closed enum in `shared.ProblemCodes`, exported in OpenA
 
 **Field codes** (`errors[].code`, also in `shared.ProblemCodes`; T-M2.1): `PASSWORD_TOO_SHORT`, `PASSWORD_TOO_LONG`, `PASSWORD_TOO_COMMON`, `PASSWORD_EQUALS_USERNAME`,
 `PASSWORD_UNCHANGED` (field `newPassword`) and `CURRENT_PASSWORD_INCORRECT` (field `currentPassword`). Each entry is `{field, code, message}`; `message` is English for developers.
+**Field codes since T-M2.3** (students): `REQUIRED` (missing or empty after trim), `TOO_LONG`, `TOO_MANY` (list entries), `INVALID_FORMAT` (email,
+phone), `INVALID_VALUE` (unknown enum or list parameter), `USERNAME_INVALID` (validation-rules username rule), `USERNAME_TAKEN` (with the top-level
+409 `USERNAME_TAKEN`, `errors[0].field = "username"`); list fields are named with an index (`contactHandles[2].label`). Top-level 409 codes live since
+T-M2.3: `USERNAME_TAKEN`, `STALE_VERSION` (also an optimistic-locking failure at flush), `INVALID_STATE_TRANSITION`.
+A version below 0 is `INVALID_VALUE` (a missing one `REQUIRED`). Backstop: a database refusal of an input character (SQLState 22021, 22P05,
+e.g. a NUL in text or jsonb) answers 422 `VALIDATION_FAILED` and is logged without its message or parameters (`ProblemDetailsAdvice`, T-M2.3 G3).
 Application code throws `shared.ProblemException` (status, code, field errors, `Retry-After`); `ProblemDetailsAdvice` maps it.
 
 **Where Problem Details come from (T-M1.8):**
@@ -85,6 +95,8 @@ Application code throws `shared.ProblemException` (status, code, field errors, `
 - Aggregates expose `version`. Updates must send it (in the body for PUT/PATCH). A mismatch → 409 `STALE_VERSION`, and the UI offers reload or merge.
 - Composite or retry-prone commands (`/lessons/{id}/wrap-up`, `/tutor/students` create, `/attempts/{id}/submit`, uploads) accept the header
   `Idempotency-Key: <uuid>`. The same key and body within 24 h return the stored response. The same key with a different body → 422 `IDEMPOTENCY_KEY_REUSED`.
+  `/tutor/students` create gets it with the idempotency store (T-M5.4; until then a retried create answers 409 `USERNAME_TAKEN` and the tutor resets the
+  password): a replay must never return the stored temporary password in clear (T-M2.3 known limitation, DEC-099).
 - Autosave `PUT /student/attempts/{id}/responses/{itemKey}` is naturally idempotent (last write wins within an open attempt).
 
 ## 7. Security headers and caching
