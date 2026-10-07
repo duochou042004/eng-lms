@@ -30,12 +30,26 @@
   `TemporaryPasswordGenerator`), `internal.persistence`, `internal.app` (`AuthenticationService`, `AccountService`), `internal.security` (Spring Security
   configuration, remember-me, throttle, must-change gate), `internal.web` (`AuthController`), `internal.bootstrap` (`TutorBootstrap`), `internal.cli`
   (`ResetTutorPasswordCommand`). Allowed dependencies as built: `shared` only (no `settings` use yet). **Identity never calls `audit`.**
+- **As built (T-M2.3):** `AccountApi` gains `createStudentAccount(username, password?)` (joins the caller's transaction; `STUDENT`, `ACTIVE`, must change,
+  temporary password valid 7 days; a generated password when absent; 409 `USERNAME_TAKEN` also from the unique index), `changeUsername(userId, username)`,
+  `resetPasswordByTutor(userId, tutorUserId)` (publishes `PasswordReset(TUTOR, tutorUserId)`), `checkUsername` (`AVAILABLE`/`INVALID`/`TAKEN`),
+  `passwordProblems`, `usernames(userIds)` (one query) and `studentUserIdsWithUsernameContaining(fragment)` (escaped `LIKE`); the record
+  `AccountApi.TemporaryCredentials {userId, username, temporaryPassword, expiresAt}` (its `toString` omits the password). `internal.security.AccountStatusFilter`
+  re-reads the account status on every authenticated `/api/**` request (SEC S4-1, security.md §4).
 
 ## students
 - **Owns:** `student`, `student_guardian`, `student_learning_profile`.
 - **API:** `StudentDirectory.require(studentId)`, `summary(studentId)`, `findActive()`, `studentIdForUser(userId)`; create/update commands.
 - **Events:** `StudentCreated`, `StudentStatusChanged`.
 - **Depends on:** identity, shared.
+- **As built (T-M2.3):** `@ApplicationModule(allowedDependencies = {"shared", "identity"})`. Owns `student` (guardians and the learning profile: T-M2.9).
+  Public API `StudentDirectory` (`require(studentId)` → `StudentRef {studentId, userId, fullName}` or 404, `studentIdForUser(userId)`); `summary` and
+  `findActive` arrive with their first consumer. Events in `students.events` (`@NamedInterface("events")`): `StudentCreated {studentId, userId, actorUserId}`,
+  `StudentStatusChanged {studentId, userId, from, to, actorUserId}` (status names), `StudentUsernameChanged {studentId, userId, actorUserId}`; IDs and
+  status names only. `internal.domain` (`Student`, `StudentStatus` with the §4.1 transitions, `StudentProfile`, `ContactHandle`, `UsernameSuggestions`),
+  `internal.persistence` (`StudentRepository`), `internal.app` (`StudentService`: the use cases, also the `StudentDirectory` and the shared
+  `StudentPrincipals` implementation), `internal.web.tutor` (`TutorStudentController`, tutor DTOs). Usernames, passwords and account status go through
+  `AccountApi` in the same transaction; queries never join `user_account`.
 
 ## goals
 - **Owns:** `metric_definition`, `learning_goal`, `metric_observation`.
@@ -115,14 +129,26 @@
 - **As built (T-M2.1):** `AuditApi.record(AuditEntry)` (writes in its own transaction, `REQUIRES_NEW`), `AuditAction`, `AuditEntry`; `recent` is not built (no audit UI in M2).
   `internal.IdentityEventsListener` records `identity.events` in a **synchronous** `@EventListener` (not after commit), so a failed-login row survives the failed request;
   `internal.AuditRetentionJob` purges rows older than 365 days daily. Allowed dependencies: `shared`, `identity :: events` (Modulith-verified; no `identity → audit` edge).
+- **As built (T-M2.3):** allowed dependencies add `students :: events`. `internal.StudentEventsListener` records the students events with a
+  **synchronous `@TransactionalEventListener` (phase `AFTER_COMMIT`)** calling `AuditApi.record` (`REQUIRES_NEW`): a rolled-back create or status change
+  leaves no row (tested). Not `@ApplicationModuleListener` (asynchronous; tests stay deterministic, DEC-093). The identity `PasswordReset(TUTOR)` stays
+  with the plain `@EventListener` of the other identity events (`PASSWORD_RESET_BY_TUTOR`). Spring Modulith's event publication registry also tracks
+  these transactional listeners: each event leaves one completed `event_publication` row (default completion mode; no purge yet).
 
 ## shared (kernel, `@ApplicationModule(type = OPEN)` or a shared module per the Spring Modulith docs)
 - IDs (`StudentId`, `UserId`, … as records wrapping UUIDs), `Clock` provider, `ProblemCodes`, paging types, `HtmlSanitizer`,
   `Audience {TUTOR, STUDENT, PUBLIC, AUTHENTICATED}`, `CurrentStudent` argument resolver, and the `extension` registry core (`ExtensionPoint`, `ExtensionManifest`).
 - **As built (T-M2.2):** `shared.web.Audience` (annotation, nested enum `Audience.Kind` with the four values; on the handler method or its class, the
   method wins), `shared.web.TutorPrivate` (type and field marker for private tutor data, NFR-SEC-02; read by the ArchUnit rule 4) and
-  `shared.web.AudienceVerifier` (the L2 startup check, security.md §4; servlet applications only). It reads only Spring MVC metadata. `CurrentStudent`
-  and its argument resolver arrive with T-M2.3. Modules that annotate handlers declare `allowedDependencies = "shared"` (settings did so in T-M2.2).
+  `shared.web.AudienceVerifier` (the L2 startup check, security.md §4; servlet applications only). It reads only Spring MVC metadata. Modules that
+  annotate handlers declare `allowedDependencies = "shared"` (settings did so in T-M2.2).
+- **As built (T-M2.3):** `shared.web.CurrentStudent` (record `{studentId, userId}`), `shared.web.CurrentStudentResolver` (Spring MVC argument resolver,
+  registers itself as a `WebMvcConfigurer`) and the one-method SPI `shared.web.StudentPrincipals.studentIdForUser(userId) → Optional<UUID>`, which
+  `students` implements (the `FileAccessResolver` pattern), so `files`/`settings` can serve `CurrentStudent` handlers without depending on `students`.
+  The resolver reads Spring Security's `Authentication` (name = user ID, authority `ROLE_STUDENT`) and never an identity type (no cycle) or a request
+  parameter. Also `shared.Like` (escaped `LIKE` patterns), `shared.web.PageResponse` (the list envelope, api-conventions §4) and the new
+  `ProblemCodes` (`USERNAME_TAKEN`, `STALE_VERSION`, `INVALID_STATE_TRANSITION`; field codes `REQUIRED`, `TOO_LONG`, `TOO_MANY`, `INVALID_FORMAT`,
+  `INVALID_VALUE`, `USERNAME_INVALID`); `ProblemDetailsAdvice` maps an optimistic-locking failure to 409 `STALE_VERSION`.
 - **Rule:** shared contains **no business rules** of any module. Additions need LC review.
 
 ## Allowed dependency graph (checked in CI)
@@ -137,8 +163,8 @@ questions → library, files
 goals     → students
 notes     → students
 library   → files, students
-students  → identity
+students  → identity          (as built in T-M2.3)
 identity  → settings          (as built in T-M2.1: shared only)
-audit     → (events only)     (as built in T-M2.1: identity :: events)
+audit     → (events only)     (as built: identity :: events, students :: events)
 all       → shared
 ```

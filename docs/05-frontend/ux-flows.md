@@ -26,14 +26,15 @@ button is sticky at the bottom on mobile; the unsaved-changes guard is on. Failu
 
 ```text
 [1] Students → "+ Add student"   (or "+ New → Student")
-[2] Full name "Nguyễn Văn An"  → username suggestion "nguyenvanan" (✓ available), password auto-generated
+[2] Full name "Nguyễn Văn An"  → username suggestion "nguyenvanan" (✓ available); the password is generated on Create and shown on the credentials card
 [3] (optional) expand "Contact" → phone / Zalo
 [4] (optional) expand "First goal" → title "TOEIC 650", metric (or create inline), current 570, target 650
 [5] Create
 [6] Credentials card → "Copy message" (paste into Zalo) → "Open workspace"
 ```
 
-The template step (SPEC §49 step 7) is P2 (OQ-04). Nothing else is required, and the student is usable immediately (NFR-UX-02).
+Step 2 (DEC-097 (2), confirmed DEC-098): the server generates the password on Create unless the tutor types one; "regenerate" later is the
+password-reset action (no password-suggestion endpoint). The template step (SPEC §49 step 7) is P2 (OQ-04). Nothing else is required, and the student is usable immediately (NFR-UX-02).
 
 ## F3 Schedule a lesson: budget ≤ 5 steps
 

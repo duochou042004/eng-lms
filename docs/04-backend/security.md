@@ -121,6 +121,23 @@ The **authz matrix test** enumerates `RequestMappingHandlerMapping`. For each ha
   for B's user ID, username and B-owned resource IDs, and for `SECRET-[A-Z0-9-]+`. `HarnessDetectionTest` proves each detection with test-only handlers.
 - Run: `cd backend && ./mvnw -B verify -Dgroups=security` (verifier, matrix, isolation, ArchUnit student rules); all of them also run in the normal `verify`.
 
+**As built (T-M2.3).**
+- **L3 `CurrentStudent`** (ADR-0016 §2): `..web.student..` handlers declare `CurrentStudent me` (`shared.web`, `{studentId, userId}`), resolved by
+  `shared.web.CurrentStudentResolver` from Spring Security's `Authentication` (name = user ID, authority `ROLE_STUDENT`) through the `StudentPrincipals`
+  SPI (students implements it). It never reads a request parameter. A student principal without a student row: the session is invalidated and the
+  request answers 401 `SESSION_EXPIRED`. Anonymous and tutor callers never reach a student handler (401/403 at L1; reaching the resolver anyway is an
+  `IllegalStateException`). Owner-scoped reads: `findByIdAndStudentId(id, me.studentId())`, a mismatch is 404 (backend-module and authz-isolation
+  skills); `HarnessStudentHandlers` (test fixture) uses it and its B-on-A check answers 404. The first production student handler: T-M2.6/T-M2.7 or M3.
+- **Per-request account status (SEC S4-1, DEC-092):** a login that commits just before `AccountApi.disable` could store its session after the disable
+  ended all sessions. `identity.internal.security.AccountStatusFilter` (right after remember-me in the chain) re-reads the account's `status` on every
+  authenticated `/api/**` request (one primary-key read): unless `ACTIVE` (or if the account is gone), the session is invalidated, the context cleared and
+  the request continues as anonymous, so protected paths and `GET /auth/session` answer 401 `SESSION_EXPIRED` while `login`, `logout` and `/meta` keep
+  working on that device. Remember-me already refuses a non-active account (401 `SESSION_EXPIRED`). The same window for a login racing a tutor
+  **password reset** is not closed (the old session ID is stored after `endAllSessions`; the account stays `ACTIVE`): noted for SEC (T-M2.3 summary).
+- **Tutor endpoints** (api-catalog "tutor: students"): all `@Audience(TUTOR)` with registry entries (anonymous 401, tutor 2xx, student A and must-change
+  403, B-on-A n/a). The isolation world gains student rows (A, B, C archived, must-change) with `SECRET-*` markers in the note and a contact-handle
+  value (`StudentsWorldContributor`, sample key `sid`).
+
 ## 5. Transport and headers
 
 - HTTPS only (Caddy) with HSTS `max-age=31536000; includeSubDomains`. HTTP redirects to HTTPS.
@@ -174,6 +191,11 @@ transaction (`REQUIRES_NEW`). The audit module records identity's events in a sy
 `LOGIN_FAILED` (`details.reason`: `UNKNOWN_USERNAME`, `BAD_PASSWORD`, `ACCOUNT_LOCKED`, `ACCOUNT_DISABLED`, `TEMPORARY_PASSWORD_EXPIRED`, `CURRENT_PASSWORD_INCORRECT`, `REJECTED_INPUT`;
 never the attempted username or password), `ACCOUNT_LOCKED`, `PASSWORD_CHANGED`, `PASSWORD_RESET_BY_OPERATOR`, `BOOTSTRAP_TUTOR_CREATED` (`PASSWORD_RESET_BY_TUTOR` is mapped,
 emitted from T-M2.3). Rows carry the client IP and user agent (personal data, data-model §3). The purge runs daily at 03:30 (server time).
+
+**As built (T-M2.3):** `PASSWORD_RESET_BY_TUTOR` (actor = the tutor, subject = the student's account, from identity's `PasswordReset(TUTOR)`),
+`STUDENT_CREATED` (`details.userId`), `STUDENT_STATUS_CHANGED` (`details.from`, `details.to`) and `USERNAME_CHANGED` (`details.userId`; never the old or
+new username), each with actor = the tutor and subject type `STUDENT`. The three students actions are written after commit (a rolled-back command
+leaves no row); no temporary password or hash appears in any row (tested).
 
 ## 9. Privacy (NFR-PRIV)
 

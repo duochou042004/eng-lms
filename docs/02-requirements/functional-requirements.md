@@ -76,7 +76,7 @@
 | FR-STU-08 | Permanent delete and export of student data | **OPTIONAL** | — | OQ-07 |
 
 **AC FR-STU-01** (UX budget: ≤ 90 s, see `ux-flows.md` F2)
-- Required fields: full name, username, password. The username is **suggested** from the name (accents removed, lowercase, unique suffix) and checked for availability as the tutor types. The password is **generated** (readable; ≥ 12 characters) and can be regenerated.
+- Required fields: full name, username, password. The username is **suggested** from the name (accents removed, lowercase, unique suffix) and checked for availability as the tutor types. The password is **generated** by the server on Create (readable; ≥ 12 characters) unless the tutor enters one, and is shown on the credentials card; it is regenerated with the password reset (FR-AUTH-07). Like a reset, the temporary password expires after 7 days if unused (A-021; DEC-097 (2), confirmed DEC-098).
 - Optional, in collapsed sections: email, phone, contact handles (Zalo, Facebook, other: label + value), guardians (name, relationship, phone, email, notes), a note, and a first goal (title + optional metric/baseline/target).
 - On save, the system creates the UserAccount (`STUDENT`, `mustChangePassword=true`) and the Student in **one transaction**, then shows a **credentials card**: username, temporary password, login URL and a "Copy message" button that produces a ready-to-paste text in the UI language.
 - The temporary password cannot be retrieved again later (it can only be reset).
