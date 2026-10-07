@@ -9,6 +9,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
@@ -17,6 +18,10 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 
 import com.englms.TestcontainersConfiguration;
+import com.englms.identity.Browser;
+import com.englms.identity.Browser.Response;
+import com.englms.identity.IdentityFixtures;
+import com.englms.identity.Role;
 import fixture.harness.HarnessItems;
 import fixture.harness.web.student.HarnessStudentHandlers;
 import com.englms.security.PolicyRegistry.Actor;
@@ -39,7 +44,7 @@ import org.springframework.web.servlet.config.annotation.DelegatingWebMvcConfigu
  * Proves that the harness detects what it must (T-M2.2 AC4, AC6, AC7): test-only handlers and a world contributor
  * added to the application context make the completeness check, the isolation scan and the "B on A's resource" check
  * fail, naming the endpoint and the hit. No production resource is student-owned yet, so the owner-scoped handler is
- * a fixture too. The student handlers and the contributor live in {@code fixture.harness} (the L2 verifier requires
+ * a fixture too; it takes {@code CurrentStudent} (T-M2.3 AC8), which is also tested here. The student handlers and the contributor live in {@code fixture.harness} (the L2 verifier requires
  * {@code STUDENT} handlers in a {@code ..web.student..} package).
  */
 @Tag("security")
@@ -59,6 +64,8 @@ class HarnessDetectionTest {
 
 	static final Policy UNSCOPED_ITEM = Policy.of("GET", "/api/v1/student/harness/unscoped-items/{itemId}", null, 401,
 			403, 200, 404, 403);
+
+	static final Policy ME = Policy.of("GET", "/api/v1/student/harness/me", null, 401, 403, 200, NA, 403);
 
 	static final String PROBE = "GET /api/v1/tutor/harness-probe";
 
@@ -98,7 +105,7 @@ class HarnessDetectionTest {
 	@Test
 	void completenessNamesAnEntryWithoutAHandlerMapping() {
 		List<Policy> all = new ArrayList<>(PolicyRegistry.ENTRIES);
-		all.addAll(List.of(LEAK_ID, LEAK_SECRET, ITEM, UNSCOPED_ITEM));
+		all.addAll(List.of(LEAK_ID, LEAK_SECRET, ITEM, UNSCOPED_ITEM, ME));
 		Set<String> registered = new HashSet<>(PolicyRegistry.keys(all));
 		registered.add(PROBE);
 		SecurityHarness.assertComplete(SecurityHarness.liveKeys(context), registered);
@@ -155,6 +162,41 @@ class HarnessDetectionTest {
 		assertThatThrownBy(() -> harness.assertStatus(UNSCOPED_ITEM, Actor.STUDENT_B_ON_A))
 			.hasMessageContaining(UNSCOPED_ITEM.key() + " as STUDENT_B_ON_A")
 			.hasMessageContaining("404");
+	}
+
+	// ---- T-M2.3 AC8: CurrentStudent ----------------------------------------------------------------------------
+
+	@ParameterizedTest
+	@EnumSource(value = Actor.class, names = "STUDENT_B_ON_A", mode = EnumSource.Mode.EXCLUDE)
+	void aCurrentStudentHandlerAnswersEachActorAsRegistered(Actor actor) {
+		harness.assertStatus(ME, actor);
+	}
+
+	@Test
+	void currentStudentCarriesTheSignedInStudentsIds() {
+		IsolationWorld world = harness.world();
+		Response response = harness.signedIn(world.studentA()).get(ME.path());
+
+		assertThat(response.status()).isEqualTo(200);
+		assertThat(response.json().path("userId").asString()).isEqualTo(world.studentA().id().toString());
+		assertThat(response.json().path("studentId").asString())
+			.isEqualTo(items.studentIdOf(world.studentA().id()).toString());
+		harness.assertNoLeak(ME);
+	}
+
+	@Test
+	void aStudentAccountWithoutAStudentRowGets401SessionExpiredAndItsSessionEnds() {
+		harness.world();
+		UUID orphan = IdentityFixtures.insert(jdbc, "student-orphan", IdentityFixtures.PASSWORD, Role.STUDENT, false);
+		Browser browser = harness.signedIn(new IsolationWorld.Account(orphan, "student-orphan"));
+
+		Response response = browser.get(ME.path());
+
+		assertThat(response.status()).isEqualTo(401);
+		assertThat(response.code()).isEqualTo("SESSION_EXPIRED");
+		assertThat(jdbc.queryForObject("SELECT count(*) FROM spring_session WHERE principal_name = ?", Integer.class,
+				orphan.toString())).isZero();
+		assertThat(browser.cookies).as("the session cookie is cleared").doesNotContainKey(Browser.SESSION);
 	}
 
 	/** Two handlers on one {@code METHOD pattern}, told apart only by a request parameter (SEC S3-2). */

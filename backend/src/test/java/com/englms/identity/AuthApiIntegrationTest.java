@@ -749,7 +749,8 @@ class AuthApiIntegrationTest {
 		assertThat(student.get("/api/v1/tutor/students").code()).isEqualTo("FORBIDDEN_ROLE");
 		assertThat(student.get("/api/v1/tutor/students").status()).isEqualTo(403);
 		assertThat(tutor.get("/api/v1/student/home").code()).isEqualTo("FORBIDDEN_ROLE");
-		assertThat(tutor.get("/api/v1/tutor/students").status()).isEqualTo(404);
+		// /api/v1/tutor/students is a live handler since T-M2.3: an unmapped tutor path stands in for it.
+		assertThat(tutor.get("/api/v1/tutor/nothing-here").status()).isEqualTo(404);
 		assertThat(student.get("/api/v1/student/home").status()).isEqualTo(404);
 		assertThat(tutor.get("/api/v1/x").status()).isEqualTo(404);
 		assertThat(tutor.get("/api/v1/x").code()).isEqualTo("NOT_FOUND");
@@ -790,6 +791,71 @@ class AuthApiIntegrationTest {
 
 		accounts.enable(id);
 		assertThat(browser().login("student.b", PASSWORD, false).status()).isEqualTo(200);
+	}
+
+	// ---- T-M2.3 AC9 (DEC-092 SEC S4-1): a session of an account that is no longer ACTIVE ----------------------
+
+	/**
+	 * Deterministic form of the race (no sleeps, DEC-093): a login that commits just before {@code AccountApi.disable}
+	 * stores its session after the disable ended all sessions. That leaves an account {@code DISABLED} with a live
+	 * session row, which is set up here directly.
+	 */
+	@Test
+	void aSessionOfAnAccountNoLongerActiveIsRefusedWith401SessionExpiredAndInvalidated() {
+		UUID id = student("raced.student", false);
+		Browser browser = signedIn("raced.student", false);
+		String cookie = browser.cookies.get(Browser.SESSION);
+		jdbc.update("UPDATE user_account SET status = 'DISABLED' WHERE id = ?", id);
+		assertThat(count("SELECT count(*) FROM spring_session WHERE principal_name = ?", id.toString())).isOne();
+
+		Response refused = browser.get("/api/v1/auth/session");
+
+		assertThat(refused.status()).isEqualTo(401);
+		assertThat(refused.code()).isEqualTo("SESSION_EXPIRED");
+		assertThat(count("SELECT count(*) FROM spring_session WHERE principal_name = ?", id.toString())).isZero();
+		assertThat(browser.cookies).as("the session cookie is cleared").doesNotContainKey(Browser.SESSION);
+		Browser replay = browser();
+		replay.cookies.put(Browser.SESSION, cookie);
+		Response next = replay.get("/api/v1/student/home");
+		assertThat(next.status()).isEqualTo(401);
+		assertThat(next.code()).isEqualTo("SESSION_EXPIRED");
+	}
+
+	@Test
+	void aProtectedRequestOfAnAccountNoLongerActiveIs401SessionExpired() {
+		Browser tutor = signedIn("tutor.one", false);
+		jdbc.update("UPDATE user_account SET status = 'DISABLED' WHERE id = ?", tutorId);
+
+		Response refused = tutor.get("/api/v1/tutor/students");
+
+		assertThat(refused.status()).isEqualTo(401);
+		assertThat(refused.code()).isEqualTo("SESSION_EXPIRED");
+		assertThat(count("SELECT count(*) FROM spring_session WHERE principal_name = ?", tutorId.toString())).isZero();
+	}
+
+	@Test
+	void aRememberMeLoginOfAnAccountNoLongerActiveIs401SessionExpired() {
+		UUID id = student("raced.remembered", false);
+		Browser remembered = signedIn("raced.remembered", true);
+		remembered.cookies.remove(Browser.SESSION);
+		jdbc.update("UPDATE user_account SET status = 'DISABLED' WHERE id = ?", id);
+
+		Response refused = remembered.get("/api/v1/auth/session");
+
+		assertThat(refused.status()).isEqualTo(401);
+		assertThat(refused.code()).isEqualTo("SESSION_EXPIRED");
+		assertThat(refused.setCookie(Browser.SESSION)).as("no session is created").isNull();
+		assertThat(remembered.cookies).as("the remember-me cookie is cleared").doesNotContainKey(Browser.REMEMBER_ME);
+	}
+
+	@Test
+	void aRefusedSessionDoesNotBlockSigningInAgainOnTheSameDevice() {
+		UUID id = student("raced.shared", false);
+		Browser browser = signedIn("raced.shared", false);
+		jdbc.update("UPDATE user_account SET status = 'DISABLED' WHERE id = ?", id);
+
+		assertThat(browser.login("tutor.one", PASSWORD, false).status()).isEqualTo(200);
+		assertThat(browser.get("/api/v1/auth/session").json().path("userId").asString()).isEqualTo(tutorId.toString());
 	}
 
 	// ---- AC11 (audit content) ------------------------------------------------------------------------------

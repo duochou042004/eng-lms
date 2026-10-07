@@ -30,8 +30,8 @@ public final class PolicyRegistry {
 	}
 
 	/**
-	 * One handler mapping. {@code path} is the mapping pattern; each {@code {key}} is replaced by student A's resource
-	 * of that key ({@link IsolationWorld#resolve}). {@code body} builds the JSON body from the acting account (student
+	 * One handler mapping. {@code path} is the mapping pattern, optionally with a sample query string; each
+	 * {@code {key}} is replaced by student A's resource of that key ({@link IsolationWorld#resolve}). {@code body} builds the JSON body from the acting account (student
 	 * A for the anonymous caller); null for none. CSRF is added by the harness for unsafe methods.
 	 */
 	public record Policy(String method, String path, Function<Account, String> body, Map<Actor, Integer> expected) {
@@ -49,8 +49,10 @@ public final class PolicyRegistry {
 			return new Policy(method, path, body, Map.copyOf(expected));
 		}
 
+		/** {@code METHOD /pattern}: the sample's query string (after {@code ?}) is not part of the key. */
 		public String key() {
-			return method + " " + path;
+			int query = path.indexOf('?');
+			return method + " " + ((query < 0) ? path : path.substring(0, query));
 		}
 
 		@Override
@@ -67,7 +69,21 @@ public final class PolicyRegistry {
 			Policy.of("POST", "/api/v1/auth/logout", null, 204, 204, 204, NA, 204),
 			// Correct current password, a too-short new one: 422 without any session or lockout side effect.
 			Policy.of("POST", "/api/v1/auth/password", PolicyRegistry::tooShortNewPassword, 401, 422, 422, NA, 422),
-			Policy.of("GET", "/api/v1/meta", null, 200, 200, 200, NA, 200));
+			Policy.of("GET", "/api/v1/meta", null, 200, 200, 200, NA, 200),
+			// T-M2.3, tutor: students. Tutor-only; B-on-A does not apply ({sid} = student A's student ID).
+			Policy.of("POST", "/api/v1/tutor/students", PolicyRegistry::newStudent, 401, 201, 403, NA, 403),
+			Policy.of("GET", "/api/v1/tutor/students", null, 401, 200, 403, NA, 403),
+			Policy.of("GET", "/api/v1/tutor/students/{sid}", null, 401, 200, 403, NA, 403),
+			Policy.of("PATCH", "/api/v1/tutor/students/{sid}", account -> "{\"version\":0,\"phone\":\"0901 234 567\"}",
+					401, 200, 403, NA, 403),
+			// Session-ending: archives student A (a fresh world per call).
+			Policy.of("POST", "/api/v1/tutor/students/{sid}/status", account -> "{\"status\":\"ARCHIVED\",\"version\":0}",
+					401, 200, 403, NA, 403),
+			// Session-ending: resets student A's password.
+			Policy.of("POST", "/api/v1/tutor/students/{sid}/password-reset", null, 401, 200, 403, NA, 403),
+			Policy.of("GET", "/api/v1/tutor/usernames/suggestion?fullName=Nguy%E1%BB%85n%20V%C4%83n%20An", null, 401, 200,
+					403, NA, 403),
+			Policy.of("GET", "/api/v1/tutor/usernames/availability?username=free-name", null, 401, 200, 403, NA, 403));
 
 	private PolicyRegistry() {
 	}
@@ -79,6 +95,10 @@ public final class PolicyRegistry {
 	static String ownCredentials(Account account) {
 		return "{\"username\":" + quote(account.username()) + ",\"password\":" + quote(account.password())
 				+ ",\"rememberMe\":false}";
+	}
+
+	static String newStudent(Account account) {
+		return "{\"fullName\":\"Matrix Student\",\"username\":\"matrix-student\"}";
 	}
 
 	static String tooShortNewPassword(Account account) {

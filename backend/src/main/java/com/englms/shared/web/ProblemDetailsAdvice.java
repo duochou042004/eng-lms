@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 
 import com.englms.shared.ProblemCodes;
 import com.englms.shared.ProblemException;
+import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -42,6 +43,12 @@ class ProblemDetailsAdvice extends ResponseEntityExceptionHandler {
 			headers.set(HttpHeaders.RETRY_AFTER, Long.toString(Math.max(1, (ex.retryAfter().toMillis() + 999) / 1000)));
 		}
 		return handleExceptionInternal(ex, body, headers, ex.status(), request);
+	}
+
+	/** A concurrent update of a versioned aggregate (api-conventions.md §6, T-M2.3). */
+	@ExceptionHandler(OptimisticLockingFailureException.class)
+	ResponseEntity<Object> handleOptimisticLock(OptimisticLockingFailureException ex, WebRequest request) {
+		return handleProblem(new ProblemException(HttpStatus.CONFLICT, ProblemCodes.STALE_VERSION), request);
 	}
 
 	@ExceptionHandler(Exception.class)

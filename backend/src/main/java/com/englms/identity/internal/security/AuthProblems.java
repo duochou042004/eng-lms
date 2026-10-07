@@ -16,7 +16,7 @@ import org.springframework.security.web.csrf.CsrfException;
 /**
  * The 401 and 403 answers of the filter chain and the auth handlers (api-conventions.md §5, T-M2.1 design notes):
  * no session cookie → {@code UNAUTHENTICATED}; a cookie naming no live session (unknown, idle-expired, logged out), or a
- * remember-me cookie that no longer authenticates →
+ * remember-me cookie that no longer authenticates, or a session of an account no longer {@code ACTIVE} (SEC S4-1) →
  * {@code SESSION_EXPIRED}; a missing or wrong CSRF token → {@code CSRF_INVALID}; the wrong role → {@code FORBIDDEN_ROLE}.
  */
 public final class AuthProblems {
@@ -27,7 +27,8 @@ public final class AuthProblems {
 	public static ProblemCodes unauthenticatedCode(HttpServletRequest request) {
 		boolean deadSession = request.getRequestedSessionId() != null && !request.isRequestedSessionIdValid();
 		boolean rejectedRememberMe = Boolean.TRUE.equals(request.getAttribute(AccountRememberMeServices.REJECTED_ATTRIBUTE));
-		return (deadSession || rejectedRememberMe) ? ProblemCodes.SESSION_EXPIRED : ProblemCodes.UNAUTHENTICATED;
+		boolean refusedAccount = Boolean.TRUE.equals(request.getAttribute(AccountStatusFilter.REFUSED_ATTRIBUTE));
+		return (deadSession || rejectedRememberMe || refusedAccount) ? ProblemCodes.SESSION_EXPIRED : ProblemCodes.UNAUTHENTICATED;
 	}
 
 	public static ProblemException unauthenticated(HttpServletRequest request) {

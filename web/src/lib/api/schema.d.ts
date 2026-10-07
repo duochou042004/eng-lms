@@ -88,6 +88,110 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  '/api/v1/tutor/students': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** List students: q (accent-insensitive), status (repeatable; default ACTIVE, PAUSED), page, size, sort = fullName|createdAt[,asc|desc] */
+    get: operations['list']
+    put?: never
+    /** Create a student with their STUDENT account; the credentials are in this response only */
+    post: operations['create']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/v1/tutor/students/{sid}': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** A student's profile and contacts, with its version */
+    get: operations['get']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    /** Update the profile and contacts (and the username); version required */
+    patch: operations['update']
+    trace?: never
+  }
+  '/api/v1/tutor/students/{sid}/password-reset': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /** A new temporary password, shown once; ends the student's sessions */
+    post: operations['resetPassword']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/v1/tutor/students/{sid}/status': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /** Change the status: ACTIVE ⇄ PAUSED, ACTIVE|PAUSED → ARCHIVED (ends the sessions), ARCHIVED → ACTIVE */
+    post: operations['changeStatus']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/v1/tutor/usernames/availability': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Whether a username can be used: available, or reason INVALID / TAKEN */
+    get: operations['usernameAvailability']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/v1/tutor/usernames/suggestion': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** A free username suggested from a full name (accents removed, lowercase, numeric suffix) */
+    get: operations['suggestUsername']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
 }
 export type webhooks = Record<string, never>
 export interface components {
@@ -95,6 +199,30 @@ export interface components {
     ChangePasswordRequest: {
       currentPassword: string
       newPassword: string
+    }
+    ContactHandle: {
+      label?: string
+      value?: string
+    }
+    CreateStudentRequest: {
+      contactHandles?: components['schemas']['ContactHandle'][]
+      email?: string
+      fullName: string
+      note?: string
+      /** @description Optional: generated (shown once in credentials) when absent */
+      password?: string
+      phone?: string
+      username: string
+    }
+    CreatedStudentResponse: {
+      credentials: components['schemas']['CredentialsResponse']
+      student: components['schemas']['StudentResponse']
+    }
+    CredentialsResponse: {
+      /** Format: date-time */
+      expiresAt: string
+      temporaryPassword: string
+      username: string
     }
     LoginRequest: {
       password: string
@@ -106,6 +234,17 @@ export interface components {
       locales: string[]
       name: string
       version: string
+    }
+    PageResponseStudentRow: {
+      items: components['schemas']['StudentRow'][]
+      /** Format: int32 */
+      page: number
+      /** Format: int32 */
+      size: number
+      /** Format: int64 */
+      totalItems: number
+      /** Format: int32 */
+      totalPages: number
     }
     /** @description RFC 9457 Problem Details (api-conventions.md §5) */
     Problem: {
@@ -146,6 +285,15 @@ export interface components {
       | 'PASSWORD_EQUALS_USERNAME'
       | 'PASSWORD_UNCHANGED'
       | 'CURRENT_PASSWORD_INCORRECT'
+      | 'USERNAME_TAKEN'
+      | 'STALE_VERSION'
+      | 'INVALID_STATE_TRANSITION'
+      | 'REQUIRED'
+      | 'TOO_LONG'
+      | 'TOO_MANY'
+      | 'INVALID_FORMAT'
+      | 'INVALID_VALUE'
+      | 'USERNAME_INVALID'
     SessionResponse: {
       displayName: string | null
       locale: string
@@ -155,6 +303,61 @@ export interface components {
       timeZone: string
       /** Format: uuid */
       userId: string
+      username: string
+    }
+    StatusRequest: {
+      /** @enum {string} */
+      status: 'ACTIVE' | 'PAUSED' | 'ARCHIVED'
+      /** Format: int64 */
+      version: number
+    }
+    StudentResponse: {
+      contactHandles: components['schemas']['ContactHandle'][]
+      /** Format: date-time */
+      createdAt: string
+      email: string | null
+      fullName: string
+      /** Format: uuid */
+      id: string
+      note: string | null
+      phone: string | null
+      /** @enum {string} */
+      status: 'ACTIVE' | 'PAUSED' | 'ARCHIVED'
+      /** Format: date-time */
+      updatedAt: string
+      username: string
+      /** Format: int64 */
+      version: number
+    }
+    StudentRow: {
+      /** Format: date-time */
+      createdAt: string
+      email: string | null
+      fullName: string
+      /** Format: uuid */
+      id: string
+      phone: string | null
+      /** @enum {string} */
+      status: 'ACTIVE' | 'PAUSED' | 'ARCHIVED'
+      username: string
+    }
+    UpdateStudentRequest: {
+      contactHandles?: components['schemas']['ContactHandle'][]
+      email?: string | null
+      fullName?: string
+      note?: string | null
+      phone?: string | null
+      username?: string
+      /** Format: int64 */
+      version: number
+    }
+    UsernameAvailability: {
+      available: boolean
+      /** @description INVALID or TAKEN; null when available */
+      reason: string | null
+      username: string
+    }
+    UsernameSuggestion: {
       username: string
     }
   }
@@ -338,6 +541,304 @@ export interface operations {
         }
         content: {
           'application/json': components['schemas']['MetaResponse']
+        }
+      }
+    }
+  }
+  list: {
+    parameters: {
+      query?: {
+        q?: string
+        status?: string[]
+        page?: number
+        size?: number
+        sort?: string
+      }
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description A page of students */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['PageResponseStudentRow']
+        }
+      }
+      /** @description VALIDATION_FAILED: unknown status or sort, page or size out of range */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/problem+json': components['schemas']['Problem']
+        }
+      }
+    }
+  }
+  create: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['CreateStudentRequest']
+      }
+    }
+    responses: {
+      /** @description Created; Location names the student */
+      201: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['CreatedStudentResponse']
+        }
+      }
+      /** @description USERNAME_TAKEN (errors[0].field = username) */
+      409: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/problem+json': components['schemas']['Problem']
+        }
+      }
+      /** @description VALIDATION_FAILED with field codes */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/problem+json': components['schemas']['Problem']
+        }
+      }
+    }
+  }
+  get: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        sid: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description The student */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['StudentResponse']
+        }
+      }
+      /** @description NOT_FOUND */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/problem+json': components['schemas']['Problem']
+        }
+      }
+    }
+  }
+  update: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        sid: string
+      }
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['UpdateStudentRequest']
+      }
+    }
+    responses: {
+      /** @description The updated student */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['StudentResponse']
+        }
+      }
+      /** @description NOT_FOUND */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/problem+json': components['schemas']['Problem']
+        }
+      }
+      /** @description STALE_VERSION or USERNAME_TAKEN */
+      409: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/problem+json': components['schemas']['Problem']
+        }
+      }
+      /** @description VALIDATION_FAILED with field codes */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/problem+json': components['schemas']['Problem']
+        }
+      }
+    }
+  }
+  resetPassword: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        sid: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description The new credentials */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['CredentialsResponse']
+        }
+      }
+      /** @description NOT_FOUND */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/problem+json': components['schemas']['Problem']
+        }
+      }
+      /** @description INVALID_STATE_TRANSITION: the student is archived */
+      409: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/problem+json': components['schemas']['Problem']
+        }
+      }
+    }
+  }
+  changeStatus: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        sid: string
+      }
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['StatusRequest']
+      }
+    }
+    responses: {
+      /** @description The updated student */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['StudentResponse']
+        }
+      }
+      /** @description NOT_FOUND */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/problem+json': components['schemas']['Problem']
+        }
+      }
+      /** @description INVALID_STATE_TRANSITION or STALE_VERSION */
+      409: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/problem+json': components['schemas']['Problem']
+        }
+      }
+      /** @description VALIDATION_FAILED (status, version) */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/problem+json': components['schemas']['Problem']
+        }
+      }
+    }
+  }
+  usernameAvailability: {
+    parameters: {
+      query: {
+        username: string
+      }
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description The answer */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['UsernameAvailability']
+        }
+      }
+    }
+  }
+  suggestUsername: {
+    parameters: {
+      query?: {
+        fullName?: string
+      }
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description The suggestion */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['UsernameSuggestion']
         }
       }
     }
