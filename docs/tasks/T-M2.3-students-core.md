@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Milestone | M2 |
-| Status | ready (G0: DOCS-REVIEW PASS; PO start signal DEC-098) |
+| Status | done (`f0e228c`, PR #61; DEC-098, DEC-101) |
 | Owner role | BE (backend-implementer; SEC review at G3) |
 | Branch | `feature/T-M2.3-students-core` (from `develop`) |
 | Depends on | T-M2.2 (merged, `04d90e4`, DEC-096) |
