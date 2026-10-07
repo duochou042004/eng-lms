@@ -71,7 +71,7 @@ Actors: anonymous internet users, an authenticated student (curious or malicious
   transaction or pool connection is held, then lock the row by ID in a short transaction that re-checks status, lock, temporary-password expiry and that the hash
   is still the one compared, and only then counts the failure or records the success. Parallel attempts on one account therefore take no longer than on an
   unknown username (no timing oracle) and a burst on one account doesn't hold connections other sign-ins need.
-- **Input bounds (SEC review S2-2):** JSON bodies are limited to 1 MB by the parser (§6). Login usernames over 64 or passwords over 1024 characters are never looked
+- **Input bounds (SEC review S2-2):** JSON bodies are limited to 1 MB by the parser (§6). Login usernames over 64 characters or with a control character (T-M2.3 SEC R2-1), and passwords over 1024 characters, are never looked
   up or hashed in full (the attempt still pays one bcrypt against a dummy hash) and get the generic 401 (audited as `LOGIN_FAILED`, reason `REJECTED_INPUT`).
 - **Unicode (SEC review S4-4):** passwords are NFC-normalised before the policy check, hashing and comparison, so precomposed and decomposed Vietnamese input are equal.
 - **Remember-me details (SEC review S3-1, S4-2, S4-3):** a login first deletes any remember-me token sent with it (a previous user's on a shared device); no token

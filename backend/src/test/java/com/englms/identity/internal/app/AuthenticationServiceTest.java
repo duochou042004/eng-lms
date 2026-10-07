@@ -69,10 +69,11 @@ class AuthenticationServiceTest {
 
 		assertThatThrownBy(() -> service.login("u".repeat(65), "x", client)).isInstanceOf(ProblemException.class);
 		assertThatThrownBy(() -> service.login("tutor", "p".repeat(1025), client)).isInstanceOf(ProblemException.class);
+		assertThatThrownBy(() -> service.login("tu\u0000tor", "x", client)).isInstanceOf(ProblemException.class);
 
 		verify(accounts, never()).findByUsernameNormalized(any());
-		verify(encoder, times(2)).matches(AuthenticationService.REJECTED_INPUT_PROBE, "{bcrypt}dummy");
-		verify(events, times(2)).publishEvent(new LoginFailed(null, LoginFailed.Reason.REJECTED_INPUT, client));
+		verify(encoder, times(3)).matches(AuthenticationService.REJECTED_INPUT_PROBE, "{bcrypt}dummy");
+		verify(events, times(3)).publishEvent(new LoginFailed(null, LoginFailed.Reason.REJECTED_INPUT, client));
 	}
 
 }

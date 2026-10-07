@@ -103,3 +103,11 @@ Results:
 - `check-docs.sh` PASS; `check-path-ownership.sh feature/T-M2.3-students-core` PASS.
 
 Not in this round (recorded by the LC): S4-2 (the vendor's ERROR log of the username on a duplicate), S4-5 (login racing a reset), S4-8 (UI href note), S4-9 (common-password list).
+
+## G3 SEC round 2 S4 (LC, in-task per DEC-088)
+SEC round 2 APPROVED at `adb28d5` (all round-1 fixes confirmed) with one new S4, fixed by the LC:
+- R2-1: a control character (e.g. NUL) in the login username reached the database and, through the new SQLState backstop, answered 422 instead of the
+  generic 401 with a dummy bcrypt and a `REJECTED_INPUT` audit row (security.md §3). `AuthenticationService#attempt` sends such usernames down the
+  `REJECTED_INPUT` branch. Proof: `AuthApiIntegrationTest.anOversizedBodyIsRefusedAndOverLongFieldsGetTheGeneric401` (a NUL username → the same 401 body as
+  a wrong password, audited `REJECTED_INPUT`; fails without the fix), `AuthenticationServiceTest.overLongInputIsNeverLookedUpButStillRunsTheEncoder`
+  (never looked up, one dummy bcrypt). Both classes green (2 + 59 tests). security.md §3 input bounds amended.

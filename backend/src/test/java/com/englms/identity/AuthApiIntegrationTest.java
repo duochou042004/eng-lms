@@ -273,7 +273,7 @@ class AuthApiIntegrationTest {
 		}
 	}
 
-	/** SEC review S2-2: a body over the 1 MB JSON limit is refused before the service; over-long fields get the generic 401. */
+	/** SEC review S2-2: a body over the 1 MB JSON limit is refused before the service; over-long fields and (T-M2.3 SEC R2-1) a control character in the username get the generic 401. */
 	@Test
 	void anOversizedBodyIsRefusedAndOverLongFieldsGetTheGeneric401() {
 		Response huge = browser().post("/api/v1/auth/login",
@@ -284,14 +284,15 @@ class AuthApiIntegrationTest {
 
 		Response longUsername = browser().login("u".repeat(100_000), PASSWORD, false);
 		Response longPassword = browser().login("tutor.one", "p".repeat(2000), false);
+		Response nulUsername = browser().login("tutor\u0000.one", PASSWORD, false);
 		Response wrong = browser().login("tutor.one", "wrong-password-1", false);
 
-		assertThat(List.of(longUsername, longPassword)).allSatisfy(response -> {
+		assertThat(List.of(longUsername, longPassword, nulUsername)).allSatisfy(response -> {
 			assertThat(response.status()).isEqualTo(401);
 			assertThat(response.bodyWithoutRequestId()).isEqualTo(wrong.bodyWithoutRequestId());
 		});
 		assertThat(jdbc.queryForList("SELECT details->>'reason' FROM audit_event", String.class))
-			.containsExactlyInAnyOrder("REJECTED_INPUT", "REJECTED_INPUT", "BAD_PASSWORD");
+			.containsExactlyInAnyOrder("REJECTED_INPUT", "REJECTED_INPUT", "REJECTED_INPUT", "BAD_PASSWORD");
 		assertThat(count("SELECT failed_login_count FROM user_account WHERE id = ?", tutorId)).isOne();
 	}
 

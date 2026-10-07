@@ -108,8 +108,9 @@ public class AuthenticationService {
 	}
 
 	private AccountView attempt(String username, String password, ClientInfo client, List<Object> published) {
+		// A control character (e.g. NUL, which PostgreSQL refuses) can never be part of a username (T-M2.3 SEC R2-1).
 		if (username == null || password == null || username.length() > MAX_USERNAME_INPUT
-				|| password.length() > MAX_PASSWORD_INPUT) {
+				|| password.length() > MAX_PASSWORD_INPUT || username.chars().anyMatch(Character::isISOControl)) {
 			// non-empty: the encoder short-circuits an empty password, so this pays one full bcrypt like any other failure (SEC S4-10)
 			encoder.matches(REJECTED_INPUT_PROBE, dummyHash);
 			published.add(new LoginFailed(null, LoginFailed.Reason.REJECTED_INPUT, client));
