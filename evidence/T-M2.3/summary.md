@@ -110,4 +110,4 @@ SEC round 2 APPROVED at `adb28d5` (all round-1 fixes confirmed) with one new S4,
   generic 401 with a dummy bcrypt and a `REJECTED_INPUT` audit row (security.md §3). `AuthenticationService#attempt` sends such usernames down the
   `REJECTED_INPUT` branch. Proof: `AuthApiIntegrationTest.anOversizedBodyIsRefusedAndOverLongFieldsGetTheGeneric401` (a NUL username → the same 401 body as
   a wrong password, audited `REJECTED_INPUT`; fails without the fix), `AuthenticationServiceTest.overLongInputIsNeverLookedUpButStillRunsTheEncoder`
-  (never looked up, one dummy bcrypt). Both classes green (2 + 59 tests). security.md §3 input bounds amended.
+  (never looked up, one dummy bcrypt). Both classes green (2 + 59 tests). security.md §3 input bounds amended. `ENGLMS_TASK=T-M2.3 ./scripts/gate.sh` **PASS** at `879c8d1` (13 steps, 452 s): `gate-20261007T084035Z.log` (replaces `gate-20261007T044249Z.log`).

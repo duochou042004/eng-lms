@@ -32,7 +32,7 @@
   "currentTask": {
     "id": "T-M2.3",
     "title": "Students core (create-with-account, usernames, list/search, profile, status, tutor password reset, CurrentStudent); also SEC S4-1 login-vs-disable",
-    "status": "qa",
+    "status": "awaiting_approval",
     "ownerRole": "BE",
     "branch": "feature/T-M2.3-students-core",
     "packet": "docs/tasks/T-M2.3-students-core.md",
@@ -45,8 +45,8 @@
       "PO start signal — met (DEC-098, 2026-10-07)"
     ],
     "nextSteps": [
-      "G3: fresh qa-evaluator, then fresh security-reviewer; fix S1/S2 and cheap S3/S4 in-task",
-      "CI green, verdicts, LC-APPROVED, merge-gate, gitlab-sync; QA report via qa/T-M2.3; SEC record + merge DEC via chore merge-record"
+      "CI green at the final head; post QA PASS, SEC APPROVED, LC-APPROVED; merge-gate; gitlab-sync",
+      "qa/T-M2.3 PR (QA report); chore merge-record PR (SEC record, merge DEC)"
     ],
     "trace": [
       "backlog M2",
