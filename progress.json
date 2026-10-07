@@ -16,7 +16,7 @@
       }
     ]
   },
-  "updatedAt": "2026-10-07T01:57:52Z",
+  "updatedAt": "2026-10-07T02:17:31Z",
   "updatedBy": "lead-coordinator (session 2026-10-07, Opus 5.5)",
   "phase": {
     "id": "P1",
@@ -32,21 +32,21 @@
   "currentTask": {
     "id": "T-M2.3",
     "title": "Students core (create-with-account, usernames, list/search, profile, status, tutor password reset, CurrentStudent); also SEC S4-1 login-vs-disable",
-    "status": "ready",
-    "ownerRole": "LC",
-    "branch": "docs/T-M2.3-students-core",
+    "status": "in_progress",
+    "ownerRole": "BE",
+    "branch": "feature/T-M2.3-students-core",
     "packet": "docs/tasks/T-M2.3-students-core.md",
-    "pr": "#60",
+    "pr": null,
     "lastCommit": null,
-    "startedAt": null,
+    "startedAt": "2026-10-07T02:17:31Z",
     "entryGate": [
       "T-M2.2 merged — met (04d90e4, DEC-096)",
       "Packet G0 — met (DOCS-REVIEW PASS round 2, PR #60)",
       "PO start signal — met (DEC-098, 2026-10-07)"
     ],
     "nextSteps": [
-      "Merge PR #60 via merge-gate; gitlab-sync",
-      "Branch feature/T-M2.3-students-core from develop; backend-implementer; G3 QA then SEC"
+      "backend-implementer: implement AC1-AC10, gate green, evidence/T-M2.3/summary.md",
+      "G3: fresh qa-evaluator, then fresh security-reviewer"
     ],
     "trace": [
       "backlog M2",
@@ -870,6 +870,11 @@
       "at": "2026-10-07T01:57:52Z",
       "actor": "lead-coordinator",
       "event": "T-M2.3 split (DEC-097): T-M2.3 students core packet written; T-M2.9 (guardians, learning profile, first goal, DEC-096 rule extensions) added to the backlog."
+    },
+    {
+      "at": "2026-10-07T02:17:31Z",
+      "actor": "lead-coordinator",
+      "event": "T-M2.3 packet merged at G0 (PR #60, 3d53b68; DEC-098 PO start signal). Implementation starts on feature/T-M2.3-students-core."
     }
   ]
 }
