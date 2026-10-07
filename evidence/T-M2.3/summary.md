@@ -111,3 +111,10 @@ SEC round 2 APPROVED at `adb28d5` (all round-1 fixes confirmed) with one new S4,
   `REJECTED_INPUT` branch. Proof: `AuthApiIntegrationTest.anOversizedBodyIsRefusedAndOverLongFieldsGetTheGeneric401` (a NUL username → the same 401 body as
   a wrong password, audited `REJECTED_INPUT`; fails without the fix), `AuthenticationServiceTest.overLongInputIsNeverLookedUpButStillRunsTheEncoder`
   (never looked up, one dummy bcrypt). Both classes green (2 + 59 tests). security.md §3 input bounds amended. `ENGLMS_TASK=T-M2.3 ./scripts/gate.sh` **PASS** at `879c8d1` (13 steps, 452 s): `gate-20261007T084035Z.log` (replaces `gate-20261007T044249Z.log`).
+
+## Review verdicts and merge
+- QA (fresh qa-evaluator): round 1 PASS WITH MINOR at `dcb45c8`; re-test R1 **PASS** at `adb28d5` (report: `evidence/T-M2.3/qa/report.md`, PR #62).
+- SEC (fresh security-reviewer): round 1 CHANGES REQUESTED at `dcb45c8`; round 2 **APPROVED** at `adb28d5`; R2-1 fixed by the LC at `879c8d1`
+  (`evidence/T-M2.3/review/security.md`).
+- `QA-VERDICT T-M2.3: PASS`, `SEC-REVIEW T-M2.3: APPROVED`, `LC-APPROVED T-M2.3` posted on PR #61 after CI 7/7 at the final head `9582fbf`; merged via
+  merge-gate as `f0e228c` (DEC-101). Deferrals: DEC-099 (create idempotency → T-M5.4), DEC-100 (S4-2/S4-5 → T-M2.9, S4-8 → T-M2.5, S4-9 PO note).

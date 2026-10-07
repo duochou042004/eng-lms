@@ -17,7 +17,7 @@
     ]
   },
   "updatedAt": "2026-10-07T08:55:34Z",
-  "updatedBy": "backend-implementer (T-M2.3, Opus 5.5)",
+  "updatedBy": "lead-coordinator (session 2026-10-07, Opus 5.5)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -69,7 +69,7 @@
       "T-M2.1 merged — met (a93bcc1)"
     ],
     "nextSteps": [
-      "Packet after T-M2.3 (or in parallel planning; depends only on T-M2.1)"
+      "The T-M2.4 packet can be written now (unblocked; depends only on T-M2.1), after or alongside T-M2.9"
     ],
     "trace": [
       "backlog M2"
@@ -254,8 +254,8 @@
     }
   ],
   "tests": {
-    "lastRun": "2026-10-07T03:41:30Z",
-    "summary": "T-M2.3: local gate PASS at 01319a0 (13 steps, 449 s; backend 384 tests; e2e 86 passed, 19 skipped); -Dgroups=security 124 tests; StudentCreateRaceTest x20 20/20.",
+    "lastRun": "2026-10-07T08:48:00Z",
+    "summary": "T-M2.3 final: local gate PASS at 879c8d1 (13 steps, 452 s; backend 396 tests; e2e 86 passed, 19 skipped; gate-20261007T084035Z.log); -Dgroups=security 126 tests; StudentCreateRaceTest x20 20/20 (4 runs of x20 in total); CI 7/7 at 9582fbf.",
     "suites": [
       {
         "name": "backend (./mvnw -B verify)",
@@ -282,23 +282,23 @@
   "gates": {
     "G0": {
       "status": "pending",
-      "note": "T-M2.3: packet to write"
+      "note": "T-M2.9: packet to write (T-M2.3 passed G0: PR #60, DEC-098)"
     },
     "G1": {
       "status": "n/a",
-      "note": "T-M2.3 not started"
+      "note": "T-M2.9 not started (T-M2.3 passed: gate PASS at 879c8d1)"
     },
     "G2": {
       "status": "n/a",
-      "note": "T-M2.3 not started"
+      "note": "T-M2.9 not started (T-M2.3 passed: CI 7/7 at 9582fbf)"
     },
     "G3": {
       "status": "n/a",
-      "note": "T-M2.3: DOCS-REVIEW for the packet"
+      "note": "T-M2.9 not started (T-M2.3 passed: QA PASS, SEC APPROVED, PR #61)"
     },
     "G4": {
       "status": "n/a",
-      "note": "T-M2.3 not started (T-M2.2 merged 04d90e4, DEC-096)"
+      "note": "T-M2.9 not started (T-M2.3 merged f0e228c, DEC-101)"
     },
     "G5": {
       "status": "pass",
@@ -309,17 +309,17 @@
   "decisions": {
     "log": "docs/10-governance/decision-log.md",
     "recent": [
-      "DEC-086",
-      "DEC-087",
-      "DEC-088",
-      "DEC-089",
-      "DEC-090",
       "DEC-091",
       "DEC-092",
       "DEC-093",
       "DEC-094",
       "DEC-095",
-      "DEC-096"
+      "DEC-096",
+      "DEC-097",
+      "DEC-098",
+      "DEC-099",
+      "DEC-100",
+      "DEC-101"
     ],
     "pendingPO": [
       "OQ-03",
@@ -510,6 +510,20 @@
       "status": "approved",
       "at": "2026-10-06T05:49:06Z",
       "ref": "DEC-096"
+    },
+    {
+      "what": "Start T-M2.3 (students core) after G0; confirm DEC-097 (2) create-password UX and the create-time 7-day expiry",
+      "by": "PO",
+      "status": "approved",
+      "at": "2026-10-07T02:20:00Z",
+      "ref": "DEC-098"
+    },
+    {
+      "what": "LC-APPROVED T-M2.3 (PR #61)",
+      "by": "LC",
+      "status": "approved",
+      "at": "2026-10-07T08:53:00Z",
+      "ref": "DEC-101"
     }
   ],
   "environment": {
