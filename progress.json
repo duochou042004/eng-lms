@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-10-06T05:49:06Z",
-  "updatedBy": "lead-coordinator (session 2026-10-06, Opus 5.5)",
+  "updatedAt": "2026-10-07T01:57:52Z",
+  "updatedBy": "lead-coordinator (session 2026-10-07, Opus 5.5)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -31,27 +31,29 @@
   },
   "currentTask": {
     "id": "T-M2.3",
-    "title": "Students backend (create-with-account, username suggestion, status, password reset, search); also SEC S4-1 login-vs-disable race",
-    "status": "draft",
+    "title": "Students core (create-with-account, usernames, list/search, profile, status, tutor password reset, CurrentStudent); also SEC S4-1 login-vs-disable",
+    "status": "ready",
     "ownerRole": "LC",
-    "branch": null,
-    "packet": null,
-    "pr": null,
+    "branch": "docs/T-M2.3-students-core",
+    "packet": "docs/tasks/T-M2.3-students-core.md",
+    "pr": "#60",
     "lastCommit": null,
     "startedAt": null,
     "entryGate": [
       "T-M2.2 merged — met (04d90e4, DEC-096)",
-      "Packet G0 — pending (to write, task-packet skill, fresh DOCS-REVIEW)",
-      "PO start signal — pending"
+      "Packet G0 — met (DOCS-REVIEW PASS round 2, PR #60)",
+      "PO start signal — met (DEC-098, 2026-10-07)"
     ],
     "nextSteps": [
-      "Write the T-M2.3 packet to G0 (students backend + CurrentStudent resolver + owner-scoped repositories; register every handler in PolicyRegistry; isolation contributors; SEC S4-1 login vs disable race; DEC-096 rule-3/4 limitations decision)",
-      "Fresh DOCS-REVIEW, merge, ask the PO for the start signal"
+      "Merge PR #60 via merge-gate; gitlab-sync",
+      "Branch feature/T-M2.3-students-core from develop; backend-implementer; G3 QA then SEC"
     ],
     "trace": [
       "backlog M2",
       "DEC-092",
-      "DEC-096"
+      "DEC-096",
+      "DEC-097",
+      "DEC-098"
     ]
   },
   "nextTask": {
@@ -863,6 +865,11 @@
       "at": "2026-10-06T05:49:06Z",
       "actor": "lead-coordinator",
       "event": "T-M2.2 packet merged at G0 (PR #56, DEC-095, PO start signal); T-M2.2 implemented and merged (PR #57, 04d90e4, DEC-096): QA PASS, SEC APPROVED x2, all findings fixed in-task. Next: T-M2.3 packet."
+    },
+    {
+      "at": "2026-10-07T01:57:52Z",
+      "actor": "lead-coordinator",
+      "event": "T-M2.3 split (DEC-097): T-M2.3 students core packet written; T-M2.9 (guardians, learning profile, first goal, DEC-096 rule extensions) added to the backlog."
     }
   ]
 }
