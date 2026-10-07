@@ -32,7 +32,7 @@
   "currentTask": {
     "id": "T-M2.3",
     "title": "Students core (create-with-account, usernames, list/search, profile, status, tutor password reset, CurrentStudent); also SEC S4-1 login-vs-disable",
-    "status": "draft",
+    "status": "ready",
     "ownerRole": "LC",
     "branch": "docs/T-M2.3-students-core",
     "packet": "docs/tasks/T-M2.3-students-core.md",
@@ -41,18 +41,19 @@
     "startedAt": null,
     "entryGate": [
       "T-M2.2 merged — met (04d90e4, DEC-096)",
-      "Packet G0 — DOCS-REVIEW PASS (round 2; D1-D15, N1-N3 fixed in-task); merge pending",
-      "PO start signal — pending"
+      "Packet G0 — met (DOCS-REVIEW PASS round 2, PR #60)",
+      "PO start signal — met (DEC-098, 2026-10-07)"
     ],
     "nextSteps": [
-      "Fresh DOCS-REVIEW of the packet; fix S3/S4 in-task (DEC-088); CI green; merge via merge-gate",
-      "Ask the PO for the start signal; then feature/T-M2.3-students-core"
+      "Merge PR #60 via merge-gate; gitlab-sync",
+      "Branch feature/T-M2.3-students-core from develop; backend-implementer; G3 QA then SEC"
     ],
     "trace": [
       "backlog M2",
       "DEC-092",
       "DEC-096",
-      "DEC-097"
+      "DEC-097",
+      "DEC-098"
     ]
   },
   "nextTask": {

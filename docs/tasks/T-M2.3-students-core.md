@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Milestone | M2 |
-| Status | draft (G0 review pending; PO start signal pending) |
+| Status | ready (G0: DOCS-REVIEW PASS; PO start signal DEC-098) |
 | Owner role | BE (backend-implementer; SEC review at G3) |
 | Branch | `feature/T-M2.3-students-core` (from `develop`) |
 | Depends on | T-M2.2 (merged, `04d90e4`, DEC-096) |
@@ -67,14 +67,13 @@ longer be used (T-M2.1 SEC S4-1).
   `LIKE` (also in identity's username lookup).
 - **Create** (FR-STU-01): request `{fullName, username, password?, email?, phone?, contactHandles?: [{label, value}], note?}`. One transaction: identity
   creates the account (`STUDENT`, `ACTIVE`, `mustChangePassword=true`, `tempPasswordExpiresAt = now + 7 days` as for a reset; this extends A-021 to the
-  create-time password, security.md T12 "temporary passwords expire"; DEC-097, PO confirmation requested with the start signal) and students inserts
+  create-time password, security.md T12 "temporary passwords expire"; DEC-097, confirmed by the PO, DEC-098) and students inserts
   the row. When `password` is absent the server generates one with `TemporaryPasswordGenerator` (≥ 12 characters per FR-STU-01; the generator yields
   ≥ 14); when present it must pass the password policy. Response `201` + `Location`: the student DTO plus `credentials {username, temporaryPassword, expiresAt}`, **only in this response**
   (`Cache-Control: no-store` already applies). The login URL and the "Copy message" text are composed by the UI (T-M2.5) from `/meta`.
-  **LC interpretation, PO confirmation requested with the start signal (DEC-097 (2), DOCS-REVIEW D8):** FR-STU-01's "generated and can be regenerated"
+  **LC interpretation, confirmed by the PO (DEC-097 (2), DEC-098; DOCS-REVIEW D8):** FR-STU-01's "generated and can be regenerated"
   and ux-flows F2 step 2 "password auto-generated" are met by server-side generation on Create (shown on the credentials card) and by the reset endpoint
-  afterwards; no separate password-suggestion endpoint is added (not in api-catalog). If the PO wants the password visible in the form before Create,
-  the packet gains `GET /tutor/passwords/suggestion` (tutor-only, no-store) before it is set to `ready`.
+  afterwards; no separate password-suggestion endpoint is added (not in api-catalog).
 - **Usernames:** suggestion = `Usernames.normalize(fullName)` with every character outside `[a-z0-9]` removed, truncated to 36 characters; if shorter than
   3 characters, `student`; then the first free of `base`, `base2`, `base3`, … (`"Nguyễn Văn An"` → `nguyenvanan`, ux-flows F2). Availability:
   `{username, available, reason?}` with `reason ∈ {INVALID, TAKEN}`; both are tutor-only and read-only. Uniqueness is the identity index on
@@ -177,7 +176,7 @@ longer be used (T-M2.1 SEC S4-1).
   (`CurrentStudent`, resolver, SPI) and "audit" (synchronous after-commit listener for students events); security.md §4 (L3 `CurrentStudent`, S4-1
   per-request status check) and §8 (new actions); api-conventions §4 (unknown `status`/`sort` → 422) and §5 (`SESSION_EXPIRED` also for an account no
   longer `ACTIVE` and a student principal without a student row); validation-rules if a limit is refined (note ≤ 2,000); A-021 (create-time temporary
-  password expiry) and, once the PO confirms DEC-097 (2), ux-flows F2 step 2 ("generated on Create, shown on the credentials card") and the FR-STU-01
+  password expiry) and (PO-confirmed, DEC-098) ux-flows F2 step 2 ("generated on Create, shown on the credentials card") and the FR-STU-01
   wording; authz-isolation and backend-module skills (owner-scoped convention, `CurrentStudent`); traceability-matrix rows for
   FR-STU-01/02/03/05 and FR-AUTH-07; `progress.json`.
 
