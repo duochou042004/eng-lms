@@ -41,7 +41,7 @@
     "startedAt": null,
     "entryGate": [
       "T-M2.2 merged — met (04d90e4, DEC-096)",
-      "Packet G0 — in review (docs/T-M2.3-students-core, fresh DOCS-REVIEW)",
+      "Packet G0 — DOCS-REVIEW PASS (round 2; D1-D15, N1-N3 fixed in-task); merge pending",
       "PO start signal — pending"
     ],
     "nextSteps": [

@@ -8,7 +8,7 @@
 | Branch | `feature/T-M2.3-students-core` (from `develop`) |
 | Depends on | T-M2.2 (merged, `04d90e4`, DEC-096) |
 | Estimate | 2 agent-days |
-| Trace | SPEC §4.2, §4.3, §37, §41, §46, §49; FR-STU-01 (except the first goal), FR-STU-02 (search, filter, sort; not the row signals), FR-STU-03 (profile and contacts; not guardians), FR-STU-05, FR-AUTH-07; NFR-SEC-01..04, NFR-SEC-11; A-018, A-021; ADR-0011, ADR-0016 §2–3; api-catalog "tutor: students"; data-model §2 "students"; domain-model §4.1; validation-rules "identity / students"; module-boundaries "students"; security.md §4 (L3), §8; DEC-092 (SEC S4-1), DEC-096 |
+| Trace | SPEC §4.2, §4.3, §37, §41, §46, §49; FR-STU-01 (except the first goal), FR-STU-02 (search, filter, sort; not the row signals), FR-STU-03 (profile and contacts; not guardians), FR-STU-05, FR-AUTH-07; NFR-SEC-01..04, NFR-SEC-11; A-018, A-021; ADR-0011, ADR-0016 §2–3; api-catalog "tutor: students"; data-model §2 "students"; domain-model §4.1; validation-rules "identity / students"; module-boundaries "students"; security.md §4 (L3), §8; DEC-092 (SEC S4-1), DEC-096, DEC-097 |
 
 ## Goal
 The tutor can create a student together with their account in one call and gets the temporary credentials once, find students by an accent-insensitive
@@ -45,14 +45,14 @@ longer be used (T-M2.1 SEC S4-1).
   - Permanent delete and export (FR-STU-08, OQ-07). Any UI (T-M2.5). A login racing a **password reset** (same window as S4-1; note it in the summary).
 
 ## Guardrail answers (scope.md §6)
-1. **Trace:** FR-STU-01/02/03/05, FR-AUTH-07, ADR-0016, DEC-092, DEC-096 (above); nothing else.
+1. **Trace:** FR-STU-01/02/03/05, FR-AUTH-07, ADR-0016, DEC-092, DEC-096, DEC-097 (above); nothing else.
 2. **Drift toward excluded scope?** No. One tutor manages their own students; no self-registration, no school roles, no messaging (contacts are stored values).
 3. **Mandatory setup added?** None. Only full name and username are required; the password is generated when not given.
 4. **Weekly use?** Yes: adding and finding students, pausing and archiving, resetting forgotten passwords (FR-AUTH-08 sends the student to the tutor).
 5. **Hard-coded semantics?** None. No level, exam or curriculum field; contact handle labels are free text (Zalo, Facebook are examples, not an enum).
 
 ## Design notes
-- **Packages** (backend-module skill): `students` (API, `CurrentStudent`), `students.events` (`@NamedInterface("events")`), `students.internal.domain`
+- **Packages** (backend-module skill): `students` (API, the `StudentPrincipals` implementation), `students.events` (`@NamedInterface("events")`), `students.internal.domain`
   (`Student`, `StudentStatus`, transitions), `students.internal.persistence`, `students.internal.app`, `students.internal.web.tutor` (controllers and tutor
   DTOs). The audit module gains `allowedDependencies` `students :: events`.
   **`CurrentStudent` stays in `shared`** (module-boundaries "shared"; DOCS-REVIEW D1): `shared.web.CurrentStudent` (record `studentId`, `userId`), its
@@ -97,8 +97,8 @@ longer be used (T-M2.1 SEC S4-1).
   student → 409 `INVALID_STATE_TRANSITION` (reactivate first).
 - **Errors:** an unknown `{sid}` → 404 `NOT_FOUND`; validation per validation-rules (fullName 1–120; username rules; email; phone; handles label 1–60,
   value 0–500, ≤ 30; note ≤ 2,000) → 422 with field codes. Statuses follow api-conventions §5.
-- **`CurrentStudent` (ADR-0016 §2):** a `HandlerMethodArgumentResolver` for `CurrentStudent` parameters, resolving the session's `CurrentUser` (role
-  `STUDENT`) through the `StudentPrincipals` SPI; a student principal without a student row → the session is invalidated and 401 `SESSION_EXPIRED`
+- **`CurrentStudent` (ADR-0016 §2):** a `HandlerMethodArgumentResolver` for `CurrentStudent` parameters, reading Spring Security's `Authentication` (`getName()` is the user ID, as
+  `CurrentUser.getName()` guarantees; authority `ROLE_STUDENT`; `shared` never references `identity` types, which would be a module cycle) through the `StudentPrincipals` SPI; a student principal without a student row → the session is invalidated and 401 `SESSION_EXPIRED`
   (like AC9; api-conventions §5 amended); no principal or a non-student principal never reaches a student handler (L1) and is an `IllegalStateException`
   in the resolver. It never reads a request parameter. The convention for owner-scoped reads (`findByIdAndStudentId(id, me.studentId())`, mismatch → 404) goes into the backend-module and
   authz-isolation skills; the T-M2.2 fixture handler `HarnessStudentHandlers` is switched to `CurrentStudent` so the B-on-A check exercises it.

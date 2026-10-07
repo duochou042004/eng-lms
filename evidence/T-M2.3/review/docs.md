@@ -53,3 +53,49 @@ DOCS-REVIEW T-M2.3: CHANGES REQUESTED
 
 ### Fixes (LC, in-task per DEC-088)
 D1 `CurrentStudent` + resolver stay in `shared.web` with a `StudentPrincipals` SPI implemented by `students` (packet scope 4, design notes; DEC-097 (1); backlog). D2 AC2: case/space variants → 409, accented → 422 (`INVALID`); QA focus aligned. D3 unknown `status`/`sort` → 422 `VALIDATION_FAILED` naming the field, bound as strings; api-conventions §4 in docs to update. D4 search decided: application-normalised `search_text` + pg_trgm GIN, `q` normalised and `LIKE`-escaped, `q=%` test in AC3. D5 synchronous `@TransactionalEventListener(AFTER_COMMIT)` for students events; identity listener unchanged. D6 row signals and sorts owned by T-M3.1, T-M5.1, T-M7.7 (backlog, FR-STU-02 in their trace). D7 T-M2.9 must merge before a student handler with body/header/cookie. D8 DEC-097 (2) marked "PO confirmation requested with the start signal"; ux-flows F2, FR-STU-01 wording in docs to update; T-M2.5 note; fallback endpoint named. D9 one number (≥ 12 per FR, generator ≥ 14). D10 create-time expiry recorded in DEC-097 (2), A-021 in docs to update. D11 no student row → 401 `SESSION_EXPIRED` + session invalidated; api-conventions §5 in docs to update. D12 `V202610070001__students_student.sql`; `started_on` not created (deferred in data-model). D13 T-M2.9 trace + FR-GOAL-02, A-008. D14 ×20 only the AC2 race class. D15 `sid` sample key and the harness fixtures re-keyed by student ID stated in "Registry and world".
+
+## Round 2
+
+- Reviewer: Docs Reviewer (fresh context, did not write the reviewed docs)
+- Date: 2026-10-07T02:09:15Z
+- Branch: `docs/T-M2.3-students-core` (PR #60)
+- Head SHA: `ad6b1e88e28104f8a23be1821c172079fb8e91d7`
+- Delta (`60d2066..HEAD`): packet, `backlog.md` (T-M2.3, T-M2.5, T-M2.9, T-M3.1, T-M5.1, T-M7.7), DEC-097, this file
+- `./scripts/check-docs.sh`: **PASS** (192 markdown files, progress.json valid, sources intact, prompt within limit)
+
+### Round-1 findings
+
+| ID | Status | Evidence |
+|---|---|---|
+| D1 | Resolved | `CurrentStudent`, its resolver and the `StudentPrincipals` SPI are in `shared` (packet:30-31, :58-61); DEC-097 (1) and the T-M2.3 row are updated; module-boundaries "shared" is in "Docs to update". New issues: N1, N2. |
+| D2 | Resolved | AC2 (packet:129-131) gives 409 for case and space variants and 422 `INVALID` for accents; the QA focus is aligned (:164). |
+| D3 | Resolved | `status` and `sort` are bound as strings; an unknown value → 422 `VALIDATION_FAILED` naming the field (:86-87, AC3); api-conventions §4 is in "Docs to update". |
+| D4 | Resolved | One design: an application-normalised `search_text` with a trgm GIN index; `q` is normalised and LIKE wildcards are escaped, in identity too (:64-67); AC3 adds `q=%`; data-model §2 is in "Docs to update". |
+| D5 | Resolved | A synchronous `@TransactionalEventListener(AFTER_COMMIT)`, `@ApplicationModuleListener` explicitly rejected, `PasswordReset(TUTOR)` unchanged (:189-193); module-boundaries "audit" is in "Docs to update". |
+| D6 | Resolved | T-M3.1 (next lesson and its default sort), T-M5.1 (open work count, "recently active") and T-M7.7 (attention badge) carry FR-STU-02; the packet (:40-42) and DEC-097 (5) point to them. |
+| D7 | Resolved | The T-M2.9 row and the packet (:120-121) say "must merge before any `..web.student..` handler that binds a body, header or cookie". |
+| D8 | Resolved | PO confirmation is requested with the start signal (DEC-097 (2), packet:74-77), with a fallback endpoint if the PO declines; the T-M2.5 row is noted; ux-flows F2 and FR-STU-01 are in "Docs to update" once the PO confirms. |
+| D9 | Resolved | ≥ 12 per FR-STU-01, and the generator yields ≥ 14 (:71-72); AC1 is unchanged at ≥ 12. |
+| D10 | Resolved | Recorded in DEC-097 (2) and in the create design note; A-021 is in "Docs to update". |
+| D11 | Resolved | 401 `SESSION_EXPIRED` and the session is invalidated (:101, AC8); the api-conventions §5 amendment is listed. |
+| D12 | Resolved | `V202610070001__students_student.sql`; `started_on` is not created and is marked deferred in data-model §2 (listed). |
+| D13 | Resolved | The T-M2.9 trace adds FR-GOAL-02 and A-008. |
+| D14 | Resolved | ×20 runs only for the AC2 race class, named in the summary (:166, :200-201). |
+| D15 | Resolved | The contributor registers `sid`; harness keying and the `HarnessDetectionTest` context are stated (:110-115). |
+
+### New findings
+
+| ID | Sev | Location | Finding | Suggested fix |
+|---|---|---|---|---|
+| N1 | S3 | packet:100-102 | The resolver now sits in `shared.web` but is described as "resolving the session's `CurrentUser` (role `STUDENT`)". `CurrentUser` and `Role` live in `identity`, and `identity → shared`, so a `shared → identity` reference would create a cycle and fail `ModularityTests`. Today `shared` has no `com.englms.identity` import. | Have the resolver read Spring Security's `Authentication`: `getName()` is the user ID (as `CurrentUser.getName()` guarantees) and the authority is `ROLE_STUDENT`. Pass the UUID to `StudentPrincipals.studentIdForUser`. State in the design note that `shared` does not reference `identity`. |
+| N2 | S4 | packet:55 | The packages line still says "`students` (API, `CurrentStudent`)", which contradicts :58 (`CurrentStudent` in `shared.web`). | Change it to "`students` (API, the `StudentPrincipals` implementation)". |
+| N3 | S4 | packet:11 (Trace), :48 (guardrail 1) | DEC-097 records this packet's decisions but is not traced. | Add DEC-097 to both places. |
+
+### Verdict
+
+All D1-D15 are resolved. No S1 or S2 findings. The new S3 (N1) and S4s (N2, N3) are one-line fixes to make in-task per DEC-088. They do not need another review round, provided the fix for N1 keeps the resolver free of `identity` types.
+
+DOCS-REVIEW T-M2.3: PASS
+
+### Round-2 fixes (LC, in-task per DEC-088)
+N1 resolver reads Spring Security's `Authentication` (name = user ID, `ROLE_STUDENT`); `shared` references no `identity` type. N2 packages line fixed. N3 DEC-097 in Trace and guardrail 1.
