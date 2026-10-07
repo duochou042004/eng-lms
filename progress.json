@@ -16,7 +16,7 @@
       }
     ]
   },
-  "updatedAt": "2026-10-07T08:55:34Z",
+  "updatedAt": "2026-10-07T09:01:16Z",
   "updatedBy": "lead-coordinator (session 2026-10-07, Opus 5.5)",
   "phase": {
     "id": "P1",
@@ -512,17 +512,17 @@
       "ref": "DEC-096"
     },
     {
-      "what": "Start T-M2.3 (students core) after G0; confirm DEC-097 (2) create-password UX and the create-time 7-day expiry",
+      "what": "Start T-M2.3 (students core) after G0; confirm DEC-097 (2) create-password UX and the create-time 7-day expiry (time approximate: PO answered in chat while the packet PR CI ran)",
       "by": "PO",
       "status": "approved",
-      "at": "2026-10-07T02:20:00Z",
+      "at": "2026-10-07T02:17:00Z",
       "ref": "DEC-098"
     },
     {
       "what": "LC-APPROVED T-M2.3 (PR #61)",
       "by": "LC",
       "status": "approved",
-      "at": "2026-10-07T08:53:00Z",
+      "at": "2026-10-07T08:53:17Z",
       "ref": "DEC-101"
     }
   ],
