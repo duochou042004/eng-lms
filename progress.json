@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-10-07T02:17:31Z",
-  "updatedBy": "lead-coordinator (session 2026-10-07, Opus 5.5)",
+  "updatedAt": "2026-10-07T03:41:30Z",
+  "updatedBy": "backend-implementer (T-M2.3, Opus 5.5)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -32,12 +32,12 @@
   "currentTask": {
     "id": "T-M2.3",
     "title": "Students core (create-with-account, usernames, list/search, profile, status, tutor password reset, CurrentStudent); also SEC S4-1 login-vs-disable",
-    "status": "in_progress",
+    "status": "in_review",
     "ownerRole": "BE",
     "branch": "feature/T-M2.3-students-core",
     "packet": "docs/tasks/T-M2.3-students-core.md",
     "pr": null,
-    "lastCommit": null,
+    "lastCommit": "01319a0",
     "startedAt": "2026-10-07T02:17:31Z",
     "entryGate": [
       "T-M2.2 merged — met (04d90e4, DEC-096)",
@@ -45,8 +45,9 @@
       "PO start signal — met (DEC-098, 2026-10-07)"
     ],
     "nextSteps": [
-      "backend-implementer: implement AC1-AC10, gate green, evidence/T-M2.3/summary.md",
-      "G3: fresh qa-evaluator, then fresh security-reviewer"
+      "LC: record evidence/T-M2.3/summary.md from the implementer's final report (the file write was denied), push, open the PR (pr stays null until then)",
+      "G3: fresh qa-evaluator (black-box create/sign-in/forced change, duplicates, diacritics search, archive with sessions + remember-me, reset, stale versions, secrets; x20 race), then fresh security-reviewer (identity changes, tutor endpoints, CurrentStudent, S4-1; the login-vs-reset window is a known limitation)",
+      "Open questions for the LC: Idempotency-Key on POST /tutor/students (api-conventions §6, no AC); remember-me tokens of a student account without a student row are not deleted by the shared resolver"
     ],
     "trace": [
       "backlog M2",
@@ -247,8 +248,8 @@
     }
   ],
   "tests": {
-    "lastRun": "2026-10-06T05:49:06Z",
-    "summary": "T-M2.2: CI 7/7 at 4ebae29; local gate PASS (QA re-test R14: 13 steps, backend 293 tests, e2e OK); -Dgroups=security 78 tests ×2 green (DEC-096).",
+    "lastRun": "2026-10-07T03:41:30Z",
+    "summary": "T-M2.3: local gate PASS at 01319a0 (13 steps, 449 s; backend 384 tests; e2e 86 passed, 19 skipped); -Dgroups=security 124 tests; StudentCreateRaceTest x20 20/20.",
     "suites": [
       {
         "name": "backend (./mvnw -B verify)",
@@ -875,6 +876,11 @@
       "at": "2026-10-07T02:17:31Z",
       "actor": "lead-coordinator",
       "event": "T-M2.3 packet merged at G0 (PR #60, 3d53b68; DEC-098 PO start signal). Implementation starts on feature/T-M2.3-students-core."
+    },
+    {
+      "at": "2026-10-07T03:41:30Z",
+      "actor": "backend-implementer",
+      "event": "T-M2.3 implemented (AC1-AC10) on feature/T-M2.3-students-core: gate PASS at 01319a0 (13 steps, 449 s, backend 384 tests), -Dgroups=security 124 tests, StudentCreateRaceTest x20 20/20 (evidence/T-M2.3/); status in_review, PR to be opened by the LC."
     }
   ]
 }
