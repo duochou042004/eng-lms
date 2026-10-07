@@ -32,11 +32,11 @@
   "currentTask": {
     "id": "T-M2.3",
     "title": "Students core (create-with-account, usernames, list/search, profile, status, tutor password reset, CurrentStudent); also SEC S4-1 login-vs-disable",
-    "status": "in_review",
+    "status": "qa",
     "ownerRole": "BE",
     "branch": "feature/T-M2.3-students-core",
     "packet": "docs/tasks/T-M2.3-students-core.md",
-    "pr": null,
+    "pr": "#61",
     "lastCommit": "01319a0",
     "startedAt": "2026-10-07T02:17:31Z",
     "entryGate": [
@@ -45,9 +45,8 @@
       "PO start signal — met (DEC-098, 2026-10-07)"
     ],
     "nextSteps": [
-      "LC: record evidence/T-M2.3/summary.md from the implementer's final report (the file write was denied), push, open the PR (pr stays null until then)",
-      "G3: fresh qa-evaluator (black-box create/sign-in/forced change, duplicates, diacritics search, archive with sessions + remember-me, reset, stale versions, secrets; x20 race), then fresh security-reviewer (identity changes, tutor endpoints, CurrentStudent, S4-1; the login-vs-reset window is a known limitation)",
-      "Open questions for the LC: Idempotency-Key on POST /tutor/students (api-conventions §6, no AC); remember-me tokens of a student account without a student row are not deleted by the shared resolver"
+      "G3: fresh qa-evaluator, then fresh security-reviewer; fix S1/S2 and cheap S3/S4 in-task",
+      "CI green, verdicts, LC-APPROVED, merge-gate, gitlab-sync; QA report via qa/T-M2.3; SEC record + merge DEC via chore merge-record"
     ],
     "trace": [
       "backlog M2",
