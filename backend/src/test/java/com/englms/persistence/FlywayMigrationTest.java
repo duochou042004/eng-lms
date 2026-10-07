@@ -22,6 +22,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
  * AC6: Flyway V1 applies on PostgreSQL 18 and the context starts with {@code ddl-auto=validate}. T-M2.1: the
  * identity and audit migrations apply on an empty database (this context) and on top of the M1 schema
  * ({@link #upgradesTheM1SchemaToTheLatestVersion}); the database enforces the single tutor (I-01) and append-only audit.
+ * T-M2.3: the student table and its constraints.
  */
 @Tag("container")
 @SpringBootTest
@@ -41,7 +42,7 @@ class FlywayMigrationTest {
 		assertThat(jdbc.queryForList("""
 				SELECT version FROM app.flyway_schema_history WHERE success AND version IS NOT NULL ORDER BY installed_rank""",
 				String.class))
-			.containsExactly("202609250001", "202610040001", "202610040002");
+			.containsExactly("202609250001", "202610040001", "202610040002", "202610070001");
 	}
 
 	@Test
@@ -68,9 +69,10 @@ class FlywayMigrationTest {
 		assertThat(jdbc.queryForList(
 				"SELECT table_name FROM information_schema.tables WHERE table_schema = 'app' ORDER BY table_name",
 				String.class))
-			.as("V1: platform tables only; T-M2.1: identity, Spring Session, remember-me and audit (data-model.md §4, DEC-036)")
+			.as("V1: platform tables only; T-M2.1: identity, Spring Session, remember-me and audit (data-model.md §4, DEC-036); "
+					+ "T-M2.3: student")
 			.containsExactly("audit_event", "event_publication", "flyway_schema_history", "persistent_logins",
-					"spring_session", "spring_session_attributes", "user_account");
+					"spring_session", "spring_session_attributes", "student", "user_account");
 	}
 
 	@Test
@@ -114,14 +116,45 @@ class FlywayMigrationTest {
 		assertThat(m1.migrate().migrationsExecuted).isOne();
 		Flyway latest = Flyway.configure().dataSource(jdbcUrl, user, password).schemas("app").defaultSchema("app").load();
 
-		assertThat(latest.migrate().migrationsExecuted).isEqualTo(2);
-		assertThat(latest.info().current().getVersion().getVersion()).isEqualTo("202610040002");
+		assertThat(latest.migrate().migrationsExecuted).isEqualTo(3);
+		assertThat(latest.info().current().getVersion().getVersion()).isEqualTo("202610070001");
 	}
 
-	private void insertAccount(String username, String role) {
+	/** T-M2.3: one student per account, a known status, and an account with a student cannot be deleted. */
+	@Test
+	void theStudentTableEnforcesItsConstraints() {
+		UUID account = insertAccount("student.c", "STUDENT");
+		try {
+			insertStudent(account, "ACTIVE");
+			assertThatThrownBy(() -> insertStudent(account, "ACTIVE")).isInstanceOf(DataIntegrityViolationException.class)
+				.hasMessageContaining("ux_student__user_id");
+			assertThatThrownBy(() -> insertStudent(insertAccount("student.d", "STUDENT"), "DELETED"))
+				.isInstanceOf(DataIntegrityViolationException.class)
+				.hasMessageContaining("ck_student__status");
+			assertThatThrownBy(() -> jdbc.update("DELETE FROM app.user_account WHERE id = ?", account))
+				.isInstanceOf(DataIntegrityViolationException.class)
+				.hasMessageContaining("fk_student__user_id");
+			assertThat(jdbc.queryForObject("SELECT indexdef FROM pg_indexes WHERE indexname = 'ix_student__search_text'",
+					String.class)).contains("gin", "gin_trgm_ops");
+		}
+		finally {
+			jdbc.update("DELETE FROM app.student");
+			jdbc.update("DELETE FROM app.user_account");
+		}
+	}
+
+	private void insertStudent(UUID userId, String status) {
+		jdbc.update("""
+				INSERT INTO app.student (id, user_id, full_name, search_text, status, created_at, updated_at)
+				VALUES (?, ?, 'S', 's', ?, now(), now())""", UUID.randomUUID(), userId, status);
+	}
+
+	private UUID insertAccount(String username, String role) {
+		UUID id = UUID.randomUUID();
 		jdbc.update("""
 				INSERT INTO app.user_account (id, username, username_normalized, password_hash, role, status, created_at, updated_at)
-				VALUES (?, ?, ?, '{bcrypt}x', ?, 'ACTIVE', now(), now())""", UUID.randomUUID(), username, username, role);
+				VALUES (?, ?, ?, '{bcrypt}x', ?, 'ACTIVE', now(), now())""", id, username, username, role);
+		return id;
 	}
 
 }
