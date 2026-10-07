@@ -128,11 +128,17 @@ The **authz matrix test** enumerates `RequestMappingHandlerMapping`. For each ha
   request answers 401 `SESSION_EXPIRED`. Anonymous and tutor callers never reach a student handler (401/403 at L1; reaching the resolver anyway is an
   `IllegalStateException`). Owner-scoped reads: `findByIdAndStudentId(id, me.studentId())`, a mismatch is 404 (backend-module and authz-isolation
   skills); `HarnessStudentHandlers` (test fixture) uses it and its B-on-A check answers 404. The first production student handler: T-M2.6/T-M2.7 or M3.
+  **L2 rule (T-M2.3 G3 SEC-S3-2):** Spring runs its annotation-based argument resolvers before custom ones, so `AudienceVerifier` refuses startup for
+  any handler parameter of type `CurrentStudent` carrying a binding annotation (`@ModelAttribute`, `@RequestBody`, `@RequestParam`, `@PathVariable`,
+  `@RequestHeader`, `@CookieValue`, `@MatrixVariable`, `@RequestPart`, `@RequestAttribute`, `@SessionAttribute`, also as meta-annotations). A bare
+  `CurrentStudent` parameter is resolved by `CurrentStudentResolver`, which Spring consults before its catch-all model-attribute binding: request
+  parameters such as `?studentId=&userId=` never reach it (`HarnessDetectionTest.requestParametersNamingStudentBDoNotChangeCurrentStudent`).
 - **Per-request account status (SEC S4-1, DEC-092):** a login that commits just before `AccountApi.disable` could store its session after the disable
   ended all sessions. `identity.internal.security.AccountStatusFilter` (right after remember-me in the chain) re-reads the account's `status` on every
   authenticated `/api/**` request (one primary-key read): unless `ACTIVE` (or if the account is gone), the session is invalidated, the context cleared and
   the request continues as anonymous, so protected paths and `GET /auth/session` answer 401 `SESSION_EXPIRED` while `login`, `logout` and `/meta` keep
-  working on that device. Remember-me already refuses a non-active account (401 `SESSION_EXPIRED`). The same window for a login racing a tutor
+  working on that device. Remember-me already refuses a non-active account (401 `SESSION_EXPIRED`). Both refusals also end every session and
+  remember-me token of the account (`SessionTerminator.endAllSessions`; T-M2.3 G3 QA-S4-1), so re-enabling the account revives none of them. The same window for a login racing a tutor
   **password reset** is not closed (the old session ID is stored after `endAllSessions`; the account stays `ACTIVE`): noted for SEC (T-M2.3 summary).
 - **Tutor endpoints** (api-catalog "tutor: students"): all `@Audience(TUTOR)` with registry entries (anonymous 401, tutor 2xx, student A and must-change
   403, B-on-A n/a). The isolation world gains student rows (A, B, C archived, must-change) with `SECRET-*` markers in the note and a contact-handle

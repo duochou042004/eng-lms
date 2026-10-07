@@ -1,7 +1,8 @@
 # Validation Rules
 
 > Layering: api-conventions.md §8. Messages are i18n keys (`validation.<code>`). Strings are trimmed before validation; empty after
-> trim = absent. Lengths count Unicode code points. "text" = plain, "html" = sanitised rich text (the limit applies to the sanitised output).
+> trim = absent. Lengths count Unicode code points. Free text refuses C0 control characters other than tab, line feed and carriage
+> return (`INVALID_FORMAT` on the field, e.g. a NUL; as built for students and the list `q`, T-M2.3 G3). "text" = plain, "html" = sanitised rich text (the limit applies to the sanitised output).
 
 ## Common
 

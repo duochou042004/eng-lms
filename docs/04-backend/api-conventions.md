@@ -37,7 +37,8 @@ The version lives in the path (`v1`). Breaking changes → `v2` routes side by s
 - Response: `{ "items": [...], "page": 0, "size": 25, "totalItems": 123, "totalPages": 5 }`.
 - Small bounded collections (e.g. goals of a student, folders tree) return plain arrays without paging, and are documented as bounded.
 - Unknown or invalid list parameters (T-M2.3): an unknown `sort` field or direction, an unknown filter value (e.g. `status`), `page < 0` or `size`
-  outside 1–100 → 422 `VALIDATION_FAILED` with `errors[].field` = the parameter name (`sort`, `status`, `page`, `size`) and code `INVALID_VALUE`.
+  outside 1–100, or `page × size` beyond 2³¹ − 1 → 422 `VALIDATION_FAILED` with `errors[].field` = the parameter name (`sort`, `status`, `page`,
+  `size`) and code `INVALID_VALUE`; a `q` with a control character → `q` `INVALID_FORMAT`.
   The parameters are bound as strings and checked by the handler. As built: `shared.web.PageResponse`.
 
 ## 5. Errors: RFC 9457 Problem Details
@@ -71,6 +72,8 @@ The `code` values form a closed enum in `shared.ProblemCodes`, exported in OpenA
 phone), `INVALID_VALUE` (unknown enum or list parameter), `USERNAME_INVALID` (validation-rules username rule), `USERNAME_TAKEN` (with the top-level
 409 `USERNAME_TAKEN`, `errors[0].field = "username"`); list fields are named with an index (`contactHandles[2].label`). Top-level 409 codes live since
 T-M2.3: `USERNAME_TAKEN`, `STALE_VERSION` (also an optimistic-locking failure at flush), `INVALID_STATE_TRANSITION`.
+A version below 0 is `INVALID_VALUE` (a missing one `REQUIRED`). Backstop: a database refusal of an input character (SQLState 22021, 22P05,
+e.g. a NUL in text or jsonb) answers 422 `VALIDATION_FAILED` and is logged without its message or parameters (`ProblemDetailsAdvice`, T-M2.3 G3).
 Application code throws `shared.ProblemException` (status, code, field errors, `Retry-After`); `ProblemDetailsAdvice` maps it.
 
 **Where Problem Details come from (T-M1.8):**

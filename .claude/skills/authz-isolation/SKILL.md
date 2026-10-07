@@ -27,6 +27,8 @@ description: Register endpoint authorization policies and add authz-matrix and s
    (`com.englms.shared.web.CurrentStudent`, as built T-M2.3: resolved by `CurrentStudentResolver` from the session principal through the
    `StudentPrincipals` SPI; a student account without a student row → 401 `SESSION_EXPIRED` and the session ends). Repository calls are owner-scoped:
    `findByIdAndStudentId(id, me.studentId())`, a mismatch → **404**. Reference: `fixture/harness/web/student/HarnessStudentHandlers#item`.
+   **Never annotate the `CurrentStudent` parameter** (`@ModelAttribute`, `@RequestBody`, `@RequestParam`, …): Spring would bind it from the request;
+   the L2 verifier refuses startup (T-M2.3 G3).
 4. Student classes: in `..web.student..`; no dependency on `notes`, `LearningProfile*` types, `@TutorPrivate` types or types with a `@TutorPrivate`
    field (mark private tutor types/fields with `@TutorPrivate`).
 5. Isolation fixture: the students contributor (`com.englms.students.StudentsWorldContributor`, `@Order(HIGHEST_PRECEDENCE)`, test sources)
