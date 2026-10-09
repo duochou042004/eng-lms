@@ -103,3 +103,7 @@ ENGLMS_TASK=T-M2.9 ./scripts/gate.sh
   absent (fails without the setting). security.md §4.
 - **S4-4:** the own-change limitation reads "can keep a session or a remember-me token" (security.md §4, packet, this summary); accepted by SEC.
 - Results at `2ea63f3`: backend verify 466/466, `-Dgroups=security` 158/158, ×20 20/20, check-docs and path-ownership PASS, no contract change.
+
+## SEC round 2 and merge
+- SEC round 2 APPROVED at `57a87e7` (all round-1 findings verified; rule-3 probe 8/8 caught); S4 R2-1 (the 120-entry tag-list cap missing from
+  validation-rules) fixed by the LC at `5de3a62`. CI 7/7 at `5de3a62`; merged via merge-gate as `37e8ce0` (DEC-105). QA report: PR #73.

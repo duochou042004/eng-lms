@@ -1,5 +1,7 @@
 # SEC review (G3): T-M2.9 students part 2, PR #72
 
+> Recorded by the LC from the security-reviewer agent's returned text (round 1 at `d6d2ee1`, round 2 at `57a87e7`); the agent's own file was moved off the feature branch.
+
 Reviewer: Security Reviewer (fresh context) · Branch `feature/T-M2.9-students-part-2` at `d6d2ee1` · Diff `origin/develop...HEAD` (65 files) ·
 Read: security.md (§4, §11), ADR-0005, ADR-0016, files-and-storage.md, packet `docs/tasks/T-M2.9-students-part-2.md`, `evidence/T-M2.9/summary.md`.
 

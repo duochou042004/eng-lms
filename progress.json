@@ -16,7 +16,7 @@
       }
     ]
   },
-  "updatedAt": "2026-10-09T14:03:42Z",
+  "updatedAt": "2026-10-09T14:07:58Z",
   "updatedBy": "lead-coordinator (session 2026-10-09, Opus 5.5)",
   "phase": {
     "id": "P1",
@@ -261,7 +261,7 @@
     }
   ],
   "tests": {
-    "lastRun": "2026-10-09T14:03:42Z",
+    "lastRun": "2026-10-09T14:01:19Z",
     "summary": "T-M2.9 merged: CI 7/7 at 5de3a62 (backend 466 tests); -Dgroups=security 158; x20 of the four race/stamp classes 20/20 (implementer, QA).",
     "suites": [
       {
@@ -939,6 +939,11 @@
       "at": "2026-10-09T14:03:42Z",
       "actor": "lead-coordinator",
       "event": "T-M2.9 merged via merge-gate (PR #72, 37e8ce0, DEC-105); QA report PR #73; next: T-M2.4 packet."
+    },
+    {
+      "at": "2026-10-09T14:07:58Z",
+      "actor": "lead-coordinator",
+      "event": "QA record PR #73 merged (680149b); merge-record PR #74 DOCS-REVIEW round 1 D1-D7 fixed."
     }
   ]
 }

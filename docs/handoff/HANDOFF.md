@@ -1,6 +1,6 @@
 # Handoff — 2026-10-09T14:05Z (T-M2.9 done; next: T-M2.4 packet)
 
-Phase/Milestone: P1 / M2 (in progress) · Current task: **T-M2.4 (packet to write)** · Branch: `chore/T-M2.9-merge-record` · Last merge on develop: `37e8ce0` (PR #72, T-M2.9) · Remote: https://github.com/duochou042004/eng-lms (mirror: gitlab.com/duochou042004/eng-lms)
+Phase/Milestone: P1 / M2 (in progress) · Current task: **T-M2.4 (packet to write)** · Branch: `develop` · Last merges on develop: `37e8ce0` (PR #72, T-M2.9), `680149b` (PR #73, QA record), PR #74 (merge record) · Remote: https://github.com/duochou042004/eng-lms (mirror: gitlab.com/duochou042004/eng-lms)
 
 ## Where we are
 - **T-M2.9 done** (`37e8ce0`, PR #72; packet PR #71; DEC-102 first goal → M7, DEC-103 guardian limits/empty profile, DEC-104 PO start, DEC-105 merge).
@@ -16,10 +16,10 @@ Phase/Milestone: P1 / M2 (in progress) · Current task: **T-M2.4 (packet to writ
   - Logs: `org.hibernate.orm.jdbc.error=off`, `logServerErrorDetail=false` (no usernames or row values from SQL errors).
 
 ## Next steps
-1. Merge the open record PRs: #73 (`qa/T-M2.9`, LC-APPROVED) and the `chore/T-M2.9-merge-record` PR (fresh DOCS-REVIEW, CI green → verdicts → LC-APPROVED →
-   merge-gate → gitlab-sync).
-2. Write the **T-M2.4 packet** (auth UI + shells, FE; frontend-standards skill; vi + en; 360/768/1280; WCAG 2.2 AA; UX review at G3) to G0; ask the PO
-   for the start signal. T-M2.5 (students UI) depends on T-M2.4 and T-M2.9.
+1. T-M2.9 record PRs merged: #73 (`qa/T-M2.9`, `680149b`) and #74 (this merge record).
+2. Write the **T-M2.4 packet** (auth UI + shells, FE; frontend-standards skill; vi + en; 360/768/1280; WCAG 2.2 AA; UX review at G3) to G0; decide the SEC review in the
+   packet (auth redirects, the `?next=` allow-list security.md T18, remember-me on shared devices; the M2 exit needs an auth security review); ask
+   the PO for the start signal. T-M2.5 (students UI) depends on T-M2.4 and T-M2.9.
 3. **T-M2.10** (strict JSON number binding, QA F3, small BE) can be packeted any time.
 4. Dependabot PRs #64–#70 are open (LC-APPROVED PR-<n> path via merge-gate when CI is green).
 
