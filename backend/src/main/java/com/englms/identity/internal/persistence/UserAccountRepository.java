@@ -7,7 +7,6 @@ import java.util.UUID;
 import jakarta.persistence.LockModeType;
 
 import com.englms.identity.Role;
-import com.englms.identity.internal.domain.AccountStatus;
 import com.englms.identity.internal.domain.UserAccount;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
@@ -31,9 +30,10 @@ public interface UserAccountRepository extends JpaRepository<UserAccount, UUID> 
 
 	boolean existsByUsernameNormalized(String usernameNormalized);
 
-	/** The per-request account check (SEC S4-1): one primary-key read. */
-	@Query("select a.status from UserAccount a where a.id = :id")
-	Optional<AccountStatus> findStatusById(UUID id);
+	/** The per-request account check (SEC S4-1, S4-5): status and credential stamp in one primary-key read. */
+	@Query("select new com.englms.identity.internal.persistence.AccountState(a.status, a.credentialStamp)"
+			+ " from UserAccount a where a.id = :id")
+	Optional<AccountState> findStateById(UUID id);
 
 	/** {@code pattern} is a {@code shared.Like} pattern (escape character {@code \}). */
 	@Query("select a.id from UserAccount a where a.role = com.englms.identity.Role.STUDENT"

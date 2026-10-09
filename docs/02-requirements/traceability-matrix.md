@@ -10,17 +10,17 @@
 | 2 | Tutor builds everything; no hard-coded curriculum | Generic engines; forbidden-identifier test | FR-STU-04, FR-ACT-03 AC, coding-agent-rules §7 | all | M1+ | MVP |
 | 3 | Two roles | `Role {TUTOR, STUDENT}`; one-tutor constraint (live T-M2.1: `identity.Role`, L1 URL gate) | FR-AUTH-02 | identity | M2 | MVP |
 | 4.1 | No public registration | No route or endpoint (verified T-M2.1: `/api/v1/auth/register` → 404) | FR-AUTH-01 | identity | M2 | MVP |
-| 4.2 | Tutor creates student account | Create student + account + credentials card (live T-M2.3: `POST /tutor/students` with server-generated credentials once, username suggestion/availability; UI T-M2.5; guardians at create T-M2.9; first goal T-M7.1/T-M7.2, DEC-102) | FR-STU-01, FR-AUTH-06 | students, identity | M2 | MVP |
+| 4.2 | Tutor creates student account | Create student + account + credentials card (live T-M2.3: `POST /tutor/students` with server-generated credentials once, username suggestion/availability; UI T-M2.5; guardians at create live T-M2.9: `guardians?` in `POST /tutor/students`, same transaction; first goal T-M7.1/T-M7.2, DEC-102) | FR-STU-01, FR-AUTH-06 | students, identity | M2 | MVP |
 | 4.3 | Login, logout, change password, forgot (later) | Session auth; tutor reset (live T-M2.1: `/auth/session`, `/auth/login`, `/auth/logout`, `/auth/password`, must-change gate, lockout, throttle, operator reset CLI FR-AUTH-09, disable FR-AUTH-10; UI in T-M2.4; tutor's student reset live T-M2.3: `POST /tutor/students/{sid}/password-reset`, FR-AUTH-07) | FR-AUTH-03..08 | identity | M2 | MVP |
 | 5.1 | No enrolment | — | scope.md §4 | — | — | NEVER |
 | 5.2 | No payment | — | scope.md §4 | — | — | NEVER |
 | 5.3 | No marketplace or SaaS | Single tenant | ADR-0006 | — | — | NEVER |
 | 5.4 | No AI | — | scope.md §3 | — | — | FUTURE |
 | 5.5 | No communication tools; store meeting URL | `meetingUrl`, contact links | FR-LES-02, FR-STU-07 | lessons, students | M2–M3 | MVP |
-| 5.6 | No parent portal; parent info on profile | Guardians on profile (profile and contacts live T-M2.3: `GET`/`PATCH /tutor/students/{sid}`, FR-STU-03; guardians T-M2.9) | FR-STU-01, FR-STU-03 | students | M2 | MVP (portal FUTURE) |
+| 5.6 | No parent portal; parent info on profile | Guardians on profile (profile and contacts live T-M2.3: `GET`/`PATCH /tutor/students/{sid}`, FR-STU-03; guardians live T-M2.9: `GET`/`POST /tutor/students/{sid}/guardians`, `PATCH`/`DELETE /tutor/guardians/{gid}`, ≤ 10, contact values only, DEC-103) | FR-STU-01, FR-STU-03 | students | M2 | MVP (portal FUTURE) |
 | 6 | Student-workspace-centric model | Workspace shell + tabs | FR-STU-06 | web + all | M2–M7 | MVP |
 | 7 | Workspaces differ per student | Nothing mandatory; tabs appear when data or modules exist | FR-STU-06, NFR-UX-02 | web | M2+ | MVP |
-| 8 | Learning profile, flexible | Level, strengths, weaknesses, notes, custom fields | FR-STU-04 | students | M2 | MVP |
+| 8 | Learning profile, flexible | Level, strengths, weaknesses, notes, custom fields (live T-M2.9: `GET`/`PUT /tutor/students/{sid}/learning-profile`, tutor-private `@TutorPrivate` types, empty profile with `version` `null`, DEC-103) | FR-STU-04 | students | M2 | MVP |
 | 9 | Goal system, extensible metrics | Metric definitions, goals, observations | FR-GOAL-01..03, 05 | goals | M7 | MVP |
 | 10 | Learning plan operations | Plan → phase → item, reorder, move, pause, complete | FR-PLAN-01..06 | plans | M7 | MVP |
 | 11 | Plan templates | Template copy | FR-PLAN-07 | plans | — | P2 (OQ-04) |
@@ -49,7 +49,7 @@
 | 34 | Data model direction (to be re-analysed) | `docs/03-architecture/data-model.md` | — | all | M0 | MVP |
 | 35 | Modular monolith | Spring Modulith | ADR-0001 | all | M1 | MVP |
 | 36 | Technology must be justified | tech-stack.md + ADRs | NFR-MNT-02 | — | M0+ | MVP |
-| 37 | Security: A ≠ B; private data | Namespace isolation, authz matrix, scans (T-M2.1: L1 role gate on `/api/v1/tutor/**` and `/api/v1/student/**`, CSRF, security headers via Spring Security, audit v1 NFR-SEC-11; T-M2.2: `@Audience` + startup verifier (L2), policy registry + authz matrix, isolation fixture world + response scan for B's IDs and `SECRET-*`, ArchUnit student rules 3–4; T-M2.3: `CurrentStudent` resolver + owner-scoped convention, per-request account-status check (S4-1), the students isolation contributor; student lifecycle with archive disabling sign-in, FR-STU-05: `POST /tutor/students/{sid}/status`) | NFR-SEC-01..03, ADR-0016, FR-STU-05 | all | M2+ | MVP |
+| 37 | Security: A ≠ B; private data | Namespace isolation, authz matrix, scans (T-M2.1: L1 role gate on `/api/v1/tutor/**` and `/api/v1/student/**`, CSRF, security headers via Spring Security, audit v1 NFR-SEC-11; T-M2.2: `@Audience` + startup verifier (L2), policy registry + authz matrix, isolation fixture world + response scan for B's IDs and `SECRET-*`, ArchUnit student rules 3–4; T-M2.3: `CurrentStudent` resolver + owner-scoped convention, per-request account-status check (S4-1), the students isolation contributor; student lifecycle with archive disabling sign-in, FR-STU-05: `POST /tutor/students/{sid}/status`; T-M2.9: credential stamp (S4-5), rule 3 on headers, cookies, matrix variables and bound fields, dashless B IDs in the scan, guardians and profiles with `SECRET-*` in the world) | NFR-SEC-01..03, ADR-0016, FR-STU-05 | all | M2+ | MVP |
 | 38 | File and material management, not Drive | Files module, limits, access checks | FR-FILE-01..04 | files, library | M4 | MVP |
 | 39 | Notifications (useful events; in-app first) | Derived dashboard items in the MVP | DEC-006 | notifications (future) | — | P2 |
 | 40 | UX principles | Design system, step budgets, progressive disclosure | NFR-UX-01..04 | web | all | MVP |

@@ -107,9 +107,15 @@ public final class IsolationWorld {
 		resourcesOfA.put(key, id.toString());
 	}
 
-	/** An identifier of student B's data; student A's responses must never contain it. */
+	/**
+	 * An identifier of student B's data; student A's responses must never contain it. A UUID is registered in its
+	 * canonical and its dashless form (DEC-097 (4) (c)); the scan ignores case.
+	 */
 	public void ownedByB(Object id) {
 		identifiersOfB.add(id.toString());
+		if (id instanceof UUID uuid) {
+			identifiersOfB.add(uuid.toString().replace("-", ""));
+		}
 	}
 
 	/**

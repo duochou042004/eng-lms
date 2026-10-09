@@ -67,6 +67,12 @@ class HarnessDetectionTest {
 
 	static final Policy ME = Policy.of("GET", "/api/v1/student/harness/me", null, 401, 403, 200, NA, 403);
 
+	static final Policy LEAK_ID_DASHLESS = Policy.of("GET", "/api/v1/student/harness/leak-id-dashless", null, 401, 403,
+			200, NA, 403);
+
+	static final Policy LEAK_PROFILE = Policy.of("GET", "/api/v1/student/harness/leak-profile", null, 401, 403, 200, NA,
+			403);
+
 	static final String PROBE = "GET /api/v1/tutor/harness-probe";
 
 	@LocalServerPort
@@ -105,7 +111,7 @@ class HarnessDetectionTest {
 	@Test
 	void completenessNamesAnEntryWithoutAHandlerMapping() {
 		List<Policy> all = new ArrayList<>(PolicyRegistry.ENTRIES);
-		all.addAll(List.of(LEAK_ID, LEAK_SECRET, ITEM, UNSCOPED_ITEM, ME));
+		all.addAll(List.of(LEAK_ID, LEAK_SECRET, ITEM, UNSCOPED_ITEM, ME, LEAK_ID_DASHLESS, LEAK_PROFILE));
 		Set<String> registered = new HashSet<>(PolicyRegistry.keys(all));
 		registered.add(PROBE);
 		SecurityHarness.assertComplete(SecurityHarness.liveKeys(context), registered);
@@ -141,6 +147,20 @@ class HarnessDetectionTest {
 	void theScanNamesASecretMarkerInAHeaderWhateverItsCase() {
 		assertThatThrownBy(() -> harness.assertNoLeak(LEAK_SECRET)).hasMessageContaining(LEAK_SECRET.key())
 			.hasMessageContaining("secret marker secret-item-b-7f3c");
+	}
+
+	/** T-M2.9 AC6 (DEC-097 (4) (c)): B's UUID without dashes is caught too. */
+	@Test
+	void theScanNamesStudentBsIdentifierWithoutDashes() {
+		assertThatThrownBy(() -> harness.assertNoLeak(LEAK_ID_DASHLESS)).hasMessageContaining(LEAK_ID_DASHLESS.key())
+			.hasMessageContaining("student B's identifier " + items.studentB.toString().replace("-", ""));
+	}
+
+	/** T-M2.9 AC4: a learning-profile value (even the student's own) in a student response fails the scan. */
+	@Test
+	void theScanNamesALearningProfileMarker() {
+		assertThatThrownBy(() -> harness.assertNoLeak(LEAK_PROFILE)).hasMessageContaining(LEAK_PROFILE.key())
+			.hasMessageContaining("secret marker SECRET-LEVEL-A");
 	}
 
 	@Test

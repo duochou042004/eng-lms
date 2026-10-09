@@ -189,6 +189,103 @@
         "tags" : [ "meta" ]
       }
     },
+    "/api/v1/tutor/guardians/{gid}" : {
+      "delete" : {
+        "operationId" : "delete",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "gid",
+          "required" : true,
+          "schema" : {
+            "type" : "string",
+            "format" : "uuid"
+          }
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "Deleted"
+          },
+          "404" : {
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description" : "NOT_FOUND"
+          }
+        },
+        "summary" : "Delete a guardian",
+        "tags" : [ "tutor: students" ]
+      },
+      "patch" : {
+        "operationId" : "update_1",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "gid",
+          "required" : true,
+          "schema" : {
+            "type" : "string",
+            "format" : "uuid"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/UpdateGuardianRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/GuardianResponse"
+                }
+              }
+            },
+            "description" : "The updated guardian"
+          },
+          "404" : {
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description" : "NOT_FOUND"
+          },
+          "409" : {
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description" : "STALE_VERSION"
+          },
+          "422" : {
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description" : "VALIDATION_FAILED with field codes"
+          }
+        },
+        "summary" : "Update a guardian; version required",
+        "tags" : [ "tutor: students" ]
+      }
+    },
     "/api/v1/tutor/students" : {
       "get" : {
         "operationId" : "list",
@@ -305,13 +402,13 @@
             "description" : "VALIDATION_FAILED with field codes"
           }
         },
-        "summary" : "Create a student with their STUDENT account; the credentials are in this response only",
+        "summary" : "Create a student with their STUDENT account (and guardians); the credentials are in this response only",
         "tags" : [ "tutor: students" ]
       }
     },
     "/api/v1/tutor/students/{sid}" : {
       "get" : {
-        "operationId" : "get",
+        "operationId" : "get_1",
         "parameters" : [ {
           "in" : "path",
           "name" : "sid",
@@ -410,6 +507,207 @@
           }
         },
         "summary" : "Update the profile and contacts (and the username); version required",
+        "tags" : [ "tutor: students" ]
+      }
+    },
+    "/api/v1/tutor/students/{sid}/guardians" : {
+      "get" : {
+        "operationId" : "list_1",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "sid",
+          "required" : true,
+          "schema" : {
+            "type" : "string",
+            "format" : "uuid"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/GuardianResponse"
+                  }
+                }
+              }
+            },
+            "description" : "The guardians"
+          },
+          "404" : {
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description" : "NOT_FOUND"
+          }
+        },
+        "summary" : "A student's guardians in insertion order",
+        "tags" : [ "tutor: students" ]
+      },
+      "post" : {
+        "operationId" : "add",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "sid",
+          "required" : true,
+          "schema" : {
+            "type" : "string",
+            "format" : "uuid"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/GuardianRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "201" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/GuardianResponse"
+                }
+              }
+            },
+            "description" : "Created; Location names the guardian"
+          },
+          "404" : {
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description" : "NOT_FOUND"
+          },
+          "422" : {
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description" : "VALIDATION_FAILED with field codes (guardians: TOO_MANY)"
+          }
+        },
+        "summary" : "Add a guardian (at most 10 per student)",
+        "tags" : [ "tutor: students" ]
+      }
+    },
+    "/api/v1/tutor/students/{sid}/learning-profile" : {
+      "get" : {
+        "operationId" : "get",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "sid",
+          "required" : true,
+          "schema" : {
+            "type" : "string",
+            "format" : "uuid"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/LearningProfileResponse"
+                }
+              }
+            },
+            "description" : "The profile"
+          },
+          "404" : {
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description" : "NOT_FOUND"
+          }
+        },
+        "summary" : "The learning profile; a student never edited has the empty one (version null)",
+        "tags" : [ "tutor: students" ]
+      },
+      "put" : {
+        "operationId" : "put",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "sid",
+          "required" : true,
+          "schema" : {
+            "type" : "string",
+            "format" : "uuid"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/LearningProfileRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/LearningProfileResponse"
+                }
+              }
+            },
+            "description" : "The new profile"
+          },
+          "404" : {
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description" : "NOT_FOUND"
+          },
+          "409" : {
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description" : "STALE_VERSION (also version null when the profile exists)"
+          },
+          "422" : {
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description" : "VALIDATION_FAILED with field codes"
+          }
+        },
+        "summary" : "Replace the learning profile (absent = cleared); version null creates it",
         "tags" : [ "tutor: students" ]
       }
     },
@@ -625,6 +923,13 @@
           "fullName" : {
             "type" : "string"
           },
+          "guardians" : {
+            "type" : "array",
+            "description" : "Optional, at most 10; created in the same transaction, listed by GET …/guardians",
+            "items" : {
+              "$ref" : "#/components/schemas/GuardianRequest"
+            }
+          },
           "note" : {
             "type" : "string"
           },
@@ -668,6 +973,140 @@
           }
         },
         "required" : [ "expiresAt", "temporaryPassword", "username" ]
+      },
+      "CustomField" : {
+        "type" : "object",
+        "properties" : {
+          "label" : {
+            "type" : "string"
+          },
+          "value" : {
+            "type" : "string"
+          }
+        }
+      },
+      "GuardianRequest" : {
+        "type" : "object",
+        "properties" : {
+          "email" : {
+            "type" : "string"
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "notes" : {
+            "type" : "string"
+          },
+          "phone" : {
+            "type" : "string"
+          },
+          "relationship" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "name" ]
+      },
+      "GuardianResponse" : {
+        "type" : "object",
+        "properties" : {
+          "email" : {
+            "type" : [ "string", "null" ]
+          },
+          "id" : {
+            "type" : "string",
+            "format" : "uuid"
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "notes" : {
+            "type" : [ "string", "null" ]
+          },
+          "phone" : {
+            "type" : [ "string", "null" ]
+          },
+          "relationship" : {
+            "type" : [ "string", "null" ]
+          },
+          "version" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        },
+        "required" : [ "email", "id", "name", "notes", "phone", "relationship", "version" ]
+      },
+      "LearningProfileRequest" : {
+        "type" : "object",
+        "description" : "Every value is replaced; an absent one is cleared. version null (or absent) = first creation",
+        "properties" : {
+          "currentLevel" : {
+            "type" : [ "string", "null" ]
+          },
+          "customFields" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/CustomField"
+            }
+          },
+          "learningNotes" : {
+            "type" : [ "string", "null" ]
+          },
+          "strengths" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "version" : {
+            "type" : [ "integer", "null" ],
+            "format" : "int64"
+          },
+          "weaknesses" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          }
+        }
+      },
+      "LearningProfileResponse" : {
+        "type" : "object",
+        "properties" : {
+          "currentLevel" : {
+            "type" : [ "string", "null" ]
+          },
+          "customFields" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/CustomField"
+            }
+          },
+          "learningNotes" : {
+            "type" : [ "string", "null" ]
+          },
+          "strengths" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "updatedAt" : {
+            "type" : [ "string", "null" ],
+            "format" : "date-time"
+          },
+          "version" : {
+            "type" : [ "integer", "null" ],
+            "format" : "int64",
+            "description" : "null while the profile was never saved"
+          },
+          "weaknesses" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          }
+        },
+        "required" : [ "currentLevel", "customFields", "learningNotes", "strengths", "updatedAt", "version", "weaknesses" ]
       },
       "LoginRequest" : {
         "type" : "object",
@@ -903,6 +1342,31 @@
           }
         },
         "required" : [ "createdAt", "email", "fullName", "id", "phone", "status", "username" ]
+      },
+      "UpdateGuardianRequest" : {
+        "type" : "object",
+        "properties" : {
+          "email" : {
+            "type" : [ "string", "null" ]
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "notes" : {
+            "type" : [ "string", "null" ]
+          },
+          "phone" : {
+            "type" : [ "string", "null" ]
+          },
+          "relationship" : {
+            "type" : [ "string", "null" ]
+          },
+          "version" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        },
+        "required" : [ "version" ]
       },
       "UpdateStudentRequest" : {
         "type" : "object",

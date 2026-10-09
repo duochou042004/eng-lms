@@ -57,19 +57,25 @@ public class StudentService implements StudentDirectory, StudentPrincipals {
 
 	private final Clock clock;
 
+	private final GuardianService guardians;
+
 	StudentService(StudentRepository students, AccountApi accounts, ApplicationEventPublisher events, Ids ids,
-			Clock clock) {
+			Clock clock, GuardianService guardians) {
 		this.students = students;
 		this.accounts = accounts;
 		this.events = events;
 		this.ids = ids;
 		this.clock = clock;
+		this.guardians = guardians;
 	}
 
 	public record Created(StudentView student, TemporaryCredentials credentials) {
 	}
 
-	/** FR-STU-01: the account and the student in one transaction; the credentials are returned only here. */
+	/**
+	 * FR-STU-01: the account, the student and its guardians (T-M2.9) in one transaction; the credentials are returned
+	 * only here.
+	 */
 	@Transactional
 	public Created create(StudentCommands.Create command, UUID tutorId) {
 		List<FieldProblem> problems = new ArrayList<>();
@@ -77,6 +83,7 @@ public class StudentService implements StudentDirectory, StudentPrincipals {
 				StudentFields.email(command.email(), problems), StudentFields.phone(command.phone(), problems),
 				StudentFields.contactHandles(command.contactHandles(), problems),
 				StudentFields.note(command.note(), problems));
+		var guardianDetails = StudentFields.guardians(command.guardians(), problems);
 		String username = command.username();
 		checkUsername(username, problems);
 		String password = command.password();
@@ -88,8 +95,9 @@ public class StudentService implements StudentDirectory, StudentPrincipals {
 			throw ProblemException.validation(problems);
 		}
 		TemporaryCredentials credentials = accounts.createStudentAccount(username, password);
-		Instant now = clock.instant();
+		Instant now = StudentFields.now(clock);
 		Student student = students.saveAndFlush(new Student(ids.newId(), credentials.userId(), profile, tutorId, now));
+		guardians.addAll(student.id(), guardianDetails, tutorId);
 		events.publishEvent(new StudentCreated(student.id(), student.userId(), tutorId));
 		return new Created(StudentView.of(student, credentials.username()), credentials);
 	}
@@ -152,7 +160,7 @@ public class StudentService implements StudentDirectory, StudentPrincipals {
 		if (!problems.isEmpty()) {
 			throw ProblemException.validation(problems);
 		}
-		student.apply(new StudentProfile(fullName, email, phone, handles, note), tutorId, clock.instant());
+		student.apply(new StudentProfile(fullName, email, phone, handles, note), tutorId, StudentFields.now(clock));
 		String currentUsername = username(student);
 		if (username != null && !username.strip().equals(currentUsername)) {
 			accounts.changeUsername(student.userId(), username);
@@ -171,7 +179,7 @@ public class StudentService implements StudentDirectory, StudentPrincipals {
 		if (!student.status().canBecome(target)) {
 			throw new ProblemException(HttpStatus.CONFLICT, ProblemCodes.INVALID_STATE_TRANSITION);
 		}
-		StudentStatus from = student.changeStatus(target, tutorId, clock.instant());
+		StudentStatus from = student.changeStatus(target, tutorId, StudentFields.now(clock));
 		if (target == StudentStatus.ARCHIVED) {
 			accounts.disable(student.userId());
 		}

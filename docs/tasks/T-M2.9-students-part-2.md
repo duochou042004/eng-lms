@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Milestone | M2 |
-| Status | ready (G0: DOCS-REVIEW PASS; PO start signal DEC-104) |
+| Status | in_progress (G0: DOCS-REVIEW PASS, PR #71; PO start signal DEC-104) |
 | Owner role | BE (backend-implementer; SEC review at G3) |
 | Branch | `feature/T-M2.9-students-part-2` (from `develop`) |
 | Depends on | T-M2.3 (merged, `f0e228c`, DEC-101) |
@@ -105,7 +105,7 @@ cannot leave a usable session (S4-5), and a duplicate username is not written to
   `CurrentUser` is a record with an explicit `serialVersionUID`: a stored session without the component reads back with stamp 0, the column default, so
   existing dev sessions keep working. Prove it deterministically (no sleeps or wall-clock bounds, DEC-093): sign in, increment the stamp in the
   database without ending sessions (the state the race leaves), call with the session → 401, and a second session signed in after the increment still
-  works. Known limitation (summary): a login with the old password racing the user's own change can keep a session (same window; the attacker needs
+  works. Known limitation (summary): a login with the old password racing the user's own change can keep a session or a remember-me token (accepted by SEC at G3; same window; the attacker needs
   the old password, and S4-5 is about the tutor reset). SEC confirms or rejects this acceptance at G3, and the merge DEC records it.
 - **S4-2 (DEC-100):** the losing duplicate-username insert or rename makes Hibernate's `SqlExceptionHelper` log the PostgreSQL detail
   `Key (username_normalized)=(…) already exists`. Stop the application log from carrying it (e.g. the logger level for that class, or translating the

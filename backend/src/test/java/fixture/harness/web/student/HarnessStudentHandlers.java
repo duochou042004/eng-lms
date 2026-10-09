@@ -35,6 +35,18 @@ public class HarnessStudentHandlers {
 		return Map.of("peer", items.studentB.toString().toUpperCase());
 	}
 
+	/** Leaks B's user ID without dashes (T-M2.9 AC6, DEC-097 (4) (c)). */
+	@GetMapping("/leak-id-dashless")
+	public Map<String, String> leakIdDashless() {
+		return Map.of("peer", items.studentB.toString().replace("-", ""));
+	}
+
+	/** Leaks the signed-in student's own learning-profile level: tutor-private even for its owner (T-M2.9 AC4). */
+	@GetMapping("/leak-profile")
+	public Map<String, String> leakProfile(CurrentStudent me) {
+		return Map.of("level", items.learningProfileLevelOf(me.studentId()));
+	}
+
 	/** Leaks a secret marker, lower-cased, in a header. */
 	@GetMapping("/leak-secret")
 	public ResponseEntity<Void> leakSecret() {

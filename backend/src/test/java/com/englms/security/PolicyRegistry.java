@@ -83,7 +83,18 @@ public final class PolicyRegistry {
 			Policy.of("POST", "/api/v1/tutor/students/{sid}/password-reset", null, 401, 200, 403, NA, 403),
 			Policy.of("GET", "/api/v1/tutor/usernames/suggestion?fullName=Nguy%E1%BB%85n%20V%C4%83n%20An", null, 401, 200,
 					403, NA, 403),
-			Policy.of("GET", "/api/v1/tutor/usernames/availability?username=free-name", null, 401, 200, 403, NA, 403));
+			Policy.of("GET", "/api/v1/tutor/usernames/availability?username=free-name", null, 401, 200, 403, NA, 403),
+			// T-M2.9, tutor: guardians and the learning profile ({gid} = student A's guardian; A has one guardian and a
+			// stored profile, version 0).
+			Policy.of("GET", "/api/v1/tutor/students/{sid}/guardians", null, 401, 200, 403, NA, 403),
+			Policy.of("POST", "/api/v1/tutor/students/{sid}/guardians", account -> "{\"name\":\"Matrix Guardian\"}", 401,
+					201, 403, NA, 403),
+			Policy.of("PATCH", "/api/v1/tutor/guardians/{gid}", account -> "{\"version\":0,\"phone\":\"0901 234 567\"}",
+					401, 200, 403, NA, 403),
+			Policy.of("DELETE", "/api/v1/tutor/guardians/{gid}", null, 401, 204, 403, NA, 403),
+			Policy.of("GET", "/api/v1/tutor/students/{sid}/learning-profile", null, 401, 200, 403, NA, 403),
+			Policy.of("PUT", "/api/v1/tutor/students/{sid}/learning-profile",
+					account -> "{\"version\":0,\"currentLevel\":\"B1\"}", 401, 200, 403, NA, 403));
 
 	private PolicyRegistry() {
 	}

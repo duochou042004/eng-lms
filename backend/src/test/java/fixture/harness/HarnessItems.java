@@ -37,6 +37,12 @@ public class HarnessItems implements IsolationWorldContributor {
 		world.secret("SECRET-ITEM-B-7F3C");
 	}
 
+	/** The stored learning-profile level of a student (tutor-private; the leak fixture of T-M2.9 AC4). */
+	public String learningProfileLevelOf(UUID studentId) {
+		return jdbc.queryForObject("SELECT current_level FROM student_learning_profile WHERE student_id = ?",
+				String.class, studentId);
+	}
+
 	public UUID studentIdOf(UUID userId) {
 		return jdbc.queryForObject("SELECT id FROM student WHERE user_id = ?", UUID.class, userId);
 	}

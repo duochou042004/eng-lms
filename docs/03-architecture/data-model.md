@@ -31,6 +31,7 @@ user_account (
   must_change_password boolean NOT NULL DEFAULT true, temp_password_expires_at timestamptz NULL,
   failed_login_count int NOT NULL DEFAULT 0, locked_until timestamptz NULL, last_login_at timestamptz NULL,
   locale text NOT NULL DEFAULT 'vi', time_zone text NOT NULL DEFAULT 'Asia/Ho_Chi_Minh', display_name text NULL,
+  credential_stamp bigint NOT NULL DEFAULT 0,   -- T-M2.9: +1 per reset by someone else (DEC-100 S4-5)
   + standard columns )
 CREATE UNIQUE INDEX ux_user_account__single_tutor ON user_account ((role)) WHERE role = 'TUTOR';   -- I-01
 -- Spring Session JDBC tables (spring_session, spring_session_attributes) as shipped by Spring Session; persistent_logins (remember-me)
@@ -55,12 +56,22 @@ the contacts too. A query `q` is normalised the same way and matched with `LIKE 
 identity (no join). `contact_handles` is validated in code (label 1–60, value 0–500, ≤ 30). `created_by`/`updated_by` hold the tutor's user ID.
 ```sql
 student_guardian ( id uuid PK, student_id uuid NOT NULL REFERENCES student ON DELETE CASCADE, name text NOT NULL,
-  relationship text NULL, phone text NULL, email text NULL, notes text NULL, position int NOT NULL )
+  relationship text NULL, phone text NULL, email text NULL, notes text NULL, position int NOT NULL,
+  + standard columns incl. version,   -- version: optimistic locking of PATCH (DEC-103)
+  UNIQUE (student_id, position) DEFERRABLE INITIALLY DEFERRED )
 student_learning_profile ( student_id uuid PK REFERENCES student ON DELETE CASCADE, current_level text NULL,
   learning_notes text NULL, strengths text[] NOT NULL DEFAULT '{}', weaknesses text[] NOT NULL DEFAULT '{}',
   custom_fields jsonb NOT NULL DEFAULT '[]',  -- [{label, value}] max 30
-  updated_at timestamptz NOT NULL, version bigint NOT NULL )
+  + standard columns incl. version )
 ```
+As built (T-M2.9, `V202610090001__students_guardians_learning_profile.sql`): `pk_student_guardian`, `fk_student_guardian__student_id` (`ON DELETE
+CASCADE`), `ux_student_guardian__student_id_position` (`DEFERRABLE INITIALLY DEFERRED`; its leading `student_id` serves the lookups); at most 10
+guardians per student (DEC-103), checked in code after `SELECT … FOR UPDATE` on the student row, `position` = max + 1, never compacted (insertion
+order; no reorder endpoint). `pk_student_learning_profile` (= `student_id`), `fk_student_learning_profile__student_id` (`ON DELETE CASCADE`). No
+backfill: a student without a profile row has the **empty profile** (`null` values, empty lists, `updatedAt` and `version` `null`); the first `PUT`
+inserts the row with `INSERT … ON CONFLICT (student_id) DO NOTHING` (0 rows → 409 `STALE_VERSION`) and then writes the values, so a stored row always
+has a number. `strengths`/`weaknesses` are tags (1–40, no commas, deduplicated case-insensitively, ≤ 30 each), `custom_fields` the label/value list;
+validated in code. `created_by`/`updated_by` hold the tutor's user ID. Both tables are owned by `students`.
 
 ### goals
 ```sql
@@ -219,13 +230,13 @@ event_publication (Spring Modulith JDBC registry; schema as shipped)
 |---|---|---|
 | `user_account.password_hash` | Secret | Never serialised; excluded from `toString`; only the identity module reads it |
 | Temporary password (not stored in plain text) | Secret | Shown once in the create or reset response, sent with `Cache-Control: no-store`, never logged |
-| `student.email`, `phone`, `contact_handles`, `search_text`, `student_guardian.*` | Personal data (possibly of minors) | Tutor-only DTOs (`search_text` in none); excluded from logs; part of export and delete (OQ-07) |
+| `student.email`, `phone`, `contact_handles`, `search_text`, `student_guardian.*` | Personal data (possibly of minors) | Tutor-only DTOs (`search_text` in none); excluded from logs; part of export and delete (OQ-07). Guardians (T-M2.9): tutor-only DTOs, no `toString` of values, `SECRET-*` markers in the isolation world; not in `search_text` |
 | `student.note` | Tutor-private | Tutor DTO only; the isolation world puts a `SECRET-*` marker in it (T-M2.3) |
-| `student_learning_profile.*`, `teacher_note.body`, `plan_item.tutor_notes` | Tutor-private | Never mapped to student DTOs (NFR-SEC-02) |
+| `student_learning_profile.*`, `teacher_note.body`, `plan_item.tutor_notes` | Tutor-private | Never mapped to student DTOs (NFR-SEC-02); the learning-profile types are `@TutorPrivate` and the isolation world puts `SECRET-*` markers in every profile text field (T-M2.9) |
 | `question.content` / snapshot answer keys | Answer secrets until release | Redacted by the type handler for the student audience |
 | `audit_event.ip`, `user_agent` | Personal data | 1-year retention job (daily, T-M2.1) |
 | `persistent_logins.series`, `token` | Session secrets (remember-me) | Server-side only; deleted on logout (this device), password change, reset, disable |
-| `user_account.locked_until`, `failed_login_count`, `last_login_at` | Security state | Never in a DTO (`GET /auth/session` has no lock fields) |
+| `user_account.locked_until`, `failed_login_count`, `last_login_at`, `credential_stamp` | Security state | Never in a DTO (`GET /auth/session` has no lock fields or stamp); the stamp is in no log line either (T-M2.9) |
 | Spring Session attributes | Session secrets | Server-side only; cookie holds an opaque ID |
 
 ## 4. Migration and seed policy
@@ -239,6 +250,8 @@ event_publication (Spring Modulith JDBC registry; schema as shipped)
   as in §2 with `ix_audit_event__occurred_at (occurred_at DESC)`, `ix_audit_event__action`, no foreign keys (a row outlives its subject; an insert never waits for the
   account row lock), and the trigger `tr_audit_event__append_only` that rejects `UPDATE`. No seed data: the tutor comes from the bootstrap secret (FR-AUTH-02).
 - T-M2.3 (**applied**): `V202610070001__students_student.sql`: `app.student` as in §2 (as built note there). No seed data.
+- T-M2.9: `V202610090001__students_guardians_learning_profile.sql` (`app.student_guardian`, `app.student_learning_profile`, §2 as-built note; no
+  backfill, no seed data) and `V202610090002__identity_credential_stamp.sql` (`user_account.credential_stamp bigint NOT NULL DEFAULT 0`; existing rows 0).
 - **No domain seed data** in migrations: no folders, no metrics, no tags. Dev/test fixtures live in `backend/src/test/resources/fixtures` and `scripts/seed-dev`.
 - Applied migrations are never edited. Destructive changes use expand → migrate → contract across two releases.
 - A snapshot schema change bumps `snapshot_schema_version`. Readers must support every version ever written (with an upcaster in `activities.internal.domain.snapshot`).

@@ -207,8 +207,9 @@ class StudentsApiIntegrationTest {
 		assertThat(count("SELECT count(*) FROM user_account WHERE role = 'STUDENT'")).isZero();
 	}
 
+	/** Also T-M2.9 AC8 (S4-2): an unexpected SQL error still reaches the log (the 500 path), only the vendor line is off. */
 	@Test
-	void aFailedStudentInsertRollsTheAccountBackAndLeavesNoAuditRow() {
+	void aFailedStudentInsertRollsTheAccountBackAndLeavesNoAuditRow(CapturedOutput output) {
 		jdbc.execute("""
 				CREATE FUNCTION app.reject_probe_student() RETURNS trigger LANGUAGE plpgsql AS $$
 				BEGIN
@@ -224,6 +225,7 @@ class StudentsApiIntegrationTest {
 			assertThat(count("SELECT count(*) FROM user_account WHERE username_normalized = 'rollback.probe'")).isZero();
 			assertThat(count("SELECT count(*) FROM student")).isZero();
 			assertThat(count("SELECT count(*) FROM audit_event WHERE action = 'STUDENT_CREATED'")).isZero();
+			assertThat(output.getAll()).contains("Unhandled exception", "probe: student insert fails");
 		}
 		finally {
 			jdbc.execute("DROP TRIGGER tr_reject_probe ON app.student");
