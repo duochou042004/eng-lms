@@ -11,7 +11,8 @@ A single tutor needs one small server. Podman is mandated. We want automatic res
   HTTPS). They share a user-defined network `englms.network`. Units live in `deploy/quadlet/`.
 - The image is built in CI and pushed to GHCR (private). The host pulls it by tag and digest. Upgrades use a scripted `deploy/upgrade.sh`:
   backup → pull → restart → health check → automatic rollback to the previous digest on failure.
-- Development: `deploy/compose.dev.yaml` (PostgreSQL only) through podman-compose. The app runs locally with `./mvnw spring-boot:run`.
+- Development: `deploy/compose.dev.yaml` (PostgreSQL only) through `docker compose` or `podman compose`, on Linux, macOS or Windows via WSL2
+  (amended by DEC-106, built in T-M1.19; originally podman-compose only). The app runs locally with `./mvnw spring-boot:run`. Production is unchanged.
 
 ## Alternatives considered
 - Docker Compose in production: acceptable, but the PO mandates Podman, and Quadlet integrates with systemd.
