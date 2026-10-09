@@ -42,7 +42,7 @@ cannot leave a usable session (S4-5), and a duplicate username is not written to
   - The PostgreSQL server's own log line for a unique violation (database operations, M8 runbooks), any UI (T-M2.5), `GET …/overview` (FR-STU-06).
 
 ## Guardrail answers (scope.md §6)
-1. **Trace:** FR-STU-01/03/04, NFR-SEC-01/02, A-005, A-008, DEC-096/097/100/102 (above); nothing else.
+1. **Trace:** FR-STU-01/03/04, NFR-SEC-01/02, A-005, A-008, DEC-096/097/100/102/103 (above); nothing else.
 2. **Drift toward excluded scope?** No. Guardians are stored contact values with no account, login, notification or portal (SPEC §5.6).
 3. **Mandatory setup added?** None. Guardians and every profile field are optional; a new student gets an empty profile.
 4. **Weekly use?** Yes: the tutor reads and updates a student's level, strengths, weaknesses and notes while planning lessons; guardians when contacting parents.
@@ -56,7 +56,7 @@ cannot leave a usable session (S4-5), and a duplicate username is not written to
 - **Migration** (db-migration skill): `V202610090001__students_guardians_learning_profile.sql`: `app.student_guardian` and
   `app.student_learning_profile` as in data-model §2 plus the standard columns; the guardian also gets `version bigint` (optimistic locking, FR-STU-03)
   and the ordering convention of data-model §1, `UNIQUE (student_id, position) DEFERRABLE INITIALLY DEFERRED`. Both `ON DELETE CASCADE` from `student`.
-  No backfill: a student without a profile row has an **empty profile with `version` 0** (see below). Flyway refuses out-of-order versions: if another
+  No backfill: a student without a profile row has an **empty profile with `version` `null`** (see below). Flyway refuses out-of-order versions: if another
   migration with a later version merges first, renumber these at implementation time.
 - **Every student status:** guardian and profile reads and writes work for `ACTIVE`, `PAUSED` and `ARCHIVED` students alike (as the student `PATCH`).
 - **Guardians:** request `{name, relationship?, phone?, email?, notes?}`; limits: name 1–120, relationship 0–40, phone/email the common rules, notes
@@ -68,18 +68,21 @@ cannot leave a usable session (S4-5), and a duplicate username is not written to
   `guardians[i].name`); the create response and the student DTO do not embed guardians (the UI reads the list endpoint).
   `search_text` is **not** extended to guardians (FR-STU-02 search covers the student's name, username and contacts).
 - **Learning profile:** `GET` → `{currentLevel, learningNotes, strengths: [..], weaknesses: [..], customFields: [{label, value}], updatedAt, version}`;
-  a student with no row yet answers the empty profile (`null`s, empty lists, `updatedAt` `null`, `version` 0). `PUT` takes the full object plus
-  `version` (absent field = cleared/empty): with `version` 0 and no row it inserts (a concurrent insert loses on the primary key → 409
-  `STALE_VERSION`), otherwise it updates with optimistic locking (stale → 409 `STALE_VERSION`) → 200 with the new state. Limits: `currentLevel` 0–40,
+  a student with no row yet answers the empty profile (`null`s, empty lists, `updatedAt` `null`, **`version` `null`**: a stored row always has a
+  number, so "no row yet" can never match one). `PUT` takes the full object plus `version` (absent field = cleared/empty): with `version` `null` it
+  inserts with `INSERT … ON CONFLICT (student_id) DO NOTHING`, and 0 rows inserted (a row exists, created by another tab or request) → 409
+  `STALE_VERSION` (no primary-key exception, no vendor log, no rollback-only transaction); with a number it updates with optimistic locking (stale or
+  no row → 409 `STALE_VERSION`) → 200 with the new state. Limits: `currentLevel` 0–40,
   `learningNotes` 0–2,000, strengths/weaknesses the common Tag rule (1–40, no commas or control characters, case-insensitive dedup keeping the first
   spelling) but ≤ 30 each (validation-rules "identity / students"), `customFields` the common label/value list (label 1–60, value 0–500, ≤ 30). An
   unknown `sid` → 404. Free text refuses C0 controls (validation-rules).
 - **Registry and world** (authz-isolation skill): one `PolicyRegistry` entry per new `METHOD /pattern` (anonymous 401, tutor 2xx/4xx, student A 403,
   must-change 403, B-on-A `NA`); `{gid}` → a guardian of A via `world.ownedByA("gid", …)`. The students contributor (or a second contributor) adds a
   guardian and a populated profile for A, B and C with a `SECRET-*` marker in **every tutor-only text field whose format allows one**: guardian `name`,
-  `relationship`, `email` (e.g. `secret-g1@example.test`, registered as a marker too), `notes`; profile `currentLevel`, `learningNotes`, a strength
+  `relationship`, `email` (a distinct one per student, e.g. `secret-g1-a@example.test`; the scan is case-insensitive, so the registered marker
+  `SECRET-G1-A` catches it), `notes`; profile `currentLevel`, `learningNotes`, a strength
   and a weakness tag, a custom-field label and value. It registers B's guardian ID with `ownedByB` (the profile has no ID of its own); `reset()`
-  removes what it added. The must-change student and other SQL-created students need no profile row (empty profile).
+  removes what it added. The must-change student and other SQL-created students need no profile row (empty profile, `version` `null`).
 - **Rule 3 extension (DEC-097 (4) (a))**: the condition also reads `@RequestHeader`, `@CookieValue` and `@MatrixVariable` `value`/`name`, and for a
   parameter annotated `@RequestBody`, `@RequestPart` or `@ModelAttribute` (or an unannotated non-simple type, which Spring binds as a model attribute)
   the names of the record components / fields of its type, plus any `@JsonProperty`/`@JsonAlias` names on them, recursing into nested `com.englms`
@@ -96,13 +99,14 @@ cannot leave a usable session (S4-5), and a duplicate username is not written to
   reset (runbooks §4). The user's own password change does **not** increment it: that flow already rotates the caller's session and ends the others,
   and bumping it would refuse a parallel request of the kept session that still carries the old stamp (FR-AUTH-05). `CurrentUser` gains the stamp, read
   in the same locked account read that verifies the password at login (and by remember-me); the filter's existing primary-key read returns status
-  **and** stamp. A mismatch invalidates **only the current session** and answers 401 `SESSION_EXPIRED`: the reset already ended every session and
-  token that existed before it, and a fresh login with the new password (current stamp) must survive. The stamp never appears in a response or log.
+  **and** stamp. A mismatch invalidates **only the current session and the current request's remember-me token** (its series deleted, its cookie
+  cancelled, as a logout of this request) and answers 401 `SESSION_EXPIRED`: the reset already ended every session and token that existed before it,
+  and a fresh login with the new password (current stamp) must survive. The stamp never appears in a response or log.
   `CurrentUser` is a record with an explicit `serialVersionUID`: a stored session without the component reads back with stamp 0, the column default, so
   existing dev sessions keep working. Prove it deterministically (no sleeps or wall-clock bounds, DEC-093): sign in, increment the stamp in the
   database without ending sessions (the state the race leaves), call with the session → 401, and a second session signed in after the increment still
   works. Known limitation (summary): a login with the old password racing the user's own change can keep a session (same window; the attacker needs
-  the old password, and the user's own change is not a takeover response; S4-5 is about the tutor reset).
+  the old password, and S4-5 is about the tutor reset). SEC confirms or rejects this acceptance at G3, and the merge DEC records it.
 - **S4-2 (DEC-100):** the losing duplicate-username insert or rename makes Hibernate's `SqlExceptionHelper` log the PostgreSQL detail
   `Key (username_normalized)=(…) already exists`. Stop the application log from carrying it (e.g. the logger level for that class, or translating the
   constraint violation before Hibernate logs it; the implementer picks the smallest option and documents what other SQL errors still log). Personal
@@ -117,9 +121,9 @@ cannot leave a usable session (S4-5), and a duplicate username is not written to
   (start latch, no timing bound); deleting the student's last guardian leaves an empty list.
 - AC2 (FR-STU-01): `POST /tutor/students` with `guardians` (≤ 10) creates them in the same transaction as the account and the student; an invalid
   guardian → 422 with `guardians[i].<field>` and no account, student or guardian remains; `GET …/guardians` then lists them in request order.
-- AC3 (FR-STU-04): `GET …/learning-profile` of a student never edited answers the empty profile with `version` 0; `PUT` with `version` 0 creates it and
-  later `PUT`s replace it (strengths/weaknesses deduplicated case-insensitively); a stale `version` → 409 `STALE_VERSION` (also two first `PUT`s at
-  `version` 0: one 200, one 409); limits per the design notes → 422 with
+- AC3 (FR-STU-04): `GET …/learning-profile` of a student never edited answers the empty profile with `version` `null`; `PUT` with `version` `null`
+  creates it and later `PUT`s replace it (strengths/weaknesses deduplicated case-insensitively); a stale `version` → 409 `STALE_VERSION`, also a second
+  sequential `PUT` with `version` `null` after the first succeeded, and two concurrent first `PUT`s (one 200, one 409); limits per the design notes → 422 with
   field codes; an unknown `sid` → 404; no field, enum or constant names an exam (forbidden-identifier scan green).
 - AC4 (A-008, NFR-SEC-02): the learning-profile types are `@TutorPrivate`; the isolation world holds guardians and profiles for A, B and C with
   `SECRET-*` markers in the fields listed in the design notes and B's guardian IDs registered; `IsolationTest` stays green, and a `HarnessDetectionTest`
@@ -129,7 +133,7 @@ cannot leave a usable session (S4-5), and a duplicate username is not written to
   `@RequestPart` field or a `@ModelAttribute` field (one fixture each, the report names the field path); the clean fixture and the application pass; `CurrentStudent` parameters pass.
 - AC6 (DEC-097 (4) (c)): the scan fails when student A's response contains a B UUID without dashes (detection fixture), and stays green for the application.
 - AC7 (DEC-100 S4-5): a session (and a remember-me login) whose credential stamp differs from the account's is refused on its next request with 401
-  `SESSION_EXPIRED` and that session ends, while a session signed in after the stamp changed keeps working (deterministic test of the design notes); a
+  `SESSION_EXPIRED` and that session and its remember-me token end (the next request with the same cookie is anonymous), while a session signed in after the stamp changed keeps working (deterministic test of the design notes); a
   tutor reset and the operator reset increment the stamp, the user's own change does not and its kept session still works; no response contains the
   stamp; existing auth tests stay green.
 - AC8 (DEC-100 S4-2): when a create or rename loses on a duplicate username (sequential and the existing race test), the application log captured
@@ -140,8 +144,8 @@ cannot leave a usable session (S4-5), and a duplicate username is not written to
   forbidden-identifier scan green; docs updated (list below); no existing test weakened.
 
 ## Test plan
-- Implementation: domain/validation unit tests (guardian limits, tag dedup, custom-field limits); migration test (backfill: a student created before
-  the migration has a profile; cascade on student delete); API tests per endpoint (happy path, 422s, 404s, 409 stale); the AC2 rollback test; rule-3
+- Implementation: domain/validation unit tests (guardian limits, tag dedup, custom-field limits); migration test (constraints: unique deferrable
+  position, cascade on student delete; a pre-existing student answers the empty profile); API tests per endpoint (happy path, 422s, 404s, 409 stale); the AC2 rollback test; rule-3
   fixtures (AC5) and the scan detection fixture (AC6); the guardian-cap race of AC1 and the first-`PUT` race of AC3 (threads with a start latch); the
   S4-5 deterministic test plus own-change and reset stamp tests; the S4-2 log-capture test;
   registry entries + contributor; OpenAPI contract.
@@ -164,7 +168,8 @@ cannot leave a usable session (S4-5), and a duplicate username is not written to
   profile, `credential_stamp` in identity), §5 (guardians personal data, unchanged rule); validation-rules (≤ 10 guardians, guardian notes,
   `learningNotes`, tag limits as built); security.md §4 (credential stamp next to the S4-1 status
   check; rule 3 and scan extensions); test-strategy §4 (rules 3/4 as built); module-boundaries "students" (owns the two tables); authz-isolation skill
-  (rule 3 now covers headers, cookies, matrix variables and body/model-attribute fields); traceability-matrix rows for FR-STU-01/03/04;
+  (rule 3 now covers headers, cookies, matrix variables and `@RequestBody`/`@RequestPart`/`@ModelAttribute` fields incl. `@JsonProperty`/`@JsonAlias`
+  names and array/collection/`Optional`/`Map` values; catch-all binders stay out); traceability-matrix rows for FR-STU-01/03/04;
   `progress.json`.
 
 ## Risks & assumptions
@@ -179,7 +184,7 @@ cannot leave a usable session (S4-5), and a duplicate username is not written to
 ```bash
 source ~/.sdkman/bin/sdkman-init.sh && source ~/.nvm/nvm.sh && source scripts/env.sh
 (cd backend && ./mvnw -B -ntp verify -Dgroups=security)
-# ×20 for the S4-5 test class and StudentCreateRaceTest (name them in the summary)
+# ×20 for the S4-5 class, the guardian-cap and first-PUT race classes and StudentCreateRaceTest (name them in the summary)
 (cd backend && for i in $(seq 1 20); do ./mvnw -B -ntp -q verify -Dtest='<S4-5 class>,<guardian-cap race class>,<first-PUT race class>,StudentCreateRaceTest' -Dsurefire.failIfNoSpecifiedTests=false || { echo "run $i failed"; exit 1; }; done)
 ENGLMS_TASK=T-M2.9 ./scripts/gate.sh
 ./scripts/check-docs.sh

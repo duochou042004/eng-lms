@@ -60,3 +60,45 @@ first `PUT` inserts; AC3 race test), D5 (`@RequestPart` in rule 3; catch-all bin
 marked as additions), D8 (common Tag rule), D9 (DEC-097 (4) (a)/(b)/(c) defined in Scope), D10 (stored sessions keep working; stamp never in a
 response), D11 (citations), D12 (×20 loop fails loudly), D13 (backlog trace columns, next-session prompt), D14 (all statuses), D15 (arrays,
 collections, `Optional`, `Map` values, `@JsonProperty`/`@JsonAlias`; fixtures), D16 (split note in Risks), D17 (renumber note).
+
+## Round 2
+
+- Reviewer: Docs Reviewer (fresh context; did not write the reviewed docs)
+- Date: 2026-10-09T07:51:25Z
+- Head SHA: `eb4e451c86f7a2b4e975514d987d94087c956cf2` (delta `a8b864a..eb4e451`: packet, DEC-103, backlog, next-session prompt, progress.json, this file)
+- `./scripts/check-docs.sh`: **PASS** (197 markdown files, progress.json valid, sources intact, prompt within limit)
+
+### Round-1 findings re-checked
+
+| ID | Status | Note |
+|---|---|---|
+| D1 | Fixed | AC2 now asserts only `GET …/guardians` order, and the design note says the create response does not embed guardians. |
+| D2 | Fixed | DEC-103 adds the guardian `version`, `UNIQUE (student_id, position) DEFERRABLE INITIALLY DEFERRED` and the student row lock before counting and appending. AC1 has the cap race. |
+| D3 | Fixed, with a gap | The stamp is now incremented only on the tutor and operator resets, a mismatch ends only the current session, and the own-change race is a known limitation. The gap is in remember-me (N2). |
+| D4 | Fixed, with a gap | Markers are now in every field whose format allows one, and a missing row is the empty profile. The empty-profile `version` scheme introduces N1, and the email marker registration fails as written (N4). |
+| D5 | Fixed | `@RequestPart` is in the recursion. Catch-all binders are explicitly out of scope, with the backstop named. |
+| D6–D17 | Fixed | D13: the backlog trace columns and the handoff prompt are updated. D12: the loop now exits 1 on failure. Remaining nits are in N5–N7. |
+
+### New findings
+
+| ID | Severity | Location | Finding | Recommendation |
+|---|---|---|---|---|
+| N1 | S2 | `T-M2.9-students-part-2.md:70-73`, AC3 `:120-122`, DEC-103 | **Lost update on the learning profile.** "No row" is shown as an empty profile with `version` 0. JPA/Hibernate's `@Version` also starts a newly persisted row at 0. Sequence: tab X and tab Y both read the empty profile (`version` 0). X `PUT`s with `version` 0, which inserts a row at version 0. Y `PUT`s with `version` 0, finds the row at version 0, the versions match, and Y silently overwrites X. This needs no concurrency, so AC3's race test (two simultaneous first `PUT`s) does not catch it, and AC3's "a stale `version` → 409" is false for this case. Tutor-private notes are lost. | Make the first `PUT` produce a version different from the virtual 0. Either the insert stores `version` 1 (e.g. an insert followed by the normal update in the same transaction, or a native `INSERT … version = 1`), or the empty profile answers with a version that a row can never have. Add an AC3 case: sequential `PUT` v0 → 200 (version ≥ 1), then a second `PUT` v0 → 409. Mirror the rule in DEC-103 and in the data-model update. Also say how the losing concurrent insert is turned into 409. A primary-key violation marks the Hibernate transaction rollback-only and is logged by `SqlExceptionHelper` (the same vendor log as S4-2). An `INSERT … ON CONFLICT DO NOTHING` with a row-count check avoids both. |
+| N2 | S3 | `:93-100`, AC7 `:131-134`, QA focus `:150` | **Remember-me after a stamp mismatch.** The filter now invalidates only the current session. The request's remember-me cookie and its `persistent_logins` series remain. On the next request, remember-me signs the user in again from a fresh account read, which carries the current stamp, so the request passes. In AC7's deterministic test (stamp bumped, `mustChangePassword` unchanged), "a remember-me login … is refused … and that session ends" is followed by a silent re-login. QA would read that as a session that survived. In a real reset, the token that the racing login creates after the reset's `DELETE` is held off only because the reset sets `mustChangePassword=true` (`AccountUserDetails` is then disabled) and the forced change runs `endOtherSessions`, which deletes every token. The packet does not state this dependency. | Cheapest: on a mismatch, also delete the current request's remember-me series and cancel its cookie (`rememberMeServices.logout(...)` for this request only). AC7 then reads "the session and its remember-me token end". Alternatively, state the must-change dependency explicitly in the design note and in AC7, and have the AC7 remember-me case use a real tutor reset. |
+| N3 | S3 | Test plan `:143-144` | The test plan still has "migration test (backfill: a student created before the migration has a profile …)". That contradicts the no-backfill design (`:59`) and AC3. | Replace it with: "migration test: constraints (unique deferrable position, cascade on student delete); a pre-existing student answers the empty profile". |
+| N4 | S4 | `:79-80` | "`email` (e.g. `secret-g1@example.test`, registered as a marker too)": `IsolationWorld.secret` requires a **full** match of `SECRET-[A-Z0-9-]+`, so registering the email throws. The scan still catches the `secret-g1` substring case-insensitively. | Register the marker part (`SECRET-G1-A`), and use a distinct email per student (A, B, C). |
+| N5 | S4 | Guardrail answer 1 `:45`; Docs to update `:166-167` | The guardrail trace does not list DEC-103. The authz-isolation skill update still says only "headers, cookies, matrix variables and body/model-attribute fields". | Add DEC-103. Extend the skill line with `@RequestPart`, `@JsonProperty`/`@JsonAlias`, and arrays/collections/`Optional`/`Map` values. |
+| N6 | S4 | Commands `:182` | The comment says "S4-5 test class and StudentCreateRaceTest", but the command runs four classes. | Update the comment. |
+| N7 | S4 | `:104-105` | The own-change race is accepted as a security known limitation in the summary only. The claim that "the user's own change is not a takeover response" is arguable: a user changing a password they suspect is compromised is exactly that response. The window is milliseconds, and the attacker needs the old password and perfect timing. | Have SEC confirm it at G3. Record the acceptance in the merge DEC rather than only in the summary. |
+
+Not blocking: guardian positions are not compacted (max + 1 after deletes is fine), and `DELETE` without `version` is consistent with api-conventions.
+
+N1 (S2) must be fixed before G0. N2 and N3 are cheap S3 packet edits (DEC-088). N4–N7 should be fixed in the same edit.
+
+DOCS-REVIEW T-M2.9: CHANGES REQUESTED
+
+### LC response (round 2, 2026-10-09)
+Fixed in-task (DEC-088): N1 (empty profile answers `version` `null`; the first `PUT` with `null` inserts with `ON CONFLICT DO NOTHING`, 0 rows → 409;
+AC3 gains the sequential case; DEC-103 updated), N2 (a mismatch also ends the request's remember-me token; AC7), N3 (migration test line), N4
+(distinct guardian emails; marker `SECRET-G1-A` matched case-insensitively), N5 (DEC-103 in the guardrail trace; skill line), N6 (command comment),
+N7 (SEC confirms the own-change acceptance at G3; recorded in the merge DEC).
