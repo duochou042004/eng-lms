@@ -28,16 +28,20 @@ device that may be a Mac or a Windows PC with Docker; this task is implemented *
      e. else a Podman machine on macOS (`podman machine inspect` socket path).
      It exports `ENGLMS_CONTAINER_ENGINE` and prints the choice; when nothing is reachable it stops with one message naming Docker and Podman.
      `systemctl` is called only on path d.
-  2. **Testcontainers variables** (only `env.sh`, which `gate.sh`, `contract-drift.sh` and agents source): on Docker, when `DOCKER_HOST` is unset,
-     export it from `docker context inspect --format '{{.Endpoints.docker.Host}}'` (Testcontainers Java does not read Docker contexts: Docker Desktop
-     and OrbStack work without it, Colima and other non-default contexts do not); Ryuk **on**. On every Podman path (incl. a preset Podman
+  2. **Testcontainers variables** (only `env.sh`, which `gate.sh`, `contract-drift.sh` and agents source): on Docker with `DOCKER_HOST` unset, read
+     the endpoint with `docker context inspect --format '{{.Endpoints.docker.Host}}'`. Testcontainers Java does not read Docker contexts but finds
+     `unix:///var/run/docker.sock` and Docker Desktop's `~/.docker/run/docker.sock` itself, and exporting a host socket path there would break its
+     Docker Desktop discovery (Ryuk mounts a path that does not exist inside the VM). So: when the endpoint is one of those two (or
+     `/var/run/docker.sock` exists on macOS), export nothing; otherwise (Colima, OrbStack without the default link, other contexts) export
+     `DOCKER_HOST`, and **on macOS only** also `TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE=/var/run/docker.sock` (the in-VM path); on Linux the host path is
+     real and no override is set. Ryuk **on**. On every Podman path (incl. a preset Podman
      `DOCKER_HOST`) `TESTCONTAINERS_RYUK_DISABLED=true`. Colima's extra overrides (`TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE=/var/run/docker.sock`,
      `TESTCONTAINERS_HOST_OVERRIDE`) are documented in development-setup §3, not automated.
   3. **`dev-up.sh` / `dev-down.sh`** source `lib/engine.sh` (they do not need the Testcontainers socket and never call `env.sh`) and run
      `<engine> compose` (v2 plugin for Docker; `docker-compose` v1 is not supported), `container inspect`, `port`, `volume inspect`/`volume rm` through
      it; behaviour and output otherwise unchanged (idempotent, `--purge`, health wait). `deploy/compose.dev.yaml` is already engine-neutral.
-  4. **bash ≥ 4.4 everywhere:** one shared guard (`scripts/lib/require-bash.sh`, sourced by every executable script and by `scripts/tests/lib.sh`/
-     `run-all.sh`) fails fast with "bash ≥ 4.4 required (macOS: brew install bash; Homebrew bash first on PATH)". 4.4, not 4.0: earlier versions
+  4. **bash ≥ 4.4 everywhere:** one shared guard (`scripts/lib/require-bash.sh`, sourced by every executable script except the git hook
+     `scripts/hooks/pre-push`, which GUI git may run with macOS's bash 3.2 and which must stay bash-3.2-safe, and by `scripts/tests/lib.sh`/`run-all.sh`) fails fast with "bash ≥ 4.4 required (macOS: brew install bash; Homebrew bash first on PATH)". 4.4, not 4.0: earlier versions
      abort on an empty array under `set -u` (`dev-down.sh` `"${env_args[@]}"`, `e2e-run.sh` `"${args[@]}"`), and tests use `${t,,}`. The guard takes the
      version as a parameter so it is unit-testable (`BASH_VERSINFO` is read-only). A scan of `scripts/` for GNU/BSD-divergent tools and flags (`sed -i`,
      `date -d`, `grep -P`, `readlink -f`, `stat -c`, `xargs -r`, `diff --label`, `mktemp` options, `sort -V`, `find -printf`, …) fixes or documents each hit.
@@ -86,11 +90,12 @@ device that may be a Mac or a Windows PC with Docker; this task is implemented *
 - AC1 (DEC-106): `lib/engine.sh` picks the engine in the order a–e, prints and exports it, routes a Podman-backed `docker` (shim) and a preset Podman
   `DOCKER_HOST` to the Podman path, and fails with one message naming Docker and Podman when nothing is reachable; proven by the script tests for each
   branch (mock engines, isolated environment).
-- AC2: `source scripts/env.sh` exports `DOCKER_HOST` from the Docker context when unset (Docker path, Ryuk on) and `TESTCONTAINERS_RYUK_DISABLED=true`
-  on every Podman path; script tests per branch.
+- AC2: `source scripts/env.sh` on Docker exports nothing for a default endpoint (`/var/run/docker.sock`, Docker Desktop's socket), exports `DOCKER_HOST`
+  for any other context endpoint plus `TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE` on macOS only, keeps Ryuk on, and exports
+  `TESTCONTAINERS_RYUK_DISABLED=true` on every Podman path; script tests per case (a mocked `uname` for macOS), and the device's result recorded in §3.
 - AC3: `dev-up.sh`/`dev-down.sh` (incl. `--purge`, nothing running, twice in a row) work with Docker and with Podman without sourcing `env.sh`
   (script tests with both mocks; a real run on the new device's engine).
-- AC4: every executable script and the test runner refuse bash < 4.4 with the documented message (unit test of the guard; bash 3.2 run when available);
+- AC4: every executable script (except the bash-3.2-safe `pre-push` hook) and the test runner refuse bash < 4.4 with the documented message (unit test of the guard; bash 3.2 run when available);
   the GNU/BSD scan's hits are fixed or documented in the summary.
 - AC5: on the new device, `./scripts/gate.sh` is green end to end (Testcontainers, contract drift, E2E at the mandatory viewports) with its engine;
   OS, engine, bash and tool versions are recorded in `progress.json` `environment` and `evidence/T-M1.19/summary.md`.
