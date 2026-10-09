@@ -16,7 +16,7 @@
       }
     ]
   },
-  "updatedAt": "2026-10-09T14:07:58Z",
+  "updatedAt": "2026-10-09T14:30:37Z",
   "updatedBy": "lead-coordinator (session 2026-10-09, Opus 5.5)",
   "phase": {
     "id": "P1",
@@ -30,6 +30,31 @@
     "exitCriteria": "FR-AUTH-01..10 and FR-STU-01..07 accepted; authorization-matrix and student-isolation harnesses fail on any unregistered endpoint; add-student flow E2E at 360/768/1280 within its step budget; security review of authentication passed (docs/01-product/roadmap.md)."
   },
   "currentTask": {
+    "id": "T-M1.19",
+    "title": "Portable development environment (Docker or Podman; Linux, macOS, Windows via WSL2)",
+    "status": "ready",
+    "ownerRole": "BE",
+    "branch": null,
+    "packet": "docs/tasks/T-M1.19-portable-dev-env.md",
+    "pr": null,
+    "lastCommit": null,
+    "startedAt": null,
+    "entryGate": [
+      "T-M2.9 merged — met (37e8ce0)",
+      "Packet G0 — packet PR (fresh DOCS-REVIEW)",
+      "PO start signal — given (DEC-106)"
+    ],
+    "nextSteps": [
+      "On the new device: development-setup §0 as far as it works (the toolchain; the engine may fail env.sh until this task lands)",
+      "Branch feature/T-M1.19-portable-dev-env, backend-implementer, prove the gate on the device, G3 QA, merge-gate, gitlab-sync",
+      "Then the T-M2.4 packet"
+    ],
+    "trace": [
+      "DEC-106",
+      "backlog M1"
+    ]
+  },
+  "nextTask": {
     "id": "T-M2.4",
     "title": "Auth UI + shells (login, password change, role redirect, tutor sidebar/drawer, student tabs)",
     "status": "draft",
@@ -41,37 +66,17 @@
     "startedAt": null,
     "entryGate": [
       "T-M2.1 merged — met (a93bcc1)",
-      "Packet G0 — pending (task-packet skill, fresh DOCS-REVIEW)",
+      "T-M1.19 merged — pending (DEC-106)",
+      "Packet G0 — pending",
       "PO start signal — pending"
     ],
     "nextSteps": [
-      "Write the T-M2.4 packet to G0 (frontend-standards skill; vi + en; 360/768/1280; WCAG 2.2 AA)",
-      "Fresh DOCS-REVIEW, merge, ask the PO for the start signal"
+      "Write the T-M2.4 packet after T-M1.19 merges; decide the SEC review in the packet (?next= allow-list T18)"
     ],
     "trace": [
       "backlog M2",
-      "DEC-105"
-    ]
-  },
-  "nextTask": {
-    "id": "T-M2.10",
-    "title": "Strict JSON number binding (T-M2.9 QA F3)",
-    "status": "draft",
-    "ownerRole": "BE",
-    "branch": null,
-    "packet": null,
-    "pr": null,
-    "lastCommit": null,
-    "startedAt": null,
-    "entryGate": [
-      "T-M2.9 merged — met (37e8ce0)"
-    ],
-    "nextSteps": [
-      "Small BE packet; can run before or after T-M2.4"
-    ],
-    "trace": [
-      "backlog M2",
-      "DEC-105"
+      "DEC-105",
+      "DEC-106"
     ]
   },
   "completed": [
@@ -289,7 +294,7 @@
   "gates": {
     "G0": {
       "status": "pending",
-      "note": "T-M2.4: packet to write (T-M2.9 passed G0: PR #71, DEC-104)"
+      "note": "T-M1.19 packet in review (T-M2.9 passed G0: PR #71, DEC-104)"
     },
     "G1": {
       "status": "n/a",
@@ -316,7 +321,6 @@
   "decisions": {
     "log": "docs/10-governance/decision-log.md",
     "recent": [
-      "DEC-096",
       "DEC-097",
       "DEC-098",
       "DEC-099",
@@ -325,7 +329,8 @@
       "DEC-102",
       "DEC-103",
       "DEC-104",
-      "DEC-105"
+      "DEC-105",
+      "DEC-106"
     ],
     "pendingPO": [
       "OQ-03",
@@ -537,6 +542,13 @@
       "status": "approved",
       "at": "2026-10-09T07:56:16Z",
       "ref": "DEC-104"
+    },
+    {
+      "what": "Portability requirement; Windows = WSL2 + Docker Desktop; T-M1.19 first (start signal)",
+      "by": "PO",
+      "status": "approved",
+      "at": "2026-10-09T14:30:37Z",
+      "ref": "DEC-106"
     }
   ],
   "environment": {
@@ -944,6 +956,11 @@
       "at": "2026-10-09T14:07:58Z",
       "actor": "lead-coordinator",
       "event": "QA record PR #73 merged (680149b); merge-record PR #74 DOCS-REVIEW round 1 D1-D7 fixed."
+    },
+    {
+      "at": "2026-10-09T14:30:37Z",
+      "actor": "lead-coordinator",
+      "event": "PO requirement DEC-106 (portable dev env); T-M1.19 packet written; next session on a new device implements it before T-M2.4."
     }
   ]
 }

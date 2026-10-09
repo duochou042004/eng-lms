@@ -1,27 +1,31 @@
-# Handoff — 2026-10-09T14:05Z (T-M2.9 done; next: T-M2.4 packet)
+# Handoff — 2026-10-09T15:00Z (T-M2.9 done; next: T-M1.19 portability on a NEW DEVICE, then T-M2.4)
 
-Phase/Milestone: P1 / M2 (in progress) · Current task: **T-M2.4 (packet to write)** · Branch: `develop` · Last merges on develop: `37e8ce0` (PR #72, T-M2.9), `680149b` (PR #73, QA record), PR #74 (merge record) · Remote: https://github.com/duochou042004/eng-lms (mirror: gitlab.com/duochou042004/eng-lms)
+Phase/Milestone: P1 / M2 (in progress) · Current task: **T-M1.19 (ready; PO start DEC-106)** · Branch: `develop` · Last merges on develop: `37e8ce0` (PR #72, T-M2.9), `680149b` (PR #73), `6cdbcf8` (PR #74), then the T-M1.19 packet PR · Remote: https://github.com/duochou042004/eng-lms (mirror: gitlab.com/duochou042004/eng-lms)
 
 ## Where we are
-- **T-M2.9 done** (`37e8ce0`, PR #72; packet PR #71; DEC-102 first goal → M7, DEC-103 guardian limits/empty profile, DEC-104 PO start, DEC-105 merge).
-  QA PASS (round 1 PASS WITH MINOR, re-test R1 PASS; report: PR #73 `qa/T-M2.9`); SEC APPROVED in two rounds (S3/S4 fixed in-task). SEC record +
-  DEC-105: the `chore/T-M2.9-merge-record` PR.
-- **What T-M2.9 gives later packets:**
-  - Guardians `GET`/`POST /tutor/students/{sid}/guardians`, `PATCH`/`DELETE /tutor/guardians/{gid}` (version, ≤ 10), `guardians?` on create;
-    learning profile `GET`/`PUT /tutor/students/{sid}/learning-profile` (`@TutorPrivate`; `version` `null` = not created yet). UI: T-M2.5.
-  - ArchUnit rule 3 now covers headers, cookies, matrix variables, the fields of any non-name-bound parameter (`@Valid` model attributes, bodies, parts,
-    generic type arguments, `@JsonProperty`/`@JsonAlias`) and the name `sid`; the scan matches dashless UUIDs. Known limits: test-strategy §4.
-  - Credential stamp in `CurrentUser` (tutor/operator resets bump it; `AccountStatusFilter` refuses a mismatch). Accepted limitation: a login racing the
-    user's own change can keep a session or token (DEC-105).
-  - Logs: `org.hibernate.orm.jdbc.error=off`, `logServerErrorDetail=false` (no usernames or row values from SQL errors).
+- **T-M2.9 done** (`37e8ce0`; DEC-102..105; QA PASS, SEC APPROVED; records merged). T-M2.10 (strict JSON numbers, QA F3) is in the backlog.
+- **PO requirement (DEC-106):** the project must run on Linux, macOS and Windows with Docker or Podman. Windows = **WSL2 + Docker Desktop** (no
+  native Windows). Production stays Podman Quadlet + Caddy (ADR-0012). The next session runs on a **new device** (macOS or Windows, maybe Docker).
+- **T-M1.19** (packet `docs/tasks/T-M1.19-portable-dev-env.md`, ready, start signal given): `env.sh` engine detection (Docker / Linux Podman socket /
+  macOS Podman machine), `dev-up.sh`/`dev-down.sh` through the engine, bash ≥ 4 guard, per-platform setup docs, agent docs without Linux/Podman/
+  `/home/kali` assumptions; proven by a green gate **on the new device**. Already portable: `deploy/compose.dev.yaml`, `.gitattributes` (LF), CI (Docker).
+
+## New device: what does not travel with `git clone`
+- `.env` (git-ignored; `cp .env.example .env`, dev-only values, DEC-094); `.data/**`; the dev database volume (fresh is fine).
+- Accounts: `gh auth login` (repo, workflow), `glab auth login`, git identity, credential helpers (PO; agents never enter credentials).
+- Clone setup: `./scripts/install-hooks.sh`, `git remote add gitlab https://gitlab.com/duochou042004/eng-lms.git`.
+- Claude's local memory (this machine's `~/.claude/projects/…`): its two notes are already in the repo (one checkout/no worktrees DEC-094; dev `.env`
+  access DEC-094, restore via T-M8.7). The LC records folder (`lc-records/`) is per session; nothing pending in it.
+- Windows: install WSL2 Ubuntu, Docker Desktop with WSL integration, and clone **inside WSL** (`~/…`, not `/mnt/c`); run Claude Code in WSL.
+  macOS: Homebrew `bash` (≥ 4), `jq`, `gh`, `glab`, `python3` + `jsonschema`, SDKMAN (Java 25.0.4-tem), nvm (Node 24.21.0), Docker Desktop/OrbStack/Colima.
+- Until T-M1.19 lands, `source scripts/env.sh` fails on Docker (it requires the systemd Podman socket): expected; T-M1.19 fixes it.
 
 ## Next steps
-1. T-M2.9 record PRs merged: #73 (`qa/T-M2.9`, `680149b`) and #74 (this merge record).
-2. Write the **T-M2.4 packet** (auth UI + shells, FE; frontend-standards skill; vi + en; 360/768/1280; WCAG 2.2 AA; UX review at G3) to G0; decide the SEC review in the
-   packet (auth redirects, the `?next=` allow-list security.md T18, remember-me on shared devices; the M2 exit needs an auth security review); ask
-   the PO for the start signal. T-M2.5 (students UI) depends on T-M2.4 and T-M2.9.
-3. **T-M2.10** (strict JSON number binding, QA F3, small BE) can be packeted any time.
-4. Dependabot PRs #64–#70 are open (LC-APPROVED PR-<n> path via merge-gate when CI is green).
+1. On the new device: development-setup §0 steps 1–3 and 6 (toolchain, accounts, clone setup, installs); the engine steps follow T-M1.19.
+2. **T-M1.19:** packet ready → `progress.json` in_progress, branch `feature/T-M1.19-portable-dev-env`, backend-implementer, gate green on the device,
+   G3 fresh qa-evaluator (follows §0 for that platform), CI green, verdicts, merge-gate, gitlab-sync; QA report via `qa/T-M1.19`; merge DEC + records via a chore PR.
+3. **T-M2.4** packet (auth UI + shells, FE; decide SEC in the packet: `?next=` allow-list T18, remember-me on shared devices; M2 exit needs an auth SEC review).
+4. Optional: T-M2.10. Dependabot PRs #64–#70 open.
 
 ## Pending PO decisions / actions
 - Production needs `SERVER_FORWARDHEADERSSTRATEGY=native` (deployment.md §3) — at deployment time (M8).
@@ -30,6 +34,7 @@ Phase/Milestone: P1 / M2 (in progress) · Current task: **T-M2.4 (packet to writ
 
 ## Gotchas
 - **One checkout, no worktrees** (DEC-094): subagents one at a time on the task branch; only the LC switches branches, never while a subagent runs.
+- Paths in older docs/evidence name `/home/kali/App_sources/eng-lms` (the first machines); on the new device use its own clone path (T-M1.19 removes the assumption).
 - **Keep LC copies of reviewer reports outside the scratchpad** (e.g. the session folder `lc-records/`): reviewers clean the shared scratchpad with globs (DEC-101).
 - Reviewer evidence (`evidence/*/review/**`) never on feature/fix branches; QA reports on `qa/<task>`; move any review/QA file an agent writes there off the
   feature branch before committing. `./scripts/check-path-ownership.sh <branch>` before pushing.
@@ -45,5 +50,6 @@ Phase/Milestone: P1 / M2 (in progress) · Current task: **T-M2.4 (packet to writ
 - Wall-clock bounds in tests flake on the 2-core CI runner (DEC-093). `git merge` is denied: `gh pr update-branch` (DEC-090).
 
 ## Files to read first
-`CLAUDE.md` → `progress.json` → this file → `docs/09-harness/coding-agent-rules.md` §3 → `docs/tasks/backlog.md` (M2: T-M2.4, T-M2.5, T-M2.10) →
-`docs/05-frontend/` (ux-flows, information-architecture, design system) → DEC-102..105 → `.claude/skills/task-packet`, `frontend-standards`, `ux-review`.
+`CLAUDE.md` → `progress.json` → this file → `docs/tasks/T-M1.19-portable-dev-env.md` → DEC-106 → `docs/07-operations/development-setup.md` §0 →
+`docs/09-harness/coding-agent-rules.md` §3 → `scripts/env.sh`, `dev-up.sh`, `dev-down.sh`, `scripts/tests/dev-scripts.test.sh` → later backlog M2 (T-M2.4) and
+`.claude/skills/task-packet`, `frontend-standards`, `ux-review`.
