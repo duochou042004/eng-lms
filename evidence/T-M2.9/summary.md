@@ -78,3 +78,13 @@ ENGLMS_TASK=T-M2.9 ./scripts/gate.sh
 - **Rule 3:** `@JsonProperty` on a setter/getter (not a field) and catch-all binders are not inspected (packet scope; DEC-096). No `..web.student..`
   handler exists in `src/main` yet.
 - No UI (T-M2.5); no audit rows for guardian or profile edits (security.md §8 lists none).
+
+## QA round 1 fixes (`f7e0b37`; QA PASS WITH MINOR at `723b924`)
+- **F1 (S3), control characters in tags:** `StudentFields.tags` refuses a tag with any control character (`Character.isISOControl`: tab, LF, CR,
+  other C0, DEL, C1 such as U+0085), checked on the raw value before trimming → 422 `INVALID_FORMAT` on `strengths[i]`/`weaknesses[i]`;
+  validation-rules says so. Tests: `StudentFieldsTest.tagsRefuseEveryControlCharacter`, `GuardiansAndLearningProfileApiTest.controlCharactersInATagAre422`.
+- **F2 (S4), timestamp precision:** every timestamp the students module writes is truncated to microseconds when set (`StudentFields.now(clock)`), so a
+  write response equals the following read. Test: `GuardiansAndLearningProfileApiTest.aWriteResponseCarriesTheSameUpdatedAtAsTheNextRead` (fails without
+  the truncation). Identity's timestamps are unchanged.
+- **F3 (S4), lenient `version` coercion:** not in this task (cross-cutting Jackson setting, pre-existing since T-M2.3); routed by the LC.
+- Results at `f7e0b37`: backend verify 465/465, `-Dgroups=security` 158/158, contract-drift OK (no DTO change).
