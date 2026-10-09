@@ -16,7 +16,7 @@
       }
     ]
   },
-  "updatedAt": "2026-10-09T13:50:00Z",
+  "updatedAt": "2026-10-09T13:58:03Z",
   "updatedBy": "backend-implementer (session 2026-10-09, Opus 5.5)",
   "phase": {
     "id": "P1",
@@ -32,7 +32,7 @@
   "currentTask": {
     "id": "T-M2.9",
     "title": "Students part 2: guardians, tutor-private learning profile, DEC-097 (4) rule extensions, credential stamp (S4-5), duplicate-username log (S4-2)",
-    "status": "in_review",
+    "status": "awaiting_approval",
     "ownerRole": "BE",
     "branch": "feature/T-M2.9-students-part-2",
     "packet": "docs/tasks/T-M2.9-students-part-2.md",
@@ -45,8 +45,8 @@
       "PO start signal — given (DEC-104)"
     ],
     "nextSteps": [
-      "LC: record evidence/T-M2.9/summary.md from the implementer's report (the harness denied the agent the file), open the PR (template), DOCS-REVIEW of the doc changes",
-      "G3: fresh qa-evaluator (focus list in the packet, x20 of CredentialStampTest, GuardianCapRaceTest, LearningProfileFirstPutRaceTest, StudentCreateRaceTest), then fresh security-reviewer (S4-5 incl. the remember-me re-check at token creation and the own-change limitation; S4-2 logger choice; rule 3/scan extensions)"
+      "CI green on the final head, then QA-VERDICT / SEC-REVIEW / LC-APPROVED comments, merge-gate, gitlab-sync",
+      "qa/T-M2.9 PR (QA report) and chore/T-M2.9-merge-record PR (SEC record + merge DEC)"
     ],
     "trace": [
       "backlog M2",

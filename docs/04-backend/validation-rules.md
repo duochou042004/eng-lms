@@ -33,7 +33,7 @@
 | guardians per student | ≤ 10 (DEC-103): an 11th `POST` → 422 `TOO_MANY` on `guardians`; at create, `guardians` ≤ 10, field paths `guardians[i].name` |
 | learningProfile.currentLevel | 0–40 |
 | learningProfile.learningNotes | 0–2,000 (Description) |
-| strengths / weaknesses | the Tag rule (1–40, no commas and no control character of any kind, tab/LF/CR, DEL and C1 included; empty → `REQUIRED`, comma or control character → `INVALID_FORMAT`), deduplicated case-insensitively keeping the first spelling, then ≤ 30 each (`TOO_MANY`) (T-M2.9) |
+| strengths / weaknesses | the Tag rule (1–40, no commas and no control character of any kind, tab/LF/CR, DEL and C1 included; empty → `REQUIRED`, comma or control character → `INVALID_FORMAT`), deduplicated case-insensitively keeping the first spelling, then ≤ 30 each (`TOO_MANY`); a list of more than 120 entries → one `TOO_MANY` before deduplication (T-M2.9 SEC S4-2) |
 | learningProfile.customFields | the label/value list rule (label 1–60, value 0–500, ≤ 30) |
 
 ## goals
