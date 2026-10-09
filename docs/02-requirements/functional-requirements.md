@@ -77,7 +77,7 @@
 
 **AC FR-STU-01** (UX budget: ≤ 90 s, see `ux-flows.md` F2)
 - Required fields: full name, username, password. The username is **suggested** from the name (accents removed, lowercase, unique suffix) and checked for availability as the tutor types. The password is **generated** by the server on Create (readable; ≥ 12 characters) unless the tutor enters one, and is shown on the credentials card; it is regenerated with the password reset (FR-AUTH-07). Like a reset, the temporary password expires after 7 days if unused (A-021; DEC-097 (2), confirmed DEC-098).
-- Optional, in collapsed sections: email, phone, contact handles (Zalo, Facebook, other: label + value), guardians (name, relationship, phone, email, notes), a note, and a first goal (title + optional metric/baseline/target).
+- Optional, in collapsed sections: email, phone, contact handles (Zalo, Facebook, other: label + value), guardians (name, relationship, phone, email, notes), a note, and a first goal (from M7, DEC-102; title + optional metric/baseline/target).
 - On save, the system creates the UserAccount (`STUDENT`, `mustChangePassword=true`) and the Student in **one transaction**, then shows a **credentials card**: username, temporary password, login URL and a "Copy message" button that produces a ready-to-paste text in the UI language.
 - The temporary password cannot be retrieved again later (it can only be reset).
 - A duplicate username returns 409 `USERNAME_TAKEN` and the field shows an inline error.
@@ -117,7 +117,7 @@
 | ID | Requirement | Phase | M | Trace |
 |---|---|---|---|---|
 | FR-GOAL-01 | Tutor-defined metric definitions | MVP | M7 | SPEC §9, §25, ADR-0015 |
-| FR-GOAL-02 | Goals per student | MVP | M7 (M2: first goal in create-student) | SPEC §9, §49 |
+| FR-GOAL-02 | Goals per student | MVP | M7 (incl. the first goal in create-student: T-M7.1/T-M7.2, DEC-102) | SPEC §9, §49 |
 | FR-GOAL-03 | Record metric observations manually | MVP | M7 | SPEC §8, §25 |
 | FR-GOAL-04 | Record an assessment result as an observation | MVP | M7 | SPEC §25 ("Mock Tests 550 → 585 → 610") |
 | FR-GOAL-05 | Goal progress computation | MVP | M7 | SPEC §26 |

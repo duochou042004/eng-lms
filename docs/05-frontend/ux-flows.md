@@ -28,7 +28,7 @@ button is sticky at the bottom on mobile; the unsaved-changes guard is on. Failu
 [1] Students → "+ Add student"   (or "+ New → Student")
 [2] Full name "Nguyễn Văn An"  → username suggestion "nguyenvanan" (✓ available); the password is generated on Create and shown on the credentials card
 [3] (optional) expand "Contact" → phone / Zalo
-[4] (optional) expand "First goal" → title "TOEIC 650", metric (or create inline), current 570, target 650
+[4] (optional) expand "First goal" → title "TOEIC 650", metric (or create inline), current 570, target 650   (from M7: T-M7.2, DEC-102)
 [5] Create
 [6] Credentials card → "Copy message" (paste into Zalo) → "Open workspace"
 ```

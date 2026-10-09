@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-10-07T09:01:16Z",
-  "updatedBy": "lead-coordinator (session 2026-10-07, Opus 5.5)",
+  "updatedAt": "2026-10-09T07:50:00Z",
+  "updatedBy": "lead-coordinator (session 2026-10-09, Opus 5.5)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -31,28 +31,29 @@
   },
   "currentTask": {
     "id": "T-M2.9",
-    "title": "Students part 2: guardians, learning profile (tutor-private), first goal at creation, DEC-096 rule extensions; SEC S4-2/S4-5 from T-M2.3",
+    "title": "Students part 2: guardians, tutor-private learning profile, DEC-097 (4) rule extensions, credential stamp (S4-5), duplicate-username log (S4-2)",
     "status": "draft",
     "ownerRole": "LC",
-    "branch": null,
-    "packet": null,
+    "branch": "docs/T-M2.9-students-part-2",
+    "packet": "docs/tasks/T-M2.9-students-part-2.md",
     "pr": null,
     "lastCommit": null,
     "startedAt": null,
     "entryGate": [
       "T-M2.3 merged — met (f0e228c, DEC-101)",
-      "Packet G0 — pending (task-packet skill, fresh DOCS-REVIEW)",
+      "Packet G0 — in review (packet PR, fresh DOCS-REVIEW)",
       "PO start signal — pending"
     ],
     "nextSteps": [
-      "Write the T-M2.9 packet to G0 (decide the first goal: minimal learning_goal now or move to M7)",
-      "Fresh DOCS-REVIEW, merge, ask the PO for the start signal"
+      "Fresh DOCS-REVIEW of the packet PR, fix S3/S4 in-task, CI green, verdict, merge-gate, gitlab-sync",
+      "Ask the PO for the start signal"
     ],
     "trace": [
       "backlog M2",
       "DEC-096",
       "DEC-097",
-      "DEC-100"
+      "DEC-100",
+      "DEC-102"
     ]
   },
   "nextTask": {
