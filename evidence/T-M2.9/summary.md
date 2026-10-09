@@ -67,7 +67,7 @@ ENGLMS_TASK=T-M2.9 ./scripts/gate.sh
 - **Data-model "§5":** the packet's "data-model §5 (guardians personal data)" is the "Security-sensitive fields" table, §3 in the current data-model.md.
 
 ### Known limitations
-- **Own-change race (packet, for SEC at G3):** a login with the old password racing the user's own password change can keep a session: the own change
+- **Own-change race (accepted by SEC at G3, S4-4 wording):** a login with the old password racing the user's own password change can keep a session or a remember-me token: the own change
   does not increment the stamp (bumping it would refuse a parallel request of the kept session, FR-AUTH-05). Same window as S4-5; the attacker needs
   the old password; S4-5 is about resets by someone else.
 - **Stamp bumped without a reset:** the deterministic tests increment the stamp by SQL. In production only the two resets do, and each deletes every
@@ -88,3 +88,18 @@ ENGLMS_TASK=T-M2.9 ./scripts/gate.sh
   the truncation). Identity's timestamps are unchanged.
 - **F3 (S4), lenient `version` coercion:** not in this task (cross-cutting Jackson setting, pre-existing since T-M2.3); routed by the LC.
 - Results at `f7e0b37`: backend verify 465/465, `-Dgroups=security` 158/158, contract-drift OK (no DTO change).
+
+## SEC round 1 fixes (`2ea63f3`; SEC APPROVED at `d6d2ee1` with S3-1, S3-2, S4-1..S4-4)
+- **S3-1:** rule 3 inspects the fields of every handler parameter except `CurrentStudent` and those bound by name or from the request context
+  (`@PathVariable`, `@RequestParam`, `@RequestHeader`, `@CookieValue`, `@MatrixVariable`, `@RequestAttribute`, `@SessionAttribute`,
+  `@AuthenticationPrincipal`), so `@Valid`/`@Validated` model attributes are checked. Fixtures `ValidModelAttributeField`, `ValidatedModelAttributeField`.
+- **S3-2:** `isStudentId` also matches the exact name `sid` (case, `_`, `-` ignored). Fixture `PathVariableNamedSid`.
+- **S4-3:** (a) field recursion resolves type arguments with Spring's `ResolvableType` (fixture `GenericWrapperBody` → `body.payload.studentId`);
+  (b)/(c) JSON names on `@JsonCreator` parameters/getters/setters and `@JsonAnySetter`/`JsonNode`/`Map<String, Object>` bodies are documented known
+  limits (test-strategy §4, authz-isolation skill). Rule 3 reports 22 fixture violations (was 18); the clean class none. ADR-0016 §2 updated.
+- **S4-2:** `StudentFields.tags` refuses a list longer than 4 × 30 with one `TOO_MANY` before the loop (`StudentFieldsTest.aTagListFarBeyondTheLimitIsOneProblem`).
+- **S4-1:** `spring.datasource.hikari.data-source-properties.logServerErrorDetail=false`: the 500 log line no longer carries PostgreSQL's detail
+  (`Failing row contains (…)`); `USERNAME_TAKEN` translation unchanged; `aFailedGuardianInsertRollsTheAccountAndStudentBack` asserts the detail is
+  absent (fails without the setting). security.md §4.
+- **S4-4:** the own-change limitation reads "can keep a session or a remember-me token" (security.md §4, packet, this summary); accepted by SEC.
+- Results at `2ea63f3`: backend verify 466/466, `-Dgroups=security` 158/158, ×20 20/20, check-docs and path-ownership PASS, no contract change.
