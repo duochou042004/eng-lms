@@ -200,6 +200,11 @@ final class StudentFields {
 		if (raw == null) {
 			return List.of();
 		}
+		// A list far beyond the limit is one problem, not one per entry (T-M2.9 SEC S4-2); duplicates still fit below it.
+		if (raw.size() > 4 * TAGS_MAX) {
+			problems.add(problem(name, ProblemCodes.TOO_MANY, "At most " + TAGS_MAX + " tags"));
+			return List.of();
+		}
 		Map<String, String> unique = new LinkedHashMap<>();
 		for (int i = 0; i < raw.size(); i++) {
 			String field = name + "[" + i + "]";

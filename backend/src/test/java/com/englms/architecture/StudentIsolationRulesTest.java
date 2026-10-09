@@ -8,12 +8,10 @@ import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.methods;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
-import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Parameter;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
@@ -44,15 +42,17 @@ import com.tngtech.archunit.lang.ArchRule;
 import com.tngtech.archunit.lang.ConditionEvents;
 import com.tngtech.archunit.lang.SimpleConditionEvent;
 
+import org.springframework.core.MethodParameter;
+import org.springframework.core.ResolvableType;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.MatrixVariable;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.SessionAttribute;
 
 /**
  * Test-strategy §4 rules 3 and 4 (ADR-0016 §2, §4), checked on {@code com.englms} and proven against the violating
@@ -71,12 +71,14 @@ class StudentIsolationRulesTest {
 
 	/**
 	 * Rule 3: no {@code ..web.student..} handler takes a student ID. Checked names (case, {@code _} and {@code -}
-	 * ignored; {@code studentId} or ending in {@code StudentId}): the Java parameter name; the {@code @PathVariable},
-	 * {@code @RequestParam}, {@code @RequestHeader}, {@code @CookieValue} and {@code @MatrixVariable} names; and for a
-	 * {@code @RequestBody}, {@code @RequestPart} or {@code @ModelAttribute} parameter (or an unannotated one, which Spring
-	 * binds as a model attribute) the field and record-component names of its type with their {@code @JsonProperty} and
-	 * {@code @JsonAlias} names, recursing into nested {@code com.englms} and {@code fixture} types (through arrays,
-	 * {@code Collection} and {@code Optional} elements and {@code Map} values), cycle-safe (T-M2.9, DEC-097 (4) (a)).
+	 * ignored; {@code studentId}, ending in {@code StudentId}, or exactly {@code sid}): the Java parameter name; the
+	 * {@code @PathVariable}, {@code @RequestParam}, {@code @RequestHeader}, {@code @CookieValue} and
+	 * {@code @MatrixVariable} names; and for every other parameter (a body, a part, an explicit or implicit model
+	 * attribute, with or without {@code @Valid}; not one bound by name, a request/session attribute or
+	 * {@code @AuthenticationPrincipal}) the field and record-component names of its type with their {@code @JsonProperty}
+	 * and {@code @JsonAlias} names, recursing into nested {@code com.englms} and {@code fixture} types (through arrays,
+	 * {@code Collection} and {@code Optional} elements, {@code Map} values and resolved type arguments), cycle-safe
+	 * (T-M2.9, DEC-097 (4) (a), SEC round 1).
 	 * {@code CurrentStudent} is exempt: its {@code studentId} comes from the session (the L2 verifier refuses a binding
 	 * annotation on it). Catch-all binders ({@code Map}, {@code HttpServletRequest}, …) are out of reach of a name check
 	 * (DEC-096); the {@code SECRET-*}/B-ID scan and the SEC review are their backstop. ArchUnit has no parameter names,
@@ -138,8 +140,13 @@ class StudentIsolationRulesTest {
 			.anySatisfy(line -> assertThat(line).contains("$ArrayOfBodies.post", "'entries[].studentId'"))
 			.anySatisfy(line -> assertThat(line).contains("$OptionalBodyField.post", "'body.entry.studentId'"))
 			.anySatisfy(line -> assertThat(line).contains("$MapValueBodyField.post", "'body.byKey{}.studentId'"))
+			// T-M2.9 SEC round 1: @Valid/@Validated model attributes (S3-1), sid (S3-2), generic wrappers (S4-3 (a)).
+			.anySatisfy(line -> assertThat(line).contains("$ValidModelAttributeField.get", "'filter.studentId'"))
+			.anySatisfy(line -> assertThat(line).contains("$ValidatedModelAttributeField.get", "'filter.studentId'"))
+			.anySatisfy(line -> assertThat(line).contains("$PathVariableNamedSid.get", "'sid'"))
+			.anySatisfy(line -> assertThat(line).contains("$GenericWrapperBody.post", "'body.payload.studentId'"))
 			.noneSatisfy(line -> assertThat(line).contains("$Clean"))
-			.hasSize(18);
+			.hasSize(22);
 	}
 
 	@Test
@@ -172,9 +179,8 @@ class StudentIsolationRulesTest {
 						.forEach(name -> events.add(SimpleConditionEvent.violated(method,
 								method.getFullName() + " takes a student ID: '" + name + "'")));
 					if (bindsFields(parameter)) {
-						studentIdFields(parameter.getParameterizedType(), parameter.getName(), new HashSet<>(),
-								path -> events.add(SimpleConditionEvent.violated(method,
-										method.getFullName() + " takes a student ID in a field: " + path)));
+						studentIdFields(parameter, path -> events.add(SimpleConditionEvent.violated(method,
+								method.getFullName() + " takes a student ID in a field: " + path)));
 					}
 				}
 			}
@@ -196,51 +202,58 @@ class StudentIsolationRulesTest {
 			.flatMap(names -> names);
 	}
 
-	/** A body, part or model attribute, explicit or (unannotated) implicit; never {@code CurrentStudent}. */
+	/** Annotations whose parameter is bound by name or resolved from the request context, not from fields. */
+	static final List<Class<? extends Annotation>> NOT_FIELD_BOUND = List.of(PathVariable.class, RequestParam.class,
+			RequestHeader.class, CookieValue.class, MatrixVariable.class, RequestAttribute.class, SessionAttribute.class,
+			AuthenticationPrincipal.class);
+
+	/**
+	 * Any parameter bound from fields: a body, a part, an explicit or implicit model attribute, also with {@code @Valid}
+	 * or {@code @Validated} (T-M2.9 SEC S3-1); never {@code CurrentStudent}. Simple types have no application fields.
+	 */
 	static boolean bindsFields(Parameter parameter) {
-		return parameter.getType() != CurrentStudent.class && (parameter.isAnnotationPresent(RequestBody.class)
-				|| parameter.isAnnotationPresent(RequestPart.class) || parameter.isAnnotationPresent(ModelAttribute.class)
-				|| parameter.getAnnotations().length == 0);
+		return parameter.getType() != CurrentStudent.class
+				&& NOT_FIELD_BOUND.stream().noneMatch(parameter::isAnnotationPresent);
+	}
+
+	static void studentIdFields(Parameter parameter, Consumer<String> violation) {
+		studentIdFields(ResolvableType.forMethodParameter(MethodParameter.forParameter(parameter)), parameter.getName(),
+				new HashSet<>(), violation);
 	}
 
 	/**
 	 * Reports the path of each field of {@code type} (and of the {@code com.englms}/{@code fixture} types it reaches)
-	 * whose name, {@code @JsonProperty} or {@code @JsonAlias} name is a student ID. {@code seen} stops cycles.
+	 * whose name, {@code @JsonProperty} or {@code @JsonAlias} name is a student ID. Type arguments are resolved, so the
+	 * fields of {@code Wrapper<Filter>}'s {@code T} are those of {@code Filter} (SEC S4-3 (a)). {@code seen} (resolved
+	 * types) stops cycles.
 	 */
-	static void studentIdFields(Type type, String path, Set<Class<?>> seen, Consumer<String> violation) {
-		if (type instanceof GenericArrayType array) {
-			studentIdFields(array.getGenericComponentType(), path + "[]", seen, violation);
+	static void studentIdFields(ResolvableType type, String path, Set<String> seen, Consumer<String> violation) {
+		Class<?> raw = type.resolve();
+		if (raw == null) {
 			return;
 		}
-		if (type instanceof ParameterizedType parameterized && parameterized.getRawType() instanceof Class<?> raw) {
-			Type[] arguments = parameterized.getActualTypeArguments();
-			if (Collection.class.isAssignableFrom(raw)) {
-				studentIdFields(arguments[0], path + "[]", seen, violation);
-			}
-			else if (raw == Optional.class) {
-				studentIdFields(arguments[0], path, seen, violation);
-			}
-			else if (Map.class.isAssignableFrom(raw)) {
-				studentIdFields(arguments[1], path + "{}", seen, violation);
-			}
-			else {
-				studentIdFields(raw, path, seen, violation);
-			}
+		if (type.isArray()) {
+			studentIdFields(type.getComponentType(), path + "[]", seen, violation);
 			return;
 		}
-		if (!(type instanceof Class<?> javaClass)) {
+		if (Collection.class.isAssignableFrom(raw)) {
+			studentIdFields(type.asCollection().getGeneric(0), path + "[]", seen, violation);
 			return;
 		}
-		if (javaClass.isArray()) {
-			studentIdFields(javaClass.getComponentType(), path + "[]", seen, violation);
+		if (raw == Optional.class) {
+			studentIdFields(type.getGeneric(0), path, seen, violation);
 			return;
 		}
-		if (!isApplicationType(javaClass) || javaClass == CurrentStudent.class || !seen.add(javaClass)) {
+		if (Map.class.isAssignableFrom(raw)) {
+			studentIdFields(type.asMap().getGeneric(1), path + "{}", seen, violation);
 			return;
 		}
-		for (Class<?> declaring = javaClass; declaring != null && isApplicationType(declaring);
-				declaring = declaring.getSuperclass()) {
-			for (Field field : declaring.getDeclaredFields()) {
+		if (!isApplicationType(raw) || raw == CurrentStudent.class || !seen.add(type.toString())) {
+			return;
+		}
+		for (ResolvableType declaring = type; declaring.resolve() != null && isApplicationType(declaring.resolve());
+				declaring = declaring.getSuperType()) {
+			for (Field field : declaring.resolve().getDeclaredFields()) {
 				if (Modifier.isStatic(field.getModifiers()) || field.isSynthetic()) {
 					continue;
 				}
@@ -253,7 +266,7 @@ class StudentIsolationRulesTest {
 					.distinct()
 					.forEach(name -> violation.accept("'" + fieldPath + "'"
 							+ (name.equals(field.getName()) ? "" : " (JSON name '" + name + "')")));
-				studentIdFields(field.getGenericType(), fieldPath, seen, violation);
+				studentIdFields(ResolvableType.forField(field, declaring), fieldPath, seen, violation);
 			}
 		}
 	}
@@ -262,8 +275,10 @@ class StudentIsolationRulesTest {
 		return type.getName().startsWith("com.englms.") || type.getName().startsWith("fixture.");
 	}
 
+	/** {@code studentId}, a name ending in {@code StudentId}, or {@code sid} (the codebase's short name; SEC S3-2). */
 	static boolean isStudentId(String name) {
-		return name.replace("_", "").replace("-", "").toLowerCase(Locale.ROOT).endsWith("studentid");
+		String normalized = name.replace("_", "").replace("-", "").toLowerCase(Locale.ROOT);
+		return normalized.endsWith("studentid") || normalized.equals("sid");
 	}
 
 }

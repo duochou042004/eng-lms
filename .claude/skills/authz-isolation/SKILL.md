@@ -23,17 +23,19 @@ description: Register endpoint authorization policies and add authz-matrix and s
    The must-change student gets **403** outside the must-change allow-list. `studentBOnA` is `NA` unless the path names a student-owned resource.
    Samples must not leave state the per-test world reset does not clear. One handler per `METHOD /pattern`: two handlers told apart only by
    `params`/`headers`/`consumes`/`produces` fail the completeness check (give each its own path).
-3. Student handler: **no** `studentId` parameter anywhere (name, `@PathVariable`, `@RequestParam`, `@RequestHeader`, `@CookieValue`,
-   `@MatrixVariable`, body field); declare `CurrentStudent me`
+3. Student handler: **no** student ID anywhere (`studentId`, `…StudentId` or `sid`, as a name, `@PathVariable`, `@RequestParam`, `@RequestHeader`,
+   `@CookieValue`, `@MatrixVariable` or a field of any bound body, part or model attribute, `@Valid` or not); declare `CurrentStudent me`
    (`com.englms.shared.web.CurrentStudent`, as built T-M2.3: resolved by `CurrentStudentResolver` from the session principal through the
    `StudentPrincipals` SPI; a student account without a student row → 401 `SESSION_EXPIRED` and the session ends). Repository calls are owner-scoped:
    `findByIdAndStudentId(id, me.studentId())`, a mismatch → **404**. Reference: `fixture/harness/web/student/HarnessStudentHandlers#item`.
    **Never annotate the `CurrentStudent` parameter** (`@ModelAttribute`, `@RequestBody`, `@RequestParam`, …): Spring would bind it from the request;
    the L2 verifier refuses startup (T-M2.3 G3).
    **ArchUnit rule 3 as built (T-M2.9, DEC-097 (4) (a)):** it checks the Java parameter name and the `@PathVariable`, `@RequestParam`,
-   `@RequestHeader`, `@CookieValue` and `@MatrixVariable` names, and for a `@RequestBody`, `@RequestPart` or `@ModelAttribute` parameter (or an
-   unannotated one) the field/record-component names of its type with their `@JsonProperty`/`@JsonAlias` names, recursing into nested `com.englms`
-   types through arrays, collections, `Optional` and `Map` values (cycle-safe); `CurrentStudent` is exempt. It cannot see catch-all binders
+   `@RequestHeader`, `@CookieValue` and `@MatrixVariable` names (also the exact name `sid`), and for every other parameter (body, part, model
+   attribute, `@Valid` or not; not `@RequestAttribute`/`@SessionAttribute`/`@AuthenticationPrincipal`) the field/record-component names of its type
+   with their `@JsonProperty`/`@JsonAlias` names, recursing into nested `com.englms` types through arrays, collections, `Optional`, `Map` values and
+   resolved type arguments (cycle-safe); `CurrentStudent` is exempt. Also out of reach: `@JsonAnySetter`/`JsonNode`/`Map` bodies and JSON names on
+   `@JsonCreator` parameters (test-strategy §4). It cannot see catch-all binders
    (`@RequestParam Map`/`MultiValueMap`, `@RequestHeader Map`/`HttpHeaders`, `HttpServletRequest`, `WebRequest`; DEC-096): avoid them in student
    handlers; the `SECRET-*`/B-ID scan and the SEC review are the backstop. Rule 4 is direct dependencies only (DEC-097 (4) (b)).
 4. Student classes: in `..web.student..`; no dependency on `notes`, `LearningProfile*` types, `@TutorPrivate` types or types with a `@TutorPrivate`

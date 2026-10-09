@@ -149,18 +149,22 @@ The **authz matrix test** enumerates `RequestMappingHandlerMapping`. For each ha
   inserted by a login whose account read preceded a concurrent reset would outlive the reset's token deletion, so after the insert the stamp is read
   `FOR SHARE` (it waits for a reset holding the row) and on a mismatch the token is deleted and no cookie is set. The stamp is in no response and no
   log line (`CurrentUser.toString()` omits it). A session stored before the column existed reads back with stamp 0 (record deserialisation, same
-  `serialVersionUID`). Known limitation (T-M2.9 summary, SEC at G3): a login with the **old** password racing the user's **own** change can keep a session.
+  `serialVersionUID`). Known limitation (T-M2.9 summary, SEC at G3): a login with the **old** password racing the user's **own** change can keep a session or a remember-me token (accepted
+  by SEC, T-M2.9 G3).
 - **No username in the log on a duplicate (SEC S4-2, DEC-100, T-M2.9):** Hibernate 7's `SqlExceptionHelper` logs the PostgreSQL message of a refused
   statement (logger `org.hibernate.orm.jdbc.error`) before the application translates it; for a losing duplicate-username insert or rename that message
   names the username. The logger is `off` (`application.properties`); a translated violation (409 `USERNAME_TAKEN`) logs nothing, and any unexpected SQL
   error still logs through `ProblemDetailsAdvice` ("Unhandled exception" with its cause, 500). The PostgreSQL server's own log is out of scope (M8).
+  The JDBC driver leaves PostgreSQL's error detail (`Failing row contains (…)`, `Key (…)=(…)`) out of exception messages
+  (`spring.datasource.hikari.data-source-properties.logServerErrorDetail=false`, T-M2.9 SEC S4-1), so that 500 log line names the constraint and the
+  message but no row values.
 - **Tutor endpoints** (api-catalog "tutor: students"): all `@Audience(TUTOR)` with registry entries (anonymous 401, tutor 2xx, student A and must-change
   403, B-on-A n/a). The isolation world gains student rows (A, B, C archived, must-change) with `SECRET-*` markers in the note and a contact-handle
   value (`StudentsWorldContributor`, sample key `sid`). T-M2.9 adds the guardian and learning-profile endpoints (sample key `gid` = A's guardian) and,
   for A, B and C, a guardian and a stored learning profile with `SECRET-*` markers in every tutor-only text field (B's guardian ID is B's).
 - **Rule 3 and scan extensions (DEC-097 (4), T-M2.9):** ArchUnit rule 3 also checks `@RequestHeader`, `@CookieValue` and `@MatrixVariable` names and the
   fields of `@RequestBody`/`@RequestPart`/`@ModelAttribute` (and unannotated) parameter types, `@JsonProperty`/`@JsonAlias` names included, nested,
-  through arrays, collections, `Optional` and `Map` values (test-strategy §4). Rule 4 stays non-transitive. The isolation scan also matches B's UUIDs
+  through arrays, collections, `Optional`, `Map` values and type arguments, `@Valid` parameters included, and the name `sid` (test-strategy §4). Rule 4 stays non-transitive. The isolation scan also matches B's UUIDs
   without dashes. Catch-all binders stay out of the name check (DEC-096).
 
 ## 5. Transport and headers

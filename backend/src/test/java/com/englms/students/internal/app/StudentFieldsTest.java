@@ -52,6 +52,16 @@ class StudentFieldsTest {
 				"strengths[2]:INVALID_FORMAT", "strengths[3]:INVALID_FORMAT", "strengths[4]:INVALID_FORMAT");
 	}
 
+	/** T-M2.9 SEC S4-2: a huge list is one TOO_MANY, not one problem per entry. */
+	@Test
+	void aTagListFarBeyondTheLimitIsOneProblem() {
+		assertThat(StudentFields.tags(Collections.nCopies(200_000, ""), "strengths", problems)).isEmpty();
+		assertThat(codes()).containsExactly("strengths:TOO_MANY");
+		problems.clear();
+		StudentFields.tags(Collections.nCopies(120, "same"), "strengths", problems);
+		assertThat(problems).as("4 x 30 entries are still deduplicated").isEmpty();
+	}
+
 	@Test
 	void customFieldsFollowTheLabelValueRule() {
 		List<CustomField> fields = StudentFields.customFields(

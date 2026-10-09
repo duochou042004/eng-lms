@@ -10,7 +10,8 @@ forgotten. We want isolation to be **structural and testable**.
 1. **Two API namespaces:** `/api/v1/tutor/**` (role TUTOR) and `/api/v1/student/**` (role STUDENT), gated in the security filter chain.
    Shared endpoints: `/api/v1/auth/**` and `/api/v1/meta`.
 2. **Student controllers never accept a student ID** from path, query or body. They receive `CurrentStudent me` from a method-argument
-   resolver bound to the session principal. An architecture test fails if any `..web.student..` handler has a parameter named `studentId`.
+   resolver bound to the session principal. An architecture test fails if any `..web.student..` handler takes a student ID: a parameter, path variable, request
+   parameter, header, cookie, matrix variable or bound field named `studentId`, ending in `StudentId`, or `sid` (as built T-M2.9; test-strategy §4 rule 3).
 3. **Ownership-scoped repository methods** for the student audience: `findByIdAndStudentId(id, me)`. A mismatch returns **404** (not 403), so there is no
    enumeration oracle.
 4. **Separate DTOs per audience** (`web.student.*Dto`), built by explicit mappers. ArchUnit: student DTO packages must not depend on `notes`,

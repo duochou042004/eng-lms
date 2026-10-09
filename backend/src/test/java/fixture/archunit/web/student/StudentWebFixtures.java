@@ -5,6 +5,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
+import jakarta.validation.Valid;
+
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -14,6 +16,7 @@ import fixture.archunit.PrivateTypes.LearningProfileSummary;
 import fixture.archunit.PrivateTypes.LessonView;
 import fixture.archunit.PrivateTypes.PrivateRemark;
 import fixture.archunit.notes.FixtureNote;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.MatrixVariable;
@@ -235,6 +238,47 @@ public final class StudentWebFixtures {
 
 		@PostMapping("/fixture")
 		public String post(@RequestBody WithMap body) {
+			return "";
+		}
+
+	}
+
+	// ---- T-M2.9 SEC round 1: @Valid/@Validated (S3-1), sid (S3-2), a generic wrapper (S4-3 (a)) ----------------
+
+	public static class ValidModelAttributeField {
+
+		@GetMapping("/fixture")
+		public String get(@Valid Filter filter) {
+			return "";
+		}
+
+	}
+
+	public static class ValidatedModelAttributeField {
+
+		@GetMapping("/fixture")
+		public String get(@Validated Filter filter) {
+			return "";
+		}
+
+	}
+
+	public static class PathVariableNamedSid {
+
+		@GetMapping("/fixture/{sid}")
+		public String get(@PathVariable UUID sid) {
+			return "";
+		}
+
+	}
+
+	public record Wrapper<T>(String note, T payload) {
+	}
+
+	public static class GenericWrapperBody {
+
+		@PostMapping("/fixture")
+		public String post(@RequestBody Wrapper<Entry> body) {
 			return "";
 		}
 

@@ -297,13 +297,18 @@ class GuardiansAndLearningProfileApiTest {
 		assertThat(count("SELECT count(*) FROM student_guardian")).isZero();
 	}
 
-	/** The guardian insert fails after the account and student rows: one transaction, so nothing remains. */
+	/**
+	 * The guardian insert fails after the account and student rows: one transaction, so nothing remains. The 500 is
+	 * logged without PostgreSQL's detail, which can carry the row's values (SEC S4-1).
+	 */
 	@Test
-	void aFailedGuardianInsertRollsTheAccountAndStudentBack() {
+	void aFailedGuardianInsertRollsTheAccountAndStudentBack(CapturedOutput output) {
 		jdbc.execute("""
 				CREATE FUNCTION app.reject_probe_guardian() RETURNS trigger LANGUAGE plpgsql AS $$
 				BEGIN
-				    IF NEW.name = 'Rollback Probe' THEN RAISE EXCEPTION 'probe: guardian insert fails'; END IF;
+				    IF NEW.name = 'Rollback Probe' THEN
+				        RAISE EXCEPTION 'probe: guardian insert fails' USING DETAIL = 'probe-detail-' || NEW.name;
+				    END IF;
 				    RETURN NEW;
 				END $$""");
 		jdbc.execute("CREATE TRIGGER tr_reject_probe_guardian BEFORE INSERT ON app.student_guardian FOR EACH ROW "
@@ -316,6 +321,8 @@ class GuardiansAndLearningProfileApiTest {
 			assertThat(count("SELECT count(*) FROM user_account WHERE username_normalized = 'guardian.probe'")).isZero();
 			assertThat(count("SELECT count(*) FROM student")).isZero();
 			assertThat(count("SELECT count(*) FROM student_guardian")).isZero();
+			assertThat(output.getAll()).contains("Unhandled exception", "probe: guardian insert fails")
+				.doesNotContain("probe-detail-");
 		}
 		finally {
 			jdbc.execute("DROP TRIGGER tr_reject_probe_guardian ON app.student_guardian");

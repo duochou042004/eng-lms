@@ -54,18 +54,21 @@
 1. Controllers (`..internal.web..`) do not access `..internal.persistence..`.
 2. No class outside a module accesses its `..internal..` packages (also covered by Modulith).
 3. `..web.student..` handler methods have no parameter, `@PathVariable`, `@RequestParam`, `@RequestHeader`, `@CookieValue` or `@MatrixVariable` whose
-   (effective) name is `studentId` or ends in `StudentId` (case, `_` and `-` ignored), and no such field in the type of a `@RequestBody`, `@RequestPart` or
-   `@ModelAttribute` parameter (or of an unannotated one, which Spring binds as a model attribute): field and record-component names plus their
-   `@JsonProperty`/`@JsonAlias` names, recursing into nested `com.englms`/`fixture` types through arrays, `Collection`/`Optional` elements and `Map`
-   values, cycle-safe; the report names the field path (T-M2.9, DEC-097 (4) (a)). `CurrentStudent` parameters are exempt. Catch-all binders
-   (`@RequestParam Map`, `@RequestHeader Map`/`HttpHeaders`, `HttpServletRequest`, `WebRequest`) are out of reach of a name check (DEC-096): the
-   `SECRET-*`/B-ID scan and the SEC review of every `..web.student..` handler are their backstop.
+   (effective) name is `studentId`, ends in `StudentId` or is exactly `sid` (the codebase's short name, as in `/tutor/students/{sid}`; case, `_` and `-`
+   ignored), and no such field in the type of any other parameter (a `@RequestBody`, a `@RequestPart`, an explicit or implicit model attribute, with or
+   without `@Valid`/`@Validated`; parameters bound by name, `@RequestAttribute`, `@SessionAttribute` and `@AuthenticationPrincipal` are not
+   field-bound): field and record-component names plus their `@JsonProperty`/`@JsonAlias` names, recursing into nested `com.englms`/`fixture` types
+   through arrays, `Collection`/`Optional` elements, `Map` values and resolved type arguments (`Wrapper<Filter>`), cycle-safe; the report names the field
+   path (T-M2.9, DEC-097 (4) (a), SEC round 1). `CurrentStudent` parameters are exempt. Known limits (the `SECRET-*`/B-ID scan and the SEC review of
+   every `..web.student..` handler are their backstop): catch-all binders (`@RequestParam Map`, `@RequestHeader Map`/`HttpHeaders`,
+   `HttpServletRequest`, `WebRequest`; DEC-096); catch-all bodies (`@JsonAnySetter`, `JsonNode`, `Map<String, Object>` bodies); JSON names declared
+   on a `@JsonCreator` constructor parameter, a getter or a setter rather than on the field or record component.
 4. `..web.student..` classes (every class, not only DTOs) do not depend on `com.englms.notes..`, on `LearningProfile*`, on types annotated `@TutorPrivate`,
    or on types with a `@TutorPrivate` field (inherited fields included; T-M2.2 SEC S3-4). Direct dependencies only (not transitive, DEC-097 (4) (b));
    the `SECRET-*` scan is the backstop.
    Rules 3 and 4 are implemented (T-M2.2) in `architecture/StudentIsolationRulesTest` (`@Tag("security")`; parameter names by reflection, the build
    compiles with `-parameters`), proven against the violating classes in `src/test/java/fixture/archunit/` (T-M2.9: one fixture per way for rule 3,
-   18 violations, and a clean class with `CurrentStudent`, clean header/cookie names and a cyclic body type).
+   22 violations after SEC round 1, and a clean class with `CurrentStudent`, clean header/cookie names and a cyclic body type).
 5. No `@Transactional` on controllers. No field injection.
 6. Forbidden identifiers in `src/main` (case-insensitive): `toeic`, `ielts`, `thpt`, `examtype`, `part5`, `tenant`, `payment`, `invoice`, `openai`, `anthropic`, `chatgpt`
    (the same list as coding-agent-rules §7; `examtype` and `part5` since T-M1.8).
