@@ -82,4 +82,4 @@ jobs:
           retention-days: 5
       - name: Warn when the Playwright report upload failed
         if: always() && steps.upload-playwright-report.outcome == 'failure'
-        run: echo "::warning title=Playwright report not uploaded::The e2e-playwright-report artifact upload failed (storage quota?); see the GitLab mirror pipeline (DEC-060)."
+        run: echo "::warning title=Playwright report not uploaded::The e2e-playwright-report artifact upload failed (storage quota?); see the GitLab mirror pipeline (DEC-060; paused by DEC-107, so re-run the job)."
