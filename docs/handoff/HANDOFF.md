@@ -1,8 +1,9 @@
-# Handoff — 2026-10-09T15:00Z (T-M2.9 done; next: T-M1.19 portability on a NEW DEVICE, then T-M2.4)
+# Handoff — 2026-10-09T15:50Z (T-M2.9 done; next: T-M1.19 portability on a NEW DEVICE, then T-M2.4)
 
-Phase/Milestone: P1 / M2 (in progress) · Current task: **T-M1.19 (ready; PO start DEC-106)** · Branch: `develop` · Last merges on develop: `37e8ce0` (PR #72, T-M2.9), `680149b` (PR #73), `6cdbcf8` (PR #74), then the T-M1.19 packet PR · Remote: https://github.com/duochou042004/eng-lms (mirror: gitlab.com/duochou042004/eng-lms)
+Phase/Milestone: P1 / M2 (in progress) · Current task: **T-M1.19 (ready; PO start DEC-106)** · Branch: `develop` · Last merges on develop: `eb799df` (PR #75, T-M1.19 packet), Dependabot #64 `70fcdf3`, `ed442e0` (PR #76, GitLab CI paused), Dependabot #65–#70 → `e1611a4` · Remote: https://github.com/duochou042004/eng-lms (mirror: gitlab.com/duochou042004/eng-lms)
 
 ## Where we are
+- **T-M1.20 done** (`ed442e0`, DEC-107): GitLab CI paused; GitHub Actions is the only CI; the mirror still syncs (see Gotchas).
 - **T-M2.9 done** (`37e8ce0`; DEC-102..105; QA PASS, SEC APPROVED; records merged). T-M2.10 (strict JSON numbers, QA F3) is in the backlog.
 - **PO requirement (DEC-106):** the project must run on Linux, macOS and Windows with Docker or Podman. Windows = **WSL2 + Docker Desktop** (no
   native Windows). Production stays Podman Quadlet + Caddy (ADR-0012). The next session runs on a **new device** (macOS or Windows, maybe Docker).
@@ -30,7 +31,8 @@ Phase/Milestone: P1 / M2 (in progress) · Current task: **T-M1.19 (ready; PO sta
 2. **T-M1.19:** packet ready → `progress.json` in_progress, branch `feature/T-M1.19-portable-dev-env`, backend-implementer, gate green on the device,
    G3 fresh qa-evaluator (follows §0 for that platform), CI green, verdicts, merge-gate, gitlab-sync; QA report via `qa/T-M1.19`; merge DEC + records via a chore PR.
 3. **T-M2.4** packet (auth UI + shells, FE; decide SEC in the packet: `?next=` allow-list T18, remember-me on shared devices; M2 exit needs an auth SEC review).
-4. Optional: T-M2.10. Dependabot PRs #64–#70 open.
+4. Optional: T-M2.10. No open PRs: Dependabot #64–#70 merged one by one (`@dependabot rebase` each time, LC-APPROVED PR-<n>, merge-gate),
+   develop at `e1611a4`; GitLab CI paused (DEC-107, PR #76), the mirror is in sync.
 
 ## Pending PO decisions / actions
 - Production needs `SERVER_FORWARDHEADERSSTRATEGY=native` (deployment.md §3) — at deployment time (M8).
