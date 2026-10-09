@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Milestone | M2 |
-| Status | draft |
+| Status | ready (G0: DOCS-REVIEW PASS; PO start signal DEC-104) |
 | Owner role | BE (backend-implementer; SEC review at G3) |
 | Branch | `feature/T-M2.9-students-part-2` (from `develop`) |
 | Depends on | T-M2.3 (merged, `f0e228c`, DEC-101) |
