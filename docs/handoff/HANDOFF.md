@@ -51,8 +51,8 @@ Phase/Milestone: P1 / M2 (in progress) · Current task: **T-M1.19 (ready; PO sta
   agent's final text from its `tasks/<id>.output` transcript rather than retyping it.
 - CI `e2e-smoke`/`backend` may fail on a Maven Central 429: `gh run rerun <id> --failed`.
 - Subagent stopped by an API limit: check containers/java (the VSCode Java language server is not ours), then resume it with SendMessage.
-- `gitlab-sync.sh` may fail authentication transiently: retry once. GitLab CI is **paused** (DEC-107; resume with the GitLab project variable
-  `ENGLMS_GITLAB_CI=on`); the sync still runs after every merge.
+- `gitlab-sync.sh` may fail authentication transiently: retry once. GitLab CI is **paused** (DEC-107; the sync pushes with `-o ci.skip`; to resume:
+  the GitLab project variable `ENGLMS_GITLAB_CI=on` and `ENGLMS_GITLAB_CI=on ./scripts/gitlab-sync.sh`, ci-cd §1.1); the sync still runs after every merge.
 - Wall-clock bounds in tests flake on the 2-core CI runner (DEC-093). `git merge` is denied: `gh pr update-branch` (DEC-090).
 
 ## Files to read first

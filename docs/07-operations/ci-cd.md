@@ -30,8 +30,8 @@ Actions are pinned by commit SHA. Workflow `permissions:` are minimal (read by d
 still mirrors `develop`, `master` and the given branches (the repository stays current) and pushes with `-o ci.skip` unless `ENGLMS_GITLAB_CI=on`
 (GitLab reads `.gitlab-ci.yml` from each pushed commit, so a branch cut before the pause would otherwise run the old config). On commits that have it,
 `.gitlab-ci.yml`'s `workflow` rule also creates no pipeline unless the project CI/CD variable `ENGLMS_GITLAB_CI=on` is set. To resume (a PO decision;
-the quota resets monthly): set that variable in GitLab (Settings → CI/CD → Variables, **unprotected**, or it reaches only `develop`/`master`), sync
-with `ENGLMS_GITLAB_CI=on ./scripts/gitlab-sync.sh`, or revert the rule. Never push to the mirror with plain `git push` while paused.
+the quota resets monthly): set that variable in GitLab (Settings → CI/CD → Variables, **unprotected**, or it reaches only `develop`/`master`) or revert
+the rule, **and** sync with `ENGLMS_GITLAB_CI=on ./scripts/gitlab-sync.sh` (or remove the script's `ci.skip` default). Never push to the mirror with plain `git push` while paused.
 
 Added while GitHub's Actions artifact storage was exhausted (until the 2026-10-01 reset; uploads are `continue-on-error`, DEC-053). Since the reset GitHub
 stores the reports again; the PO keeps the mirror as a second copy of the repository and its CI as a precaution (DEC-080). The private mirror `gitlab.com/duochou042004/eng-lms`, when CI is enabled, runs `.gitlab-ci.yml` on every branch push:
