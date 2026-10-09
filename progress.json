@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-10-09T13:58:03Z",
-  "updatedBy": "backend-implementer (session 2026-10-09, Opus 5.5)",
+  "updatedAt": "2026-10-09T14:07:58Z",
+  "updatedBy": "lead-coordinator (session 2026-10-09, Opus 5.5)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -30,35 +30,6 @@
     "exitCriteria": "FR-AUTH-01..10 and FR-STU-01..07 accepted; authorization-matrix and student-isolation harnesses fail on any unregistered endpoint; add-student flow E2E at 360/768/1280 within its step budget; security review of authentication passed (docs/01-product/roadmap.md)."
   },
   "currentTask": {
-    "id": "T-M2.9",
-    "title": "Students part 2: guardians, tutor-private learning profile, DEC-097 (4) rule extensions, credential stamp (S4-5), duplicate-username log (S4-2)",
-    "status": "awaiting_approval",
-    "ownerRole": "BE",
-    "branch": "feature/T-M2.9-students-part-2",
-    "packet": "docs/tasks/T-M2.9-students-part-2.md",
-    "pr": "72",
-    "lastCommit": "2ea63f3",
-    "startedAt": "2026-10-09T08:06:16Z",
-    "entryGate": [
-      "T-M2.3 merged — met (f0e228c, DEC-101)",
-      "Packet G0 — met (PR #71, 4c02ee0)",
-      "PO start signal — given (DEC-104)"
-    ],
-    "nextSteps": [
-      "CI green on the final head, then QA-VERDICT / SEC-REVIEW / LC-APPROVED comments, merge-gate, gitlab-sync",
-      "qa/T-M2.9 PR (QA report) and chore/T-M2.9-merge-record PR (SEC record + merge DEC)"
-    ],
-    "trace": [
-      "backlog M2",
-      "DEC-096",
-      "DEC-097",
-      "DEC-100",
-      "DEC-102",
-      "DEC-103",
-      "DEC-104"
-    ]
-  },
-  "nextTask": {
     "id": "T-M2.4",
     "title": "Auth UI + shells (login, password change, role redirect, tutor sidebar/drawer, student tabs)",
     "status": "draft",
@@ -69,13 +40,38 @@
     "lastCommit": null,
     "startedAt": null,
     "entryGate": [
-      "T-M2.1 merged — met (a93bcc1)"
+      "T-M2.1 merged — met (a93bcc1)",
+      "Packet G0 — pending (task-packet skill, fresh DOCS-REVIEW)",
+      "PO start signal — pending"
     ],
     "nextSteps": [
-      "The T-M2.4 packet can be written now (unblocked; depends only on T-M2.1), after or alongside T-M2.9"
+      "Write the T-M2.4 packet to G0 (frontend-standards skill; vi + en; 360/768/1280; WCAG 2.2 AA)",
+      "Fresh DOCS-REVIEW, merge, ask the PO for the start signal"
     ],
     "trace": [
-      "backlog M2"
+      "backlog M2",
+      "DEC-105"
+    ]
+  },
+  "nextTask": {
+    "id": "T-M2.10",
+    "title": "Strict JSON number binding (T-M2.9 QA F3)",
+    "status": "draft",
+    "ownerRole": "BE",
+    "branch": null,
+    "packet": null,
+    "pr": null,
+    "lastCommit": null,
+    "startedAt": null,
+    "entryGate": [
+      "T-M2.9 merged — met (37e8ce0)"
+    ],
+    "nextSteps": [
+      "Small BE packet; can run before or after T-M2.4"
+    ],
+    "trace": [
+      "backlog M2",
+      "DEC-105"
     ]
   },
   "completed": [
@@ -254,11 +250,19 @@
       "mergeCommit": "f0e228c",
       "evidence": "evidence/T-M2.3/summary.md",
       "note": "PO start DEC-098. Merged via scripts/merge-gate.sh (PR #61) at head 9582fbf; CI 7/7. QA PASS WITH MINOR -> re-test PASS (PR #62); SEC CHANGES REQUESTED (S3-1, S3-2) -> fixed -> round 2 APPROVED, R2-1 fixed by the LC. Deferrals DEC-099 (create idempotency -> T-M5.4), DEC-100 (S4-2/S4-5 -> T-M2.9, S4-8 -> T-M2.5, S4-9 PO note). Backend 396 tests."
+    },
+    {
+      "id": "T-M2.9",
+      "title": "Students part 2 (guardians, tutor-private learning profile, rule 3/scan extensions, credential stamp S4-5, duplicate-username log S4-2)",
+      "completedAt": "2026-10-09T14:03:42Z",
+      "mergeCommit": "37e8ce0",
+      "evidence": "evidence/T-M2.9/summary.md",
+      "note": "Packet PR #71 (DEC-102 first goal -> M7, DEC-103, PO start DEC-104). Merged via scripts/merge-gate.sh (PR #72) at head 5de3a62; CI 7/7. QA PASS WITH MINOR -> re-test PASS (PR #73); SEC APPROVED twice (S3-1, S3-2, S4s fixed in-task). QA F3 -> T-M2.10 (DEC-105). Backend 466 tests."
     }
   ],
   "tests": {
-    "lastRun": "2026-10-09T09:25:00Z",
-    "summary": "T-M2.9 implementation: local gate PASS at 7550855 (13 steps, 482 s; backend 462 tests; web 88; e2e 86 passed, 19 skipped; contract-drift OK; evidence/T-M2.9/gate-20261009T091443Z.log); -Dgroups=security 158 tests (security-groups.log); x20 of CredentialStampTest, GuardianCapRaceTest, LearningProfileFirstPutRaceTest, StudentCreateRaceTest 20/20 (x20.log).",
+    "lastRun": "2026-10-09T14:01:19Z",
+    "summary": "T-M2.9 merged: CI 7/7 at 5de3a62 (backend 466 tests); -Dgroups=security 158; x20 of the four race/stamp classes 20/20 (implementer, QA).",
     "suites": [
       {
         "name": "backend (./mvnw -B verify)",
@@ -285,23 +289,23 @@
   "gates": {
     "G0": {
       "status": "pending",
-      "note": "T-M2.9: packet to write (T-M2.3 passed G0: PR #60, DEC-098)"
+      "note": "T-M2.4: packet to write (T-M2.9 passed G0: PR #71, DEC-104)"
     },
     "G1": {
       "status": "n/a",
-      "note": "T-M2.9 not started (T-M2.3 passed: gate PASS at 879c8d1)"
+      "note": "T-M2.4 not started (T-M2.9 passed: gate PASS at 7550855)"
     },
     "G2": {
       "status": "n/a",
-      "note": "T-M2.9 not started (T-M2.3 passed: CI 7/7 at 9582fbf)"
+      "note": "T-M2.4 not started (T-M2.9 passed: CI 7/7 at 5de3a62)"
     },
     "G3": {
       "status": "n/a",
-      "note": "T-M2.9 not started (T-M2.3 passed: QA PASS, SEC APPROVED, PR #61)"
+      "note": "T-M2.4 not started (T-M2.9 passed: QA PASS, SEC APPROVED, PR #72)"
     },
     "G4": {
       "status": "n/a",
-      "note": "T-M2.9 not started (T-M2.3 merged f0e228c, DEC-101)"
+      "note": "T-M2.4 not started (T-M2.9 passed: merged 37e8ce0, DEC-105)"
     },
     "G5": {
       "status": "pass",
@@ -312,17 +316,16 @@
   "decisions": {
     "log": "docs/10-governance/decision-log.md",
     "recent": [
-      "DEC-091",
-      "DEC-092",
-      "DEC-093",
-      "DEC-094",
-      "DEC-095",
       "DEC-096",
       "DEC-097",
       "DEC-098",
       "DEC-099",
       "DEC-100",
-      "DEC-101"
+      "DEC-101",
+      "DEC-102",
+      "DEC-103",
+      "DEC-104",
+      "DEC-105"
     ],
     "pendingPO": [
       "OQ-03",
@@ -527,6 +530,13 @@
       "status": "approved",
       "at": "2026-10-07T08:53:17Z",
       "ref": "DEC-101"
+    },
+    {
+      "what": "Start T-M2.9 (students part 2)",
+      "by": "PO",
+      "status": "approved",
+      "at": "2026-10-09T07:56:16Z",
+      "ref": "DEC-104"
     }
   ],
   "environment": {
@@ -924,6 +934,16 @@
       "at": "2026-10-09T13:50:00Z",
       "actor": "backend-implementer",
       "event": "T-M2.9 SEC round 1 fixes at 2ea63f3 (DEC-088 in-task): S3-1 rule 3 on @Valid/any non-name-bound parameter, S3-2 sid, S4-3(a) type arguments, S4-2 tag list cap, S4-1 logServerErrorDetail=false, S4-4 wording. Backend verify 466 tests, -Dgroups=security 158, x20 20/20; no DTO change."
+    },
+    {
+      "at": "2026-10-09T14:03:42Z",
+      "actor": "lead-coordinator",
+      "event": "T-M2.9 merged via merge-gate (PR #72, 37e8ce0, DEC-105); QA report PR #73; next: T-M2.4 packet."
+    },
+    {
+      "at": "2026-10-09T14:07:58Z",
+      "actor": "lead-coordinator",
+      "event": "QA record PR #73 merged (680149b); merge-record PR #74 DOCS-REVIEW round 1 D1-D7 fixed."
     }
   ]
 }
