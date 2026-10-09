@@ -14,6 +14,7 @@ import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import com.englms.MutableClockConfiguration;
 import com.englms.TestcontainersConfiguration;
@@ -27,6 +28,8 @@ import com.englms.shared.ProblemException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.boot.test.system.CapturedOutput;
+import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -37,12 +40,14 @@ import org.springframework.transaction.support.TransactionTemplate;
  * whether the existence check or the database index ({@code ux_user_account__username_normalized}) catches it. No
  * timing bound (DEC-093): a start latch for the HTTP race, and for the index path a condition (the second insert
  * waits on the first transaction's lock) instead of a delay. Same context as {@link StudentsApiIntegrationTest}.
+ * T-M2.9 AC8 (DEC-100 S4-2): the application log written meanwhile carries neither the username nor its normalised form.
  */
 @Tag("container")
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT,
 		properties = { "management.server.port=0", "englms.security.login-throttle.max-attempts=100000",
 				"spring.jpa.properties.hibernate.generate_statistics=true" })
 @Import({ TestcontainersConfiguration.class, MutableClockConfiguration.class })
+@ExtendWith(OutputCaptureExtension.class)
 class StudentCreateRaceTest {
 
 	@LocalServerPort
@@ -71,7 +76,7 @@ class StudentCreateRaceTest {
 	}
 
 	@Test
-	void twoConcurrentCreatesOfOneUsernameGiveOne201AndOne409() throws Exception {
+	void twoConcurrentCreatesOfOneUsernameGiveOne201AndOne409(CapturedOutput output) throws Exception {
 		Browser first = tutor();
 		Browser second = tutor();
 		CountDownLatch start = new CountDownLatch(1);
@@ -99,10 +104,11 @@ class StudentCreateRaceTest {
 		assertThat(jdbc.queryForObject("SELECT count(*) FROM user_account WHERE username_normalized = 'race.user'",
 				Integer.class)).isOne();
 		assertThat(jdbc.queryForObject("SELECT count(*) FROM student", Integer.class)).isOne();
+		assertNotLogged(output, "race.user");
 	}
 
 	@Test
-	void theUniqueIndexCatchesACreateThatPassedTheExistenceCheck() throws Exception {
+	void theUniqueIndexCatchesACreateThatPassedTheExistenceCheck(CapturedOutput output) throws Exception {
 		CountDownLatch inserted = new CountDownLatch(1);
 		CountDownLatch commit = new CountDownLatch(1);
 		ExecutorService pool = Executors.newFixedThreadPool(2);
@@ -130,6 +136,35 @@ class StudentCreateRaceTest {
 		}
 		assertThat(jdbc.queryForObject("SELECT count(*) FROM user_account WHERE username_normalized = 'index.race'",
 				Integer.class)).isOne();
+		assertNotLogged(output, "index.race");
+	}
+
+	/** AC8, sequential: a create and a rename that lose on a taken username (409) log nothing naming it. */
+	@Test
+	void aSequentialDuplicateCreateOrRenameLogsNoUsername(CapturedOutput output) {
+		Browser tutor = tutor();
+		assertThat(tutor.post("/api/v1/tutor/students", "{\"fullName\":\"Seq A\",\"username\":\"Seq.Taken\"}").status())
+			.isEqualTo(201);
+		String other = tutor.post("/api/v1/tutor/students", "{\"fullName\":\"Seq B\",\"username\":\"seq.other\"}")
+			.json()
+			.path("student")
+			.path("id")
+			.asString();
+
+		Response create = tutor.post("/api/v1/tutor/students", "{\"fullName\":\"Seq C\",\"username\":\" SEQ.taken \"}");
+		Response rename = tutor.send("PATCH", "/api/v1/tutor/students/" + other, "{\"version\":0,\"username\":\"Seq.TAKEN\"}",
+				true);
+
+		assertThat(List.of(create, rename)).allSatisfy(response -> {
+			assertThat(response.status()).isEqualTo(409);
+			assertThat(response.code()).isEqualTo("USERNAME_TAKEN");
+		});
+		assertNotLogged(output, "seq.taken");
+	}
+
+	/** Case-insensitive: neither the username as sent nor its normalised form, at any level. */
+	static void assertNotLogged(CapturedOutput output, String normalizedUsername) {
+		assertThat(output.getAll().toLowerCase(java.util.Locale.ROOT)).doesNotContain(normalizedUsername);
 	}
 
 	/** Polls PostgreSQL until a backend waits on a lock (the loser's insert on the winner's index entry). */

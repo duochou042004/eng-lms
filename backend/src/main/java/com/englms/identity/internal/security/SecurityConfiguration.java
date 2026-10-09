@@ -94,14 +94,14 @@ class SecurityConfiguration {
 	 */
 	@Bean
 	AccountRememberMeServices rememberMeServices(AccountUserDetailsService users, DataSource dataSource,
-			JdbcTemplate jdbc, IdentityProperties properties, SessionTerminator terminator,
+			JdbcTemplate jdbc, IdentityProperties properties, SessionTerminator terminator, Clock clock,
 			@Value("${server.servlet.session.cookie.secure:true}") boolean secureCookies) {
 		JdbcTokenRepositoryImpl tokens = new JdbcTokenRepositoryImpl();
 		tokens.setDataSource(dataSource);
 		byte[] key = new byte[32];
 		new SecureRandom().nextBytes(key);
 		AccountRememberMeServices services = new AccountRememberMeServices(HexFormat.of().formatHex(key), users,
-				tokens, jdbc, terminator);
+				tokens, jdbc, terminator, clock);
 		services.setTokenValiditySeconds((int) properties.rememberMe().validity().toSeconds());
 		services.setUseSecureCookie(secureCookies);
 		services.setCookieCustomizer(cookie -> cookie.setAttribute("SameSite", "Lax"));
@@ -179,7 +179,7 @@ class SecurityConfiguration {
 					.authenticated()
 					.anyRequest()
 					.permitAll())
-				.addFilterAfter(new AccountStatusFilter(accounts, terminator), RememberMeAuthenticationFilter.class)
+				.addFilterAfter(new AccountStatusFilter(accounts, terminator, rememberMe), RememberMeAuthenticationFilter.class)
 				.addFilterAfter(new MustChangePasswordFilter(), AuthorizationFilter.class);
 			return http.build();
 		}

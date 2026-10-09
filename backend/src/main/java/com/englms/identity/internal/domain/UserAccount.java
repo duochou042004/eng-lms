@@ -55,6 +55,9 @@ public class UserAccount {
 
 	private String displayName;
 
+	/** Incremented by a reset by someone else (DEC-100 S4-5); see {@link CurrentUser#credentialStamp()}. */
+	private long credentialStamp;
+
 	@Column(updatable = false)
 	private Instant createdAt;
 
@@ -147,8 +150,13 @@ public class UserAccount {
 		updatedAt = now;
 	}
 
-	/** A reset to a temporary password (FR-AUTH-07, FR-AUTH-09): must change, expires, and clears the lockout. */
+	/**
+	 * A reset to a temporary password by someone else (FR-AUTH-07 tutor, FR-AUTH-09 operator): must change, expires,
+	 * clears the lockout, and increments the credential stamp, so a session stored by a login racing the reset is
+	 * refused on its next request (DEC-100 S4-5).
+	 */
 	public void resetPassword(String temporaryHash, Instant expiresAt, Instant now) {
+		credentialStamp++;
 		passwordHash = temporaryHash;
 		mustChangePassword = true;
 		tempPasswordExpiresAt = expiresAt;
@@ -168,7 +176,7 @@ public class UserAccount {
 	}
 
 	public CurrentUser toCurrentUser() {
-		return new CurrentUser(id, role, mustChangePassword);
+		return new CurrentUser(id, role, mustChangePassword, credentialStamp);
 	}
 
 	public UUID id() {
@@ -217,6 +225,10 @@ public class UserAccount {
 
 	public String displayName() {
 		return displayName;
+	}
+
+	public long credentialStamp() {
+		return credentialStamp;
 	}
 
 	@Override
