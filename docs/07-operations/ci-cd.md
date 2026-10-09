@@ -24,7 +24,13 @@ so a failed upload shows as an annotation instead of passing silently (T-M1.8, D
 Actions are pinned by commit SHA. Workflow `permissions:` are minimal (read by default, `packages: write` only in release). Dependabot is enabled for GitHub Actions
 (weekly, grouped). Maven and npm entries are added by T-M1.2, T-M1.3 and T-M1.6. Dependabot PRs merge through merge-gate with `LC-APPROVED PR-<n>` (git-governance §4).
 
-### 1.1 GitLab mirror CI (T-M1.11, DEC-060; kept as a backup, DEC-080)
+### 1.1 GitLab mirror CI (T-M1.11, DEC-060; kept as a backup, DEC-080) — **paused** (DEC-107)
+
+**Paused since 2026-10-09 (PO, DEC-107):** the 400 monthly compute minutes are used up, so `.gitlab-ci.yml`'s `workflow` rule creates no
+pipeline unless the project CI/CD variable `ENGLMS_GITLAB_CI=on` is set. GitHub Actions is the only CI. `scripts/gitlab-sync.sh` still mirrors
+`develop`, `master` and the given branches (the repository stays current). To resume: set the variable in GitLab (Settings → CI/CD → Variables) or
+revert the rule.
+
 
 Added while GitHub's Actions artifact storage was exhausted (until the 2026-10-01 reset; uploads are `continue-on-error`, DEC-053). Since the reset GitHub
 stores the reports again; the PO keeps the mirror as a second copy of the repository and its CI as a precaution (DEC-080). The private mirror `gitlab.com/duochou042004/eng-lms` runs `.gitlab-ci.yml` on every branch push:

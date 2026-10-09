@@ -6,6 +6,10 @@
 
 workflow:
   rules:
+    # PAUSED (DEC-107): the GitLab.com free compute minutes are used up; GitHub Actions is the only CI. The mirror is still synced.
+    # To resume, set the project CI/CD variable ENGLMS_GITLAB_CI=on (or delete these two lines).
+    - if: $ENGLMS_GITLAB_CI != "on"
+      when: never
     - if: $CI_COMMIT_BRANCH # branch pushes only (no tags, no merge-request pipelines)
   auto_cancel:
     on_new_commit: interruptible

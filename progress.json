@@ -16,7 +16,7 @@
       }
     ]
   },
-  "updatedAt": "2026-10-09T14:30:37Z",
+  "updatedAt": "2026-10-09T14:54:53Z",
   "updatedBy": "lead-coordinator (session 2026-10-09, Opus 5.5)",
   "phase": {
     "id": "P1",
@@ -321,7 +321,6 @@
   "decisions": {
     "log": "docs/10-governance/decision-log.md",
     "recent": [
-      "DEC-097",
       "DEC-098",
       "DEC-099",
       "DEC-100",
@@ -330,7 +329,8 @@
       "DEC-103",
       "DEC-104",
       "DEC-105",
-      "DEC-106"
+      "DEC-106",
+      "DEC-107"
     ],
     "pendingPO": [
       "OQ-03",
@@ -549,6 +549,13 @@
       "status": "approved",
       "at": "2026-10-09T14:30:37Z",
       "ref": "DEC-106"
+    },
+    {
+      "what": "Pause GitLab CI; keep the mirror synced",
+      "by": "PO",
+      "status": "approved",
+      "at": "2026-10-09T14:54:53Z",
+      "ref": "DEC-107"
     }
   ],
   "environment": {
@@ -961,6 +968,11 @@
       "at": "2026-10-09T14:30:37Z",
       "actor": "lead-coordinator",
       "event": "PO requirement DEC-106 (portable dev env); T-M1.19 packet written; next session on a new device implements it before T-M2.4."
+    },
+    {
+      "at": "2026-10-09T14:54:53Z",
+      "actor": "lead-coordinator",
+      "event": "PO: pause GitLab CI (DEC-107, T-M1.20): .gitlab-ci.yml workflow rule never unless ENGLMS_GITLAB_CI=on; mirror sync unchanged. Dependabot PRs #64-#70 being merged one by one."
     }
   ]
 }
