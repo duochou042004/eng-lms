@@ -166,7 +166,7 @@ cannot leave a usable session (S4-5), and a duplicate username is not written to
 - api-catalog "tutor: students" (guardians: `GET`/`POST …/guardians`, `PATCH`/`DELETE /tutor/guardians/{gid}` as built; learning profile `GET`/`PUT`;
   `guardians?` in the create body; mark the two `GET`s as additions); data-model §2 (both tables as built incl. the guardian `version` and the empty
   profile, `credential_stamp` in identity), §5 (guardians personal data, unchanged rule); validation-rules (≤ 10 guardians, guardian notes,
-  `learningNotes`, tag limits as built); security.md §4 (credential stamp next to the S4-1 status
+  `learningNotes`, tag limits as built; the `version` rule's exception: learning profile `version` `null`/absent = first creation, DEC-103); security.md §4 (credential stamp next to the S4-1 status
   check; rule 3 and scan extensions); test-strategy §4 (rules 3/4 as built); module-boundaries "students" (owns the two tables); authz-isolation skill
   (rule 3 now covers headers, cookies, matrix variables and `@RequestBody`/`@RequestPart`/`@ModelAttribute` fields incl. `@JsonProperty`/`@JsonAlias`
   names and array/collection/`Optional`/`Map` values; catch-all binders stay out); traceability-matrix rows for FR-STU-01/03/04;

@@ -102,3 +102,35 @@ Fixed in-task (DEC-088): N1 (empty profile answers `version` `null`; the first `
 AC3 gains the sequential case; DEC-103 updated), N2 (a mismatch also ends the request's remember-me token; AC7), N3 (migration test line), N4
 (distinct guardian emails; marker `SECRET-G1-A` matched case-insensitively), N5 (DEC-103 in the guardrail trace; skill line), N6 (command comment),
 N7 (SEC confirms the own-change acceptance at G3; recorded in the merge DEC).
+
+## Round 3
+
+- Reviewer: Docs Reviewer (fresh context; did not write the reviewed docs)
+- Date: 2026-10-09T07:53:12Z
+- Head SHA: `c21b697d50e5145f6e2a76141e005696a89f06db` (delta `eb4e451..c21b697`: packet, DEC-103, this file)
+- `./scripts/check-docs.sh`: **PASS** (197 markdown files, progress.json valid, sources intact, prompt within limit)
+
+### Round-2 findings re-checked
+
+| ID | Status | Note |
+|---|---|---|
+| N1 | Fixed | The empty profile now has `version` `null`, which no stored row can have. A first `PUT` with `null` does `INSERT … ON CONFLICT (student_id) DO NOTHING`; 0 rows inserted → 409. A sequential second `null` → 409 and the concurrent pair → 200/409 are both in AC3. There is no primary-key exception, no vendor log and no rollback-only transaction. Under concurrency, the second insert waits for the first to commit and then inserts nothing, so the design is correct. DEC-103 is updated. |
+| N2 | Fixed | A mismatch now also ends the current request's remember-me token, and AC7 asserts that "the next request with the same cookie is anonymous". This can be built: `AccountRememberMeServices.logout` already deletes only the current series and cancels the cookie, and it sits in the same package as `AccountStatusFilter`. |
+| N3 | Fixed | The test plan's migration test now covers the constraints, the cascade and the empty profile; the backfill text is gone. |
+| N4 | Fixed | Each student gets a distinct email, and the registered marker `SECRET-G1-A` matches `IsolationWorld.SECRET` in full. |
+| N5 | Fixed | DEC-103 is in guardrail answer 1, and the authz-isolation skill line is complete. |
+| N6 | Fixed | The ×20 comment names all four classes. |
+| N7 | Fixed | SEC confirms or rejects the own-change limitation at G3, and the merge DEC records it. |
+
+### New findings
+
+| ID | Severity | Location | Finding | Recommendation |
+|---|---|---|---|---|
+| R1 | S4 | `T-M2.9-students-part-2.md:71-75`, Docs to update `:165-168`; validation-rules "`version` required on update, integer ≥ 0"; api-conventions §5 (`:75`, "a missing one `REQUIRED`") | `PUT …/learning-profile` with `version` `null` is a documented exception (DEC-103) to the house rule that `version` is required. Jackson cannot tell an absent `version` from a `null` one, so here an absent `version` means "create" instead of 422 `REQUIRED`. This is harmless, because an existing row → 409, but the general docs will contradict the endpoint. | In the implementation PR, add a validation-rules (or api-conventions §5) note: "learning profile: `version` `null`/absent = first creation (DEC-103)". Add validation-rules `version` to Docs to update. This can be done at implementation (G1); it does not need another packet round. |
+
+No S1, S2, S3 or SCOPE findings. The packet meets G0 from the documentation side. The PO start signal and the `ready` status are still pending.
+
+DOCS-REVIEW T-M2.9: PASS
+
+### LC response (round 3, 2026-10-09)
+R1 (S4) fixed in the packet: validation-rules `version` exception added to "Docs to update" (written in the implementation PR).
