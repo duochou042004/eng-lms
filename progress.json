@@ -16,7 +16,7 @@
       }
     ]
   },
-  "updatedAt": "2026-10-09T07:56:20Z",
+  "updatedAt": "2026-10-09T08:06:16Z",
   "updatedBy": "lead-coordinator (session 2026-10-09, Opus 5.5)",
   "phase": {
     "id": "P1",
@@ -32,21 +32,21 @@
   "currentTask": {
     "id": "T-M2.9",
     "title": "Students part 2: guardians, tutor-private learning profile, DEC-097 (4) rule extensions, credential stamp (S4-5), duplicate-username log (S4-2)",
-    "status": "ready",
+    "status": "in_progress",
     "ownerRole": "BE",
-    "branch": null,
+    "branch": "feature/T-M2.9-students-part-2",
     "packet": "docs/tasks/T-M2.9-students-part-2.md",
-    "pr": "71",
+    "pr": null,
     "lastCommit": null,
-    "startedAt": null,
+    "startedAt": "2026-10-09T08:06:16Z",
     "entryGate": [
       "T-M2.3 merged — met (f0e228c, DEC-101)",
-      "Packet G0 — met (DOCS-REVIEW PASS round 3, PR #71)",
+      "Packet G0 — met (PR #71, 4c02ee0)",
       "PO start signal — given (DEC-104)"
     ],
     "nextSteps": [
-      "Merge the packet PR #71 (verdicts, merge-gate, gitlab-sync)",
-      "Branch feature/T-M2.9-students-part-2 from develop, status in_progress, backend-implementer"
+      "backend-implementer implements AC1-AC10 with tests and evidence/T-M2.9/summary.md",
+      "G3: fresh qa-evaluator, then fresh security-reviewer; x20 race/stamp runs"
     ],
     "trace": [
       "backlog M2",
