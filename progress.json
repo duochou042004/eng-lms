@@ -36,7 +36,7 @@
     "ownerRole": "BE",
     "branch": "feature/T-M2.9-students-part-2",
     "packet": "docs/tasks/T-M2.9-students-part-2.md",
-    "pr": null,
+    "pr": "72",
     "lastCommit": "7550855",
     "startedAt": "2026-10-09T08:06:16Z",
     "entryGate": [
