@@ -36,12 +36,12 @@
     "ownerRole": "BE",
     "branch": null,
     "packet": "docs/tasks/T-M1.19-portable-dev-env.md",
-    "pr": null,
+    "pr": "75",
     "lastCommit": null,
     "startedAt": null,
     "entryGate": [
       "T-M2.9 merged — met (37e8ce0)",
-      "Packet G0 — packet PR #75 (fresh DOCS-REVIEW)",
+      "Packet G0 — met (DOCS-REVIEW PASS round 3, PR #75)",
       "PO start signal — given (DEC-106)"
     ],
     "nextSteps": [
@@ -293,8 +293,8 @@
   },
   "gates": {
     "G0": {
-      "status": "pending",
-      "note": "T-M1.19 packet in review (T-M2.9 passed G0: PR #71, DEC-104)"
+      "status": "pass",
+      "note": "T-M1.19 packet: DOCS-REVIEW PASS round 3 (PR #75)"
     },
     "G1": {
       "status": "n/a",
