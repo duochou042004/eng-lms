@@ -1,0 +1,101 @@
+=== run 1 19:34:11
+[INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 23.72 s -- in com.englms.identity.CredentialStampTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 4.317 s -- in com.englms.students.GuardianCapRaceTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.670 s -- in com.englms.students.StudentCreateRaceTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.090 s -- in com.englms.students.LearningProfileFirstPutRaceTest
+=== run 2 19:35:22
+[INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 23.51 s -- in com.englms.identity.CredentialStampTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 4.349 s -- in com.englms.students.GuardianCapRaceTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.651 s -- in com.englms.students.StudentCreateRaceTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.083 s -- in com.englms.students.LearningProfileFirstPutRaceTest
+=== run 3 19:36:32
+[INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 23.44 s -- in com.englms.identity.CredentialStampTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 4.460 s -- in com.englms.students.GuardianCapRaceTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.643 s -- in com.englms.students.StudentCreateRaceTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.080 s -- in com.englms.students.LearningProfileFirstPutRaceTest
+=== run 4 19:37:42
+[INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 23.66 s -- in com.englms.identity.CredentialStampTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 4.487 s -- in com.englms.students.GuardianCapRaceTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.712 s -- in com.englms.students.StudentCreateRaceTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.088 s -- in com.englms.students.LearningProfileFirstPutRaceTest
+=== run 5 19:38:52
+[INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 23.58 s -- in com.englms.identity.CredentialStampTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 4.284 s -- in com.englms.students.GuardianCapRaceTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.674 s -- in com.englms.students.StudentCreateRaceTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.084 s -- in com.englms.students.LearningProfileFirstPutRaceTest
+=== run 6 19:40:02
+[INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 23.58 s -- in com.englms.identity.CredentialStampTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 4.083 s -- in com.englms.students.GuardianCapRaceTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.669 s -- in com.englms.students.StudentCreateRaceTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.086 s -- in com.englms.students.LearningProfileFirstPutRaceTest
+=== run 7 19:41:12
+[INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 24.01 s -- in com.englms.identity.CredentialStampTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 4.270 s -- in com.englms.students.GuardianCapRaceTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.677 s -- in com.englms.students.StudentCreateRaceTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.091 s -- in com.englms.students.LearningProfileFirstPutRaceTest
+=== run 8 19:42:24
+[INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 23.43 s -- in com.englms.identity.CredentialStampTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 4.517 s -- in com.englms.students.GuardianCapRaceTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.680 s -- in com.englms.students.StudentCreateRaceTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.099 s -- in com.englms.students.LearningProfileFirstPutRaceTest
+=== run 9 19:43:34
+[INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 23.56 s -- in com.englms.identity.CredentialStampTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 4.254 s -- in com.englms.students.GuardianCapRaceTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.625 s -- in com.englms.students.StudentCreateRaceTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.079 s -- in com.englms.students.LearningProfileFirstPutRaceTest
+=== run 10 19:44:45
+[INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 23.85 s -- in com.englms.identity.CredentialStampTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 4.336 s -- in com.englms.students.GuardianCapRaceTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.668 s -- in com.englms.students.StudentCreateRaceTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.079 s -- in com.englms.students.LearningProfileFirstPutRaceTest
+=== run 11 19:45:55
+[INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 23.81 s -- in com.englms.identity.CredentialStampTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 4.332 s -- in com.englms.students.GuardianCapRaceTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.684 s -- in com.englms.students.StudentCreateRaceTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.085 s -- in com.englms.students.LearningProfileFirstPutRaceTest
+=== run 12 19:47:06
+[INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 23.66 s -- in com.englms.identity.CredentialStampTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 4.438 s -- in com.englms.students.GuardianCapRaceTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.676 s -- in com.englms.students.StudentCreateRaceTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.107 s -- in com.englms.students.LearningProfileFirstPutRaceTest
+=== run 13 19:48:16
+[INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 23.61 s -- in com.englms.identity.CredentialStampTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 4.313 s -- in com.englms.students.GuardianCapRaceTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.657 s -- in com.englms.students.StudentCreateRaceTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.075 s -- in com.englms.students.LearningProfileFirstPutRaceTest
+=== run 14 19:49:27
+[INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 23.76 s -- in com.englms.identity.CredentialStampTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 4.341 s -- in com.englms.students.GuardianCapRaceTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.671 s -- in com.englms.students.StudentCreateRaceTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.086 s -- in com.englms.students.LearningProfileFirstPutRaceTest
+=== run 15 19:50:37
+[INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 23.73 s -- in com.englms.identity.CredentialStampTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 4.243 s -- in com.englms.students.GuardianCapRaceTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.674 s -- in com.englms.students.StudentCreateRaceTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.086 s -- in com.englms.students.LearningProfileFirstPutRaceTest
+=== run 16 19:51:47
+[INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 23.40 s -- in com.englms.identity.CredentialStampTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 4.464 s -- in com.englms.students.GuardianCapRaceTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.700 s -- in com.englms.students.StudentCreateRaceTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.093 s -- in com.englms.students.LearningProfileFirstPutRaceTest
+=== run 17 19:52:58
+[INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 23.80 s -- in com.englms.identity.CredentialStampTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 4.707 s -- in com.englms.students.GuardianCapRaceTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.720 s -- in com.englms.students.StudentCreateRaceTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.091 s -- in com.englms.students.LearningProfileFirstPutRaceTest
+=== run 18 19:54:09
+[INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 24.10 s -- in com.englms.identity.CredentialStampTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 4.400 s -- in com.englms.students.GuardianCapRaceTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.689 s -- in com.englms.students.StudentCreateRaceTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.088 s -- in com.englms.students.LearningProfileFirstPutRaceTest
+=== run 19 19:55:20
+[INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 24.76 s -- in com.englms.identity.CredentialStampTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 4.371 s -- in com.englms.students.GuardianCapRaceTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.672 s -- in com.englms.students.StudentCreateRaceTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.117 s -- in com.englms.students.LearningProfileFirstPutRaceTest
+=== run 20 19:56:31
+[INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 24.33 s -- in com.englms.identity.CredentialStampTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 4.463 s -- in com.englms.students.GuardianCapRaceTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.705 s -- in com.englms.students.StudentCreateRaceTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.098 s -- in com.englms.students.LearningProfileFirstPutRaceTest
+ALL 20 PASSED
