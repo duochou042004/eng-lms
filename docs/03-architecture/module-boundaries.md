@@ -42,13 +42,17 @@
 - **API:** `StudentDirectory.require(studentId)`, `summary(studentId)`, `findActive()`, `studentIdForUser(userId)`; create/update commands.
 - **Events:** `StudentCreated`, `StudentStatusChanged`.
 - **Depends on:** identity, shared.
-- **As built (T-M2.3):** `@ApplicationModule(allowedDependencies = {"shared", "identity"})`. Owns `student` (guardians and the learning profile: T-M2.9).
+- **As built (T-M2.3):** `@ApplicationModule(allowedDependencies = {"shared", "identity"})`. Owns `student`, `student_guardian` and `student_learning_profile` (the last two since T-M2.9).
   Public API `StudentDirectory` (`require(studentId)` → `StudentRef {studentId, userId, fullName}` or 404, `studentIdForUser(userId)`); `summary` and
   `findActive` arrive with their first consumer. Events in `students.events` (`@NamedInterface("events")`): `StudentCreated {studentId, userId, actorUserId}`,
   `StudentStatusChanged {studentId, userId, from, to, actorUserId}` (status names), `StudentUsernameChanged {studentId, userId, actorUserId}`; IDs and
   status names only. `internal.domain` (`Student`, `StudentStatus` with the §4.1 transitions, `StudentProfile`, `ContactHandle`, `UsernameSuggestions`),
   `internal.persistence` (`StudentRepository`), `internal.app` (`StudentService`: the use cases, also the `StudentDirectory` and the shared
-  `StudentPrincipals` implementation), `internal.web.tutor` (`TutorStudentController`, tutor DTOs). Usernames, passwords and account status go through
+  `StudentPrincipals` implementation), `internal.web.tutor` (`TutorStudentController`, tutor DTOs).
+  **T-M2.9:** `internal.domain` `Guardian`, `GuardianDetails`, `LearningProfile`, `LearningProfileDetails`, `CustomField` (the profile types are
+  `@TutorPrivate`); `internal.persistence` `GuardianRepository`, `LearningProfileRepository` (`insertEmptyIfAbsent`: `INSERT … ON CONFLICT DO NOTHING`),
+  `StudentRepository.findForUpdateById` (row lock for guardian appends); `internal.app` `GuardianService`, `LearningProfileService`;
+  `internal.web.tutor` `TutorGuardianController`, `TutorLearningProfileController`. No new API, event or dependency. Usernames, passwords and account status go through
   `AccountApi` in the same transaction; queries never join `user_account`.
 
 ## goals

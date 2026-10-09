@@ -138,11 +138,30 @@ The **authz matrix test** enumerates `RequestMappingHandlerMapping`. For each ha
   authenticated `/api/**` request (one primary-key read): unless `ACTIVE` (or if the account is gone), the session is invalidated, the context cleared and
   the request continues as anonymous, so protected paths and `GET /auth/session` answer 401 `SESSION_EXPIRED` while `login`, `logout` and `/meta` keep
   working on that device. Remember-me already refuses a non-active account (401 `SESSION_EXPIRED`). Both refusals also end every session and
-  remember-me token of the account (`SessionTerminator.endAllSessions`; T-M2.3 G3 QA-S4-1), so re-enabling the account revives none of them. The same window for a login racing a tutor
-  **password reset** is not closed (the old session ID is stored after `endAllSessions`; the account stays `ACTIVE`): noted for SEC (T-M2.3 summary).
+  remember-me token of the account (`SessionTerminator.endAllSessions`; T-M2.3 G3 QA-S4-1), so re-enabling the account revives none of them.
+- **Credential stamp (SEC S4-5, DEC-100, T-M2.9):** the same window for a login racing a **password reset by someone else**: `user_account.credential_stamp`
+  (`bigint`, default 0) is incremented in the transaction of the tutor's reset of a student and of the operator's reset of the tutor (runbooks §4), never
+  by the user's own change (that flow rotates the caller's session and ends the others; bumping would refuse a parallel request of the kept session,
+  FR-AUTH-05). `CurrentUser` carries the stamp read at sign-in (the locked account read that checks the password; remember-me reads it with the
+  account). `AccountStatusFilter`'s primary-key read returns status **and** stamp (still one statement); a differing stamp invalidates **only** the
+  current session and the current request's remember-me token (series deleted, cookie cancelled, as a logout of this request) and the request goes on as
+  anonymous, 401 `SESSION_EXPIRED`: the reset already ended everything older, and a sign-in after it (current stamp) keeps working. A remember-me token
+  inserted by a login whose account read preceded a concurrent reset would outlive the reset's token deletion, so after the insert the stamp is read
+  `FOR SHARE` (it waits for a reset holding the row) and on a mismatch the token is deleted and no cookie is set. The stamp is in no response and no
+  log line (`CurrentUser.toString()` omits it). A session stored before the column existed reads back with stamp 0 (record deserialisation, same
+  `serialVersionUID`). Known limitation (T-M2.9 summary, SEC at G3): a login with the **old** password racing the user's **own** change can keep a session.
+- **No username in the log on a duplicate (SEC S4-2, DEC-100, T-M2.9):** Hibernate 7's `SqlExceptionHelper` logs the PostgreSQL message of a refused
+  statement (logger `org.hibernate.orm.jdbc.error`) before the application translates it; for a losing duplicate-username insert or rename that message
+  names the username. The logger is `off` (`application.properties`); a translated violation (409 `USERNAME_TAKEN`) logs nothing, and any unexpected SQL
+  error still logs through `ProblemDetailsAdvice` ("Unhandled exception" with its cause, 500). The PostgreSQL server's own log is out of scope (M8).
 - **Tutor endpoints** (api-catalog "tutor: students"): all `@Audience(TUTOR)` with registry entries (anonymous 401, tutor 2xx, student A and must-change
   403, B-on-A n/a). The isolation world gains student rows (A, B, C archived, must-change) with `SECRET-*` markers in the note and a contact-handle
-  value (`StudentsWorldContributor`, sample key `sid`).
+  value (`StudentsWorldContributor`, sample key `sid`). T-M2.9 adds the guardian and learning-profile endpoints (sample key `gid` = A's guardian) and,
+  for A, B and C, a guardian and a stored learning profile with `SECRET-*` markers in every tutor-only text field (B's guardian ID is B's).
+- **Rule 3 and scan extensions (DEC-097 (4), T-M2.9):** ArchUnit rule 3 also checks `@RequestHeader`, `@CookieValue` and `@MatrixVariable` names and the
+  fields of `@RequestBody`/`@RequestPart`/`@ModelAttribute` (and unannotated) parameter types, `@JsonProperty`/`@JsonAlias` names included, nested,
+  through arrays, collections, `Optional` and `Map` values (test-strategy §4). Rule 4 stays non-transitive. The isolation scan also matches B's UUIDs
+  without dashes. Catch-all binders stay out of the name check (DEC-096).
 
 ## 5. Transport and headers
 

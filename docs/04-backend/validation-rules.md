@@ -17,7 +17,7 @@
 | Phone | 6–20 characters from `[0-9 +().-]` |
 | Label/value lists (custom fields, contact handles, metadata) | label 1–60, value 0–500, ≤ 30 entries |
 | Position lists (`order` PUT) | the full set of current child IDs, no duplicates |
-| `version` | required on update, integer ≥ 0 |
+| `version` | required on update, integer ≥ 0. Exception (DEC-103, T-M2.9): the learning-profile `PUT` takes `version` `null` or absent as "first creation" (409 `STALE_VERSION` once a profile exists) |
 
 ## identity / students
 
@@ -29,9 +29,12 @@
 | student note | text 0–2,000 (T-M2.3; the "Description" limit) |
 | student email / phone / contact handles | the "Common" rules (contact handles: label 1–60, value 0–500, ≤ 30 entries); field codes api-conventions §5 |
 | student status transition | per domain-model §4.1 |
-| guardian.name | 1–120; relationship 0–40 |
+| guardian.name | 1–120 (cannot be cleared); relationship 0–40; phone / email the "Common" rules; notes 0–2,000 (Description) (T-M2.9) |
+| guardians per student | ≤ 10 (DEC-103): an 11th `POST` → 422 `TOO_MANY` on `guardians`; at create, `guardians` ≤ 10, field paths `guardians[i].name` |
 | learningProfile.currentLevel | 0–40 |
-| strengths / weaknesses | tags (≤ 30 each) |
+| learningProfile.learningNotes | 0–2,000 (Description) |
+| strengths / weaknesses | the Tag rule (1–40, no commas or control characters; empty → `REQUIRED`, comma → `INVALID_FORMAT`), deduplicated case-insensitively keeping the first spelling, then ≤ 30 each (`TOO_MANY`) (T-M2.9) |
+| learningProfile.customFields | the label/value list rule (label 1–60, value 0–500, ≤ 30) |
 
 ## goals
 

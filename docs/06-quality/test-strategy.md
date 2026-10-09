@@ -31,7 +31,10 @@
   deletes every session). Today it holds the tutor, A and B (active), C as a **disabled** account (archived arrives with the students module; C cannot
   sign in, so it never acts) and a must-change student; usernames carry a random suffix (`student-b-<8 hex>`), so a scan hit is never a coincidence.
   Later modules add A-owned and B-owned rows and `SECRET-*` markers through `IsolationWorldContributor` (a Spring bean in test sources). The scan
-  (`SecurityHarness.assertNoLeak`) searches the headers and body of student A's response to every registry entry, case-insensitively.
+  (`SecurityHarness.assertNoLeak`) searches the headers and body of student A's response to every registry entry, case-insensitively. Since T-M2.9 a
+  UUID registered with `ownedByB` is matched in its canonical and its dashless form (DEC-097 (4) (c); other encodings are out of scope, no encoder
+  exists in the app), and the students contributor adds a guardian and a stored learning profile for A, B and C with a `SECRET-*` marker in every
+  tutor-only text field whose format allows one.
 - Builders (Java test data builders) for aggregates. Never depend on the order of generated IDs.
 - Time: tests inject a fixed `Clock`. Deadlines and overdue logic are tested at the boundaries (just before, at, and just after).
 - The web uses MSW handlers generated from `api/openapi.json` examples where possible.
@@ -50,11 +53,19 @@
 
 1. Controllers (`..internal.web..`) do not access `..internal.persistence..`.
 2. No class outside a module accesses its `..internal..` packages (also covered by Modulith).
-3. `..web.student..` handler methods have no parameter, `@PathVariable` or `@RequestParam` whose (effective) name is `studentId` or ends in `StudentId`.
+3. `..web.student..` handler methods have no parameter, `@PathVariable`, `@RequestParam`, `@RequestHeader`, `@CookieValue` or `@MatrixVariable` whose
+   (effective) name is `studentId` or ends in `StudentId` (case, `_` and `-` ignored), and no such field in the type of a `@RequestBody`, `@RequestPart` or
+   `@ModelAttribute` parameter (or of an unannotated one, which Spring binds as a model attribute): field and record-component names plus their
+   `@JsonProperty`/`@JsonAlias` names, recursing into nested `com.englms`/`fixture` types through arrays, `Collection`/`Optional` elements and `Map`
+   values, cycle-safe; the report names the field path (T-M2.9, DEC-097 (4) (a)). `CurrentStudent` parameters are exempt. Catch-all binders
+   (`@RequestParam Map`, `@RequestHeader Map`/`HttpHeaders`, `HttpServletRequest`, `WebRequest`) are out of reach of a name check (DEC-096): the
+   `SECRET-*`/B-ID scan and the SEC review of every `..web.student..` handler are their backstop.
 4. `..web.student..` classes (every class, not only DTOs) do not depend on `com.englms.notes..`, on `LearningProfile*`, on types annotated `@TutorPrivate`,
-   or on types with a `@TutorPrivate` field (inherited fields included; T-M2.2 SEC S3-4).
+   or on types with a `@TutorPrivate` field (inherited fields included; T-M2.2 SEC S3-4). Direct dependencies only (not transitive, DEC-097 (4) (b));
+   the `SECRET-*` scan is the backstop.
    Rules 3 and 4 are implemented (T-M2.2) in `architecture/StudentIsolationRulesTest` (`@Tag("security")`; parameter names by reflection, the build
-   compiles with `-parameters`), proven against the violating classes in `src/test/java/fixture/archunit/`.
+   compiles with `-parameters`), proven against the violating classes in `src/test/java/fixture/archunit/` (T-M2.9: one fixture per way for rule 3,
+   18 violations, and a clean class with `CurrentStudent`, clean header/cookie names and a cyclic body type).
 5. No `@Transactional` on controllers. No field injection.
 6. Forbidden identifiers in `src/main` (case-insensitive): `toeic`, `ielts`, `thpt`, `examtype`, `part5`, `tenant`, `payment`, `invoice`, `openai`, `anthropic`, `chatgpt`
    (the same list as coding-agent-rules §7; `examtype` and `part5` since T-M1.8).
