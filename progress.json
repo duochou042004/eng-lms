@@ -16,7 +16,7 @@
       }
     ]
   },
-  "updatedAt": "2026-10-09T10:30:00Z",
+  "updatedAt": "2026-10-09T13:50:00Z",
   "updatedBy": "backend-implementer (session 2026-10-09, Opus 5.5)",
   "phase": {
     "id": "P1",
@@ -37,7 +37,7 @@
     "branch": "feature/T-M2.9-students-part-2",
     "packet": "docs/tasks/T-M2.9-students-part-2.md",
     "pr": "72",
-    "lastCommit": "f7e0b37",
+    "lastCommit": "2ea63f3",
     "startedAt": "2026-10-09T08:06:16Z",
     "entryGate": [
       "T-M2.3 merged — met (f0e228c, DEC-101)",
@@ -919,6 +919,11 @@
       "at": "2026-10-09T10:30:00Z",
       "actor": "backend-implementer",
       "event": "T-M2.9 QA round 1 fixes at f7e0b37 (DEC-088 in-task): F1 tags refuse every control character; F2 write timestamps truncated to microseconds. Backend verify 465 tests, -Dgroups=security 158, contract unchanged."
+    },
+    {
+      "at": "2026-10-09T13:50:00Z",
+      "actor": "backend-implementer",
+      "event": "T-M2.9 SEC round 1 fixes at 2ea63f3 (DEC-088 in-task): S3-1 rule 3 on @Valid/any non-name-bound parameter, S3-2 sid, S4-3(a) type arguments, S4-2 tag list cap, S4-1 logServerErrorDetail=false, S4-4 wording. Backend verify 466 tests, -Dgroups=security 158, x20 20/20; no DTO change."
     }
   ]
 }
