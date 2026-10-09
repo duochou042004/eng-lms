@@ -41,6 +41,17 @@ class StudentFieldsTest {
 		assertThat(codes()).containsExactly("strengths:TOO_MANY");
 	}
 
+	/** T-M2.9 QA F1: a tag refuses every control character, also tab, LF, CR (even at the ends), DEL and C1. */
+	@Test
+	void tagsRefuseEveryControlCharacter() {
+		List<String> tags = StudentFields.tags(List.of("a\tb", "line\n", "\rx", "del\u007f", "nel\u0085", "ok"), "strengths",
+				problems);
+
+		assertThat(tags).containsExactly("ok");
+		assertThat(codes()).containsExactly("strengths[0]:INVALID_FORMAT", "strengths[1]:INVALID_FORMAT",
+				"strengths[2]:INVALID_FORMAT", "strengths[3]:INVALID_FORMAT", "strengths[4]:INVALID_FORMAT");
+	}
+
 	@Test
 	void customFieldsFollowTheLabelValueRule() {
 		List<CustomField> fields = StudentFields.customFields(

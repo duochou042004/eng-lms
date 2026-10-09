@@ -64,7 +64,7 @@ public class GuardianService {
 					"At most " + StudentFields.GUARDIANS_MAX + " guardians")));
 		}
 		Guardian guardian = guardians.saveAndFlush(new Guardian(ids.newId(), studentId,
-				guardians.maxPosition(studentId) + 1, details, tutorId, clock.instant()));
+				guardians.maxPosition(studentId) + 1, details, tutorId, StudentFields.now(clock)));
 		return GuardianView.of(guardian);
 	}
 
@@ -72,7 +72,7 @@ public class GuardianService {
 	void addAll(UUID studentId, List<GuardianDetails> details, UUID tutorId) {
 		List<Guardian> created = new ArrayList<>();
 		for (int i = 0; i < details.size(); i++) {
-			created.add(new Guardian(ids.newId(), studentId, i + 1, details.get(i), tutorId, clock.instant()));
+			created.add(new Guardian(ids.newId(), studentId, i + 1, details.get(i), tutorId, StudentFields.now(clock)));
 		}
 		guardians.saveAllAndFlush(created);
 	}
@@ -100,7 +100,7 @@ public class GuardianService {
 		if (!problems.isEmpty()) {
 			throw ProblemException.validation(problems);
 		}
-		guardian.apply(details, tutorId, clock.instant());
+		guardian.apply(details, tutorId, StudentFields.now(clock));
 		guardians.flush();
 		return GuardianView.of(guardian);
 	}

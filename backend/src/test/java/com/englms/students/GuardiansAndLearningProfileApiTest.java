@@ -419,6 +419,37 @@ class GuardiansAndLearningProfileApiTest {
 		assertThat(deduplicated.json().path("strengths").size()).isEqualTo(30);
 	}
 
+	/** T-M2.9 QA F1: tab, LF, CR, DEL and C1 characters in a tag are 422 INVALID_FORMAT naming the tag. */
+	@Test
+	void controlCharactersInATagAre422() {
+		String sid = createStudent("tag.controls");
+
+		Response response = putProfile(sid, "{\"version\":null,\"strengths\":[\"a\\tb\",\"c\\n\",\"\\rd\"],"
+				+ "\"weaknesses\":[\"e\\u007f\",\"f\\u0085\"]}");
+
+		assertThat(response.status()).isEqualTo(422);
+		assertThat(fieldCodes(response)).containsExactlyInAnyOrder("strengths[0]:INVALID_FORMAT",
+				"strengths[1]:INVALID_FORMAT", "strengths[2]:INVALID_FORMAT", "weaknesses[0]:INVALID_FORMAT",
+				"weaknesses[1]:INVALID_FORMAT");
+		assertThat(count("SELECT count(*) FROM student_learning_profile")).isZero();
+	}
+
+	/** T-M2.9 QA F2: write timestamps are stored at microsecond precision, so a write response equals the next read. */
+	@Test
+	void aWriteResponseCarriesTheSameUpdatedAtAsTheNextRead() {
+		String sid = createStudent("precise");
+		clock.set(NOW.plusNanos(123_456_789));
+
+		Response put = putProfile(sid, "{\"version\":null,\"currentLevel\":\"B1\"}");
+		Response patched = tutor.send("PATCH", STUDENTS + "/" + sid, "{\"version\":0,\"note\":\"n\"}", true);
+
+		assertThat(put.json().path("updatedAt").asString()).isEqualTo("2026-10-09T03:00:00.123456Z")
+			.isEqualTo(profile(sid).json().path("updatedAt").asString());
+		assertThat(patched.json().path("updatedAt").asString())
+			.isEqualTo(tutor.get(STUDENTS + "/" + sid).json().path("updatedAt").asString());
+		assertThat(put.body()).isEqualTo(profile(sid).body());
+	}
+
 	// ---- AC9: logs -------------------------------------------------------------------------------------------------
 
 	@Test

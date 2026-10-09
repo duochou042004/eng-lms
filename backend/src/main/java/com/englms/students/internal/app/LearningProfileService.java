@@ -63,7 +63,7 @@ public class LearningProfileService {
 		if (!problems.isEmpty()) {
 			throw ProblemException.validation(problems);
 		}
-		Instant now = clock.instant();
+		Instant now = StudentFields.now(clock);
 		if (command.version() == null && profiles.insertEmptyIfAbsent(studentId, now, tutorId) == 0) {
 			throw stale();
 		}

@@ -1,5 +1,8 @@
 package com.englms.students.internal.app;
 
+import java.time.Clock;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -190,7 +193,7 @@ final class StudentFields {
 	}
 
 	/**
-	 * The common Tag rule (1–40, no commas or control characters), deduplicated case-insensitively keeping the first
+	 * The common Tag rule (1–40, no commas or control characters of any kind), deduplicated case-insensitively keeping the first
 	 * spelling, then at most {@value #TAGS_MAX}.
 	 */
 	static List<String> tags(List<String> raw, String name, List<FieldProblem> problems) {
@@ -200,11 +203,13 @@ final class StudentFields {
 		Map<String, String> unique = new LinkedHashMap<>();
 		for (int i = 0; i < raw.size(); i++) {
 			String field = name + "[" + i + "]";
-			int before = problems.size();
-			String tag = text(raw.get(i), field, problems);
-			if (problems.size() > before) {
+			String value = raw.get(i);
+			// Any control character (C0 incl. tab/LF/CR, DEL, C1), checked before trimming (T-M2.9 QA F1).
+			if (value != null && value.codePoints().anyMatch(Character::isISOControl)) {
+				problems.add(problem(field, ProblemCodes.INVALID_FORMAT, "Control characters are not allowed"));
 				continue;
 			}
+			String tag = text(value);
 			if (tag == null) {
 				problems.add(problem(field, ProblemCodes.REQUIRED, "Required"));
 			}
@@ -230,6 +235,11 @@ final class StudentFields {
 				optionalText(raw.relationship(), prefix + "relationship", RELATIONSHIP_MAX, problems),
 				phone(raw.phone(), prefix + "phone", problems), email(raw.email(), prefix + "email", problems),
 				optionalText(raw.notes(), prefix + "notes", NOTE_MAX, problems));
+	}
+
+	/** Write timestamps at the database's precision (microseconds), so a write response equals the next read (T-M2.9 QA F2). */
+	static Instant now(Clock clock) {
+		return clock.instant().truncatedTo(ChronoUnit.MICROS);
 	}
 
 	/** The guardians of a new student (FR-STU-01): at most {@value #GUARDIANS_MAX}, field paths {@code guardians[i].name}. */

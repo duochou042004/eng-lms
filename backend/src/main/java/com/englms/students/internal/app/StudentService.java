@@ -95,7 +95,7 @@ public class StudentService implements StudentDirectory, StudentPrincipals {
 			throw ProblemException.validation(problems);
 		}
 		TemporaryCredentials credentials = accounts.createStudentAccount(username, password);
-		Instant now = clock.instant();
+		Instant now = StudentFields.now(clock);
 		Student student = students.saveAndFlush(new Student(ids.newId(), credentials.userId(), profile, tutorId, now));
 		guardians.addAll(student.id(), guardianDetails, tutorId);
 		events.publishEvent(new StudentCreated(student.id(), student.userId(), tutorId));
@@ -160,7 +160,7 @@ public class StudentService implements StudentDirectory, StudentPrincipals {
 		if (!problems.isEmpty()) {
 			throw ProblemException.validation(problems);
 		}
-		student.apply(new StudentProfile(fullName, email, phone, handles, note), tutorId, clock.instant());
+		student.apply(new StudentProfile(fullName, email, phone, handles, note), tutorId, StudentFields.now(clock));
 		String currentUsername = username(student);
 		if (username != null && !username.strip().equals(currentUsername)) {
 			accounts.changeUsername(student.userId(), username);
@@ -179,7 +179,7 @@ public class StudentService implements StudentDirectory, StudentPrincipals {
 		if (!student.status().canBecome(target)) {
 			throw new ProblemException(HttpStatus.CONFLICT, ProblemCodes.INVALID_STATE_TRANSITION);
 		}
-		StudentStatus from = student.changeStatus(target, tutorId, clock.instant());
+		StudentStatus from = student.changeStatus(target, tutorId, StudentFields.now(clock));
 		if (target == StudentStatus.ARCHIVED) {
 			accounts.disable(student.userId());
 		}
