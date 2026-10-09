@@ -16,7 +16,7 @@
       }
     ]
   },
-  "updatedAt": "2026-10-09T14:54:53Z",
+  "updatedAt": "2026-10-09T15:46:04Z",
   "updatedBy": "lead-coordinator (session 2026-10-09, Opus 5.5)",
   "phase": {
     "id": "P1",
@@ -973,6 +973,11 @@
       "at": "2026-10-09T14:54:53Z",
       "actor": "lead-coordinator",
       "event": "PO: pause GitLab CI (DEC-107, T-M1.20): .gitlab-ci.yml workflow rule never unless ENGLMS_GITLAB_CI=on; mirror sync unchanged. Dependabot PRs #64-#70 being merged one by one."
+    },
+    {
+      "at": "2026-10-09T15:46:04Z",
+      "actor": "lead-coordinator",
+      "event": "Merged GitLab CI pause (PR #76, ed442e0, DEC-107) and Dependabot PRs #64-#70 (develop e1611a4); mirror synced with -o ci.skip; GitLab shows skipped pipelines only."
     }
   ]
 }
