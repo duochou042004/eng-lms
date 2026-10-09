@@ -66,4 +66,4 @@ jobs:
           retention-days: 5
       - name: Warn when the test-report upload failed
         if: always() && steps.upload-test-reports.outcome == 'failure'
-        run: echo "::warning title=Test reports not uploaded::The backend-test-reports artifact upload failed (storage quota?); see the GitLab mirror pipeline (DEC-060; paused, DEC-107: re-run the job)."
+        run: echo "::warning title=Test reports not uploaded::The backend-test-reports artifact upload failed (storage quota?); see the GitLab mirror pipeline (DEC-060; paused by DEC-107, so re-run the job)."
