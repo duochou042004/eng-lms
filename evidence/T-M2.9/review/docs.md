@@ -1,0 +1,136 @@
+# DOCS-REVIEW T-M2.9: Students part 2 (packet)
+
+## Round 1
+
+- Reviewer: Docs Reviewer (fresh context; did not write the reviewed docs)
+- Date: 2026-10-09T07:47:20Z
+- Branch: `docs/T-M2.9-students-part-2` (PR #71)
+- Head SHA: `a8b864aa809df7815f7c3c2900511f6ceef01eec`
+- Diff (`origin/develop...HEAD`): `docs/tasks/T-M2.9-students-part-2.md` (new, 162 lines), `docs/10-governance/decision-log.md` (DEC-102),
+  `docs/tasks/backlog.md` (T-M2.9, T-M7.1), `docs/02-requirements/functional-requirements.md` (FR-STU-01, FR-GOAL-02),
+  `docs/02-requirements/traceability-matrix.md` (§4.2), `docs/04-backend/api-catalog.md` (create row), `docs/05-frontend/ux-flows.md` (F2 step 4), `progress.json`
+- `./scripts/check-docs.sh`: **PASS** (196 markdown files, progress.json valid, sources intact, prompt within limit)
+
+### Checks performed
+
+| Check | Result |
+|---|---|
+| Template / G0 completeness | All template sections are present. Out of scope sits under Scope, and there is no "Status transitions" section; both follow the T-M2.3 precedent. 10 ACs, an estimate of 2 agent-days (at the limit, D16), one PR. T-M2.3 is merged (`f0e228c`). Status `draft` in both the packet and progress.json. The branch and the PO start signal are start-time items. |
+| Traceability / guardrails (scope.md §6) | Guardians trace to SPEC §4.2/§5.6, FR-STU-01/03 and A-005. The profile traces to SPEC §8, FR-STU-04, A-008 and OQ-06 (default accepted). The rule and scan extensions trace to DEC-096/097 (4). S4-2/S4-5 trace to DEC-100 and evidence/T-M2.3/review/security.md. All five guardrails are answered. There is no parent portal, no account and no notification, so SPEC §5.6 is not contradicted. No exam semantics: `currentLevel` is free text and the tags and labels are tutor data. **No SCOPE finding.** New items not in the docs: `GET …/guardians`, `GET …/learning-profile` (D6) and the ≤ 10-guardian cap (D7). |
+| DEC-102 (first goal → M7) | Sound and consistent across FR-STU-01, FR-GOAL-02, the traceability matrix §4.2, the api-catalog, ux-flows F2 and the backlog. The goal stays MVP (M7 is MVP), so SPEC §49 is not dropped. There are small leftovers in the trace columns and the handoff prompt (D13). |
+| FR ACs | FR-STU-04 (fields, ≤ 30 custom fields, no exam fields, scan) is reflected. The FR-STU-03 "optimistic locking applies" AC conflicts with last-write-wins for guardians, and no DEC records the deviation (D2). |
+| api-conventions / validation-rules | 201 + `Location`, 204, 404, 409 `STALE_VERSION`, 422 `TOO_MANY`/`INVALID_FORMAT` (existing codes in `ProblemCodes`). PUT is a full replace and PATCH treats absent vs `null` correctly. Limits match validation-rules (name 1–120, relationship 0–40, `currentLevel` 0–40, ≤ 30 tags, label/value 1–60/0–500/≤ 30), except that "no commas" in tags is missing (D8). |
+| As-built consistency: credential stamp | It can be built with the current code. `AuthenticationService.attempt` re-reads the row `FOR UPDATE` and checks `passwordHash.equals(checkedHash)` before `AccountView.of(account)`, so a stamp taken from that read is the stamp of the verified hash. Remember-me builds `CurrentUser` from `AccountUserDetailsService` (a fresh read). `findStatusById` can return a projection of status + stamp, so there is no extra query. `UserAccount.changePassword`/`resetPassword` are natural increment points. `SessionResponse.of` maps fields explicitly, so the stamp does not leak through `/auth/session`. Issues: the own-change re-issue window (D3) and an inaccurate claim about dev sessions (D10). |
+| As-built consistency: rule 3 recursion | Sound overall. Restricting it to `com.englms`/`fixture` types skips JDK, servlet and Spring types (`HttpServletRequest`, `Locale`, `Pageable`). `@AuthenticationPrincipal CurrentUser` is annotated, so it is not treated as a model attribute. `CurrentStudent` needs the stated exemption, because its `studentId` component would otherwise be flagged. `AudienceVerifier.BINDINGS` already refuses `@RequestBody`/`@ModelAttribute` on it. Gaps: catch-all binders and `@RequestPart` (D5), plus arrays, `Optional`, `Map` values and Jackson renames (D15). |
+| As-built consistency: scan / world | `SecurityHarness` already lowercases text and IDs, so "stays case-insensitive" holds. `ownedByB(Object)` can detect a `UUID` and add the dashless form. `StudentsWorldContributor` inserts students by SQL, including the must-change student M, which affects the profile-row invariant (D4). |
+| Migrations | `V202610090001__students_…` / `V202610090002__identity_…` follow the house `V<yyyyMMdd>NNNN__<module>_<change>` pattern (after `V202610070001`). See D17. |
+| Links / IDs | All DEC, FR, NFR, A and OQ IDs cited exist. The cross-references used by the docs check resolve. Trace nits: D11. |
+
+### Findings
+
+| ID | Sev | Location | Finding | Recommendation |
+|---|---|---|---|---|
+| D1 | S3 | `T-M2.9-students-part-2.md:98-99` (AC2) vs `:60-61` | AC2 says "the response and `GET …/guardians` show them in request order". The design note says the student DTO does not embed guardians, and the create response is `{student, credentials}` (api-catalog). The AC cannot be met as written. | AC2: "`GET …/guardians` lists them in request order" (or embed guardians in the create response and say so in the design note and the api-catalog). |
+| D2 | S3 | `:58-59` (last write wins), `:52-55`; FR-STU-03 AC (`functional-requirements.md:92`); api-conventions §6; domain-model §1 (`Guardian[]` is a child of `Student`); data-model §1 "Ordering" | FR-STU-03 says optimistic locking applies to all FR-STU-01 fields (guardians included), and api-conventions §6 requires `version` on aggregate updates. The packet chooses last write wins with a rationale but records no DEC. The packet also departs from the data-model §1 ordering convention (`UNIQUE (parent_id, position) DEFERRABLE`; the packet has a plain `ix_…`). With check-then-insert, two concurrent `POST`s can produce duplicate positions or an 11th guardian. | Record the choice in a DEC (or extend DEC-102): guardians are child rows, last write wins, one tutor. Note it on FR-STU-03 / data-model §2. Have the append take the parent student row `FOR UPDATE` (the cheapest way to make `position` = max + 1 and the ≤ 10 cap safe), or add the unique deferrable constraint per §1. |
+| D3 | S3 | `:79-86` (S4-5 design), AC7 `:110-112` | (a) Incrementing the stamp on the user's **own** change requires re-issuing the caller's principal. Between the change transaction's commit and the session save at the end of that request, a parallel request on the **same** session still carries the old stamp. `AccountStatusFilter` would refuse it and call `endAllSessions`, which also ends the session that was supposed to be kept. This breaks AC7 "the kept session still works" and FR-AUTH-05. The window is timing-dependent, so the sequential QA check will not catch it. SEC S4-5 (`evidence/T-M2.3/review/security.md:30`) concerns only the race with a **tutor reset**. (b) Incrementing on "bootstrap" is meaningless: the account is created with the default stamp. (c) Refusing a mismatch "exactly like non-ACTIVE (every session and token ended)" also ends the student's legitimate post-reset session the first time the stale session calls. That is a trade-off: it also removes a token the racing login may have created. The packet should state it. | Smallest fix: increment only on resets (tutor reset, operator reset), leave the own change and bootstrap unchanged, and drop the principal re-issue. List the own-change race as a known limitation, since `endOtherSessions` already covers sequential cases. If the own-change increment stays, specify how the parallel same-session request is handled and add a test for it. Either way, state the end-all vs end-current choice for a mismatch in the design note and in AC7. |
+| D4 | S3 | AC4 `:103-105` vs `:68-70`; `StudentsWorldContributor.java` | (a) AC4 requires `SECRET-*` markers in **every** tutor-only text field, but the design note lists only `notes`, `learningNotes`, one tag and one custom-field value. A student response that leaked a guardian `name`, `relationship` or `email`, a `currentLevel` or a custom-field label would go unseen. The fixture inserts by SQL, so validation is no obstacle. (b) The contributor adds profiles only for A, B and C, and it inserts student M (must-change) by SQL as well. So the invariant "every student has exactly one profile row" (`:54-55`, AC3) does not hold in the security tests, and the packet does not say what `GET …/learning-profile` returns when the row is missing. | (a) Align the design note with AC4: put markers in guardian name/relationship/email/notes, `currentLevel`, `learningNotes`, one tag in each list, and a custom label and value. (b) Either the contributor inserts a profile for every student row it creates (including M), or the service treats a missing row as an empty profile (version 0). State which one. |
+| D5 | S3 | Scope `:26-27`, out of scope `:37`, design `:71-76`; DEC-096 | DEC-096 also lists "catch-all binders" as a rule-3 limitation. DEC-097 (4) and this packet neither cover them nor put them out of scope: `@RequestParam Map`/`MultiValueMap`, `@RequestHeader Map`/`HttpHeaders`, `HttpServletRequest`/`WebRequest`, and `@RequestPart`. `@RequestPart` binds a JSON part to a DTO, which is the likely shape of future student file submissions. "Out of scope explicit" is a G0 item. | Add `@RequestPart` to the field recursion (it costs one more annotation next to `@RequestBody`). List the catch-all binders explicitly as out of scope, with the backstop (the `SECRET-*`/ID scan plus SEC review of every `web.student` PR). |
+| D6 | S4 | `:21-24`; api-catalog rows 29-30 | `GET /tutor/students/{sid}/guardians` and `GET …/learning-profile` are new endpoints. The catalog lists only `PUT …/learning-profile` and `POST …/guardians` · `PATCH`/`DELETE …/guardians/{gid}`. They are needed by T-M2.5 and traced to FR-STU-03/04, and Docs-to-update covers them. | Mention in the design note that both GETs are additions to the catalog (the catalog row fix is already planned). |
+| D7 | S4 | `:57` | The "≤ 10 guardians per student" cap is new (it is in neither FR-STU-03 nor validation-rules). The packet labels it as new, but there is no decision behind it. | Record it with the D2 DEC (LC decision: a bounded list, like the ≤ 30 handles). |
+| D8 | S4 | `:65` | The tag rule omits "no commas" (validation-rules Common "Tag": 1–40, no commas or control characters). | Add "no commas" (→ `INVALID_FORMAT`) or refer to the Common Tag rule. |
+| D9 | S4 | `:26-27`, `:37`, `:71`, `:77`, AC5/AC6 | DEC-097 (4) has no (a)/(b)/(c) labels. The packet introduces them implicitly. The out-of-scope line cites "(b), (c)" for "other ID encodings in the scan", but (c) (dashless UUIDs) is in scope. | Define the labels once (e.g. "(a) rule 3 extension, (b) rule 4 stays non-transitive, (c) dashless scan"), and in the out-of-scope line write "other ID encodings beyond (c)". |
+| D10 | S4 | `:84-85`, `:148-149` | "Changing `CurrentUser` makes existing dev sessions unreadable" is likely wrong. `CurrentUser` is a record with an explicit `serialVersionUID`, and Java serialization fills a missing record component with its default (0), which equals the column default, so old sessions still read and pass. This is harmless, but it misleads the implementer and QA. | Replace it with: "old sessions deserialize with stamp 0 (= the column default); no re-login needed", or tell the implementer to verify. Also add "the stamp never appears in a response (`SessionResponse` maps fields explicitly)". |
+| D11 | S4 | Trace `:11`; `:85` | "domain-model §4.1" is the Student lifecycle. The relevant sections are §1 (aggregates: `Guardian[]`, `LearningProfile` 1:1) and §5 (ownership and audience). "Prove it deterministically (DEC-093)" cites the T-M2.1 merge record; the link holds (its lesson about wall-clock bounds in CI), but it is loose. | Cite domain-model §1, §5. Optionally reword it as "no timing-based test (cf. DEC-093)". |
+| D12 | S4 | Commands `:158` | `for …; do … \|\| break; done` exits 0 after a failed run, so the ×20 command does not fail. This is copied from T-M2.3. | Use `\|\| { echo "run $i failed"; exit 1; }` and record the pass count in the log. |
+| D13 | S4 | `backlog.md` T-M7.1/T-M7.2 Trace columns; `docs/handoff/next-session-prompt.md:8` | T-M7.1 now carries part of FR-STU-01, but its trace column still says only FR-GOAL-01..05, and T-M7.2 lacks FR-STU-01 as well. The handoff prompt still says "decide the first goal". | Add FR-STU-01 (DEC-102) to the T-M7.1/T-M7.2 trace. Update the handoff prompt in the merge-record or handoff commit. |
+| D14 | S4 | Design `:56-66` | The packet does not say whether guardian and profile edits are allowed on an `ARCHIVED` student. T-M2.3 `PATCH` allows them, while the reset answers 409. | State it explicitly: "allowed (data kept, SPEC §37/FR-STU-05)", or 409 like the reset. |
+| D15 | S4 | Rule 3 `:71-76`, risks `:146-147` | The recursion covers generic collections through their type argument. Arrays (`Foo[]`), `Optional<Foo>` and `Map<?, Foo>` values are not mentioned. A Jackson rename (`@JsonProperty("studentId") UUID who`) changes the bound name but not the field name. | Follow the component type of arrays, `Optional` and `Map` values. Also check `@JsonProperty`/`@JsonAlias` values with `isStudentId`. Each is a one-liner, and each gets one fixture. |
+| D16 | S4 | Estimate `:10` | Two agent-days for two tables, 7 endpoints and create integration, world, rule 3 recursion, scan, credential stamp (identity) and S4-2 is at the upper bound. | Advisory: if it runs over, S4-2 and S4-5 (identity-only) split off cleanly into their own packet. Name that split in Risks. |
+| D17 | S4 | `:52`, `:81` | Flyway rejects out-of-order versions by default. If another migration with a later version merges first (e.g. T-M2.6 settings), these names fail. | Add "renumber to the next free timestamp at implementation if needed" to the design note. |
+
+No S1, S2 or SCOPE findings. Per DEC-088, the S3 findings D1–D5 (cheap packet edits) and the S4 findings should be fixed in-task before G0.
+
+DOCS-REVIEW T-M2.9: CHANGES REQUESTED
+
+## LC response (round 1, 2026-10-09)
+All findings fixed in-task (DEC-088): D1 (AC2 wording), D2/D7 (DEC-103: guardian `version`, `UNIQUE (student_id, position) DEFERRABLE`, student row
+lock on append, ≤ 10 cap; AC1 race test), D3 (stamp only on tutor/operator reset; mismatch ends the current session only; own-change race a known
+limitation; AC7 rewritten), D4 (markers in every tutor-only text field whose format allows one; no backfill: missing row = empty profile `version` 0,
+first `PUT` inserts; AC3 race test), D5 (`@RequestPart` in rule 3; catch-all binders out of scope with the scan/SEC backstop), D6 (the two `GET`s
+marked as additions), D8 (common Tag rule), D9 (DEC-097 (4) (a)/(b)/(c) defined in Scope), D10 (stored sessions keep working; stamp never in a
+response), D11 (citations), D12 (×20 loop fails loudly), D13 (backlog trace columns, next-session prompt), D14 (all statuses), D15 (arrays,
+collections, `Optional`, `Map` values, `@JsonProperty`/`@JsonAlias`; fixtures), D16 (split note in Risks), D17 (renumber note).
+
+## Round 2
+
+- Reviewer: Docs Reviewer (fresh context; did not write the reviewed docs)
+- Date: 2026-10-09T07:51:25Z
+- Head SHA: `eb4e451c86f7a2b4e975514d987d94087c956cf2` (delta `a8b864a..eb4e451`: packet, DEC-103, backlog, next-session prompt, progress.json, this file)
+- `./scripts/check-docs.sh`: **PASS** (197 markdown files, progress.json valid, sources intact, prompt within limit)
+
+### Round-1 findings re-checked
+
+| ID | Status | Note |
+|---|---|---|
+| D1 | Fixed | AC2 now asserts only `GET …/guardians` order, and the design note says the create response does not embed guardians. |
+| D2 | Fixed | DEC-103 adds the guardian `version`, `UNIQUE (student_id, position) DEFERRABLE INITIALLY DEFERRED` and the student row lock before counting and appending. AC1 has the cap race. |
+| D3 | Fixed, with a gap | The stamp is now incremented only on the tutor and operator resets, a mismatch ends only the current session, and the own-change race is a known limitation. The gap is in remember-me (N2). |
+| D4 | Fixed, with a gap | Markers are now in every field whose format allows one, and a missing row is the empty profile. The empty-profile `version` scheme introduces N1, and the email marker registration fails as written (N4). |
+| D5 | Fixed | `@RequestPart` is in the recursion. Catch-all binders are explicitly out of scope, with the backstop named. |
+| D6–D17 | Fixed | D13: the backlog trace columns and the handoff prompt are updated. D12: the loop now exits 1 on failure. Remaining nits are in N5–N7. |
+
+### New findings
+
+| ID | Severity | Location | Finding | Recommendation |
+|---|---|---|---|---|
+| N1 | S2 | `T-M2.9-students-part-2.md:70-73`, AC3 `:120-122`, DEC-103 | **Lost update on the learning profile.** "No row" is shown as an empty profile with `version` 0. JPA/Hibernate's `@Version` also starts a newly persisted row at 0. Sequence: tab X and tab Y both read the empty profile (`version` 0). X `PUT`s with `version` 0, which inserts a row at version 0. Y `PUT`s with `version` 0, finds the row at version 0, the versions match, and Y silently overwrites X. This needs no concurrency, so AC3's race test (two simultaneous first `PUT`s) does not catch it, and AC3's "a stale `version` → 409" is false for this case. Tutor-private notes are lost. | Make the first `PUT` produce a version different from the virtual 0. Either the insert stores `version` 1 (e.g. an insert followed by the normal update in the same transaction, or a native `INSERT … version = 1`), or the empty profile answers with a version that a row can never have. Add an AC3 case: sequential `PUT` v0 → 200 (version ≥ 1), then a second `PUT` v0 → 409. Mirror the rule in DEC-103 and in the data-model update. Also say how the losing concurrent insert is turned into 409. A primary-key violation marks the Hibernate transaction rollback-only and is logged by `SqlExceptionHelper` (the same vendor log as S4-2). An `INSERT … ON CONFLICT DO NOTHING` with a row-count check avoids both. |
+| N2 | S3 | `:93-100`, AC7 `:131-134`, QA focus `:150` | **Remember-me after a stamp mismatch.** The filter now invalidates only the current session. The request's remember-me cookie and its `persistent_logins` series remain. On the next request, remember-me signs the user in again from a fresh account read, which carries the current stamp, so the request passes. In AC7's deterministic test (stamp bumped, `mustChangePassword` unchanged), "a remember-me login … is refused … and that session ends" is followed by a silent re-login. QA would read that as a session that survived. In a real reset, the token that the racing login creates after the reset's `DELETE` is held off only because the reset sets `mustChangePassword=true` (`AccountUserDetails` is then disabled) and the forced change runs `endOtherSessions`, which deletes every token. The packet does not state this dependency. | Cheapest: on a mismatch, also delete the current request's remember-me series and cancel its cookie (`rememberMeServices.logout(...)` for this request only). AC7 then reads "the session and its remember-me token end". Alternatively, state the must-change dependency explicitly in the design note and in AC7, and have the AC7 remember-me case use a real tutor reset. |
+| N3 | S3 | Test plan `:143-144` | The test plan still has "migration test (backfill: a student created before the migration has a profile …)". That contradicts the no-backfill design (`:59`) and AC3. | Replace it with: "migration test: constraints (unique deferrable position, cascade on student delete); a pre-existing student answers the empty profile". |
+| N4 | S4 | `:79-80` | "`email` (e.g. `secret-g1@example.test`, registered as a marker too)": `IsolationWorld.secret` requires a **full** match of `SECRET-[A-Z0-9-]+`, so registering the email throws. The scan still catches the `secret-g1` substring case-insensitively. | Register the marker part (`SECRET-G1-A`), and use a distinct email per student (A, B, C). |
+| N5 | S4 | Guardrail answer 1 `:45`; Docs to update `:166-167` | The guardrail trace does not list DEC-103. The authz-isolation skill update still says only "headers, cookies, matrix variables and body/model-attribute fields". | Add DEC-103. Extend the skill line with `@RequestPart`, `@JsonProperty`/`@JsonAlias`, and arrays/collections/`Optional`/`Map` values. |
+| N6 | S4 | Commands `:182` | The comment says "S4-5 test class and StudentCreateRaceTest", but the command runs four classes. | Update the comment. |
+| N7 | S4 | `:104-105` | The own-change race is accepted as a security known limitation in the summary only. The claim that "the user's own change is not a takeover response" is arguable: a user changing a password they suspect is compromised is exactly that response. The window is milliseconds, and the attacker needs the old password and perfect timing. | Have SEC confirm it at G3. Record the acceptance in the merge DEC rather than only in the summary. |
+
+Not blocking: guardian positions are not compacted (max + 1 after deletes is fine), and `DELETE` without `version` is consistent with api-conventions.
+
+N1 (S2) must be fixed before G0. N2 and N3 are cheap S3 packet edits (DEC-088). N4–N7 should be fixed in the same edit.
+
+DOCS-REVIEW T-M2.9: CHANGES REQUESTED
+
+### LC response (round 2, 2026-10-09)
+Fixed in-task (DEC-088): N1 (empty profile answers `version` `null`; the first `PUT` with `null` inserts with `ON CONFLICT DO NOTHING`, 0 rows → 409;
+AC3 gains the sequential case; DEC-103 updated), N2 (a mismatch also ends the request's remember-me token; AC7), N3 (migration test line), N4
+(distinct guardian emails; marker `SECRET-G1-A` matched case-insensitively), N5 (DEC-103 in the guardrail trace; skill line), N6 (command comment),
+N7 (SEC confirms the own-change acceptance at G3; recorded in the merge DEC).
+
+## Round 3
+
+- Reviewer: Docs Reviewer (fresh context; did not write the reviewed docs)
+- Date: 2026-10-09T07:53:12Z
+- Head SHA: `c21b697d50e5145f6e2a76141e005696a89f06db` (delta `eb4e451..c21b697`: packet, DEC-103, this file)
+- `./scripts/check-docs.sh`: **PASS** (197 markdown files, progress.json valid, sources intact, prompt within limit)
+
+### Round-2 findings re-checked
+
+| ID | Status | Note |
+|---|---|---|
+| N1 | Fixed | The empty profile now has `version` `null`, which no stored row can have. A first `PUT` with `null` does `INSERT … ON CONFLICT (student_id) DO NOTHING`; 0 rows inserted → 409. A sequential second `null` → 409 and the concurrent pair → 200/409 are both in AC3. There is no primary-key exception, no vendor log and no rollback-only transaction. Under concurrency, the second insert waits for the first to commit and then inserts nothing, so the design is correct. DEC-103 is updated. |
+| N2 | Fixed | A mismatch now also ends the current request's remember-me token, and AC7 asserts that "the next request with the same cookie is anonymous". This can be built: `AccountRememberMeServices.logout` already deletes only the current series and cancels the cookie, and it sits in the same package as `AccountStatusFilter`. |
+| N3 | Fixed | The test plan's migration test now covers the constraints, the cascade and the empty profile; the backfill text is gone. |
+| N4 | Fixed | Each student gets a distinct email, and the registered marker `SECRET-G1-A` matches `IsolationWorld.SECRET` in full. |
+| N5 | Fixed | DEC-103 is in guardrail answer 1, and the authz-isolation skill line is complete. |
+| N6 | Fixed | The ×20 comment names all four classes. |
+| N7 | Fixed | SEC confirms or rejects the own-change limitation at G3, and the merge DEC records it. |
+
+### New findings
+
+| ID | Severity | Location | Finding | Recommendation |
+|---|---|---|---|---|
+| R1 | S4 | `T-M2.9-students-part-2.md:71-75`, Docs to update `:165-168`; validation-rules "`version` required on update, integer ≥ 0"; api-conventions §5 (`:75`, "a missing one `REQUIRED`") | `PUT …/learning-profile` with `version` `null` is a documented exception (DEC-103) to the house rule that `version` is required. Jackson cannot tell an absent `version` from a `null` one, so here an absent `version` means "create" instead of 422 `REQUIRED`. This is harmless, because an existing row → 409, but the general docs will contradict the endpoint. | In the implementation PR, add a validation-rules (or api-conventions §5) note: "learning profile: `version` `null`/absent = first creation (DEC-103)". Add validation-rules `version` to Docs to update. This can be done at implementation (G1); it does not need another packet round. |
+
+No S1, S2, S3 or SCOPE findings. The packet meets G0 from the documentation side. The PO start signal and the `ready` status are still pending.
+
+DOCS-REVIEW T-M2.9: PASS
+
+### LC response (round 3, 2026-10-09)
+R1 (S4) fixed in the packet: validation-rules `version` exception added to "Docs to update" (written in the implementation PR).
