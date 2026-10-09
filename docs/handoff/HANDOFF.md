@@ -6,22 +6,27 @@ Phase/Milestone: P1 / M2 (in progress) · Current task: **T-M1.19 (ready; PO sta
 - **T-M2.9 done** (`37e8ce0`; DEC-102..105; QA PASS, SEC APPROVED; records merged). T-M2.10 (strict JSON numbers, QA F3) is in the backlog.
 - **PO requirement (DEC-106):** the project must run on Linux, macOS and Windows with Docker or Podman. Windows = **WSL2 + Docker Desktop** (no
   native Windows). Production stays Podman Quadlet + Caddy (ADR-0012). The next session runs on a **new device** (macOS or Windows, maybe Docker).
-- **T-M1.19** (packet `docs/tasks/T-M1.19-portable-dev-env.md`, ready, start signal given): `env.sh` engine detection (Docker / Linux Podman socket /
-  macOS Podman machine), `dev-up.sh`/`dev-down.sh` through the engine, bash ≥ 4 guard, per-platform setup docs, agent docs without Linux/Podman/
-  `/home/kali` assumptions; proven by a green gate **on the new device**. Already portable: `deploy/compose.dev.yaml`, `.gitattributes` (LF), CI (Docker).
+- **T-M1.19** (packet `docs/tasks/T-M1.19-portable-dev-env.md`, ready, start signal given): `lib/engine.sh` detection (Docker / Linux Podman socket /
+  macOS Podman machine; Podman-backed `docker` shims), `env.sh` Testcontainers variables, `dev-up.sh`/`dev-down.sh` through the engine, bash ≥ 4.4 guard, per-platform setup docs, agent docs without Linux/Podman/
+  `/home/kali` assumptions; proven by a green gate **on the new device**. Already portable: `deploy/compose.dev.yaml`, `.gitattributes` (LF). ADR-0012's development bullet is amended (DEC-106).
 
 ## New device: what does not travel with `git clone`
-- `.env` (git-ignored; `cp .env.example .env`, dev-only values, DEC-094); `.data/**`; the dev database volume (fresh is fine).
+- `.env` (git-ignored; `cp .env.example .env`, dev-only values, DEC-094; set `ENGLMS_DEV_DB_PORT` if a local PostgreSQL holds 5432); `.data/**`; the
+  dev database volume (fresh is fine); `.claude/settings.local.json` (local permission grants); Playwright browser caches (`cd e2e && pnpm browsers`;
+  `qa/` needs chromium, firefox and webkit); a stray `~/.testcontainers.properties` on the old machine is not needed; SSH/GPG keys if used.
 - Accounts: `gh auth login` (repo, workflow), `glab auth login`, git identity, credential helpers (PO; agents never enter credentials).
 - Clone setup: `./scripts/install-hooks.sh`, `git remote add gitlab https://gitlab.com/duochou042004/eng-lms.git`.
 - Claude's local memory (this machine's `~/.claude/projects/…`): its two notes are already in the repo (one checkout/no worktrees DEC-094; dev `.env`
   access DEC-094, restore via T-M8.7). The LC records folder (`lc-records/`) is per session; nothing pending in it.
 - Windows: install WSL2 Ubuntu, Docker Desktop with WSL integration, and clone **inside WSL** (`~/…`, not `/mnt/c`); run Claude Code in WSL.
-  macOS: Homebrew `bash` (≥ 4), `jq`, `gh`, `glab`, `python3` + `jsonschema`, SDKMAN (Java 25.0.4-tem), nvm (Node 24.21.0), Docker Desktop/OrbStack/Colima.
+  macOS: Homebrew `bash` (≥ 4.4, first on `PATH`: `env bash -c 'echo $BASH_VERSION'`), `jq`, `gh`, `glab`, Python with `jsonschema` (Homebrew Python is
+  externally managed: use a venv or `pipx`; `check-docs.sh` needs it in gate step 1), SDKMAN (Java 25.0.4-tem), nvm (Node 24.21.0), Docker
+  Desktop/OrbStack/Colima. Linux with Docker Engine: the `docker` group is root-equivalent (PO decision).
 - Until T-M1.19 lands, `source scripts/env.sh` fails on Docker (it requires the systemd Podman socket): expected; T-M1.19 fixes it.
 
 ## Next steps
-1. On the new device: development-setup §0 steps 1–3 and 6 (toolchain, accounts, clone setup, installs); the engine steps follow T-M1.19.
+1. On the new device: development-setup §0 steps 1–3 and 6 (toolchain, accounts, clone setup, installs); in step 1 skip the Podman items when
+   `docker info` works; the engine steps follow T-M1.19. Native Windows (not WSL): stop and ask the PO to start Claude Code inside WSL2 (DEC-106).
 2. **T-M1.19:** packet ready → `progress.json` in_progress, branch `feature/T-M1.19-portable-dev-env`, backend-implementer, gate green on the device,
    G3 fresh qa-evaluator (follows §0 for that platform), CI green, verdicts, merge-gate, gitlab-sync; QA report via `qa/T-M1.19`; merge DEC + records via a chore PR.
 3. **T-M2.4** packet (auth UI + shells, FE; decide SEC in the packet: `?next=` allow-list T18, remember-me on shared devices; M2 exit needs an auth SEC review).
