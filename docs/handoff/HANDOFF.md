@@ -1,8 +1,9 @@
-# Handoff — 2026-10-09T15:00Z (T-M2.9 done; next: T-M1.19 portability on a NEW DEVICE, then T-M2.4)
+# Handoff — 2026-10-09T15:50Z (T-M2.9 done; next: T-M1.19 portability on a NEW DEVICE, then T-M2.4)
 
-Phase/Milestone: P1 / M2 (in progress) · Current task: **T-M1.19 (ready; PO start DEC-106)** · Branch: `develop` · Last merges on develop: `eb799df` (PR #75, T-M1.19 packet), `ed442e0` (PR #76, GitLab CI paused), Dependabot #64–#70 → `e1611a4` · Remote: https://github.com/duochou042004/eng-lms (mirror: gitlab.com/duochou042004/eng-lms)
+Phase/Milestone: P1 / M2 (in progress) · Current task: **T-M1.19 (ready; PO start DEC-106)** · Branch: `develop` · Last merges on develop: `eb799df` (PR #75, T-M1.19 packet), Dependabot #64 `70fcdf3`, `ed442e0` (PR #76, GitLab CI paused), Dependabot #65–#70 → `e1611a4` · Remote: https://github.com/duochou042004/eng-lms (mirror: gitlab.com/duochou042004/eng-lms)
 
 ## Where we are
+- **T-M1.20 done** (`ed442e0`, DEC-107): GitLab CI paused; GitHub Actions is the only CI; the mirror still syncs (see Gotchas).
 - **T-M2.9 done** (`37e8ce0`; DEC-102..105; QA PASS, SEC APPROVED; records merged). T-M2.10 (strict JSON numbers, QA F3) is in the backlog.
 - **PO requirement (DEC-106):** the project must run on Linux, macOS and Windows with Docker or Podman. Windows = **WSL2 + Docker Desktop** (no
   native Windows). Production stays Podman Quadlet + Caddy (ADR-0012). The next session runs on a **new device** (macOS or Windows, maybe Docker).

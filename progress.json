@@ -263,6 +263,14 @@
       "mergeCommit": "37e8ce0",
       "evidence": "evidence/T-M2.9/summary.md",
       "note": "Packet PR #71 (DEC-102 first goal -> M7, DEC-103, PO start DEC-104). Merged via scripts/merge-gate.sh (PR #72) at head 5de3a62; CI 7/7. QA PASS WITH MINOR -> re-test PASS (PR #73); SEC APPROVED twice (S3-1, S3-2, S4s fixed in-task). QA F3 -> T-M2.10 (DEC-105). Backend 466 tests."
+    },
+    {
+      "id": "T-M1.20",
+      "title": "Pause GitLab CI (DEC-107)",
+      "completedAt": "2026-10-09T15:07:13Z",
+      "mergeCommit": "ed442e0",
+      "evidence": "evidence/T-M1.20/review/docs.md",
+      "note": "PR #76 via merge-gate; gitlab-sync pushes with -o ci.skip and the .gitlab-ci.yml workflow rule is never, both unless ENGLMS_GITLAB_CI=on; DOCS-REVIEW round 2 PASS; mirror synced, GitLab pipelines skipped."
     }
   ],
   "tests": {
