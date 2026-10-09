@@ -36,7 +36,7 @@
     "ownerRole": "LC",
     "branch": "docs/T-M2.9-students-part-2",
     "packet": "docs/tasks/T-M2.9-students-part-2.md",
-    "pr": null,
+    "pr": "71",
     "lastCommit": null,
     "startedAt": null,
     "entryGate": [
@@ -53,7 +53,8 @@
       "DEC-096",
       "DEC-097",
       "DEC-100",
-      "DEC-102"
+      "DEC-102",
+      "DEC-103"
     ]
   },
   "nextTask": {
