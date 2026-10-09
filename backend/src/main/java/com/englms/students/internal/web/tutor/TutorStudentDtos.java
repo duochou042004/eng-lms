@@ -22,7 +22,16 @@ final class TutorStudentDtos {
 	@Schema(requiredProperties = { "fullName", "username" })
 	record CreateStudentRequest(String fullName, String username,
 			@Schema(description = "Optional: generated (shown once in credentials) when absent") String password,
-			String email, String phone, List<ContactHandle> contactHandles, String note) {
+			String email, String phone, List<ContactHandle> contactHandles, String note,
+			@Schema(description = "Optional, at most 10; created in the same transaction, listed by GET …/guardians")
+			List<TutorGuardianDtos.GuardianRequest> guardians) {
+
+		StudentCommands.Create command() {
+			return new StudentCommands.Create(fullName, username, password, email, phone, contactHandles, note,
+					(guardians != null)
+							? guardians.stream().map(g -> (g != null) ? g.input() : null).toList()
+							: null);
+		}
 
 		@Override
 		public String toString() {

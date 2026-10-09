@@ -88,6 +88,24 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  '/api/v1/tutor/guardians/{gid}': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    post?: never
+    /** Delete a guardian */
+    delete: operations['delete']
+    options?: never
+    head?: never
+    /** Update a guardian; version required */
+    patch: operations['update_1']
+    trace?: never
+  }
   '/api/v1/tutor/students': {
     parameters: {
       query?: never
@@ -98,7 +116,7 @@ export interface paths {
     /** List students: q (accent-insensitive), status (repeatable; default ACTIVE, PAUSED), page, size, sort = fullName|createdAt[,asc|desc] */
     get: operations['list']
     put?: never
-    /** Create a student with their STUDENT account; the credentials are in this response only */
+    /** Create a student with their STUDENT account (and guardians); the credentials are in this response only */
     post: operations['create']
     delete?: never
     options?: never
@@ -114,7 +132,7 @@ export interface paths {
       cookie?: never
     }
     /** A student's profile and contacts, with its version */
-    get: operations['get']
+    get: operations['get_1']
     put?: never
     post?: never
     delete?: never
@@ -122,6 +140,42 @@ export interface paths {
     head?: never
     /** Update the profile and contacts (and the username); version required */
     patch: operations['update']
+    trace?: never
+  }
+  '/api/v1/tutor/students/{sid}/guardians': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** A student's guardians in insertion order */
+    get: operations['list_1']
+    put?: never
+    /** Add a guardian (at most 10 per student) */
+    post: operations['add']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/v1/tutor/students/{sid}/learning-profile': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** The learning profile; a student never edited has the empty one (version null) */
+    get: operations['get']
+    /** Replace the learning profile (absent = cleared); version null creates it */
+    put: operations['put']
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
     trace?: never
   }
   '/api/v1/tutor/students/{sid}/password-reset': {
@@ -208,6 +262,8 @@ export interface components {
       contactHandles?: components['schemas']['ContactHandle'][]
       email?: string
       fullName: string
+      /** @description Optional, at most 10; created in the same transaction, listed by GET …/guardians */
+      guardians?: components['schemas']['GuardianRequest'][]
       note?: string
       /** @description Optional: generated (shown once in credentials) when absent */
       password?: string
@@ -223,6 +279,52 @@ export interface components {
       expiresAt: string
       temporaryPassword: string
       username: string
+    }
+    CustomField: {
+      label?: string
+      value?: string
+    }
+    GuardianRequest: {
+      email?: string
+      name: string
+      notes?: string
+      phone?: string
+      relationship?: string
+    }
+    GuardianResponse: {
+      email: string | null
+      /** Format: uuid */
+      id: string
+      name: string
+      notes: string | null
+      phone: string | null
+      relationship: string | null
+      /** Format: int64 */
+      version: number
+    }
+    /** @description Every value is replaced; an absent one is cleared. version null (or absent) = first creation */
+    LearningProfileRequest: {
+      currentLevel?: string | null
+      customFields?: components['schemas']['CustomField'][]
+      learningNotes?: string | null
+      strengths?: string[]
+      /** Format: int64 */
+      version?: number | null
+      weaknesses?: string[]
+    }
+    LearningProfileResponse: {
+      currentLevel: string | null
+      customFields: components['schemas']['CustomField'][]
+      learningNotes: string | null
+      strengths: string[]
+      /** Format: date-time */
+      updatedAt: string | null
+      /**
+       * Format: int64
+       * @description null while the profile was never saved
+       */
+      version: number | null
+      weaknesses: string[]
     }
     LoginRequest: {
       password: string
@@ -340,6 +442,15 @@ export interface components {
       /** @enum {string} */
       status: 'ACTIVE' | 'PAUSED' | 'ARCHIVED'
       username: string
+    }
+    UpdateGuardianRequest: {
+      email?: string | null
+      name?: string
+      notes?: string | null
+      phone?: string | null
+      relationship?: string | null
+      /** Format: int64 */
+      version: number
     }
     UpdateStudentRequest: {
       contactHandles?: components['schemas']['ContactHandle'][]
@@ -545,6 +656,88 @@ export interface operations {
       }
     }
   }
+  delete: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        gid: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Deleted */
+      204: {
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
+      }
+      /** @description NOT_FOUND */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/problem+json': components['schemas']['Problem']
+        }
+      }
+    }
+  }
+  update_1: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        gid: string
+      }
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['UpdateGuardianRequest']
+      }
+    }
+    responses: {
+      /** @description The updated guardian */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['GuardianResponse']
+        }
+      }
+      /** @description NOT_FOUND */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/problem+json': components['schemas']['Problem']
+        }
+      }
+      /** @description STALE_VERSION */
+      409: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/problem+json': components['schemas']['Problem']
+        }
+      }
+      /** @description VALIDATION_FAILED with field codes */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/problem+json': components['schemas']['Problem']
+        }
+      }
+    }
+  }
   list: {
     parameters: {
       query?: {
@@ -622,7 +815,7 @@ export interface operations {
       }
     }
   }
-  get: {
+  get_1: {
     parameters: {
       query?: never
       header?: never
@@ -687,6 +880,165 @@ export interface operations {
         }
       }
       /** @description STALE_VERSION or USERNAME_TAKEN */
+      409: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/problem+json': components['schemas']['Problem']
+        }
+      }
+      /** @description VALIDATION_FAILED with field codes */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/problem+json': components['schemas']['Problem']
+        }
+      }
+    }
+  }
+  list_1: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        sid: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description The guardians */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['GuardianResponse'][]
+        }
+      }
+      /** @description NOT_FOUND */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/problem+json': components['schemas']['Problem']
+        }
+      }
+    }
+  }
+  add: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        sid: string
+      }
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['GuardianRequest']
+      }
+    }
+    responses: {
+      /** @description Created; Location names the guardian */
+      201: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['GuardianResponse']
+        }
+      }
+      /** @description NOT_FOUND */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/problem+json': components['schemas']['Problem']
+        }
+      }
+      /** @description VALIDATION_FAILED with field codes (guardians: TOO_MANY) */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/problem+json': components['schemas']['Problem']
+        }
+      }
+    }
+  }
+  get: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        sid: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description The profile */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['LearningProfileResponse']
+        }
+      }
+      /** @description NOT_FOUND */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/problem+json': components['schemas']['Problem']
+        }
+      }
+    }
+  }
+  put: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        sid: string
+      }
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['LearningProfileRequest']
+      }
+    }
+    responses: {
+      /** @description The new profile */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['LearningProfileResponse']
+        }
+      }
+      /** @description NOT_FOUND */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/problem+json': components['schemas']['Problem']
+        }
+      }
+      /** @description STALE_VERSION (also version null when the profile exists) */
       409: {
         headers: {
           [name: string]: unknown

@@ -22,7 +22,6 @@ import com.englms.shared.ProblemException;
 import com.englms.shared.ProblemException.FieldProblem;
 import com.englms.shared.web.Audience;
 import com.englms.shared.web.PageResponse;
-import com.englms.students.internal.app.StudentCommands;
 import com.englms.students.internal.app.StudentService;
 import com.englms.students.internal.domain.StudentStatus;
 import com.englms.students.internal.web.tutor.TutorStudentDtos.CreateStudentRequest;
@@ -66,7 +65,7 @@ class TutorStudentController {
 	}
 
 	@PostMapping(path = "/students", consumes = MediaType.APPLICATION_JSON_VALUE)
-	@Operation(summary = "Create a student with their STUDENT account; the credentials are in this response only")
+	@Operation(summary = "Create a student with their STUDENT account (and guardians); the credentials are in this response only")
 	@ApiResponse(responseCode = "201", description = "Created; Location names the student")
 	@ApiResponse(responseCode = "409", description = "USERNAME_TAKEN (errors[0].field = username)",
 			content = @Content(mediaType = "application/problem+json", schema = @Schema(ref = PROBLEM)))
@@ -74,8 +73,7 @@ class TutorStudentController {
 			content = @Content(mediaType = "application/problem+json", schema = @Schema(ref = PROBLEM)))
 	ResponseEntity<CreatedStudentResponse> create(@RequestBody CreateStudentRequest body,
 			@AuthenticationPrincipal CurrentUser me) {
-		StudentService.Created created = students.create(new StudentCommands.Create(body.fullName(), body.username(),
-				body.password(), body.email(), body.phone(), body.contactHandles(), body.note()), me.userId());
+		StudentService.Created created = students.create(body.command(), me.userId());
 		return ResponseEntity.created(URI.create("/api/v1/tutor/students/" + created.student().id()))
 			.body(new CreatedStudentResponse(StudentResponse.of(created.student()),
 					CredentialsResponse.of(created.credentials())));
