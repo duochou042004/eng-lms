@@ -109,7 +109,10 @@ Planned: `./scripts/seed-dev.sh` (sample students, dev profile only, not domain 
 is not Podman (a `podman-docker` shim counts as Podman) → rootless Podman on Linux (the user socket, `ENGLMS_PODMAN_SOCK` overrides its path; without an
 active socket, e.g. WSL2 without systemd, Podman is still chosen when `podman info` works) → a Podman machine on macOS. Nothing reachable: it stops with
 one message. `dev-up.sh`/`dev-down.sh` use the same detection but not `env.sh`, so they need no API socket; `env.sh` does (Testcontainers) and says how to
-enable it. A detected engine is detected again on every sourcing; only a user's `ENGLMS_CONTAINER_ENGINE` forces one. Then, per shell:
+enable it. A detected engine is detected again on every sourcing; only a user's `ENGLMS_CONTAINER_ENGINE` forces one. Known limits (T-M1.19 QA N-1..N-3):
+to force the engine the shell already detected, `unset ENGLMS_CONTAINER_ENGINE_AUTO` first (or use a new shell); after `env.sh` exported a Podman or
+Colima `DOCKER_HOST`, later sourcings keep it (rule b): `unset DOCKER_HOST` to detect again after switching engines; a hand-started Podman service
+(`podman system service`, no systemd unit) is used only through `export DOCKER_HOST=unix://<socket>`, not `ENGLMS_PODMAN_SOCK`. Then, per shell:
 
 ```bash
 source scripts/env.sh                         # prints the engine and the variables below

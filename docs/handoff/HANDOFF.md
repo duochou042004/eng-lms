@@ -1,38 +1,27 @@
-# Handoff — 2026-10-09T15:50Z (T-M2.9 done; next: T-M1.19 portability on a NEW DEVICE, then T-M2.4)
+# Handoff — 2026-10-11T09:40Z (T-M1.19 done on the new device; next: the T-M2.4 packet)
 
-Phase/Milestone: P1 / M2 (in progress) · Current task: **T-M1.19 (ready; PO start DEC-106)** · Branch: `develop` · Last merges on develop: `eb799df` (PR #75, T-M1.19 packet), Dependabot #64 `70fcdf3`, `ed442e0` (PR #76, GitLab CI paused), Dependabot #65–#70 → `e1611a4` · Remote: https://github.com/duochou042004/eng-lms (mirror: gitlab.com/duochou042004/eng-lms)
+Phase/Milestone: P1 / M2 (in progress) · Current task: **T-M2.4 (draft: packet next)** · Branch: `develop` · Last merges on develop: `8be6d9f` (PR #78, T-M1.19), then the QA report (PR #79, `qa/T-M1.19`) and this record (`chore/T-M1.19-merge-record`) · Remote: https://github.com/duochou042004/eng-lms (mirror: gitlab.com/duochou042004/eng-lms)
 
 ## Where we are
-- **T-M1.20 done** (`ed442e0`, DEC-107): GitLab CI paused; GitHub Actions is the only CI; the mirror still syncs (see Gotchas).
-- **T-M2.9 done** (`37e8ce0`; DEC-102..105; QA PASS, SEC APPROVED; records merged). T-M2.10 (strict JSON numbers, QA F3) is in the backlog.
-- **PO requirement (DEC-106):** the project must run on Linux, macOS and Windows with Docker or Podman. Windows = **WSL2 + Docker Desktop** (no
-  native Windows). Production stays Podman Quadlet + Caddy (ADR-0012). The next session runs on a **new device** (macOS or Windows, maybe Docker).
-- **T-M1.19** (packet `docs/tasks/T-M1.19-portable-dev-env.md`, ready, start signal given): `lib/engine.sh` detection (Docker / Linux Podman socket /
-  macOS Podman machine; Podman-backed `docker` shims), `env.sh` Testcontainers variables, `dev-up.sh`/`dev-down.sh` through the engine, bash ≥ 4.4 guard, per-platform setup docs, agent docs without Linux/Podman/
-  `/home/kali` assumptions; proven by a green gate **on the new device**. Already portable: `deploy/compose.dev.yaml`, `.gitattributes` (LF). ADR-0012's development bullet is amended (DEC-106).
+- **T-M1.19 done** (`8be6d9f`, DEC-108): Docker or Podman on Linux, macOS, Windows via WSL2 (`scripts/lib/engine.sh`, `env.sh`, dev scripts, bash ≥ 4.4
+  guard, development-setup §0 per platform). Proven on this device: **Kali Linux rolling, rootless Podman 5.8.6, clone `/home/kali/App_projects/eng-lms`**
+  (`progress.json` `environment`, `project.repoLocal`); gate PASS; QA round 2 PASS; known limits N-1..N-3 in development-setup §3.
+- **T-M1.20 done** (`ed442e0`, DEC-107): GitLab CI paused; GitHub Actions is the only CI; the mirror still syncs.
+- **T-M2.9 done** (`37e8ce0`, DEC-105). T-M2.10 (strict JSON numbers) is in the backlog.
 
-## New device: what does not travel with `git clone`
-- `.env` (git-ignored; `cp .env.example .env`, dev-only values, DEC-094; set `ENGLMS_DEV_DB_PORT` if a local PostgreSQL holds 5432); `.data/**`; the
-  dev database volume (fresh is fine); `.claude/settings.local.json` (local permission grants); Playwright browser caches (`cd e2e && pnpm browsers`;
-  `qa/` needs chromium, firefox and webkit); a stray `~/.testcontainers.properties` on the old machine is not needed; SSH/GPG keys if used.
-- Accounts: `gh auth login` (repo, workflow), `glab auth login`, git identity, credential helpers (PO; agents never enter credentials).
-- Clone setup: `./scripts/install-hooks.sh`, `git remote add gitlab https://gitlab.com/duochou042004/eng-lms.git`.
-- Claude's local memory (this machine's `~/.claude/projects/…`): its two notes are already in the repo (one checkout/no worktrees DEC-094; dev `.env`
-  access DEC-094, restore via T-M8.7). The LC records folder (`lc-records/`) is per session; nothing pending in it.
-- Windows: install WSL2 Ubuntu, Docker Desktop with WSL integration, and clone **inside WSL** (`~/…`, not `/mnt/c`); run Claude Code in WSL.
-  macOS: Homebrew `bash` (≥ 4.4, first on `PATH`: `env bash -c 'echo $BASH_VERSION'`), `jq`, `gh`, `glab`, Python with `jsonschema` (Homebrew Python is
-  externally managed: use a venv or `pipx`; `check-docs.sh` needs it in gate step 1), SDKMAN (Java 25.0.4-tem), nvm (Node 24.21.0), Docker
-  Desktop/OrbStack/Colima. Linux with Docker Engine: the `docker` group is root-equivalent (PO decision).
-- Until T-M1.19 lands, `source scripts/env.sh` fails on Docker (it requires the systemd Podman socket): expected; T-M1.19 fixes it.
+## Another device
+- Follow development-setup §0 for its platform (Linux, macOS, Windows = WSL2 + Docker Desktop with the clone inside WSL); record OS, engine and versions in
+  `progress.json` `environment` and the clone path in `project.repoLocal` (DEC-083). Only Linux + Podman is proven end to end so far.
+- Not in git: `.env` (`cp .env.example .env`, dev-only, DEC-094), `.data/**`, the dev database volume, `.claude/settings.local.json`, Playwright browsers
+  (`cd e2e && pnpm browsers`; `qa/` needs chromium, firefox and webkit; on this device firefox/webkit lack host libraries: PO `sudo` `playwright install-deps`).
+- Accounts (PO): `gh auth login`, `glab auth login`, git identity, credential helpers. Clone setup: `./scripts/install-hooks.sh`, `git remote add gitlab …`.
 
 ## Next steps
-1. On the new device: development-setup §0 steps 1–3 and 6 (toolchain, accounts, clone setup, installs); in step 1 skip the Podman items when
-   `docker info` works; the engine steps follow T-M1.19. Native Windows (not WSL): stop and ask the PO to start Claude Code inside WSL2 (DEC-106).
-2. **T-M1.19:** packet ready → `progress.json` in_progress, branch `feature/T-M1.19-portable-dev-env`, backend-implementer, gate green on the device,
-   G3 fresh qa-evaluator (follows §0 for that platform), CI green, verdicts, merge-gate, gitlab-sync; QA report via `qa/T-M1.19`; merge DEC + records via a chore PR.
-3. **T-M2.4** packet (auth UI + shells, FE; decide SEC in the packet: `?next=` allow-list T18, remember-me on shared devices; M2 exit needs an auth SEC review).
-4. Optional: T-M2.10. No open PRs: Dependabot #64–#70 merged one by one (`@dependabot rebase` each time, LC-APPROVED PR-<n>, merge-gate),
-   develop at `e1611a4`; GitLab CI paused (DEC-107, PR #76), the mirror is in sync.
+1. **T-M2.4 packet** (task-packet skill, branch `docs/T-M2.4-auth-ui`): the backlog row is too large; split into **T-M2.4 auth UI** (login, forgot info,
+   password change forced/voluntary, role redirect, guards, `?next=` allow-list T18, logout, session bootstrap DEC-092, remember-me note DEC-093; SEC
+   triggered) and **T-M2.11 shells** (sidebar/drawer, bottom tabs, account menu, header fixes, lazy/offline feedback, nested 404s). Fresh docs-reviewer,
+   CI, verdicts, merge-gate, gitlab-sync; ask the PO once for the start signal.
+2. Then implement T-M2.4 through G3 (QA, UX, SEC) with the start signal; then T-M2.11, T-M2.5.
 
 ## Pending PO decisions / actions
 - Production needs `SERVER_FORWARDHEADERSSTRATEGY=native` (deployment.md §3) — at deployment time (M8).
@@ -41,7 +30,7 @@ Phase/Milestone: P1 / M2 (in progress) · Current task: **T-M1.19 (ready; PO sta
 
 ## Gotchas
 - **One checkout, no worktrees** (DEC-094): subagents one at a time on the task branch; only the LC switches branches, never while a subagent runs.
-- Paths in older docs/evidence name `/home/kali/App_sources/eng-lms` (the first machines); on the new device use its own clone path (T-M1.19 removes the assumption).
+- Paths in older docs/evidence name `/home/kali/App_sources/eng-lms` (the first machines); this device clones to `/home/kali/App_projects/eng-lms`.
 - **Keep LC copies of reviewer reports outside the scratchpad** (e.g. the session folder `lc-records/`): reviewers clean the shared scratchpad with globs (DEC-101).
 - Reviewer evidence (`evidence/*/review/**`) never on feature/fix branches; QA reports on `qa/<task>`; move any review/QA file an agent writes there off the
   feature branch before committing. `./scripts/check-path-ownership.sh <branch>` before pushing.
@@ -58,6 +47,6 @@ Phase/Milestone: P1 / M2 (in progress) · Current task: **T-M1.19 (ready; PO sta
 - Wall-clock bounds in tests flake on the 2-core CI runner (DEC-093). `git merge` is denied: `gh pr update-branch` (DEC-090).
 
 ## Files to read first
-`CLAUDE.md` → `progress.json` → this file → `docs/tasks/T-M1.19-portable-dev-env.md` → DEC-106 → `docs/07-operations/development-setup.md` §0 →
-`docs/09-harness/coding-agent-rules.md` §3 → `scripts/env.sh`, `dev-up.sh`, `dev-down.sh`, `scripts/tests/dev-scripts.test.sh` → later backlog M2 (T-M2.4) and
-`.claude/skills/task-packet`, `frontend-standards`, `ux-review`.
+`CLAUDE.md` → `progress.json` → this file → backlog M2 (T-M2.4) → FR-AUTH-03..08 → `docs/05-frontend/information-architecture.md` §4,
+`frontend-architecture.md` §2–3 → `docs/04-backend/api-catalog.md` (auth) and `security.md` T18 → `.claude/skills/task-packet`, `frontend-standards`, `ux-review`,
+`security-review`.

@@ -16,7 +16,7 @@
       }
     ]
   },
-  "updatedAt": "2026-10-11T08:55:00Z",
+  "updatedAt": "2026-10-11T09:23:27Z",
   "updatedBy": "backend-implementer (T-M1.19, Opus 5.5)",
   "phase": {
     "id": "P1",
@@ -30,31 +30,6 @@
     "exitCriteria": "FR-AUTH-01..10 and FR-STU-01..07 accepted; authorization-matrix and student-isolation harnesses fail on any unregistered endpoint; add-student flow E2E at 360/768/1280 within its step budget; security review of authentication passed (docs/01-product/roadmap.md)."
   },
   "currentTask": {
-    "id": "T-M1.19",
-    "title": "Portable development environment (Docker or Podman; Linux, macOS, Windows via WSL2)",
-    "status": "in_review",
-    "ownerRole": "BE",
-    "branch": "feature/T-M1.19-portable-dev-env",
-    "packet": "docs/tasks/T-M1.19-portable-dev-env.md",
-    "pr": "78",
-    "lastCommit": null,
-    "startedAt": "2026-10-11T08:20:32Z",
-    "entryGate": [
-      "T-M2.9 merged — met (37e8ce0)",
-      "Packet G0 — met (DOCS-REVIEW PASS round 3, PR #75)",
-      "PO start signal — given (DEC-106)"
-    ],
-    "nextSteps": [
-      "LC: record evidence/T-M1.19/summary.md from the implementer's returned text (the harness blocks agent-written .md reports)",
-      "LC: open the PR (template), CI 7/7, G3 fresh qa-evaluator following development-setup §0 for its platform, verdicts, merge-gate, gitlab-sync",
-      "Then the T-M2.4 packet"
-    ],
-    "trace": [
-      "DEC-106",
-      "backlog M1"
-    ]
-  },
-  "nextTask": {
     "id": "T-M2.4",
     "title": "Auth UI + shells (login, password change, role redirect, tutor sidebar/drawer, student tabs)",
     "status": "draft",
@@ -66,12 +41,13 @@
     "startedAt": null,
     "entryGate": [
       "T-M2.1 merged — met (a93bcc1)",
-      "T-M1.19 merged — pending (DEC-106)",
+      "T-M1.19 merged — met (8be6d9f, DEC-108)",
       "Packet G0 — pending",
       "PO start signal — pending"
     ],
     "nextSteps": [
-      "Write the T-M2.4 packet after T-M1.19 merges; decide the SEC review in the packet (?next= allow-list T18)"
+      "Write the T-M2.4 packet (task-packet skill, branch docs/T-M2.4-auth-ui); fresh docs-reviewer; merge-gate",
+      "Ask the PO for the start signal"
     ],
     "trace": [
       "backlog M2",
@@ -79,6 +55,7 @@
       "DEC-106"
     ]
   },
+  "nextTask": null,
   "completed": [
     {
       "id": "T-M0.1",
@@ -271,6 +248,14 @@
       "mergeCommit": "ed442e0",
       "evidence": "evidence/T-M1.20/review/docs.md",
       "note": "PR #76 via merge-gate; gitlab-sync pushes with -o ci.skip and the .gitlab-ci.yml workflow rule is never, both unless ENGLMS_GITLAB_CI=on; DOCS-REVIEW round 2 PASS; mirror synced, GitLab pipelines skipped."
+    },
+    {
+      "id": "T-M1.19",
+      "title": "Portable development environment (Docker or Podman; Linux, macOS, Windows via WSL2)",
+      "completedAt": "2026-10-11T09:22:12Z",
+      "mergeCommit": "8be6d9f",
+      "evidence": "evidence/T-M1.19/summary.md",
+      "note": "PR #78 via merge-gate at head ba8f0be; CI 7/7; gate PASS on the new device (Kali Linux, rootless Podman 5.8.6). QA round 1 PASS WITH MINOR (F-1..F-7 fixed in-task), round 2 PASS; N-1..N-3 documented in development-setup §3 (DEC-108). QA report via qa/T-M1.19 (PR #79)."
     }
   ],
   "tests": {
@@ -302,7 +287,7 @@
   "gates": {
     "G0": {
       "status": "pass",
-      "note": "T-M1.19 packet: DOCS-REVIEW PASS round 3 (PR #75)"
+      "note": "T-M2.4 packet pending (T-M1.19 packet passed: DOCS-REVIEW PASS round 3, PR #75)"
     },
     "G1": {
       "status": "n/a",
@@ -313,12 +298,12 @@
       "note": "T-M2.4 not started (T-M2.9 passed: CI 7/7 at 5de3a62)"
     },
     "G3": {
-      "status": "n/a",
-      "note": "T-M2.4 not started (T-M2.9 passed: QA PASS, SEC APPROVED, PR #72)"
+      "status": "pass",
+      "note": "T-M1.19 QA round 2 PASS at ba8f0be"
     },
     "G4": {
-      "status": "n/a",
-      "note": "T-M2.4 not started (T-M2.9 passed: merged 37e8ce0, DEC-105)"
+      "status": "pass",
+      "note": "T-M1.19 merged 8be6d9f (DEC-108)"
     },
     "G5": {
       "status": "pass",
@@ -338,7 +323,8 @@
       "DEC-104",
       "DEC-105",
       "DEC-106",
-      "DEC-107"
+      "DEC-107",
+      "DEC-108"
     ],
     "pendingPO": [
       "OQ-03",
@@ -986,6 +972,11 @@
       "at": "2026-10-09T15:46:04Z",
       "actor": "lead-coordinator",
       "event": "Merged GitLab CI pause (PR #76, ed442e0, DEC-107) and Dependabot PRs #64-#70 (develop e1611a4); mirror synced with -o ci.skip; GitLab shows skipped pipelines only."
+    },
+    {
+      "at": "2026-10-11T09:23:27Z",
+      "actor": "lead-coordinator",
+      "event": "T-M1.19 merged via merge-gate (PR #78, 8be6d9f, DEC-108): gate green on the new device (Kali Linux, rootless Podman); QA PASS (round 2); mirror synced. QA report PR #79."
     }
   ]
 }
