@@ -39,7 +39,7 @@ describe('i18n completeness (NFR-I18N-01)', () => {
   })
 
   it('covers the dev namespace', () => {
-    expect(Object.keys(catalogues.vi)).toEqual(expect.arrayContaining(['common', 'shell', 'dev']))
+    expect(Object.keys(catalogues.vi)).toEqual(expect.arrayContaining(['common', 'shell', 'auth', 'dev']))
     expect(Object.keys(resources.vi)).not.toContain('dev')
   })
 
@@ -51,7 +51,7 @@ describe('i18n completeness (NFR-I18N-01)', () => {
 
   it('detects a key missing from en (fixture)', () => {
     const en = structuredClone(resources.en) as Record<string, Record<string, unknown>>
-    delete (en.common!.landing as Record<string, unknown>).tutor
-    expect(missingKeys(resources.vi, en)).toEqual(['common:landing.tutor'])
+    delete (en.common!.notFound as Record<string, unknown>).home
+    expect(missingKeys(resources.vi, en)).toEqual(['common:notFound.home'])
   })
 })

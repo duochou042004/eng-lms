@@ -6,6 +6,8 @@ import shellStyles from '../shells/ShellLayout.module.css'
 import styles from './Page.module.css'
 
 const SHELL_PATH = /^\/(tutor|student)(\/|$)/
+// The pages in the PublicPage frame (toolbar row + 400 px column); `/` redirects, usually to /login.
+const PUBLIC_PATHS = new Set(['/', '/login', '/change-password', '/forbidden'])
 
 /**
  * A 44 px block as wide as the language switcher (T-M1.16): an invisible, zero-height row of its endonyms in the
@@ -26,21 +28,53 @@ function SwitcherSkeleton() {
 }
 
 /**
- * The page part: a PageHeader-shaped title line and a content block. With `toolbar` (the landing page), first a 44 px,
- * end-aligned row in the shape of the landing page's language switcher, so the heading appears where its line was.
+ * A 44 px block as wide as a shell-header control with a text label (T-M2.4): an invisible, zero-height copy of the
+ * label with the control's inline padding (`sizerClass`) sets the inline size, as `SwitcherSkeleton` does.
+ */
+function ControlSkeleton({ label, sizerClass }: { label: string; sizerClass: string | undefined }) {
+  return (
+    <div className={styles.switcherSkeleton}>
+      <div aria-hidden="true" className={`${styles.labelSizer} ${sizerClass}`}>
+        <span>{label}</span>
+      </div>
+      <Skeleton shape="block" inlineSize="100%" blockSize="var(--size-control-md)" />
+    </div>
+  )
+}
+
+function TitleAndContent() {
+  return (
+    <>
+      <div className={styles.headerSkeleton} data-testid="route-loading-title">
+        <Skeleton inlineSize="14em" blockSize="1.875rem" />
+      </div>
+      <Skeleton shape="block" inlineSize="100%" blockSize="12rem" />
+    </>
+  )
+}
+
+/**
+ * The page part: a PageHeader-shaped title line and a content block. With `toolbar` (the public pages: sign-in,
+ * password change, forbidden), first a 44 px, end-aligned row in the shape of their language switcher, and the title and
+ * content in their 400 px column, so the heading appears where its line was.
  */
 function PageSkeleton({ toolbar = false }: { toolbar?: boolean }) {
   return (
     <Stack gap={6}>
       {toolbar ? (
-        <div className={styles.toolbar} data-testid="route-loading-toolbar">
-          <SwitcherSkeleton />
-        </div>
-      ) : null}
-      <div className={styles.headerSkeleton} data-testid="route-loading-title">
-        <Skeleton inlineSize="14em" blockSize="1.875rem" />
-      </div>
-      <Skeleton shape="block" inlineSize="100%" blockSize="12rem" />
+        <>
+          <div className={styles.toolbar} data-testid="route-loading-toolbar">
+            <SwitcherSkeleton />
+          </div>
+          <div className={styles.narrow}>
+            <Stack gap={6}>
+              <TitleAndContent />
+            </Stack>
+          </div>
+        </>
+      ) : (
+        <TitleAndContent />
+      )}
     </Stack>
   )
 }
@@ -48,8 +82,9 @@ function PageSkeleton({ toolbar = false }: { toolbar?: boolean }) {
 /**
  * Shown while a lazy route module loads on first visit (interaction-states §1: a layout-shaped skeleton, not a blank
  * page). The region is `aria-busy` with its label from 0 ms; the skeletons appear after 150 ms (`DelayedSkeleton`).
- * On the shell paths it includes a top-bar-shaped skeleton (the shell's own top-bar styles), elsewhere only the page; on
- * the landing page (`/`) the page part starts with the language switcher's toolbar row (T-M1.13).
+ * On the shell paths it includes a top-bar-shaped skeleton (the shell's own top-bar styles, with the switcher and the
+ * T-M2.4 account controls), elsewhere only the page; on the public pages the page part starts with the language
+ * switcher's toolbar row (T-M1.13) and uses their column.
  */
 export function RouteLoading() {
   const { t } = useTranslation()
@@ -65,7 +100,11 @@ export function RouteLoading() {
                 <Skeleton inlineSize="4.5em" />
                 <Skeleton inlineSize="8em" />
               </div>
-              <SwitcherSkeleton />
+              <div className={shellStyles.actions}>
+                <ControlSkeleton label={t('auth:header.changePassword')} sizerClass={styles.linkSizer} />
+                <ControlSkeleton label={t('auth:header.logout')} sizerClass={styles.buttonSizer} />
+                <SwitcherSkeleton />
+              </div>
             </div>
             <div className={shellStyles.main}>
               <PageSkeleton />
@@ -73,7 +112,7 @@ export function RouteLoading() {
           </>
         ) : (
           <div className={styles.page}>
-            <PageSkeleton toolbar={pathname === '/'} />
+            <PageSkeleton toolbar={PUBLIC_PATHS.has(pathname)} />
           </div>
         )}
       </DelayedSkeleton>

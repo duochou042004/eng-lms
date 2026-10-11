@@ -7,13 +7,14 @@ const REPO_ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', '..')
 
 /**
  * Evidence screenshot (evidence-protocol): with ENGLMS_TASK=T-Mx.y set, writes
- * evidence/<task>/screenshots/<project>/<name>.png; without it, does nothing.
+ * evidence/<task>/<dir>/<project>/<name>.png (`dir` defaults to `screenshots`; the implementer's screen-and-state set
+ * uses `impl`); without it, does nothing.
  */
-export async function evidenceShot(page: Page, testInfo: TestInfo, name: string) {
+export async function evidenceShot(page: Page, testInfo: TestInfo, name: string, dir = 'screenshots') {
   const task = process.env.ENGLMS_TASK
   if (!task) return
   if (!/^T-[A-Za-z0-9.]+$/.test(task)) throw new Error(`ENGLMS_TASK must look like T-M1.6 (got: ${task})`)
-  const file = join(REPO_ROOT, 'evidence', task, 'screenshots', testInfo.project.name, `${name}.png`)
+  const file = join(REPO_ROOT, 'evidence', task, dir, testInfo.project.name, `${name}.png`)
   mkdirSync(dirname(file), { recursive: true })
   await page.screenshot({ path: file, fullPage: true })
 }

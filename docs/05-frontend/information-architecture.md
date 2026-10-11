@@ -57,6 +57,11 @@ At < 768 px: a bottom tab bar (Home, Work, Lessons, Plan, More), with labels alw
 
 `/login` · `/change-password` (forced, or from account) · `/` → redirect by role · `*` → 404 page (with a link home) · `/forbidden` (403).
 
+Implemented in T-M2.4: `/` has no page (the M1 landing page is gone): it redirects a `TUTOR` to `/tutor/today`, a `STUDENT` to `/student/home`, a
+session that must change its password to `/change-password` and an anonymous visitor to `/login`. `/login`, `/change-password` and `/forbidden`
+share the public frame (the language switcher in a toolbar row, one 400 px column). Until T-M2.11 the "Change password" link and "Log out" sit in
+the placeholder shell header, before the language switcher.
+
 ## 5. Full route inventory
 
 ```text

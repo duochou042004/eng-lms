@@ -1,0 +1,7 @@
+{
+  "name": "ENGLMS_REMEMBER_ME",
+  "httpOnly": true,
+  "secure": true,
+  "sameSite": "Lax",
+  "lifetimeDays": 30
+}

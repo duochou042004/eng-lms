@@ -1,0 +1,22 @@
+{
+  "viewport": {
+    "width": 768,
+    "height": 1024
+  },
+  "homeLinkBox": {
+    "x": 162,
+    "y": 115.796875,
+    "width": 177,
+    "height": 44
+  },
+  "minimumTargetPx": 44,
+  "steps": {
+    "reachMainAfterFailedNavigation": 0,
+    "leaveForStartPagePointer": 1,
+    "leaveForStartPageKeyboard": 1
+  },
+  "budgets": {
+    "reachMain": 0,
+    "leaveForStartPage": 1
+  }
+}

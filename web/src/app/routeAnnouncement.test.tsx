@@ -3,51 +3,57 @@ import userEvent from '@testing-library/user-event'
 import { describe, expect, it } from 'vitest'
 import { changeLocale, i18n } from '../lib/i18n'
 import { renderRoute } from '../test/render'
+import { server, sessionAs } from '../test/server'
 
 // T-M1.9 AC1: focus moves to the new page's h1 after a client-side navigation, never on a first load (the helper renders
 // under <StrictMode>, so the effect replay on mount is covered); document.title is "<page title> · Eng-LMS".
+// T-M2.4: the anonymous start page is /login (no landing page); the shells need a session, so the client-side
+// navigations start from a shell and use its header link to the password page.
 
 const h1 = (name: string) => screen.findByRole('heading', { level: 1, name })
 
 describe('route focus and document titles', () => {
   it('keeps focus on body on a first load and sets the title', async () => {
     renderRoute('/')
-    await h1('Không gian dạy học')
-    await waitFor(() => expect(document.title).toBe('Không gian dạy học · Eng-LMS')) // the page's effects have run
+    await h1('Đăng nhập')
+    await waitFor(() => expect(document.title).toBe('Đăng nhập · Eng-LMS')) // the page's effects have run
     expect(document.activeElement).toBe(document.body)
   })
 
-  it('moves focus to the h1 of a lazy route after a link navigation (landing → tutor)', async () => {
-    renderRoute('/')
-    await h1('Không gian dạy học')
-    await userEvent.click(screen.getByRole('link', { name: 'Khu vực gia sư' }))
-    const heading = await h1('Không gian gia sư')
+  it('moves focus to the h1 of a lazy route after a link navigation (tutor → change password)', async () => {
+    server.use(sessionAs('TUTOR'))
+    renderRoute('/tutor')
+    await h1('Không gian gia sư')
+    await userEvent.click(screen.getByRole('link', { name: 'Đổi mật khẩu' }))
+    const heading = await h1('Đổi mật khẩu')
     await waitFor(() => expect(heading).toHaveFocus())
     expect(heading).toHaveAttribute('tabindex', '-1')
-    await waitFor(() => expect(document.title).toBe('Không gian gia sư · Eng-LMS'))
+    await waitFor(() => expect(document.title).toBe('Đổi mật khẩu · Eng-LMS'))
   })
 
-  it('moves focus after landing → student, → 404 and browser back', async () => {
-    const { router } = renderRoute('/')
-    await h1('Không gian dạy học')
-    await userEvent.click(screen.getByRole('link', { name: 'Khu vực học viên' }))
-    await waitFor(() => expect(screen.getByRole('heading', { level: 1, name: 'Trang của học viên' })).toHaveFocus())
-    await waitFor(() => expect(document.title).toBe('Trang của học viên · Eng-LMS'))
+  it('moves focus after student → change password, → 404 and browser back', async () => {
+    server.use(sessionAs('STUDENT'))
+    const { router } = renderRoute('/student')
+    await h1('Trang của học viên')
+    await userEvent.click(screen.getByRole('link', { name: 'Đổi mật khẩu' }))
+    await waitFor(() => expect(screen.getByRole('heading', { level: 1, name: 'Đổi mật khẩu' })).toHaveFocus())
+    await waitFor(() => expect(document.title).toBe('Đổi mật khẩu · Eng-LMS'))
 
     await act(() => router.navigate('/khong-co'))
     await waitFor(() => expect(screen.getByRole('heading', { level: 1, name: 'Không tìm thấy trang' })).toHaveFocus())
     await waitFor(() => expect(document.title).toBe('Không tìm thấy trang · Eng-LMS'))
 
     await act(() => router.navigate(-1))
-    await waitFor(() => expect(screen.getByRole('heading', { level: 1, name: 'Trang của học viên' })).toHaveFocus())
+    await waitFor(() => expect(screen.getByRole('heading', { level: 1, name: 'Đổi mật khẩu' })).toHaveFocus())
     await act(() => router.navigate(-1))
-    await waitFor(() => expect(screen.getByRole('heading', { level: 1, name: 'Không gian dạy học' })).toHaveFocus())
-    await waitFor(() => expect(document.title).toBe('Không gian dạy học · Eng-LMS'))
+    await waitFor(() => expect(screen.getByRole('heading', { level: 1, name: 'Trang của học viên' })).toHaveFocus())
+    await waitFor(() => expect(document.title).toBe('Trang của học viên · Eng-LMS'))
   })
 
   it('keeps focus on body after a reload of a page first reached by client navigation; the skip link is the first Tab stop', async () => {
-    // A reload starts a fresh app with the history stack kept (the current entry is /tutor, reached from /).
-    renderRoute(['/', '/tutor'], 1)
+    // A reload starts a fresh app with the history stack kept (the current entry is /tutor, reached from /login).
+    server.use(sessionAs('TUTOR'))
+    renderRoute(['/login', '/tutor'], 1)
     await h1('Không gian gia sư')
     await waitFor(() => expect(document.title).toBe('Không gian gia sư · Eng-LMS'))
     expect(document.activeElement).toBe(document.body)
@@ -56,6 +62,7 @@ describe('route focus and document titles', () => {
   })
 
   it('does not move focus on a hash-only change (the skip link target)', async () => {
+    server.use(sessionAs('TUTOR'))
     const { router } = renderRoute('/tutor')
     await h1('Không gian gia sư')
     await act(() => router.navigate('/tutor#main'))
@@ -63,6 +70,7 @@ describe('route focus and document titles', () => {
   })
 
   it('updates the title on a language change without a navigation, and titles English pages', async () => {
+    server.use(sessionAs('TUTOR'))
     renderRoute('/tutor')
     await h1('Không gian gia sư')
     await act(() => changeLocale('en'))

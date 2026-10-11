@@ -12,7 +12,7 @@ mkdir -p "$repo/scripts" "$repo/backend/target" "$repo/e2e" "$work/bin"
 cp "$ROOT/scripts/e2e-run.sh" "$repo/scripts/e2e-run.sh"; cp -R "$ROOT/scripts/lib" "$repo/scripts/"
 touch "$repo/backend/target/englms-0.0.1-SNAPSHOT.jar"
 # java stub: a long-running "app" that records its pid; curl stub: always ready; pnpm stub: exit $PNPM_EXIT for the test run.
-printf '#!/usr/bin/env bash\necho $$ >"%s/app.pid"\nexec sleep 300\n' "$work" >"$work/bin/java"
+printf '#!/usr/bin/env bash\necho $$ >"%s/app.pid"\nenv | grep -E "^ENGLMS_(BOOTSTRAP|SECURITY)" | sort >"%s/app.env"\nexec sleep 300\n' "$work" "$work" >"$work/bin/java"
 printf '#!/usr/bin/env bash\nexit 0\n' >"$work/bin/curl"
 printf '#!/usr/bin/env bash\necho "pnpm $*" >>"%s/pnpm.args"\n[[ "$1" == exec ]] && exit "${PNPM_EXIT:-0}"\nexit 0\n' "$work" >"$work/bin/pnpm"
 chmod +x "$work/bin/"*
@@ -28,6 +28,15 @@ expect_output_contains "e2e-run: app stopped" "stops the app after the run"
 LAST_OUTPUT=$(cat "$work/pnpm.args")
 expect_output_contains "pnpm exec playwright test --project=laptop tests/x.spec.ts" "passes the Playwright arguments through"
 app_gone && { PASS_COUNT=$((PASS_COUNT + 1)); echo "  ok   - no app process is left"; } || { FAIL_COUNT=$((FAIL_COUNT + 1)); echo "  FAIL - the app process is still running"; }
+
+LAST_OUTPUT=$(cat "$work/app.env")
+expect_output_contains "ENGLMS_BOOTSTRAP_TUTOR_USERNAME=e2e-tutor" "starts the app with the E2E tutor bootstrap"
+expect_output_contains "ENGLMS_BOOTSTRAP_TUTOR_PASSWORD_FILE=$repo/.data/e2e/tutor-bootstrap-password" "points the bootstrap at the generated password file"
+expect_output_contains "ENGLMS_SECURITY_LOGINTHROTTLE_MAXATTEMPTS=100000" "raises the login throttle for the E2E app only"
+pw=$(cat "$repo/.data/e2e/tutor-bootstrap-password")
+[[ ${#pw} -eq 24 && "$(stat -c %a "$repo/.data/e2e/tutor-bootstrap-password")" == 600 ]] && { PASS_COUNT=$((PASS_COUNT + 1)); echo "  ok   - generates a 24-character, owner-only bootstrap password file"; } || { FAIL_COUNT=$((FAIL_COUNT + 1)); echo "  FAIL - bootstrap password file (length ${#pw})"; }
+expect_exit 0 "reuses the bootstrap password file on a re-run" -- run "$repo/scripts/e2e-run.sh" --no-build
+[[ "$(cat "$repo/.data/e2e/tutor-bootstrap-password")" == "$pw" ]] && { PASS_COUNT=$((PASS_COUNT + 1)); echo "  ok   - the bootstrap password is generated once"; } || { FAIL_COUNT=$((FAIL_COUNT + 1)); echo "  FAIL - the bootstrap password changed on a re-run"; }
 
 rm -f "$work/app.pid"
 expect_exit 3 "propagates Playwright's exit code" -- env PNPM_EXIT=3 PATH="$work/bin:$PATH" E2E_CHECK_PORTS= SPRING_DATASOURCE_URL=x "$repo/scripts/e2e-run.sh" --no-build

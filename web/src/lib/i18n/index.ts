@@ -1,7 +1,9 @@
 import i18n from 'i18next'
 import { initReactI18next } from 'react-i18next'
+import enAuth from './locales/en/auth.json'
 import enCommon from './locales/en/common.json'
 import enShell from './locales/en/shell.json'
+import viAuth from './locales/vi/auth.json'
 import viCommon from './locales/vi/common.json'
 import viShell from './locales/vi/shell.json'
 
@@ -16,8 +18,8 @@ export const LOCALE_STORAGE_KEY = 'englms.locale'
  * when the lazily loaded `/dev/ui` module runs, so no `dev` string reaches a production build (T-M1.3 QA F-1, DEC-045).
  */
 export const resources = {
-  vi: { common: viCommon, shell: viShell },
-  en: { common: enCommon, shell: enShell },
+  vi: { common: viCommon, shell: viShell, auth: viAuth },
+  en: { common: enCommon, shell: enShell, auth: enAuth },
 } as const
 
 export function isLocale(value: unknown): value is Locale {
@@ -52,7 +54,7 @@ void i18n.use(initReactI18next).init({
   lng: initialLocale(),
   fallbackLng: DEFAULT_LOCALE,
   supportedLngs: [...LOCALES],
-  ns: ['common', 'shell'],
+  ns: ['common', 'shell', 'auth'],
   defaultNS: 'common',
   interpolation: { escapeValue: false },
   returnNull: false,

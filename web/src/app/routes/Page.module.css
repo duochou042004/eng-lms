@@ -10,33 +10,6 @@
   justify-content: flex-end;
 }
 
-.choices {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
-  gap: var(--space-4);
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.choice {
-  display: flex;
-  align-items: center;
-  min-block-size: var(--size-control-lg);
-  padding: var(--space-5) var(--space-4);
-  border: var(--border-width) solid var(--color-border-strong);
-  border-radius: var(--radius-md);
-  background: var(--color-surface);
-  font-size: var(--font-size-lg);
-  font-weight: var(--font-weight-medium);
-  text-decoration: none;
-}
-
-.choice:hover {
-  background: var(--color-accent-subtle);
-  color: var(--color-accent-strong);
-}
-
 /* RouteLoading: a block-level region (an <output> is inline by default), so the page and shell paddings apply. */
 .loading {
   display: block;
@@ -68,6 +41,25 @@
   border-inline-start: var(--border-width) solid;
 }
 
+/* ControlSkeleton: the label of a shell-header control, invisible and zero-height, in the control's own type and inline
+   padding (ShellLayout .accountLink: medium weight, --space-2; Button md: medium weight, --space-4 plus its border). */
+.labelSizer {
+  display: flex;
+  block-size: 0;
+  overflow: hidden;
+  visibility: hidden;
+  font-weight: var(--font-weight-medium);
+  white-space: nowrap;
+}
+
+.linkSizer > * {
+  padding-inline: var(--space-2);
+}
+
+.buttonSizer > * {
+  padding-inline: calc(var(--space-4) + var(--border-width));
+}
+
 /* The shell brand row is as tall as its 44 px home link. */
 .brandSkeleton {
   min-block-size: var(--size-control-md);
@@ -94,4 +86,60 @@
   min-block-size: var(--size-control-md);
   padding-inline: var(--space-2);
   font-weight: var(--font-weight-medium);
+}
+
+/* The one-column public pages (sign-in, password change, forbidden) and their loading skeleton: at most 400 px, centred. */
+.narrow {
+  inline-size: 100%;
+  max-inline-size: var(--size-form-max);
+  margin-inline: auto;
+}
+
+/* "Forgot your password?" (FR-AUTH-08): a native disclosure; the summary is a 44 px target. */
+.disclosure {
+  border-block-start: var(--border-width) solid var(--color-border);
+  padding-block-start: var(--space-2);
+}
+
+.disclosureSummary {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  min-block-size: var(--size-control-md);
+  color: var(--color-accent);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+}
+
+/* The marker `display: flex` removes: a chevron that turns down when open (no movement under reduced motion: the
+   duration token is 0 ms there). */
+.disclosureIcon {
+  flex: none;
+  inline-size: var(--size-icon);
+  block-size: var(--size-icon);
+  transition: transform var(--motion-duration) var(--motion-easing);
+}
+
+.disclosure[open] .disclosureIcon {
+  transform: rotate(90deg);
+}
+
+.disclosureBody {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding-block-end: var(--space-2);
+  color: var(--color-text-muted);
+}
+
+/* A link aligned with the column edge (no inline padding), still a 44 px target. */
+.flush {
+  padding-inline: 0;
+}
+
+/* A form's actions: the primary submit first; wraps on narrow screens. */
+.formActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
 }

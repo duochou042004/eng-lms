@@ -42,6 +42,22 @@ Cross-feature needs go through `lib` or via route composition. `react-aria-compo
 - **API client:** `openapi-fetch` with `credentials: 'same-origin'`. A middleware adds `X-XSRF-TOKEN` from the cookie and `Idempotency-Key` for flagged
   commands, and maps Problem Details → `ApiError {status, code, fieldErrors}`. On 401 it clears the query cache → `/login?next=`. On 403
   `PASSWORD_CHANGE_REQUIRED` it redirects to `/change-password`.
+  **Implemented (T-M2.4)** in `lib/api/client.ts`: the XSRF middleware sends `X-XSRF-TOKEN` = the `XSRF-TOKEN` cookie on every non-GET request;
+  when the cookie is missing it first calls `GET /auth/session` (which primes it, also on 401; a GET, so no recursion). `ApiError` carries
+  `fieldErrors` (`errors[]`) and `retryAfterSeconds` (`Retry-After`). A 401 from any call except `GET /auth/session` and `POST /auth/login`, or a
+  403 `PASSWORD_CHANGE_REQUIRED`, is reported to one listener (`onAuthProblem`); `app/guards.ts` `connectAuthProblems` reacts through the router:
+  401 → clear the query cache, `/login?next=<path+search>` (only when `isSafeAppPath` accepts it, else `/login`); 403 → read the session again,
+  `/change-password`. (`Idempotency-Key` is not built yet.)
+- **Session bootstrap and guards (T-M2.4, DEC-092):** `features/auth/api/session.ts` `sessionQuery` (key `['auth','session']`, `GET /auth/session`,
+  `null` on 401, `staleTime: Infinity`; changed only by sign-in, password change and logout). The root route's loader resolves it before anything
+  renders, so it completes before any other API request. The guards are route loaders (`app/guards.ts`), so protected UI never renders for the
+  wrong visitor: `/tutor/*` needs `TUTOR`, `/student/*` needs `STUDENT`; anonymous → `/login?next=`; `mustChangePassword` → `/change-password`
+  (checked before the role); wrong role → `/forbidden`. `/` only redirects (role home, `/change-password` or `/login`). `/login` logs out a
+  session that must change its password, sends another signed-in visitor home, else shows the form. `/change-password` needs a session.
+- **Return targets (security.md T18):** `features/auth/model/redirect.ts`: `isSafeAppPath(path)` (structural, no role: raw and after exactly one
+  `decodeURIComponent`, a decode error refuses; starts with `/` but not `//` or `/\`; no `:` or whitespace in the path part, backslash, control character, `.`/`..`
+  segment raw or `%2e`-encoded; first segment `tutor` or `student`) and `safeNext(next, role)` (safe **and** the role's namespace, else the role
+  home). The redirect after sign-in and after a forced change always goes through the router's `navigate()`; table test in `redirect.test.ts`.
 
 ## 3. Routing and code splitting
 

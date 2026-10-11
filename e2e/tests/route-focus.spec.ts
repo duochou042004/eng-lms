@@ -1,29 +1,31 @@
 import type { Locator, Page } from '@playwright/test'
+import { ANONYMOUS, STUDENT_STATE, TUTOR_STATE } from '../support/auth'
 import { evidenceRecord, evidenceShot } from '../support/evidence'
 import { expect, test } from '../support/fixtures'
 import { StepCounter } from '../support/steps'
 
 // T-M1.9: route focus and titles (AC1), 44 px targets (AC6) and the UX step budgets (AC10) at the mandatory viewports.
+// T-M2.4: no landing page; the anonymous start page is /login and the shells need a session (the stored E2E tutor and
+// student sessions). The client-side navigations start from a shell: its header link to the password page, its home
+// link (`/` → the role home) and the 404 page's start-page link.
 
 const COPY = {
   vi: {
-    landing: 'Không gian dạy học',
+    login: 'Đăng nhập',
     tutor: 'Không gian gia sư',
     student: 'Trang của học viên',
     notFound: 'Không tìm thấy trang',
-    toTutor: 'Khu vực gia sư',
-    toStudent: 'Khu vực học viên',
+    changePassword: 'Đổi mật khẩu',
     home: 'Về trang đầu',
     skip: 'Chuyển đến nội dung chính',
     language: 'Ngôn ngữ',
   },
   en: {
-    landing: 'Teaching workspace',
+    login: 'Sign in',
     tutor: 'Tutor workspace',
     student: 'Student home',
     notFound: 'Page not found',
-    toTutor: 'Tutor area',
-    toStudent: 'Student area',
+    changePassword: 'Change password',
     home: 'Go to the start page',
     skip: 'Skip to main content',
     language: 'Language',
@@ -51,61 +53,77 @@ async function useLanguage(page: Page, lang: Lang) {
   }, lang)
 }
 
+const ROLES = [
+  { role: 'tutor', path: '/tutor', state: TUTOR_STATE },
+  { role: 'student', path: '/student', state: STUDENT_STATE },
+] as const
+
 for (const lang of ['vi', 'en'] as const) {
   const c = COPY[lang]
 
-  test(`[${lang}] client-side navigation moves focus to the h1 and sets the title; a first load does not`, async ({
-    page,
-  }) => {
-    await useLanguage(page, lang)
-    await page.goto('/')
-    await expect(h1(page, c.landing)).toBeVisible()
-    await expect(page).toHaveTitle(`${c.landing} · Eng-LMS`)
-    await expectBodyFocused(page)
+  for (const { role, path, state } of ROLES) {
+    test.describe(() => {
+      test.use({ storageState: state })
+      test(`[${lang}] ${role}: client-side navigation moves focus to the h1 and sets the title; a first load does not`, async ({
+        page,
+      }) => {
+        const home = c[role]
+        await useLanguage(page, lang)
+        await page.goto(path)
+        await expect(h1(page, home)).toBeVisible()
+        await expect(page).toHaveTitle(`${home} · Eng-LMS`)
+        await expectBodyFocused(page)
 
-    await page.getByRole('link', { name: c.toTutor }).click()
-    await expectFocusedPage(page, c.tutor)
-    await page.goBack()
-    await expectFocusedPage(page, c.landing)
-    await page.getByRole('link', { name: c.toStudent }).click()
-    await expectFocusedPage(page, c.student)
-    await page.goBack()
-    await expectFocusedPage(page, c.landing)
+        await page.getByRole('link', { name: c.changePassword }).click()
+        await expectFocusedPage(page, c.changePassword)
+        await page.goBack()
+        await expectFocusedPage(page, home)
+        await page.getByRole('banner').getByRole('link', { name: 'Eng-LMS' }).click()
+        await expectFocusedPage(page, home)
+        await page.goBack()
+        await expectFocusedPage(page, home)
 
-    // A reload of a page first reached by client navigation is a first load: focus stays on body.
-    await page.getByRole('link', { name: c.toTutor }).click()
-    await expectFocusedPage(page, c.tutor)
-    await page.reload()
-    await expect(h1(page, c.tutor)).toBeVisible()
-    await expect(page).toHaveTitle(`${c.tutor} · Eng-LMS`)
-    await expectBodyFocused(page)
+        // A reload of a page first reached by client navigation is a first load: focus stays on body.
+        await page.getByRole('link', { name: c.changePassword }).click()
+        await expectFocusedPage(page, c.changePassword)
+        await page.reload()
+        await expect(h1(page, c.changePassword)).toBeVisible()
+        await expect(page).toHaveTitle(`${c.changePassword} · Eng-LMS`)
+        await expectBodyFocused(page)
 
-    // Any → 404: a fresh 404, a link to the start page, then browser back to the 404.
-    await page.goto('/does-not-exist')
-    await expect(h1(page, c.notFound)).toBeVisible()
-    await expect(page).toHaveTitle(`${c.notFound} · Eng-LMS`)
-    await expectBodyFocused(page)
-    await page.getByRole('link', { name: c.home }).click()
-    await expectFocusedPage(page, c.landing)
-    await page.goBack()
-    await expectFocusedPage(page, c.notFound)
-  })
+        // Any → 404: a fresh 404, a link to the start page (`/` → the role home), then browser back to the 404.
+        await page.goto('/does-not-exist')
+        await expect(h1(page, c.notFound)).toBeVisible()
+        await expect(page).toHaveTitle(`${c.notFound} · Eng-LMS`)
+        await expectBodyFocused(page)
+        await page.getByRole('link', { name: c.home }).click()
+        await expectFocusedPage(page, home)
+        await page.goBack()
+        await expectFocusedPage(page, c.notFound)
+      })
+    })
+  }
 
-  test(`[${lang}] a language change updates the title without a navigation and keeps focus on the switcher`, async ({
-    page,
-  }) => {
-    await useLanguage(page, lang)
-    await page.goto('/tutor')
-    await expect(page).toHaveTitle(`${c.tutor} · Eng-LMS`)
-    const other: Lang = lang === 'vi' ? 'en' : 'vi'
-    const otherName = other === 'en' ? 'English' : 'Tiếng Việt'
-    await page.getByRole('radiogroup', { name: c.language }).getByRole('radio', { name: otherName }).click()
-    await expect(page).toHaveTitle(`${COPY[other].tutor} · Eng-LMS`)
-    await expect(page.locator('html')).toHaveAttribute('lang', other)
-    // The group's name is now in the other language; focus stayed on the activated segment (no jump to the h1).
-    const segment = page.getByRole('radiogroup', { name: COPY[other].language }).getByRole('radio', { name: otherName })
-    await expect(segment).toBeFocused()
-    await expect(segment).toBeChecked()
+  test.describe(() => {
+    test.use({ storageState: TUTOR_STATE })
+    test(`[${lang}] a language change updates the title without a navigation and keeps focus on the switcher`, async ({
+      page,
+    }) => {
+      await useLanguage(page, lang)
+      await page.goto('/tutor')
+      await expect(page).toHaveTitle(`${c.tutor} · Eng-LMS`)
+      const other: Lang = lang === 'vi' ? 'en' : 'vi'
+      const otherName = other === 'en' ? 'English' : 'Tiếng Việt'
+      await page.getByRole('radiogroup', { name: c.language }).getByRole('radio', { name: otherName }).click()
+      await expect(page).toHaveTitle(`${COPY[other].tutor} · Eng-LMS`)
+      await expect(page.locator('html')).toHaveAttribute('lang', other)
+      // The group's name is now in the other language; focus stayed on the activated segment (no jump to the h1).
+      const segment = page
+        .getByRole('radiogroup', { name: COPY[other].language })
+        .getByRole('radio', { name: otherName })
+      await expect(segment).toBeFocused()
+      await expect(segment).toBeChecked()
+    })
   })
 }
 
@@ -115,43 +133,56 @@ async function blockSize(locator: Locator) {
   return Math.round(box!.height * 100) / 100
 }
 
-test('targets measure at least 44 px block size: skip link, shell home link, 404 link, switcher segments', async ({
-  page,
-}, testInfo) => {
-  const sizes: Record<string, number> = {}
-  await page.goto('/tutor')
-  await expect(h1(page, COPY.vi.tutor)).toBeVisible()
-  await page.keyboard.press('Tab')
-  const skip = page.getByRole('link', { name: COPY.vi.skip })
-  await expect(skip).toBeFocused()
-  sizes.skipLink = await blockSize(skip)
-  sizes.shellHomeLink = await blockSize(page.getByRole('banner').getByRole('link', { name: 'Eng-LMS' }))
-  for (const name of ['Tiếng Việt', 'English']) {
-    sizes[`switcherSegment:${name}`] = await blockSize(page.getByRole('radio', { name }))
-  }
-  await page.goto('/does-not-exist')
-  sizes.notFoundHomeLink = await blockSize(page.getByRole('link', { name: COPY.vi.home }))
-  await evidenceRecord(testInfo, 'ac6-target-sizes', { viewport: page.viewportSize(), minimum: 44, sizes })
-  for (const [name, size] of Object.entries(sizes)) expect(size, name).toBeGreaterThanOrEqual(44)
+test.describe(() => {
+  test.use({ storageState: TUTOR_STATE })
+  test('targets measure at least 44 px block size: skip link, shell home link, 404 link, switcher segments, account controls', async ({
+    page,
+  }, testInfo) => {
+    const sizes: Record<string, number> = {}
+    await page.goto('/tutor')
+    await expect(h1(page, COPY.vi.tutor)).toBeVisible()
+    await page.keyboard.press('Tab')
+    const skip = page.getByRole('link', { name: COPY.vi.skip })
+    await expect(skip).toBeFocused()
+    sizes.skipLink = await blockSize(skip)
+    sizes.shellHomeLink = await blockSize(page.getByRole('banner').getByRole('link', { name: 'Eng-LMS' }))
+    for (const name of ['Tiếng Việt', 'English']) {
+      sizes[`switcherSegment:${name}`] = await blockSize(page.getByRole('radio', { name }))
+    }
+    sizes.changePasswordLink = await blockSize(page.getByRole('link', { name: COPY.vi.changePassword }))
+    sizes.logoutButton = await blockSize(page.getByRole('button', { name: 'Đăng xuất' }))
+    await page.goto('/does-not-exist')
+    sizes.notFoundHomeLink = await blockSize(page.getByRole('link', { name: COPY.vi.home }))
+    await evidenceRecord(testInfo, 'ac6-target-sizes', { viewport: page.viewportSize(), minimum: 44, sizes })
+    for (const [name, size] of Object.entries(sizes)) expect(size, name).toBeGreaterThanOrEqual(44)
+  })
 })
 
 test.describe('UX step budgets (T-M1.9 design notes)', () => {
-  test('switch the language from any page: 1 step (pointer), 1 step (keyboard)', async ({ page }, testInfo) => {
+  test('switch the language from any page: 1 step (pointer), 1 step (keyboard)', async ({ browser }, testInfo) => {
     const record: Record<string, number> = {}
-    for (const path of ['/', '/tutor', '/student']) {
+    for (const [path, storageState] of [
+      ['/login', ANONYMOUS],
+      ['/tutor', TUTOR_STATE],
+      ['/student', STUDENT_STATE],
+    ] as const) {
+      const context = await browser.newContext({ storageState })
+      const page = await context.newPage()
       await page.goto(path)
       const steps = new StepCounter()
       await steps.step('activate the "English" segment', () => page.getByRole('radio', { name: 'English' }).click())
       await expect(page.locator('html')).toHaveAttribute('lang', 'en')
       steps.expectAtMost(1)
       record[`pointer ${path}`] = steps.count
-      await page.evaluate(() => localStorage.clear())
+      await context.close()
     }
-    // Keyboard on the landing page (the switcher is its first Tab stop): Tab into the group, arrow, Space. The landing
-    // page is lazy and a first load moves no focus: wait for its h1 before the first Tab, or Tab can run on the loading
-    // region (DEC-082).
-    await page.goto('/')
-    await expect(h1(page, COPY.vi.landing)).toBeVisible()
+    // Keyboard on the sign-in page (the switcher is its first Tab stop): Tab into the group, arrow, Space. The page is
+    // lazy and a first load moves no focus: wait for its h1 before the first Tab, or Tab can run on the loading region
+    // (DEC-082).
+    const context = await browser.newContext({ storageState: ANONYMOUS })
+    const page = await context.newPage()
+    await page.goto('/login')
+    await expect(h1(page, COPY.vi.login)).toBeVisible()
     const steps = new StepCounter()
     await steps.step('Tab into the group, ArrowRight, Space', async () => {
       await page.keyboard.press('Tab')
@@ -163,15 +194,21 @@ test.describe('UX step budgets (T-M1.9 design notes)', () => {
     await expect(page.locator('html')).toHaveAttribute('lang', 'en')
     await expect(page.getByRole('radio', { name: 'English' })).toBeChecked()
     steps.expectAtMost(1)
-    record['keyboard /'] = steps.count
+    record['keyboard /login'] = steps.count
     await evidenceRecord(testInfo, 'steps-switch-language', { viewport: page.viewportSize(), budget: 1, steps: record })
+    await context.close()
   })
 
-  test('reach the main content: 1 step on a fresh shell load, 0 on landing/404, 0 after a client-side navigation', async ({
-    page,
+  test('reach the main content: 1 step on a fresh shell load, 0 on sign-in/404, 0 after a client-side navigation', async ({
+    browser,
   }, testInfo) => {
     const record: Record<string, number> = {}
-    for (const path of ['/tutor', '/student']) {
+    for (const [path, storageState] of [
+      ['/tutor', TUTOR_STATE],
+      ['/student', STUDENT_STATE],
+    ] as const) {
+      const context = await browser.newContext({ storageState })
+      const page = await context.newPage()
       await page.goto(path)
       await expect(page.getByRole('main')).toBeVisible()
       const steps = new StepCounter()
@@ -183,10 +220,13 @@ test.describe('UX step budgets (T-M1.9 design notes)', () => {
       await expect(page.getByRole('main')).toBeFocused()
       steps.expectAtMost(1)
       record[`fresh ${path}`] = steps.count
+      await context.close()
     }
-    for (const path of ['/', '/does-not-exist']) {
+    const anonymous = await browser.newContext({ storageState: ANONYMOUS })
+    for (const path of ['/login', '/does-not-exist']) {
+      const page = await anonymous.newPage()
       await page.goto(path)
-      await expect(page.getByRole('main')).toBeVisible()
+      await expect(page.getByRole('heading', { level: 1 })).toBeVisible()
       const steps = new StepCounter()
       // No step: the first Tab stop is already inside main (no header before it).
       await page.keyboard.press('Tab')
@@ -194,9 +234,14 @@ test.describe('UX step budgets (T-M1.9 design notes)', () => {
       steps.expectAtMost(0)
       record[`fresh ${path}`] = steps.count
     }
-    // Keyboard-only: Tab to the "tutor area" link, Enter. Focus lands on the new page's h1 (0 further steps).
-    await page.goto('/')
-    const link = page.getByRole('link', { name: COPY.vi.toTutor })
+    await anonymous.close()
+    // Keyboard-only, signed in as the tutor: on the 404 page, Tab to the start-page link, Enter (`/` → the tutor home).
+    // Focus lands on the new page's h1 (0 further steps).
+    const context = await browser.newContext({ storageState: TUTOR_STATE })
+    const page = await context.newPage()
+    await page.goto('/does-not-exist')
+    await expect(h1(page, COPY.vi.notFound)).toBeVisible()
+    const link = page.getByRole('link', { name: COPY.vi.home })
     for (let i = 0; i < 5 && !(await link.evaluate((el) => el === document.activeElement)); i++)
       await page.keyboard.press('Tab')
     await expect(link).toBeFocused()
@@ -212,5 +257,6 @@ test.describe('UX step budgets (T-M1.9 design notes)', () => {
       budgets: { freshShell: 1, freshOther: 0, afterNavigation: 0 },
       steps: record,
     })
+    await context.close()
   })
 })

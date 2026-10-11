@@ -1,0 +1,70 @@
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+/* The label element: box + text, one ≥ 44 px row. */
+.button {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-block-size: var(--size-control-md);
+  align-self: flex-start;
+  color: var(--color-text);
+  cursor: pointer;
+}
+
+.box {
+  display: inline-grid;
+  flex: none;
+  place-items: center;
+  inline-size: var(--size-icon);
+  block-size: var(--size-icon);
+  border: var(--border-width) solid var(--color-border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  color: var(--color-on-accent);
+  transition: background-color var(--motion-duration) var(--motion-easing);
+}
+
+.check {
+  inline-size: 100%;
+  block-size: 100%;
+}
+
+.label {
+  font-weight: var(--font-weight-medium);
+}
+
+.button[data-hovered] .box {
+  border-color: var(--color-text-muted);
+}
+
+.button[data-pressed] .box {
+  background: var(--color-accent-subtle);
+}
+
+.button[data-selected] .box {
+  border-color: var(--color-accent);
+  background: var(--color-accent);
+}
+
+.button[data-focus-visible] .box {
+  outline: var(--focus-ring-width) solid var(--color-focus);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.button[data-invalid] .box {
+  border-color: var(--color-danger);
+}
+
+.button[data-disabled] {
+  color: var(--color-text-subtle);
+  cursor: not-allowed;
+}
+
+.button[data-disabled] .box {
+  background: var(--color-surface-sunken);
+  border-color: var(--color-border);
+}

@@ -1,4 +1,5 @@
 import type { Locator, Page } from '@playwright/test'
+import { ANONYMOUS, TUTOR_STATE } from '../support/auth'
 import { expectNoAxeViolations, expectNoHorizontalScroll } from '../support/checks'
 import { evidenceRecord, evidenceShot } from '../support/evidence'
 import { expect, test } from '../support/fixtures'
@@ -6,12 +7,14 @@ import { StepCounter } from '../support/steps'
 
 // T-M1.13 (web polish): stable SegmentedControl widths (AC2), the landing loading skeleton (AC3) and the route error
 // page's way back to the start page (AC4), at the mandatory viewports.
+// T-M2.4: no landing page. The anonymous start page is /login (AC2, AC3); a signed-in tutor's start page is `/` →
+// /tutor/today, and AC4's failed client navigation is the shell header's link to the password page.
 
 const COPY = {
   vi: {
-    landing: 'Không gian dạy học',
+    login: 'Đăng nhập',
     tutor: 'Không gian gia sư',
-    toTutor: 'Khu vực gia sư',
+    toChangePassword: 'Đổi mật khẩu',
     language: 'Ngôn ngữ',
     loading: 'Đang tải trang',
     errorTitle: 'Không hiển thị được trang này',
@@ -21,9 +24,9 @@ const COPY = {
     devOptions: ['Danh sách', 'Tuần', 'Tháng'],
   },
   en: {
-    landing: 'Teaching workspace',
+    login: 'Sign in',
     tutor: 'Tutor workspace',
-    toTutor: 'Tutor area',
+    toChangePassword: 'Change password',
     language: 'Language',
     loading: 'Loading the page',
     errorTitle: "This page couldn't be displayed",
@@ -36,10 +39,11 @@ const COPY = {
 type Lang = keyof typeof COPY
 const ENDONYM = { vi: 'Tiếng Việt', en: 'English' } as const
 
-const TUTOR_CHUNK = /\/assets\/TutorShell-[^/]+\.js$/
-const LANDING_CHUNK = /\/assets\/Landing-[^/]+\.js$/
+const CHANGE_PASSWORD_CHUNK = /\/assets\/ChangePasswordPage-[^/]+\.js$/
+const LOGIN_CHUNK = /\/assets\/LoginPage-[^/]+\.js$/
 // Chromium's console message for a request the test aborts on purpose (AC4 reaches the error page this way).
-const ABORTED_REQUEST = /^console\.error: Failed to load resource: net::ERR_FAILED$/
+// The guard appends the request's URL to a failed-resource entry (T-M2.4 G3 QA F2).
+const ABORTED_REQUEST = /^console\.error: Failed to load resource: net::ERR_FAILED( \[[^\]]+\])?$/
 
 const h1 = (page: Page, name: string) => page.getByRole('heading', { level: 1, name })
 const round = (n: number) => Math.round(n * 100) / 100
@@ -101,41 +105,44 @@ function expectStable(before: SegmentBox[], after: SegmentBox[]) {
     expect(s.iconVisible, `check icon visible = checked (${s.name})`).toBe(s.checked)
 }
 
-for (const path of ['/', '/tutor']) {
-  test(`AC2: the language switcher keeps its segment boundaries when the selection changes (pointer and keyboard) on ${path}`, async ({
-    page,
-  }, testInfo) => {
-    const slug = path === '/' ? 'landing' : 'tutor'
-    await page.goto(path)
-    const group = () => page.getByRole('radiogroup', { name: /^(Ngôn ngữ|Language)$/ })
-    await expect(group().getByRole('radio', { name: ENDONYM.vi })).toBeChecked()
-    await page.evaluate(() => document.fonts.ready)
-    const vi = await segmentBoxes(group())
-    await evidenceShot(page, testInfo, `ac2-switcher-${slug}-vi`)
+for (const path of ['/login', '/tutor']) {
+  test.describe(() => {
+    test.use({ storageState: path === '/tutor' ? TUTOR_STATE : ANONYMOUS })
+    test(`AC2: the language switcher keeps its segment boundaries when the selection changes (pointer and keyboard) on ${path}`, async ({
+      page,
+    }, testInfo) => {
+      const slug = path === '/login' ? 'login' : 'tutor'
+      await page.goto(path)
+      const group = () => page.getByRole('radiogroup', { name: /^(Ngôn ngữ|Language)$/ })
+      await expect(group().getByRole('radio', { name: ENDONYM.vi })).toBeChecked()
+      await page.evaluate(() => document.fonts.ready)
+      const vi = await segmentBoxes(group())
+      await evidenceShot(page, testInfo, `ac2-switcher-${slug}-vi`)
 
-    await group().getByRole('radio', { name: ENDONYM.en }).click()
-    await expect(page.locator('html')).toHaveAttribute('lang', 'en')
-    await expect(group().getByRole('radio', { name: ENDONYM.en })).toBeChecked()
-    const en = await segmentBoxes(group())
-    expectStable(vi, en)
-    await expectNoHorizontalScroll(page)
-    await evidenceShot(page, testInfo, `ac2-switcher-${slug}-en`)
+      await group().getByRole('radio', { name: ENDONYM.en }).click()
+      await expect(page.locator('html')).toHaveAttribute('lang', 'en')
+      await expect(group().getByRole('radio', { name: ENDONYM.en })).toBeChecked()
+      const en = await segmentBoxes(group())
+      expectStable(vi, en)
+      await expectNoHorizontalScroll(page)
+      await evidenceShot(page, testInfo, `ac2-switcher-${slug}-en`)
 
-    // Keyboard back to vi: focus is on "English"; ArrowLeft, Space.
-    await page.keyboard.press('ArrowLeft')
-    await expect(group().getByRole('radio', { name: ENDONYM.vi })).toBeFocused()
-    await page.keyboard.press('Space')
-    await expect(page.locator('html')).toHaveAttribute('lang', 'vi')
-    const viAgain = await segmentBoxes(group())
-    expectStable(en, viAgain)
-    expectStable(vi, viAgain)
+      // Keyboard back to vi: focus is on "English"; ArrowLeft, Space.
+      await page.keyboard.press('ArrowLeft')
+      await expect(group().getByRole('radio', { name: ENDONYM.vi })).toBeFocused()
+      await page.keyboard.press('Space')
+      await expect(page.locator('html')).toHaveAttribute('lang', 'vi')
+      const viAgain = await segmentBoxes(group())
+      expectStable(en, viAgain)
+      expectStable(vi, viAgain)
 
-    await evidenceRecord(testInfo, `ac2-switcher-widths-${slug}`, {
-      viewport: page.viewportSize(),
-      tolerancePx: 1,
-      selectedVi: vi,
-      selectedEnPointer: en,
-      selectedViKeyboard: viAgain,
+      await evidenceRecord(testInfo, `ac2-switcher-widths-${slug}`, {
+        viewport: page.viewportSize(),
+        tolerancePx: 1,
+        selectedVi: vi,
+        selectedEnPointer: en,
+        selectedViKeyboard: viAgain,
+      })
     })
   })
 }
@@ -225,7 +232,7 @@ test("T-M1.16 AC2 (/dev/ui, dev build): a UI language change keeps the LanguageS
   await expectNoHorizontalScroll(page)
 })
 
-// ---- AC3: the landing loading skeleton matches the page ------------------------------------------------------------
+// ---- AC3: the start page's loading skeleton matches the page (the sign-in page since T-M2.4) ------------------------------------------------------------
 
 /** Sum of all layout-shift entries without recent input (an upper bound of CLS), as in loading.spec.ts. */
 async function layoutShiftTotal(page: Page) {
@@ -250,18 +257,18 @@ async function layoutShiftTotal(page: Page) {
 }
 
 for (const lang of ['vi', 'en'] as const) {
-  test(`AC3 [${lang}]: on a slowed first load of /, the heading appears where its skeleton line was; CLS ≤ 0.05`, async ({
+  test(`AC3 [${lang}]: on a slowed first load of /login, the heading appears where its skeleton line was; CLS ≤ 0.05`, async ({
     page,
   }, testInfo) => {
     const c = COPY[lang]
     await useLanguage(page, lang)
     let release: () => void = () => {}
     const released = new Promise<void>((resolve) => (release = resolve))
-    await page.route(LANDING_CHUNK, async (route) => {
+    await page.route(LOGIN_CHUNK, async (route) => {
       await released
       await route.continue()
     })
-    await page.goto('/', { waitUntil: 'commit' })
+    await page.goto('/login', { waitUntil: 'commit' })
     const region = page.getByRole('status', { name: c.loading })
     await expect(region.locator('[data-shown]')).toHaveCount(1)
     const toolbar = region.getByTestId('route-loading-toolbar')
@@ -273,10 +280,10 @@ for (const lang of ['vi', 'en'] as const) {
       toolbarRow: await toolbar.boundingBox(),
       switcher: await toolbar.getByTestId('skeleton').boundingBox(),
     }
-    await evidenceShot(page, testInfo, `ac3-landing-loading-${lang}`)
+    await evidenceShot(page, testInfo, `ac3-login-loading-${lang}`)
     release()
 
-    const heading = h1(page, c.landing)
+    const heading = h1(page, c.login)
     await expect(heading).toBeVisible()
     await page.evaluate(() => document.fonts.ready)
     const page_ = {
@@ -285,7 +292,7 @@ for (const lang of ['vi', 'en'] as const) {
     }
     const cls = await layoutShiftTotal(page)
     const headingDelta = round(Math.abs(page_.heading!.y - skeleton.titleLine!.y))
-    await evidenceRecord(testInfo, `ac3-landing-skeleton-${lang}`, {
+    await evidenceRecord(testInfo, `ac3-login-skeleton-${lang}`, {
       viewport: page.viewportSize(),
       skeleton,
       page: page_,
@@ -305,72 +312,76 @@ for (const lang of ['vi', 'en'] as const) {
 for (const lang of ['vi', 'en'] as const) {
   const c = COPY[lang]
 
-  test(`AC4 [${lang}]: a failed lazy load on a client navigation → error page → "go to the start page" (1 step)`, async ({
-    page,
-    consoleGuard,
-  }, testInfo) => {
-    await useLanguage(page, lang)
-    await page.goto('/')
-    await expect(h1(page, c.landing)).toBeVisible()
-    await page.route(TUTOR_CHUNK, (route) => route.abort())
-    await page.getByRole('link', { name: c.toTutor }).click()
-    // The pathless-child boundary inside the root layout: route focus moves to the error page's h1 (T-M1.9).
-    await expect(h1(page, c.errorTitle)).toBeFocused()
-    expect(acceptAbortedRequests(consoleGuard), 'the aborted chunk request was logged').toBeGreaterThan(0)
+  test.describe(() => {
+    test.use({ storageState: TUTOR_STATE })
+    test(`AC4 [${lang}]: a failed lazy load on a client navigation → error page → "go to the start page" (1 step)`, async ({
+      page,
+      consoleGuard,
+    }, testInfo) => {
+      await useLanguage(page, lang)
+      await page.goto('/')
+      await expect(h1(page, c.tutor)).toBeVisible()
+      await page.route(CHANGE_PASSWORD_CHUNK, (route) => route.abort())
+      await page.getByRole('link', { name: c.toChangePassword }).click()
+      // The pathless-child boundary inside the root layout: route focus moves to the error page's h1 (T-M1.9).
+      await expect(h1(page, c.errorTitle)).toBeFocused()
+      expect(acceptAbortedRequests(consoleGuard), 'the aborted chunk request was logged').toBeGreaterThan(0)
 
-    const reload = page.getByRole('button', { name: c.reload })
-    const home = page.getByRole('link', { name: c.home })
-    await expect(reload).toBeVisible()
-    await expect(home).toBeVisible()
-    await expect(home).toHaveAttribute('href', '/')
-    const homeBox = await home.boundingBox()
-    expect(homeBox!.height, 'start-page link block size').toBeGreaterThanOrEqual(44)
-    await expectNoAxeViolations(page)
-    await expectNoHorizontalScroll(page)
-    await evidenceShot(page, testInfo, `ac4-error-page-${lang}`)
+      const reload = page.getByRole('button', { name: c.reload })
+      const home = page.getByRole('link', { name: c.home })
+      await expect(reload).toBeVisible()
+      await expect(home).toBeVisible()
+      await expect(home).toHaveAttribute('href', '/')
+      const homeBox = await home.boundingBox()
+      expect(homeBox!.height, 'start-page link block size').toBeGreaterThanOrEqual(44)
+      await expectNoAxeViolations(page)
+      await expectNoHorizontalScroll(page)
+      await evidenceShot(page, testInfo, `ac4-error-page-${lang}`)
 
-    // Reach main content: 0 steps (focus is already on the h1 inside main; the next Tab stop is the reload button).
-    await page.keyboard.press('Tab')
-    await expect(reload).toBeFocused()
-    expect(await page.evaluate(() => !!document.activeElement?.closest('main'))).toBe(true)
+      // Reach main content: 0 steps (focus is already on the h1 inside main; the next Tab stop is the reload button).
+      await page.keyboard.press('Tab')
+      await expect(reload).toBeFocused()
+      expect(await page.evaluate(() => !!document.activeElement?.closest('main'))).toBe(true)
 
-    const pointer = new StepCounter()
-    await pointer.step('activate "go to the start page"', () => home.click())
-    await expect(h1(page, c.landing)).toBeFocused()
-    await expect(page).toHaveURL(/\/$/)
-    await expect(page).toHaveTitle(`${c.landing} · Eng-LMS`)
-    pointer.expectAtMost(1)
+      const pointer = new StepCounter()
+      await pointer.step('activate "go to the start page"', () => home.click())
+      await expect(h1(page, c.tutor)).toBeFocused()
+      await expect(page).toHaveURL(/\/tutor\/today$/)
+      await expect(page).toHaveTitle(`${c.tutor} · Eng-LMS`)
+      pointer.expectAtMost(1)
 
-    // Keyboard: the same failure again, then Tab to the link and Enter (one step).
-    await page.getByRole('link', { name: c.toTutor }).click()
-    await expect(h1(page, c.errorTitle)).toBeFocused()
-    acceptAbortedRequests(consoleGuard)
-    const keyboard = new StepCounter()
-    await keyboard.step('Tab to "go to the start page", Enter', async () => {
-      for (let i = 0; i < 3 && !(await home.evaluate((el) => el === document.activeElement)); i++)
-        await page.keyboard.press('Tab')
-      await expect(home).toBeFocused()
-      await page.keyboard.press('Enter')
-    })
-    await expect(h1(page, c.landing)).toBeFocused()
-    keyboard.expectAtMost(1)
+      // Keyboard: the same failure again, then Tab to the link and Enter (one step).
+      await page.getByRole('link', { name: c.toChangePassword }).click()
+      await expect(h1(page, c.errorTitle)).toBeFocused()
+      acceptAbortedRequests(consoleGuard)
+      const keyboard = new StepCounter()
+      await keyboard.step('Tab to "go to the start page", Enter', async () => {
+        for (let i = 0; i < 3 && !(await home.evaluate((el) => el === document.activeElement)); i++)
+          await page.keyboard.press('Tab')
+        await expect(home).toBeFocused()
+        await page.keyboard.press('Enter')
+      })
+      await expect(h1(page, c.tutor)).toBeFocused()
+      keyboard.expectAtMost(1)
 
-    await evidenceRecord(testInfo, `ac4-error-page-${lang}`, {
-      viewport: page.viewportSize(),
-      homeLinkBox: homeBox,
-      minimumTargetPx: 44,
-      steps: {
-        reachMainAfterFailedNavigation: 0,
-        leaveForStartPagePointer: pointer.count,
-        leaveForStartPageKeyboard: keyboard.count,
-      },
-      budgets: { reachMain: 0, leaveForStartPage: 1 },
+      await evidenceRecord(testInfo, `ac4-error-page-${lang}`, {
+        viewport: page.viewportSize(),
+        homeLinkBox: homeBox,
+        minimumTargetPx: 44,
+        steps: {
+          reachMainAfterFailedNavigation: 0,
+          leaveForStartPagePointer: pointer.count,
+          leaveForStartPageKeyboard: keyboard.count,
+        },
+        budgets: { reachMain: 0, leaveForStartPage: 1 },
+      })
     })
   })
 
+  // T-M2.4: `/` has no page module any more; what can fail there is the session bootstrap it needs first.
   test(`AC4 [${lang}]: no start-page link when the failed route is / itself`, async ({ page, consoleGuard }) => {
     await useLanguage(page, lang)
-    await page.route(LANDING_CHUNK, (route) => route.abort())
+    await page.route('**/api/v1/auth/session', (route) => route.abort())
     await page.goto('/')
     await expect(h1(page, c.errorTitle)).toBeVisible()
     expect(acceptAbortedRequests(consoleGuard), 'the aborted chunk request was logged').toBeGreaterThan(0)

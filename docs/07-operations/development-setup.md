@@ -96,6 +96,17 @@ The first start creates `tutor` with `mustChangePassword=true` (log: `Tutor acco
 password: runbooks §4 (`java -jar backend/target/englms-*.jar --englms.cli=reset-tutor-password --spring.main.web-application-type=none` with the `SPRING_DATASOURCE_*` values).
 Sign-in needs the CSRF handshake (`GET /api/v1/auth/session` sets `XSRF-TOKEN`, send it back as `X-XSRF-TOKEN`).
 
+**E2E tutor (T-M2.4).** `scripts/e2e-run.sh` starts the packaged app with its own tutor bootstrap, for that process only (it overrides `.env`):
+username `e2e-tutor`, password file `.data/e2e/tutor-bootstrap-password` (generated once, owner-only), and a raised per-IP login throttle
+(`ENGLMS_SECURITY_LOGINTHROTTLE_MAXATTEMPTS`; the application default stays 30 per 5 minutes). Playwright's global setup
+(`e2e/support/global-setup.ts`) signs in with `.data/e2e/tutor-password` when it exists, else with the bootstrap password; a first sign-in does the
+forced change to a generated password and stores it there, so re-runs on the same database reuse it. It also stores the tutor's and a fresh
+student's sessions under `.data/e2e/state/` (the specs never log them out). Tests that log out or change a password create their own student
+(`e2e-<project>-<random>`) through `POST /api/v1/tutor/students`; these accumulate in the dev database. Everything under `.data/e2e/` is dev-only
+and git-ignored (DEC-094). If neither password works (the dev database holds another tutor, e.g. one bootstrapped by hand), the run stops with one
+message: start from an empty database with `scripts/dev-down.sh --purge`, which **deletes the local dev data**. CI's `e2e-smoke` starts from an
+empty database and takes the same path.
+
 **Cookies on `http://localhost`.** Session, remember-me and CSRF cookies are `Secure` (NFR-SEC-04). Chromium and Firefox keep Secure cookies from `http://localhost`.
 For an engine that refuses them (WebKit), start with the `local` profile and `SERVER_SERVLET_SESSION_COOKIE_SECURE=false`
 (`SPRING_PROFILES_ACTIVE=local`); without the `local` profile that setting stops startup. Nothing else uses the `local` profile.

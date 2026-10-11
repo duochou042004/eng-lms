@@ -6,6 +6,9 @@
 # Database: with a .env file, the dev DB is started with scripts/dev-up.sh and .env is loaded; without one (CI), the
 # SPRING_DATASOURCE_* variables must already be set. E2E_READY_TIMEOUT (default 120) bounds the startup wait;
 # E2E_CHECK_PORTS (default "8080 8081") lists the ports that must be free.
+# Sign-in (T-M2.4): the app starts with its own tutor bootstrap (username e2e-tutor, password file
+# .data/e2e/tutor-bootstrap-password, generated once, git-ignored, dev-only) and a raised per-IP login throttle; both
+# override .env for this process only. Playwright's global setup signs in and keeps the changed password in .data/e2e/.
 source "$(dirname "$0")/lib/require-bash.sh"
 set -uo pipefail
 ROOT=$(cd "$(dirname "$0")/.." && pwd)
@@ -42,6 +45,13 @@ elif [[ -z "${SPRING_DATASOURCE_URL:-}" ]]; then
   exit 1
 fi
 
+E2E_DATA="$ROOT/.data/e2e"
+mkdir -p "$E2E_DATA" && chmod 700 "$E2E_DATA"
+if [[ ! -s "$E2E_DATA/tutor-bootstrap-password" ]]; then
+  # 24 random URL-safe characters: passes the password policy (10–128, not common, not the username).
+  (umask 077 && head -c 32 /dev/urandom | base64 | tr -dc 'A-Za-z0-9' | head -c 24 >"$E2E_DATA/tutor-bootstrap-password")
+fi
+
 app_pid=""
 cleanup() {
   if [[ -n "$app_pid" ]] && kill -0 "$app_pid" 2>/dev/null; then
@@ -69,7 +79,10 @@ jar=$(ls "$ROOT"/backend/target/englms-*.jar 2>/dev/null | grep -v '\.original$'
 [[ -n "$jar" ]] || { echo "e2e-run: no jar in backend/target (run without --no-build)" >&2; exit 1; }
 
 mkdir -p "$(dirname "$APP_LOG")"
-java -jar "$jar" >"$APP_LOG" 2>&1 &
+ENGLMS_BOOTSTRAP_TUTOR_USERNAME=e2e-tutor \
+  ENGLMS_BOOTSTRAP_TUTOR_PASSWORD_FILE="$E2E_DATA/tutor-bootstrap-password" \
+  ENGLMS_SECURITY_LOGINTHROTTLE_MAXATTEMPTS=100000 \
+  java -jar "$jar" >"$APP_LOG" 2>&1 &
 app_pid=$!
 echo "e2e-run: started $(basename "$jar") (pid $app_pid, log ${APP_LOG#"$ROOT"/})"
 ready=0
@@ -85,7 +98,7 @@ done
 ((ready)) || { echo "e2e-run: the app was not ready within ${READY_TIMEOUT}s" >&2; tail -n 30 "$APP_LOG" >&2; exit 1; }
 echo "e2e-run: app ready; running Playwright ${args[*]:-(all projects)}"
 
-(cd "$ROOT/e2e" && pnpm install --frozen-lockfile >/dev/null && E2E_BASE_URL=http://localhost:8080 pnpm exec playwright test "${args[@]}")
+(cd "$ROOT/e2e" && pnpm install --frozen-lockfile >/dev/null && E2E_BASE_URL=http://localhost:8080 E2E_DATA_DIR="$E2E_DATA" pnpm exec playwright test "${args[@]}")
 status=$?
 echo "e2e-run: playwright exit $status"
 exit $status
