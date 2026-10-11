@@ -26,7 +26,7 @@ credential. Every step is idempotent; check each one with the command after `→
 
 1. **Toolchain present:** `source ~/.sdkman/bin/sdkman-init.sh && sdk env install && sdk default java 25.0.4-tem && sdk default springboot 4.1.0`
    (`.sdkmanrc`; the defaults matter because `sdkman_auto_env` may be off) → `java -version` **in a new shell** shows 25.0.4;
-   `source ~/.nvm/nvm.sh && nvm install && corepack enable` (`.nvmrc`: Node 24.21.0; pnpm 12.6.0 from `packageManager`) → `pnpm -v`
+   `source ~/.nvm/nvm.sh && nvm install && corepack enable` (`.nvmrc`: Node 24.21.0; pnpm 12.6.0 from `packageManager`) → `(cd web && pnpm -v)` = 12.6.0 (at the root, corepack shows its global default)
    (any JDK 25 / Node 24.21 on `PATH` works; SDKMAN and nvm are how the pins are installed here);
    **bash ≥ 4.4** → `env bash -c 'echo $BASH_VERSION'`;
    **a container engine**, one of:
@@ -106,8 +106,10 @@ Planned: `./scripts/seed-dev.sh` (sample students, dev profile only, not domain 
 
 `scripts/env.sh` (bash or zsh; `gate.sh` and `contract-drift.sh` source it) picks the engine with `scripts/lib/engine.sh`, in this order:
 `ENGLMS_CONTAINER_ENGINE=docker|podman` → an existing `DOCKER_HOST` (Podman when its path contains `podman`) → Docker when `docker info` works and the server
-is not Podman (a `podman-docker` shim counts as Podman) → rootless Podman on Linux (the user socket, `ENGLMS_PODMAN_SOCK` overrides its path) → a Podman
-machine on macOS. Nothing reachable: it stops with one message. `dev-up.sh`/`dev-down.sh` use the same detection but not `env.sh`. Then, per shell:
+is not Podman (a `podman-docker` shim counts as Podman) → rootless Podman on Linux (the user socket, `ENGLMS_PODMAN_SOCK` overrides its path; without an
+active socket, e.g. WSL2 without systemd, Podman is still chosen when `podman info` works) → a Podman machine on macOS. Nothing reachable: it stops with
+one message. `dev-up.sh`/`dev-down.sh` use the same detection but not `env.sh`, so they need no API socket; `env.sh` does (Testcontainers) and says how to
+enable it. A detected engine is detected again on every sourcing; only a user's `ENGLMS_CONTAINER_ENGINE` forces one. Then, per shell:
 
 ```bash
 source scripts/env.sh                         # prints the engine and the variables below
@@ -116,8 +118,8 @@ source scripts/env.sh                         # prints the engine and the variab
 
 | Engine | What `env.sh` exports | Ryuk |
 |---|---|---|
-| Docker, context endpoint `unix:///var/run/docker.sock` or Docker Desktop's `~/.docker/run/docker.sock` (or `/var/run/docker.sock` exists on macOS) | nothing: Testcontainers finds the socket itself (exporting a host path would break Docker Desktop's discovery) | on |
-| Docker, any other context endpoint (Colima, OrbStack without the default link, Docker Desktop on Linux, other contexts) | `DOCKER_HOST=<endpoint>`; on macOS also `TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE=/var/run/docker.sock` (the in-VM path Ryuk mounts) | on |
+| Docker, context endpoint `unix:///var/run/docker.sock` or Docker Desktop's `~/.docker/run/docker.sock` or (Docker Desktop on Linux, a VM) `~/.docker/desktop/docker.sock` (or `/var/run/docker.sock` exists on macOS) | nothing, and a stale `TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE` is cleared: Testcontainers finds the socket itself (exporting a host path would break Docker Desktop's discovery) | on |
+| Docker, any other context endpoint (Colima, OrbStack without the default link, other contexts) | `DOCKER_HOST=<endpoint>`; on macOS also `TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE=/var/run/docker.sock` (the in-VM path Ryuk mounts) | on |
 | Docker, `DOCKER_HOST` already set | nothing (kept) | on |
 | Podman (Linux socket, macOS machine, a preset Podman `DOCKER_HOST`, a `podman-docker` shim) | `DOCKER_HOST=unix://<Podman socket>` unless set, `TESTCONTAINERS_RYUK_DISABLED=true` | off |
 

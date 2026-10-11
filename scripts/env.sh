@@ -4,7 +4,7 @@
 #   Podman (every path): DOCKER_HOST=unix://<the Podman socket> unless already set, TESTCONTAINERS_RYUK_DISABLED=true (Ryuk needs
 #     privileged mode under rootless Podman; containers are removed by JVM shutdown hooks, leftovers: development-setup §3).
 #   Docker: Ryuk on. With DOCKER_HOST unset, the Docker context's endpoint is exported only when Testcontainers cannot find it itself
-#     (not /var/run/docker.sock or Docker Desktop's ~/.docker/run/docker.sock); on macOS then also
+#     (not /var/run/docker.sock or Docker Desktop's ~/.docker/run/docker.sock or, on Linux, ~/.docker/desktop/docker.sock); on macOS then also
 #     TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE=/var/run/docker.sock (the in-VM path Ryuk mounts).
 # ENGLMS_DOCKER_DEFAULT_SOCK (test seam, default /var/run/docker.sock) is the default socket path checked on macOS.
 _englms_lib="$(dirname "${BASH_SOURCE[0]:-$0}")/lib/engine.sh"
@@ -16,11 +16,11 @@ fi
 unset _englms_lib
 if [ "$ENGLMS_CONTAINER_ENGINE" = podman ]; then
   if [ -z "${DOCKER_HOST:-}" ]; then
-    if [ ! -S "${ENGLMS_PODMAN_SOCK:-}" ]; then
-      echo "env.sh: Testcontainers needs the Podman socket (Linux: systemctl --user enable --now podman.socket; macOS: podman machine start)" >&2
+    if [ -z "${ENGLMS_ENGINE_SOCK:-}" ]; then # set by engine.sh only for an active socket
+      echo "env.sh: Testcontainers needs the Podman API socket$( [ -n "${ENGLMS_PODMAN_SOCK:-}" ] && [ ! -S "$ENGLMS_PODMAN_SOCK" ] && echo " (ENGLMS_PODMAN_SOCK=$ENGLMS_PODMAN_SOCK is not a socket)"): enable it with systemctl --user enable --now podman.socket (Linux; macOS: podman machine start)" >&2
       return 1 2>/dev/null || exit 1
     fi
-    export DOCKER_HOST="unix://$ENGLMS_PODMAN_SOCK"
+    export DOCKER_HOST="unix://$ENGLMS_ENGINE_SOCK"
   fi
   export TESTCONTAINERS_RYUK_DISABLED=true
   echo "env.sh: DOCKER_HOST=$DOCKER_HOST TESTCONTAINERS_RYUK_DISABLED=true"
@@ -30,7 +30,8 @@ else
     _englms_ep=$(docker context inspect --format '{{.Endpoints.docker.Host}}' 2>/dev/null)
     _englms_default="${ENGLMS_DOCKER_DEFAULT_SOCK:-/var/run/docker.sock}"
     case "$_englms_ep" in
-      "" | "unix:///var/run/docker.sock" | "unix://$HOME/.docker/run/docker.sock") ;;
+      "" | "unix:///var/run/docker.sock" | "unix://$HOME/.docker/run/docker.sock" | "unix://$HOME/.docker/desktop/docker.sock")
+        unset TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE ;; # Testcontainers finds these itself (Docker Desktop's strategy for both ~/.docker sockets)
       *)
         if [ "$(uname -s)" = Darwin ]; then
           if [ ! -S "$_englms_default" ]; then

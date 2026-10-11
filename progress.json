@@ -572,7 +572,7 @@
     "buildTool": "Maven Wrapper (Maven 3.10.0; no global mvn/gradle installed)",
     "node": "24.21.0 via nvm (source ~/.nvm/nvm.sh; not on non-interactive PATH)",
     "pnpm": "12.6.0 in the projects via packageManager (corepack 0.36.0; corepack's global default is 12.10.1)",
-    "podman": "Container engine (T-M1.19 detection: scripts/lib/engine.sh): rootless Podman 5.8.6 + podman-compose 1.6.0, the user podman.socket ENABLED (DEC-044); no docker CLI installed. scripts/env.sh -> engine: podman (socket /run/user/1000/podman/podman.sock), DOCKER_HOST=unix:///run/user/1000/podman/podman.sock, TESTCONTAINERS_RYUK_DISABLED=true. bash 5.3.15 (scripts need >= 4.4), zsh 5.9.2",
+    "containerEngine": "Container engine (T-M1.19 detection: scripts/lib/engine.sh): rootless Podman 5.8.6 + podman-compose 1.6.0, the user podman.socket ENABLED (DEC-044); no docker CLI installed. scripts/env.sh -> engine: podman (socket /run/user/1000/podman/podman.sock), DOCKER_HOST=unix:///run/user/1000/podman/podman.sock, TESTCONTAINERS_RYUK_DISABLED=true. bash 5.3.15 (scripts need >= 4.4), zsh 5.9.2",
     "gh": "2.102.0, authenticated as duochou042004; git credential helper !/usr/bin/gh auth git-credential for github.com",
     "host": "Kali GNU/Linux Rolling 2026.3 (kernel 7.1.5+kali-amd64, x86_64), 16 cores, 22 GB RAM, 103 GB free; clone /home/kali/App_projects/eng-lms; git 2.53.0; shellcheck not installed",
     "python": "3.14.7 with jsonschema 4.26.0 (used by scripts/check_docs.py); jq 1.8.2",

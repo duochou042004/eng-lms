@@ -34,8 +34,10 @@ if ! "$engine" container inspect englms-dev-db >/dev/null 2>&1; then
     echo "dev-down: nothing was running; removed the englms-dev-pgdata volume"
   elif ((purge)); then
     echo "dev-down: nothing was running and there is no englms-dev-pgdata volume"
-  else
+  elif "$engine" volume inspect englms-dev-pgdata >/dev/null 2>&1; then
     echo "dev-down: nothing is running (data volume englms-dev-pgdata kept; use --purge to delete it)"
+  else
+    echo "dev-down: nothing is running and there is no englms-dev-pgdata volume"
   fi
   exit 0
 fi
