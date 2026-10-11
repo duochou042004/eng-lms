@@ -1,6 +1,6 @@
 # Handoff — 2026-10-11T15:09Z (T-M1.19 and T-M2.4 done on this device; next: the T-M2.11 packet)
 
-Phase/Milestone: P1 / M2 (in progress) · Current task: **T-M2.11 (draft: packet next)** · Branch: `develop` · Last merges on develop: `9fcc992` (PR #82, T-M2.4), then the QA report (PR #83, `qa/T-M2.4`) and this record (`chore/T-M2.4-merge-record`); check `git log` that both landed · Remote: https://github.com/duochou042004/eng-lms (mirror: gitlab.com/duochou042004/eng-lms)
+Phase/Milestone: P1 / M2 (in progress) · Current task: **T-M2.11 (draft: packet next)** · Branch: `develop` · Last merges on develop: `9fcc992` (PR #82, T-M2.4), `6423649` (PR #83, QA report); this record is PR #84 (check `git log` that it landed) · Remote: https://github.com/duochou042004/eng-lms (mirror: gitlab.com/duochou042004/eng-lms)
 
 ## Where we are
 - **T-M2.4 done** (`9fcc992`, DEC-109..111): auth UI (login, forgot info, forced/voluntary password change, logout, role redirect, guards,
