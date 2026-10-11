@@ -22,7 +22,8 @@ placeholder shell header and adds only a "Change password" link and a "Log out" 
   1. **Session bootstrap** (`features/auth/api`): `useSession()` (TanStack Query, key `['auth','session']`) over `GET /auth/session`; the root route
      resolves it **before** any other API call (one request completes first; DEC-092 remember-me rotation race); anonymous → `null` on 401.
   2. **API client** (`lib/api`, frontend-architecture §2): a middleware reads the `XSRF-TOKEN` cookie and sends it as `X-XSRF-TOKEN` on every
-     non-GET request (today the client sends no CSRF header; login, logout and password change need it, NFR-SEC-07); on 401 from any call except
+     non-GET request (today the client sends no CSRF header; login, logout and password change need it, NFR-SEC-07); when the cookie is missing
+     it first calls `GET /auth/session` (which primes it, also on 401) and then sends the request; on 401 from any call except
      `GET /auth/session` and `POST /auth/login`, clear the query cache and navigate to `/login?next=<current path+search>` (only when
      `isSafeAppPath` accepts it, else plain `/login`); on 403 `PASSWORD_CHANGE_REQUIRED`, navigate to `/change-password`.
   3. **Route guards** (`app/`): `/tutor` and `/tutor/*` require role `TUTOR`, `/student` and `/student/*` require `STUDENT`; anonymous →
@@ -40,17 +41,17 @@ placeholder shell header and adds only a "Change password" link and a "Log out" 
      - The redirect always goes through the router's `navigate()`; never `window.location`, `location.assign` or an `href` built from `next`.
   5. **Login page** `/login` (public). On load, in this order: if the session must change its password → `POST /auth/logout` and show the form
      (DEC-092, T-M2.1 QA F3); else if signed in → the role home; else the form. Fields: username, password (`PasswordField`), "Remember me on this
-     device" (`Checkbox`) with the shared-device hint. **Submitting always calls `POST /auth/logout` (idempotent) and then `POST /auth/login`**, so
-     a remember-me cookie of whoever used the device before is ended first: a failed login can no longer sign that earlier user in (DEC-093 S4-12),
-     and a successful one replaces them. After a failed login the page stays on `/login` with one generic error for 401 (DEC-089) and does not
-     refetch the session; 429 shows the wait from `Retry-After`; a network failure shows a retry-able error; pending state, no double submit.
+     device" (`Checkbox`) with the shared-device hint. Submitting calls `POST /auth/login`. A user A remembered on the device is signed in by the
+     bootstrap `GET /auth/session`, so the app opens as A and B must log out first; the hint says so (DEC-093 S4-12; SEC confirms). After a
+     failed login the page stays on `/login` with one generic error for 401 (DEC-089) and does not refetch the session; 429 shows the wait from `Retry-After`; a network failure shows a retry-able error; pending state, no double submit.
      **Forgot your password?** disclosure (FR-AUTH-08): students ask their tutor to reset it; the tutor follows the operator runbook (no link to
      the runbook, no email flow).
   6. **Change password page** `/change-password` (authenticated): current password, new password, confirm (all `PasswordField`); client checks
      (required, length 10–128 per validation-rules, confirm matches) and the server's `errors[]` codes mapped to field messages
      (`CURRENT_PASSWORD_INCORRECT`, `PASSWORD_TOO_SHORT`, `PASSWORD_TOO_LONG`, `PASSWORD_TOO_COMMON`, `PASSWORD_EQUALS_USERNAME`,
      `PASSWORD_UNCHANGED`); `ErrorSummary` + focus on a failed submit. **Forced mode** (`mustChangePassword`): explanatory text, no cancel, and on
-     success the session is refetched and the user goes to `safeNext` or the role home. **Voluntary mode**: reached from the shell header link, has
+     success the session is refetched and the user goes to `safeNext` or the role home (a login whose session must change its password goes to
+     `/change-password?next=<next>` when `isSafeAppPath` accepts `next`, else plain `/change-password`). **Voluntary mode**: reached from the shell header link, has
      Cancel (back), and on success shows a confirmation that other devices were signed out (the API ends them).
   7. **Logout** (FR-AUTH-04): a "Log out" control in the current placeholder shell header (both shells); `POST /auth/logout`, clear the query cache,
      go to `/login`; works when the session has already expired.
@@ -72,7 +73,9 @@ placeholder shell header and adds only a "Change password" link and a "Log out" 
         voluntary change AC5, logout AC6) each create their own student through the tutor API (`POST /api/v1/tutor/students` with a temporary
         password, username `e2e-<project>-<random>`) and sign in fresh.
       - Specs that use the anonymous `/` or the shells are retargeted, keeping every assertion: `smoke.spec.ts` and `loading.spec.ts` (the landing
-        case moves to `/login`: heading, switcher, chunk and skeleton), `polish.spec.ts` and `route-focus.spec.ts` (sign in first). Specs under
+        case moves to `/login`: heading, switcher, chunk and skeleton; every tutor and student shell case runs with the tutor `storageState` or a
+        student session), `guards.spec.ts` (signed in for the shell heading; the anonymous case now expects `/login`), `polish.spec.ts` and
+        `route-focus.spec.ts` (sign in first). Specs under
         `qa/e2e/` are QA-owned: the QA run updates those that rely on the anonymous `/` on `qa/T-M2.4`.
 - Out of scope (explicit):
   - Tutor sidebar/drawer, student bottom tabs, account menu, header brand fix, `meta.error` copy, lazy-navigation loading feedback, offline chunk
@@ -95,8 +98,10 @@ registration, no self-service recovery, no SSO. 3. **Mandatory setup added?** No
 - The login and change-password forms are one column, max 400 px, centred; inputs ≥ 16 px; `autocomplete` = `username`, `current-password`,
   `new-password`; Enter submits.
 - CSRF: the bootstrap `GET /auth/session` primes the `XSRF-TOKEN` cookie (T-M2.1); the middleware of scope 2 sends it.
-- Shared-device hint wording (vi + en, final copy by the implementer, checked by UX): do not tick "Remember me" on a shared device; signing in
-  here signs out whoever was remembered on this device.
+- Shared-device hint wording (vi + en, final copy by the implementer, checked by UX): do not tick "Remember me" on a shared device; on a shared
+  device, log out when you finish (a remembered user opens the app as themselves). The server gives no remember-me while the password must change.
+- Logging out before a login is done only for a session that must change its password (DEC-092): with a remembered user, logout ends the
+  `XSRF-TOKEN` cookie and the next request needs the re-priming of scope 2.
 
 ## Acceptance criteria
 - AC1 (FR-AUTH-03, DEC-092, NFR-SEC-07): Given no session, opening `/tutor/students` shows `/login?next=%2Ftutor%2Fstudents`; signing in as the
@@ -105,8 +110,8 @@ registration, no self-service recovery, no SSO. 3. **Mandatory setup added?** No
 - AC2 (T18): `isSafeAppPath` and `safeNext` accept and refuse exactly the design-notes table (unit test); a login with an unsafe or wrong-role
   `next` lands on the role home, and the redirect uses the router (E2E; no full page load).
 - AC3 (FR-AUTH-03, DEC-089, DEC-093): a wrong password, an unknown username and a locked account show the same generic message; a 429 shows the
-  wait from `Retry-After`; a network failure shows a retry-able error; the submit cannot fire twice; submit calls logout then login, and a failed
-  login does not refetch the session (component tests with a mocked API).
+  wait from `Retry-After`; a network failure shows a retry-able error; the submit cannot fire twice; a failed login does not refetch the session;
+  with no `XSRF-TOKEN` cookie the middleware primes it with `GET /auth/session` before the non-GET (component and unit tests with a mocked API).
 - AC4 (FR-AUTH-06, DEC-092): a student created with a temporary password signs in, is sent to `/change-password` (forced mode, no cancel) from
   any protected URL, cannot leave it by navigation, changes the password and lands on `/student/home`; visiting `/login` in that state logs out
   first and a fresh login works (E2E).
@@ -117,19 +122,22 @@ registration, no self-service recovery, no SSO. 3. **Mandatory setup added?** No
 - AC7: wrong role → `/forbidden` (403 page, link home); `/` redirects by role and anonymous → `/login`; a signed-in visit to `/login` goes home
   (E2E for both roles).
 - AC8 (FR-AUTH-08, DEC-093): the "Forgot your password?" disclosure, the shared-device hint and the language switcher are on the public pages in
-  vi and en; remember-me sets the 30-day `ENGLMS_REMEMBER_ME` cookie only when ticked; with a remembered user A on the device, a failed login as
-  B leaves nobody signed in (E2E cookie and session checks).
+  vi and en; for a user past the forced change (a student created by the test), remember-me sets the 30-day `ENGLMS_REMEMBER_ME` cookie only
+  when ticked; a new browser context holding that cookie opens as that user, and after Log out the login form signs in another user with no 403
+  (E2E cookie and session checks).
 - AC9 (NFR-A11Y-01, 02): login, change-password and forbidden pages pass axe at 360×740, 768×1024 and 1280×800 with no horizontal scroll;
   keyboard-only login and password change work; `PasswordField`, `Checkbox` and `ErrorSummary` have `/dev/ui` entries, tests and axe checks.
-- AC10: `./scripts/gate.sh` green twice in a row on the same dev database (the second run reuses the E2E tutor password) and on an empty one;
-  no 429 in the E2E run; all retargeted specs keep their assertions; bundle budget green.
+- AC10: `./scripts/gate.sh` green twice in a row on the same dev database (the second run reuses the E2E tutor password); the empty-database
+  case is CI's `e2e-smoke` run (recorded in the evidence; never purge the PO's dev database without asking); no 429 in the E2E run; all
+  retargeted specs keep their assertions; bundle budget green.
 
 ## Test plan
 - Implementation: unit (`isSafeAppPath`, `safeNext`, Zod schemas, XSRF and 401/403 middleware), component (login, change password, guards with a
   mocked session, `ui/` components), E2E (`auth.spec.ts`: AC1, AC2, AC4, AC6, AC7, AC8 at the mandatory viewports; retargeted specs), axe.
 - Independent QA focus: open-redirect attempts through `?next=` (encoded, double-encoded, malformed, protocol-relative, backslash, dot segments,
   other role); forced change cannot be bypassed by URL; logout and back button; two tabs (log out in one, act in the other → login);
-  remember-me on/off across a browser restart (new context with the stored cookie) and the shared-device case of AC8; vi/en; 360/768/1280;
+  remember-me on/off across a browser restart (new context with the stored cookie) and the shared-device case of AC8; a missing `XSRF-TOKEN`
+  cookie before a login; vi/en; 360/768/1280;
   `gate.sh` twice. Exploratory charter: find any way to reach protected UI or data without a valid session of the right role.
 - SEC: **triggered** (DEC-109: identity UI, redirect handling, remember-me, session bootstrap, CSRF header; the client-side part of the M2 exit
   "security review of authentication"). UX: **triggered** (new screens).
@@ -147,12 +155,12 @@ registration, no self-service recovery, no SSO. 3. **Mandatory setup added?** No
 
 ## Risks & assumptions
 - **Split line** (as DEC-089 (4)): if AC1–AC8 are not green by about 1.5 agent-days, AC9's `/dev/ui` polish beyond the three components' basic
-  states and the empty-database variant of AC10 move to a follow-up recorded by a DEC; the open-redirect rules, CSRF and the guards never move.
+  states and the second consecutive run of AC10 move to a follow-up recorded by a DEC; the open-redirect rules, CSRF and the guards never move.
 - The PO's dev database may hold a manually bootstrapped tutor: E2E then stops with a clear message instead of guessing credentials; the fix
   (`dev-down.sh --purge`) deletes local dev data, so the message says so.
 - Adding React Hook Form + Zod is the documented standard (frontend-architecture §2), not new infrastructure; the bundle budget must stay green.
 - `/tutor/today` and `/student/home` are placeholder shell pages until their tasks; landing there is enough for this task.
-- SEC confirms the shared-device behaviour (logout before login) and its wording.
+- SEC confirms the shared-device behaviour (a remembered user opens the app; log out on shared devices) and its wording.
 
 ## Commands (reproducible)
 ```bash

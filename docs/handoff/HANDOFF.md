@@ -1,4 +1,4 @@
-# Handoff — 2026-10-11T09:38Z (T-M1.19 done on the new device; T-M2.4 packet at G0)
+# Handoff — 2026-10-11T09:42Z (T-M1.19 done on the new device; T-M2.4 packet at G0)
 
 Phase/Milestone: P1 / M2 (in progress) · Current task: **T-M2.4 (ready; PO start signal pending)** · Branch: `develop` · Last merges on develop: `8be6d9f` (PR #78, T-M1.19), `a4d9af2` (PR #79, QA report); `a2c59a0` (PR #80, T-M1.19 merge record); this packet is PR #81 · Remote: https://github.com/duochou042004/eng-lms (mirror: gitlab.com/duochou042004/eng-lms)
 
