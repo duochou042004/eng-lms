@@ -10,12 +10,6 @@
     "vi": "Tiếng Việt",
     "en": "English"
   },
-  "landing": {
-    "title": "Không gian dạy học",
-    "description": "Chọn khu vực để tiếp tục.",
-    "tutor": "Khu vực gia sư",
-    "student": "Khu vực học viên"
-  },
   "notFound": {
     "title": "Không tìm thấy trang",
     "description": "Đường dẫn này không tồn tại hoặc đã được di chuyển.",

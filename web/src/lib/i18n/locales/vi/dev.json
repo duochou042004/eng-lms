@@ -7,7 +7,10 @@
     "segmented": "Nút chọn phân đoạn",
     "alerts": "Thông báo",
     "loading": "Đang tải",
-    "empty": "Trạng thái trống"
+    "empty": "Trạng thái trống",
+    "password": "Trường mật khẩu",
+    "checkbox": "Ô đánh dấu",
+    "errorSummary": "Tóm tắt lỗi"
   },
   "sample": {
     "primary": "Lưu",
@@ -37,6 +40,22 @@
     "segmentedWeek": "Tuần",
     "segmentedMonth": "Tháng",
     "segmentedDisabledLabel": "Chế độ xem (không khả dụng)",
-    "segmentedPartialLabel": "Chế độ xem (một lựa chọn không khả dụng)"
+    "segmentedPartialLabel": "Chế độ xem (một lựa chọn không khả dụng)",
+    "passwordLabel": "Mật khẩu",
+    "passwordReveal": "Hiện mật khẩu",
+    "passwordHint": "Từ 10 đến 128 ký tự.",
+    "passwordInvalidLabel": "Mật khẩu mới",
+    "passwordError": "Mật khẩu mới cần ít nhất 10 ký tự.",
+    "passwordDisabledLabel": "Mật khẩu (không khả dụng)",
+    "checkboxLabel": "Ghi nhớ đăng nhập trên thiết bị này",
+    "checkboxHint": "Đừng chọn trên thiết bị dùng chung.",
+    "checkboxSelectedLabel": "Nhận nhắc nhở",
+    "checkboxInvalidLabel": "Tôi đã đọc hướng dẫn",
+    "checkboxError": "Hãy đánh dấu ô này để tiếp tục.",
+    "checkboxDisabledLabel": "Tuỳ chọn không khả dụng",
+    "summaryTitle": "Mật khẩu chưa được đổi",
+    "summaryFieldError": "Hãy nhập mật khẩu hiện tại.",
+    "summaryFormError": "Không kết nối được máy chủ. Hãy kiểm tra mạng rồi thử lại.",
+    "summaryFieldLabel": "Mật khẩu hiện tại"
   }
 }

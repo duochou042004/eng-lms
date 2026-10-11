@@ -49,6 +49,24 @@
   text-decoration: none;
 }
 
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-3);
+  min-inline-size: 0;
+}
+
+.accountLink {
+  display: inline-flex;
+  align-items: center;
+  min-block-size: var(--size-control-md);
+  padding-inline: var(--space-2);
+  font-weight: var(--font-weight-medium);
+  white-space: nowrap;
+}
+
 .workspace {
   color: var(--color-text-muted);
   min-inline-size: 0;

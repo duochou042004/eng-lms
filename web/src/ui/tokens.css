@@ -73,6 +73,7 @@
   --size-control-lg: 3rem;
   --size-icon: 1.25rem;
   --size-content-max: 72rem;
+  --size-form-max: 25rem; /* 400 px: the one-column sign-in and password forms (T-M2.4) */
 
   /* Motion */
   --motion-duration: 160ms;

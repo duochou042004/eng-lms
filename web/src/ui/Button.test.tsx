@@ -52,6 +52,20 @@ describe('Button', () => {
     await expectNoAxeViolations(container)
   })
 
+  it('drops its pending announcement when it unmounts, so the live region never points at a missing element', async () => {
+    const { rerender, unmount } = render(<Button>Đăng nhập</Button>)
+    await userEvent.tab()
+    rerender(<Button isPending>Đăng nhập</Button>)
+    const button = screen.getByRole('button')
+    const entries = () =>
+      [...document.querySelectorAll('[data-live-announcer] [aria-labelledby]')].filter(
+        (e) => e.getAttribute('aria-labelledby')?.split(' ')[0] === button.id,
+      )
+    expect(entries().length).toBeGreaterThan(0)
+    unmount()
+    expect(entries()).toEqual([])
+  })
+
   it('supports the large size', () => {
     render(<Button size="lg">Bắt đầu</Button>)
     expect(screen.getByRole('button')).toHaveClass('lg')

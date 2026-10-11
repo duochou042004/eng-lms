@@ -1,0 +1,49 @@
+.summary {
+  display: flex;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border: var(--border-width) solid currentcolor;
+  border-radius: var(--radius-md);
+  background: var(--color-danger-subtle);
+  color: var(--color-danger-text);
+}
+
+.summary:focus-visible,
+.summary:focus {
+  outline: var(--focus-ring-width) solid var(--color-focus);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.icon {
+  flex: none;
+  inline-size: var(--size-icon);
+  block-size: var(--size-icon);
+  margin-block-start: var(--space-1);
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-inline-size: 0;
+}
+
+.title {
+  font-size: var(--font-size-md);
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding-inline-start: var(--space-5);
+}
+
+/* Each error link is a 44 px target (responsive-standards §3.7). */
+.link {
+  display: inline-flex;
+  align-items: center;
+  min-block-size: var(--size-control-md);
+  color: var(--color-danger-text);
+  font-weight: var(--font-weight-medium);
+}

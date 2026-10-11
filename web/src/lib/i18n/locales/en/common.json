@@ -10,12 +10,6 @@
     "vi": "Tiếng Việt",
     "en": "English"
   },
-  "landing": {
-    "title": "Teaching workspace",
-    "description": "Choose an area to continue.",
-    "tutor": "Tutor area",
-    "student": "Student area"
-  },
   "notFound": {
     "title": "Page not found",
     "description": "This link does not exist or has moved.",

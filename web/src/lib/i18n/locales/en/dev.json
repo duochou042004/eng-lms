@@ -7,7 +7,10 @@
     "segmented": "Segmented control",
     "alerts": "Alerts",
     "loading": "Loading",
-    "empty": "Empty state"
+    "empty": "Empty state",
+    "password": "Password field",
+    "checkbox": "Checkbox",
+    "errorSummary": "Error summary"
   },
   "sample": {
     "primary": "Save",
@@ -37,6 +40,22 @@
     "segmentedWeek": "Week",
     "segmentedMonth": "Month",
     "segmentedDisabledLabel": "View (unavailable)",
-    "segmentedPartialLabel": "View (one option unavailable)"
+    "segmentedPartialLabel": "View (one option unavailable)",
+    "passwordLabel": "Password",
+    "passwordReveal": "Show password",
+    "passwordHint": "10 to 128 characters.",
+    "passwordInvalidLabel": "New password",
+    "passwordError": "The new password needs at least 10 characters.",
+    "passwordDisabledLabel": "Password (unavailable)",
+    "checkboxLabel": "Remember me on this device",
+    "checkboxHint": "Don't tick this on a shared device.",
+    "checkboxSelectedLabel": "Get reminders",
+    "checkboxInvalidLabel": "I have read the guide",
+    "checkboxError": "Tick this box to continue.",
+    "checkboxDisabledLabel": "Unavailable option",
+    "summaryTitle": "Your password wasn't changed",
+    "summaryFieldError": "Enter your current password.",
+    "summaryFormError": "Couldn't reach the server. Check your connection, then try again.",
+    "summaryFieldLabel": "Current password"
   }
 }

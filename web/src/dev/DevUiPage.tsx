@@ -5,10 +5,13 @@ import { LanguageSwitcher } from '../app/components/LanguageSwitcher'
 import { usePageTitle } from '../app/routeAnnouncement'
 import {
   Button,
+  Checkbox,
   EmptyState,
+  ErrorSummary,
   IconButton,
   InlineAlert,
   PageHeader,
+  PasswordField,
   SegmentedControl,
   Skeleton,
   Stack,
@@ -86,6 +89,47 @@ export function DevUiPage() {
           <TextField label={t('sample.fieldLabel')} hint={t('sample.fieldHint')} />
           <TextField label={t('sample.invalidLabel')} isInvalid errorMessage={t('sample.fieldError')} />
           <TextField label={t('sample.disabledLabel')} isDisabled defaultValue="S-0001" />
+        </Section>
+        <Section title={t('sections.password')}>
+          <PasswordField
+            label={t('sample.passwordLabel')}
+            revealLabel={t('sample.passwordReveal')}
+            hint={t('sample.passwordHint')}
+            autoComplete="current-password"
+          />
+          <PasswordField
+            label={t('sample.passwordInvalidLabel')}
+            revealLabel={t('sample.passwordReveal')}
+            autoComplete="new-password"
+            isInvalid
+            errorMessage={t('sample.passwordError')}
+          />
+          <PasswordField
+            label={t('sample.passwordDisabledLabel')}
+            revealLabel={t('sample.passwordReveal')}
+            autoComplete="current-password"
+            isDisabled
+          />
+        </Section>
+        <Section title={t('sections.checkbox')}>
+          <Stack gap={3}>
+            <Checkbox label={t('sample.checkboxLabel')} hint={t('sample.checkboxHint')} />
+            <Checkbox label={t('sample.checkboxSelectedLabel')} defaultSelected />
+            <Checkbox label={t('sample.checkboxInvalidLabel')} isInvalid errorMessage={t('sample.checkboxError')} />
+            <Checkbox label={t('sample.checkboxDisabledLabel')} isDisabled />
+          </Stack>
+        </Section>
+        <Section title={t('sections.errorSummary')}>
+          <Stack gap={3}>
+            <ErrorSummary
+              title={t('sample.summaryTitle')}
+              errors={[
+                { fieldId: 'dev-summary-field', message: t('sample.summaryFieldError') },
+                { message: t('sample.summaryFormError') },
+              ]}
+            />
+            <TextField id="dev-summary-field" label={t('sample.summaryFieldLabel')} />
+          </Stack>
         </Section>
         <Section title={t('sections.segmented')}>
           <SegmentedSamples />
