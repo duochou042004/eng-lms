@@ -17,7 +17,7 @@
     ]
   },
   "updatedAt": "2026-10-11T09:23:27Z",
-  "updatedBy": "backend-implementer (T-M1.19, Opus 5.5)",
+  "updatedBy": "lead-coordinator (T-M1.19 merge record, session 2026-10-11, Opus 5.5)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -286,24 +286,24 @@
   },
   "gates": {
     "G0": {
-      "status": "pass",
-      "note": "T-M2.4 packet pending (T-M1.19 packet passed: DOCS-REVIEW PASS round 3, PR #75)"
+      "status": "pending",
+      "note": "T-M2.4 packet not written (T-M1.19 passed: DOCS-REVIEW PASS round 3, PR #75)"
     },
     "G1": {
       "status": "n/a",
-      "note": "T-M2.4 not started (T-M2.9 passed: gate PASS at 7550855)"
+      "note": "T-M2.4 not started (T-M1.19 passed: gate PASS on the new device at 787c457)"
     },
     "G2": {
       "status": "n/a",
-      "note": "T-M2.4 not started (T-M2.9 passed: CI 7/7 at 5de3a62)"
+      "note": "T-M2.4 not started (T-M1.19 passed: CI 7/7 at ba8f0be)"
     },
     "G3": {
-      "status": "pass",
-      "note": "T-M1.19 QA round 2 PASS at ba8f0be"
+      "status": "n/a",
+      "note": "T-M2.4 not started (T-M1.19 passed: QA round 2 PASS at ba8f0be)"
     },
     "G4": {
-      "status": "pass",
-      "note": "T-M1.19 merged 8be6d9f (DEC-108)"
+      "status": "n/a",
+      "note": "T-M2.4 not started (T-M1.19 passed: merged 8be6d9f, DEC-108)"
     },
     "G5": {
       "status": "pass",

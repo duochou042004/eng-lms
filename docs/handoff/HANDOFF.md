@@ -1,6 +1,6 @@
 # Handoff — 2026-10-11T09:40Z (T-M1.19 done on the new device; next: the T-M2.4 packet)
 
-Phase/Milestone: P1 / M2 (in progress) · Current task: **T-M2.4 (draft: packet next)** · Branch: `develop` · Last merges on develop: `8be6d9f` (PR #78, T-M1.19), then the QA report (PR #79, `qa/T-M1.19`) and this record (`chore/T-M1.19-merge-record`) · Remote: https://github.com/duochou042004/eng-lms (mirror: gitlab.com/duochou042004/eng-lms)
+Phase/Milestone: P1 / M2 (in progress) · Current task: **T-M2.4 (draft: packet next)** · Branch: `develop` · Last merges on develop: `8be6d9f` (PR #78, T-M1.19); to merge: PR #79 (QA report, `qa/T-M1.19`), then PR #80 (this record) — check `git log` that both landed · Remote: https://github.com/duochou042004/eng-lms (mirror: gitlab.com/duochou042004/eng-lms)
 
 ## Where we are
 - **T-M1.19 done** (`8be6d9f`, DEC-108): Docker or Podman on Linux, macOS, Windows via WSL2 (`scripts/lib/engine.sh`, `env.sh`, dev scripts, bash ≥ 4.4
@@ -20,10 +20,12 @@ Phase/Milestone: P1 / M2 (in progress) · Current task: **T-M2.4 (draft: packet 
 1. **T-M2.4 packet** (task-packet skill, branch `docs/T-M2.4-auth-ui`): the backlog row is too large; split into **T-M2.4 auth UI** (login, forgot info,
    password change forced/voluntary, role redirect, guards, `?next=` allow-list T18, logout, session bootstrap DEC-092, remember-me note DEC-093; SEC
    triggered) and **T-M2.11 shells** (sidebar/drawer, bottom tabs, account menu, header fixes, lazy/offline feedback, nested 404s). Fresh docs-reviewer,
-   CI, verdicts, merge-gate, gitlab-sync; ask the PO once for the start signal.
+   CI, verdicts, merge-gate, gitlab-sync; ask the PO once for the start signal. The packet PR adds the T-M2.11 backlog row, moves the shell items
+   out of the T-M2.4 row, adds T-M2.11 to T-M2.5's dependencies and records the split in a DEC.
 2. Then implement T-M2.4 through G3 (QA, UX, SEC) with the start signal; then T-M2.11, T-M2.5.
 
 ## Pending PO decisions / actions
+- This device: `(cd qa && pnpm exec playwright install-deps firefox webkit)` (needs `sudo`) so `qa/` can run all three browsers (G3 of UI tasks).
 - Production needs `SERVER_FORWARDHEADERSSTRATEGY=native` (deployment.md §3) — at deployment time (M8).
 - QA F4 / T-M2.3 SEC S4-9: the bundled common-password list barely filters at the 10-character minimum (`password123` passes); say if a stronger list is wanted.
 - Recommended (DEC-061): `glab` deny rules. OQ-03..OQ-14 (defaults documented).
