@@ -1,6 +1,6 @@
 # Handoff — 2026-10-11T09:40Z (T-M1.19 done on the new device; next: the T-M2.4 packet)
 
-Phase/Milestone: P1 / M2 (in progress) · Current task: **T-M2.4 (draft: packet next)** · Branch: `develop` · Last merges on develop: `8be6d9f` (PR #78, T-M1.19); to merge: PR #79 (QA report, `qa/T-M1.19`), then PR #80 (this record) — check `git log` that both landed · Remote: https://github.com/duochou042004/eng-lms (mirror: gitlab.com/duochou042004/eng-lms)
+Phase/Milestone: P1 / M2 (in progress) · Current task: **T-M2.4 (draft: packet next)** · Branch: `develop` · Last merges on develop: `8be6d9f` (PR #78, T-M1.19), `a4d9af2` (PR #79, QA report); this record is PR #80 (check `git log` that it landed) · Remote: https://github.com/duochou042004/eng-lms (mirror: gitlab.com/duochou042004/eng-lms)
 
 ## Where we are
 - **T-M1.19 done** (`8be6d9f`, DEC-108): Docker or Podman on Linux, macOS, Windows via WSL2 (`scripts/lib/engine.sh`, `env.sh`, dev scripts, bash ≥ 4.4
