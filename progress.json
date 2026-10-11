@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-10-11T09:51:18Z",
-  "updatedBy": "lead-coordinator (session 2026-10-11, Opus 5.5)",
+  "updatedAt": "2026-10-11T10:55:00Z",
+  "updatedBy": "frontend-implementer (T-M2.4, Opus 5.5)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -32,12 +32,12 @@
   "currentTask": {
     "id": "T-M2.4",
     "title": "Auth UI (login, forgot info, password change, role redirect, route guards, logout)",
-    "status": "in_progress",
+    "status": "in_review",
     "ownerRole": "FE",
     "branch": "feature/T-M2.4-auth-ui",
     "packet": "docs/tasks/T-M2.4-auth-ui.md",
     "pr": null,
-    "lastCommit": null,
+    "lastCommit": "6b821a2",
     "startedAt": "2026-10-11T09:51:18Z",
     "entryGate": [
       "T-M2.1 merged — met (a93bcc1)",
@@ -46,7 +46,7 @@
       "PO start signal — given (DEC-110)"
     ],
     "nextSteps": [
-      "frontend-implementer on feature/T-M2.4-auth-ui; gate green twice",
+      "Implementation done (550a231, 2502074, 6b821a2); gate.sh green twice on the same dev DB (evidence/T-M2.4/gate-20261011T103024Z.log, gate-20261011T103937Z.log); summary content in the implementer's report (the harness blocked writing evidence/T-M2.4/summary.md)",
       "G3: fresh qa-evaluator, ux-reviewer, security-reviewer; CI; verdicts; merge-gate; gitlab-sync; QA report via qa/T-M2.4; merge record"
     ],
     "trace": [
