@@ -6,7 +6,7 @@ Phase/Milestone: P1 / M2 (in progress) · Current task: **T-M2.11 (draft: packet
 - **T-M2.4 done** (`9fcc992`, DEC-109..111): auth UI (login, forgot info, forced/voluntary password change, logout, role redirect, guards,
   `/forbidden`, `?next=` allow-list T18, XSRF header with re-priming, E2E sign-in harness with `e2e-tutor` under `.data/e2e/`). QA PASS WITH MINOR,
   UX APPROVED, SEC APPROVED (the client-side auth part of the M2 exit security review). Deferred: SEC S4-2 cross-tab session → T-M2.11; SEC S4-3 CI
-  failure traces (known risk); `qa/` specs that use the anonymous `/` or the shells → T-M2.7 (DEC-111).
+  failure traces (risk-register R-22); `qa/` specs that use the anonymous `/` or the shells → T-M2.7 (DEC-111).
 - **T-M1.19 done** (`8be6d9f`, DEC-108): Docker or Podman on Linux, macOS, WSL2. This device: **Kali Linux rolling, rootless Podman 5.8.6, clone
   `/home/kali/App_projects/eng-lms`**; known limits N-1..N-3 in development-setup §3.
 - T-M1.20 (`ed442e0`, DEC-107): GitLab CI paused; the mirror still syncs. T-M2.10 (strict JSON numbers) is in the backlog.
@@ -22,7 +22,7 @@ Phase/Milestone: P1 / M2 (in progress) · Current task: **T-M2.11 (draft: packet
 1. **T-M2.11 packet** (task-packet skill, branch `docs/T-M2.11-app-shells`): the backlog row (tutor sidebar/drawer, student tabs/top bar, account menu
    with language/password/logout replacing the placeholder header controls, brand fix, `meta.error` copy, 150 ms lazy-navigation feedback, offline
    chunk feedback, nested 404s, cross-tab session handling SEC S4-2) and the UX notes carried from T-M2.4 (`evidence/T-M2.4/review/ux.md`: header
-   wraps to 3 rows at 360 px, workspace identity on public pages). Decide SEC in the packet (S4-2 touches session handling). Fresh docs-reviewer,
+   wraps to 3 rows at 360 px, "Đổi mật khẩu" link vs "Đăng xuất" button style, brand twice, workspace identity on public pages). Decide SEC in the packet (S4-2 touches session handling). Fresh docs-reviewer,
    CI, verdicts, merge-gate, gitlab-sync; ask the PO once for the start signal (DEC); with it implement through G3.
 2. Then T-M2.5 (students UI), T-M2.6, T-M2.7 (M2 regression incl. the `qa/` spec updates). Optional: T-M2.10.
 
