@@ -2,6 +2,7 @@
 # coverage-summary.sh — print the JaCoCo totals and per-package line/branch coverage as Markdown (T-M1.5 AC6, DEC-053).
 # CI appends it to the job summary ($GITHUB_STEP_SUMMARY), which needs no artifact storage. No threshold (OQ-16, DEC-051).
 # Usage: ./scripts/coverage-summary.sh [backend/target/site/jacoco/jacoco.csv]
+source "$(dirname "$0")/lib/require-bash.sh"
 set -euo pipefail
 CSV=${1:-backend/target/site/jacoco/jacoco.csv}
 [[ -f "$CSV" ]] || { echo "coverage-summary: $CSV not found (run ./mvnw verify first)" >&2; exit 1; }

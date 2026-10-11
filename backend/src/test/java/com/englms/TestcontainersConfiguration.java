@@ -8,7 +8,7 @@ import org.testcontainers.utility.DockerImageName;
 
 /**
  * PostgreSQL 18 for integration tests. Tests using it are tagged {@code container}: they need a Docker-compatible
- * socket (CI; locally once T-M1.4 enables the rootless Podman socket).
+ * engine, Docker or Podman ({@code source scripts/env.sh} locally, development-setup §3; CI uses the runner's Docker).
  */
 @TestConfiguration(proxyBeanMethods = false)
 public class TestcontainersConfiguration {
@@ -22,10 +22,10 @@ public class TestcontainersConfiguration {
 	}
 
 	/**
-	 * Up to three start attempts: the rootless Podman API service ({@code podman system service}, socket-activated)
-	 * exits after 5 s without requests, so the first Docker API call after a long-running test class can hit a
-	 * pooled connection that Podman has closed ("Broken pipe"). A new attempt opens a new connection (T-M2.1: the
-	 * suite now has enough long-running classes between container starts to meet this).
+	 * Up to three start attempts: an engine's API service can close idle connections (e.g. rootless Podman's
+	 * socket-activated {@code podman system service} exits after 5 s without requests), so the first API call after a
+	 * long-running test class can hit a pooled connection that is already closed ("Broken pipe"). A new attempt opens
+	 * a new connection (T-M2.1). Harmless on Docker.
 	 */
 	public static PostgreSQLContainer newPostgres() {
 		PostgreSQLContainer container = new PostgreSQLContainer(

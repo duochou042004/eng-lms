@@ -16,6 +16,7 @@
 #                                      the Maven wrapper properties and workflow `uses: <action>@<sha>` bumps may change (T-M1.7)
 # In every case: required checks pass, no check fails, branch 0 behind base, no conflicts, no review type's latest fresh verdict is negative,
 # and every verdict comment must be posted AFTER the head commit ARRIVED on the PR (push time, not committedDate; stale verdicts don't count).
+source "$(dirname "$0")/lib/require-bash.sh"
 set -euo pipefail
 export LC_ALL=C  # [0-9] must mean ASCII digits whatever the caller's locale (T-M1.12 review F3)
 

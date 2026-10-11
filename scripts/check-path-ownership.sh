@@ -3,6 +3,7 @@
 # Usage: scripts/check-path-ownership.sh <branch-name> [<base-ref>]
 #   Files come from `git diff --name-only <base-ref>...HEAD` (default base: origin/develop),
 #   or from the file named in FILES_FROM (one path per line; used by tests).
+source "$(dirname "$0")/lib/require-bash.sh"
 set -euo pipefail
 
 branch=${1:?"usage: check-path-ownership.sh <branch> [<base-ref>]"}

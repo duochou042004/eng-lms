@@ -4,8 +4,9 @@
 #   --list         print the steps and exit
 #   --from <step>  start at <step> (resume after fixing a failure)
 # With ENGLMS_TASK=<task id> (e.g. T-M1.5) the whole output is also written to evidence/<task>/gate-<UTC timestamp>.log.
-# The backend and contract-drift steps need Testcontainers: the rootless Podman socket (scripts/env.sh is sourced here).
+# The backend and contract-drift steps need Testcontainers: Docker or Podman (scripts/env.sh is sourced here).
 # The e2e step runs the packaged app on :8080/:8081 against the dev DB (scripts/e2e-run.sh).
+source "$(dirname "$0")/lib/require-bash.sh"
 set -uo pipefail
 ROOT=$(cd "$(dirname "$0")/.." && pwd)
 
@@ -56,7 +57,7 @@ if [[ -n "${ENGLMS_TASK:-}" ]]; then
   echo "gate: logging to ${log#"$ROOT"/}"
 fi
 
-# Testcontainers on rootless Podman (DEC-044). A missing socket fails the backend step, not the fast steps before it.
+# Testcontainers on Docker or Podman (DEC-044, DEC-106). No reachable engine fails the backend step, not the fast steps before it.
 # shellcheck source=scripts/env.sh
 source "$ROOT/scripts/env.sh" || echo "gate: warning: scripts/env.sh failed; the backend and contract-drift steps need it" >&2
 

@@ -9,7 +9,7 @@ listener_pid=""
 trap '[[ -n "$listener_pid" ]] && kill "$listener_pid" 2>/dev/null; rm -rf "$work"' EXIT
 repo="$work/repo"
 mkdir -p "$repo/scripts" "$repo/backend/target" "$repo/e2e" "$work/bin"
-cp "$ROOT/scripts/e2e-run.sh" "$repo/scripts/e2e-run.sh"
+cp "$ROOT/scripts/e2e-run.sh" "$repo/scripts/e2e-run.sh"; cp -R "$ROOT/scripts/lib" "$repo/scripts/"
 touch "$repo/backend/target/englms-0.0.1-SNAPSHOT.jar"
 # java stub: a long-running "app" that records its pid; curl stub: always ready; pnpm stub: exit $PNPM_EXIT for the test run.
 printf '#!/usr/bin/env bash\necho $$ >"%s/app.pid"\nexec sleep 300\n' "$work" >"$work/bin/java"
