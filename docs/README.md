@@ -46,7 +46,7 @@
 | 06 Quality | [test-strategy.md](06-quality/test-strategy.md) | Pyramid, ownership (implementation vs QA), fixtures, architecture rules, coverage |
 | | [quality-gates.md](06-quality/quality-gates.md) | G0–G6, severities |
 | | [qa-protocol.md](06-quality/qa-protocol.md) | Independent QA procedure and report template |
-| 07 Operations | [development-setup.md](07-operations/development-setup.md) | Toolchain, local stack, Testcontainers on Podman |
+| 07 Operations | [development-setup.md](07-operations/development-setup.md) | Toolchain per platform, local stack, Testcontainers on Docker or Podman |
 | | [deployment.md](07-operations/deployment.md) | Topology, image, configuration, install, upgrade, observability |
 | | [runbooks.md](07-operations/runbooks.md) | Backup, restore, resets, incidents |
 | | [ci-cd.md](07-operations/ci-cd.md) | Workflows, required checks, branch protection, releases |

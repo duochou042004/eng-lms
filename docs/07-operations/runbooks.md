@@ -62,4 +62,4 @@ security log for affected accounts. 4. Reset affected passwords (sessions end au
 notification obligations (R-12). 6. Write a post-incident note in `evidence/incidents/`.
 
 ## 10. Local dev database reset
-`./scripts/dev-down.sh && podman volume rm englms-dev-pgdata && ./scripts/dev-up.sh` (dev only; deletes all local data).
+`./scripts/dev-down.sh --purge && ./scripts/dev-up.sh` (dev only; deletes all local data; works with Docker or Podman). By hand: `docker volume rm englms-dev-pgdata` or `podman volume rm englms-dev-pgdata` after `dev-down.sh`.

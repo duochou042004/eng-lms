@@ -23,7 +23,7 @@ Secrets (podman secret): englms-db-password, englms-bootstrap-tutor-password (fi
   `docker.io/library/eclipse-temurin:25-jdk@sha256:97014c4b396021f9ddb7d592a7dbedb0c4e4215c29e03dc01c393558aefb71c2`,
   `docker.io/library/eclipse-temurin:25-jre@sha256:bb036ed6cfdc57e3da7c22634d15f1b840d2caf76183861c80e81ca4b5104abb` (Ubuntu 26.04, glibc; image ≈ 416 MB).
 - Build: `podman build --format docker -f deploy/Containerfile -t englms:dev .` (Podman's default OCI format drops `HEALTHCHECK`, DEC-050).
-  Run: `podman run --read-only --tmpfs /tmp --env-file .env -p 127.0.0.1:8080:8080 englms:dev` (or `--network host` against `dev-up.sh`).
+  Run: `podman run --read-only --tmpfs /tmp --env-file .env -p 127.0.0.1:8080:8080 englms:dev` (or `--network host` against `dev-up.sh` on Linux; Docker builds and other platforms: development-setup §4).
   The CI `container` workflow builds it on every PR without pushing.
 - Built in CI on tags or release branches, scanned with Trivy, pushed to `ghcr.io/<owner>/englms:<version>` (private) and referenced by digest in the Quadlet units.
 
@@ -75,7 +75,7 @@ the new schema. A rollback that needs a DB restore is documented as the exceptio
 
 | Env | Where | Data |
 |---|---|---|
-| dev | Developer machine (podman compose DB) | Seeded dev data |
+| dev | Developer machine (`docker compose` or `podman compose` DB, DEC-106) | Seeded dev data |
 | ci | GitHub Actions (service container PostgreSQL) | Test fixtures |
 | staging (optional, M8) | The same host under a separate user and ports, or a cheap second VM | Anonymised copy (script) or synthetic data |
 | prod | The tutor's host | Real data (backups!) |

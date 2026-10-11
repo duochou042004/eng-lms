@@ -569,17 +569,17 @@
   "environment": {
     "jdk": "Temurin 25.0.4 (SDKMAN; source ~/.sdkman/bin/sdkman-init.sh; sdk default set)",
     "springBootCli": "4.1.0 (sdk default set)",
-    "buildTool": "Maven Wrapper 3.9.16 (no global mvn/gradle installed)",
+    "buildTool": "Maven Wrapper (Maven 3.10.0; no global mvn/gradle installed)",
     "node": "24.21.0 via nvm (source ~/.nvm/nvm.sh; not on non-interactive PATH)",
-    "pnpm": "12.6.0 (corepack 0.36.0)",
-    "podman": "5.7.0 rootless (Ubuntu 26.04 package), podman-compose 1.5.0; the user podman.socket is ENABLED (DEC-044, DEC-083). Testcontainers via scripts/env.sh (DOCKER_HOST=unix://$XDG_RUNTIME_DIR/podman/podman.sock, TESTCONTAINERS_RYUK_DISABLED=true). Image englms:dev builds (416 MB)",
-    "gh": "2.102.0 (GitHub apt repository; Ubuntu 2.46.0 lacks gh pr checks --json), authenticated as duochou042004 (scopes: repo, workflow, read:org, gist); git credential helper for github.com",
-    "host": "Ubuntu 26.04.1 LTS (kernel 7.0.0), 16 cores, 22 GB RAM, 114 GB free",
-    "python": "3.14.4 with jsonschema 4.19.2 (used by scripts/check_docs.py)",
-    "playwright": "Chrome Headless Shell 153.0.8010.12 (pnpm browsers in e2e)",
+    "pnpm": "12.6.0 in the projects via packageManager (corepack 0.36.0; corepack's global default is 12.10.1)",
+    "podman": "Container engine (T-M1.19 detection: scripts/lib/engine.sh): rootless Podman 5.8.6 + podman-compose 1.6.0, the user podman.socket ENABLED (DEC-044); no docker CLI installed. scripts/env.sh -> engine: podman (socket /run/user/1000/podman/podman.sock), DOCKER_HOST=unix:///run/user/1000/podman/podman.sock, TESTCONTAINERS_RYUK_DISABLED=true. bash 5.3.15 (scripts need >= 4.4), zsh 5.9.2",
+    "gh": "2.102.0, authenticated as duochou042004; git credential helper !/usr/bin/gh auth git-credential for github.com",
+    "host": "Kali GNU/Linux Rolling 2026.3 (kernel 7.1.5+kali-amd64, x86_64), 16 cores, 22 GB RAM, 103 GB free; clone /home/kali/App_projects/eng-lms; git 2.53.0; shellcheck not installed",
+    "python": "3.14.7 with jsonschema 4.26.0 (used by scripts/check_docs.py); jq 1.8.2",
+    "playwright": "Chromium headless shell 153 (build 1243) for e2e/; firefox 155 (1543) and webkit 26.6 (2359) downloaded for qa/, but their host libraries are missing (PO: sudo pnpm exec playwright install-deps)",
     "githubActionsStorage": "PO freed the account artifact storage on 2026-09-26; artifacts are kept 5 days (DEC-056).",
-    "gitlab": "Private mirror gitlab.com/duochou042004/eng-lms (project 86941168), remote gitlab, glab 1.120.0 (snap) authenticated as duochou042004; git credential helper !/snap/bin/glab auth git-credential; GitLab CI stores reports 5 days (DEC-060). Sync: ./scripts/gitlab-sync.sh",
-    "note": "Verified on the new device on 2026-10-03 with development-setup §0 (DEC-083): ./scripts/gate.sh PASS."
+    "gitlab": "Private mirror gitlab.com/duochou042004/eng-lms (project 86941168), remote gitlab, glab 1.118.0 (/usr/bin/glab) authenticated as duochou042004; git credential helper !/usr/bin/glab auth git-credential; GitLab CI paused (DEC-107). Sync: ./scripts/gitlab-sync.sh",
+    "note": "T-M1.19 device (2026-10-11): development-setup §0 (Linux + rootless Podman); gate result in evidence/T-M1.19/summary.md."
   },
   "history": [
     {

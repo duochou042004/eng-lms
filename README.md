@@ -185,7 +185,8 @@ git clone https://github.com/duochou042004/eng-lms.git && cd eng-lms
 | JDK | Temurin 25.0.4 | via SDKMAN (`.sdkmanrc`) |
 | Spring Boot CLI | 4.1.0 | the backend will be generated with `spring init` (T-M1.2) |
 | Node.js | 24.21.0 | via nvm (`.nvmrc`); pnpm through corepack |
-| Podman | 5.8.6 (rootless) | podman-compose for the dev database; Quadlet in production |
+| Docker or Podman | Podman 5.8.6 rootless on the first machines | dev database and Testcontainers with either engine (Linux, macOS, Windows via WSL2); Podman Quadlet in production |
+| bash | ≥ 4.4 | macOS: Homebrew bash |
 | GitHub CLI | 2.101 | PRs, checks, merge gate |
 
 </details>
