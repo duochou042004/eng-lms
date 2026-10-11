@@ -4,6 +4,15 @@
 > or a completed field entry. Typing inside one field counts as one step. Budgets are measured by E2E step counters
 > (`e2e/support/steps.ts`) and are part of the acceptance criteria. Each flow is validated at 360, 768 and 1280 px.
 
+## F0 Sign in (FR-AUTH-03, T-M2.4): budget ≤ 3 steps, one screen
+
+```text
+[1] Username   [2] Password   [3] Sign in (or Enter)   → the role home, or the safe ?next= of the role (security.md T18)
+```
+
+"Remember me on this device" is optional and unticked by default (shared-device hint, DEC-093). A first sign-in with a temporary password adds the
+forced change on `/change-password` (current, new, repeat, submit). Measured by `e2e/tests/auth.spec.ts` (`steps-login` record).
+
 ## F1 After-lesson wrap-up (SPEC §48): budget ≤ 7 steps, ≤ 60 s
 
 Entry points: Today → lesson row → **Wrap up**; or the lesson detail → **Wrap up**; or the student workspace → the last lesson card.

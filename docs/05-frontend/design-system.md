@@ -74,6 +74,22 @@ skeletons are laid out at once but stay `visibility: hidden` until the delay has
 skeleton or the data appears); the wrapper generates no box (`display: contents`). The region itself (`<output aria-busy="true" aria-label=…>`) is busy
 and labelled from 0 ms. Used by `RouteLoading` and `WorkspaceName`; new loading regions use the same wrapper, not their own timers.
 
+**`PasswordField`, `Checkbox`, `ErrorSummary`** (T-M2.4; tests, axe and `/dev/ui` entries):
+- `PasswordField`: a React Aria `TextField` (label, hint, error as `TextField`) whose input sits beside a reveal toggle (`ToggleButton`, a fixed
+  accessible name such as "Show password" from the `revealLabel` prop, `aria-pressed`, `type="button"`, after the input in the Tab order).
+  `autoComplete` is required (`current-password` or `new-password`); paste and password managers work (WCAG 3.3.8). States: hover,
+  focus-visible, invalid, disabled, revealed.
+- `Checkbox`: React Aria `CheckboxField` + `CheckboxButton`; the whole row (box and label) is the ≥ 44 px target; selected = a check icon in an
+  accent box (not colour alone); an optional `hint` is the description; `errorMessage` when invalid. States: hover, pressed, focus-visible,
+  selected, invalid, disabled.
+- `ErrorSummary`: the errors of a form above it (interaction-states §2.3): an `alert` with an `h2` title, a programmatic focus target
+  (`tabIndex={-1}`, `ref` prop); a field error is a ≥ 44 px link (`#<input id>`) that moves focus to its input; an error without a field is
+  plain text. Renders nothing without errors.
+- `Button` (T-M2.4 addition): React Aria announces a focused button's pending state with a live-announcer entry that points at the button's id
+  for 7 s; when the button unmounts first (a submit that navigates or swaps the form for its result), `Button` removes that entry, so the live
+  region never points at a missing element (an axe `role-img-alt` violation otherwise).
+- Token `--size-form-max` (25rem, 400 px): the one-column sign-in and password forms.
+
 ## 4. Status vocabulary (one mapping, used everywhere)
 
 | Domain status | Label (en / vi) | Tone | Icon |

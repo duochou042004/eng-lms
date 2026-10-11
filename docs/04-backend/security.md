@@ -37,7 +37,7 @@ Actors: anonymous internet users, an authenticated student (curious or malicious
 | T15 | Vulnerable dependency | Dependabot, `pnpm audit`, Trivy at release | Release gate |
 | T16 | Enumerating usernames | Same login response and timing for unknown and wrong-password; availability check is tutor-only | Tests |
 | T17 | Clickjacking | `frame-ancestors 'none'` | Header test |
-| T18 | Open redirect after login | Login neither accepts nor returns a redirect target (T-M2.1); the SPA picks the landing route from the session's role, and its `?next=` accepts only relative app paths from an allow-list (T-M2.4) | Tests |
+| T18 | Open redirect after login | Login neither accepts nor returns a redirect target (T-M2.1); the SPA picks the landing route from the session's role, and its `?next=` accepts only relative app paths from an allow-list. **Implemented (T-M2.4):** `isSafeAppPath` (structural: one decode, no `//`, `/\`, scheme, backslash, control character or dot segment; first segment `tutor` or `student`) and `safeNext` (also the role's own namespace, else the role home) in `web/src/features/auth/model/redirect.ts`; the redirect always goes through the router's `navigate()` | Tests (`redirect.test.ts` table; `auth.spec.ts` AC2) |
 
 ## 3. Authentication
 
