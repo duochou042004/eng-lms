@@ -36,7 +36,7 @@
     "ownerRole": "FE",
     "branch": "feature/T-M2.4-auth-ui",
     "packet": "docs/tasks/T-M2.4-auth-ui.md",
-    "pr": null,
+    "pr": "82",
     "lastCommit": "6b821a2",
     "startedAt": "2026-10-11T09:51:18Z",
     "entryGate": [
