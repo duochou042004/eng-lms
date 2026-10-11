@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-10-11T08:20:32Z",
-  "updatedBy": "lead-coordinator (session 2026-10-11, Opus 5.5)",
+  "updatedAt": "2026-10-11T08:55:00Z",
+  "updatedBy": "backend-implementer (T-M1.19, Opus 5.5)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -32,7 +32,7 @@
   "currentTask": {
     "id": "T-M1.19",
     "title": "Portable development environment (Docker or Podman; Linux, macOS, Windows via WSL2)",
-    "status": "in_progress",
+    "status": "in_review",
     "ownerRole": "BE",
     "branch": "feature/T-M1.19-portable-dev-env",
     "packet": "docs/tasks/T-M1.19-portable-dev-env.md",
@@ -45,8 +45,8 @@
       "PO start signal — given (DEC-106)"
     ],
     "nextSteps": [
-      "On the new device: development-setup §0 as far as it works (the toolchain; the engine may fail env.sh until this task lands)",
-      "Branch feature/T-M1.19-portable-dev-env, backend-implementer, prove the gate on the device, G3 QA, merge-gate, gitlab-sync",
+      "LC: record evidence/T-M1.19/summary.md from the implementer's returned text (the harness blocks agent-written .md reports)",
+      "LC: open the PR (template), CI 7/7, G3 fresh qa-evaluator following development-setup §0 for its platform, verdicts, merge-gate, gitlab-sync",
       "Then the T-M2.4 packet"
     ],
     "trace": [

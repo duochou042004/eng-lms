@@ -1,0 +1,23 @@
+engine: podman (socket /run/user/1000/podman/podman.sock)
+Trying to pull docker.io/library/postgres@sha256:5a5a84b19854a9ffaa54082c166ff4ec27473a361e496e5ea167f298f2da9722...
+Getting image source signatures
+Copying config sha256:662db3da228c2ea2649b3ae04db4b4479e85fea5979f6a917a7f6d5cb1e7ec39
+Writing manifest to image destination
+662db3da228c2ea2649b3ae04db4b4479e85fea5979f6a917a7f6d5cb1e7ec39
+195c8d969a6b5aa05dcc9c231fdcd0e6927d3e08ac29885ac7ed5a429da2aaa2
+4532b927e54def565fa629c65484cf1fcfb82402ce070de2a45f8f31652b25ea
+englms-dev-db
+dev-up: englms-dev-db is healthy on 127.0.0.1:5432
+engine: podman (socket /run/user/1000/podman/podman.sock)
+662db3da228c2ea2649b3ae04db4b4479e85fea5979f6a917a7f6d5cb1e7ec39
+englms-dev-db
+dev-up: englms-dev-db is healthy on 127.0.0.1:5432
+englms-dev-db
+englms-dev-db
+englms-dev-pgdata
+195c8d969a6b5aa05dcc9c231fdcd0e6927d3e08ac29885ac7ed5a429da2aaa2
+englms-dev_default
+dev-down: stopped and removed the englms-dev-pgdata volume
+exit=0
+dev-down: nothing was running and there is no englms-dev-pgdata volume
+dev-down: nothing is running (data volume englms-dev-pgdata kept; use --purge to delete it)
