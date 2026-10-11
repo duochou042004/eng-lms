@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-10-11T09:23:27Z",
-  "updatedBy": "lead-coordinator (T-M1.19 merge record, session 2026-10-11, Opus 5.5)",
+  "updatedAt": "2026-10-11T09:42:29Z",
+  "updatedBy": "lead-coordinator (session 2026-10-11, Opus 5.5)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -31,7 +31,35 @@
   },
   "currentTask": {
     "id": "T-M2.4",
-    "title": "Auth UI + shells (login, password change, role redirect, tutor sidebar/drawer, student tabs)",
+    "title": "Auth UI (login, forgot info, password change, role redirect, route guards, logout)",
+    "status": "ready",
+    "ownerRole": "FE",
+    "branch": null,
+    "packet": "docs/tasks/T-M2.4-auth-ui.md",
+    "pr": "81",
+    "lastCommit": null,
+    "startedAt": null,
+    "entryGate": [
+      "T-M2.1 merged — met (a93bcc1)",
+      "T-M1.19 merged — met (8be6d9f, DEC-108)",
+      "Packet G0 — met at merge (DOCS-REVIEW, PR #81)",
+      "PO start signal — pending"
+    ],
+    "nextSteps": [
+      "Ask the PO for the start signal (DEC)",
+      "Then branch feature/T-M2.4-auth-ui, frontend-implementer, gate, G3 QA + UX + SEC, merge-gate, gitlab-sync"
+    ],
+    "trace": [
+      "FR-AUTH-03..06, 08",
+      "security.md T18",
+      "DEC-092",
+      "DEC-093",
+      "DEC-109"
+    ]
+  },
+  "nextTask": {
+    "id": "T-M2.11",
+    "title": "App shells (tutor sidebar/drawer, student tabs, account menu, navigation feedback, nested 404s)",
     "status": "draft",
     "ownerRole": "FE",
     "branch": null,
@@ -40,22 +68,20 @@
     "lastCommit": null,
     "startedAt": null,
     "entryGate": [
-      "T-M2.1 merged — met (a93bcc1)",
-      "T-M1.19 merged — met (8be6d9f, DEC-108)",
+      "T-M2.4 merged — pending",
       "Packet G0 — pending",
       "PO start signal — pending"
     ],
     "nextSteps": [
-      "Write the T-M2.4 packet (task-packet skill, branch docs/T-M2.4-auth-ui); fresh docs-reviewer; merge-gate",
-      "Ask the PO for the start signal"
+      "Write the T-M2.11 packet after T-M2.4 merges"
     ],
     "trace": [
       "backlog M2",
-      "DEC-105",
-      "DEC-106"
+      "DEC-109",
+      "DEC-073",
+      "DEC-087"
     ]
   },
-  "nextTask": null,
   "completed": [
     {
       "id": "T-M0.1",
@@ -287,7 +313,7 @@
   "gates": {
     "G0": {
       "status": "pending",
-      "note": "T-M2.4 packet not written (T-M1.19 passed: DOCS-REVIEW PASS round 3, PR #75)"
+      "note": "T-M2.4 packet in review (PR #81) (T-M1.19 passed: DOCS-REVIEW PASS round 3, PR #75)"
     },
     "G1": {
       "status": "n/a",
@@ -324,7 +350,8 @@
       "DEC-105",
       "DEC-106",
       "DEC-107",
-      "DEC-108"
+      "DEC-108",
+      "DEC-109"
     ],
     "pendingPO": [
       "OQ-03",
@@ -977,6 +1004,16 @@
       "at": "2026-10-11T09:23:27Z",
       "actor": "lead-coordinator",
       "event": "T-M1.19 merged via merge-gate (PR #78, 8be6d9f, DEC-108): gate green on the new device (Kali Linux, rootless Podman); QA PASS (round 2); mirror synced. QA report PR #79."
+    },
+    {
+      "at": "2026-10-11T09:32:21Z",
+      "actor": "lead-coordinator",
+      "event": "QA report PR #79 merged (a4d9af2); T-M1.19 merge record PR #80 merged (a2c59a0, DEC-108) after DOCS-REVIEW round 2 PASS; mirror synced."
+    },
+    {
+      "at": "2026-10-11T09:33:19Z",
+      "actor": "lead-coordinator",
+      "event": "T-M2.4 packet written (PR #81): backlog row split into T-M2.4 auth UI and T-M2.11 app shells (DEC-109); SEC and UX triggered."
     }
   ]
 }
