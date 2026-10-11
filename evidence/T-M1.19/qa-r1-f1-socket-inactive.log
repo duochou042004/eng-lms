@@ -1,0 +1,21 @@
+# QA F-1 repro on the device, 2026-10-11T09:03:58Z, a66bde1+worktree
+podman.socket: inactive
+engine: podman (podman info; no API socket)
+englms-dev-db
+dev-up: englms-dev-db is healthy on 127.0.0.1:5432
+dev-up rc=(not captured: PIPESTATUS lost in the filtering pipe; dev-up prints the "healthy" line above only before exit 0)
+englms-dev-db
+englms-dev-db
+56adf32bc4cbbb31835cd6029194d73bfae7dba510710ee0361dad55f1696727
+englms-dev_default
+dev-down: stopped (data volume englms-dev-pgdata kept; use --purge to delete it)
+dev-down rc=0
+dev-down: nothing is running (data volume englms-dev-pgdata kept; use --purge to delete it)
+dev-down (nothing running) rc=0
+engine: podman (podman info; no API socket)
+env.sh: Testcontainers needs the Podman API socket: enable it with systemctl --user enable --now podman.socket (Linux; macOS: podman machine start)
+env.sh rc=1
+podman.socket: active
+engine: podman (socket /run/user/1000/podman/podman.sock)
+env.sh: DOCKER_HOST=unix:///run/user/1000/podman/podman.sock TESTCONTAINERS_RYUK_DISABLED=true
+env.sh rc=0

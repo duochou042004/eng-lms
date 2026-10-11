@@ -1,4 +1,4 @@
-# scripts/tests/run-all.sh on 4d0ac46, 2026-10-11T08:46:26Z, bash , Linux 7.1.5+kali-amd64
+# scripts/tests/run-all.sh on 787c457, 2026-10-11T09:13:50Z, bash , Linux 7.1.5+kali-amd64
 coverage-summary.sh
   ok   - summarises a fixture CSV
   ok   - exact totals line and sorted per-package rows
@@ -40,18 +40,44 @@ dev scripts
   ok   - e: uses the machine's socket
   ok   - e: systemctl is not called on macOS
   ok   - e: asks podman machine inspect
-  ok   - nothing reachable (Docker down, Podman socket inactive) fails
+  ok   - nothing reachable (Docker down, Podman socket inactive, podman info fails) fails
   ok   - nothing reachable: one message
   ok   - nothing reachable: names Docker
   ok   - nothing reachable: names Podman and how to enable its socket
   ok   - nothing reachable on macOS (no Podman machine socket) fails
   ok   - nothing reachable on macOS: names podman machine start
+  ok   - nothing reachable without ENGLMS_PODMAN_SOCK: no socket note
+  ok   - F-4: nothing reachable with ENGLMS_PODMAN_SOCK pointing at no socket
+  ok   - F-4: names the variable and the path
+  ok   - F-4: still one message
+  ok   - F-1: socket inactive (systemctl exit 3) but podman info works: podman without a socket
+  ok   - F-1: says there is no API socket
+  ok   - F-1: exports podman
+  ok   - F-1: socket inactive (systemctl exit 127) but podman info works: podman without a socket
+  ok   - F-1: says there is no API socket
+  ok   - F-1: exports podman
+  ok   - F-1: macOS does not fall back to podman info
+  ok   - F-1: macOS without a machine socket is still not reachable
+  ok   - F-1: podman info is not called on macOS
+  ok   - F-1: systemctl stays on Linux path d
   ok   - sourcing twice gives the same engine
   ok   - sourcing twice: still docker
+  ok   - F-3: the second sourcing is not reported as forced
+  ok   - F-3: sourcing again after Docker stopped detects Podman
+  ok   - F-3: re-detected podman
+  ok   - F-3: a child script detects again
+  ok   - F-3: the child reports detection, not a forced choice
+  ok   - F-3: a user's ENGLMS_CONTAINER_ENGINE after a detection still forces
+  ok   - F-3: the user's choice is reported as forced
+  ok   - F-3: and kept
  env.sh (AC2, AC6)
   ok   - env.sh fails when podman.socket is inactive
   ok   - env.sh tells how to enable the socket
+  ok   - F-1: env.sh on Podman without a socket (no systemd) fails with one clear message
+  ok   - F-1: names the socket and how to enable it
+  ok   - F-1: one message
   ok   - env.sh fails when the socket file is missing
+  ok   - F-4: env.sh names a bad ENGLMS_PODMAN_SOCK
   ok   - env.sh exports DOCKER_HOST and disables Ryuk when the socket is active
   ok   - env.sh exports the expected values
   ok   - Podman machine (macOS): DOCKER_HOST is its socket, Ryuk off
@@ -63,9 +89,11 @@ dev scripts
   ok   - forced Podman without a socket: env.sh fails (Testcontainers needs it)
   ok   - forced Podman without a socket: says why
   ok   - Docker, default endpoint unix:///var/run/docker.sock: nothing exported, Ryuk on
-  ok   - Docker, default endpoint: no DOCKER_HOST, no override, Ryuk not disabled
-  ok   - Docker, default endpoint unix:///tmp/tmp.geMgYXwSiy/home/.docker/run/docker.sock: nothing exported, Ryuk on
-  ok   - Docker, default endpoint: no DOCKER_HOST, no override, Ryuk not disabled
+  ok   - Docker, default endpoint: no DOCKER_HOST, no (stale) override, Ryuk not disabled
+  ok   - Docker, default endpoint unix:///tmp/tmp.wQVkVtzUD5/home/.docker/run/docker.sock: nothing exported, Ryuk on
+  ok   - Docker, default endpoint: no DOCKER_HOST, no (stale) override, Ryuk not disabled
+  ok   - Docker, default endpoint unix:///tmp/tmp.wQVkVtzUD5/home/.docker/desktop/docker.sock: nothing exported, Ryuk on
+  ok   - Docker, default endpoint: no DOCKER_HOST, no (stale) override, Ryuk not disabled
   ok   - Docker, other endpoint on Linux: DOCKER_HOST only
   ok   - Docker on Linux: DOCKER_HOST, no socket override
   ok   - Docker, other endpoint on macOS (no /var/run/docker.sock): DOCKER_HOST + socket override
@@ -106,6 +134,9 @@ dev scripts
   ok   - docker: --purge removes the volume
   ok   - docker: dev-down.sh --purge twice in a row
   ok   - docker: second --purge has nothing to do
+  ok   - F-5 docker: dev-down.sh with nothing running and no volume
+  ok   - F-5 docker: says there is no volume
+  ok   - F-5 docker: does not say kept
   ok   - podman: dev-up.sh starts the database
   ok   - podman: dev-up.sh prints the engine
   ok   - podman: dev-up.sh waits for health and prints the port
@@ -133,13 +164,21 @@ dev scripts
   ok   - podman: --purge removes the volume
   ok   - podman: dev-down.sh --purge twice in a row
   ok   - podman: second --purge has nothing to do
+  ok   - F-5 podman: dev-down.sh with nothing running and no volume
+  ok   - F-5 podman: says there is no volume
+  ok   - F-5 podman: does not say kept
+  ok   - F-1: dev-up.sh works with podman but no API socket
+  ok   - F-1: dev-up.sh names the choice
+  ok   - F-1: dev-down.sh works with podman but no API socket
+  ok   - F-1: dev-down.sh stopped the database
+  ok   - F-1: compose ran through podman
   ok   - dev-up.sh stops when no engine is reachable
   ok   - dev-up.sh: the engine message
   ok   - dev-down.sh stops when no engine is reachable
   ok   - dev-down.sh: the engine message
   ok   - dev-down.sh rejects unknown arguments
   ok   - prints usage
-  -> 125 passed, 0 failed
+  -> 164 passed, 0 failed
 e2e-run.sh
   ok   - --help prints usage
   ok   - usage names the arguments
