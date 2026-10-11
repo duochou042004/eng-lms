@@ -43,7 +43,8 @@ placeholder shell header and adds only a "Change password" link and a "Log out" 
      (DEC-092, T-M2.1 QA F3); else if signed in → the role home; else the form. Fields: username, password (`PasswordField`), "Remember me on this
      device" (`Checkbox`) with the shared-device hint. Submitting calls `POST /auth/login`. A user A remembered on the device is signed in by the
      bootstrap `GET /auth/session`, so the app opens as A and B must log out first; the hint says so (DEC-093 S4-12; SEC confirms). After a
-     failed login the page stays on `/login` with one generic error for 401 (DEC-089) and does not refetch the session; 429 shows the wait from `Retry-After`; a network failure shows a retry-able error; pending state, no double submit.
+     failed login the page stays on `/login` with one generic error for 401 (DEC-089) and does not refetch the session; 429 shows the wait
+     from `Retry-After`; a network failure shows a retry-able error; pending state, no double submit.
      **Forgot your password?** disclosure (FR-AUTH-08): students ask their tutor to reset it; the tutor follows the operator runbook (no link to
      the runbook, no email flow).
   6. **Change password page** `/change-password` (authenticated): current password, new password, confirm (all `PasswordField`); client checks
@@ -51,8 +52,8 @@ placeholder shell header and adds only a "Change password" link and a "Log out" 
      (`CURRENT_PASSWORD_INCORRECT`, `PASSWORD_TOO_SHORT`, `PASSWORD_TOO_LONG`, `PASSWORD_TOO_COMMON`, `PASSWORD_EQUALS_USERNAME`,
      `PASSWORD_UNCHANGED`); `ErrorSummary` + focus on a failed submit. **Forced mode** (`mustChangePassword`): explanatory text, no cancel, and on
      success the session is refetched and the user goes to `safeNext` or the role home (a login whose session must change its password goes to
-     `/change-password?next=<next>` when `isSafeAppPath` accepts `next`, else plain `/change-password`). **Voluntary mode**: reached from the shell header link, has
-     Cancel (back), and on success shows a confirmation that other devices were signed out (the API ends them).
+     `/change-password?next=<next>` when `isSafeAppPath` accepts `next`, else plain `/change-password`). **Voluntary mode**: reached from the
+     shell header link, has Cancel (back), and on success shows a confirmation that other devices were signed out (the API ends them).
   7. **Logout** (FR-AUTH-04): a "Log out" control in the current placeholder shell header (both shells); `POST /auth/logout`, clear the query cache,
      go to `/login`; works when the session has already expired.
   8. **UI library** (`web/src/ui/`, design-system): `PasswordField` (reveal toggle with an accessible name), `Checkbox` (React Aria) and
@@ -100,8 +101,8 @@ registration, no self-service recovery, no SSO. 3. **Mandatory setup added?** No
 - CSRF: the bootstrap `GET /auth/session` primes the `XSRF-TOKEN` cookie (T-M2.1); the middleware of scope 2 sends it.
 - Shared-device hint wording (vi + en, final copy by the implementer, checked by UX): do not tick "Remember me" on a shared device; on a shared
   device, log out when you finish (a remembered user opens the app as themselves). The server gives no remember-me while the password must change.
-- Logging out before a login is done only for a session that must change its password (DEC-092): with a remembered user, logout ends the
-  `XSRF-TOKEN` cookie and the next request needs the re-priming of scope 2.
+- Logging out before a login is done only for a session that must change its password (DEC-092). A non-GET that arrives with a remember-me
+  cookie but no session (e.g. Log out after an idle expiry) ends the `XSRF-TOKEN` cookie; the re-priming of scope 2 covers the next request.
 
 ## Acceptance criteria
 - AC1 (FR-AUTH-03, DEC-092, NFR-SEC-07): Given no session, opening `/tutor/students` shows `/login?next=%2Ftutor%2Fstudents`; signing in as the
@@ -118,7 +119,8 @@ registration, no self-service recovery, no SSO. 3. **Mandatory setup added?** No
 - AC5 (FR-AUTH-05): voluntary change from the shell header: each server field code shows its message on the right field, the error summary takes
   focus on a failed submit, and success shows the other-devices confirmation (component + E2E).
 - AC6 (FR-AUTH-04): Log out ends the session (a back navigation does not show protected data; the next protected visit goes to `/login`), also
-  when the session had already expired (E2E).
+  when the session had already expired, including on a remembered device: after that Log out, a login succeeds with no 403 (the re-priming of
+  scope 2) (E2E).
 - AC7: wrong role → `/forbidden` (403 page, link home); `/` redirects by role and anonymous → `/login`; a signed-in visit to `/login` goes home
   (E2E for both roles).
 - AC8 (FR-AUTH-08, DEC-093): the "Forgot your password?" disclosure, the shared-device hint and the language switcher are on the public pages in
@@ -155,7 +157,7 @@ registration, no self-service recovery, no SSO. 3. **Mandatory setup added?** No
 
 ## Risks & assumptions
 - **Split line** (as DEC-089 (4)): if AC1–AC8 are not green by about 1.5 agent-days, AC9's `/dev/ui` polish beyond the three components' basic
-  states and the second consecutive run of AC10 move to a follow-up recorded by a DEC; the open-redirect rules, CSRF and the guards never move.
+  states move to a follow-up recorded by a DEC; the open-redirect rules, CSRF and the guards never move.
 - The PO's dev database may hold a manually bootstrapped tutor: E2E then stops with a clear message instead of guessing credentials; the fix
   (`dev-down.sh --purge`) deletes local dev data, so the message says so.
 - Adding React Hook Form + Zod is the documented standard (frontend-architecture §2), not new infrastructure; the bundle budget must stay green.
