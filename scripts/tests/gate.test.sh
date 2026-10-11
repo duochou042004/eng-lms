@@ -7,7 +7,7 @@ echo "gate.sh"
 work=$(mktemp -d); trap 'rm -rf "$work"' EXIT
 repo="$work/repo"
 mkdir -p "$repo/scripts/tests" "$repo/backend" "$repo/web" "$repo/qa" "$work/bin"
-cp "$ROOT/scripts/gate.sh" "$repo/scripts/gate.sh"
+cp "$ROOT/scripts/gate.sh" "$repo/scripts/gate.sh"; cp -R "$ROOT/scripts/lib" "$repo/scripts/"
 calls="$work/calls"
 # A stub records "<name> <args>" and fails when its name equals $GATE_FAIL_AT.
 stub() {
@@ -34,7 +34,7 @@ gate() { env PATH="$work/bin:$PATH" "$repo/scripts/gate.sh" "$@"; }
 : >"$calls"
 expect_exit 0 "passes when every step passes" -- gate
 expect_output_contains "gate: PASS (13 steps" "reports PASS with the step count"
-LAST_OUTPUT=$(cut -d' ' -f1 "$calls" | paste -sd' ')
+LAST_OUTPUT=$(cut -d' ' -f1 "$calls" | paste -sd' ' -)
 expect_output_contains "docs scripts backend web-install web-lint web-typecheck web-test web-build web-budget web-contrast contract-drift qa-install qa-typecheck e2e" \
   "runs every step in CI order"
 LAST_OUTPUT=$(cat "$calls")
@@ -49,7 +49,7 @@ expect_output_contains "qa-typecheck typecheck" "T-M1.18: the qa suite is typech
 expect_exit 1 "fails fast on the first failing step" -- env GATE_FAIL_AT=web-typecheck PATH="$work/bin:$PATH" "$repo/scripts/gate.sh"
 expect_output_contains "gate: FAIL at step 'web-typecheck' (exit 7)" "names the failing step and its exit code"
 expect_output_contains "./scripts/gate.sh --from web-typecheck" "tells how to resume"
-LAST_OUTPUT=$(cut -d' ' -f1 "$calls" | paste -sd' ')
+LAST_OUTPUT=$(cut -d' ' -f1 "$calls" | paste -sd' ' -)
 expect_output_contains "web-lint web-typecheck" "ran the steps up to the failure"
 if grep -qE '^(web-test|web-build|contract-drift|e2e) ' "$calls"; then
   FAIL_COUNT=$((FAIL_COUNT + 1)); echo "  FAIL - steps after the failure must not run"
@@ -64,7 +64,7 @@ LAST_OUTPUT=$(cat "$calls")
 
 : >"$calls"
 expect_exit 0 "--from resumes at a step" -- gate --from web-budget
-LAST_OUTPUT=$(cut -d' ' -f1 "$calls" | paste -sd' ')
+LAST_OUTPUT=$(cut -d' ' -f1 "$calls" | paste -sd' ' -)
 [[ "$LAST_OUTPUT" == "web-budget web-contrast contract-drift qa-install qa-typecheck e2e" ]] && { PASS_COUNT=$((PASS_COUNT + 1)); echo "  ok   - --from runs that step and the rest"; } || { FAIL_COUNT=$((FAIL_COUNT + 1)); echo "  FAIL - --from ran: $LAST_OUTPUT"; }
 
 expect_exit 0 "--list prints the steps" -- gate --list

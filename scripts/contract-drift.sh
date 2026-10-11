@@ -4,6 +4,7 @@
 # (pnpm api:generate), then fails if either differs from what was there before. The regenerated files are left in
 # place so a deliberate change can be reviewed and committed. Needs Docker/Podman for Testcontainers (source env.sh
 # locally) and `pnpm install` in web/. Usage: ./scripts/contract-drift.sh
+source "$(dirname "$0")/lib/require-bash.sh"
 set -euo pipefail
 ROOT=$(cd "$(dirname "$0")/.." && pwd)
 FILES=(api/openapi.json web/src/lib/api/schema.d.ts)

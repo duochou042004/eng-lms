@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 # dev-up.sh — start the local PostgreSQL 18 (deploy/compose.dev.yaml) and wait until it is healthy. Idempotent.
+# Docker or Podman, as picked by scripts/lib/engine.sh (ENGLMS_CONTAINER_ENGINE forces one).
+source "$(dirname "$0")/lib/require-bash.sh"
 set -euo pipefail
 ROOT=$(cd "$(dirname "$0")/.." && pwd)
 COMPOSE_FILE="$ROOT/deploy/compose.dev.yaml"
@@ -10,16 +12,18 @@ if [[ ! -f "$ROOT/.env" ]]; then
   echo "dev-up: $ROOT/.env is missing. Create it with: cp .env.example .env" >&2
   exit 1
 fi
-command -v podman >/dev/null || { echo "dev-up: podman is not installed" >&2; exit 1; }
+# shellcheck source=scripts/lib/engine.sh
+source "$ROOT/scripts/lib/engine.sh"
+engine=$ENGLMS_CONTAINER_ENGINE
 
-# `podman compose` delegates to podman-compose (1.6.0 here); run from the repo root so .env is picked up.
+# `docker compose` is the v2 plugin; `podman compose` delegates to podman-compose. Run from the repo root so .env is picked up.
 cd "$ROOT"
-podman compose --env-file "$ROOT/.env" -f "$COMPOSE_FILE" up -d
+"$engine" compose --env-file "$ROOT/.env" -f "$COMPOSE_FILE" up -d
 
 for ((i = 0; i < TIMEOUT; i++)); do
-  status=$(podman inspect --format '{{.State.Health.Status}}' "$CONTAINER" 2>/dev/null || echo missing)
+  status=$("$engine" container inspect --format '{{.State.Health.Status}}' "$CONTAINER" 2>/dev/null || echo missing)
   if [[ "$status" == healthy ]]; then
-    echo "dev-up: $CONTAINER is healthy on $(podman port "$CONTAINER" 5432)"
+    echo "dev-up: $CONTAINER is healthy on $("$engine" port "$CONTAINER" 5432)"
     exit 0
   fi
   sleep 1

@@ -5,6 +5,7 @@
 # pre-push hook allows develop/master on the mirror only for exactly those commits. GitLab CI is paused (DEC-107): pushes carry
 # `-o ci.skip` unless ENGLMS_GITLAB_CI=on.
 # Usage: ./scripts/gitlab-sync.sh [branch...]      Env: ENGLMS_MIRROR_REMOTE (default: gitlab), ENGLMS_GITLAB_CI (on = run CI)
+source "$(dirname "$0")/lib/require-bash.sh"
 set -euo pipefail
 ROOT=$(cd "$(dirname "$0")/.." && pwd)
 cd "$ROOT"

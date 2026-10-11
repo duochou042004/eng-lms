@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # Minimal bash test helpers (no external test framework; plain bash).
+source "$(dirname "${BASH_SOURCE[0]}")/../lib/require-bash.sh"
 PASS_COUNT=0; FAIL_COUNT=0
 ROOT=$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)
 

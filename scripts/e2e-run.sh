@@ -6,6 +6,7 @@
 # Database: with a .env file, the dev DB is started with scripts/dev-up.sh and .env is loaded; without one (CI), the
 # SPRING_DATASOURCE_* variables must already be set. E2E_READY_TIMEOUT (default 120) bounds the startup wait;
 # E2E_CHECK_PORTS (default "8080 8081") lists the ports that must be free.
+source "$(dirname "$0")/lib/require-bash.sh"
 set -uo pipefail
 ROOT=$(cd "$(dirname "$0")/.." && pwd)
 READY_TIMEOUT=${E2E_READY_TIMEOUT:-120}

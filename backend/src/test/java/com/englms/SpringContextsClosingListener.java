@@ -13,10 +13,11 @@ import org.springframework.test.context.TestContext;
  * Closes the Spring test contexts as soon as the JUnit test plan has finished, before the JVM's shutdown hooks run
  * (T-M1.8 AC4, T-M1.4 QA F1).
  * <p>
- * Locally, Ryuk is off under rootless Podman (DEC-044), so Testcontainers stops its containers from its own JVM
- * shutdown hook. Spring's shutdown hook closed the cached test contexts at the same time, and Spring Modulith's event
- * publication registry queries the database while closing. With the database container already gone, that query
- * waited for Hikari's 30 s connection timeout, and Surefire killed the fork JVM. Closing the contexts here, while the
+ * With Ryuk off (every Podman engine, DEC-044, DEC-106; scripts/env.sh), Testcontainers stops its containers from its own
+ * JVM shutdown hook (with Ryuk on, on Docker, this listener is harmless). Spring's shutdown hook closed the cached test
+ * contexts at the same time, and Spring Modulith's event publication registry queries the database while closing.
+ * With the database container already gone, that query waited for Hikari's 30 s connection timeout, and Surefire
+ * killed the fork JVM. Closing the contexts here, while the
  * database still runs, lets Spring shut down in dependency order: the registry, then the data source, then the
  * {@code PostgreSQLContainer} bean. The context cache is untouched while tests run, so caching still works.
  * <p>

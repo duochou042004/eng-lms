@@ -3,6 +3,7 @@
 #   pr.json (pr view), checks.json (pr checks), behind.txt (compare behind_by); records merges in merged.txt and every call in calls.txt
 #   activity.json (repository activity), runs.json (actions/runs), forcepush.json (graphql timeline), pr-commits.json / pr-files.json (pulls/<n>/commits|files)
 #   A fixture file named <name>.fail makes that call exit non-zero (API error → the gate must fail closed).
+source "$(dirname "$0")/../lib/require-bash.sh"
 set -euo pipefail
 echo "$*" >>"$MOCK_DIR/calls.txt"   # every call (T-M1.12 AC4: argument errors must make none)
 #   A non-empty .fail file is printed to stderr instead of the default message (e.g. an old gh's "unknown flag: --json").

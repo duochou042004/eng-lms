@@ -36,7 +36,7 @@
 
 - **One image, one version.** The SPA is built and copied into the jar's `static/` directory at image build time (ADR-0004). It is served same-origin, so there is no CORS and cookies stay simple.
 - **No** Redis, message broker, search engine, Kubernetes or separate microservices (SPEC §36). Each of these needs an ADR backed by evidence.
-- Runtime: rootless **Podman** managed by systemd **Quadlet** units (ADR-0012). Development runs the same PostgreSQL image through podman-compose.
+- Runtime: rootless **Podman** managed by systemd **Quadlet** units (ADR-0012). Development runs the same PostgreSQL image through `docker compose` or `podman compose` (DEC-106).
 
 ## 3. Components: application modules (C4 level 3)
 

@@ -33,7 +33,7 @@ One agent may play several roles **across different tasks**, but never implement
 | **Merge PR** (`scripts/merge-gate.sh`) | ✓ **only** | – | – | – | – | – |
 | Push to `develop`/`master`, force-push, delete remote branches (except the merged task branch) | – | – | – | – | – | – |
 | Add a dependency | approve | propose in packet | propose in packet | – | review | – |
-| Podman (dev containers) | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Container engine for dev containers (Docker or Podman) | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
 | Host or system settings (sysctl, systemd system units, firewall) | ✗, needs the PO | ✗ | ✗ | ✗ | ✗ | ✗ |
 | External or outward actions (create repo, deploy, publish, paid services) | ✗, needs the PO | ✗ | ✗ | ✗ | ✗ | ✗ |
 | Delete data (DB volumes, files) outside dev | ✗, needs the PO | ✗ | ✗ | ✗ | ✗ | ✗ |

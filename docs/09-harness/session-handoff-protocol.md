@@ -58,7 +58,7 @@ Do next: <1–5 concrete steps>.
 Constraints: follow docs/09-harness/coding-agent-rules.md; gates in docs/06-quality/quality-gates.md; no scope beyond the packet;
 only LC merges via scripts/merge-gate.sh; record evidence in evidence/<task>/; update progress.json + handoff before stopping.
 Pending PO decisions: <OQ ids + defaults in use>.
-Environment notes: source ~/.sdkman/bin/sdkman-init.sh and ~/.nvm/nvm.sh in each shell; <other gotchas>.
+Environment notes: the main checkout is <progress.json project.repoLocal>; source SDKMAN/nvm in each shell when installed; engine <docker|podman>; <other gotchas>.
 ```
 
 ## 6. Session start checklist

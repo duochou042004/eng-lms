@@ -14,7 +14,7 @@ printf '#!/bin/sh\n: >"%s/push-options"\ni=0\nwhile [ "$i" -lt "${GIT_PUSH_OPTIO
 chmod +x "$work/mirror.git/hooks/pre-receive"
 g clone -q "$work/origin.git" "$work/repo" 2>/dev/null
 cd "$work/repo"
-mkdir -p scripts && cp "$ROOT/scripts/gitlab-sync.sh" scripts/
+mkdir -p scripts && cp "$ROOT/scripts/gitlab-sync.sh" scripts/ && cp -R "$ROOT/scripts/lib" scripts/
 g commit -q --allow-empty -m init
 g push -q origin HEAD:refs/heads/master HEAD:refs/heads/develop 2>/dev/null
 g checkout -q -b chore/T-M9.9-x

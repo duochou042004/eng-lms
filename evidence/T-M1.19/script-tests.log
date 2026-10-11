@@ -1,0 +1,633 @@
+# scripts/tests/run-all.sh on 787c457, 2026-10-11T09:13:50Z, bash , Linux 7.1.5+kali-amd64
+coverage-summary.sh
+  ok   - summarises a fixture CSV
+  ok   - exact totals line and sorted per-package rows
+  ok   - a missing CSV exits 1
+  ok   - explains the missing CSV
+  ok   - a header-only CSV (no classes) is not an error
+  ok   - reports n/a totals
+  ok   - no package rows
+  ok   - an empty CSV file is not an error
+  ok   - reports n/a totals for an empty file
+  -> 9 passed, 0 failed
+dev scripts
+ engine.sh (AC1)
+  ok   - a: ENGLMS_CONTAINER_ENGINE=docker forces docker
+  ok   - a: exports ENGLMS_CONTAINER_ENGINE=docker
+  ok   - a: prints the choice
+  ok   - a: ENGLMS_CONTAINER_ENGINE=podman wins over a reachable Docker
+  ok   - a: exports ENGLMS_CONTAINER_ENGINE=podman
+  ok   - a: any other value is refused
+  ok   - a: says which values are allowed
+  ok   - b: a preset Podman DOCKER_HOST goes to Podman even when Docker is reachable
+  ok   - b: podman, DOCKER_HOST kept
+  ok   - b: any other preset DOCKER_HOST is Docker
+  ok   - b: docker, DOCKER_HOST kept
+  ok   - c: a reachable Docker is chosen
+  ok   - c: docker
+  ok   - c: prints the choice
+  ok   - c: systemctl is not called off path d
+  ok   - c: a Podman-backed docker (podman-docker shim) goes to the Podman path
+  ok   - c: shim → podman
+  ok   - c: a Docker CLI talking to a Podman server goes to the Podman path
+  ok   - c: Podman server → podman
+  ok   - d: rootless Podman on Linux (active socket)
+  ok   - d: podman
+  ok   - d: prints the socket
+  ok   - d: systemctl is asked about podman.socket
+  ok   - e: a Podman machine on macOS
+  ok   - e: podman
+  ok   - e: uses the machine's socket
+  ok   - e: systemctl is not called on macOS
+  ok   - e: asks podman machine inspect
+  ok   - nothing reachable (Docker down, Podman socket inactive, podman info fails) fails
+  ok   - nothing reachable: one message
+  ok   - nothing reachable: names Docker
+  ok   - nothing reachable: names Podman and how to enable its socket
+  ok   - nothing reachable on macOS (no Podman machine socket) fails
+  ok   - nothing reachable on macOS: names podman machine start
+  ok   - nothing reachable without ENGLMS_PODMAN_SOCK: no socket note
+  ok   - F-4: nothing reachable with ENGLMS_PODMAN_SOCK pointing at no socket
+  ok   - F-4: names the variable and the path
+  ok   - F-4: still one message
+  ok   - F-1: socket inactive (systemctl exit 3) but podman info works: podman without a socket
+  ok   - F-1: says there is no API socket
+  ok   - F-1: exports podman
+  ok   - F-1: socket inactive (systemctl exit 127) but podman info works: podman without a socket
+  ok   - F-1: says there is no API socket
+  ok   - F-1: exports podman
+  ok   - F-1: macOS does not fall back to podman info
+  ok   - F-1: macOS without a machine socket is still not reachable
+  ok   - F-1: podman info is not called on macOS
+  ok   - F-1: systemctl stays on Linux path d
+  ok   - sourcing twice gives the same engine
+  ok   - sourcing twice: still docker
+  ok   - F-3: the second sourcing is not reported as forced
+  ok   - F-3: sourcing again after Docker stopped detects Podman
+  ok   - F-3: re-detected podman
+  ok   - F-3: a child script detects again
+  ok   - F-3: the child reports detection, not a forced choice
+  ok   - F-3: a user's ENGLMS_CONTAINER_ENGINE after a detection still forces
+  ok   - F-3: the user's choice is reported as forced
+  ok   - F-3: and kept
+ env.sh (AC2, AC6)
+  ok   - env.sh fails when podman.socket is inactive
+  ok   - env.sh tells how to enable the socket
+  ok   - F-1: env.sh on Podman without a socket (no systemd) fails with one clear message
+  ok   - F-1: names the socket and how to enable it
+  ok   - F-1: one message
+  ok   - env.sh fails when the socket file is missing
+  ok   - F-4: env.sh names a bad ENGLMS_PODMAN_SOCK
+  ok   - env.sh exports DOCKER_HOST and disables Ryuk when the socket is active
+  ok   - env.sh exports the expected values
+  ok   - Podman machine (macOS): DOCKER_HOST is its socket, Ryuk off
+  ok   - Podman machine: the expected values
+  ok   - preset Podman DOCKER_HOST: kept, Ryuk off
+  ok   - preset Podman DOCKER_HOST: the expected values
+  ok   - podman-docker shim: Ryuk off
+  ok   - podman-docker shim: the expected values
+  ok   - forced Podman without a socket: env.sh fails (Testcontainers needs it)
+  ok   - forced Podman without a socket: says why
+  ok   - Docker, default endpoint unix:///var/run/docker.sock: nothing exported, Ryuk on
+  ok   - Docker, default endpoint: no DOCKER_HOST, no (stale) override, Ryuk not disabled
+  ok   - Docker, default endpoint unix:///tmp/tmp.wQVkVtzUD5/home/.docker/run/docker.sock: nothing exported, Ryuk on
+  ok   - Docker, default endpoint: no DOCKER_HOST, no (stale) override, Ryuk not disabled
+  ok   - Docker, default endpoint unix:///tmp/tmp.wQVkVtzUD5/home/.docker/desktop/docker.sock: nothing exported, Ryuk on
+  ok   - Docker, default endpoint: no DOCKER_HOST, no (stale) override, Ryuk not disabled
+  ok   - Docker, other endpoint on Linux: DOCKER_HOST only
+  ok   - Docker on Linux: DOCKER_HOST, no socket override
+  ok   - Docker, other endpoint on macOS (no /var/run/docker.sock): DOCKER_HOST + socket override
+  ok   - Docker on macOS (Colima-like): DOCKER_HOST and TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE
+  ok   - Docker, other endpoint on macOS with /var/run/docker.sock present: nothing exported
+  ok   - Docker on macOS with the default link: Testcontainers' own discovery
+  ok   - Docker, preset DOCKER_HOST: kept, Ryuk on
+  ok   - Docker, preset DOCKER_HOST: the expected values
+  ok   - zsh: env.sh on Podman
+  ok   - zsh: the expected values on Podman
+  ok   - zsh: env.sh on Docker (other endpoint)
+  ok   - zsh: the expected values on Docker
+ dev-up.sh / dev-down.sh (AC3, T-M1.8 AC5)
+  ok   - docker: dev-up.sh starts the database
+  ok   - docker: dev-up.sh prints the engine
+  ok   - docker: dev-up.sh waits for health and prints the port
+  ok   - docker: dev-up.sh twice in a row
+  ok   - docker: second dev-up.sh is healthy too
+  ok   - docker: compose up through docker, without env.sh's DOCKER_HOST
+  ok   - docker: health via container inspect
+  ok   - docker: podman runs nothing
+  ok   - docker: dev-down.sh keeps the volume by default
+  ok   - docker: says the volume is kept
+  ok   - docker: dev-down.sh runs compose down
+  ok   - docker: default down does not delete the volume
+  ok   - docker: the volume is still there
+  ok   - AC5 docker: dev-down.sh with nothing running exits 0
+  ok   - AC5 docker: stdout+stderr is exactly one 'dev-down:' line
+  ok   - AC5 docker: says nothing is running
+  ok   - AC5 docker: compose down is not run
+  ok   - AC5 docker: dev-down.sh --purge with nothing running still removes the volume
+  ok   - AC5 docker: reports the removed volume
+  ok   - AC5 docker: the volume is gone
+  ok   - AC5 docker: dev-down.sh --purge with no volume
+  ok   - AC5 docker: says there is no volume
+  ok   - docker: dev-down.sh --purge
+  ok   - docker: --purge reports it
+  ok   - docker: --purge removes the volume
+  ok   - docker: dev-down.sh --purge twice in a row
+  ok   - docker: second --purge has nothing to do
+  ok   - F-5 docker: dev-down.sh with nothing running and no volume
+  ok   - F-5 docker: says there is no volume
+  ok   - F-5 docker: does not say kept
+  ok   - podman: dev-up.sh starts the database
+  ok   - podman: dev-up.sh prints the engine
+  ok   - podman: dev-up.sh waits for health and prints the port
+  ok   - podman: dev-up.sh twice in a row
+  ok   - podman: second dev-up.sh is healthy too
+  ok   - podman: compose up through podman, without env.sh's DOCKER_HOST
+  ok   - podman: health via container inspect
+  ok   - podman: docker runs nothing
+  ok   - podman: dev-down.sh keeps the volume by default
+  ok   - podman: says the volume is kept
+  ok   - podman: dev-down.sh runs compose down
+  ok   - podman: default down does not delete the volume
+  ok   - podman: the volume is still there
+  ok   - AC5 podman: dev-down.sh with nothing running exits 0
+  ok   - AC5 podman: stdout+stderr is exactly one 'dev-down:' line
+  ok   - AC5 podman: says nothing is running
+  ok   - AC5 podman: compose down is not run
+  ok   - AC5 podman: dev-down.sh --purge with nothing running still removes the volume
+  ok   - AC5 podman: reports the removed volume
+  ok   - AC5 podman: the volume is gone
+  ok   - AC5 podman: dev-down.sh --purge with no volume
+  ok   - AC5 podman: says there is no volume
+  ok   - podman: dev-down.sh --purge
+  ok   - podman: --purge reports it
+  ok   - podman: --purge removes the volume
+  ok   - podman: dev-down.sh --purge twice in a row
+  ok   - podman: second --purge has nothing to do
+  ok   - F-5 podman: dev-down.sh with nothing running and no volume
+  ok   - F-5 podman: says there is no volume
+  ok   - F-5 podman: does not say kept
+  ok   - F-1: dev-up.sh works with podman but no API socket
+  ok   - F-1: dev-up.sh names the choice
+  ok   - F-1: dev-down.sh works with podman but no API socket
+  ok   - F-1: dev-down.sh stopped the database
+  ok   - F-1: compose ran through podman
+  ok   - dev-up.sh stops when no engine is reachable
+  ok   - dev-up.sh: the engine message
+  ok   - dev-down.sh stops when no engine is reachable
+  ok   - dev-down.sh: the engine message
+  ok   - dev-down.sh rejects unknown arguments
+  ok   - prints usage
+  -> 164 passed, 0 failed
+e2e-run.sh
+  ok   - --help prints usage
+  ok   - usage names the arguments
+  ok   - passes when Playwright passes
+  ok   - stops the app after the run
+  ok   - passes the Playwright arguments through
+  ok   - no app process is left
+  ok   - propagates Playwright's exit code
+  ok   - stops the app after a failing run too
+  ok   - no app process is left after a failure
+  ok   - refuses to start when a port is busy
+  ok   - names the busy port
+  ok   - needs .env or SPRING_DATASOURCE_URL
+  ok   - explains the datasource requirement
+  -> 13 passed, 0 failed
+gate.sh
+  ok   - passes when every step passes
+  ok   - reports PASS with the step count
+  ok   - runs every step in CI order
+  ok   - backend runs ./mvnw -B -ntp verify
+  ok   - web install uses the frozen lockfile
+  ok   - web tests run once (no watch mode)
+  ok   - e2e runs the mandatory viewports
+  ok   - T-M1.18: qa install uses the frozen lockfile
+  ok   - T-M1.18: the qa suite is typechecked
+  ok   - fails fast on the first failing step
+  ok   - names the failing step and its exit code
+  ok   - tells how to resume
+  ok   - ran the steps up to the failure
+  ok   - no step after the failure ran
+  ok   - a failing first step stops everything
+  ok   - only docs ran
+  ok   - --from resumes at a step
+  ok   - --from runs that step and the rest
+  ok   - --list prints the steps
+  ok   - --list includes contract-drift
+  ok   - T-M1.18: --list shows qa-typecheck between contract-drift and e2e
+  ok   - T-M1.18: a failing qa-typecheck fails the gate
+  ok   - T-M1.18: qa-typecheck failure is reported at step qa-typecheck
+  ok   - T-M1.18: e2e did not run after a failing qa-typecheck
+  ok   - T-M1.18: a failing qa-install fails the gate
+  ok   - T-M1.18: qa-install failure is reported at step qa-typecheck
+  ok   - T-M1.18: e2e did not run after a failing qa-install
+  ok   - --from without a step is a usage error
+  ok   - --from with an unknown step is a usage error
+  ok   - names the unknown step
+  ok   - unknown arguments are rejected
+  ok   - a malformed ENGLMS_TASK is rejected
+  ok   - ENGLMS_TASK writes the evidence log, including the failure
+  ok   - evidence/<task>/gate-<timestamp>.log holds the run and the failure
+  -> 34 passed, 0 failed
+gitlab-sync.sh
+  ok   - fails without a gitlab remote
+  ok   - explains how to add the remote
+  ok   - mirrors develop, master and a named branch
+  ok   - mirror develop == origin/develop (not the local commit)
+  ok   - mirror master == origin/master (not the local commit)
+  ok   - mirror chore/T-M9.9-x == origin/chore/T-M9.9-x (not the local commit)
+  ok   - pushes with -o ci.skip while GitLab CI is paused (DEC-107)
+  ok   - ENGLMS_GITLAB_CI=on pushes without ci.skip
+  ok   - no push option when ENGLMS_GITLAB_CI=on
+  ok   - fails for a branch GitHub does not have
+  ok   - names the missing branch
+  -> 11 passed, 0 failed
+merge-gate.sh
+  ok   - passes when all gates hold (dry run)
+  ok   - dry run does not merge
+  ok   - merges when not a dry run
+  ok   - merge commit, deletes branch, pins the head commit
+  ok   - (a) refuses when a required check fails
+  ok   - reports the failing check
+  ok   - (a) refuses when a required check is pending
+  ok   - (a) refuses when a required check is missing
+  ok   - T-M1.17 AC1: refuses when 'gh pr checks --json' fails (old gh)
+  ok   - T-M1.17 AC1: names the cause, the needed gh and gh's error
+  ok   - T-M1.17 AC1: does not report the required checks as missing
+  ok   - T-M1.17 AC1: refuses on an API error from 'gh pr checks'
+  ok   - T-M1.17 AC1: shows gh's error text
+  ok   - T-M1.17 AC1: an API error is not reported as missing checks
+  ok   - T-M1.17 AC2: refuses when the checks output is not a JSON array
+  ok   - T-M1.17 AC2: shows the unexpected output when gh printed no error
+  ok   - T-M1.17 AC2: does not report the required checks as missing
+  ok   - T-M1.17 AC2: refuses an empty checks output (review F3)
+  ok   - T-M1.17 AC2: says the output was empty
+  ok   - T-M1.17 AC2: empty output is not reported as missing checks
+  ok   - T-M1.17 AC2: refuses several JSON documents (review F4)
+  ok   - T-M1.17 AC2: several documents are unreadable checks
+  ok   - (b) refuses without LC-APPROVED
+  ok   - reports missing LC approval
+  ok   - (b) LC approval must be the exact line
+  ok   - (c) refuses a chore PR without DOCS-REVIEW
+  ok   - (c) F1: 'CHANGES REQUESTED (previous verdict: PASS)' is not a pass
+  ok   - (c) F1: template placeholder 'PASS | CHANGES REQUESTED' is not a pass
+  ok   - (c) F1: 'FAIL (AC1: PASS …)' is not a pass
+  ok   - (c) the latest QA verdict wins (FAIL after PASS)
+  ok   - (c) refuses when the latest SEC-REVIEW requests changes
+  ok   - (c) UX-REVIEW must be exactly APPROVED
+  ok   - accepts a feature PR with QA 'PASS WITH MINOR'
+  ok   - (c) a verdict for another task id does not count
+  ok   - F3: a verdict posted before the head commit is stale
+  ok   - F3: an LC approval posted before the head commit is stale
+  ok   - (d) refuses when the branch is behind its base
+  ok   - reports how far behind
+  ok   - refuses on merge conflicts
+  ok   - refuses when progress.json is not updated
+  ok   - (T-M1.15) passes when progress.json is the 130th file (on the second page)
+  ok   - (T-M1.15) refuses when only pr view lists progress.json (the REST listing decides)
+  ok   - says progress.json is missing
+  ok   - (T-M1.15) refuses when the PR deletes progress.json
+  ok   - (T-M1.15) refuses when the PR's files cannot be listed (fail closed)
+  ok   - reports the listing failure
+  ok   - (T-M1.16) refuses a file page that is a JSON object (step 5, fail closed)
+  ok   - reports the non-array page
+  ok   - (T-M1.16) refuses progress.json with status 'unchanged'
+  ok   - (T-M1.16) refuses progress.json with status 'none'
+  ok   - (T-M1.16) accepts progress.json with status 'added'
+  ok   - (T-M1.16) accepts progress.json with status 'renamed'
+  ok   - (T-M1.16) accepts progress.json with status 'copied'
+  ok   - (T-M1.16) accepts progress.json with status 'changed'
+  ok   - refuses a branch kind without a merge path
+  ok   - refuses a task branch targeting master
+  ok   - F4: dependabot PR (by the Dependabot app) merges with checks + 'LC-APPROVED PR-<n>'
+  ok   - (T-M1.16) refuses a dependabot file page that is a JSON object (fail closed)
+  ok   - reports the non-array dependabot page
+  ok   - R2-1: a hand-made dependabot/* branch (human author) is refused
+  ok   - explains the author check
+  ok   - R2-1: a dependabot PR touching non-manifest files is refused
+  ok   - R2-4: an explicit DOCS-REVIEW CHANGES REQUESTED is not overridden by QA PASS
+  ok   - R2-5: a verdict that is not the comment's first line (e.g. in a code block) does not count
+  ok   - R2-7: an empty commit list is refused (no freshness baseline)
+  ok   - F4: release PR needs PO-APPROVED
+  ok   - F4: release PR merges into master with QA + PO + LC
+  ok   - AC1: a back-dated commit pushed AFTER the verdict makes the verdict stale
+  ok   - reports the approval as stale
+  ok   - reports the review as stale
+  ok   - AC1: the same back-dated commit counts once it arrived BEFORE the verdict
+  ok   - AC1: the LATEST pull_request run for the head counts (head re-arrived after the verdict)
+  ok   - AC1: a force-push after the verdict (back to an already-built SHA) invalidates it
+  ok   - AC1: a force-push before the head arrived does not block
+  ok   - AC1: no pull_request run for the head (no push-time data) fails closed
+  ok   - explains the fail-closed refusal
+  ok   - AC1: a run for the same SHA on ANOTHER branch is no evidence (fails closed)
+  ok   - AC1: a non-pull_request run is no evidence (fails closed)
+  ok   - AC1: a run for another SHA is no evidence (fails closed)
+  ok   - AC1: a workflow-runs API error fails closed
+  ok   - reports the runs API failure
+  ok   - AC1: a PR-timeline API error fails closed
+  ok   - reports the timeline failure
+  ok   - AC1: a PR-timeline answer without timeline data fails closed
+  ok   - AC1: a verdict in the same second as the arrival is not strictly after it
+  ok   - AC2: QA-VERDICT FAIL blocks a chore PR even though DOCS-REVIEW passed
+  ok   - names the blocking verdict
+  ok   - AC2: DOCS-REVIEW CHANGES REQUESTED blocks a feature PR even though QA passed
+  ok   - names the blocking docs review
+  ok   - AC2: UX-REVIEW CHANGES REQUESTED blocks although QA and SEC passed
+  ok   - names the blocking UX review
+  ok   - AC2: SEC-REVIEW CHANGES REQUESTED blocks a chore PR
+  ok   - AC2: within a type the latest wins (QA FAIL then PASS on re-test) — positive path passes
+  ok   - AC2: all four review types positive passes
+  ok   - AC2: a stale negative (posted before the head arrived) does not block the new head
+  ok   - AC2: a negative verdict blocks the dependabot path too
+  ok   - AC3: manifests + lockfile + a workflow uses: SHA bump, all by Dependabot, passes
+  ok   - AC3: a human commit on a Dependabot PR blocks
+  ok   - names the foreign commit
+  ok   - AC3: a Dependabot-authored commit without a verified signature (forged author e-mail) blocks
+  ok   - AC3: a Dependabot-authored commit committed by a human blocks
+  ok   - AC3: an empty commit list from the API fails closed
+  ok   - AC3: a commits API error fails closed
+  ok   - AC3: a workflow edit that is not a uses: bump blocks
+  ok   - explains the workflow rule
+  ok   - AC3: a uses: line that swaps the action (not a bump) blocks
+  ok   - explains the same-action rule
+  ok   - AC3: a uses: bump to a tag instead of a 40-hex SHA blocks
+  ok   - AC3: a uses: bump bundled with a with: change blocks
+  ok   - AC3: adding a workflow file blocks
+  ok   - AC3: a workflow change without a diff to verify fails closed
+  ok   - AC3: renaming a file into an allowed path blocks
+  ok   - AC3/R3-3: a Maven wrapper properties bump passes
+  ok   - AC3: other .mvn files (e.g. extensions.xml) are no longer allowed
+  ok   - AC3: the wrapper jar is not allowed
+  ok   - AC3: the file list is taken from the files API, not only from pr view
+  ok   - names the allow-list
+  ok   - S2-1: swapping two uses: lines (no SHA change) blocks
+  ok   - S2-1: re-indenting a uses: line blocks
+  ok   - S2-1: a uses: line that keeps its SHA is not a bump
+  ok   - explains the same-SHA refusal
+  ok   - S2-1: moving a uses: line into a run: block blocks
+  ok   - S2-1: two adjacent pairwise SHA bumps pass
+  ok   - S3-4: adding or removing manifests on a Dependabot PR blocks
+  ok   - explains the modified-only rule
+  ok   - S3-1: a non-exact negative verdict blocks: 'QA-VERDICT  T-M9.9: FAIL'
+  ok   - S3-1: a non-exact negative verdict blocks: 'qa-verdict T-M9.9: FAIL'
+  ok   - S3-1: a non-exact negative verdict blocks: 'QA-VERDICT T-M9.9 : FAIL'
+  ok   - S3-1: a non-exact negative verdict blocks: '**QA-VERDICT T-M9.9: FAIL**'
+  ok   - S3-1: a non-exact negative verdict blocks: '`QA-VERDICT T-M9.9: FAIL`'
+  ok   - S3-1: a non-exact negative verdict blocks: '> QA-VERDICT T-M9.9: FAIL'
+  ok   - S3-1: a non-exact negative verdict blocks: 'ux-review t-m9.9: changes requested'
+  ok   - S3-1: a negative for another id does not block, and a sloppy positive is simply ignored
+  ok   - S3-1: an exact PASS after a non-exact FAIL wins (latest within the type)
+  ok   - S3-2: a push recorded in the repository activity after the verdict makes it stale (even without a new run)
+  ok   - S3-2: no activity entry for the head fails closed
+  ok   - explains the activity refusal
+  ok   - S3-2: an activity API error fails closed
+  ok   - S3-2: an activity answer that is not a list fails closed
+  ok   - S3-3: a push by a human to a Dependabot branch (per the repository activity) blocks
+  ok   - names the foreign push
+  ok   - S3-3: activity before Dependabot (re)created the branch does not count
+  ok   - S3-3: a Dependabot branch without a recorded creation fails closed
+  ok   - S4-1: a run at 10:05:00.500Z makes a 10:05:00Z verdict stale (no string-order trick)
+  ok   - S4-1: an unparsable (non-Z) run time fails closed
+  ok   - R2 S3-A: a removed line '-n' (an echo option) cannot hide a non-bump
+  ok   - R2 S3-A: a removed line '-e' (an echo option) cannot hide a non-bump
+  ok   - R2 S3-A: a removed line '-E' (an echo option) cannot hide a non-bump
+  ok   - R2 S3-A: a removed line '-ne' (an echo option) cannot hide a non-bump
+  ok   - R2 S4-A: a diff line with an unknown prefix fails closed
+  ok   - explains the unknown-prefix refusal
+  ok   - R2 S3-B: a human push in the same second as Dependabot's branch creation still counts
+  ok   - R2 S3-B: an activity entry with an unparsable time counts as inside the window
+  ok   - R2 S4-B: a non-exact negative verdict blocks: '## QA-VERDICT T-M9.9: FAIL'
+  ok   - R2 S4-B: a non-exact negative verdict blocks: '- QA-VERDICT T-M9.9: FAIL'
+  ok   - R2 S4-B: a non-exact negative verdict blocks: '❌ QA-VERDICT T-M9.9: FAIL'
+  ok   - R2 S4-B: a non-exact negative verdict blocks: 'QA-VERDICT T-M9.9 - FAIL'
+  ok   - R2 S4-B: a non-exact negative verdict blocks: 'QA VERDICT T-M9.9: FAIL'
+  ok   - R2 S4-B: a non-exact negative verdict blocks: 'DOCS-REVIEW T-M9.9: CHANGES_REQUESTED'
+  ok   - R2 S4-B: a non-exact negative verdict blocks: 'SEC-REVIEW T-M9.9: CHANGES-REQUESTED'
+  ok   - R2 S4-B: another id with a '-' suffix and prose mentioning a verdict do not block
+  ok   - T-M1.12 AC1: 'QA-VERDICT <id>-FAILOVER: PASS' is not a negative
+  ok   - T-M1.12 AC1: 'QA-VERDICT T-M9.9: FAIL' blocks
+  ok   - T-M1.12 AC1: 'QA-VERDICT T-M9.9: FAIL.' blocks
+  ok   - T-M1.12 AC1: 'QA-VERDICT T-M9.9: FAIL (see F1)' blocks
+  ok   - T-M1.12 AC1: 'QA-VERDICT T-M9.9: CHANGES REQUESTED' blocks
+  ok   - T-M1.12 AC1: '**QA-VERDICT T-M9.9: FAILED**' blocks
+  ok   - T-M1.12 AC1: 'QA-VERDICT T-M9.9 - FAILS AC3' blocks
+  ok   - T-M1.12 AC1: 'QA-VERDICT T-M9.9: FAILED' blocks
+  ok   - T-M1.12 AC1: '> qa-verdict T-M9.9: failed' blocks
+  ok   - T-M1.12 AC1: 'QA-VERDICT T-M9.9: FAILURE' blocks
+  ok   - T-M1.12 AC1: 'QA-VERDICT T-M9.9 - FAILING' blocks
+  ok   - T-M1.12 AC1: 'DOCS-REVIEW T-M9.9: FAIL' blocks
+  ok   - T-M1.12 AC1: 'DOCS-REVIEW T-M9.9: FAIL.' blocks
+  ok   - T-M1.12 AC1: 'DOCS-REVIEW T-M9.9: FAIL (see F1)' blocks
+  ok   - T-M1.12 AC1: 'DOCS-REVIEW T-M9.9: CHANGES REQUESTED' blocks
+  ok   - T-M1.12 AC1: '**DOCS-REVIEW T-M9.9: FAILED**' blocks
+  ok   - T-M1.12 AC1: 'DOCS-REVIEW T-M9.9 - FAILS AC3' blocks
+  ok   - T-M1.12 AC1: 'DOCS-REVIEW T-M9.9: FAILED' blocks
+  ok   - T-M1.12 AC1: '> docs-review T-M9.9: failed' blocks
+  ok   - T-M1.12 AC1: 'DOCS-REVIEW T-M9.9: FAILURE' blocks
+  ok   - T-M1.12 AC1: 'DOCS-REVIEW T-M9.9 - FAILING' blocks
+  ok   - T-M1.12 AC1: 'SEC-REVIEW T-M9.9: FAIL' blocks
+  ok   - T-M1.12 AC1: 'SEC-REVIEW T-M9.9: FAIL.' blocks
+  ok   - T-M1.12 AC1: 'SEC-REVIEW T-M9.9: FAIL (see F1)' blocks
+  ok   - T-M1.12 AC1: 'SEC-REVIEW T-M9.9: CHANGES REQUESTED' blocks
+  ok   - T-M1.12 AC1: '**SEC-REVIEW T-M9.9: FAILED**' blocks
+  ok   - T-M1.12 AC1: 'SEC-REVIEW T-M9.9 - FAILS AC3' blocks
+  ok   - T-M1.12 AC1: 'SEC-REVIEW T-M9.9: FAILED' blocks
+  ok   - T-M1.12 AC1: '> sec-review T-M9.9: failed' blocks
+  ok   - T-M1.12 AC1: 'SEC-REVIEW T-M9.9: FAILURE' blocks
+  ok   - T-M1.12 AC1: 'SEC-REVIEW T-M9.9 - FAILING' blocks
+  ok   - T-M1.12 AC1: 'UX-REVIEW T-M9.9: FAIL' blocks
+  ok   - T-M1.12 AC1: 'UX-REVIEW T-M9.9: FAIL.' blocks
+  ok   - T-M1.12 AC1: 'UX-REVIEW T-M9.9: FAIL (see F1)' blocks
+  ok   - T-M1.12 AC1: 'UX-REVIEW T-M9.9: CHANGES REQUESTED' blocks
+  ok   - T-M1.12 AC1: '**UX-REVIEW T-M9.9: FAILED**' blocks
+  ok   - T-M1.12 AC1: 'UX-REVIEW T-M9.9 - FAILS AC3' blocks
+  ok   - T-M1.12 AC1: 'UX-REVIEW T-M9.9: FAILED' blocks
+  ok   - T-M1.12 AC1: '> ux-review T-M9.9: failed' blocks
+  ok   - T-M1.12 AC1: 'UX-REVIEW T-M9.9: FAILURE' blocks
+  ok   - T-M1.12 AC1: 'UX-REVIEW T-M9.9 - FAILING' blocks
+  ok   - T-M1.12 AC1: an exact line with an unknown token (FAILED-OVER) still blocks
+  ok   - T-M1.12 AC2: '1. QA-VERDICT T-M9.9: FAIL' blocks
+  ok   - T-M1.12 AC2: '1. QA-VERDICT T-M9.9: PASS' is not a positive QA verdict
+  ok   - the twin is ignored, not read as a verdict
+  ok   - T-M1.12 AC2: '1) QA-VERDICT T-M9.9: FAIL' blocks
+  ok   - T-M1.12 AC2: '1) QA-VERDICT T-M9.9: PASS' is not a positive QA verdict
+  ok   - the twin is ignored, not read as a verdict
+  ok   - T-M1.12 AC2: '12. QA-VERDICT T-M9.9: FAIL' blocks
+  ok   - T-M1.12 AC2: '12. QA-VERDICT T-M9.9: PASS' is not a positive QA verdict
+  ok   - the twin is ignored, not read as a verdict
+  ok   - T-M1.12 AC2: '- - QA-VERDICT T-M9.9: FAIL' blocks
+  ok   - T-M1.12 AC2: '- - QA-VERDICT T-M9.9: PASS' is not a positive QA verdict
+  ok   - the twin is ignored, not read as a verdict
+  ok   - T-M1.12 AC2: '* QA-VERDICT T-M9.9: FAIL' blocks
+  ok   - T-M1.12 AC2: '* QA-VERDICT T-M9.9: PASS' is not a positive QA verdict
+  ok   - the twin is ignored, not read as a verdict
+  ok   - T-M1.12 AC2: '- * QA-VERDICT T-M9.9: FAIL' blocks
+  ok   - T-M1.12 AC2: '- * QA-VERDICT T-M9.9: PASS' is not a positive QA verdict
+  ok   - the twin is ignored, not read as a verdict
+  ok   - T-M1.12 AC2: 'QA-VERDICT T-M9.9 — FAIL' blocks
+  ok   - T-M1.12 AC2: 'QA-VERDICT T-M9.9 — PASS' is not a positive QA verdict
+  ok   - the twin is ignored, not read as a verdict
+  ok   - T-M1.12 AC2: 'QA-VERDICT T-M9.9 – FAIL' blocks
+  ok   - T-M1.12 AC2: 'QA-VERDICT T-M9.9 – PASS' is not a positive QA verdict
+  ok   - the twin is ignored, not read as a verdict
+  ok   - T-M1.12 AC2: 'QA-VERDICT T-M9.9—FAIL' blocks
+  ok   - T-M1.12 AC2: 'QA-VERDICT T-M9.9—PASS' is not a positive QA verdict
+  ok   - the twin is ignored, not read as a verdict
+  ok   - T-M1.12 AC2: 'QA-VERDICT: T-M9.9: FAIL' blocks
+  ok   - T-M1.12 AC2: 'QA-VERDICT: T-M9.9: PASS' is not a positive QA verdict
+  ok   - the twin is ignored, not read as a verdict
+  ok   - T-M1.12 AC2: '1.  QA-VERDICT:  T-M9.9 —  FAIL' blocks
+  ok   - T-M1.12 AC2: '1.  QA-VERDICT:  T-M9.9 —  PASS' is not a positive QA verdict
+  ok   - the twin is ignored, not read as a verdict
+  ok   - T-M1.12 AC2: 'DOCS-REVIEW: T-M9.9: PASS' is not a positive docs verdict
+  ok   - T-M1.12 AC2: '1. DOCS-REVIEW T-M9.9: PASS' is not a positive docs verdict
+  ok   - T-M1.12 review F1/F2: '**QA-VERDICT T-M9.9: FAILURES**' blocks
+  ok   - T-M1.12 review F1/F2: 'QA-VERDICT T-M9.9 - FAILINGS' blocks
+  ok   - T-M1.12 review F1/F2: 'QA-VERDICT T-M9.9: FAIL2' blocks
+  ok   - T-M1.12 review F1/F2: 'QA-VERDICT T-M9.9 -FAILSAFE' blocks
+  ok   - T-M1.12 review F1/F2: 'QA-VERDICT T-M9.9-FAILED' blocks
+  ok   - T-M1.12 review F1/F2: 'QA-VERDICT T-M9.9—FAIL' blocks
+  ok   - T-M1.12 review F1/F2: 'SEC-REVIEW T-M9.9: CHANGES REQUESTED' blocks
+  ok   - T-M1.12 review F1/F2: 'QA-VERDICT T-M9.9: FAIL' blocks
+  ok   - T-M1.12 review F1/F2: 'QA-VERDICT T-M9.9： FAIL' blocks
+  ok   - T-M1.12 review F1/F2: 'QA-VERDICT T-M9.9 － FAIL' blocks
+  ok   - T-M1.12 review F1/F2: 'QA-VERDICT　T-M9.9: FAIL' blocks
+  ok   - T-M1.12 review F1/F2: '+ QA-VERDICT T-M9.9: FAIL' blocks
+  ok   - T-M1.12 review F1/F2: '- [x] QA-VERDICT T-M9.9: FAIL' blocks
+  ok   - T-M1.12 review F1/F2: '(1) QA-VERDICT T-M9.9: FAIL' blocks
+  ok   - T-M1.12 review F1/F2: 'QA-VERDICT T-M9.9:: CHANGES REQUESTED' blocks
+  ok   - T-M1.12 review F1/F2: 'QA-VERDICT T-M9.9- FAIL' blocks
+  ok   - T-M1.12 review F1/F2: '**QA-VERDICT T-M9.9- CHANGES REQUESTED**' blocks
+  ok   - T-M1.12 review F1/F2: 'QA-VERDICT T-M9.9-: FAIL' blocks
+  ok   - T-M1.12 review F1/F2: 'QA-VERDICT T-M9.9-  FAILED' blocks
+  ok   - T-M1.12 review F1/F2: 'QA-VERDICT T-M9.9 : - FAIL' blocks
+  ok   - T-M1.12 review F1/F2: 'QA-VERDICT T-M9.9 - - FAIL' blocks
+  ok   - T-M1.12 review F1/F2: 'QA-VERDICT T-M9.9-FAILURES' blocks
+  ok   - T-M1.12 review F1/F2: 'QA-VERDICT T-M9.9--FAILINGS' blocks
+  ok   - T-M1.12 review F1: a word glued to the id by a dash (FAILOVER, FAILSAFE) is not a negative
+  ok   - T-M1.12 AC3: a wrapperVersion-only bump passes
+  ok   - T-M1.12 AC3: another host fails
+  ok   - T-M1.12 AC3: another host — names the line
+  ok   - T-M1.12 AC3: userinfo in the URL fails
+  ok   - T-M1.12 AC3: userinfo in the URL — names the line
+  ok   - T-M1.12 AC3: another path on the same host fails
+  ok   - T-M1.12 AC3: another path on the same host — names the line
+  ok   - T-M1.12 AC3: mismatched versions in the URL fails
+  ok   - T-M1.12 AC3: mismatched versions in the URL — names the line
+  ok   - T-M1.12 AC3: a query string fails
+  ok   - T-M1.12 AC3: a query string — names the line
+  ok   - T-M1.12 AC3: an added key fails
+  ok   - T-M1.12 AC3: an added key — names the line
+  ok   - T-M1.12 AC3: a removed key fails
+  ok   - T-M1.12 AC3: a removed key — names the line
+  ok   - T-M1.12 AC3: a distributionType change fails
+  ok   - T-M1.12 AC3: a distributionType change — names the line
+  ok   - T-M1.12 AC3: a renamed key fails
+  ok   - T-M1.12 AC3: a renamed key — names the line
+  ok   - T-M1.12 AC3: a non-semver wrapperVersion fails
+  ok   - T-M1.12 AC3: a non-semver wrapperVersion — names the line
+  ok   - T-M1.12 AC3: a fullwidth digit (any locale, review F3) fails
+  ok   - T-M1.12 AC3: a fullwidth digit (any locale, review F3) — names the line
+  ok   - T-M1.12 AC3: a -n line (printf, not echo) fails
+  ok   - T-M1.12 AC3: a -n line (printf, not echo) — names the line
+  ok   - T-M1.12 AC3: a wrapper change without a diff fails closed
+  ok   - T-M1.12 AC4: '--dry-run 7' dry-runs
+  ok   - T-M1.12 AC4: '--dry-run 7' made no merge call
+  ok   - T-M1.12 AC4: '7 --dry-run' dry-runs
+  ok   - T-M1.12 AC4: '7 --dry-run' made no merge call
+  ok   - T-M1.12 AC4: arguments '' exit 2 (caller locale en_US.UTF-8)
+  ok   - T-M1.12 AC4: '' prints the usage
+  ok   - T-M1.12 AC4: '' made no gh call
+  ok   - T-M1.12 AC4: arguments '--dry-run' exit 2 (caller locale en_US.UTF-8)
+  ok   - T-M1.12 AC4: '--dry-run' prints the usage
+  ok   - T-M1.12 AC4: '--dry-run' made no gh call
+  ok   - T-M1.12 AC4: arguments '7 --dryrun' exit 2 (caller locale en_US.UTF-8)
+  ok   - T-M1.12 AC4: '7 --dryrun' prints the usage
+  ok   - T-M1.12 AC4: '7 --dryrun' made no gh call
+  ok   - T-M1.12 AC4: arguments '7 21' exit 2 (caller locale en_US.UTF-8)
+  ok   - T-M1.12 AC4: '7 21' prints the usage
+  ok   - T-M1.12 AC4: '7 21' made no gh call
+  ok   - T-M1.12 AC4: arguments 'abc' exit 2 (caller locale en_US.UTF-8)
+  ok   - T-M1.12 AC4: 'abc' prints the usage
+  ok   - T-M1.12 AC4: 'abc' made no gh call
+  ok   - T-M1.12 AC4: arguments '--force 7' exit 2 (caller locale en_US.UTF-8)
+  ok   - T-M1.12 AC4: '--force 7' prints the usage
+  ok   - T-M1.12 AC4: '--force 7' made no gh call
+  ok   - T-M1.12 AC4: arguments '07' exit 2 (caller locale en_US.UTF-8)
+  ok   - T-M1.12 AC4: '07' prints the usage
+  ok   - T-M1.12 AC4: '07' made no gh call
+  ok   - T-M1.12 AC4: arguments '7 --dry-run=1' exit 2 (caller locale en_US.UTF-8)
+  ok   - T-M1.12 AC4: '7 --dry-run=1' prints the usage
+  ok   - T-M1.12 AC4: '7 --dry-run=1' made no gh call
+  ok   - T-M1.12 AC4: arguments '-- 7' exit 2 (caller locale en_US.UTF-8)
+  ok   - T-M1.12 AC4: '-- 7' prints the usage
+  ok   - T-M1.12 AC4: '-- 7' made no gh call
+  ok   - T-M1.12 AC4: arguments '７' exit 2 (caller locale en_US.UTF-8)
+  ok   - T-M1.12 AC4: '７' prints the usage
+  ok   - T-M1.12 AC4: '７' made no gh call
+  ok   - T-M1.12 AC4: arguments '٧' exit 2 (caller locale en_US.UTF-8)
+  ok   - T-M1.12 AC4: '٧' prints the usage
+  ok   - T-M1.12 AC4: '٧' made no gh call
+  -> 325 passed, 0 failed
+check-path-ownership.sh
+  ok   - qa/ branch touching backend/ fails
+  ok   - qa/ branch touching qa/ and qa evidence passes
+  ok   - feature/ branch touching qa/ fails
+  ok   - feature/ branch writing reviewer evidence fails
+  ok   - feature/ branch with backend, web, impl evidence passes
+  ok   - any branch touching docs/00-sources fails
+  ok   - chore/ branch with docs and scripts passes
+  ok   - unknown branch kind fails
+  ok   - R2-1: dependabot branch touching source code fails
+  ok   - dependabot branch touching manifests/workflows passes
+  ok   - T-M1.7/R3-3: dependabot branch bumping the Maven wrapper properties passes
+  ok   - T-M1.7: dependabot branch touching other .mvn files fails
+  ok   - T-M1.7: dependabot branch touching the wrapper jar fails
+  ok   - F5: an empty change list fails (no silent PASS)
+  ok   - F5: an unknown base ref fails (no silent PASS)
+  -> 15 passed, 0 failed
+pre-push hook
+  ok   - blocks a direct push to develop
+  ok   - explains the develop block
+  ok   - blocks a direct push to master
+  ok   - allows pushing a feature branch
+  ok   - blocks a force push that rewrites history
+  ok   - explains the force-push block
+  ok   - allows a normal fast-forward push
+  ok   - mirrors develop to the GitLab mirror when it is exactly origin/develop
+  ok   - blocks develop on the mirror when the commit is not origin/develop
+  ok   - points to gitlab-sync.sh
+  ok   - blocks origin's develop commit to a remote that is not the mirror
+  ok   - still blocks a new develop commit to origin (GitHub), even with the mirror setting
+  ok   - blocks deleting develop on the mirror
+  ok   - the test-only override is ignored for non-path URLs (file://, https://), so it cannot widen to a real remote
+  ok   - explains the block
+  -> 15 passed, 0 failed
+require-bash.sh
+  ok   - bash 3.2 is refused
+  ok   - bash 3.2: the documented message
+  ok   - bash 4.0 is refused
+  ok   - bash 4.0: the documented message
+  ok   - bash 4.3 is refused
+  ok   - bash 4.3: the documented message
+  ok   - bash 4.4 is accepted
+  ok   - bash 5.0 is accepted
+  ok   - bash 5.3 is accepted
+  ok   - every executable bash script sources the guard first
+  ok   - hooks/pre-push has no guard (GUI git may run it with bash 3.2)
+  skip - no bash 3.2 here (/bin/bash is 5.3.15(1)-release); set ENGLMS_BASH32=<path> or run on macOS
+  -> 11 passed, 0 failed
+workflow upload warnings
+  ok   - a best-effort upload followed by its warning step passes
+  ok   - a continue-on-error step without an id fails
+  ok   - names the missing id
+  ok   - a continue-on-error step without a warning step fails
+  ok   - names the missing warning
+  ok   - a warning step in another job does not count
+  ok   - a warning step before the upload does not count
+  ok   - a warning step without always() (skipped after a failure) does not count
+  ok   - all real workflows warn on every failed best-effort step
+  ok   - the scan saw the real best-effort steps (2 workflow files)
+  -> 10 passed, 0 failed
+script tests: PASS
