@@ -48,7 +48,7 @@
     "passwordError": "Mật khẩu mới cần ít nhất 10 ký tự.",
     "passwordDisabledLabel": "Mật khẩu (không khả dụng)",
     "checkboxLabel": "Ghi nhớ đăng nhập trên thiết bị này",
-    "checkboxHint": "Đừng chọn trên thiết bị dùng chung.",
+    "checkboxHint": "Không chọn mục này trên thiết bị dùng chung.",
     "checkboxSelectedLabel": "Nhận nhắc nhở",
     "checkboxInvalidLabel": "Tôi đã đọc hướng dẫn",
     "checkboxError": "Hãy đánh dấu ô này để tiếp tục.",

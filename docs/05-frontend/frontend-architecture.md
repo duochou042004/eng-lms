@@ -55,7 +55,7 @@ Cross-feature needs go through `lib` or via route composition. `react-aria-compo
   (checked before the role); wrong role → `/forbidden`. `/` only redirects (role home, `/change-password` or `/login`). `/login` logs out a
   session that must change its password, sends another signed-in visitor home, else shows the form. `/change-password` needs a session.
 - **Return targets (security.md T18):** `features/auth/model/redirect.ts`: `isSafeAppPath(path)` (structural, no role: raw and after exactly one
-  `decodeURIComponent`, a decode error refuses; starts with `/` but not `//` or `/\`; no `:` in the path part, backslash, control character, `.`/`..`
+  `decodeURIComponent`, a decode error refuses; starts with `/` but not `//` or `/\`; no `:` or whitespace in the path part, backslash, control character, `.`/`..`
   segment raw or `%2e`-encoded; first segment `tutor` or `student`) and `safeNext(next, role)` (safe **and** the role's namespace, else the role
   home). The redirect after sign-in and after a forced change always goes through the router's `navigate()`; table test in `redirect.test.ts`.
 

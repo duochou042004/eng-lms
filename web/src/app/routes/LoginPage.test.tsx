@@ -56,8 +56,11 @@ describe('/login (T-M2.4 scope 5)', () => {
     expect(screen.getByRole('button', { name: 'Hiện mật khẩu' })).toBeInTheDocument()
     const remember = screen.getByRole('checkbox', { name: 'Ghi nhớ đăng nhập trên thiết bị này' })
     expect(remember).not.toBeChecked()
-    expect(remember).toHaveAccessibleDescription(expect.stringContaining('Đừng chọn trên thiết bị dùng chung'))
+    expect(remember).toHaveAccessibleDescription(expect.stringContaining('Không chọn mục này trên thiết bị dùng chung'))
     const forgot = screen.getByText('Quên mật khẩu?')
+    // UX-2: the disclosure keeps a visible marker (a decorative chevron) although the summary is a flex row.
+    expect(forgot.closest('summary')!.querySelector('svg[aria-hidden="true"]')).not.toBeNull()
+    expect(screen.getByText('Đăng nhập vào không gian dạy học của bạn.')).toBeInTheDocument()
     expect(forgot.closest('details')).not.toHaveAttribute('open')
     await userEvent.click(forgot)
     expect(forgot.closest('details')).toHaveAttribute('open')
@@ -76,6 +79,29 @@ describe('/login (T-M2.4 scope 5)', () => {
     expect(screen.getByLabelText('Tên đăng nhập (bắt buộc)')).toHaveFocus()
     expect(screen.getByLabelText('Tên đăng nhập (bắt buộc)')).toHaveAttribute('aria-invalid', 'true')
     expect(calls).toEqual([])
+  })
+
+  it('submitting empty with Enter shows the errors and focuses the first invalid field (G3 UX-1)', async () => {
+    await openLogin()
+    await userEvent.click(screen.getByLabelText('Tên đăng nhập (bắt buộc)'))
+    await userEvent.keyboard('{Enter}')
+    expect(await screen.findByText('Hãy nhập tên đăng nhập.')).toBeInTheDocument()
+    expect(screen.getByLabelText('Tên đăng nhập (bắt buộc)')).toHaveFocus()
+  })
+
+  it('tabbing through empty fields shows no error; after a failed submit, typing clears it (G3 UX-5)', async () => {
+    await openLogin()
+    await userEvent.click(screen.getByLabelText('Tên đăng nhập (bắt buộc)'))
+    await userEvent.tab()
+    await userEvent.tab()
+    await userEvent.tab()
+    expect(screen.queryByText('Hãy nhập tên đăng nhập.')).not.toBeInTheDocument()
+    expect(screen.queryByText('Hãy nhập mật khẩu.')).not.toBeInTheDocument()
+    expect(screen.getByLabelText('Tên đăng nhập (bắt buộc)')).not.toHaveAttribute('aria-invalid')
+    await userEvent.click(screen.getByRole('button', { name: 'Đăng nhập' }))
+    expect(await screen.findByText('Hãy nhập tên đăng nhập.')).toBeInTheDocument()
+    await userEvent.type(screen.getByLabelText('Tên đăng nhập (bắt buộc)'), 'c')
+    await waitFor(() => expect(screen.queryByText('Hãy nhập tên đăng nhập.')).not.toBeInTheDocument())
   })
 
   it('shows one generic message for a wrong password, an unknown username and a locked account; the session is not refetched (DEC-089, AC3)', async () => {

@@ -19,7 +19,13 @@ export function Forbidden() {
         headingLevel={1}
         icon={<ShieldX />}
         title={t('forbidden.title')}
-        description={t('forbidden.description')}
+        description={
+          session?.role === 'TUTOR'
+            ? t('forbidden.descriptionTutor')
+            : session?.role === 'STUDENT'
+              ? t('forbidden.descriptionStudent')
+              : t('forbidden.description')
+        }
         action={
           <Link to={session ? roleHome(session.role) : '/'} className={styles.homeLink}>
             {t('forbidden.home')}

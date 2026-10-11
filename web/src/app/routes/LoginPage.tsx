@@ -1,4 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod'
+import { ChevronRight } from 'lucide-react'
 import { useRef } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
@@ -45,7 +46,9 @@ export function LoginPage() {
   const { control, handleSubmit } = useForm<LoginValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: { username: '', password: '', rememberMe: false },
-    mode: 'onTouched',
+    // UX-5: no "required" errors from tabbing through; first checked on submit, then on every change.
+    mode: 'onSubmit',
+    reValidateMode: 'onChange',
   })
 
   const submit = handleSubmit(
@@ -151,7 +154,10 @@ export function LoginPage() {
           </Stack>
         </form>
         <details className={styles.disclosure}>
-          <summary className={styles.disclosureSummary}>{t('login.forgotTitle')}</summary>
+          <summary className={styles.disclosureSummary}>
+            <ChevronRight aria-hidden="true" className={styles.disclosureIcon} />
+            {t('login.forgotTitle')}
+          </summary>
           <div className={styles.disclosureBody}>
             <p>{t('login.forgotStudent')}</p>
             <p>{t('login.forgotTutor')}</p>

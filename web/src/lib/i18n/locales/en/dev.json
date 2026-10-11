@@ -48,7 +48,7 @@
     "passwordError": "The new password needs at least 10 characters.",
     "passwordDisabledLabel": "Password (unavailable)",
     "checkboxLabel": "Remember me on this device",
-    "checkboxHint": "Don't tick this on a shared device.",
+    "checkboxHint": "Leave this unticked on a shared device.",
     "checkboxSelectedLabel": "Get reminders",
     "checkboxInvalidLabel": "I have read the guide",
     "checkboxError": "Tick this box to continue.",

@@ -8,7 +8,7 @@ const ACCEPTED = [
   '/student/work#top',
   '/student',
   '/tutor?x=1',
-  '/tutor/students/a%20b',
+  '/tutor/students?q=an%20b',
 ]
 const REFUSED: Array<[string, string]> = [
   ['//evil.example', 'protocol-relative'],
@@ -35,6 +35,10 @@ const REFUSED: Array<[string, string]> = [
   ['/tutor/%5Cb', 'encoded backslash'],
   ['/tutor/http://evil.example', 'scheme in the path'],
   ['/%74utor/../x', 'dot-dot after an encoded namespace'],
+  ['/tutor/.. ', 'dot-dot with a trailing space (G3 SEC S4-4)'],
+  ['/tutor/%2e%2e%20', 'encoded dot-dot and space (G3 SEC S4-4)'],
+  ['/tutor/students/a%20b', 'whitespace in the path'],
+  ['/tutor/\tx', 'tab in the path'],
 ]
 
 describe('isSafeAppPath (T18)', () => {

@@ -136,6 +136,44 @@ describe('/change-password, voluntary mode (FR-AUTH-05, AC5)', () => {
   })
 })
 
+describe('/change-password: the first failed client check focuses the summary (G3 UX-1)', () => {
+  it.each([
+    ['voluntary', false, 'click'],
+    ['voluntary', false, 'Enter'],
+    ['forced', true, 'click'],
+    ['forced', true, 'Enter'],
+  ] as const)('%s mode, first empty submit by %s', async (_mode, forced, how) => {
+    server.use(sessionAs('STUDENT', forced))
+    await openPage()
+    if (how === 'click') await userEvent.click(screen.getByRole('button', { name: 'Đổi mật khẩu' }))
+    else {
+      await userEvent.click(screen.getByLabelText(LABEL.current))
+      await userEvent.keyboard('{Enter}')
+    }
+    const summary = await screen.findByRole('alert', { name: 'Mật khẩu chưa được đổi' })
+    await waitFor(() => expect(summary).toHaveFocus())
+    expect(within(summary).getAllByRole('link')).toHaveLength(3)
+  })
+
+  it.each(['too short', 'mismatch'])('first submit with a %s new password focuses the summary', async (kind) => {
+    server.use(sessionAs('TUTOR'))
+    await openPage()
+    if (kind === 'too short') await fill('mat-khau-cu-1', 'ngan')
+    else await fill('mat-khau-cu-1', 'mat-khau-moi-1', 'mat-khau-moi-2')
+    const summary = await screen.findByRole('alert', { name: 'Mật khẩu chưa được đổi' })
+    await waitFor(() => expect(summary).toHaveFocus())
+  })
+
+  it('tabbing through empty fields shows no error (G3 UX-5)', async () => {
+    server.use(sessionAs('TUTOR'))
+    await openPage()
+    await userEvent.click(screen.getByLabelText(LABEL.current))
+    for (let i = 0; i < 6; i++) await userEvent.tab()
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+    for (const label of Object.values(LABEL)) expect(screen.getByLabelText(label)).not.toHaveAttribute('aria-invalid')
+  })
+})
+
 describe('/change-password, forced mode (FR-AUTH-06, AC4)', () => {
   function forcedThenChanged() {
     let changed = false
@@ -157,6 +195,31 @@ describe('/change-password, forced mode (FR-AUTH-06, AC4)', () => {
     expect(screen.getByText(/Hãy đặt mật khẩu mới trước khi tiếp tục/)).toBeInTheDocument()
     expect(screen.queryByRole('button', { name: 'Huỷ' })).not.toBeInTheDocument()
     await expectNoAxeViolations(container)
+  })
+
+  it('offers Log out (not Cancel): it ends the session and goes to /login (G3 UX-4)', async () => {
+    let loggedOut = false
+    server.use(
+      http.get('*/api/v1/auth/session', () => {
+        setXsrfCookie()
+        return loggedOut ? problem(401, 'UNAUTHENTICATED') : HttpResponse.json(sessionBody('STUDENT', true))
+      }),
+      http.post('*/api/v1/auth/logout', () => {
+        loggedOut = true
+        return new HttpResponse(null, { status: 204 })
+      }),
+    )
+    const { router } = await openPage()
+    await userEvent.click(screen.getByRole('button', { name: 'Đăng xuất' }))
+    await screen.findByRole('heading', { level: 1, name: 'Đăng nhập' })
+    expect(loggedOut).toBe(true)
+    expect(router.state.location.pathname).toBe('/login')
+  })
+
+  it('has no Log out button in voluntary mode (the header has one)', async () => {
+    server.use(sessionAs('STUDENT'))
+    await openPage()
+    expect(screen.queryByRole('button', { name: 'Đăng xuất' })).not.toBeInTheDocument()
   })
 
   it.each([

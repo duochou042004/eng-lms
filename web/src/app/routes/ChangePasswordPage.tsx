@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import { Controller, useForm, type FieldErrors } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { Link, useLocation, useNavigate, useSearchParams } from 'react-router'
-import { refreshSession, useChangePassword, useSession } from '../../features/auth/api/session'
+import { refreshSession, useChangePassword, useLogout, useSession } from '../../features/auth/api/session'
 import { roleHome, safeNext } from '../../features/auth/model/redirect'
 import { changePasswordSchema, type ChangePasswordValues } from '../../features/auth/model/schemas'
 import { ApiError } from '../../lib/api'
@@ -47,6 +47,7 @@ export function ChangePasswordPage() {
   const location = useLocation()
   const [params] = useSearchParams()
   const change = useChangePassword()
+  const logout = useLogout()
   const inFlight = useRef(false)
   const summaryRef = useRef<HTMLDivElement>(null)
   const successRef = useRef<HTMLDivElement>(null)
@@ -63,12 +64,11 @@ export function ChangePasswordPage() {
   } = useForm<ChangePasswordValues>({
     resolver: zodResolver(changePasswordSchema),
     defaultValues: { currentPassword: '', newPassword: '', confirmPassword: '' },
-    mode: 'onTouched',
+    // UX-5: no "required" errors from tabbing through; first checked on submit, then on every change.
+    mode: 'onSubmit',
+    reValidateMode: 'onChange',
   })
 
-  useEffect(() => {
-    if (focusSummary > 0) summaryRef.current?.focus()
-  }, [focusSummary])
   useEffect(() => {
     if (changed) successRef.current?.focus()
   }, [changed])
@@ -126,6 +126,16 @@ export function ChangePasswordPage() {
 
   // `errors` is read on every render: react-hook-form re-renders only for the formState parts read.
   const summaryItems: ErrorSummaryItem[] = summaryShown ? summaryOf(errors, formError, t) : []
+  const hasSummary = summaryItems.length > 0
+  // Focus the summary once per failed submit, as soon as it is in the DOM: after a client-side failure the errors
+  // arrive in a later render than the submit's state update, so this waits for them (G3 UX-1).
+  const focusedFor = useRef(0)
+  useEffect(() => {
+    if (hasSummary && focusSummary > focusedFor.current) {
+      focusedFor.current = focusSummary
+      summaryRef.current?.focus()
+    }
+  }, [focusSummary, hasSummary])
   const home = session ? roleHome(session.role) : '/'
 
   if (changed) {
@@ -138,7 +148,7 @@ export function ChangePasswordPage() {
               {t('changePassword.successBody')}
             </InlineAlert>
           </div>
-          <Link to={home} className={styles.homeLink}>
+          <Link to={home} className={`${styles.homeLink} ${styles.flush}`}>
             {t('changePassword.home')}
           </Link>
         </Stack>
@@ -190,7 +200,12 @@ export function ChangePasswordPage() {
               <Button type="submit" isPending={change.isPending}>
                 {change.isPending ? t('changePassword.submitting') : t('changePassword.submit')}
               </Button>
-              {forced ? null : (
+              {forced ? (
+                // UX-4: a way out of the forced change that is not a Cancel: end the session, back to /login.
+                <Button variant="quiet" isPending={logout.isPending} onPress={() => logout.mutate()}>
+                  {t('header.logout')}
+                </Button>
+              ) : (
                 <Button
                   variant="quiet"
                   onPress={() => void (location.key === 'default' ? navigate(home) : navigate(-1))}

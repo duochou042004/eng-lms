@@ -19,14 +19,14 @@ const hasControl = (s: string) => [...s].some((c) => c.charCodeAt(0) < 0x20 || c
 function isStructurallySafe(path: string): boolean {
   if (!path.startsWith('/') || path.startsWith('//') || path.includes('\\') || hasControl(path)) return false
   const pathPart = path.split(/[?#]/, 1)[0]!
-  if (pathPart.includes(':')) return false
+  if (pathPart.includes(':') || /\s/.test(pathPart)) return false
   return !pathPart.split('/').some((segment) => DOT_SEGMENT.test(segment))
 }
 
 /**
  * security.md T18: may `path` be used as a sign-in return target? Structural only (no role), so it also serves the
  * 401 redirect and anonymous visits. Accepted only when the path, raw and after exactly one `decodeURIComponent` (a
- * decode error refuses), starts with `/` but not `//` or `/\`, contains no scheme (`:` in the path part), backslash or
+ * decode error refuses), starts with `/` but not `//` or `/\`, contains no scheme (`:`) or whitespace in the path part, backslash or
  * control character, has no `.` or `..` segment (raw or `%2e`-encoded), and its first segment is `tutor` or `student`.
  */
 export function isSafeAppPath(path: string | null | undefined): path is string {

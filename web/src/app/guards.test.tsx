@@ -18,15 +18,16 @@ describe('route guards (T-M2.4 scope 3)', () => {
   })
 
   it.each([
-    ['TUTOR', '/student/home', '/tutor/today'],
-    ['STUDENT', '/tutor/students', '/student/home'],
-  ] as const)('sends a %s visiting %s to /forbidden, with a link to %s (AC7)', async (role, visit, home) => {
+    ['TUTOR', '/student/home', '/tutor/today', 'Trang này thuộc khu vực của học viên.'],
+    ['STUDENT', '/tutor/students', '/student/home', 'Trang này dành cho gia sư.'],
+  ] as const)('sends a %s visiting %s to /forbidden, with a link to %s (AC7)', async (role, visit, home, why) => {
     server.use(sessionAs(role))
     const { router, container } = renderRoute(visit)
     expect(
       await screen.findByRole('heading', { level: 1, name: 'Bạn không có quyền mở trang này' }),
     ).toBeInTheDocument()
     expect(router.state.location.pathname).toBe('/forbidden')
+    expect(screen.getByText(why)).toBeInTheDocument() // G3 UX-7: plain, role-aware copy
     const link = screen.getByRole('link', { name: 'Về trang chính của bạn' })
     expect(link).toHaveAttribute('href', home)
     expect(screen.getByRole('radiogroup', { name: 'Ngôn ngữ' })).toBeInTheDocument()
