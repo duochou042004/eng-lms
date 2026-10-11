@@ -3,7 +3,7 @@
   "project": {
     "name": "Eng-LMS",
     "description": "Private 1:1 teaching workspace for a single English tutor and their students (flexible LMS; not a school/centre LMS, SaaS, marketplace, booking, payment, chat, conferencing, Drive clone or AI tutor).",
-    "repoLocal": "/home/kali/App_sources/eng-lms",
+    "repoLocal": "/home/kali/App_projects/eng-lms",
     "repoRemote": "https://github.com/duochou042004/eng-lms",
     "sources": [
       {
@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-10-09T15:46:04Z",
-  "updatedBy": "lead-coordinator (session 2026-10-09, Opus 5.5)",
+  "updatedAt": "2026-10-11T08:20:32Z",
+  "updatedBy": "lead-coordinator (session 2026-10-11, Opus 5.5)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -32,13 +32,13 @@
   "currentTask": {
     "id": "T-M1.19",
     "title": "Portable development environment (Docker or Podman; Linux, macOS, Windows via WSL2)",
-    "status": "ready",
+    "status": "in_progress",
     "ownerRole": "BE",
-    "branch": null,
+    "branch": "feature/T-M1.19-portable-dev-env",
     "packet": "docs/tasks/T-M1.19-portable-dev-env.md",
-    "pr": "75",
+    "pr": null,
     "lastCommit": null,
-    "startedAt": null,
+    "startedAt": "2026-10-11T08:20:32Z",
     "entryGate": [
       "T-M2.9 merged — met (37e8ce0)",
       "Packet G0 — met (DOCS-REVIEW PASS round 3, PR #75)",
