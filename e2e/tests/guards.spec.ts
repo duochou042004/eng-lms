@@ -1,4 +1,5 @@
 import type { Page } from '@playwright/test'
+import { ANONYMOUS, TUTOR_STATE } from '../support/auth'
 import { expectNoAxeViolations, expectNoHorizontalScroll } from '../support/checks'
 import { expect, LATE_ERROR_SETTLE_MS, test } from '../support/fixtures'
 
@@ -7,6 +8,8 @@ import { expect, LATE_ERROR_SETTLE_MS, test } from '../support/fixtures'
 // Browser-level guards run on one project; the overflow guard depends on the viewport emulation (isMobile widens
 // window.innerWidth, QA F1), so it also runs on the mobile/touch mandatory projects.
 const OVERFLOW_PROJECTS = ['phone-small', 'tablet', 'laptop']
+// T-M2.4: /tutor needs a session, so the guards run signed in as the E2E tutor (the stored session).
+test.use({ storageState: TUTOR_STATE })
 test.beforeEach(({ page: _page }, testInfo) => {
   const overflowTest = testInfo.title.startsWith('the layout check')
   const runsHere = overflowTest ? OVERFLOW_PROJECTS.includes(testInfo.project.name) : testInfo.project.name === 'laptop'
@@ -46,7 +49,10 @@ for (const extra of [40, 3000]) {
   })
 }
 
-test('the console guard fails on a CSP violation (an inline <style> under style-src self)', async ({ page, consoleGuard }) => {
+test('the console guard fails on a CSP violation (an inline <style> under style-src self)', async ({
+  page,
+  consoleGuard,
+}) => {
   await openTutorWith(page, '<style>body { outline: 1px solid red; }</style>')
   await expect.poll(() => consoleGuard.join('\n')).toMatch(/style-src/)
   // The guard would now fail this test in teardown; clear it so the self-test itself can pass.
@@ -60,11 +66,29 @@ test('the console guard fails on a console error', async ({ page, consoleGuard }
   consoleGuard.length = 0
 })
 
-test('the console guard also watches a second page of the same context', async ({ context, consoleGuard }) => {
-  const second = await context.newPage()
-  await second.goto('/student')
-  await second.evaluate(() => console.error('error in a second page'))
-  await expect.poll(() => consoleGuard.join('\n')).toContain('error in a second page')
+test.describe('anonymous', () => {
+  test.use({ storageState: ANONYMOUS })
+
+  test('the console guard also watches a second page of the same context', async ({ context, consoleGuard }) => {
+    const second = await context.newPage()
+    await second.goto('/student')
+    // T-M2.4: an anonymous visit to a shell now lands on the sign-in page.
+    await expect(second).toHaveURL(/\/login\?next=%2Fstudent$/)
+    await second.evaluate(() => console.error('error in a second page'))
+    await expect.poll(() => consoleGuard.join('\n')).toContain('error in a second page')
+    consoleGuard.length = 0
+  })
+})
+
+// T-M2.4: the guard ignores only the anonymous session bootstrap's 401 (fixtures.ts isAnonymousSessionProbe); a 401 from
+// any other request still fails the test.
+test('the console guard fails on a 401 from any request other than the session bootstrap', async ({
+  page,
+  consoleGuard,
+}) => {
+  await openTutorWith(page, '')
+  await page.evaluate(() => fetch('/api/v1/tutor/does-not-exist', { credentials: 'omit' }))
+  await expect.poll(() => consoleGuard.join('\n')).toMatch(/status of 401/)
   consoleGuard.length = 0
 })
 

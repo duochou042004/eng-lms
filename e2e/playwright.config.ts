@@ -14,6 +14,8 @@ export const MANDATORY_PROJECTS = ['phone-small', 'tablet', 'laptop'] as const
 
 export default defineConfig({
   testDir: './tests',
+  // Signs in as the E2E tutor and stores the tutor and student sessions (T-M2.4; support/auth.ts).
+  globalSetup: './support/global-setup.ts',
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   // Flaky policy (test-strategy §3): never silently retried.

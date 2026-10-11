@@ -18,12 +18,26 @@ export const LATE_ERROR_SETTLE_MS = 500
  * body the guard waits `LATE_ERROR_SETTLE_MS` before it asserts (the pages stay open until the context closes, which
  * happens after this fixture's teardown), so late errors are seen too.
  */
+/**
+ * The one expected network "error" (T-M2.4): the session bootstrap `GET /api/v1/auth/session` answers 401 to an
+ * anonymous visitor (api-catalog "auth"), and Chromium logs every 4xx resource as a console error. Only that exact
+ * message from that exact URL is ignored; a 401 from any other request still fails the test (self-test in
+ * guards.spec.ts).
+ */
+export function isAnonymousSessionProbe(text: string, url: string) {
+  return (
+    /^Failed to load resource: the server responded with a status of 401\b/.test(text) &&
+    new URL(url, 'http://x').pathname === '/api/v1/auth/session'
+  )
+}
+
 export const test = base.extend<{ consoleGuard: string[] }>({
   consoleGuard: [
     async ({ context }, use) => {
       const problems: string[] = []
       context.on('console', (message) => {
-        if (message.type() === 'error') problems.push(`console.error: ${message.text()}`)
+        if (message.type() !== 'error' || isAnonymousSessionProbe(message.text(), message.location().url)) return
+        problems.push(`console.error: ${message.text()}`)
       })
       context.on('weberror', (webError) => problems.push(`pageerror: ${webError.error().message}`))
       await context.addInitScript(() => {
