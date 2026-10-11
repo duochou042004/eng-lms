@@ -20,8 +20,8 @@
   "inlineEndDeltaPx": 0,
   "inlineEndLimitPx": 1,
   "layoutShift": {
-    "total": 0.001070420927684441,
-    "entries": 1
+    "total": 0,
+    "entries": 0
   },
   "clsLimit": 0.05
 }

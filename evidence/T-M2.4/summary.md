@@ -88,3 +88,27 @@ No screen-reader run (manual NVDA/VoiceOver passes are planned for M5 and M8).
 5. **Not built: an unsaved-changes guard on the password form.** It is not in the packet's scope, and `ConfirmDialog` and `UnsavedChangesGuard` do not exist yet. The forms otherwise follow interaction-states §2.
 6. **E2E students accumulate.** Each E2E run creates students in the dev database: one shared student, plus one per destructive test and project. This follows the packet's design.
 7. **The polish AC4 "/ itself" case now fails `/` through an aborted session request.** `/` has no page module any more.
+
+## G3 round 1 fixes (`073c71d` web, `6aefd73` E2E)
+
+| Finding | Fix | Proof |
+|---|---|---|
+| UX-1 (S2) | The summary-focus effect now waits until the summary is in the DOM. In a browser, react-hook-form publishes the errors one render after the submit's state update. The login form already moved focus to its first invalid field. | E2E: the first empty submit focuses the summary, by Enter and by click, in forced mode (AC4) and voluntary mode (both roles). These checks fail against the previous logic (verified on `laptop`). Component tests cover click and Enter, forced and voluntary, too short and mismatch, plus login by Enter. jsdom cannot reproduce the race, because Testing Library flushes it inside `act`. |
+| UX-2 (S3) | The disclosure has a lucide `ChevronRight` marker (`aria-hidden`), turned 90° when `details[open]`. It uses tokens only; under reduced motion the transition is 0 ms (`--motion-duration`). | Component test; `impl/*/login-forgot-open-*`. |
+| UX-3, SEC S4-1 | The remember-me hint now uses the agreed vi/en copy. | Component and E2E assertions. |
+| UX-4 (S3) | Forced mode has a quiet "Đăng xuất / Log out" button next to the submit, using the header's logout flow. It does not appear in voluntary mode. | Component test (POST logout, then `/login`); E2E checks it is visible; `impl/*/change-password-forced-vi`. |
+| UX-5 (S3) | Both forms use `mode: 'onSubmit'` and `reValidateMode: 'onChange'`. | Component tests: tabbing through empty fields shows no error; after a failed submit, typing clears the error. |
+| UX-6 (S4) | The login description is role-neutral. | Component test; screenshots. |
+| UX-7 (S4) | `/forbidden` copy depends on the role. The success link is flush with the column (`.flush`, still 44 px tall). | `guards.test.tsx` for both roles; `impl/*/forbidden-*`, `impl/*/change-password-success-vi`. |
+| SEC S4-4 | `isSafeAppPath` refuses whitespace in the path part, raw or decoded. A query may still contain an encoded space (`?q=an%20b`). | New rows in `redirect.test.ts`: `/tutor/.. `, `/tutor/%2e%2e%20`, `/tutor/students/a%20b` and a tab. |
+| QA F2 (S4) | Failed-resource console entries now carry their URL. `acceptStatus(status, path)` only accepts the provoked status from the provoking API path. The polish regex for aborted requests allows the URL suffix. | `auth.spec.ts`. |
+
+**Gate**
+- Run on `6aefd73`, same dev DB: `gate-20261011T144910Z.log`, PASS (13 steps, 459 s).
+- Web: 24 files / 253 tests. Budget: student 155.7 KB gz, tutor 155.7 KB gz.
+- E2E: 159 passed, 21 skipped.
+- The stored E2E tutor password was reused; no `RATE_LIMITED` in the app log.
+
+**Gate logs kept:** `gate-20261011T103937Z.log` (pre-review run 2) and the new one. The pre-review run-1 log is removed, as asked.
+
+**Screenshots:** the gate run rewrote `impl/`, `screenshots/` and `records/` for all 3 viewports.
