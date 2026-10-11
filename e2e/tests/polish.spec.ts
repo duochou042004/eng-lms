@@ -42,7 +42,8 @@ const ENDONYM = { vi: 'Tiếng Việt', en: 'English' } as const
 const CHANGE_PASSWORD_CHUNK = /\/assets\/ChangePasswordPage-[^/]+\.js$/
 const LOGIN_CHUNK = /\/assets\/LoginPage-[^/]+\.js$/
 // Chromium's console message for a request the test aborts on purpose (AC4 reaches the error page this way).
-const ABORTED_REQUEST = /^console\.error: Failed to load resource: net::ERR_FAILED$/
+// The guard appends the request's URL to a failed-resource entry (T-M2.4 G3 QA F2).
+const ABORTED_REQUEST = /^console\.error: Failed to load resource: net::ERR_FAILED( \[[^\]]+\])?$/
 
 const h1 = (page: Page, name: string) => page.getByRole('heading', { level: 1, name })
 const round = (n: number) => Math.round(n * 100) / 100

@@ -37,7 +37,10 @@ export const test = base.extend<{ consoleGuard: string[] }>({
       const problems: string[] = []
       context.on('console', (message) => {
         if (message.type() !== 'error' || isAnonymousSessionProbe(message.text(), message.location().url)) return
-        problems.push(`console.error: ${message.text()}`)
+        // A failed resource names its URL (G3 QA F2), so a test can accept exactly the request it provoked.
+        const text = message.text()
+        const url = message.location().url
+        problems.push(`console.error: ${text}${text.startsWith('Failed to load resource') && url ? ` [${url}]` : ''}`)
       })
       context.on('weberror', (webError) => problems.push(`pageerror: ${webError.error().message}`))
       await context.addInitScript(() => {

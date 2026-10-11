@@ -48,14 +48,16 @@ async function expectAccessible(page: Page) {
 }
 
 /**
- * Removes the console entries of responses a test provokes on purpose (Chromium logs every 4xx resource as an error);
- * any other entry still fails the test.
+ * Removes the console entries of the responses a test provokes on purpose (Chromium logs every 4xx resource as an
+ * error): only that status from that API path (G3 QA F2); any other entry still fails the test.
  */
-function acceptStatus(consoleGuard: string[], status: number) {
-  const pattern = new RegExp(
-    `^console\\.error: Failed to load resource: the server responded with a status of ${status}\\b`,
-  )
-  for (let i = consoleGuard.length - 1; i >= 0; i--) if (pattern.test(consoleGuard[i]!)) consoleGuard.splice(i, 1)
+function acceptStatus(consoleGuard: string[], status: number, path: string) {
+  const prefix = `console.error: Failed to load resource: the server responded with a status of ${status} `
+  for (let i = consoleGuard.length - 1; i >= 0; i--) {
+    const entry = consoleGuard[i]!
+    const url = /\[([^\]]+)\]$/.exec(entry)?.[1]
+    if (entry.startsWith(prefix) && url && new URL(url).pathname === path) consoleGuard.splice(i, 1)
+  }
 }
 
 /** A page on the app's origin signed in as the E2E tutor (its stored session), for API set-up calls. */
@@ -85,6 +87,23 @@ async function readyStudent(browser: Browser, testInfo: TestInfo) {
   const ready = await apiChangePassword(page, temporary)
   await context.close()
   return ready
+}
+
+/**
+ * G3 UX-1: the first submit that fails the client checks moves focus to the error summary, by Enter and (after a
+ * reload, so it is again the first submit) by click. In a real browser the summary renders one frame after the submit.
+ */
+async function expectFirstEmptySubmitFocusesSummary(page: Page) {
+  const summary = page.getByRole('alert', { name: 'Mật khẩu chưa được đổi' })
+  await field(page, FIELD.current).focus()
+  await page.keyboard.press('Enter')
+  await expect(summary).toBeFocused()
+  await page.reload()
+  await expect(h1(page, CHANGE)).toBeVisible()
+  await page.getByRole('button', { name: CHANGE, exact: true }).click()
+  await expect(summary).toBeFocused()
+  await page.reload()
+  await expect(h1(page, CHANGE)).toBeVisible()
 }
 
 /** Marks the document, so a later check can tell that no full page load happened. */
@@ -162,7 +181,7 @@ test.describe('anonymous', () => {
     const alert = page.getByRole('alert')
     await expect(alert).toContainText('Không đăng nhập được với tên đăng nhập và mật khẩu này')
     await expect(page).toHaveURL(/\/login$/)
-    acceptStatus(consoleGuard, 401)
+    acceptStatus(consoleGuard, 401, '/api/v1/auth/login')
     await expectAccessible(page)
     await shot(page, testInfo, 'login-error-vi')
 
@@ -176,7 +195,7 @@ test.describe('anonymous', () => {
     )
     await page.getByRole('button', { name: LOGIN.vi, exact: true }).click()
     await expect(alert).toContainText('Hãy thử lại sau 4 phút.')
-    acceptStatus(consoleGuard, 429)
+    acceptStatus(consoleGuard, 429, '/api/v1/auth/login')
     await expectAccessible(page)
     await shot(page, testInfo, 'login-rate-limited-vi')
   })
@@ -204,8 +223,11 @@ test.describe('anonymous', () => {
     await expect(page).toHaveURL(/\/change-password$/)
     await expect(page.getByText(/Hãy đặt mật khẩu mới trước khi tiếp tục/)).toBeVisible()
     await expect(page.getByRole('button', { name: 'Huỷ' })).toHaveCount(0)
+    // G3 UX-4: a quiet Log out instead of a Cancel.
+    await expect(page.getByRole('main').getByRole('button', { name: 'Đăng xuất' })).toBeVisible()
     await expectAccessible(page)
     await shot(page, testInfo, 'change-password-forced-vi')
+    await expectFirstEmptySubmitFocusesSummary(page)
 
     for (const path of ['/student/home', '/student/work', '/tutor/students', '/']) {
       await page.goto(path)
@@ -276,7 +298,7 @@ test.describe('anonymous', () => {
     )
     await attempt(student.password, student.username, FIELD.new, 'Mật khẩu mới không được trùng với tên đăng nhập.')
     await attempt(student.password, student.password, FIELD.new, 'Mật khẩu mới phải khác mật khẩu hiện tại.')
-    acceptStatus(consoleGuard, 422)
+    acceptStatus(consoleGuard, 422, '/api/v1/auth/password')
     await expectAccessible(page)
     await shot(page, testInfo, 'change-password-field-errors-vi')
 
@@ -414,11 +436,11 @@ test.describe('anonymous', () => {
     page,
   }, testInfo) => {
     await page.goto('/login')
-    await expect(page.getByText(/Đừng chọn trên thiết bị dùng chung/)).toBeVisible()
+    await expect(page.getByText(/Không chọn mục này trên thiết bị dùng chung/)).toBeVisible()
     await page.getByRole('radiogroup', { name: 'Ngôn ngữ' }).getByRole('radio', { name: 'English' }).click()
     await expect(h1(page, LOGIN.en)).toBeVisible()
     await expect(page.locator('html')).toHaveAttribute('lang', 'en')
-    await expect(page.getByText(/Don't tick this on a shared device/)).toBeVisible()
+    await expect(page.getByText(/Leave this unticked on a shared device/)).toBeVisible()
     await page.getByText('Forgot your password?').click()
     await expect(page.getByText(/Students: message your tutor/)).toBeVisible()
     await expectAccessible(page)
@@ -453,6 +475,12 @@ for (const [role, state, other, home, homeTitle] of [
         await expect(page).toHaveURL(new RegExp(`${home}$`))
         await expect(h1(page, homeTitle)).toBeVisible()
       }
+    })
+
+    test('G3 UX-1: voluntary change, the first empty submit focuses the summary (Enter, click)', async ({ page }) => {
+      await page.goto('/change-password')
+      await expect(h1(page, CHANGE)).toBeVisible()
+      await expectFirstEmptySubmitFocusesSummary(page)
     })
 
     test('AC9: the shell header with the account controls; the password page in English is accessible', async ({
