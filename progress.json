@@ -36,7 +36,7 @@
     "ownerRole": "BE",
     "branch": "feature/T-M1.19-portable-dev-env",
     "packet": "docs/tasks/T-M1.19-portable-dev-env.md",
-    "pr": null,
+    "pr": "78",
     "lastCommit": null,
     "startedAt": "2026-10-11T08:20:32Z",
     "entryGate": [
