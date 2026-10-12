@@ -6,13 +6,13 @@
   "control": "switcher",
   "skeleton": {
     "x": 106,
-    "y": 24,
+    "y": 85.59375,
     "width": 238,
     "height": 44
   },
   "switcher": {
     "x": 106,
-    "y": 24,
+    "y": 85.59375,
     "width": 238,
     "height": 46
   },
@@ -21,7 +21,7 @@
   "inlineEndDeltaPx": 0,
   "inlineEndLimitPx": 1,
   "layoutShift": {
-    "total": 0.005087875882639396,
+    "total": 0.0050157074304033765,
     "entries": 1
   },
   "clsLimit": 0.05

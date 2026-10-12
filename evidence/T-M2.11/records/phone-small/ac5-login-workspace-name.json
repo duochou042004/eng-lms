@@ -12,37 +12,33 @@
     "height": 740
   },
   "vi": {
-    "bar": {
+    "name": {
       "top": 24,
-      "bottom": 70,
-      "height": 46
+      "bottom": 73.59375,
+      "width": 328
     },
-    "children": [
-      {
-        "top": 34.59375,
-        "bottom": 59.390625
-      },
-      {
-        "top": 24,
-        "bottom": 70
-      }
-    ]
+    "switcher": {
+      "top": 85.59375,
+      "right": 344
+    },
+    "row": {
+      "width": 328,
+      "right": 344
+    }
   },
   "en": {
-    "bar": {
+    "name": {
       "top": 24,
-      "bottom": 70,
-      "height": 46
+      "bottom": 73.59375,
+      "width": 328
     },
-    "children": [
-      {
-        "top": 34.59375,
-        "bottom": 59.390625
-      },
-      {
-        "top": 24,
-        "bottom": 70
-      }
-    ]
+    "switcher": {
+      "top": 85.59375,
+      "right": 344
+    },
+    "row": {
+      "width": 328,
+      "right": 344
+    }
   }
 }
