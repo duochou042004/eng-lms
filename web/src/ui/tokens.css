@@ -31,6 +31,7 @@
   --color-info-text: #234a70;
   --color-focus: #2f5d8c;
   --color-skeleton: #e9e5de;
+  --color-scrim: rgb(31 29 26 / 40%); /* behind modal sheets (T-M2.11) */
 
   /* Typography */
   --font-family: 'Be Vietnam Pro', system-ui, sans-serif;
@@ -74,6 +75,15 @@
   --size-icon: 1.25rem;
   --size-content-max: 72rem;
   --size-form-max: 25rem; /* 400 px: the one-column sign-in and password forms (T-M2.4) */
+
+  /* App shells (T-M2.11) */
+  --size-sidebar: 15rem; /* tutor sidebar at >= lg */
+  --size-drawer: 20rem; /* start-edge navigation drawer (at most the viewport minus a tap-out strip) */
+  --size-popover: 18rem; /* account popover: fixed, so a language change never moves its contents */
+  --size-account-button: 12rem; /* fixed, so the loading skeleton can match it before the session name is known */
+  --size-tabbar: 3.75rem; /* student bottom tabs, without the safe-area inset */
+  --size-sheet-max: 85dvh; /* bottom sheets */
+  --size-marker: 3px; /* the current-item bar of NavList and BottomTabs (non-colour marker) */
 
   /* Motion */
   --motion-duration: 160ms;

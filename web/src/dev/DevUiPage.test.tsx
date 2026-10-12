@@ -1,4 +1,5 @@
 import { screen, waitFor, within } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { describe, expect, it } from 'vitest'
 import { i18n } from '../lib/i18n'
 import { expectNoAxeViolations } from '../test/axe'
@@ -28,5 +29,35 @@ describe('/dev/ui (development builds only)', () => {
       '#dev-summary-field',
     )
     await expectNoAxeViolations(container)
+  })
+
+  it('shows the T-M2.11 components: ButtonLink, NavList (vertical, horizontal), BottomTabs, Sheet and Popover', async () => {
+    const { container } = renderRoute('/dev/ui')
+    await screen.findByRole('heading', { level: 1, name: 'Thư viện thành phần' })
+    expect(screen.getByRole('link', { name: 'Đổi mật khẩu' })).toHaveClass('button')
+    const nav = screen.getByRole('navigation', { name: 'Điều hướng mẫu' })
+    expect(within(nav).getByRole('link', { name: 'Hôm nay' })).toHaveAttribute('aria-current', 'page')
+    expect(screen.getByRole('navigation', { name: 'Điều hướng mẫu (ngang)' })).toBeInTheDocument()
+    const tabs = screen.getByRole('navigation', { name: 'Thanh tab mẫu' })
+    await userEvent.click(within(tabs).getByRole('button', { name: 'Thêm' }))
+    expect(within(tabs).getByRole('button', { name: 'Thêm' })).toHaveAttribute('aria-expanded', 'true')
+    await expectNoAxeViolations(container)
+
+    await userEvent.click(screen.getByRole('button', { name: 'Mở sheet dưới' }))
+    expect(await screen.findByRole('dialog', { name: 'Thêm' })).toBeInTheDocument()
+    await expectNoAxeViolations(document.body)
+    await userEvent.keyboard('{Escape}')
+    await userEvent.click(screen.getByRole('button', { name: 'Mở ngăn điều hướng' }))
+    expect(await screen.findByRole('dialog', { name: 'Điều hướng' })).toBeInTheDocument()
+    await userEvent.click(screen.getByRole('button', { name: 'Đóng' }))
+    await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument())
+
+    const long = screen.getByRole('button', { name: 'Nguyễn Thị Phương Lan Anh (tên rất dài)' })
+    await userEvent.click(screen.getByRole('button', { name: 'Cô Lan' }))
+    expect(await screen.findByRole('dialog', { name: 'Tài khoản mẫu' })).toBeInTheDocument()
+    await expectNoAxeViolations(document.body)
+    await userEvent.keyboard('{Escape}')
+    await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument())
+    expect(long).toBeInTheDocument()
   })
 })

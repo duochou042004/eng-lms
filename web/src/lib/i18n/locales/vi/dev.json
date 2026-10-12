@@ -10,7 +10,10 @@
     "empty": "Trạng thái trống",
     "password": "Trường mật khẩu",
     "checkbox": "Ô đánh dấu",
-    "errorSummary": "Tóm tắt lỗi"
+    "errorSummary": "Tóm tắt lỗi",
+    "navigation": "Điều hướng",
+    "overlays": "Sheet và popover",
+    "buttonLink": "Liên kết dạng nút"
   },
   "sample": {
     "primary": "Lưu",
@@ -56,6 +59,24 @@
     "summaryTitle": "Mật khẩu chưa được đổi",
     "summaryFieldError": "Hãy nhập mật khẩu hiện tại.",
     "summaryFormError": "Không kết nối được máy chủ. Hãy kiểm tra mạng rồi thử lại.",
-    "summaryFieldLabel": "Mật khẩu hiện tại"
+    "summaryFieldLabel": "Mật khẩu hiện tại",
+    "navListLabel": "Điều hướng mẫu",
+    "navListHorizontalLabel": "Điều hướng mẫu (ngang)",
+    "navToday": "Hôm nay",
+    "navStudents": "Học viên",
+    "tabsLabel": "Thanh tab mẫu",
+    "tabsMore": "Thêm",
+    "openDrawer": "Mở ngăn điều hướng",
+    "openBottomSheet": "Mở sheet dưới",
+    "drawerTitle": "Điều hướng",
+    "bottomSheetTitle": "Thêm",
+    "close": "Đóng",
+    "sheetBody": "Nội dung của sheet. Esc, nút Đóng hoặc chạm ra ngoài để đóng.",
+    "popoverLabel": "Tài khoản mẫu",
+    "popoverTrigger": "Cô Lan",
+    "popoverLongTrigger": "Nguyễn Thị Phương Lan Anh (tên rất dài)",
+    "popoverBody": "Nội dung của popover.",
+    "linkSecondary": "Đổi mật khẩu",
+    "linkQuiet": "Xem tất cả"
   }
 }

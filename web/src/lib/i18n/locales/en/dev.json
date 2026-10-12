@@ -10,7 +10,10 @@
     "empty": "Empty state",
     "password": "Password field",
     "checkbox": "Checkbox",
-    "errorSummary": "Error summary"
+    "errorSummary": "Error summary",
+    "navigation": "Navigation",
+    "overlays": "Sheets and popover",
+    "buttonLink": "Button-styled link"
   },
   "sample": {
     "primary": "Save",
@@ -56,6 +59,24 @@
     "summaryTitle": "Your password wasn't changed",
     "summaryFieldError": "Enter your current password.",
     "summaryFormError": "Couldn't reach the server. Check your connection, then try again.",
-    "summaryFieldLabel": "Current password"
+    "summaryFieldLabel": "Current password",
+    "navListLabel": "Sample navigation",
+    "navListHorizontalLabel": "Sample navigation (horizontal)",
+    "navToday": "Today",
+    "navStudents": "Students",
+    "tabsLabel": "Sample tab bar",
+    "tabsMore": "More",
+    "openDrawer": "Open the navigation drawer",
+    "openBottomSheet": "Open a bottom sheet",
+    "drawerTitle": "Navigation",
+    "bottomSheetTitle": "More",
+    "close": "Close",
+    "sheetBody": "The sheet's content. Esc, the Close button or a tap outside closes it.",
+    "popoverLabel": "Sample account",
+    "popoverTrigger": "Ms Lan",
+    "popoverLongTrigger": "Nguyen Thi Phuong Lan Anh (a very long name)",
+    "popoverBody": "The popover's content.",
+    "linkSecondary": "Change password",
+    "linkQuiet": "See all"
   }
 }

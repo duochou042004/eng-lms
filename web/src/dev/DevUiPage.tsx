@@ -1,18 +1,23 @@
-import { Plus, Users } from 'lucide-react'
+import { CalendarCheck, CircleUser, Ellipsis, House, Plus, Users } from 'lucide-react'
 import { useState, type ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import { LanguageSwitcher } from '../app/components/LanguageSwitcher'
 import { usePageTitle } from '../app/routeAnnouncement'
 import {
+  BottomTabs,
   Button,
+  ButtonLink,
   Checkbox,
   EmptyState,
   ErrorSummary,
   IconButton,
   InlineAlert,
+  NavList,
   PageHeader,
   PasswordField,
+  Popover,
   SegmentedControl,
+  Sheet,
   Skeleton,
   Stack,
   TextField,
@@ -57,6 +62,81 @@ function SegmentedSamples() {
   )
 }
 
+/** NavList and BottomTabs (T-M2.11): "Today" links to this page, so it is the current item. */
+function NavigationSamples() {
+  const { t } = useTranslation('dev')
+  const [moreOpen, setMoreOpen] = useState(false)
+  const items = [
+    { id: 'today', label: t('sample.navToday'), icon: <CalendarCheck />, to: '/dev/ui' },
+    { id: 'students', label: t('sample.navStudents'), icon: <Users />, to: '/login' },
+  ]
+  return (
+    <Stack gap={4}>
+      <div className={styles.navColumn}>
+        <NavList label={t('sample.navListLabel')} items={items} />
+      </div>
+      <NavList label={t('sample.navListHorizontalLabel')} items={items} orientation="horizontal" />
+      {/* The bar is fixed to the viewport in the app; the transformed frame holds it in the gallery. */}
+      <div className={styles.tabsFrame}>
+        <BottomTabs
+          label={t('sample.tabsLabel')}
+          items={[{ ...items[0]!, id: 'home', icon: <House /> }]}
+          action={{
+            label: t('sample.tabsMore'),
+            icon: <Ellipsis />,
+            onPress: () => setMoreOpen((open) => !open),
+            isExpanded: moreOpen,
+          }}
+        />
+      </div>
+    </Stack>
+  )
+}
+
+/** Sheet (start and bottom) and Popover (T-M2.11), each opened from a button. */
+function OverlaySamples() {
+  const { t } = useTranslation('dev')
+  const [sheet, setSheet] = useState<'start' | 'bottom' | null>(null)
+  const [popover, setPopover] = useState<'short' | 'long' | null>(null)
+  return (
+    <>
+      <Button variant="secondary" onPress={() => setSheet('start')}>
+        {t('sample.openDrawer')}
+      </Button>
+      <Button variant="secondary" onPress={() => setSheet('bottom')}>
+        {t('sample.openBottomSheet')}
+      </Button>
+      <Sheet
+        placement={sheet ?? 'start'}
+        isOpen={sheet !== null}
+        onOpenChange={(open) => setSheet(open ? sheet : null)}
+        title={sheet === 'bottom' ? t('sample.bottomSheetTitle') : t('sample.drawerTitle')}
+        closeLabel={t('sample.close')}
+        footer={sheet === 'start' ? <Button variant="secondary">{t('sample.secondary')}</Button> : undefined}
+      >
+        <p>{t('sample.sheetBody')}</p>
+      </Sheet>
+      {(['short', 'long'] as const).map((id) => (
+        <Popover
+          key={id}
+          triggerLabel={id === 'short' ? t('sample.popoverTrigger') : t('sample.popoverLongTrigger')}
+          triggerIcon={<CircleUser />}
+          label={t('sample.popoverLabel')}
+          isOpen={popover === id}
+          onOpenChange={(open) => setPopover(open ? id : null)}
+        >
+          <Stack gap={3}>
+            <p>{t('sample.popoverBody')}</p>
+            <Button variant="secondary" onPress={() => setPopover(null)}>
+              {t('sample.close')}
+            </Button>
+          </Stack>
+        </Popover>
+      ))}
+    </>
+  )
+}
+
 function Section({ title, children }: { title: string; children: ReactNode }) {
   return (
     <section className={styles.section}>
@@ -84,6 +164,21 @@ export function DevUiPage() {
           <Button isPending>{t('sample.pending')}</Button>
           <IconButton label={t('sample.iconLabel')} icon={<Plus />} />
           <IconButton label={t('sample.iconLabel')} icon={<Plus />} variant="secondary" />
+        </Section>
+        <Section title={t('sections.buttonLink')}>
+          <ButtonLink to="/login" variant="secondary">
+            {t('sample.linkSecondary')}
+          </ButtonLink>
+          <ButtonLink to="/login" variant="quiet">
+            {t('sample.linkQuiet')}
+          </ButtonLink>
+          <ButtonLink to="/login">{t('sample.primary')}</ButtonLink>
+        </Section>
+        <Section title={t('sections.navigation')}>
+          <NavigationSamples />
+        </Section>
+        <Section title={t('sections.overlays')}>
+          <OverlaySamples />
         </Section>
         <Section title={t('sections.fields')}>
           <TextField label={t('sample.fieldLabel')} hint={t('sample.fieldHint')} />

@@ -1,0 +1,81 @@
+.list {
+  display: flex;
+  gap: var(--space-1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.vertical {
+  flex-direction: column;
+}
+
+.horizontal {
+  flex-flow: row wrap;
+}
+
+.item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-block-size: var(--size-control-md);
+  padding-inline: var(--space-3);
+  border-radius: var(--radius-sm);
+  color: var(--color-text);
+  font-weight: var(--font-weight-medium);
+  text-decoration: none;
+  transition: background-color var(--motion-duration) var(--motion-easing);
+}
+
+.item:hover {
+  background: var(--color-surface-sunken);
+}
+
+.item:focus-visible {
+  outline: var(--focus-ring-width) solid var(--color-focus);
+  outline-offset: calc(-1 * var(--focus-ring-width));
+}
+
+.item[aria-current='page'] {
+  background: var(--color-accent-subtle);
+  color: var(--color-accent-strong);
+  font-weight: var(--font-weight-semibold);
+}
+
+/* The non-colour current marker. */
+.item[aria-current='page']::before {
+  content: '';
+  position: absolute;
+  background: var(--color-accent);
+  border-radius: var(--radius-full);
+}
+
+.vertical .item[aria-current='page']::before {
+  inset-block: var(--space-2);
+  inset-inline-start: 0;
+  inline-size: var(--size-marker);
+}
+
+.horizontal .item[aria-current='page']::before {
+  inset-inline: var(--space-2);
+  inset-block-end: 0;
+  block-size: var(--size-marker);
+}
+
+.icon {
+  display: inline-flex;
+  flex: none;
+  inline-size: var(--size-icon);
+  block-size: var(--size-icon);
+}
+
+.icon > svg {
+  inline-size: 100%;
+  block-size: 100%;
+}
+
+.label {
+  min-inline-size: 0;
+  overflow-wrap: anywhere;
+}

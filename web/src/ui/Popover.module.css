@@ -1,0 +1,96 @@
+.trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  inline-size: var(--size-account-button);
+  max-inline-size: 100%;
+  min-block-size: var(--size-control-md);
+  padding-inline: var(--space-3);
+  border: var(--border-width) solid var(--color-border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font: inherit;
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: background-color var(--motion-duration) var(--motion-easing);
+}
+
+.trigger[data-hovered],
+.trigger[data-pressed] {
+  background: var(--color-accent-subtle);
+  color: var(--color-accent-strong);
+}
+
+.trigger[data-focus-visible] {
+  outline: var(--focus-ring-width) solid var(--color-focus);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.trigger[aria-expanded='true'] {
+  background: var(--color-accent-subtle);
+}
+
+.trigger[data-disabled] {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+/* The label truncates with an ellipsis; its `title` holds the full text (responsive-standards §3 item 8). */
+.triggerText {
+  flex: 0 1 auto;
+  min-inline-size: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.icon {
+  display: inline-flex;
+  flex: none;
+  inline-size: var(--size-icon);
+  block-size: var(--size-icon);
+  color: var(--color-text-muted);
+}
+
+.icon > svg {
+  inline-size: 100%;
+  block-size: 100%;
+}
+
+.chevron {
+  flex: none;
+  inline-size: var(--size-icon);
+  block-size: var(--size-icon);
+  margin-inline-start: auto;
+  transition: transform var(--motion-duration) var(--motion-easing);
+}
+
+.trigger[aria-expanded='true'] .chevron {
+  transform: rotate(180deg);
+}
+
+.popover {
+  inline-size: var(--size-popover);
+  max-inline-size: calc(100vw - var(--space-6));
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-overlay);
+  z-index: var(--z-overlay);
+}
+
+.popover[data-entering] {
+  animation: fade-in var(--motion-duration) var(--motion-easing);
+}
+
+.dialog {
+  padding: var(--space-4);
+  outline: none;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
