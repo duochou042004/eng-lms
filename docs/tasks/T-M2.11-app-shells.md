@@ -141,9 +141,9 @@ starts in a shell. 5. **Hard-coded semantics?** None: nav items are routes, not 
   student chunk contains no tutor navigation code); the placeholder `ShellLayout` and the `auth` `header.*` keys that no longer have a use are
   removed.
 
-- AC11 (G3 round 1, DEC-114; cheap fixes made in this task, DEC-088): (a) UX-1 / QA F-1, F-4, F-2 public part: below 480 px (`sm`) the public
+- AC11 (G3 round 1, DEC-114; cheap fixes made in this task, DEC-088): (a) UX-1 / QA F-1, F-4, F-2 public part: below 768 px (`md`; was 480 px, changed by (j)) the public
   frame has two fixed rows in every state (a full-width identity row where the name and the compact error wrap to at most 2 lines with a
-  `title`, then the end-aligned switcher row), the same in `RouteLoading`; at ≥ 480 px one row; a 60-character name shows ≥ 30 characters at
+  `title`, then the end-aligned switcher row), the same in `RouteLoading`; at ≥ 768 px one row; a 60-character name shows ≥ 30 characters at
   320 and 360 px and the `h1` top is equal in the loading, loaded and error states (CLS ≤ 0.05); the shell top bars stay one row (AC7);
   (b) UX-2: the Today and Home `h1` and document title equal their nav labels ("Hôm nay" / "Today", "Trang chủ" / "Home"); (c) UX-3 / QA F-2:
   in a narrow shell top bar the compact meta error shows an icon + Retry with the message kept as visually hidden alert text and linked to
@@ -152,6 +152,9 @@ starts in a shell. 5. **Hard-coded semantics?** None: nav items are routes, not 
   frame's trigger, not `body`; (g) UX-7: the shell 404 link names its destination ("Về Hôm nay" / "Back to Today", "Về Trang chủ" / "Back to
   Home"); (h) UX-8: the unused `shell:home` key is removed. Tests for each (component or E2E); assertions that read the old titles change
   with (b) only.
+  QA round 2 (DEC-114): (i) N-1: an overlay closed by a frame change stays closed when the frame changes back (its open state resets);
+  (j) N-2: the public frame's two-row layout applies below 768 px (`md`), not 480 px, so the error and a 60-character name are readable up to
+  the one-row width (≥ 30 characters of the name at 320, 360, 568 and 740 px; `h1` top equal across states). Tests for both.
 
 ## Test plan
 - Implementation: router unit tests (AC1 redirects, guard before 404), component tests (`AccountSection`, both shells with a mocked session and
