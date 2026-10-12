@@ -77,3 +77,31 @@ T-M2.4 set re-shot. `/dev/ui`: `devui-entries-vi`, `devui-sheet-start-open-vi`, 
 axe clean on every changed route and state at three viewports; the skip link is the first Tab stop; the drawer, sheet and popover trap focus,
 close with Esc and return focus; route focus lands on the `h1` after nav items, the home link and Back; one `header`, one `main`, one
 labelled `nav` per shell.
+
+## Round 2 fixes (G3 round 1, AC11, DEC-114)
+
+(Recorded by the LC from the implementer's returned text.)
+
+Commits: `f12116b` (fixes and unit tests), `879ba96` (E2E), `f05384a` (docs), `2ec015e` (evidence, progress). Both gate runs ran on `f05384a`,
+one after the other, against the same dev database.
+
+| Run | Log | Result |
+|---|---|---|
+| 1 | `gate-20261012T081104Z.log` | PASS (13 steps, 494 s) |
+| 2 | `gate-20261012T081927Z.log` | PASS (13 steps, 490 s) |
+
+Web: 31 test files, 328 tests (was 320). Budget: student and tutor 173.8 KB gz. E2E (phone-small, tablet, laptop): 228 passed, 24 skipped per run.
+
+| Item | Fix | Proof |
+|---|---|---|
+| (a) UX-1 / F-1, F-4, F-2 public | Public toolbar below 480 px: a fixed two-line identity row (name or error wraps to ≤ 2 lines, with `title`), then the end-aligned switcher row; same in `RouteLoading`; one row at ≥ 480 px; the 12rem `:has` rule is removed | E2E `shells.spec.ts` "AC11 (a)" at 320 and 360 px: 59 of 60 characters visible; `h1` top 155.6 px in loading, loaded and error; CLS ≤ 0.005; skeleton line 2 px from the heading (`records/*/ac11a-*`) |
+| (b) UX-2 | Today/Home `h1` and document title = "Hôm nay"/"Today", "Trang chủ"/"Home" | Title assertions updated in unit tests and E2E specs |
+| (c) UX-3 / F-2 shell | Container query on the error alert (`workspace-error`, under 22rem, not ~16rem on the identity: at 360 px the identity is 17rem): icon and Retry; the message is visually hidden inside the alert and describes Retry | `shells.test.tsx` "AC11 (c)"; screenshot `tutor-workspace-name-error-vi` |
+| (d) UX-4 / F-3 | The shell skeleton sits in the full-height `.shell` frame | `RouteLoading.test.tsx`; `loading.spec.ts`: sidebar skeleton bottom = viewport height |
+| (e) UX-5 | `.dialog:focus-visible` ring inset by the ring width, following the panel's corners (`Sheet`, `Popover`) | CSS; Sheet and Popover tests and axe pass |
+| (f) UX-6 | `useFrameFocus`: a frame change across `md`/`lg` with focus on `body` focuses the new frame's trigger | `shells.test.tsx` "AC11 (f)": 4 directions plus a leave-alone case; they fail without the hook |
+| (g) UX-7 | The shell 404 link reads "Về Hôm nay"/"Back to Today", "Về Trang chủ"/"Back to Home"; the top-level 404 is unchanged | `shells.test.tsx` (vi, en); `shells.spec.ts` |
+| (h) UX-8 | `shell:home` removed (vi, en) | i18n completeness test |
+
+New screenshots (`impl/<project>/`): `login-{320,360}-{name-loading,long-name,name-error,route-loading}-vi`; all other impl screenshots re-shot
+with the new titles and states. Docs: IA §4 (public frame rows), responsive-standards §3 items 5 and 8, design-system §3 (dialog ring).
