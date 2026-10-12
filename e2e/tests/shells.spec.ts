@@ -23,8 +23,8 @@ import { StepCounter } from '../support/steps'
 
 const h1 = (page: Page, name: string) => page.getByRole('heading', { level: 1, name })
 const COPY = {
-  tutorHome: 'Không gian gia sư',
-  studentHome: 'Trang của học viên',
+  tutorHome: 'Hôm nay',
+  studentHome: 'Trang chủ',
   notFound: 'Không tìm thấy trang',
   login: 'Đăng nhập',
   change: 'Đổi mật khẩu',
@@ -32,7 +32,6 @@ const COPY = {
   forbidden: 'Bạn không có quyền mở trang này',
   tutorNav: 'Điều hướng gia sư',
   studentNav: 'Điều hướng học viên',
-  startPage: 'Về trang đầu',
   metaLoading: 'Đang tải thông tin không gian dạy học',
   metaError: 'Không tải được tên không gian dạy học',
 }
@@ -40,6 +39,8 @@ const HOME = { tutor: '/tutor/today', student: '/student/home' } as const
 const TITLE = { tutor: COPY.tutorHome, student: COPY.studentHome } as const
 const NAV = { tutor: COPY.tutorNav, student: COPY.studentNav } as const
 const ITEM = { tutor: 'Hôm nay', student: 'Trang chủ' } as const
+/** The shell 404's link names its destination (AC11 (g)). */
+const BACK = { tutor: 'Về Hôm nay', student: 'Về Trang chủ' } as const
 const LONG_NAME = 'Lớp tiếng Anh giao tiếp của cô Nguyễn Thị Phương Lan, Hà Nội'.padEnd(60, '.').slice(0, 60)
 
 /** Evidence screenshot of a changed screen and state: evidence/T-M2.11/impl/<project>/. */
@@ -94,6 +95,48 @@ async function expectOneRow(row: Locator, what: string) {
     for (const b of boxes.children)
       expect(a.top, `${what}: children on one row (${JSON.stringify(tops)})`).toBeLessThan(b.bottom)
   return boxes
+}
+
+/** Below 480 px the public toolbar is two rows: the name row above the end-aligned switcher (AC11 (a)). */
+async function expectTwoRows(row: Locator, what: string) {
+  const boxes = await row.evaluate((el) => {
+    const [name, switcher] = [...el.children].map((c) => c.getBoundingClientRect())
+    return {
+      name: { top: name!.top, bottom: name!.bottom, width: name!.width },
+      switcher: { top: switcher!.top, right: switcher!.right },
+      row: { width: el.getBoundingClientRect().width, right: el.getBoundingClientRect().right },
+    }
+  })
+  expect(boxes.switcher.top, `${what}: the switcher row is below the name row`).toBeGreaterThanOrEqual(
+    boxes.name.bottom,
+  )
+  expect(Math.abs(boxes.name.width - boxes.row.width), `${what}: the name row is full width`).toBeLessThanOrEqual(1)
+  expect(Math.abs(boxes.switcher.right - boxes.row.right), `${what}: the switcher is end-aligned`).toBeLessThanOrEqual(
+    1,
+  )
+  return boxes
+}
+
+/** Sum of the layout-shift entries without recent input (an upper bound of CLS), as in loading.spec.ts. */
+async function layoutShiftTotal(page: Page) {
+  return page.evaluate(
+    () =>
+      new Promise<{ total: number; entries: number }>((resolve) => {
+        let total = 0
+        let entries = 0
+        new PerformanceObserver((list) => {
+          for (const entry of list.getEntries() as Array<
+            PerformanceEntry & { value: number; hadRecentInput: boolean }
+          >) {
+            if (!entry.hadRecentInput) {
+              total += entry.value
+              entries++
+            }
+          }
+        }).observe({ type: 'layout-shift', buffered: true })
+        setTimeout(() => resolve({ total, entries }), 250)
+      }),
+  )
 }
 
 /** A page signed in through the API in a fresh context: the stored sessions stay untouched. */
@@ -206,10 +249,7 @@ for (const role of ['tutor', 'student'] as const) {
       await expect(banner).toBeVisible()
       if (place === 'drawer') await expect(accountOpener(page, role)).toBeVisible()
       else await expect(page.getByRole('navigation', { name: NAV[role] })).toBeVisible()
-      await expect(page.getByRole('main').getByRole('link', { name: COPY.startPage })).toHaveAttribute(
-        'href',
-        HOME[role],
-      )
+      await expect(page.getByRole('main').getByRole('link', { name: BACK[role] })).toHaveAttribute('href', HOME[role])
       await expectAccessible(page)
       await shot(page, testInfo, `${role}-404-vi`)
 
@@ -329,7 +369,7 @@ for (const role of ['tutor', 'student'] as const) {
       await expect(dialog.getByText(/^Signed in as .+/)).toBeVisible()
       await expect(dialog.getByRole('link', { name: 'Change password' })).toBeVisible()
       await page.keyboard.press('Escape')
-      await expect(h1(page, role === 'tutor' ? 'Tutor workspace' : 'Student home')).toBeVisible()
+      await expect(h1(page, role === 'tutor' ? 'Today' : 'Home')).toBeVisible()
       await expect(page.locator('html')).toHaveAttribute('lang', 'en')
       await expect(accountOpener(page, role)).toBeVisible()
     })
@@ -473,12 +513,14 @@ test.describe('workspace name on the public pages (AC5)', () => {
     const toolbar = page.locator('main > div > div').first()
     await expect(toolbar).toContainText(name)
     await expect(toolbar.getByRole('radiogroup', { name: 'Ngôn ngữ' })).toBeVisible()
-    const vi = await expectOneRow(toolbar, 'public toolbar (vi)')
+    // AC7 as amended by AC11 (a): one row at >= 480 px, two rows (name, then switcher) below.
+    const rows = page.viewportSize()!.width >= 480 ? expectOneRow : expectTwoRows
+    const vi = await rows(toolbar, 'public toolbar (vi)')
     await expectAccessible(page)
     await shot(page, testInfo, 'login-workspace-name-vi')
     await toolbar.getByRole('radio', { name: 'English' }).click()
     await expect(h1(page, 'Sign in')).toBeVisible()
-    const en = await expectOneRow(toolbar, 'public toolbar (en)')
+    const en = await rows(toolbar, 'public toolbar (en)')
     await evidenceRecord(testInfo, 'ac5-login-workspace-name', {
       events,
       viewport: page.viewportSize(),
@@ -516,6 +558,120 @@ test.describe('workspace name on the public pages (AC5)', () => {
     release()
     await expect(page.getByRole('main').getByText(await workspaceName(page), { exact: true })).toBeVisible()
   })
+})
+
+test.describe('AC11 (a): the public frame below 480 px', () => {
+  test.use({ storageState: ANONYMOUS })
+
+  /** The characters of the name element's text that are painted inside its box (line clamp hides the rest). */
+  const visibleCharacters = (name: Locator) =>
+    name.evaluate((el) => {
+      const box = el.getBoundingClientRect()
+      const text = el.firstChild as Text
+      const range = document.createRange()
+      let count = 0
+      for (let i = 0; i < text.length; i++) {
+        range.setStart(text, i)
+        range.setEnd(text, i + 1)
+        const r = range.getBoundingClientRect()
+        if (r.width > 0 && r.bottom <= box.bottom + 0.5 && r.right <= box.right + 0.5) count++
+      }
+      return count
+    })
+
+  for (const width of [320, 360]) {
+    test(`at ${width} px: two rows in every state, a 60-character name shows ≥ 30 characters, the h1 never moves (CLS ≤ 0.05)`, async ({
+      page,
+      consoleGuard,
+    }, testInfo) => {
+      await page.setViewportSize({ width, height: 740 })
+      let mode: 'hold' | 'long' | 'fail' = 'hold'
+      let release: () => void = () => {}
+      const released = new Promise<void>((resolve) => (release = resolve))
+      await page.route('**/api/v1/meta', async (route) => {
+        if (mode === 'fail')
+          return route.fulfill({
+            status: 500,
+            contentType: 'application/problem+json',
+            body: '{"status":500,"code":"INTERNAL_ERROR"}',
+          })
+        if (mode === 'hold') await released
+        const response = await route.fetch()
+        await route.fulfill({ response, json: { ...(await response.json()), displayName: LONG_NAME } })
+      })
+      const toolbar = page.locator('main > div > div').first()
+      const heading = h1(page, COPY.login)
+      const record: Record<string, unknown> = {}
+
+      // Loading: the name is still pending.
+      await page.goto('/login')
+      await expect(heading).toBeVisible()
+      await expect(page.getByRole('status', { name: COPY.metaLoading })).toBeVisible()
+      const loadingTop = (await heading.boundingBox())!.y
+      record.loading = { h1Top: loadingTop, rows: await expectTwoRows(toolbar, 'loading') }
+      await shot(page, testInfo, `login-${width}-name-loading-vi`)
+
+      // Loaded: the 60-character name, at most two lines, at least 30 characters visible.
+      mode = 'long'
+      release()
+      const name = page.getByRole('main').getByText(LONG_NAME, { exact: true })
+      await expect(name).toBeVisible()
+      await expect(name).toHaveAttribute('title', LONG_NAME)
+      const shown = await visibleCharacters(name)
+      const loadedTop = (await heading.boundingBox())!.y
+      record.loaded = { h1Top: loadedTop, visibleCharacters: shown, rows: await expectTwoRows(toolbar, 'loaded') }
+      expect(shown, 'characters of the 60-character name on screen').toBeGreaterThanOrEqual(30)
+      await expectAccessible(page)
+      await shot(page, testInfo, `login-${width}-long-name-vi`)
+      record.loadedCls = await layoutShiftTotal(page)
+
+      // Error: the compact message wraps (≤ 2 lines) with Retry at the end; same rows, same h1 top.
+      mode = 'fail'
+      await page.reload()
+      const alert = page.getByRole('alert')
+      await expect(alert).toContainText(COPY.metaError)
+      acceptStatus(consoleGuard, 500, '/api/v1/meta')
+      await expect(alert.getByRole('button', { name: 'Thử lại' })).toBeVisible()
+      const errorTop = (await heading.boundingBox())!.y
+      record.error = { h1Top: errorTop, rows: await expectTwoRows(toolbar, 'error') }
+      record.errorCls = await layoutShiftTotal(page)
+      await expectAccessible(page)
+      await shot(page, testInfo, `login-${width}-name-error-vi`)
+      await evidenceRecord(testInfo, `ac11a-public-frame-${width}`, record)
+
+      expect(Math.abs(loadedTop - loadingTop), 'h1 top: loaded vs loading').toBeLessThanOrEqual(0.5)
+      expect(Math.abs(errorTop - loadingTop), 'h1 top: error vs loading').toBeLessThanOrEqual(0.5)
+      expect((record.loadedCls as { total: number }).total, 'CLS (loading → loaded)').toBeLessThanOrEqual(0.05)
+      expect((record.errorCls as { total: number }).total, 'CLS (error load)').toBeLessThanOrEqual(0.05)
+    })
+
+    test(`at ${width} px: the loading skeleton draws the same two rows; the h1 appears where its line was`, async ({
+      page,
+    }, testInfo) => {
+      await page.setViewportSize({ width, height: 740 })
+      let release: () => void = () => {}
+      const released = new Promise<void>((resolve) => (release = resolve))
+      await page.route(/\/assets\/LoginPage-[^/]+\.js$/, async (route) => {
+        await released
+        await route.continue()
+      })
+      await page.goto('/login', { waitUntil: 'commit' })
+      const region = page.getByRole('status', { name: 'Đang tải trang' })
+      await expect(region.locator('[data-shown]')).toHaveCount(1)
+      const rows = await expectTwoRows(region.getByTestId('route-loading-toolbar'), 'skeleton')
+      const line = (await region.getByTestId('route-loading-title').getByTestId('skeleton').boundingBox())!.y
+      await shot(page, testInfo, `login-${width}-route-loading-vi`)
+      release()
+      const heading = h1(page, COPY.login)
+      await expect(heading).toBeVisible()
+      await page.evaluate(() => document.fonts.ready)
+      const top = (await heading.boundingBox())!.y
+      const cls = await layoutShiftTotal(page)
+      await evidenceRecord(testInfo, `ac11a-public-skeleton-${width}`, { rows, titleLine: line, h1Top: top, cls })
+      expect(Math.abs(top - line), 'heading vs its skeleton line').toBeLessThanOrEqual(8)
+      expect(cls.total).toBeLessThanOrEqual(0.05)
+    })
+  }
 })
 
 test.describe('workspace name in the shell: loading and error (AC5)', () => {

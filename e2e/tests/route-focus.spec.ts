@@ -16,8 +16,8 @@ import { StepCounter } from '../support/steps'
 const COPY = {
   vi: {
     login: 'Đăng nhập',
-    tutor: 'Không gian gia sư',
-    student: 'Trang của học viên',
+    tutor: 'Hôm nay',
+    student: 'Trang chủ',
     notFound: 'Không tìm thấy trang',
     changePassword: 'Đổi mật khẩu',
     home: 'Về trang đầu',
@@ -26,8 +26,8 @@ const COPY = {
   },
   en: {
     login: 'Sign in',
-    tutor: 'Tutor workspace',
-    student: 'Student home',
+    tutor: 'Today',
+    student: 'Home',
     notFound: 'Page not found',
     changePassword: 'Change password',
     home: 'Go to the start page',

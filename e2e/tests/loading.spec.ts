@@ -21,7 +21,7 @@ const PAGES = [
     name: 'tutor',
     path: '/tutor',
     chunk: /\/assets\/TutorShell-[^/]+\.js$/,
-    h1: 'Không gian gia sư',
+    h1: 'Hôm nay',
     shell: true,
     state: TUTOR_STATE,
   },
@@ -29,7 +29,7 @@ const PAGES = [
     name: 'student',
     path: '/student',
     chunk: /\/assets\/StudentShell-[^/]+\.js$/,
-    h1: 'Trang của học viên',
+    h1: 'Trang chủ',
     shell: true,
     state: STUDENT_STATE,
   },
@@ -111,6 +111,15 @@ for (const target of PAGES) {
       await expect(region.locator('[data-shown]')).toHaveCount(1)
       await expect(region.getByTestId('skeleton').first()).toBeVisible()
       const box = await region.boundingBox()
+      // AC11 (d): the tutor sidebar skeleton (≥ 1024 px) runs to the bottom of the viewport, like the sidebar.
+      const sidebar = region.getByTestId('route-loading-sidebar')
+      if (await sidebar.count()) {
+        const bottom = (await sidebar.boundingBox())!
+        expect(
+          Math.abs(bottom.y + bottom.height - page.viewportSize()!.height),
+          'sidebar skeleton bottom',
+        ).toBeLessThanOrEqual(1)
+      }
       // T-M1.16 AC1: the language-switcher skeleton (public toolbar row) or the shell top bar's end control (T-M2.11).
       const end = endControl(page, target)
       const switcherSkeleton = end ? await region.getByTestId(end.skeleton).getByTestId('skeleton').boundingBox() : null
@@ -169,6 +178,6 @@ test.describe(() => {
     await expect(region.locator('[data-shown]')).toHaveCount(1)
     await evidenceShot(page, testInfo, 'route-loading-tutor-en')
     release()
-    await expect(page.getByRole('heading', { level: 1, name: 'Tutor workspace' })).toBeVisible()
+    await expect(page.getByRole('heading', { level: 1, name: 'Today' })).toBeVisible()
   })
 })

@@ -17,8 +17,8 @@ const PAGES = [
   {
     name: 'tutor',
     path: '/tutor',
-    vi: 'Không gian gia sư',
-    en: 'Tutor workspace',
+    vi: 'Hôm nay',
+    en: 'Today',
     switcher: true,
     state: TUTOR_STATE,
     shell: 'tutor',
@@ -26,8 +26,8 @@ const PAGES = [
   {
     name: 'student',
     path: '/student',
-    vi: 'Trang của học viên',
-    en: 'Student home',
+    vi: 'Trang chủ',
+    en: 'Home',
     switcher: true,
     state: STUDENT_STATE,
     shell: 'student',
@@ -96,10 +96,10 @@ for (const target of PAGES) {
 }
 
 for (const deepLink of [
-  { path: '/tutor', heading: 'Không gian gia sư', state: TUTOR_STATE },
+  { path: '/tutor', heading: 'Hôm nay', state: TUTOR_STATE },
   {
     path: '/student/home',
-    heading: 'Trang của học viên',
+    heading: 'Trang chủ',
     state: STUDENT_STATE,
   },
 ]) {

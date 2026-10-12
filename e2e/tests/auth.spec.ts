@@ -30,8 +30,8 @@ const h1 = (page: Page, name: string) => page.getByRole('heading', { level: 1, n
 const LOGIN = { vi: 'Đăng nhập', en: 'Sign in' }
 const CHANGE = 'Đổi mật khẩu'
 const FORBIDDEN = 'Bạn không có quyền mở trang này'
-const TUTOR_HOME = 'Không gian gia sư'
-const STUDENT_HOME = 'Trang của học viên'
+const TUTOR_HOME = 'Hôm nay'
+const STUDENT_HOME = 'Trang chủ'
 const FIELD = {
   current: 'Mật khẩu hiện tại (bắt buộc)',
   new: 'Mật khẩu mới (bắt buộc)',
