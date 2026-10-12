@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-10-12T09:30:00Z",
-  "updatedBy": "frontend-implementer (T-M2.11 implementation, session 2026-10-12, Opus 5.5)",
+  "updatedAt": "2026-10-12T05:20:00Z",
+  "updatedBy": "lead-coordinator (T-M2.11 PR #86, session 2026-10-12, Opus 5.5)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -32,12 +32,12 @@
   "currentTask": {
     "id": "T-M2.11",
     "title": "App shells (tutor sidebar/drawer, student tabs, account menu, workspace identity, nested 404s)",
-    "status": "in_progress",
+    "status": "in_review",
     "ownerRole": "FE",
     "branch": "feature/T-M2.11-app-shells",
     "packet": "docs/tasks/T-M2.11-app-shells.md",
-    "pr": null,
-    "lastCommit": "67e1097",
+    "pr": "86",
+    "lastCommit": "1c9f2a7",
     "startedAt": "2026-10-12T03:45:00Z",
     "entryGate": [
       "T-M2.4 merged — met (9fcc992, DEC-111)",
