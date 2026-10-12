@@ -24,7 +24,7 @@ export function TutorShell() {
   const wide = useMinWidth('lg')
   const root = useRef<HTMLDivElement>(null)
   useFrameFocus(wide, root)
-  const drawer = useOverlay()
+  const drawer = useOverlay(wide)
   const items: NavItem[] = NAV.map(({ labelKey, ...item }) => ({ ...item, label: t(labelKey) }))
   return (
     <div ref={root} className={styles.shell}>

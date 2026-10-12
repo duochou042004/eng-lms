@@ -18,7 +18,7 @@ export function WorkspaceNameLoading() {
 }
 
 /**
- * The compact (header-sized) error: the message and Retry, never inside a link. `wrap` (the public frame): below 480 px
+ * The compact (header-sized) error: the message and Retry, never inside a link. `wrap` (the public frame): below 768 px
  * the message may take two lines. In a shell top bar too narrow for the message (the `workspace-error` container, set by
  * the shell, under 22rem) only an icon shows before Retry: the message stays in the alert as visually hidden text and
  * describes Retry (AC11 (c)).
@@ -45,8 +45,8 @@ export function WorkspaceNameError({ onRetry, wrap = false }: { onRetry: () => v
 
 /**
  * The workspace display name from `GET /api/v1/meta` with its loading and compact error states, in the public frame (the
- * shells show it as their home link, `ShellHomeLink`). At ≥ 480 px one line with an ellipsis; below, up to two lines
- * (AC11 (a)); always with a full-text `title` (responsive-standards §3 item 8).
+ * shells show it as their home link, `ShellHomeLink`). At ≥ 768 px one line with an ellipsis; below, up to two lines
+ * (AC11 (a), (j)); always with a full-text `title` (responsive-standards §3 item 8).
  */
 export function WorkspaceName() {
   const meta = useMeta()

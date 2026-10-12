@@ -523,3 +523,26 @@ describe('AC11 (c): the compact meta error in a narrow shell top bar', () => {
     await expectNoAxeViolations(container)
   })
 })
+
+describe('AC11 (i): an overlay closed by a frame change stays closed when the frame changes back', () => {
+  it.each([
+    ['TUTOR', '/tutor/today', 768, 'Mở điều hướng', 1280, 'co-lan'],
+    ['STUDENT', '/student/home', 360, 'Thêm', 800, 'an.nguyen'],
+  ] as const)(
+    '%s on %s: open at %i px (%s), %i px and back → closed, focus on the trigger',
+    async (role, at, narrow, opener, wide, account) => {
+      setViewportWidth(narrow)
+      server.use(sessionAs(role))
+      renderRoute(at)
+      await screen.findByRole('heading', { level: 1 })
+      await userEvent.click(screen.getByRole('button', { name: opener }))
+      await screen.findByRole('dialog')
+      act(() => setViewportWidth(wide))
+      await waitFor(() => expect(screen.getByRole('button', { name: account })).toHaveFocus())
+      act(() => setViewportWidth(narrow))
+      await waitFor(() => expect(screen.getByRole('button', { name: opener })).toHaveFocus())
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+      expect(screen.getByRole('button', { name: opener })).toHaveAttribute('aria-expanded', 'false')
+    },
+  )
+})

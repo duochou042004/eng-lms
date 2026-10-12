@@ -33,7 +33,7 @@
   white-space: nowrap;
 }
 
-/* The public frame: one line at >= 480 px; below 480 px (sm, src/ui/breakpoints.ts) at most two lines. */
+/* The public frame: one line at >= 768 px; below 768 px (md, src/ui/breakpoints.ts) at most two lines (AC11 (j)). */
 .clamp {
   display: block;
   min-inline-size: 0;
@@ -42,7 +42,7 @@
   white-space: nowrap;
 }
 
-@media (width < 480px) {
+@media (width < 768px) {
   .clamp {
     display: -webkit-box;
     overflow-wrap: anywhere;
