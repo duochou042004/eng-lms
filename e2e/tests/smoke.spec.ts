@@ -1,15 +1,28 @@
+import type { Page } from '@playwright/test'
 import { ANONYMOUS, STUDENT_STATE, TUTOR_STATE } from '../support/auth'
 import { expectNoAxeViolations, expectNoHorizontalScroll } from '../support/checks'
 import { evidenceShot } from '../support/evidence'
 import { expect, test } from '../support/fixtures'
+import { openAccountSection } from '../support/shell'
 
 // T-M1.6 smoke: the packaged app serves every shell page same-origin, in vi (default) and en, accessibly, without
 // horizontal scroll and without console/CSP errors (the console guard is automatic).
 // T-M2.4: the landing page is gone; its case is the sign-in page (the anonymous start page). The shells run signed in
 // (the stored E2E tutor and student sessions).
+// T-M2.11 (DEC-112 (5), scope 11 (c)): on the shells the language radios are in the account section (popover, drawer or
+// More sheet by viewport), opened first; the assertions after it opens are unchanged. /student/x is the student shell's
+// 404 now (AC1), so the deep link uses /student/home.
 const PAGES = [
   { name: 'login', path: '/login', vi: 'Đăng nhập', en: 'Sign in', switcher: true, state: ANONYMOUS },
-  { name: 'tutor', path: '/tutor', vi: 'Không gian gia sư', en: 'Tutor workspace', switcher: true, state: TUTOR_STATE },
+  {
+    name: 'tutor',
+    path: '/tutor',
+    vi: 'Không gian gia sư',
+    en: 'Tutor workspace',
+    switcher: true,
+    state: TUTOR_STATE,
+    shell: 'tutor',
+  },
   {
     name: 'student',
     path: '/student',
@@ -17,6 +30,7 @@ const PAGES = [
     en: 'Student home',
     switcher: true,
     state: STUDENT_STATE,
+    shell: 'student',
   },
   // The not-found page has no language switcher: English comes from the stored choice (englms.locale).
   {
@@ -28,6 +42,11 @@ const PAGES = [
     state: ANONYMOUS,
   },
 ] as const
+
+/** The shells' account section holds their switcher (T-M2.11); the public pages show it in their toolbar row. */
+async function revealSwitcher(page: Page, target: (typeof PAGES)[number]) {
+  if ('shell' in target) await openAccountSection(page, target.shell)
+}
 
 for (const target of PAGES) {
   test.describe(() => {
@@ -41,11 +60,14 @@ for (const target of PAGES) {
       await evidenceShot(page, testInfo, `${target.name}-vi`)
 
       if (target.switcher) {
+        await revealSwitcher(page, target)
         // The language switcher is a SegmentedControl: a radiogroup of radio segments with aria-checked (T-M1.9 AC3).
         const switcher = page.getByRole('radiogroup', { name: 'Ngôn ngữ' })
         await expect(switcher.getByRole('radio', { name: 'Tiếng Việt' })).toBeChecked()
         await expect(switcher.getByRole('radio', { name: 'English' })).not.toBeChecked()
         await switcher.getByRole('radio', { name: 'English' }).click()
+        // The account section is modal: close it to read the page behind it (it stays open on a language change).
+        if ('shell' in target) await page.keyboard.press('Escape')
       } else {
         await page.evaluate(() => localStorage.setItem('englms.locale', 'en'))
         await page.reload()
@@ -53,6 +75,7 @@ for (const target of PAGES) {
       await expect(page.getByRole('heading', { level: 1, name: target.en })).toBeVisible()
       await expect(page.locator('html')).toHaveAttribute('lang', 'en')
       if (target.switcher) {
+        await revealSwitcher(page, target)
         const switcher = page.getByRole('radiogroup', { name: 'Language' })
         await expect(switcher.getByRole('radio', { name: 'English' })).toBeChecked()
         await expect(switcher.getByRole('radio', { name: 'Tiếng Việt' })).not.toBeChecked()
@@ -60,6 +83,7 @@ for (const target of PAGES) {
         // The choice survives a reload (localStorage, T-M1.3 AC5).
         await page.reload()
         await expect(page.getByRole('heading', { level: 1, name: target.en })).toBeVisible()
+        await revealSwitcher(page, target)
         await expect(
           page.getByRole('radiogroup', { name: 'Language' }).getByRole('radio', { name: 'English' }),
         ).toBeChecked()
@@ -73,7 +97,11 @@ for (const target of PAGES) {
 
 for (const deepLink of [
   { path: '/tutor', heading: 'Không gian gia sư', state: TUTOR_STATE },
-  { path: '/student/x', heading: 'Trang của học viên', state: STUDENT_STATE },
+  {
+    path: '/student/home',
+    heading: 'Trang của học viên',
+    state: STUDENT_STATE,
+  },
 ]) {
   test.describe(() => {
     test.use({ storageState: deepLink.state })

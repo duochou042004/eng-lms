@@ -16,11 +16,15 @@ import {
 import { expectNoAxeViolations, expectNoHorizontalScroll } from '../support/checks'
 import { evidenceRecord, evidenceShot } from '../support/evidence'
 import { expect, test } from '../support/fixtures'
+import { openAccountSection } from '../support/shell'
 import { StepCounter } from '../support/steps'
 
 // T-M2.4 (auth UI) at the mandatory viewports. Destructive flows (forced change, voluntary change, logout, remember-me)
 // each use their own student, created through the tutor API; the stored tutor and student sessions are never logged
 // out or password-changed here (packet scope 10).
+// T-M2.11: "Change password" and "Log out" sit in the shell's account section (account popover, tutor drawer or student
+// More sheet, by viewport: support/shell.ts); /tutor/students has no page yet (the shell's 404, AC1), so the return
+// targets use /tutor/today.
 
 const h1 = (page: Page, name: string) => page.getByRole('heading', { level: 1, name })
 const LOGIN = { vi: 'Đăng nhập', en: 'Sign in' }
@@ -129,8 +133,8 @@ test.describe('anonymous', () => {
   test('AC1: a protected URL asks to sign in and returns there; the login takes 3 steps (ux-flows)', async ({
     page,
   }, testInfo) => {
-    await page.goto('/tutor/students')
-    await expect(page).toHaveURL(/\/login\?next=%2Ftutor%2Fstudents$/)
+    await page.goto('/tutor/today')
+    await expect(page).toHaveURL(/\/login\?next=%2Ftutor%2Ftoday$/)
     await expect(h1(page, LOGIN.vi)).toBeVisible()
     await expectAccessible(page)
     await shot(page, testInfo, 'login-default-vi')
@@ -140,7 +144,7 @@ test.describe('anonymous', () => {
     await steps.step('type the username', () => page.getByLabel('Tên đăng nhập (bắt buộc)').fill(username))
     await steps.step('type the password', () => page.getByLabel('Mật khẩu (bắt buộc)', { exact: true }).fill(password))
     await steps.step('Sign in', () => page.getByRole('button', { name: LOGIN.vi, exact: true }).click())
-    await expect(page).toHaveURL(/\/tutor\/students$/)
+    await expect(page).toHaveURL(/\/tutor\/today$/)
     await expect(h1(page, TUTOR_HOME)).toBeVisible()
     await expectSameDocument(page)
     steps.expectAtMost(3)
@@ -152,7 +156,7 @@ test.describe('anonymous', () => {
     ['https%3A%2F%2Fevil.example', '/tutor/today'],
     ['%2Ftutor%2F..%2Fstudent%2Fhome', '/tutor/today'],
     ['%2Fstudent%2Fhome', '/tutor/today'],
-    ['%2Ftutor%2Fstudents%3Fq%3Dan', '/tutor/students?q=an'],
+    ['%2Ftutor%2Ftoday%3Fq%3Dan', '/tutor/today?q=an'],
   ] as const) {
     test(`AC2: signing in with next=${next} lands on ${landing}, through the router`, async ({ page }) => {
       await page.goto(`/login?next=${next}`)
@@ -270,6 +274,7 @@ test.describe('anonymous', () => {
     await page.goto('/login')
     await signInWithForm(page, student)
     await expect(h1(page, STUDENT_HOME)).toBeVisible()
+    await openAccountSection(page, 'student')
     await page.getByRole('link', { name: CHANGE }).click()
     await expect(h1(page, CHANGE)).toBeFocused()
     await expect(page.getByText('Sau khi đổi, bạn sẽ bị đăng xuất trên mọi thiết bị khác.')).toBeVisible()
@@ -345,6 +350,7 @@ test.describe('anonymous', () => {
     await page.goto('/login')
     await signInWithForm(page, student)
     await expect(h1(page, STUDENT_HOME)).toBeVisible()
+    await openAccountSection(page, 'student')
     await page.getByRole('button', { name: 'Đăng xuất' }).click()
     await expect(page).toHaveURL(/\/login$/)
     await expect(h1(page, LOGIN.vi)).toBeVisible()
@@ -366,12 +372,14 @@ test.describe('anonymous', () => {
       expect(names.includes('ENGLMS_REMEMBER_ME')).toBe(remembered)
       // The idle expiry: the session cookie is gone; the page still shows the student (no request yet).
       await context.clearCookies({ name: 'ENGLMS_SESSION' })
+      await openAccountSection(page, 'student')
       await page.getByRole('button', { name: 'Đăng xuất' }).click()
       await expect(h1(page, LOGIN.vi)).toBeVisible()
       expect((await context.cookies()).map((c) => c.name)).not.toContain('ENGLMS_REMEMBER_ME')
       // The next sign-in works (the XSRF cookie is re-primed): no 403.
       await signInWithForm(page, student)
       await expect(h1(page, STUDENT_HOME)).toBeVisible()
+      await openAccountSection(page, 'student')
       await page.getByRole('button', { name: 'Đăng xuất' }).click()
       await expect(h1(page, LOGIN.vi)).toBeVisible()
     }
@@ -394,6 +402,7 @@ test.describe('anonymous', () => {
     await signInWithForm(page, student)
     await expect(h1(page, STUDENT_HOME)).toBeVisible()
     expect((await context.cookies()).map((c) => c.name)).not.toContain('ENGLMS_REMEMBER_ME')
+    await openAccountSection(page, 'student')
     await page.getByRole('button', { name: 'Đăng xuất' }).click()
     await expect(h1(page, LOGIN.vi)).toBeVisible()
 
@@ -423,6 +432,7 @@ test.describe('anonymous', () => {
     await expect(shared).toHaveURL(/\/student\/home$/)
     await expect(h1(shared, STUDENT_HOME)).toBeVisible()
     // The shared-device case (DEC-093): log out, then another user signs in on the form, with no 403.
+    await openAccountSection(shared, 'student')
     await shared.getByRole('button', { name: 'Đăng xuất' }).click()
     await expect(h1(shared, LOGIN.vi)).toBeVisible()
     await signInWithForm(shared, tutor())
@@ -487,6 +497,7 @@ for (const [role, state, other, home, homeTitle] of [
       page,
     }, testInfo) => {
       await page.goto(home)
+      await openAccountSection(page, role === 'TUTOR' ? 'tutor' : 'student')
       await expect(page.getByRole('button', { name: 'Đăng xuất' })).toBeVisible()
       await expectAccessible(page)
       await shot(page, testInfo, `shell-header-${role.toLowerCase()}-vi`)

@@ -2,6 +2,7 @@ import type { Page } from '@playwright/test'
 import { ANONYMOUS, STUDENT_STATE, TUTOR_STATE } from '../support/auth'
 import { evidenceRecord, evidenceShot } from '../support/evidence'
 import { expect, test } from '../support/fixtures'
+import { accountPlace } from '../support/shell'
 
 // T-M1.9 AC4 / AC6 N3 / AC10: the route loading state on a slow first load. The lazy route chunk (and /api/v1/meta) are
 // held back, so the loading region is visible long enough to check and photograph; then the layout-shift total of the
@@ -9,6 +10,10 @@ import { expect, test } from '../support/fixtures'
 // wide as the switcher (≤ 8 px) and ends where it ends (≤ 1 px).
 // T-M2.4: the landing case is now the sign-in page (the anonymous start page, with the switcher in its toolbar row);
 // the shell cases run with the stored E2E tutor and student sessions.
+// T-M2.11 (DEC-112 (5), packet scope 11 (b)): the shell's language switcher moved into the account section, so the shell
+// case of T-M1.16 AC1 checks the skeleton of the top bar's end control against that control: the account menu button
+// (tutor ≥ 1024 px, student ≥ 768 px), the tutor's menu button below 1024 px, nothing for the student below 768 px. The
+// public-page case is unchanged.
 
 const LOADING_LABEL = { vi: 'Đang tải trang', en: 'Loading the page' } as const
 const PAGES = [
@@ -38,6 +43,21 @@ const PAGES = [
   },
 ] as const
 const DELAY_MS = 700
+
+/** The top-bar control whose skeleton T-M1.16 AC1 compares, with its skeleton's test id, at this viewport. */
+function endControl(page: Page, target: (typeof PAGES)[number]) {
+  if (!target.shell)
+    return { skeleton: 'route-loading-switcher', control: page.getByRole('radiogroup', { name: 'Ngôn ngữ' }) }
+  const place = accountPlace(page, target.name === 'tutor' ? 'tutor' : 'student')
+  if (place === 'popover')
+    return {
+      skeleton: 'route-loading-account',
+      control: page.getByRole('banner').locator('button[aria-haspopup="dialog"]'),
+    }
+  if (place === 'drawer')
+    return { skeleton: 'route-loading-menu', control: page.getByRole('button', { name: 'Mở điều hướng' }) }
+  return null // the student's top bar below 768 px has no control (the bottom tabs hold More)
+}
 const round = (n: number) => Math.round(n * 100) / 100
 
 /** Delays matching requests by DELAY_MS, or until `release()` when held. */
@@ -91,8 +111,9 @@ for (const target of PAGES) {
       await expect(region.locator('[data-shown]')).toHaveCount(1)
       await expect(region.getByTestId('skeleton').first()).toBeVisible()
       const box = await region.boundingBox()
-      // T-M1.16 AC1: the language-switcher skeleton (landing toolbar row or shell header).
-      const switcherSkeleton = await region.getByTestId('route-loading-switcher').getByTestId('skeleton').boundingBox()
+      // T-M1.16 AC1: the language-switcher skeleton (public toolbar row) or the shell top bar's end control (T-M2.11).
+      const end = endControl(page, target)
+      const switcherSkeleton = end ? await region.getByTestId(end.skeleton).getByTestId('skeleton').boundingBox() : null
       await evidenceShot(page, testInfo, `route-loading-${target.name}-vi`)
       release()
 
@@ -100,26 +121,31 @@ for (const target of PAGES) {
       // The shells' workspace name (GET /api/v1/meta, delayed) has replaced its loading region.
       await expect(page.getByRole('status', { name: 'Đang tải thông tin không gian dạy học' })).toHaveCount(0)
       await page.evaluate(() => document.fonts.ready)
-      const switcher = await page.getByRole('radiogroup', { name: 'Ngôn ngữ' }).boundingBox()
+      const switcher = end ? await end.control.boundingBox() : null
       const cls = await layoutShiftTotal(page)
-      const ac1 = {
-        skeleton: switcherSkeleton,
-        switcher,
-        inlineSizeDeltaPx: round(Math.abs(switcher!.width - switcherSkeleton!.width)),
-        inlineSizeLimitPx: 8,
-        inlineEndDeltaPx: round(
-          Math.abs(switcher!.x + switcher!.width - (switcherSkeleton!.x + switcherSkeleton!.width)),
-        ),
-        inlineEndLimitPx: 1,
-      }
+      const ac1 = end
+        ? {
+            control: end.skeleton.replace('route-loading-', ''),
+            skeleton: switcherSkeleton,
+            switcher,
+            inlineSizeDeltaPx: round(Math.abs(switcher!.width - switcherSkeleton!.width)),
+            inlineSizeLimitPx: 8,
+            inlineEndDeltaPx: round(
+              Math.abs(switcher!.x + switcher!.width - (switcherSkeleton!.x + switcherSkeleton!.width)),
+            ),
+            inlineEndLimitPx: 1,
+          }
+        : { control: 'none (no top-bar control at this viewport)' }
       await evidenceRecord(testInfo, `t-m1.16-ac1-switcher-${target.name}`, {
         viewport: page.viewportSize(),
         ...ac1,
         layoutShift: cls,
         clsLimit: 0.05,
       })
-      expect(ac1.inlineSizeDeltaPx, 'switcher skeleton inline size vs the switcher').toBeLessThanOrEqual(8)
-      expect(ac1.inlineEndDeltaPx, 'switcher skeleton inline end vs the switcher').toBeLessThanOrEqual(1)
+      if ('inlineSizeDeltaPx' in ac1) {
+        expect(ac1.inlineSizeDeltaPx, 'switcher skeleton inline size vs the switcher').toBeLessThanOrEqual(8)
+        expect(ac1.inlineEndDeltaPx, 'switcher skeleton inline end vs the switcher').toBeLessThanOrEqual(1)
+      }
       await evidenceRecord(testInfo, `ac4-cls-${target.name}`, {
         viewport: page.viewportSize(),
         heldChunkUntilScreenshot: true,
