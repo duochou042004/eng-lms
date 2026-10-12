@@ -97,7 +97,7 @@ async function expectOneRow(row: Locator, what: string) {
   return boxes
 }
 
-/** Below 480 px the public toolbar is two rows: the name row above the end-aligned switcher (AC11 (a)). */
+/** Below 768 px the public toolbar is two rows: the name row above the end-aligned switcher (AC11 (a), (j)). */
 async function expectTwoRows(row: Locator, what: string) {
   const boxes = await row.evaluate((el) => {
     const [name, switcher] = [...el.children].map((c) => c.getBoundingClientRect())
@@ -513,8 +513,8 @@ test.describe('workspace name on the public pages (AC5)', () => {
     const toolbar = page.locator('main > div > div').first()
     await expect(toolbar).toContainText(name)
     await expect(toolbar.getByRole('radiogroup', { name: 'Ngôn ngữ' })).toBeVisible()
-    // AC7 as amended by AC11 (a): one row at >= 480 px, two rows (name, then switcher) below.
-    const rows = page.viewportSize()!.width >= 480 ? expectOneRow : expectTwoRows
+    // AC7 as amended by AC11 (a), (j): one row at >= 768 px, two rows (name, then switcher) below.
+    const rows = page.viewportSize()!.width >= 768 ? expectOneRow : expectTwoRows
     const vi = await rows(toolbar, 'public toolbar (vi)')
     await expectAccessible(page)
     await shot(page, testInfo, 'login-workspace-name-vi')
@@ -560,7 +560,7 @@ test.describe('workspace name on the public pages (AC5)', () => {
   })
 })
 
-test.describe('AC11 (a): the public frame below 480 px', () => {
+test.describe('AC11 (a), (j): the public frame below 768 px', () => {
   test.use({ storageState: ANONYMOUS })
 
   /** The characters of the name element's text that are painted inside its box (line clamp hides the rest). */
@@ -579,7 +579,7 @@ test.describe('AC11 (a): the public frame below 480 px', () => {
       return count
     })
 
-  for (const width of [320, 360]) {
+  for (const width of [320, 360, 568, 740]) {
     test(`at ${width} px: two rows in every state, a 60-character name shows ≥ 30 characters, the h1 never moves (CLS ≤ 0.05)`, async ({
       page,
       consoleGuard,
