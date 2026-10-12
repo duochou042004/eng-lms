@@ -1,8 +1,13 @@
-# Handoff — 2026-10-12T03:20Z (T-M2.11 packet in review, PR #85; split T-M2.12, DEC-112)
+# Handoff — 2026-10-12T14:00Z (T-M2.11 app shells done; next: the T-M2.12 packet)
 
-Phase/Milestone: P1 / M2 (in progress) · Current task: **T-M2.11 (packet in DOCS-REVIEW, PR #85, branch `docs/T-M2.11-app-shells`)** · Branch: `docs/T-M2.11-app-shells` · Last merges on develop: `30fc948` (PR #84, T-M2.4 merge record), `9fcc992` (PR #82, T-M2.4) · Remote: https://github.com/duochou042004/eng-lms (mirror: gitlab.com/duochou042004/eng-lms)
+Phase/Milestone: P1 / M2 (in progress) · Current task: **T-M2.12 (draft: packet next)** · Branch: `develop` · Last merges on develop: `1af32de` (PR #86, T-M2.11), `3bf8c91` (PR #87, QA report); this record is the `chore/T-M2.11-merge-record` PR (check `git log` that it landed) · Remote: https://github.com/duochou042004/eng-lms (mirror: gitlab.com/duochou042004/eng-lms)
 
 ## Where we are
+- **T-M2.11 done** (`1af32de`, DEC-112..115): app shells (nested shell routes, 404s inside the shells, tutor sidebar/drawer, student tabs/top bar,
+  account section with language, Change password, Log out; workspace name once and on the public pages, two rows below 768 px; `Sheet`,
+  `Popover`, `NavList`, `BottomTabs`, `ButtonLink`, `breakpoints.ts` in `ui/`). QA PASS (round 3), UX APPROVED (round 2), SEC not triggered.
+  G3 fixes via AC11 (DEC-114). Deferred: UX-9 S4 (compact shell error: Retry beside its icon, icon `title`) → T-M2.12. Language from a shell is
+  now 2 steps (DEC-112 (5)).
 - **T-M2.4 done** (`9fcc992`, DEC-109..111): auth UI (login, forgot info, forced/voluntary password change, logout, role redirect, guards,
   `/forbidden`, `?next=` allow-list T18, XSRF header with re-priming, E2E sign-in harness with `e2e-tutor` under `.data/e2e/`). QA PASS WITH MINOR,
   UX APPROVED, SEC APPROVED (the client-side auth part of the M2 exit security review). Deferred: SEC S4-2 cross-tab session → T-M2.12 (DEC-112; was T-M2.11); SEC S4-3 CI
@@ -19,11 +24,11 @@ Phase/Milestone: P1 / M2 (in progress) · Current task: **T-M2.11 (packet in DOC
 - Accounts (PO): `gh auth login`, `glab auth login`, git identity, credential helpers. Clone setup: `./scripts/install-hooks.sh`, `git remote add gitlab …`.
 
 ## Next steps
-1. **T-M2.11 packet** `docs/tasks/T-M2.11-app-shells.md` (PR #85): DOCS-REVIEW round 1 CHANGES REQUESTED (D-1 S2 language budget, D-2..D-11)
-   fixed; round 2 PASS (N-1..N-7 S3/S4 fixed); CI, verdicts, merge-gate, gitlab-sync. Split (DEC-112): T-M2.11 shells (SEC not triggered) and **T-M2.12** navigation
-   feedback (150 ms lazy navigation, offline chunk) + cross-tab session (SEC S4-2; SEC triggered). Ask the PO once for the T-M2.11 start
-   signal (DEC); with it implement through G3 (QA + UX).
-2. Then T-M2.12, T-M2.5 (students UI), T-M2.6, T-M2.7 (M2 regression incl. the `qa/` spec updates). Optional: T-M2.10.
+1. **T-M2.12 packet** (task-packet skill, branch `docs/T-M2.12-<slug>`): the backlog row: 150 ms lazy-navigation feedback (DEC-073), offline
+   chunk feedback (DEC-087 F-3), refetch the session on 403 `FORBIDDEN_ROLE` and broadcast sign-in/out across tabs (T-M2.4 SEC S4-2), UX-9
+   (DEC-115). **SEC triggered** (DEC-112). Size check; fresh docs-reviewer, CI, verdicts, merge-gate, gitlab-sync; ask the PO once for the start
+   signal (DEC); with it implement through G3 (QA, UX, SEC).
+2. Then T-M2.5 (students UI), T-M2.6, T-M2.7 (M2 regression incl. the `qa/` spec updates). Optional: T-M2.10.
 
 ## Pending PO decisions / actions
 - This device: `(cd qa && pnpm exec playwright install-deps firefox webkit)` (needs `sudo`) so `qa/` can run all three browsers (G3 of UI tasks).
@@ -32,6 +37,9 @@ Phase/Milestone: P1 / M2 (in progress) · Current task: **T-M2.11 (packet in DOC
 - Recommended (DEC-061): `glab` deny rules. OQ-03..OQ-14 (defaults documented).
 
 ## Gotchas
+- An API usage limit can stop a subagent mid-run: check `podman ps` and `pgrep -af 'java -jar'` (its JAR may still run), then resume it with
+  SendMessage; it keeps its context. A `gh` GraphQL error mid-chain: check which comments landed before re-posting.
+- Fix rounds: resume the original implementer (it keeps the code context); the LC first adds the findings to the packet as an AC (DEC-088) and a DEC.
 - Running `gate.sh` or `e2e-run.sh` rewrites tracked `evidence/<task>/` screenshots and records (T-M2.4 QA F1): reviewers restore them with
   `git checkout -- evidence/<task>`. E2E signs in as `e2e-tutor` (`.data/e2e/`); never `dev-down.sh --purge` the PO's dev database without asking.
 - **One checkout, no worktrees** (DEC-094): subagents one at a time on the task branch; only the LC switches branches, never while a subagent runs.
