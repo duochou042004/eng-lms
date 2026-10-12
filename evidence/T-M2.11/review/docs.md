@@ -2,6 +2,31 @@
 
 PR #85, branch `docs/T-M2.11-app-shells`.
 
+## Round 2 (head `d7c2cfd`; fresh reviewer)
+
+`./scripts/check-docs.sh` (bare): `docs-check: PASS (211 markdown files, progress.json valid, sources intact, prompt within limit)`
+
+All round 1 findings D-1..D-11 **fixed** (D-1 checked against `route-focus.spec.ts:162-199`, `loading.spec.ts:94-122`, `smoke.spec.ts:44-64`).
+Also confirmed: the split agrees across DEC-112, backlog and `progress.json`; code assumptions hold (`router.tsx` splat guards, `requireRole`
+builds `next` from the request URL, Cancel = `navigate(-1)`, `WorkspaceName` error has a Retry `Button`, `RouteLoading` draws the T-M2.4
+controls, `meta.error` says "class", `auth:header.logout` still used by `ChangePasswordPage.tsx:206`); SEC not triggered holds; React Router
+resolves a relative loader `redirect('today')` against the matched route.
+
+| ID | Sev | Issue | LC disposition |
+|---|---|---|---|
+| N-1 | S3 | Tutor < 1024 px and student < 768 px have no account button or popover, yet scope 11 (b), AC9 and the evidence list assumed one at every viewport. | Fixed: per-viewport wording (drawer / More sheet below the breakpoints, popover above). |
+| N-2 | S3 | IA §3 "More expanded inline" at ≥ 768 px vs the account-menu button: no DEC. | Fixed: DEC-112 (4) clause; IA §3 note in Docs to update. |
+| N-3 | S3 | The public toolbar row (name + switcher) had no one-row/truncation rule; a wrap could break `polish.spec.ts` AC3. | Fixed: scope 8 and AC7 cover the public row; scope 9 adds a name-shaped line to the public toolbar skeleton. |
+| N-4 | S4 | `route-focus.spec.ts:81`, `:148` find the home link by "Eng-LMS". | Fixed: scope 11 names it. |
+| N-5 | S4 | Home-link design note contradicted itself. | Fixed: reworded. |
+| N-6 | S4 | `Popover` is not in the design-system §3 inventory. | Fixed: "added to the §3 inventory". |
+| N-7 | S4 | `HANDOFF.md:3` stale branch and PR #84 note. | Fixed. |
+
+Not checked: the full `ux-flows.md` and `interaction-states.md` text; the 44 px target with the workspace name as the home link (runtime; AC7,
+AC9, QA).
+
+DOCS-REVIEW T-M2.11: PASS
+
 ## Round 1 (head `2fd0108`)
 
 `./scripts/check-docs.sh` (bare): `docs-check: PASS (210 markdown files, progress.json valid, sources intact, prompt within limit)`

@@ -36,7 +36,8 @@ handling of the original backlog row are **T-M2.12** (DEC-112).
      visible (Home, More), 44 px targets, padding for `env(safe-area-inset-bottom)`, and page content never hidden behind it; **More** opens a
      bottom **sheet** (a decorative drag handle and a visible Close button; swipe is never the only way, responsive-standards §3 item 7) with the
      account section (IA §3 lists Log out there; Account `/student/account` arrives with T-M2.7). At ≥ 768 px a top bar
-     with the same items (Home) and the account menu button, as for the tutor at ≥ 1024 px.
+     with the same items (Home) and the account menu button, as for the tutor at ≥ 1024 px: IA §3's "More expanded inline" puts More's account
+     items (Log out, language; Account with T-M2.7) in the account menu (DEC-112 (4)).
   5. **Account menu** (IA §1, FR-AUTH-04, FR-AUTH-05): a button showing the user's display name (else the username) opens a **popover** with the
      account section: who is signed in, the `LanguageSwitcher`, "Change password" (navigates to `/change-password`, voluntary mode) and "Log out"
      (`useLogout`, unchanged). It is a dialog-type popover, not an ARIA `menu`, because it holds a segmented control (the ARIA APG menu pattern allows only menu items, not a radio group; the popover traps
@@ -51,12 +52,14 @@ handling of the original backlog row are **T-M2.12** (DEC-112).
      in the toolbar row, with its loading and compact error states; the session bootstrap still completes first (DEC-092).
   7. **Copy** (DEC-073, T-M1.9 UX F-5): `meta.error` says "workspace", not "class" (vi + en). New strings for the navigation, drawer, sheet and
      account menu in vi + en (namespace `shell`).
-  8. **Header fits** (carried UX note "header wraps to three rows at 360 px"): both shells' top bars are one row at 360 px in vi and en; a long
+  8. **Header fits** (carried UX note "header wraps to three rows at 360 px"): both shells' top bars and the public toolbar row (workspace name +
+     language switcher) are one row at 360 px in vi and en; a long
      workspace name truncates with an ellipsis and has a full-text `title` tooltip (responsive-standards §3 item 8; the full name is also shown
      in Settings › Workspace, T-M2.6).
   9. **Loading skeleton** (`app/routes/RouteLoading.tsx`): the shell skeleton follows the new frame at each breakpoint (tutor: sidebar or top bar
      with the menu button; student: top bar and bottom tabs or the top bar), keeping today's rules (`aria-busy` with its label from 0 ms, the
-     skeleton after 150 ms, `DelayedSkeleton`). It no longer draws the removed header controls.
+     skeleton after 150 ms, `DelayedSkeleton`). It no longer draws the removed header controls. The public toolbar skeleton adds a name-shaped line before the switcher, so the heading
+     still appears where its line was (`polish.spec.ts` AC3, CLS ≤ 0.05).
   10. **UI library** (`web/src/ui/`, design-system §3; React Aria Components): `Sheet` (modal; `placement="start"` for the drawer and
       `placement="bottom"` for the student sheet; visible Close button; reduced motion), `Popover` (dialog trigger + popover), `NavList`
       (vertical items with icon, label, current marker) and `BottomTabs`; plus `breakpoints.ts` with the responsive-standards §1 values used by
@@ -65,8 +68,9 @@ handling of the original backlog row are **T-M2.12** (DEC-112).
       `polish.spec.ts`, `route-focus.spec.ts`, `smoke.spec.ts`, `guards.spec.ts`) are retargeted to the account menu, keeping every assertion
       **except these, changed as DEC-112 (5) records**: (a) `route-focus.spec.ts` "switch the language from any page: 1 step" keeps 1 step on the
       public pages and expects at most 2 on `/tutor/…` and `/student/…`; (b) `loading.spec.ts` T-M1.16 AC1 (the switcher skeleton matches the
-      switcher's width and end edge) keeps its public-page case, and its shell case checks the account-button skeleton against the account
-      button instead; (c) `smoke.spec.ts` reaches the shell's language radios through the account menu (same assertions after it opens). A new
+      switcher's width and end edge) keeps its public-page case, and its shell case checks the skeleton of the top bar's end control against that
+      control: the account button (tutor ≥ 1024 px, student ≥ 768 px) or the menu button / nothing where the bar has no end control; (c) `smoke.spec.ts` reaches the shell's language radios through the account menu, drawer or More sheet (same assertions after it
+      opens). `route-focus.spec.ts` finds the shell home link by the workspace name instead of "Eng-LMS". A new
       `shells.spec.ts` covers the ACs below. Specs under `qa/` are QA-owned (their update is T-M2.7, DEC-111).
 - Out of scope (explicit):
   - **T-M2.12** (DEC-112): loading feedback after 150 ms during a slow client-side navigation to a lazy route (DEC-073, T-M1.9 QA F4); feedback
@@ -97,8 +101,8 @@ starts in a shell. 5. **Hard-coded semantics?** None: nav items are routes, not 
   names the file; no custom-media plugin, responsive-standards §1 is updated to say so); stylelint's token rules apply.
 - The drawer and the More sheet are `Sheet`s (responsive-standards §3 item 5); the `visualViewport` keyboard handling of item 10 is not needed
   (no inputs) and stays for the first form in a sheet.
-- Home link and name states: only the **loaded** workspace name is the home link. While it loads the link's text is the skeleton and its
-  accessible name is `app.name`; after an error the home link shows `app.name` and the compact error with Retry sits **beside** it, never inside
+- Home link and name states: the home link is always there; only its content changes (the skeleton with the accessible name `app.name`
+  while loading, then the workspace name, or `app.name` after an error). The compact error with Retry sits **beside** the link, never inside
   (no interactive element nested in another).
 - The 404 inside a shell reuses the content of `NotFound` (`EmptyState` level 1 + the home link), extracted into a component without its own
   `main`, with the role home as the link; the top-level `NotFound` keeps its own `main`.
@@ -124,13 +128,13 @@ starts in a shell. 5. **Hard-coded semantics?** None: nav items are routes, not 
   a mocked `/api/v1/meta`; no interactive element nested in another, e.g. the Retry button never inside the home link); on a cold load `GET /auth/session` still completes before `GET /api/v1/meta` (network-order E2E).
 - AC6 (DEC-073 UX F-5): `meta.error` reads "Couldn't load the workspace name" / "Không tải được tên không gian dạy học" (or equivalent wording
   that says workspace), vi and en.
-- AC7 (carried UX note, NFR-RESP-01): both shells' top bars are one row at 360×740 in vi and en (bounding-box check); a 60-character workspace
+- AC7 (carried UX note, NFR-RESP-01): both shells' top bars and the public toolbar row are one row at 360×740 in vi and en (bounding-box check); a 60-character workspace
   name truncates with a full-text `title`; no horizontal scroll at 320, 360, 768, 1024 and 1280 px with the drawer, sheet and popover
   closed and open.
 - AC8 (frontend-architecture §3): the shell loading skeleton matches the new frame per breakpoint and keeps today's rules (`aria-busy` and label
   from 0 ms, skeleton after 150 ms); the retargeted `loading.spec.ts` keeps all its assertions except the shell case of T-M1.16 AC1, changed as scope 11 (b) says.
-- AC9 (NFR-A11Y-01, 02): axe has no serious or critical issues for both shells at 360×740, 768×1024 and 1280×800, with the drawer, More sheet and
-  account popover open; keyboard only: skip link → navigation → account menu → Log out works; route focus after a nav-item navigation lands on
+- AC9 (NFR-A11Y-01, 02): axe has no serious or critical issues for both shells at 360×740, 768×1024 and 1280×800, with the tutor drawer (< 1024 px) or account
+  popover (≥ 1024 px) open and the student More sheet (< 768 px) or account popover (≥ 768 px) open; keyboard only: skip link → navigation → account menu → Log out works; route focus after a nav-item navigation lands on
   the page `h1`; reduced motion removes sheet and drawer movement. `Sheet`, `Popover`, `NavList` and `BottomTabs` have `/dev/ui` entries, tests
   and axe checks.
 - AC10: `./scripts/gate.sh` green twice in a row on the same dev database; all retargeted specs keep their assertions except the three changes listed in scope 11 (DEC-112 (5)); bundle budget green (the
@@ -151,16 +155,17 @@ starts in a shell. 5. **Hard-coded semantics?** None: nav items are routes, not 
 
 ## Evidence required
 - `evidence/T-M2.11/summary.md`, gate logs (both runs), screenshots (360×740, 768×1024, 1280×800) under `evidence/T-M2.11/impl/`: tutor shell
-  (default, drawer open, account popover open, 404), student shell (default, More sheet open, account popover open at ≥ 768, 404), `/login` with
+  (default, drawer open at 360/768, account popover open at 1280, 404), student shell (default, More sheet open at 360, account popover open at
+  768/1280, 404), `/login` with
   the workspace name, `/dev/ui` entries; axe results. QA report via `qa/T-M2.11`; the UX verdict as a PR record (reviewer evidence never on the
   feature branch).
 
 ## Docs to update
-- `information-architecture.md` §1, §3, §4 (implemented notes: nav lists, account section, workspace name on public pages; remove "Until
-  T-M2.11 …"), `responsive-standards.md` §1 (tutor at `md`: drawer until the nav has enough items for a rail, DEC-112; the breakpoint values live in
+- `information-architecture.md` §1, §3, §4 (implemented notes: nav lists, account section, workspace name on public pages; §3: at ≥ 768 px
+  More's account items sit in the account menu; remove "Until T-M2.11 …"), `responsive-standards.md` §1 (tutor at `md`: drawer until the nav has enough items for a rail, DEC-112; the breakpoint values live in
   `ui/breakpoints.ts` and CSS repeats them with a comment, no custom-media plugin) and §3 item 5 (navigation drawers are start-edge sheets at
   every width below `lg`, item 6; other sheets stay bottom sheets on `xs`/`sm`), `design-system.md` §3
-  (`Sheet`, `Popover`, `NavList`, `BottomTabs` implemented; `AppShell` is the two shells in `app/shells/`, composed from `ui/` parts), `frontend-architecture.md` §3 (nested shell routes, guard on the parent, shell
+  (`Sheet`, `NavList`, `BottomTabs` implemented; `Popover` added to the §3 inventory; `AppShell` is the two shells in `app/shells/`, composed from `ui/` parts), `frontend-architecture.md` §3 (nested shell routes, guard on the parent, shell
   404, skeleton), `ux-flows.md` (log out ≤ 2 steps from any shell page; language 1 step on public pages, ≤ 2 from a shell page, DEC-112 (5)), backlog (T-M2.11 done note), `progress.json`.
 
 ## Risks & assumptions

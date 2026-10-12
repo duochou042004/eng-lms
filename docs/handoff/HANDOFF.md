@@ -1,6 +1,6 @@
 # Handoff — 2026-10-12T03:20Z (T-M2.11 packet in review, PR #85; split T-M2.12, DEC-112)
 
-Phase/Milestone: P1 / M2 (in progress) · Current task: **T-M2.11 (packet in DOCS-REVIEW, PR #85, branch `docs/T-M2.11-app-shells`)** · Branch: `develop` · Last merges on develop: `9fcc992` (PR #82, T-M2.4), `6423649` (PR #83, QA report); this record is PR #84 (check `git log` that it landed) · Remote: https://github.com/duochou042004/eng-lms (mirror: gitlab.com/duochou042004/eng-lms)
+Phase/Milestone: P1 / M2 (in progress) · Current task: **T-M2.11 (packet in DOCS-REVIEW, PR #85, branch `docs/T-M2.11-app-shells`)** · Branch: `docs/T-M2.11-app-shells` · Last merges on develop: `30fc948` (PR #84, T-M2.4 merge record), `9fcc992` (PR #82, T-M2.4) · Remote: https://github.com/duochou042004/eng-lms (mirror: gitlab.com/duochou042004/eng-lms)
 
 ## Where we are
 - **T-M2.4 done** (`9fcc992`, DEC-109..111): auth UI (login, forgot info, forced/voluntary password change, logout, role redirect, guards,
@@ -20,7 +20,7 @@ Phase/Milestone: P1 / M2 (in progress) · Current task: **T-M2.11 (packet in DOC
 
 ## Next steps
 1. **T-M2.11 packet** `docs/tasks/T-M2.11-app-shells.md` (PR #85): DOCS-REVIEW round 1 CHANGES REQUESTED (D-1 S2 language budget, D-2..D-11)
-   fixed; re-review, CI, verdicts, merge-gate, gitlab-sync. Split (DEC-112): T-M2.11 shells (SEC not triggered) and **T-M2.12** navigation
+   fixed; round 2 PASS (N-1..N-7 S3/S4 fixed); CI, verdicts, merge-gate, gitlab-sync. Split (DEC-112): T-M2.11 shells (SEC not triggered) and **T-M2.12** navigation
    feedback (150 ms lazy navigation, offline chunk) + cross-tab session (SEC S4-2; SEC triggered). Ask the PO once for the T-M2.11 start
    signal (DEC); with it implement through G3 (QA + UX).
 2. Then T-M2.12, T-M2.5 (students UI), T-M2.6, T-M2.7 (M2 regression incl. the `qa/` spec updates). Optional: T-M2.10.
