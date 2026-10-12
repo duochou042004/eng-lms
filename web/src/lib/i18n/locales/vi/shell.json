@@ -1,15 +1,29 @@
 {
   "tutor": {
-    "title": "Không gian gia sư",
+    "title": "Hôm nay",
     "navLabel": "Điều hướng gia sư",
     "emptyTitle": "Chưa có gì ở đây",
     "emptyDescription": "Các công cụ dạy học của bạn sẽ xuất hiện ở đây."
   },
   "student": {
-    "title": "Trang của học viên",
+    "title": "Trang chủ",
     "navLabel": "Điều hướng học viên",
     "emptyTitle": "Chưa có gì ở đây",
     "emptyDescription": "Bài học và nhiệm vụ của bạn sẽ xuất hiện ở đây."
   },
-  "home": "Trang đầu"
+  "nav": {
+    "today": "Hôm nay",
+    "home": "Trang chủ",
+    "more": "Thêm",
+    "open": "Mở điều hướng",
+    "drawerTitle": "Điều hướng",
+    "backTo": "Về {{page}}"
+  },
+  "account": {
+    "label": "Tài khoản",
+    "signedInAs": "Đã đăng nhập: {{name}}",
+    "changePassword": "Đổi mật khẩu",
+    "logout": "Đăng xuất"
+  },
+  "close": "Đóng"
 }

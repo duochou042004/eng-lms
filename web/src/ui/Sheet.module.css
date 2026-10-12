@@ -1,0 +1,116 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-overlay);
+  background: var(--color-scrim);
+}
+
+.overlay[data-entering] {
+  animation: fade-in var(--motion-duration) var(--motion-easing);
+}
+
+.sheet {
+  position: fixed;
+  display: flex;
+  background: var(--color-surface);
+  box-shadow: var(--shadow-overlay);
+  outline: none;
+}
+
+.start {
+  inset-block: 0;
+  inset-inline-start: 0;
+  inline-size: min(var(--size-drawer), calc(100% - var(--space-9)));
+  block-size: 100dvh;
+}
+
+.bottom {
+  inset-inline: 0;
+  inset-block-end: 0;
+  max-block-size: var(--size-sheet-max);
+  padding-block-end: env(safe-area-inset-bottom);
+  border-start-start-radius: var(--radius-md);
+  border-start-end-radius: var(--radius-md);
+}
+
+/* Movement only without a reduced-motion preference; the token is 0 ms with it anyway (tokens.css).
+   shortcut: the drawer slides from the left (LTR only: vi and en); add a :dir(rtl) keyframe with the first RTL locale. */
+@media (prefers-reduced-motion: no-preference) {
+  .start[data-entering] {
+    animation: slide-from-start var(--motion-duration) var(--motion-easing);
+  }
+
+  .bottom[data-entering] {
+    animation: slide-from-bottom var(--motion-duration) var(--motion-easing);
+  }
+}
+
+.dialog {
+  display: flex;
+  border-radius: inherit;
+  flex-direction: column;
+  inline-size: 100%;
+  min-block-size: 0;
+  outline: none;
+}
+
+.handle {
+  align-self: center;
+  inline-size: var(--space-8);
+  block-size: var(--space-1);
+  margin-block-start: var(--space-2);
+  border-radius: var(--radius-full);
+  background: var(--color-border-strong);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-2) var(--space-2) var(--space-4);
+  border-block-end: var(--border-width) solid var(--color-border);
+}
+
+.title {
+  min-inline-size: 0;
+  font-size: var(--font-size-lg);
+  overflow-wrap: anywhere;
+}
+
+.body {
+  flex: 1 1 auto;
+  min-block-size: 0;
+  overflow-y: auto;
+  padding: var(--space-3) var(--space-4);
+}
+
+.footer {
+  padding: var(--space-3) var(--space-4);
+  border-block-start: var(--border-width) solid var(--color-border);
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes slide-from-start {
+  from {
+    transform: translateX(-100%);
+  }
+}
+
+@keyframes slide-from-bottom {
+  from {
+    transform: translateY(100%);
+  }
+}
+
+/* The dialog's focus ring (it is focused on open) sits inside the panel and follows its corners (AC11 (e)). */
+.dialog:focus-visible {
+  outline: var(--focus-ring-width) solid var(--color-focus);
+  outline-offset: calc(-1 * var(--focus-ring-width));
+  border-radius: inherit;
+}

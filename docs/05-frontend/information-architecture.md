@@ -21,6 +21,14 @@ work sits in the **Student workspace** (SPEC §6). A top-level "Learning Plans" 
 **Global elements:** a quick-find command palette (`Ctrl/⌘+K`: students, lessons, library items) and a "+ New" menu (Student, Lesson,
 Assignment, Assessment, Material, Question). The account menu (language, password, logout) sits top right on desktop and in the drawer footer on mobile.
 
+Implemented in T-M2.11 (DEC-112): the tutor shell (`app/shells/TutorShell.tsx`) takes its items from one list (label key, icon, route) and lists
+only routes that exist (no dead items): **Today** for now; Students (T-M2.5), Settings (T-M2.6) and the rest add a row with their task. At ≥ 1024 px
+(`lg`) a persistent sidebar (`NavList`) under a top bar with the workspace name (the home link) and the account menu button top right; below
+1024 px the top bar has a menu button that opens the navigation drawer (a start-edge `Sheet`) with the items and, in its footer, the account
+section. The account section (`AccountSection`: who is signed in, the language switcher, "Change password", "Log out" in the same visual kind) is
+one component for the account popover, the drawer footer and the student's More sheet. The command palette and "+ New" arrive with their first
+targets. Unknown paths under `/tutor/…` show the 404 inside the shell.
+
 ## 2. Student workspace (tutor view): `/tutor/students/:studentId/*`
 
 ```text
@@ -51,6 +59,12 @@ Tabs:   Overview | Plan | Lessons | Work | Materials | Progress | Notes | Profil
 | **More** | sheet | Materials `/student/materials`, Progress `/student/progress` (M7), Account `/student/account`, Log out |
 
 At < 768 px: a bottom tab bar (Home, Work, Lessons, Plan, More), with labels always visible. At ≥ 768 px: a top bar with the same items (More is expanded inline).
+
+Implemented in T-M2.11 (DEC-112): the student shell lists only routes that exist (**Home** for now, plus More). Below 768 px the bottom tabs
+(`BottomTabs`: Home, More; safe-area padding; the page is padded so nothing sits behind them) and **More** opens a bottom `Sheet` with the account
+section (language, Change password, Log out; Account `/student/account` joins with T-M2.7). At ≥ 768 px "More expanded inline" means: the items
+in the top bar, and More's account items in the **account menu** (the button with the user's name, top right), as for the tutor at ≥ 1024 px.
+Unknown paths under `/student/…` show the 404 inside the shell.
 **During an attempt** the navigation is hidden: a focused header shows the title, timer, save status and Exit (autosaved).
 
 ## 4. Public routes
@@ -59,8 +73,12 @@ At < 768 px: a bottom tab bar (Home, Work, Lessons, Plan, More), with labels alw
 
 Implemented in T-M2.4: `/` has no page (the M1 landing page is gone): it redirects a `TUTOR` to `/tutor/today`, a `STUDENT` to `/student/home`, a
 session that must change its password to `/change-password` and an anonymous visitor to `/login`. `/login`, `/change-password` and `/forbidden`
-share the public frame (the language switcher in a toolbar row, one 400 px column). Until T-M2.11 the "Change password" link and "Log out" sit in
-the placeholder shell header, before the language switcher.
+share the public frame (a toolbar with the workspace name and the language switcher, then one 400 px column; the workspace name since
+T-M2.11, with a full-text tooltip). At ≥ 768 px (`md`) the toolbar is one row (the name at the start, truncated to one line; the switcher at the end);
+below 768 px it is two fixed rows in every state (AC11 (a), (j), DEC-114): a full-width name row, two lines tall (the name or the compact error
+wraps to at most two lines; the loading skeleton sits in the same box, so the `h1` never moves), then the end-aligned switcher row. "Change password" and "Log out" are in the shells' account
+section (T-M2.11). The top-level `*` 404 is for paths outside the shells; `/tutor/*` and `/student/*` unknown paths render the 404 inside their
+shell, after the role guard.
 
 ## 5. Full route inventory
 

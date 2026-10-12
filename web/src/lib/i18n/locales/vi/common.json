@@ -24,7 +24,7 @@
   },
   "meta": {
     "loading": "Đang tải thông tin không gian dạy học",
-    "error": "Không tải được tên lớp",
+    "error": "Không tải được tên không gian dạy học",
     "retry": "Thử lại"
   }
 }

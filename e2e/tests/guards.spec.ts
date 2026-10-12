@@ -23,7 +23,7 @@ async function openTutorWith(page: Page, injectIntoHead: string) {
     await route.fulfill({ response, body: html })
   })
   await page.goto('/tutor')
-  await expect(page.getByRole('heading', { level: 1, name: 'Không gian gia sư' })).toBeVisible()
+  await expect(page.getByRole('heading', { level: 1, name: 'Hôm nay' })).toBeVisible()
 }
 
 test('the axe check fails on an image without alt text', async ({ page }) => {

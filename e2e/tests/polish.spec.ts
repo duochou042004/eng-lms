@@ -3,17 +3,20 @@ import { ANONYMOUS, TUTOR_STATE } from '../support/auth'
 import { expectNoAxeViolations, expectNoHorizontalScroll } from '../support/checks'
 import { evidenceRecord, evidenceShot } from '../support/evidence'
 import { expect, test } from '../support/fixtures'
+import { openAccountSection } from '../support/shell'
 import { StepCounter } from '../support/steps'
 
 // T-M1.13 (web polish): stable SegmentedControl widths (AC2), the landing loading skeleton (AC3) and the route error
 // page's way back to the start page (AC4), at the mandatory viewports.
 // T-M2.4: no landing page. The anonymous start page is /login (AC2, AC3); a signed-in tutor's start page is `/` →
 // /tutor/today, and AC4's failed client navigation is the shell header's link to the password page.
+// T-M2.11: on /tutor the switcher (AC2) and the password-page link (AC4) are in the account section (popover, or the
+// drawer below 1024 px), opened first (support/shell.ts).
 
 const COPY = {
   vi: {
     login: 'Đăng nhập',
-    tutor: 'Không gian gia sư',
+    tutor: 'Hôm nay',
     toChangePassword: 'Đổi mật khẩu',
     language: 'Ngôn ngữ',
     loading: 'Đang tải trang',
@@ -25,7 +28,7 @@ const COPY = {
   },
   en: {
     login: 'Sign in',
-    tutor: 'Tutor workspace',
+    tutor: 'Today',
     toChangePassword: 'Change password',
     language: 'Language',
     loading: 'Loading the page',
@@ -113,6 +116,7 @@ for (const path of ['/login', '/tutor']) {
     }, testInfo) => {
       const slug = path === '/login' ? 'login' : 'tutor'
       await page.goto(path)
+      if (path === '/tutor') await openAccountSection(page, 'tutor')
       const group = () => page.getByRole('radiogroup', { name: /^(Ngôn ngữ|Language)$/ })
       await expect(group().getByRole('radio', { name: ENDONYM.vi })).toBeChecked()
       await page.evaluate(() => document.fonts.ready)
@@ -278,7 +282,7 @@ for (const lang of ['vi', 'en'] as const) {
     const skeleton = {
       titleLine: await titleLine.boundingBox(),
       toolbarRow: await toolbar.boundingBox(),
-      switcher: await toolbar.getByTestId('skeleton').boundingBox(),
+      switcher: await toolbar.getByTestId('route-loading-switcher').getByTestId('skeleton').boundingBox(),
     }
     await evidenceShot(page, testInfo, `ac3-login-loading-${lang}`)
     release()
@@ -322,6 +326,7 @@ for (const lang of ['vi', 'en'] as const) {
       await page.goto('/')
       await expect(h1(page, c.tutor)).toBeVisible()
       await page.route(CHANGE_PASSWORD_CHUNK, (route) => route.abort())
+      await openAccountSection(page, 'tutor')
       await page.getByRole('link', { name: c.toChangePassword }).click()
       // The pathless-child boundary inside the root layout: route focus moves to the error page's h1 (T-M1.9).
       await expect(h1(page, c.errorTitle)).toBeFocused()
@@ -351,6 +356,7 @@ for (const lang of ['vi', 'en'] as const) {
       pointer.expectAtMost(1)
 
       // Keyboard: the same failure again, then Tab to the link and Enter (one step).
+      await openAccountSection(page, 'tutor')
       await page.getByRole('link', { name: c.toChangePassword }).click()
       await expect(h1(page, c.errorTitle)).toBeFocused()
       acceptAbortedRequests(consoleGuard)

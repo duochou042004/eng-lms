@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-10-12T03:05:00Z",
-  "updatedBy": "lead-coordinator (T-M2.11 packet, session 2026-10-12, Opus 5.5)",
+  "updatedAt": "2026-10-12T10:15:00Z",
+  "updatedBy": "frontend-implementer (T-M2.11 QA round 2 fixes, AC11 (i), (j), session 2026-10-12, Opus 5.5)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -32,21 +32,21 @@
   "currentTask": {
     "id": "T-M2.11",
     "title": "App shells (tutor sidebar/drawer, student tabs, account menu, workspace identity, nested 404s)",
-    "status": "ready",
+    "status": "in_review",
     "ownerRole": "FE",
-    "branch": null,
+    "branch": "feature/T-M2.11-app-shells",
     "packet": "docs/tasks/T-M2.11-app-shells.md",
-    "pr": "85",
-    "lastCommit": null,
-    "startedAt": null,
+    "pr": "86",
+    "lastCommit": "71086f4",
+    "startedAt": "2026-10-12T03:45:00Z",
     "entryGate": [
       "T-M2.4 merged — met (9fcc992, DEC-111)",
-      "Packet G0 — pending (DOCS-REVIEW, docs/T-M2.11-app-shells)",
-      "PO start signal — pending"
+      "Packet G0 — met (DOCS-REVIEW PASS, PR #85, 7cfee3f)",
+      "PO start signal — met (DEC-113)"
     ],
     "nextSteps": [
-      "Fresh docs-reviewer on the packet; merge-gate; gitlab-sync",
-      "Ask the PO for the start signal (DEC); then feature/T-M2.11-app-shells, frontend-implementer, gate, G3 QA + UX (SEC not triggered, DEC-112)"
+      "Implementation pushed on feature/T-M2.11-app-shells (ui d02b5fd, shells 6da76f0, e2e 67e1097, docs and evidence after); gate green twice (evidence/T-M2.11/summary.md)",
+      "LC: open the PR; G3: fresh qa-evaluator, then ux-reviewer; merge-gate; gitlab-sync; QA report via qa/T-M2.11; merge record"
     ],
     "trace": [
       "backlog M2",

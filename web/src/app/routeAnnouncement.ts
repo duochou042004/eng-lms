@@ -19,22 +19,23 @@ export function usePageTitle(pageTitle: string) {
  * (accessibility §2; PageHeader and EmptyState render it with `tabIndex={-1}`). On the first load, including a reload,
  * focus stays on `body`, so the skip link is the first Tab stop.
  *
- * The first load is detected with a ref holding the last seen path, not with `useNavigationType` (the initial location
- * is a POP, like browser back) nor with `location.key` (a reload keeps the key in `history.state`). The ref survives
- * React's StrictMode effect replay, so focus never moves on mount. Hash-only changes (the skip link) are ignored.
+ * The first load is detected with a ref holding the last seen location, not with `useNavigationType` (the initial
+ * location is a POP, like browser back) nor with `location.key` alone (a reload keeps the key in `history.state`). The
+ * ref survives React's StrictMode effect replay, so focus never moves on mount. Hash-only changes (the skip link) are
+ * ignored (an in-page jump: same path, a hash). A navigation to the page already shown (a nav item or home link of the
+ * current page, T-M2.11) has a new key and no hash: it moves focus too, as any activated navigation does.
  * Used once, in the root layout: the effect runs after the new route's DOM is committed, and React Router resolves a
  * lazy route before it commits the new location, so the `h1` exists by then.
  */
 export function useRouteFocus() {
-  const { pathname, search } = useLocation()
+  const { pathname, search, hash, key } = useLocation()
   const path = pathname + search
-  const previous = useRef<string | null>(null)
+  const previous = useRef<{ path: string; key: string } | null>(null)
   useEffect(() => {
-    if (previous.current === null || previous.current === path) {
-      previous.current = path
-      return
-    }
-    previous.current = path
+    const before = previous.current
+    previous.current = { path, key }
+    if (before === null) return
+    if (before.path === path && (before.key === key || hash !== '')) return
     document.querySelector<HTMLElement>('main h1')?.focus()
-  }, [path])
+  }, [path, hash, key])
 }

@@ -255,7 +255,10 @@ describe('/login (T-M2.4 scope 5)', () => {
     const calls = recordCalls()
     const { router } = await openLogin()
     expect(loggedOut).toBe(true)
-    expect(calls).toEqual(['GET /api/v1/auth/session', 'POST /api/v1/auth/logout'])
+    // T-M2.11: then the public frame's workspace name (GET /api/v1/meta), after the logout.
+    await waitFor(() =>
+      expect(calls).toEqual(['GET /api/v1/auth/session', 'POST /api/v1/auth/logout', 'GET /api/v1/meta']),
+    )
     expect(router.state.location.pathname).toBe('/login')
   })
 })

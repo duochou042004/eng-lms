@@ -1,9 +1,71 @@
 .error {
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
   gap: var(--space-2);
+  min-inline-size: 0;
   color: var(--color-text-muted);
+}
+
+.error > :last-child {
+  flex: none;
+  margin-inline-start: auto;
+}
+
+.message {
+  flex: 0 1 auto;
+}
+
+/* Shown only in a narrow shell top bar (below). */
+.errorIcon {
+  display: none;
+  flex: none;
+  inline-size: var(--size-icon);
+  block-size: var(--size-icon);
+  color: var(--color-danger);
+}
+
+/* One line; a long text ends in an ellipsis (its `title` holds the full text). */
+.truncate {
+  display: block;
+  min-inline-size: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* The public frame: one line at >= 768 px; below 768 px (md, src/ui/breakpoints.ts) at most two lines (AC11 (j)). */
+.clamp {
+  display: block;
+  min-inline-size: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (width < 768px) {
+  .clamp {
+    display: -webkit-box;
+    overflow-wrap: anywhere;
+    white-space: normal;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+}
+
+/* A narrow shell top bar (AC11 (c)): the icon and Retry; the message stays for assistive technology. */
+@container workspace-error (width < 22rem) {
+  .errorIcon {
+    display: inline-flex;
+  }
+
+  .message {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
 }
 
 /* One line of body text tall, like the name that replaces it. */

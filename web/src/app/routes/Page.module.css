@@ -7,7 +7,35 @@
 
 .toolbar {
   display: flex;
-  justify-content: flex-end;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+/* The language switcher stays at the end, also on its own row. */
+.toolbar > :last-child {
+  margin-inline-start: auto;
+}
+
+/* At >= 768 px one row: the workspace name takes the room the switcher leaves and truncates (basis 0, never wraps the
+   row; the compact error truncates its message too). */
+.toolbarName {
+  flex: 1 1 0;
+  min-inline-size: 0;
+}
+
+/* Below 768 px (md, src/ui/breakpoints.ts; AC11 (j)) two fixed rows in every state (AC11 (a)): the identity row, full width and
+   two lines tall (the name or the error message wraps to at most two lines; the skeleton line sits in the same box), then
+   the switcher row. The fixed height keeps the h1 where it is through loading, loaded and error. */
+@media (width < 768px) {
+  .toolbarName {
+    display: flex;
+    flex-basis: 100%;
+    flex-direction: column;
+    justify-content: center;
+    block-size: calc(2 * 1em * var(--line-height-body));
+  }
 }
 
 /* RouteLoading: a block-level region (an <output> is inline by default), so the page and shell paddings apply. */
@@ -39,30 +67,6 @@
 
 .switcherSizer > * + * {
   border-inline-start: var(--border-width) solid;
-}
-
-/* ControlSkeleton: the label of a shell-header control, invisible and zero-height, in the control's own type and inline
-   padding (ShellLayout .accountLink: medium weight, --space-2; Button md: medium weight, --space-4 plus its border). */
-.labelSizer {
-  display: flex;
-  block-size: 0;
-  overflow: hidden;
-  visibility: hidden;
-  font-weight: var(--font-weight-medium);
-  white-space: nowrap;
-}
-
-.linkSizer > * {
-  padding-inline: var(--space-2);
-}
-
-.buttonSizer > * {
-  padding-inline: calc(var(--space-4) + var(--border-width));
-}
-
-/* The shell brand row is as tall as its 44 px home link. */
-.brandSkeleton {
-  min-block-size: var(--size-control-md);
 }
 
 /* The PageHeader's box (title line, padding and hairline) without its text. */

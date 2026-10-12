@@ -5,6 +5,7 @@ import { describe, expect, it } from 'vitest'
 import { expectNoAxeViolations } from '../../test/axe'
 import { renderRoute } from '../../test/render'
 import { problem, server, sessionAs, sessionBody, setXsrfCookie } from '../../test/server'
+import { openAccountMenu } from '../../test/shell'
 
 const LABEL = {
   current: 'Mật khẩu hiện tại (bắt buộc)',
@@ -124,7 +125,9 @@ describe('/change-password, voluntary mode (FR-AUTH-05, AC5)', () => {
   it('Cancel goes back', async () => {
     server.use(sessionAs('TUTOR'))
     const { router } = renderRoute('/tutor/students')
-    await screen.findByRole('heading', { level: 1, name: 'Không gian gia sư' })
+    // T-M2.11: no Students page yet, so the 404 inside the tutor shell; the link is in the account menu.
+    await screen.findByRole('heading', { level: 1, name: 'Không tìm thấy trang' })
+    await openAccountMenu()
     await userEvent.click(screen.getByRole('link', { name: 'Đổi mật khẩu' }))
     await userEvent.click(await screen.findByRole('button', { name: 'Huỷ' }))
     await waitFor(() => expect(router.state.location.pathname).toBe('/tutor/students'))
@@ -222,17 +225,19 @@ describe('/change-password, forced mode (FR-AUTH-06, AC4)', () => {
     expect(screen.queryByRole('button', { name: 'Đăng xuất' })).not.toBeInTheDocument()
   })
 
+  // T-M2.11: /student/work has no page yet, so the student shell shows its 404 there (AC1).
   it.each([
-    ['/change-password', '/student/home'],
-    ['/change-password?next=%2Fstudent%2Fwork', '/student/work'],
-    ['/change-password?next=%2Ftutor%2Fstudents', '/student/home'],
-    ['/change-password?next=%2F%2Fevil.example', '/student/home'],
-  ])('reads the session again after success and goes from %s to %s', async (path, target) => {
+    ['/change-password', '/student/home', 'Trang chủ'],
+    ['/change-password?next=%2Fstudent%2Fwork', '/student/work', 'Không tìm thấy trang'],
+    ['/change-password?next=%2Ftutor%2Fstudents', '/student/home', 'Trang chủ'],
+    ['/change-password?next=%2F%2Fevil.example', '/student/home', 'Trang chủ'],
+  ])('reads the session again after success and goes from %s to %s', async (path, target, title) => {
     forcedThenChanged()
     const { router } = await openPage(path)
     await fill('tam-thoi-123', 'mat-khau-moi-1')
     await waitFor(() => expect(router.state.location.pathname + router.state.location.search).toBe(target))
-    expect(await screen.findByRole('heading', { level: 1, name: 'Trang của học viên' })).toBeInTheDocument()
+    expect(await screen.findByRole('heading', { level: 1, name: title })).toBeInTheDocument()
+    expect(screen.getByRole('navigation', { name: 'Điều hướng học viên' })).toBeInTheDocument()
   })
 
   it.each(['/student/home', '/student/work', '/tutor/students', '/'])(

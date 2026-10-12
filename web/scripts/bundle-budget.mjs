@@ -13,6 +13,9 @@ const BUDGETS = [
   { name: 'tutor', route: 'src/app/shells/TutorShell.tsx', limitKb: Number(process.env.BUDGET_TUTOR_KB ?? 300) },
 ]
 const FORBIDDEN_IN_PRODUCTION = ['src/dev/DevUiPage.tsx']
+// T-M2.11 AC10: the student's first visit never loads the tutor shell (its navigation and pages), statically or as a
+// shared chunk.
+const FORBIDDEN_IN_CLOSURE = [{ budget: 'student', key: 'src/app/shells/TutorShell.tsx' }]
 
 function closure(key, seen = new Set()) {
   if (seen.has(key)) return seen
@@ -36,6 +39,12 @@ for (const key of FORBIDDEN_IN_PRODUCTION) {
 const entry = Object.keys(manifest).find((k) => manifest[k].isEntry)
 for (const { name, route, limitKb } of BUDGETS) {
   const keys = new Set([...closure(entry), ...closure(route)])
+  for (const forbidden of FORBIDDEN_IN_CLOSURE.filter((f) => f.budget === name)) {
+    if (keys.has(forbidden.key)) {
+      console.log(`FAIL  ${name}: ${forbidden.key} is in its first-visit chunks`)
+      failed = true
+    }
+  }
   const files = [...keys].map((k) => manifest[k].file)
   const total = files.reduce((sum, f) => sum + gzipKb(f), 0)
   const ok = total <= limitKb

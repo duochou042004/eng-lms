@@ -1,15 +1,29 @@
 {
   "tutor": {
-    "title": "Tutor workspace",
+    "title": "Today",
     "navLabel": "Tutor navigation",
     "emptyTitle": "Nothing here yet",
     "emptyDescription": "Your teaching tools will appear here."
   },
   "student": {
-    "title": "Student home",
+    "title": "Home",
     "navLabel": "Student navigation",
     "emptyTitle": "Nothing here yet",
     "emptyDescription": "Your lessons and tasks will appear here."
   },
-  "home": "Start page"
+  "nav": {
+    "today": "Today",
+    "home": "Home",
+    "more": "More",
+    "open": "Open navigation",
+    "drawerTitle": "Navigation",
+    "backTo": "Back to {{page}}"
+  },
+  "account": {
+    "label": "Account",
+    "signedInAs": "Signed in as {{name}}",
+    "changePassword": "Change password",
+    "logout": "Log out"
+  },
+  "close": "Close"
 }

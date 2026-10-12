@@ -36,3 +36,17 @@
   gap: var(--space-2);
   inline-size: 100%;
 }
+
+/* NavList sample: the width of the tutor sidebar. */
+.navColumn {
+  inline-size: var(--size-sidebar);
+}
+
+/* BottomTabs sample: a transformed box becomes the containing block of the fixed bar, so it stays in the gallery. */
+.tabsFrame {
+  position: relative;
+  inline-size: 100%;
+  max-inline-size: var(--size-form-max);
+  block-size: var(--size-tabbar);
+  transform: translateZ(0);
+}

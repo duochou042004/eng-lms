@@ -1,5 +1,11 @@
 import type { QueryClient } from '@tanstack/react-query'
-import { createBrowserRouter, createMemoryRouter, type RouteObject } from 'react-router'
+import {
+  createBrowserRouter,
+  createMemoryRouter,
+  redirect,
+  type LoaderFunctionArgs,
+  type RouteObject,
+} from 'react-router'
 import { createGuards } from './guards'
 import { RootLayout } from './RootLayout'
 import { RouteError } from './routes/RouteError'
@@ -13,9 +19,19 @@ import { RouteLoading } from './routes/RouteLoading'
  *
  * Auth (T-M2.4): the root loader resolves the session before anything renders (DEC-092); the guards are loaders
  * (`app/guards.ts`), so protected UI never renders for the wrong visitor. `/` only redirects (no landing page).
+ *
+ * Shells (T-M2.11): `/tutor` and `/student` are layout routes (the shell renders an `<Outlet />`). The role guard sits on
+ * the parent, so it runs before any child, unknown paths included: the shell's 404 (`*`) never shows to the wrong
+ * visitor. Every child imports its shell's module, so each shell stays one lazy chunk.
  */
 export function createRoutes(queryClient: QueryClient): RouteObject[] {
   const guard = createGuards(queryClient)
+  // React Router runs the parent's and the child's loaders in parallel: the index redirect waits for the role guard, so
+  // the guard's redirect (e.g. `/login?next=%2Ftutor`) always wins over the redirect to the role home.
+  const indexOf = (role: 'TUTOR' | 'STUDENT', home: string) => async (args: LoaderFunctionArgs) => {
+    await guard.requireRole(role)(args)
+    return redirect(home)
+  }
   return [
     {
       Component: RootLayout,
@@ -39,14 +55,30 @@ export function createRoutes(queryClient: QueryClient): RouteObject[] {
             },
             { path: 'forbidden', lazy: async () => ({ Component: (await import('./routes/Forbidden')).Forbidden }) },
             {
-              path: 'tutor/*',
+              path: 'tutor',
               loader: guard.requireRole('TUTOR'),
               lazy: async () => ({ Component: (await import('./shells/TutorShell')).TutorShell }),
+              children: [
+                { index: true, loader: indexOf('TUTOR', '/tutor/today') },
+                { path: 'today', lazy: async () => ({ Component: (await import('./shells/TutorShell')).TutorToday }) },
+                { path: '*', lazy: async () => ({ Component: (await import('./shells/TutorShell')).ShellNotFound }) },
+              ],
             },
             {
-              path: 'student/*',
+              path: 'student',
               loader: guard.requireRole('STUDENT'),
               lazy: async () => ({ Component: (await import('./shells/StudentShell')).StudentShell }),
+              children: [
+                { index: true, loader: indexOf('STUDENT', '/student/home') },
+                {
+                  path: 'home',
+                  lazy: async () => ({ Component: (await import('./shells/StudentShell')).StudentHome }),
+                },
+                {
+                  path: '*',
+                  lazy: async () => ({ Component: (await import('./shells/StudentShell')).ShellNotFound }),
+                },
+              ],
             },
             ...(import.meta.env.DEV
               ? [{ path: 'dev/ui', lazy: async () => ({ Component: (await import('../dev/DevUiPage')).DevUiPage }) }]

@@ -1,5 +1,6 @@
 import { useEffect, useId, type ReactNode } from 'react'
 import { Button as AriaButton, type ButtonProps as AriaButtonProps } from 'react-aria-components'
+import { Link, type LinkProps } from 'react-router'
 import { cx } from './cx'
 import styles from './Button.module.css'
 import { Spinner } from './Spinner'
@@ -35,5 +36,24 @@ export function Button({ variant = 'primary', size = 'md', children, id, ...prop
       {props.isPending ? <Spinner /> : null}
       <span className={styles.label}>{children}</span>
     </AriaButton>
+  )
+}
+
+export interface ButtonLinkProps extends Omit<LinkProps, 'className' | 'style'> {
+  variant?: ButtonVariant
+  size?: ButtonSize
+  children: ReactNode
+}
+
+/**
+ * A router link that looks like a `Button` of the same variant and size (T-M2.11): a navigation keeps link semantics
+ * (role `link`, opens in a new tab, no pending state) while sitting next to buttons in the same visual kind, e.g.
+ * "Change password" beside "Log out". States: hover, active, focus-visible.
+ */
+export function ButtonLink({ variant = 'primary', size = 'md', children, ...props }: ButtonLinkProps) {
+  return (
+    <Link {...props} className={cx(styles.button, styles.link, styles[variant], styles[size])}>
+      <span className={styles.label}>{children}</span>
+    </Link>
   )
 }

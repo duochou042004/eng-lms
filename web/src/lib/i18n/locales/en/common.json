@@ -24,7 +24,7 @@
   },
   "meta": {
     "loading": "Loading workspace information",
-    "error": "Couldn't load the class name",
+    "error": "Couldn't load the workspace name",
     "retry": "Try again"
   }
 }

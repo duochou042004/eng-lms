@@ -2,18 +2,22 @@ import type { Locator, Page } from '@playwright/test'
 import { ANONYMOUS, STUDENT_STATE, TUTOR_STATE } from '../support/auth'
 import { evidenceRecord, evidenceShot } from '../support/evidence'
 import { expect, test } from '../support/fixtures'
+import { openAccountSection, workspaceName } from '../support/shell'
 import { StepCounter } from '../support/steps'
 
 // T-M1.9: route focus and titles (AC1), 44 px targets (AC6) and the UX step budgets (AC10) at the mandatory viewports.
 // T-M2.4: no landing page; the anonymous start page is /login and the shells need a session (the stored E2E tutor and
 // student sessions). The client-side navigations start from a shell: its header link to the password page, its home
 // link (`/` → the role home) and the 404 page's start-page link.
+// T-M2.11: the password-page link and the shell's language switcher are in the account section (popover, drawer or More
+// sheet by viewport; support/shell.ts); the shell's home link is the workspace name (no "Eng-LMS" next to it). The
+// language budget is 1 step on the public pages and at most 2 from a shell page (DEC-112 (5), packet scope 11 (a)).
 
 const COPY = {
   vi: {
     login: 'Đăng nhập',
-    tutor: 'Không gian gia sư',
-    student: 'Trang của học viên',
+    tutor: 'Hôm nay',
+    student: 'Trang chủ',
     notFound: 'Không tìm thấy trang',
     changePassword: 'Đổi mật khẩu',
     home: 'Về trang đầu',
@@ -22,8 +26,8 @@ const COPY = {
   },
   en: {
     login: 'Sign in',
-    tutor: 'Tutor workspace',
-    student: 'Student home',
+    tutor: 'Today',
+    student: 'Home',
     notFound: 'Page not found',
     changePassword: 'Change password',
     home: 'Go to the start page',
@@ -58,6 +62,11 @@ const ROLES = [
   { role: 'student', path: '/student', state: STUDENT_STATE },
 ] as const
 
+/** The shell's top-bar home link: the workspace name (T-M2.11). */
+async function shellHomeLink(page: Page) {
+  return page.getByRole('banner').getByRole('link', { name: await workspaceName(page), exact: true })
+}
+
 for (const lang of ['vi', 'en'] as const) {
   const c = COPY[lang]
 
@@ -74,16 +83,18 @@ for (const lang of ['vi', 'en'] as const) {
         await expect(page).toHaveTitle(`${home} · Eng-LMS`)
         await expectBodyFocused(page)
 
+        await openAccountSection(page, role)
         await page.getByRole('link', { name: c.changePassword }).click()
         await expectFocusedPage(page, c.changePassword)
         await page.goBack()
         await expectFocusedPage(page, home)
-        await page.getByRole('banner').getByRole('link', { name: 'Eng-LMS' }).click()
+        await (await shellHomeLink(page)).click()
         await expectFocusedPage(page, home)
         await page.goBack()
         await expectFocusedPage(page, home)
 
         // A reload of a page first reached by client navigation is a first load: focus stays on body.
+        await openAccountSection(page, role)
         await page.getByRole('link', { name: c.changePassword }).click()
         await expectFocusedPage(page, c.changePassword)
         await page.reload()
@@ -114,6 +125,7 @@ for (const lang of ['vi', 'en'] as const) {
       await expect(page).toHaveTitle(`${c.tutor} · Eng-LMS`)
       const other: Lang = lang === 'vi' ? 'en' : 'vi'
       const otherName = other === 'en' ? 'English' : 'Tiếng Việt'
+      await openAccountSection(page, 'tutor')
       await page.getByRole('radiogroup', { name: c.language }).getByRole('radio', { name: otherName }).click()
       await expect(page).toHaveTitle(`${COPY[other].tutor} · Eng-LMS`)
       await expect(page.locator('html')).toHaveAttribute('lang', other)
@@ -145,7 +157,10 @@ test.describe(() => {
     const skip = page.getByRole('link', { name: COPY.vi.skip })
     await expect(skip).toBeFocused()
     sizes.skipLink = await blockSize(skip)
-    sizes.shellHomeLink = await blockSize(page.getByRole('banner').getByRole('link', { name: 'Eng-LMS' }))
+    sizes.shellHomeLink = await blockSize(await shellHomeLink(page))
+    // The focused skip link sits over the top bar's start (the menu button below 1024 px): leave it first.
+    await skip.blur()
+    await openAccountSection(page, 'tutor')
     for (const name of ['Tiếng Việt', 'English']) {
       sizes[`switcherSegment:${name}`] = await blockSize(page.getByRole('radio', { name }))
     }
@@ -159,20 +174,24 @@ test.describe(() => {
 })
 
 test.describe('UX step budgets (T-M1.9 design notes)', () => {
-  test('switch the language from any page: 1 step (pointer), 1 step (keyboard)', async ({ browser }, testInfo) => {
+  test('switch the language: 1 step on the public pages, at most 2 from a shell page (pointer), 1 step (keyboard)', async ({
+    browser,
+  }, testInfo) => {
     const record: Record<string, number> = {}
-    for (const [path, storageState] of [
-      ['/login', ANONYMOUS],
-      ['/tutor', TUTOR_STATE],
-      ['/student', STUDENT_STATE],
+    for (const [path, storageState, shell] of [
+      ['/login', ANONYMOUS, null],
+      ['/tutor', TUTOR_STATE, 'tutor'],
+      ['/student', STUDENT_STATE, 'student'],
     ] as const) {
       const context = await browser.newContext({ storageState })
       const page = await context.newPage()
       await page.goto(path)
+      await expect(page.getByRole('heading', { level: 1 })).toBeVisible()
       const steps = new StepCounter()
+      if (shell) await steps.step('open the account section', () => openAccountSection(page, shell))
       await steps.step('activate the "English" segment', () => page.getByRole('radio', { name: 'English' }).click())
       await expect(page.locator('html')).toHaveAttribute('lang', 'en')
-      steps.expectAtMost(1)
+      steps.expectAtMost(shell ? 2 : 1)
       record[`pointer ${path}`] = steps.count
       await context.close()
     }
@@ -195,7 +214,11 @@ test.describe('UX step budgets (T-M1.9 design notes)', () => {
     await expect(page.getByRole('radio', { name: 'English' })).toBeChecked()
     steps.expectAtMost(1)
     record['keyboard /login'] = steps.count
-    await evidenceRecord(testInfo, 'steps-switch-language', { viewport: page.viewportSize(), budget: 1, steps: record })
+    await evidenceRecord(testInfo, 'steps-switch-language', {
+      viewport: page.viewportSize(),
+      budget: { publicPage: 1, shellPage: 2 },
+      steps: record,
+    })
     await context.close()
   })
 

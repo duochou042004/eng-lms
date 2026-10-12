@@ -3,9 +3,13 @@ import { cleanup } from '@testing-library/react'
 import { afterAll, afterEach, beforeAll, beforeEach } from 'vitest'
 import { changeLocale, DEFAULT_LOCALE } from '../lib/i18n'
 import { clearXsrfCookie, server } from './server'
+import { DEFAULT_VIEWPORT_WIDTH, installMatchMedia, setViewportWidth } from './viewport'
+
+installMatchMedia()
 
 beforeAll(() => server.listen({ onUnhandledRequest: 'error' }))
 beforeEach(async () => {
+  setViewportWidth(DEFAULT_VIEWPORT_WIDTH)
   localStorage.clear()
   await changeLocale(DEFAULT_LOCALE)
   localStorage.clear()

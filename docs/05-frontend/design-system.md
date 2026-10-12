@@ -44,9 +44,9 @@ Use at most **3 sizes per screen region**.
 
 | Group | Components |
 |---|---|
-| Layout | `AppShell` (tutor, student), `PageHeader`, `Section`, `Stack`, `Cluster`, `Split`, `Sheet` (bottom sheet on mobile / side panel on desktop), `StickyFooter` |
+| Layout | `AppShell` (tutor, student), `PageHeader`, `Section`, `Stack`, `Cluster`, `Split`, `Sheet` (bottom sheet on mobile / side panel on desktop), `Popover` (dialog-type, from a button), `StickyFooter` |
 | Navigation | `NavList`, `BottomTabs`, `Tabs` (scrollable, overflow menu), `Breadcrumbs`, `CommandPalette`, `Pagination` |
-| Actions | `Button` (primary, secondary, quiet, danger; sizes md and lg), `IconButton` (label required), `Menu`, `SplitButton`, `CopyButton` |
+| Actions | `Button` (primary, secondary, quiet, danger; sizes md and lg), `ButtonLink` (a router link that looks like a `Button`), `IconButton` (label required), `Menu`, `SplitButton`, `CopyButton` |
 | Forms | `Form`, `Field` (label + hint + error wrapper), `TextField`, `TextArea` (auto-grow, counter), `NumberField`, `Select`, `ComboBox`, `StudentPicker`, `DatePicker`, `TimeField`, `DurationField`, `Checkbox`, `RadioGroup`, `SegmentedControl` (one of a few options, always one selected; e.g. the language switcher), `Switch`, `TagInput`, `FileDrop` + `UploadList`, `RichTextEditor`, `AudioRecorder`, `PasswordField` (reveal), `ErrorSummary` |
 | Data display | `DataList` (responsive table ↔ list), `Timeline`, `DescriptionList`, `StatusBadge`, `Meter` (labelled bar), `ScoreLine`, `Sparkline`, `Avatar` (initials), `EmptyState`, `KeyValueSummary`, `Countdown` |
 | Feedback | `Toast` (polite live region), `InlineAlert`, `Skeleton` (shape-matched) + `DelayedSkeleton` (the 150 ms delay), `Spinner` (only for actions under 1 s), `ProgressBar` (uploads), `ConfirmDialog`, `UnsavedChangesGuard`, `SaveIndicator` |
@@ -89,6 +89,31 @@ and labelled from 0 ms. Used by `RouteLoading` and `WorkspaceName`; new loading 
   for 7 s; when the button unmounts first (a submit that navigates or swaps the form for its result), `Button` removes that entry, so the live
   region never points at a missing element (an axe `role-img-alt` violation otherwise).
 - Token `--size-form-max` (25rem, 400 px): the one-column sign-in and password forms.
+
+**App shells** (T-M2.11, DEC-112; tests, axe and `/dev/ui` entries). `AppShell` is not one `ui/` component: it is the two shells in
+`app/shells/` (`TutorShell`, `StudentShell`), composed from these `ui/` parts:
+- `Sheet`: a React Aria modal (`ModalOverlay` + `Modal` + `Dialog`) with `placement="start"` (full-height navigation drawer from the inline-start
+  edge, at most `--size-drawer`) or `placement="bottom"` (bottom sheet, a decorative drag handle, at most `--size-sheet-max`, safe-area padding).
+  A visible heading names it; a visible Close button (`IconButton`), Esc and a tap on the scrim (`--color-scrim`) close it; focus moves in, is
+  contained and returns to the opener. An optional `footer` is pinned below the scrolling body. The focused dialog's ring sits inside the panel and follows its corners (AC11 (e)). It slides in on entry only (closing is
+  immediate, so a navigation from inside lands focus on the new page at once); with reduced motion nothing moves.
+- `Popover`: a button (`aria-haspopup="dialog"`, `aria-expanded`; the label truncates with a full-text `title`, the button is
+  `--size-account-button` wide so a skeleton can take its shape) opening a dialog-type popover (not an ARIA `menu`, so it may hold any
+  control, e.g. the language `SegmentedControl`). Modal: focus in and contained, Esc and an outside click close it, focus returns. Fixed width
+  (`--size-popover`), so a language change never moves its content. Controlled (`isOpen`, `onOpenChange`).
+- `NavList`: a labelled `nav` with a list of router links (icon + always-visible label), vertical (sidebar, drawer) or horizontal (student top
+  bar). The current item (its route or one below it) has `aria-current="page"`, the accent-subtle background, a semibold label and a bar on its
+  inline-start (vertical) or block-end (horizontal) edge (`--size-marker`), so the state is not colour alone. `onNavigate` lets a drawer close first.
+- `BottomTabs`: a labelled `nav` fixed to the bottom edge (`--size-tabbar` tall plus `env(safe-area-inset-bottom)`): equal tabs, icon above an
+  always-visible label, ≥ 44 px; an optional last tab is an action (`aria-haspopup="dialog"`, `aria-expanded`), e.g. More. The current tab has
+  `aria-current="page"` with a bar on its top edge and a semibold label. While it is on the page, the document's scroll padding keeps a focused
+  element clear of it (accessibility §1 rule 15).
+- `ButtonLink`: a React Router `Link` with the classes of a `Button` of the same variant and size (hover, active and focus-visible through CSS),
+  so a navigation keeps link semantics next to buttons ("Change password" beside "Log out").
+- `breakpoints.ts`: `BREAKPOINTS` (responsive-standards §1) and `useMinWidth(name)`.
+- `NavList`, `BottomTabs` and `ButtonLink` import React Router's links: the design system targets this app's router only.
+- Tokens: `--size-sidebar` (15rem), `--size-drawer` (20rem), `--size-popover` (18rem), `--size-account-button` (12rem), `--size-tabbar`
+  (3.75rem), `--size-sheet-max` (85dvh), `--size-marker` (3px), `--color-scrim`.
 
 ## 4. Status vocabulary (one mapping, used everywhere)
 
