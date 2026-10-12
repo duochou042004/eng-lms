@@ -105,3 +105,25 @@ Web: 31 test files, 328 tests (was 320). Budget: student and tutor 173.8 KB gz. 
 
 New screenshots (`impl/<project>/`): `login-{320,360}-{name-loading,long-name,name-error,route-loading}-vi`; all other impl screenshots re-shot
 with the new titles and states. Docs: IA §4 (public frame rows), responsive-standards §3 items 5 and 8, design-system §3 (dialog ring).
+
+## Round 3 fixes (QA round 2, AC11 (i), (j), DEC-114)
+
+(Recorded by the LC from the implementer's returned text.)
+
+Commits: `7505a03` (fix and unit tests), `846ccff` (E2E), `71086f4` (docs), `16e6d70` (evidence, progress). Both gate runs ran on `71086f4`,
+one after the other, against the same dev database.
+
+| Run | Log | Result |
+|---|---|---|
+| 1 | `gate-20261012T095504Z.log` | PASS (13 steps, 525 s) |
+| 2 | `gate-20261012T100349Z.log` | PASS (13 steps, 528 s) |
+
+Each run: 330 web tests in 31 files; E2E 240 passed, 24 skipped.
+
+| Item | Fix | Proof |
+|---|---|---|
+| (i) N-1 | `useOverlay(frame)` resets its open state when the shell frame changes, so the drawer or More sheet does not come back open | `shells.test.tsx` "AC11 (i)": tutor 768 → 1280 → 768 and student 360 → 800 → 360; afterwards no dialog open, `aria-expanded="false"`, focus on the trigger; both fail without the fix |
+| (j) N-2 | Public frame two rows below 768 px (`md`), one row at ≥ 768 px, in `PublicPage` and `RouteLoading` | E2E "AC11 (a), (j)" at 320, 360, 568 and 740 px: 59–60 of 60 characters visible; `h1` top 155.6 px in loading, loaded and error; CLS ≤ 0.005; skeleton line 2 px from the heading (`records/*/ac11a-*`); one row at ≥ 768 px |
+
+New screenshots in `impl/<project>/`: `login-{568,740}-{name-loading,long-name,name-error,route-loading}-vi`; 320 and 360 px re-shot. Docs: IA
+§4 and responsive-standards §3 item 8 (768 px).
