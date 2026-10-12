@@ -91,6 +91,11 @@ describe('RouteLoading (T-M1.9 AC4, AC6 N3)', () => {
         blockSize: 'var(--size-control-md)',
       })
     }
+    // AC11 (d): the skeleton sits in the shell's full-height frame, so the sidebar runs to the bottom.
+    const frameRoot = screen.getByTestId('route-loading-shell')
+    expect(frameRoot).toHaveClass('shell')
+    expect(frameRoot).toContainElement(topBar)
+    if (frame.sidebar) expect(screen.getByTestId('route-loading-sidebar').parentElement).toHaveClass('body')
     // The page sits in the shell's main box, padded for the bottom tabs when they are there.
     const main = screen.getByRole('status').querySelector('.main')!
     expect(main.classList.contains('withTabs')).toBe(frame.tabs)

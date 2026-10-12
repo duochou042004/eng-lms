@@ -1,10 +1,12 @@
 import { BookOpen, Ellipsis, House } from 'lucide-react'
+import { useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Outlet } from 'react-router'
 import { BottomTabs, EmptyState, NavList, PageHeader, Sheet, Stack, cx, useMinWidth, type NavItem } from '../../ui'
 import { usePageTitle } from '../routeAnnouncement'
 import styles from './Shell.module.css'
 import { AccountMenu, AccountSection, ShellHomeLink, SkipLink } from './ShellParts'
+import { useFrameFocus } from './useFrameFocus'
 import { useOverlay } from './useOverlay'
 
 export { ShellNotFound } from './ShellParts'
@@ -20,10 +22,12 @@ const NAV = [{ id: 'home', labelKey: 'nav.home', icon: <House />, to: '/student/
 export function StudentShell() {
   const { t } = useTranslation('shell')
   const wide = useMinWidth('md')
+  const root = useRef<HTMLDivElement>(null)
+  useFrameFocus(wide, root)
   const more = useOverlay()
   const items: NavItem[] = NAV.map(({ labelKey, ...item }) => ({ ...item, label: t(labelKey) }))
   return (
-    <div className={styles.shell}>
+    <div ref={root} className={styles.shell}>
       <SkipLink />
       <header className={styles.topBar}>
         <ShellHomeLink />

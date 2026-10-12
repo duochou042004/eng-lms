@@ -86,6 +86,7 @@
 
 .dialog {
   padding: var(--space-4);
+  border-radius: inherit;
   outline: none;
 }
 
@@ -93,4 +94,11 @@
   from {
     opacity: 0;
   }
+}
+
+/* The dialog's focus ring (it is focused on open) sits inside the panel and follows its corners (AC11 (e)). */
+.dialog:focus-visible {
+  outline: var(--focus-ring-width) solid var(--color-focus);
+  outline-offset: calc(-1 * var(--focus-ring-width));
+  border-radius: inherit;
 }

@@ -227,10 +227,10 @@ describe('/change-password, forced mode (FR-AUTH-06, AC4)', () => {
 
   // T-M2.11: /student/work has no page yet, so the student shell shows its 404 there (AC1).
   it.each([
-    ['/change-password', '/student/home', 'Trang của học viên'],
+    ['/change-password', '/student/home', 'Trang chủ'],
     ['/change-password?next=%2Fstudent%2Fwork', '/student/work', 'Không tìm thấy trang'],
-    ['/change-password?next=%2Ftutor%2Fstudents', '/student/home', 'Trang của học viên'],
-    ['/change-password?next=%2F%2Fevil.example', '/student/home', 'Trang của học viên'],
+    ['/change-password?next=%2Ftutor%2Fstudents', '/student/home', 'Trang chủ'],
+    ['/change-password?next=%2F%2Fevil.example', '/student/home', 'Trang chủ'],
   ])('reads the session again after success and goes from %s to %s', async (path, target, title) => {
     forcedThenChanged()
     const { router } = await openPage(path)

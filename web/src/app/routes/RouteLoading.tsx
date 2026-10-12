@@ -86,8 +86,9 @@ function ShellSkeleton({ role }: { role: 'tutor' | 'student' }) {
       <PageSkeleton />
     </div>
   )
+  // In the shell's own full-height frame, so the sidebar skeleton runs to the bottom like the sidebar (AC11 (d)).
   return (
-    <>
+    <div className={shellStyles.shell} data-testid="route-loading-shell">
       <div className={shellStyles.topBar} data-testid="route-loading-topbar">
         {tutor && !lg ? <div data-testid="route-loading-menu">{controlSkeleton('var(--size-control-md)')}</div> : null}
         <div className={shellStyles.identity}>
@@ -111,7 +112,7 @@ function ShellSkeleton({ role }: { role: 'tutor' | 'student' }) {
         page
       )}
       {!tutor && !md ? <div className={shellStyles.tabsSkeleton} data-testid="route-loading-tabs" /> : null}
-    </>
+    </div>
   )
 }
 

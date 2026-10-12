@@ -13,16 +13,29 @@
   gap: var(--space-3);
 }
 
-/* The workspace name takes the room the switcher leaves and truncates (basis 0: a long name never wraps the row). Its
-   compact error needs room for some message and the whole Retry button: when the row cannot give it 12rem, the error
-   wraps to a row of its own (the message still truncates there). */
+/* The language switcher stays at the end, also on its own row. */
+.toolbar > :last-child {
+  margin-inline-start: auto;
+}
+
+/* At >= 480 px one row: the workspace name takes the room the switcher leaves and truncates (basis 0, never wraps the
+   row; the compact error truncates its message too). */
 .toolbarName {
   flex: 1 1 0;
   min-inline-size: 0;
 }
 
-.toolbarName:has([role='alert']) {
-  flex-basis: 12rem;
+/* Below 480 px (sm, src/ui/breakpoints.ts) two fixed rows in every state (AC11 (a)): the identity row, full width and
+   two lines tall (the name or the error message wraps to at most two lines; the skeleton line sits in the same box), then
+   the switcher row. The fixed height keeps the h1 where it is through loading, loaded and error. */
+@media (width < 480px) {
+  .toolbarName {
+    display: flex;
+    flex-basis: 100%;
+    flex-direction: column;
+    justify-content: center;
+    block-size: calc(2 * 1em * var(--line-height-body));
+  }
 }
 
 /* RouteLoading: a block-level region (an <output> is inline by default), so the page and shell paddings apply. */

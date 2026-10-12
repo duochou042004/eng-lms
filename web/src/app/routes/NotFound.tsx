@@ -5,8 +5,11 @@ import { EmptyState } from '../../ui'
 import { usePageTitle } from '../routeAnnouncement'
 import styles from './Page.module.css'
 
-/** The 404 content (a level-1 `EmptyState` with a link home), without a `main`: also used inside the shells. */
-export function NotFoundContent({ home }: { home: string }) {
+/**
+ * The 404 content (a level-1 `EmptyState` with a link home), without a `main`: also used inside the shells, whose link
+ * names its destination (`homeLabel`, AC11 (g)).
+ */
+export function NotFoundContent({ home, homeLabel }: { home: string; homeLabel?: string }) {
   const { t } = useTranslation()
   usePageTitle(t('notFound.title'))
   return (
@@ -17,7 +20,7 @@ export function NotFoundContent({ home }: { home: string }) {
       description={t('notFound.description')}
       action={
         <Link to={home} className={styles.homeLink}>
-          {t('notFound.home')}
+          {homeLabel ?? t('notFound.home')}
         </Link>
       }
     />

@@ -14,8 +14,8 @@ import { setViewportWidth } from '../../test/viewport'
 const path = (router: ReturnType<typeof renderRoute>['router']) =>
   router.state.location.pathname + router.state.location.search
 const h1 = (name: string) => screen.findByRole('heading', { level: 1, name })
-const TUTOR_HOME = 'Không gian gia sư'
-const STUDENT_HOME = 'Trang của học viên'
+const TUTOR_HOME = 'Hôm nay'
+const STUDENT_HOME = 'Trang chủ'
 const NOT_FOUND = 'Không tìm thấy trang'
 /** The shell's top bar. (jsdom's role mapping makes PageHeader's `header` inside `main` a banner too; browsers do not.) */
 const banner = () => document.querySelector<HTMLElement>('header:not(main header)')!
@@ -32,18 +32,19 @@ describe('AC1: nested shell routes, the guard before any child, the 404 inside t
   })
 
   it.each([
-    ['TUTOR', '/tutor/nope', 'Điều hướng gia sư', '/tutor/today'],
-    ['STUDENT', '/student/a/b', 'Điều hướng học viên', '/student/home'],
+    ['TUTOR', '/tutor/nope', 'Điều hướng gia sư', '/tutor/today', 'Về Hôm nay'],
+    ['STUDENT', '/student/a/b', 'Điều hướng học viên', '/student/home', 'Về Trang chủ'],
   ] as const)(
-    '%s: %s renders the 404 inside the shell (navigation, a link to the role home, title)',
-    async (role, at, navLabel, home) => {
+    '%s: %s renders the 404 inside the shell (navigation, a link naming the role home, title)',
+    async (role, at, navLabel, home, linkName) => {
       server.use(sessionAs(role))
       const { container, router } = renderRoute(at)
       await h1(NOT_FOUND)
       expect(router.state.location.pathname).toBe(at)
       expect(screen.getByRole('navigation', { name: navLabel })).toBeInTheDocument()
       expect(banner()).toBeInTheDocument()
-      expect(within(screen.getByRole('main')).getByRole('link', { name: 'Về trang đầu' })).toHaveAttribute('href', home)
+      // AC11 (g): the link names its destination by its nav label.
+      expect(within(screen.getByRole('main')).getByRole('link', { name: linkName })).toHaveAttribute('href', home)
       expect(screen.getAllByRole('main')).toHaveLength(1)
       await waitFor(() => expect(document.title).toBe(`${NOT_FOUND} · Eng-LMS`))
       await screen.findByText(META.displayName)
@@ -94,6 +95,17 @@ describe('AC1: nested shell routes, the guard before any child, the 404 inside t
     const { router } = renderRoute('/tutor/nope')
     await h1('Đổi mật khẩu')
     expect(router.state.location.pathname).toBe('/change-password')
+  })
+
+  it.each([
+    ['TUTOR', '/tutor/nope', 'Back to Today'],
+    ['STUDENT', '/student/nope', 'Back to Home'],
+  ] as const)('AC11 (g) in English: %s on %s → "%s"', async (role, at, linkName) => {
+    await changeLocale('en')
+    server.use(sessionAs(role))
+    renderRoute(at)
+    await h1('Page not found')
+    expect(within(screen.getByRole('main')).getByRole('link', { name: linkName })).toBeInTheDocument()
   })
 
   it('keeps the top-level 404 outside the shells', async () => {
@@ -323,7 +335,7 @@ describe('AC4: the account section (popover, drawer footer, More sheet)', () => 
     expect(await within(menu).findByText('Signed in as co-lan')).toBeInTheDocument()
     expect(screen.getByRole('dialog', { name: 'Account' })).toBe(menu)
     await userEvent.keyboard('{Escape}')
-    expect(await h1('Tutor workspace')).toBeInTheDocument()
+    expect(await h1('Today')).toBeInTheDocument()
     expect(screen.getByRole('navigation', { name: 'Tutor navigation' })).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Today' })).toBeInTheDocument()
   })
@@ -455,5 +467,59 @@ describe('AC9: keyboard path and landmarks', () => {
     await userEvent.keyboard('{Enter}')
     await h1('Đăng nhập')
     expect(loggedOut).toBe(true)
+  })
+})
+
+describe('AC11 (f): a frame change moves focus from body to the new frame trigger', () => {
+  it.each([
+    ['TUTOR', '/tutor/today', 768, 'Mở điều hướng', 1024, 'co-lan'],
+    ['TUTOR', '/tutor/today', 1280, 'co-lan', 768, 'Mở điều hướng'],
+    ['STUDENT', '/student/home', 360, 'Thêm', 768, 'an.nguyen'],
+    ['STUDENT', '/student/home', 768, 'an.nguyen', 360, 'Thêm'],
+  ] as const)(
+    '%s on %s: overlay open at %i px (%s), resized to %i px → focus on "%s"',
+    async (role, at, from, opener, to, next) => {
+      setViewportWidth(from)
+      server.use(sessionAs(role))
+      renderRoute(at)
+      await screen.findByRole('heading', { level: 1 })
+      await userEvent.click(screen.getByRole('button', { name: opener }))
+      await screen.findByRole('dialog')
+      act(() => setViewportWidth(to))
+      await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument())
+      await waitFor(() => expect(screen.getByRole('button', { name: next })).toHaveFocus())
+    },
+  )
+
+  it('leaves focus alone when it is not on body, and does not move it on the first render', async () => {
+    setViewportWidth(768)
+    server.use(sessionAs('TUTOR'))
+    renderRoute('/tutor/today')
+    await h1(TUTOR_HOME)
+    expect(document.activeElement).toBe(document.body)
+    const home = await screen.findByRole('link', { name: META.displayName })
+    home.focus()
+    act(() => setViewportWidth(1024))
+    await screen.findByRole('button', { name: 'co-lan' })
+    expect(home).toHaveFocus()
+  })
+})
+
+describe('AC11 (c): the compact meta error in a narrow shell top bar', () => {
+  it('keeps the message inside the alert, describing Retry, with a decorative icon for the narrow layout', async () => {
+    setViewportWidth(360)
+    server.use(
+      sessionAs('TUTOR'),
+      http.get('*/api/v1/meta', () => problem(500, 'INTERNAL_ERROR')),
+    )
+    const { container } = renderRoute('/tutor/today')
+    const alert = await screen.findByRole('alert')
+    const retry = within(alert).getByRole('button', { name: 'Thử lại' })
+    expect(retry).toHaveAccessibleDescription('Không tải được tên không gian dạy học')
+    expect(alert).toHaveTextContent('Không tải được tên không gian dạy học')
+    expect(alert.querySelector('svg')).toHaveAttribute('aria-hidden', 'true')
+    // The shell makes the alert the size container the narrow rule queries (WorkspaceName.module.css).
+    expect(alert.parentElement).toHaveClass('identity')
+    await expectNoAxeViolations(container)
   })
 })

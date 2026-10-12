@@ -48,9 +48,11 @@
   min-inline-size: 0;
 }
 
-/* After a /meta error the message beside the link yields first (basis 0, truncates); the link keeps "Eng-LMS" whole. */
+/* After a /meta error the message beside the link yields first (basis 0); the link keeps "Eng-LMS" whole. Under 22rem
+   the message becomes visually hidden alert text with an icon (WorkspaceName.module.css, AC11 (c)). */
 .identity > [role='alert'] {
   flex: 1 1 0;
+  container: workspace-error / inline-size;
 }
 
 .homeLink {

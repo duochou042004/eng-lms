@@ -1,10 +1,12 @@
 import { CalendarCheck, Menu, NotebookPen } from 'lucide-react'
+import { useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Outlet } from 'react-router'
 import { EmptyState, IconButton, NavList, PageHeader, Sheet, Stack, useMinWidth, type NavItem } from '../../ui'
 import { usePageTitle } from '../routeAnnouncement'
 import styles from './Shell.module.css'
 import { AccountMenu, AccountSection, ShellHomeLink, SkipLink } from './ShellParts'
+import { useFrameFocus } from './useFrameFocus'
 import { useOverlay } from './useOverlay'
 
 export { ShellNotFound } from './ShellParts'
@@ -20,10 +22,12 @@ const NAV = [{ id: 'today', labelKey: 'nav.today', icon: <CalendarCheck />, to: 
 export function TutorShell() {
   const { t } = useTranslation('shell')
   const wide = useMinWidth('lg')
+  const root = useRef<HTMLDivElement>(null)
+  useFrameFocus(wide, root)
   const drawer = useOverlay()
   const items: NavItem[] = NAV.map(({ labelKey, ...item }) => ({ ...item, label: t(labelKey) }))
   return (
-    <div className={styles.shell}>
+    <div ref={root} className={styles.shell}>
       <SkipLink />
       <header className={styles.topBar}>
         {wide ? null : (

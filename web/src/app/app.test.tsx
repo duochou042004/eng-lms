@@ -19,8 +19,8 @@ describe('routes and shells', () => {
   })
 
   it.each([
-    ['TUTOR', '/tutor/today', 'Không gian gia sư'],
-    ['STUDENT', '/student/home', 'Trang của học viên'],
+    ['TUTOR', '/tutor/today', 'Hôm nay'],
+    ['STUDENT', '/student/home', 'Trang chủ'],
   ] as const)('/ sends a signed-in %s to the role home %s', async (role, home, title) => {
     server.use(sessionAs(role))
     const { router } = renderRoute('/')
@@ -29,8 +29,8 @@ describe('routes and shells', () => {
   })
 
   it.each([
-    ['/tutor', 'TUTOR', 'Không gian gia sư'],
-    ['/student', 'STUDENT', 'Trang của học viên'],
+    ['/tutor', 'TUTOR', 'Hôm nay'],
+    ['/student', 'STUDENT', 'Trang chủ'],
   ] as const)('%s renders its shell with the workspace name from /api/v1/meta', async (path, role, title) => {
     server.use(sessionAs(role))
     const { container } = renderRoute(path)
@@ -88,7 +88,7 @@ describe('routes and shells', () => {
     expect(within(groupEn).getByRole('radio', { name: 'English' })).toHaveAttribute('aria-checked', 'true')
     expect(within(groupEn).getByRole('radio', { name: 'Tiếng Việt' })).toHaveAttribute('aria-checked', 'false')
     await userEvent.keyboard('{Escape}')
-    expect(await screen.findByRole('heading', { level: 1, name: 'Tutor workspace' })).toBeInTheDocument()
+    expect(await screen.findByRole('heading', { level: 1, name: 'Today' })).toBeInTheDocument()
     expect(screen.getByRole('heading', { level: 2, name: 'Nothing here yet' })).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Skip to main content' })).toBeInTheDocument()
     expect(document.documentElement.lang).toBe('en')

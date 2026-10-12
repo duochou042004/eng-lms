@@ -92,8 +92,11 @@ export function AccountMenu() {
   )
 }
 
-/** An unknown path under a shell (DEC-087 F-4): the 404 inside the shell, linking to the role home. */
+/** An unknown path under a shell (DEC-087 F-4): the 404 inside the shell, linking to the role home by its nav label. */
 export function ShellNotFound() {
+  const { t } = useTranslation('shell')
   const session = useSession().data
-  return <NotFoundContent home={session ? roleHome(session.role) : '/'} />
+  if (!session) return <NotFoundContent home="/" />
+  const label = t(session.role === 'TUTOR' ? 'nav.today' : 'nav.home')
+  return <NotFoundContent home={roleHome(session.role)} homeLabel={t('nav.backTo', { page: label })} />
 }
