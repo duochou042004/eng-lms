@@ -46,9 +46,12 @@ E2E on all six (nightly) and on the three mandatory ones per PR.
    `StickyFooter` on `xs`/`sm` for long forms. Correct `inputmode` and `autocomplete` for keyboards.
 5. **Dialogs:** `Sheet` = a bottom sheet on `xs`/`sm` (drag handle plus a visible Close button), a side panel or centred dialog at ≥ `md`. Long forms never go in a small dialog.
    Navigation drawers are start-edge sheets (`placement="start"`) at every width below `lg` (item 6); other sheets stay bottom sheets on `xs`/`sm` (T-M2.11).
+   When a resize or rotation across `md`/`lg` unmounts an open overlay, focus moves to the new frame's trigger, not `body` (AC11 (f)).
 6. **Navigation:** the tutor sidebar collapses into a drawer below `lg`. The student bottom tabs respect `env(safe-area-inset-bottom)`.
 7. **Touch:** primary targets ≥ 44 × 44 px, ≥ 8 px apart. Swipe gestures are never the only way to do something.
-8. **Text:** line length 45–80 characters for reading areas. Long names wrap (`overflow-wrap: anywhere` for usernames and URLs). Truncated text has a full-text tooltip **and** is visible on the detail view.
+8. **Text:** line length 45–80 characters for reading areas. The workspace name: one line with an ellipsis in the shell top bars and in the
+   public toolbar at ≥ `sm`; at most two lines in the public toolbar's own row on `xs` (T-M2.11 AC11 (a)). In a narrow shell top bar the compact
+   meta error shows an icon and Retry, its message kept as visually hidden alert text that describes Retry (AC11 (c)). Long names wrap (`overflow-wrap: anywhere` for usernames and URLs). Truncated text has a full-text tooltip **and** is visible on the detail view.
 9. **Orientation:** both are supported. An attempt in landscape on a phone keeps the timer visible.
 10. **Viewport height:** use `dvh` units for full-height sheets. Sticky footers must not cover inputs when the on-screen keyboard is open (use `visualViewport` handling in `Sheet`).
 

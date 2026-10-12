@@ -95,7 +95,7 @@ and labelled from 0 ms. Used by `RouteLoading` and `WorkspaceName`; new loading 
 - `Sheet`: a React Aria modal (`ModalOverlay` + `Modal` + `Dialog`) with `placement="start"` (full-height navigation drawer from the inline-start
   edge, at most `--size-drawer`) or `placement="bottom"` (bottom sheet, a decorative drag handle, at most `--size-sheet-max`, safe-area padding).
   A visible heading names it; a visible Close button (`IconButton`), Esc and a tap on the scrim (`--color-scrim`) close it; focus moves in, is
-  contained and returns to the opener. An optional `footer` is pinned below the scrolling body. It slides in on entry only (closing is
+  contained and returns to the opener. An optional `footer` is pinned below the scrolling body. The focused dialog's ring sits inside the panel and follows its corners (AC11 (e)). It slides in on entry only (closing is
   immediate, so a navigation from inside lands focus on the new page at once); with reduced motion nothing moves.
 - `Popover`: a button (`aria-haspopup="dialog"`, `aria-expanded`; the label truncates with a full-text `title`, the button is
   `--size-account-button` wide so a skeleton can take its shape) opening a dialog-type popover (not an ARIA `menu`, so it may hold any

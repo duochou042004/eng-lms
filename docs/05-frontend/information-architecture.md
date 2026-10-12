@@ -73,8 +73,10 @@ Unknown paths under `/student/…` show the 404 inside the shell.
 
 Implemented in T-M2.4: `/` has no page (the M1 landing page is gone): it redirects a `TUTOR` to `/tutor/today`, a `STUDENT` to `/student/home`, a
 session that must change its password to `/change-password` and an anonymous visitor to `/login`. `/login`, `/change-password` and `/forbidden`
-share the public frame (a toolbar row with the workspace name at the start and the language switcher at the end, then one 400 px column; the
-workspace name since T-M2.11, truncated on a narrow screen with a full-text tooltip). "Change password" and "Log out" are in the shells' account
+share the public frame (a toolbar with the workspace name and the language switcher, then one 400 px column; the workspace name since
+T-M2.11, with a full-text tooltip). At ≥ 480 px the toolbar is one row (the name at the start, truncated to one line; the switcher at the end);
+below 480 px it is two fixed rows in every state (AC11 (a), DEC-114): a full-width name row, two lines tall (the name or the compact error
+wraps to at most two lines; the loading skeleton sits in the same box, so the `h1` never moves), then the end-aligned switcher row. "Change password" and "Log out" are in the shells' account
 section (T-M2.11). The top-level `*` 404 is for paths outside the shells; `/tutor/*` and `/student/*` unknown paths render the 404 inside their
 shell, after the role guard.
 
