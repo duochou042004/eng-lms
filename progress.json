@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-10-11T15:08:55Z",
-  "updatedBy": "lead-coordinator (T-M2.4 merge record, session 2026-10-11, Opus 5.5)",
+  "updatedAt": "2026-10-12T03:05:00Z",
+  "updatedBy": "lead-coordinator (T-M2.11 packet, session 2026-10-12, Opus 5.5)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -31,34 +31,35 @@
   },
   "currentTask": {
     "id": "T-M2.11",
-    "title": "App shells (tutor sidebar/drawer, student tabs, account menu, navigation feedback, nested 404s, cross-tab session)",
-    "status": "draft",
+    "title": "App shells (tutor sidebar/drawer, student tabs, account menu, workspace identity, nested 404s)",
+    "status": "ready",
     "ownerRole": "FE",
     "branch": null,
-    "packet": null,
-    "pr": null,
+    "packet": "docs/tasks/T-M2.11-app-shells.md",
+    "pr": "85",
     "lastCommit": null,
     "startedAt": null,
     "entryGate": [
       "T-M2.4 merged — met (9fcc992, DEC-111)",
-      "Packet G0 — pending",
+      "Packet G0 — pending (DOCS-REVIEW, docs/T-M2.11-app-shells)",
       "PO start signal — pending"
     ],
     "nextSteps": [
-      "Write the T-M2.11 packet (task-packet skill, branch docs/T-M2.11-<slug>); fresh docs-reviewer; merge-gate",
-      "Ask the PO for the start signal; implement through G3 (QA, UX; SEC if the cross-tab session handling is in scope)"
+      "Fresh docs-reviewer on the packet; merge-gate; gitlab-sync",
+      "Ask the PO for the start signal (DEC); then feature/T-M2.11-app-shells, frontend-implementer, gate, G3 QA + UX (SEC not triggered, DEC-112)"
     ],
     "trace": [
       "backlog M2",
-      "DEC-109",
-      "DEC-111",
+      "IA §1, §3, §5",
       "DEC-073",
-      "DEC-087"
+      "DEC-087",
+      "DEC-111",
+      "DEC-112"
     ]
   },
   "nextTask": {
-    "id": "T-M2.5",
-    "title": "Students UI (list, add student flow F2, workspace shell, profile, guardians, learning profile, status, reset password)",
+    "id": "T-M2.12",
+    "title": "Navigation feedback and cross-tab session (150 ms lazy-navigation feedback, offline chunk feedback, FORBIDDEN_ROLE session refetch, cross-tab sign-in/out)",
     "status": "draft",
     "ownerRole": "FE",
     "branch": null,
@@ -67,19 +68,18 @@
     "lastCommit": null,
     "startedAt": null,
     "entryGate": [
-      "T-M2.3, T-M2.9 merged — met",
-      "T-M2.4 merged — met (9fcc992)",
       "T-M2.11 merged — pending",
       "Packet G0 — pending",
       "PO start signal — pending"
     ],
     "nextSteps": [
-      "Packet after T-M2.11"
+      "Write the T-M2.12 packet after T-M2.11 merges (SEC triggered, DEC-112)"
     ],
     "trace": [
-      "backlog M2",
-      "FR-STU-01..07",
-      "FR-AUTH-07"
+      "DEC-073",
+      "DEC-087",
+      "DEC-111",
+      "DEC-112"
     ]
   },
   "completed": [

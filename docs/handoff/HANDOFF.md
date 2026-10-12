@@ -1,11 +1,11 @@
-# Handoff — 2026-10-11T15:09Z (T-M1.19 and T-M2.4 done on this device; next: the T-M2.11 packet)
+# Handoff — 2026-10-12T03:20Z (T-M2.11 packet in review, PR #85; split T-M2.12, DEC-112)
 
-Phase/Milestone: P1 / M2 (in progress) · Current task: **T-M2.11 (draft: packet next)** · Branch: `develop` · Last merges on develop: `9fcc992` (PR #82, T-M2.4), `6423649` (PR #83, QA report); this record is PR #84 (check `git log` that it landed) · Remote: https://github.com/duochou042004/eng-lms (mirror: gitlab.com/duochou042004/eng-lms)
+Phase/Milestone: P1 / M2 (in progress) · Current task: **T-M2.11 (packet in DOCS-REVIEW, PR #85, branch `docs/T-M2.11-app-shells`)** · Branch: `docs/T-M2.11-app-shells` · Last merges on develop: `30fc948` (PR #84, T-M2.4 merge record), `9fcc992` (PR #82, T-M2.4) · Remote: https://github.com/duochou042004/eng-lms (mirror: gitlab.com/duochou042004/eng-lms)
 
 ## Where we are
 - **T-M2.4 done** (`9fcc992`, DEC-109..111): auth UI (login, forgot info, forced/voluntary password change, logout, role redirect, guards,
   `/forbidden`, `?next=` allow-list T18, XSRF header with re-priming, E2E sign-in harness with `e2e-tutor` under `.data/e2e/`). QA PASS WITH MINOR,
-  UX APPROVED, SEC APPROVED (the client-side auth part of the M2 exit security review). Deferred: SEC S4-2 cross-tab session → T-M2.11; SEC S4-3 CI
+  UX APPROVED, SEC APPROVED (the client-side auth part of the M2 exit security review). Deferred: SEC S4-2 cross-tab session → T-M2.12 (DEC-112; was T-M2.11); SEC S4-3 CI
   failure traces (risk-register R-22); `qa/` specs that use the anonymous `/` or the shells → T-M2.7 (DEC-111).
 - **T-M1.19 done** (`8be6d9f`, DEC-108): Docker or Podman on Linux, macOS, WSL2. This device: **Kali Linux rolling, rootless Podman 5.8.6, clone
   `/home/kali/App_projects/eng-lms`**; known limits N-1..N-3 in development-setup §3.
@@ -19,12 +19,11 @@ Phase/Milestone: P1 / M2 (in progress) · Current task: **T-M2.11 (draft: packet
 - Accounts (PO): `gh auth login`, `glab auth login`, git identity, credential helpers. Clone setup: `./scripts/install-hooks.sh`, `git remote add gitlab …`.
 
 ## Next steps
-1. **T-M2.11 packet** (task-packet skill, branch `docs/T-M2.11-app-shells`): the backlog row (tutor sidebar/drawer, student tabs/top bar, account menu
-   with language/password/logout replacing the placeholder header controls, brand fix, `meta.error` copy, 150 ms lazy-navigation feedback, offline
-   chunk feedback, nested 404s, cross-tab session handling SEC S4-2) and the UX notes carried from T-M2.4 (`evidence/T-M2.4/review/ux.md`: header
-   wraps to 3 rows at 360 px, "Đổi mật khẩu" link vs "Đăng xuất" button style, brand twice, workspace identity on public pages). Decide SEC in the packet (S4-2 touches session handling). Fresh docs-reviewer,
-   CI, verdicts, merge-gate, gitlab-sync; ask the PO once for the start signal (DEC); with it implement through G3.
-2. Then T-M2.5 (students UI), T-M2.6, T-M2.7 (M2 regression incl. the `qa/` spec updates). Optional: T-M2.10.
+1. **T-M2.11 packet** `docs/tasks/T-M2.11-app-shells.md` (PR #85): DOCS-REVIEW round 1 CHANGES REQUESTED (D-1 S2 language budget, D-2..D-11)
+   fixed; round 2 PASS (N-1..N-7 S3/S4 fixed); CI, verdicts, merge-gate, gitlab-sync. Split (DEC-112): T-M2.11 shells (SEC not triggered) and **T-M2.12** navigation
+   feedback (150 ms lazy navigation, offline chunk) + cross-tab session (SEC S4-2; SEC triggered). Ask the PO once for the T-M2.11 start
+   signal (DEC); with it implement through G3 (QA + UX).
+2. Then T-M2.12, T-M2.5 (students UI), T-M2.6, T-M2.7 (M2 regression incl. the `qa/` spec updates). Optional: T-M2.10.
 
 ## Pending PO decisions / actions
 - This device: `(cd qa && pnpm exec playwright install-deps firefox webkit)` (needs `sudo`) so `qa/` can run all three browsers (G3 of UI tasks).
