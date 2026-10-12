@@ -2,6 +2,7 @@ import { act, render, screen, within } from '@testing-library/react'
 import { createMemoryRouter, RouterProvider } from 'react-router'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { expectNoAxeViolations } from '../../test/axe'
+import { setViewportWidth } from '../../test/viewport'
 import { RouteLoading } from './RouteLoading'
 
 function renderLoading(path: string) {
@@ -44,7 +45,12 @@ describe('RouteLoading (T-M1.9 AC4, AC6 N3)', () => {
       renderLoading(path)
       const toolbar = screen.getByTestId('route-loading-toolbar')
       expect(toolbar).toHaveClass('toolbar')
-      const [switcher] = within(toolbar).getAllByTestId('skeleton')
+      // T-M2.11: a name-shaped line first (the workspace name), then the switcher block, last in the row.
+      const name = screen.getByTestId('route-loading-name')
+      expect(name).toHaveClass('toolbarName')
+      expect(toolbar.firstElementChild).toBe(name)
+      expect(toolbar.lastElementChild).toBe(screen.getByTestId('route-loading-switcher'))
+      const [switcher] = within(screen.getByTestId('route-loading-switcher')).getAllByTestId('skeleton')
       expect(switcher).toHaveStyle({ blockSize: 'var(--size-control-md)' })
       // It comes before the title line (document order = block order in the Stack).
       const title = screen.getByRole('status').querySelector('.headerSkeleton')
@@ -54,22 +60,43 @@ describe('RouteLoading (T-M1.9 AC4, AC6 N3)', () => {
     },
   )
 
-  it.each(['/tutor', '/student/x'])(
-    'puts the header controls before the switcher on %s, sized from their own labels (T-M2.4)',
-    (path) => {
-      renderLoading(path)
-      const topBar = screen.getByTestId('route-loading-topbar')
-      const actions = topBar.querySelector('.actions')!
-      expect(actions.lastElementChild).toBe(screen.getByTestId('route-loading-switcher'))
-      const sizers = [...actions.querySelectorAll('.labelSizer')]
-      expect(sizers.map((s) => s.textContent)).toEqual(['Đổi mật khẩu', 'Đăng xuất'])
-      expect(sizers[0]).toHaveClass('linkSizer')
-      expect(sizers[1]).toHaveClass('buttonSizer')
-      for (const sizer of sizers) expect(sizer).toHaveAttribute('aria-hidden', 'true')
-    },
-  )
+  // T-M2.11 scope 9: the shell skeleton follows the new frame per breakpoint (no header controls of T-M2.4 any more).
+  it.each([
+    [360, '/tutor', { menu: true, account: false, sidebar: false, tabs: false }],
+    [768, '/tutor/today', { menu: true, account: false, sidebar: false, tabs: false }],
+    [1024, '/tutor/x', { menu: false, account: true, sidebar: true, tabs: false }],
+    [1280, '/tutor', { menu: false, account: true, sidebar: true, tabs: false }],
+    [360, '/student', { menu: false, account: false, sidebar: false, tabs: true }],
+    [767, '/student/x', { menu: false, account: false, sidebar: false, tabs: true }],
+    [768, '/student/home', { menu: false, account: true, sidebar: false, tabs: false }],
+    [1280, '/student', { menu: false, account: true, sidebar: false, tabs: false }],
+  ])('at %i px on %s draws the shell frame %o', (width, path, frame) => {
+    setViewportWidth(width)
+    renderLoading(path)
+    const topBar = screen.getByTestId('route-loading-topbar')
+    expect(topBar).toHaveClass('topBar')
+    expect(screen.queryByTestId('route-loading-menu') !== null).toBe(frame.menu)
+    expect(screen.queryByTestId('route-loading-account') !== null).toBe(frame.account)
+    expect(screen.queryByTestId('route-loading-sidebar') !== null).toBe(frame.sidebar)
+    expect(screen.queryByTestId('route-loading-tabs') !== null).toBe(frame.tabs)
+    expect(topBar.querySelector('.identity')).not.toBeNull()
+    expect(screen.queryByTestId('route-loading-switcher')).not.toBeInTheDocument()
+    if (frame.menu) expect(topBar.firstElementChild).toBe(screen.getByTestId('route-loading-menu'))
+    if (frame.account) {
+      // The end control: as wide as the account menu button (a fixed token; T-M1.16 AC1 as changed by DEC-112 (5)).
+      const account = screen.getByTestId('route-loading-account')
+      expect(topBar.lastElementChild).toBe(account)
+      expect(within(account).getByTestId('skeleton')).toHaveStyle({
+        inlineSize: 'var(--size-account-button)',
+        blockSize: 'var(--size-control-md)',
+      })
+    }
+    // The page sits in the shell's main box, padded for the bottom tabs when they are there.
+    const main = screen.getByRole('status').querySelector('.main')!
+    expect(main.classList.contains('withTabs')).toBe(frame.tabs)
+  })
 
-  it.each(['/login', '/tutor'])(
+  it.each(['/login', '/forbidden'])(
     'sizes the switcher block on %s from the switcher’s own row: both endonyms, hidden (T-M1.16 AC1)',
     (path) => {
       renderLoading(path)

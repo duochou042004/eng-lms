@@ -11,5 +11,19 @@
     "emptyTitle": "Chưa có gì ở đây",
     "emptyDescription": "Bài học và nhiệm vụ của bạn sẽ xuất hiện ở đây."
   },
-  "home": "Trang đầu"
+  "home": "Trang đầu",
+  "nav": {
+    "today": "Hôm nay",
+    "home": "Trang chủ",
+    "more": "Thêm",
+    "open": "Mở điều hướng",
+    "drawerTitle": "Điều hướng"
+  },
+  "account": {
+    "label": "Tài khoản",
+    "signedInAs": "Đã đăng nhập: {{name}}",
+    "changePassword": "Đổi mật khẩu",
+    "logout": "Đăng xuất"
+  },
+  "close": "Đóng"
 }

@@ -7,7 +7,22 @@
 
 .toolbar {
   display: flex;
-  justify-content: flex-end;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+/* The workspace name takes the room the switcher leaves and truncates (basis 0: a long name never wraps the row). Its
+   compact error needs room for some message and the whole Retry button: when the row cannot give it 12rem, the error
+   wraps to a row of its own (the message still truncates there). */
+.toolbarName {
+  flex: 1 1 0;
+  min-inline-size: 0;
+}
+
+.toolbarName:has([role='alert']) {
+  flex-basis: 12rem;
 }
 
 /* RouteLoading: a block-level region (an <output> is inline by default), so the page and shell paddings apply. */
@@ -39,30 +54,6 @@
 
 .switcherSizer > * + * {
   border-inline-start: var(--border-width) solid;
-}
-
-/* ControlSkeleton: the label of a shell-header control, invisible and zero-height, in the control's own type and inline
-   padding (ShellLayout .accountLink: medium weight, --space-2; Button md: medium weight, --space-4 plus its border). */
-.labelSizer {
-  display: flex;
-  block-size: 0;
-  overflow: hidden;
-  visibility: hidden;
-  font-weight: var(--font-weight-medium);
-  white-space: nowrap;
-}
-
-.linkSizer > * {
-  padding-inline: var(--space-2);
-}
-
-.buttonSizer > * {
-  padding-inline: calc(var(--space-4) + var(--border-width));
-}
-
-/* The shell brand row is as tall as its 44 px home link. */
-.brandSkeleton {
-  min-block-size: var(--size-control-md);
 }
 
 /* The PageHeader's box (title line, padding and hairline) without its text. */

@@ -6,6 +6,7 @@ import { SESSION_KEY } from '../features/auth/api/session'
 import { expectNoAxeViolations } from '../test/axe'
 import { renderRoute } from '../test/render'
 import { problem, server, sessionAs, sessionBody, setXsrfCookie } from '../test/server'
+import { openAccountMenu } from '../test/shell'
 
 const path = (router: ReturnType<typeof renderRoute>['router']) =>
   router.state.location.pathname + router.state.location.search
@@ -103,18 +104,20 @@ describe('Log out (FR-AUTH-04, scope 7)', () => {
     const posts = signedInUntilLogout(() => new HttpResponse(null, { status: 204 }))
     const { router } = renderRoute('/tutor')
     await screen.findByText('Lớp cô Lan')
+    await openAccountMenu()
     await userEvent.click(screen.getByRole('button', { name: 'Đăng xuất' }))
     await screen.findByRole('heading', { level: 1, name: 'Đăng nhập' })
     expect(posts).toEqual(['xsrf-test-token'])
     expect(router.state.location.pathname).toBe('/login')
     await router.navigate(-1)
-    await waitFor(() => expect(path(router)).toBe('/login?next=%2Ftutor'))
+    await waitFor(() => expect(path(router)).toBe('/login?next=%2Ftutor%2Ftoday'))
   })
 
   it('still goes to /login when the logout call fails', async () => {
     signedInUntilLogout(() => HttpResponse.error() as unknown as Response)
     const { router } = renderRoute('/tutor')
     await screen.findByText('Lớp cô Lan')
+    await openAccountMenu()
     await userEvent.click(screen.getByRole('button', { name: 'Đăng xuất' }))
     await screen.findByRole('heading', { level: 1, name: 'Đăng nhập' })
     expect(router.state.location.pathname).toBe('/login')

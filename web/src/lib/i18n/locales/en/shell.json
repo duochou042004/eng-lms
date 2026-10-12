@@ -11,5 +11,19 @@
     "emptyTitle": "Nothing here yet",
     "emptyDescription": "Your lessons and tasks will appear here."
   },
-  "home": "Start page"
+  "home": "Start page",
+  "nav": {
+    "today": "Today",
+    "home": "Home",
+    "more": "More",
+    "open": "Open navigation",
+    "drawerTitle": "Navigation"
+  },
+  "account": {
+    "label": "Account",
+    "signedInAs": "Signed in as {{name}}",
+    "changePassword": "Change password",
+    "logout": "Log out"
+  },
+  "close": "Close"
 }
