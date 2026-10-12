@@ -301,8 +301,8 @@
     }
   ],
   "tests": {
-    "lastRun": "2026-10-09T14:01:19Z",
-    "summary": "T-M2.9 merged: CI 7/7 at 5de3a62 (backend 466 tests); -Dgroups=security 158; x20 of the four race/stamp classes 20/20 (implementer, QA).",
+    "lastRun": "2026-10-12T13:00:00Z",
+    "summary": "T-M2.11 merged: CI 7/7 at 93698aa; gate PASS x2 on 71086f4 (backend 466 tests, web 330 tests in 31 files, e2e 240 passed / 24 skipped on phone-small, tablet, laptop); QA round 3 x3/x20 repeats green.",
     "suites": [
       {
         "name": "backend (./mvnw -B verify)",

@@ -68,6 +68,7 @@ I re-checked every round-1 finding on the live app at `93698aa` and all eight ar
 - The e2e global setup created one more shared student in the dev database through the tutor API.
 
 UX-REVIEW T-M2.11: APPROVED
+
 ---
 
 ## Round 1
