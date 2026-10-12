@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Milestone | M2 |
-| Status | in_progress (DEC-113) |
+| Status | done (`1af32de`, DEC-115) |
 | Owner role | FE (frontend-implementer) |
 | Branch | `feature/T-M2.11-app-shells` (from `develop`) |
 | Depends on | T-M2.4 merged (`9fcc992`, DEC-111) |
