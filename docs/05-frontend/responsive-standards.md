@@ -4,16 +4,19 @@
 > layout breakpoints for the shells. Student UI is designed mobile-first; tutor UI is designed desktop-first but must be **fully usable**
 > on a phone (wrap-up, schedule, review).
 
-## 1. Breakpoints (shell-level only; `web/src/ui/breakpoints.ts` and the matching CSS custom media)
+## 1. Breakpoints (shell-level only; `web/src/ui/breakpoints.ts`)
 
 | Name | Min width | Shell behaviour |
 |---|---|---|
 | `xs` | 0 | Phone. Tutor: top bar + drawer nav. Student: bottom tabs |
 | `sm` | 480 | Large phone. As `xs`, with 2-column form rows allowed for short fields |
-| `md` | 768 | Tablet portrait. Tutor: collapsible rail nav (icons + labels on expand). Student: top nav |
+| `md` | 768 | Tablet portrait. Tutor: top bar + drawer nav while the nav has few items (a collapsible rail once it has enough items to need one, DEC-112). Student: top nav |
 | `lg` | 1024 | Tablet landscape / small laptop. Tutor: persistent sidebar (labels); split views allowed |
 | `xl` | 1280 | Laptop. Optional secondary column; builder 3-pane |
 | `2xl` | 1536 | Desktop. Content max width stays 1200 px (reading comfort), centred |
+
+The values live in `ui/breakpoints.ts` (`BREAKPOINTS`, and `useMinWidth(name)`, which the shells use to pick their frame). There is no
+custom-media plugin: a stylesheet that needs a breakpoint repeats its value with a comment naming that file (T-M2.11).
 
 Components adapt with **container queries** (`@container`) against their own width, not the viewport. For example, `DataList` switches
 from a table to a list below a 640 px container width wherever it is placed.
@@ -42,6 +45,7 @@ E2E on all six (nightly) and on the three mandatory ones per PR.
 4. **Forms:** a single column below `md`. Labels always sit above inputs. Inputs are ≥ 44 px tall, with `font-size ≥ 16px` (prevents iOS zoom). The primary action sits in a
    `StickyFooter` on `xs`/`sm` for long forms. Correct `inputmode` and `autocomplete` for keyboards.
 5. **Dialogs:** `Sheet` = a bottom sheet on `xs`/`sm` (drag handle plus a visible Close button), a side panel or centred dialog at ≥ `md`. Long forms never go in a small dialog.
+   Navigation drawers are start-edge sheets (`placement="start"`) at every width below `lg` (item 6); other sheets stay bottom sheets on `xs`/`sm` (T-M2.11).
 6. **Navigation:** the tutor sidebar collapses into a drawer below `lg`. The student bottom tabs respect `env(safe-area-inset-bottom)`.
 7. **Touch:** primary targets ≥ 44 × 44 px, ≥ 8 px apart. Swipe gestures are never the only way to do something.
 8. **Text:** line length 45–80 characters for reading areas. Long names wrap (`overflow-wrap: anywhere` for usernames and URLs). Truncated text has a full-text tooltip **and** is visible on the detail view.

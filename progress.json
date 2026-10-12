@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-10-12T03:45:00Z",
-  "updatedBy": "lead-coordinator (T-M2.11 start, session 2026-10-12, Opus 5.5)",
+  "updatedAt": "2026-10-12T09:30:00Z",
+  "updatedBy": "frontend-implementer (T-M2.11 implementation, session 2026-10-12, Opus 5.5)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -37,7 +37,7 @@
     "branch": "feature/T-M2.11-app-shells",
     "packet": "docs/tasks/T-M2.11-app-shells.md",
     "pr": null,
-    "lastCommit": null,
+    "lastCommit": "67e1097",
     "startedAt": "2026-10-12T03:45:00Z",
     "entryGate": [
       "T-M2.4 merged — met (9fcc992, DEC-111)",
@@ -45,8 +45,8 @@
       "PO start signal — met (DEC-113)"
     ],
     "nextSteps": [
-      "frontend-implementer on feature/T-M2.11-app-shells; gate green twice",
-      "G3: fresh qa-evaluator, then ux-reviewer; merge-gate; gitlab-sync; QA report via qa/T-M2.11; merge record"
+      "Implementation pushed on feature/T-M2.11-app-shells (ui d02b5fd, shells 6da76f0, e2e 67e1097, docs and evidence after); gate green twice (evidence/T-M2.11/summary.md)",
+      "LC: open the PR; G3: fresh qa-evaluator, then ux-reviewer; merge-gate; gitlab-sync; QA report via qa/T-M2.11; merge record"
     ],
     "trace": [
       "backlog M2",

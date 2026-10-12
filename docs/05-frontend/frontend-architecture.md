@@ -74,6 +74,19 @@ failed navigation also renders inside `RootLayout` and gets the same focus move.
 `document.title` to `app.documentTitle` (`<page title> · <app name>`) and follows a language change. `RouteLoading` (the hydrate fallback) shows a
 top-bar-shaped skeleton on `/tutor/*` and `/student/*` and the page-only skeleton elsewhere.
 
+**Shell routes (T-M2.11, DEC-112).** `/tutor` and `/student` are layout routes: the shell renders an `<Outlet />` in its `main`. The role guard
+(`guard.requireRole`) is the **parent's** loader, so it runs before any child, unknown paths included (anonymous → `/login?next=`, must change →
+`/change-password`, wrong role → `/forbidden`); React Router runs it on entering the shell, not on every child navigation (it reads the cached
+session either way). Children: the index redirects (`/tutor` → `/tutor/today`, `/student` → `/student/home`), the pages (`today`, `home`), and
+`*` → `ShellNotFound` (the 404 content of `NotFound`, without its own `main`, linking to the role home; `usePageTitle`; route focus on its `h1`).
+Every child's `lazy()` imports its shell's module, so each shell stays one lazy chunk; the top-level `*` 404 stays for paths outside the shells.
+The shells choose their frame with `useMinWidth` (tutor sidebar at ≥ `lg`, drawer below; student top bar at ≥ `md`, bottom tabs below); their
+overlays (`useOverlay`) are open only while the location they were opened at is current, so any navigation (a link, Back, a redirect) closes
+them in the same commit. `RouteLoading` draws the same frame per breakpoint (tutor: menu-button skeleton below `lg`, account-button skeleton
+and sidebar at ≥ `lg`; student: bottom-tab bar below `md`, nav item and account-button skeletons at ≥ `md`); the public pages' skeleton has a
+name-shaped line before the switcher. Route focus also moves after a navigation to the page already shown (a nav item or the home link of the
+current page: a new location key without a hash); an in-page hash jump still does not move it.
+
 ## 4. i18n
 
 `i18next` namespaces per feature. Keys are semantic (`students.create.title`). The Vietnamese catalogue is the default (A-012). A missing key fails the unit test

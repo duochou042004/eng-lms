@@ -13,6 +13,15 @@
 "Remember me on this device" is optional and unticked by default (shared-device hint, DEC-093). A first sign-in with a temporary password adds the
 forced change on `/change-password` (current, new, repeat, submit). Measured by `e2e/tests/auth.spec.ts` (`steps-login` record).
 
+## Shell flows (T-M2.11, DEC-112 (5))
+
+- **Log out** (FR-AUTH-04): ≤ 2 steps from any shell page at every viewport: open the account section (the account menu button, the tutor's
+  menu button below 1024 px, or the student's More tab below 768 px), then Log out → `/login`. Measured by `e2e/tests/shells.spec.ts`
+  (`steps-logout-*`).
+- **Switch the language:** 1 step on the public pages (the switcher in their toolbar row); ≤ 2 from a shell page (open the account section,
+  pick a language). Was 1 step everywhere (T-M1.9) until the shell's switcher moved into the account section. Measured by
+  `e2e/tests/route-focus.spec.ts` (`steps-switch-language`).
+
 ## F1 After-lesson wrap-up (SPEC §48): budget ≤ 7 steps, ≤ 60 s
 
 Entry points: Today → lesson row → **Wrap up**; or the lesson detail → **Wrap up**; or the student workspace → the last lesson card.
