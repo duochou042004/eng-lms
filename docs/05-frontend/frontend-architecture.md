@@ -50,13 +50,16 @@ Cross-feature needs go through `lib` or via route composition. `react-aria-compo
   `/change-password`. (`Idempotency-Key` is not built yet.)
   **T-M2.12:** a 403 `FORBIDDEN_ROLE` is reported too (a third `AuthProblem`; the caller still gets its `ApiError`). `connectAuthProblems`
   reads the session again (`refreshSession`; concurrent 403s share one read); only when the user, role or sign-in changed (`userId`, `role`, or
-  anonymous now) does it remove every cached query except the session and follow it (below); else nothing happens.
+  anonymous now) does it drop every cached query except the session and follow it (below); else nothing happens. **Dropping** (AC11 (e),
+  DEC-118): queries of mounted pages are reset (`resetQueries`: their observers are notified and refetch for the new session), the unused
+  ones removed, so a same-role user switch never leaves the previous user's data on a mounted page.
 - **Cross-tab sign-in/out (T-M2.12, security.md T19):** the session is no longer changed only by this tab. `features/auth/api/authChannel.ts`
   wraps one `BroadcastChannel` named `englms-auth` (post and listen share the instance, so a tab never hears itself; nothing happens where
   `BroadcastChannel` does not exist). `useLogin` posts `{ type: 'signed-in' }` after a successful sign-in; `useLogout` (also when the call
   failed) and `guard.login` after its must-change logout post `{ type: 'signed-out' }`: only the type, no user data. `connectAuthProblems` also
-  listens: on a message of exactly that shape (anything else is ignored) it removes every cached query except the session, reads the session
-  again and follows it; a received message never posts. **Following a session:** on `/login` with a signed-in session the tab navigates to `/`
+  listens: on a message of exactly that shape (anything else is ignored) it drops every cached query except the session, reads the session
+  again and follows it; a received message never posts. A page restored from the back/forward cache (`pageshow` with `event.persisted`,
+  AC11 (f)) missed the messages sent meanwhile, so it runs the same steps. **Following a session:** on `/login` with a signed-in session the tab navigates to `/`
   (`replace`; its guard picks the role home or `/change-password`; `?next=` is not honoured there); elsewhere `router.revalidate()`, so the
   unchanged guards redirect. The reactions run one after another (a queue), so a redirect into `/login` has finished before the next session
   read. The channel is closed when the app unmounts (`App`'s effect returns the unsubscribe).
@@ -105,7 +108,8 @@ loaders) for longer than 150 ms (`useDelayed`, the timer behind `DelayedSkeleton
 viewport and fills its one polite status region (an `<output>`) with `app.loading`; the current page stays as it is and keeps focus until the
 new page renders (then route focus moves as above). A navigation that settles within 150 ms shows nothing. When a route's `lazy()` import fails
 (a dynamic-import error of any engine or Vite's CSS preload error, `app/routes/chunkError.ts`), or any route error happens while
-`navigator.onLine` is `false`, `RouteError` shows the offline or the couldn't-load copy with **Retry** and the start-page link. Retry while
+`navigator.onLine` is `false`, `RouteError` shows the offline or the couldn't-load page (its own `h1` and document title, AC11 (b)) with a
+primary **Retry** and the quiet start-page link; the copy follows `online` / `offline` events while shown (AC11 (a)). Retry while
 offline keeps the page and announces the offline message again (no request); online it calls `window.location.reload()`: React Router keeps a
 rejected `lazy()` for the router's life, and after a failed client navigation the address bar already shows the failed URL (no URL is built, so
 it cannot leave the origin). Nothing reloads by itself (no `vite:preloadError` or `online` handler). **`/login` does not revalidate** while

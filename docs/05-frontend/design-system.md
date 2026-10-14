@@ -78,7 +78,7 @@ The timer itself is `useDelayed(active, delayMs = SKELETON_DELAY_MS)` (`ui/useDe
 
 **`ProgressLine`** (T-M2.12; test, axe and `/dev/ui` entry): a thin indeterminate line at the top edge of the viewport
 (`position: fixed`, `--size-progress-line` = 3 px, `--color-accent`, `--z-toast`, no pointer events), so the page under it keeps its layout and
-stays usable. A 40 % bar travels across (1.2 s, `--motion-easing`); with `prefers-reduced-motion: reduce` it is a static full-width line.
+stays usable. A 40 % bar travels across (`--motion-duration-progress` = 1.2 s, `--motion-easing`); with `prefers-reduced-motion: reduce` it is a static full-width line.
 Decorative: `aria-hidden="true"`, never focusable; its owner announces the state (in `RootLayout`, one polite status region saying
 `app.loading`). Shown by `RootLayout` after 150 ms of a router navigation (frontend-architecture §3).
 
