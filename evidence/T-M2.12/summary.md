@@ -15,3 +15,8 @@
 - **Implementer decisions:** the chunk/offline pages keep the generic error title with the packet's sentences as the description; the 403 and cross-tab reactions run serially so a redirect into `/login` cannot overlap a session read.
 - **Not done:** Firefox/WebKit not run (Chromium only); an offline route error is caught by the offline check regardless of the engine's error text.
 - Screenshots: `impl/<phone-small|tablet|laptop>/`; measurements: `records/`.
+
+## Round 2: AC11 (a)–(f) (G3 round 1 fixes, DEC-118)
+- **Gates:** `gate-20261014T064210Z.log` PASS and `gate-20261014T065157Z.log` PASS on `c4c9e02` (13 steps; backend 466, web 370 in 34 files, E2E 276 passed / 30 skipped; budget student 174.8 KB, tutor 174.9 KB gz). Unit suite ×3 more: green.
+- (a) `RouteError` follows `online`/`offline` (unit + E2E `chunk-back-online-{vi,en}`); (b) own `h1` and title "Bạn đang ngoại tuyến" / "You're offline", "Không tải được trang này" / "This page couldn't load" (unit + E2E; `polish.spec.ts` T-M1.13 AC4 heading updated); (c) Retry and generic Reload primary (unit + E2E); (d) `--motion-duration-progress: 1.2s` (`ProgressLine.test.tsx`); (e) `resetQueries` for mounted queries on a user/role change, shared by the 403, channel and `pageshow` paths; student A → B test with a mounted query (fails with `removeQueries`); (f) `pageshow` `persisted` resync (unit tests); T19, frontend-architecture §2/§3, design-system, interaction-states updated.
+- Flaky-test fix: `tutorTab` helper waits for the workspace name before recording requests (no assertion changed).
