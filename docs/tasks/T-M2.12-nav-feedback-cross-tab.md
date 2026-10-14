@@ -29,7 +29,8 @@ guards. The narrow shell top bar's compact workspace-name error keeps Retry besi
      connection to load." / Vietnamese equivalent; online → "This page couldn't load. Check your connection and try again." / Vietnamese
      equivalent; with a **Retry** button and the existing link back to the start page. Retry while `navigator.onLine` is `false` keeps the
      page and announces the offline message again (no request); otherwise it does a **full load of the failed URL**
-     (`window.location.assign`), because React Router caches a rejected `lazy()` per route for the router's life and a browser may keep a
+     (`window.location.reload()`: after a failed client navigation the address bar already shows that URL; no URL is built, so Retry can
+     never leave the origin, DOCS-REVIEW N-1), because React Router caches a rejected `lazy()` per route for the router's life and a browser may keep a
      failed dynamic `import()` in its module map (DOCS-REVIEW D-1, DEC-116 (2)); the full load re-reads the session from the cookie and keeps the
      language (stored locally), and it also picks up a new deployment's chunk names. No request ID line (there is none). Nothing reloads
      automatically (`vite:preloadError` and the `online` event never trigger a reload). The generic error page keeps its Reload button.
@@ -45,8 +46,9 @@ guards. The narrow shell top bar's compact workspace-name error keeps Retry besi
      router (guards re-run, as in item 3). Messages of any other shape are ignored. Where `BroadcastChannel` does not exist, the module does
      nothing (no fallback; every browser of A-014 / NFR-COMPAT-01 has it). The channel is closed when the app unmounts.
      **Revalidation never logs out** (DOCS-REVIEW D-2): the must-change logout of the `/login` guard runs only when the visitor navigates to
-     `/login`, never on a revalidation caused by a message or a 403. The `/login` route opts out of revalidation (`shouldRevalidate: () =>
-     false`), and a tab on `/login` that learns of a signed-in session (message or 403 reaction) navigates to `/` with `replace`, whose guard
+     `/login`, never on a revalidation caused by a message or a 403. The `/login` route opts out of revalidation while its URL is unchanged
+     (`shouldRevalidate` returns `false` when `currentUrl.href === nextUrl.href`, so moving between `/login` URLs still runs the guard,
+     DOCS-REVIEW N-2), and a tab on `/login` that learns of a signed-in session (message or 403 reaction) navigates to `/` with `replace`, whose guard
      picks the role home or `/change-password`. So a tab left on `/login` never ends a session that another tab just created.
   5. **UX-9** (DEC-115): inside `@container workspace-error (width < 22rem)` the compact meta error's Retry sits next to the icon (the
      `margin-inline-start: auto` push is reset), and the icon's wrapper carries the message as `title` (`meta.error`); the message stays the
@@ -75,8 +77,8 @@ navigation; every shared-device sign-in. 5. **Hard-coded semantics?** None.
 - The pathless child route already has `RouteError` as its boundary, so a failed lazy import renders inside `RootLayout` (route focus moves to
   its `h1`). React Router 8.4 keeps each route's `lazy()` promise in a module-level `WeakMap`, rejections included, so an in-app retry
   (`navigate`, `revalidate`) would get the same rejection: Retry is a full load of the failed URL when online (scope 2). A unit test proves
-  the offline branch makes no request and the online branch calls `location.assign` with the failed path + search (never another origin:
-  the path comes from the router's location).
+  the offline branch makes no request and the online branch calls `location.reload()` and never `assign`/`href` (a pathname such as
+  `//evil.example/x` would otherwise be read as another origin, N-1).
 - `AuthProblem` gains `'FORBIDDEN_ROLE'`; the listener contract stays one listener. A single in-flight promise dedupes the session read.
   `router.revalidate()` re-runs the shell's parent guard (frontend-architecture §3); the guards' redirect rules do not change (only
   `guard.login` posts `signed-out`, and the `/login` route opts out of revalidation, scope 4).

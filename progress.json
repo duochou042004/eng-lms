@@ -36,7 +36,7 @@
     "ownerRole": "FE",
     "branch": "docs/T-M2.12-nav-feedback-cross-tab",
     "packet": "docs/tasks/T-M2.12-nav-feedback-cross-tab.md",
-    "pr": null,
+    "pr": "89",
     "lastCommit": null,
     "startedAt": null,
     "entryGate": [
@@ -331,7 +331,7 @@
   "gates": {
     "G0": {
       "status": "pending",
-      "note": "T-M2.12 packet written (DEC-116); DOCS-REVIEW pending"
+      "note": "T-M2.12 packet (DEC-116, PR #89): DOCS-REVIEW round 1 CHANGES REQUESTED (D-1..D-9 fixed), round 2 PASS WITH MINOR (N-1, N-2 fixed)"
     },
     "G1": {
       "status": "n/a",
