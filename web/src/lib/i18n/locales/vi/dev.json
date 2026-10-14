@@ -77,6 +77,9 @@
     "popoverLongTrigger": "Nguyễn Thị Phương Lan Anh (tên rất dài)",
     "popoverBody": "Nội dung của popover.",
     "linkSecondary": "Đổi mật khẩu",
-    "linkQuiet": "Xem tất cả"
+    "linkQuiet": "Xem tất cả",
+    "progressShow": "Hiện đường tiến trình",
+    "progressHide": "Ẩn đường tiến trình",
+    "progressHint": "Đường mảnh ở mép trên cửa sổ, khi một lần chuyển trang kéo dài hơn 150 ms. Khi giảm chuyển động: một đường tĩnh."
   }
 }

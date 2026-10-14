@@ -77,6 +77,9 @@
     "popoverLongTrigger": "Nguyen Thi Phuong Lan Anh (a very long name)",
     "popoverBody": "The popover's content.",
     "linkSecondary": "Change password",
-    "linkQuiet": "See all"
+    "linkQuiet": "See all",
+    "progressShow": "Show the progress line",
+    "progressHide": "Hide the progress line",
+    "progressHint": "A thin line at the top edge of the window while a navigation takes longer than 150 ms. With reduced motion: a static line."
   }
 }

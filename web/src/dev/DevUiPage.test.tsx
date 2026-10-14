@@ -60,4 +60,15 @@ describe('/dev/ui (development builds only)', () => {
     await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument())
     expect(long).toBeInTheDocument()
   })
+
+  it('shows the ProgressLine (T-M2.12) on demand: decorative, axe clean', async () => {
+    const { container } = renderRoute('/dev/ui')
+    await screen.findByRole('heading', { level: 1, name: 'Thư viện thành phần' })
+    expect(screen.queryByTestId('progress-line')).not.toBeInTheDocument()
+    await userEvent.click(screen.getByRole('button', { name: 'Hiện đường tiến trình' }))
+    expect(screen.getByTestId('progress-line')).toHaveAttribute('aria-hidden', 'true')
+    await expectNoAxeViolations(container)
+    await userEvent.click(screen.getByRole('button', { name: 'Ẩn đường tiến trình' }))
+    expect(screen.queryByTestId('progress-line')).not.toBeInTheDocument()
+  })
 })
