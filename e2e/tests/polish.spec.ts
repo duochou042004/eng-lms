@@ -22,6 +22,7 @@ const COPY = {
     loading: 'Đang tải trang',
     errorTitle: 'Không hiển thị được trang này',
     reload: 'Tải lại trang',
+    retry: 'Thử lại',
     home: 'Về trang đầu',
     devView: 'Chế độ xem',
     devOptions: ['Danh sách', 'Tuần', 'Tháng'],
@@ -34,6 +35,7 @@ const COPY = {
     loading: 'Loading the page',
     errorTitle: "This page couldn't be displayed",
     reload: 'Reload page',
+    retry: 'Try again',
     home: 'Go to the start page',
     devView: 'View',
     devOptions: ['List', 'Week', 'Month'],
@@ -332,7 +334,8 @@ for (const lang of ['vi', 'en'] as const) {
       await expect(h1(page, c.errorTitle)).toBeFocused()
       expect(acceptAbortedRequests(consoleGuard), 'the aborted chunk request was logged').toBeGreaterThan(0)
 
-      const reload = page.getByRole('button', { name: c.reload })
+      // A failed chunk shows the chunk-error variant (T-M2.12 scope 2): Retry instead of Reload, same place and Tab order.
+      const reload = page.getByRole('button', { name: c.retry })
       const home = page.getByRole('link', { name: c.home })
       await expect(reload).toBeVisible()
       await expect(home).toBeVisible()
