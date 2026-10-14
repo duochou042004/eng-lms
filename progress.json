@@ -32,7 +32,7 @@
   "currentTask": {
     "id": "T-M2.12",
     "title": "Navigation feedback and cross-tab session (150 ms progress line, offline chunk page with Retry, FORBIDDEN_ROLE session refetch, cross-tab sign-in/out, UX-9)",
-    "status": "in_review",
+    "status": "in_progress",
     "ownerRole": "FE",
     "branch": "feature/T-M2.12-nav-feedback-cross-tab",
     "packet": "docs/tasks/T-M2.12-nav-feedback-cross-tab.md",
@@ -45,9 +45,8 @@
       "PO start signal — met (DEC-117)"
     ],
     "nextSteps": [
-      "LC: record evidence/T-M2.12/summary.md from the implementer's returned text; open the PR",
-      "G3 one reviewer at a time: QA, UX, SEC; fix S1/S2 and cheap S3/S4 in-task",
-      "Verdicts on the final head after CI; merge-gate; gitlab-sync; QA report via qa/T-M2.12; merge record"
+      "Implementer: AC11 (a)-(f) (DEC-118); gate green twice",
+      "Re-check QA, UX, SEC on the final head; CI; verdicts; merge-gate; gitlab-sync; qa/T-M2.12; merge record"
     ],
     "trace": [
       "backlog M2",
@@ -57,7 +56,8 @@
       "DEC-112",
       "DEC-115",
       "DEC-116",
-      "DEC-117"
+      "DEC-117",
+      "DEC-118"
     ]
   },
   "nextTask": {
@@ -343,8 +343,8 @@
       "note": "T-M2.12 not started (T-M2.11 passed: CI 7/7 at 93698aa)"
     },
     "G3": {
-      "status": "n/a",
-      "note": "T-M2.12 not started (T-M2.11 passed: QA PASS, UX APPROVED at 93698aa; SEC not triggered)"
+      "status": "pending",
+      "note": "T-M2.12 round 1 at 57ce8df: QA PASS WITH MINOR, UX APPROVED, SEC APPROVED; AC11 fixes (DEC-118) then re-check"
     },
     "G4": {
       "status": "n/a",
@@ -359,7 +359,6 @@
   "decisions": {
     "log": "docs/10-governance/decision-log.md",
     "recent": [
-      "DEC-104",
       "DEC-105",
       "DEC-106",
       "DEC-107",
@@ -372,7 +371,8 @@
       "DEC-114",
       "DEC-115",
       "DEC-116",
-      "DEC-117"
+      "DEC-117",
+      "DEC-118"
     ],
     "pendingPO": [
       "OQ-03",
