@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs'
 import { act, render, renderHook, screen } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { expectNoAxeViolations } from '../test/axe'
@@ -18,6 +19,15 @@ describe('ProgressLine (T-M2.12, design-system §3)', () => {
     expect(line.querySelectorAll('[tabindex], a, button, input')).toHaveLength(0)
     expect(line).not.toHaveAttribute('tabindex')
     await expectNoAxeViolations(container)
+  })
+})
+
+describe('ProgressLine motion (AC11 (d))', () => {
+  it('takes its animation duration from a motion token', () => {
+    const css = readFileSync('src/ui/ProgressLine.module.css', 'utf8')
+    const tokens = readFileSync('src/ui/tokens.css', 'utf8')
+    expect(css).toMatch(/animation: travel var\(--motion-duration-progress\) /)
+    expect(tokens).toMatch(/--motion-duration-progress: 1\.2s;/)
   })
 })
 

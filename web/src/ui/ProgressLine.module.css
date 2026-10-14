@@ -12,7 +12,7 @@
   inline-size: 40%;
   block-size: 100%;
   background: var(--color-accent);
-  animation: travel 1.2s var(--motion-easing) infinite;
+  animation: travel var(--motion-duration-progress) var(--motion-easing) infinite;
 }
 
 @keyframes travel {

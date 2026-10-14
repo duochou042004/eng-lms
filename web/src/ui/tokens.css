@@ -89,6 +89,7 @@
   /* Motion */
   --motion-duration: 160ms;
   --motion-easing: ease-out;
+  --motion-duration-progress: 1.2s; /* one pass of the indeterminate ProgressLine bar (T-M2.12) */
 
   /* Z-index */
   --z-sticky: 100;
