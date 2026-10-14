@@ -32,11 +32,11 @@
   "currentTask": {
     "id": "T-M2.12",
     "title": "Navigation feedback and cross-tab session (150 ms progress line, offline chunk page with Retry, FORBIDDEN_ROLE session refetch, cross-tab sign-in/out, UX-9)",
-    "status": "in_progress",
+    "status": "in_review",
     "ownerRole": "FE",
     "branch": "feature/T-M2.12-nav-feedback-cross-tab",
     "packet": "docs/tasks/T-M2.12-nav-feedback-cross-tab.md",
-    "pr": null,
+    "pr": "90",
     "lastCommit": "cfe5780",
     "startedAt": "2026-10-14T05:20:00Z",
     "entryGate": [
