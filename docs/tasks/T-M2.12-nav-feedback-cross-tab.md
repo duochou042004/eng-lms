@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Milestone | M2 |
-| Status | ready |
+| Status | in_progress |
 | Owner role | FE (frontend-implementer) |
 | Branch | `feature/T-M2.12-nav-feedback-cross-tab` (from `develop`) |
 | Depends on | T-M2.11 merged (`1af32de`, DEC-115) |
