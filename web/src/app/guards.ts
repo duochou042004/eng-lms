@@ -1,6 +1,7 @@
-import type { QueryClient } from '@tanstack/react-query'
+import { hashKey, type QueryClient } from '@tanstack/react-query'
 import { redirect, type DataRouter, type LoaderFunctionArgs } from 'react-router'
-import { ensureSession, logout, refreshSession, SESSION_KEY } from '../features/auth/api/session'
+import { onAuthMessage, postAuthMessage } from '../features/auth/api/authChannel'
+import { ensureSession, logout, refreshSession, SESSION_KEY, type Session } from '../features/auth/api/session'
 import { loginPath, roleHome, type Role } from '../features/auth/model/redirect'
 import { onAuthProblem } from '../lib/api'
 
@@ -38,14 +39,16 @@ export function createGuards(queryClient: QueryClient) {
     },
 
     /**
-     * `/login`, in this order (DEC-092, T-M2.1 QA F3): a session that must change its password is logged out and the
-     * form shows; another signed-in visit goes home; else the form.
+     * `/login`, in this order (DEC-092, T-M2.1 QA F3): a session that must change its password is logged out (and the
+     * other tabs are told, T-M2.12) and the form shows; another signed-in visit goes home; else the form. It runs only
+     * when the visitor navigates to `/login`: the route opts out of revalidation while its URL is unchanged (router.tsx).
      */
     login: async () => {
       const session = await ensureSession(queryClient)
       if (session?.mustChangePassword) {
         await logout()
         queryClient.setQueryData(SESSION_KEY, null)
+        postAuthMessage('signed-out')
         return null
       }
       if (session) throw redirect(roleHome(session.role))
@@ -60,22 +63,70 @@ export function createGuards(queryClient: QueryClient) {
   }
 }
 
+const SESSION_HASH = hashKey(SESSION_KEY)
+
+/** Another user, another role, or signed in vs anonymous. */
+function sessionChanged(before: Session | null | undefined, after: Session | null) {
+  if (!before || !after) return !before !== !after
+  return before.userId !== after.userId || before.role !== after.role
+}
+
 /**
- * The API client's 401 and 403 `PASSWORD_CHANGE_REQUIRED` reactions (frontend-architecture §2): a lost session clears
- * the query cache and goes to `/login?next=<current path>` (when the path is a safe app path); a forced change goes to
- * `/change-password` with the session read again. Navigation goes through the router only. Returns the unsubscribe.
+ * The tab follows a session that changed under it (T-M2.12): on `/login` with a signed-in session it goes to `/`
+ * (whose guard picks the role home or `/change-password`); elsewhere the router revalidates, so the unchanged guards
+ * redirect. Never a logout: `/login` does not revalidate while its URL is unchanged.
+ */
+async function followSession(router: DataRouter, session: Session | null) {
+  if (router.state.location.pathname === '/login') {
+    if (session) await router.navigate('/', { replace: true })
+    return
+  }
+  await router.revalidate()
+}
+
+/**
+ * The API client's auth-problem reactions (frontend-architecture §2) and the cross-tab sign-in/out messages. A lost
+ * session (401) clears the query cache and goes to `/login?next=<current path>` (when the path is a safe app path); a
+ * forced change goes to `/change-password` with the session read again. A 403 `FORBIDDEN_ROLE` reads the session once
+ * (concurrent 403s share the read); only when the user, role or sign-in changed does it drop every cached query but the
+ * session and follow it. A message from another tab drops every cached query but the session, reads the session and
+ * follows it. These reactions run one after another; none of them posts a message. Navigation goes through the router
+ * only. Returns the unsubscribe (which also closes the channel).
  */
 export function connectAuthProblems(router: DataRouter, queryClient: QueryClient) {
-  return onAuthProblem((problem) => {
+  let queue: Promise<unknown> = Promise.resolve()
+  const serially = (work: () => Promise<unknown>) => (queue = queue.then(work).catch(() => undefined))
+  const dropAllButSession = () => queryClient.removeQueries({ predicate: (query) => query.queryHash !== SESSION_HASH })
+  let roleCheck: Promise<unknown> | null = null
+
+  const offProblems = onAuthProblem((problem) => {
     const { pathname, search } = router.state.location
     if (problem === 'UNAUTHENTICATED') {
       if (pathname === '/login') return
       queryClient.getQueryCache().clear()
       void router.navigate(loginPath(pathname + search))
+    } else if (problem === 'FORBIDDEN_ROLE') {
+      roleCheck ??= serially(async () => {
+        const before = queryClient.getQueryData<Session | null>(SESSION_KEY)
+        const after = await refreshSession(queryClient)
+        if (!sessionChanged(before, after)) return
+        dropAllButSession()
+        await followSession(router, after)
+      }).finally(() => (roleCheck = null))
     } else if (pathname !== '/change-password') {
       void refreshSession(queryClient)
         .catch(() => undefined)
         .then(() => router.navigate('/change-password'))
     }
   })
+  const offMessages = onAuthMessage(() => {
+    void serially(async () => {
+      dropAllButSession()
+      await followSession(router, await refreshSession(queryClient))
+    })
+  })
+  return () => {
+    offProblems()
+    offMessages()
+  }
 }

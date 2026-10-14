@@ -10,8 +10,11 @@ export const XSRF_COOKIE = 'XSRF-TOKEN'
 export const XSRF_HEADER = 'X-XSRF-TOKEN'
 const SAFE_METHODS = new Set(['GET', 'HEAD', 'OPTIONS'])
 
-/** An auth failure the app reacts to by navigating (frontend-architecture §2). */
-export type AuthProblem = 'UNAUTHENTICATED' | 'PASSWORD_CHANGE_REQUIRED'
+/**
+ * An auth failure the app reacts to (frontend-architecture §2): by navigating, or for `FORBIDDEN_ROLE` by reading the
+ * session again (another tab may have signed in as someone else, T-M2.12).
+ */
+export type AuthProblem = 'UNAUTHENTICATED' | 'PASSWORD_CHANGE_REQUIRED' | 'FORBIDDEN_ROLE'
 type AuthProblemListener = (problem: AuthProblem) => void
 
 // A 401 from these is an answer, not a lost session: the bootstrap reads "anonymous" from it, a login shows its error.
@@ -19,7 +22,7 @@ const NO_SIGN_IN_REDIRECT = new Set(['GET /api/v1/auth/session', 'POST /api/v1/a
 
 let authProblemListener: AuthProblemListener | null = null
 
-/** Registers the app's reaction to a 401 or a 403 `PASSWORD_CHANGE_REQUIRED` (one listener). Returns the unsubscribe. */
+/** Registers the app's reaction to a 401 or a 403 `PASSWORD_CHANGE_REQUIRED` / `FORBIDDEN_ROLE` (one listener). Returns the unsubscribe. */
 export function onAuthProblem(listener: AuthProblemListener) {
   authProblemListener = listener
   return () => {
@@ -61,8 +64,11 @@ const problemDetails: Middleware = {
       const error = await toApiError(response)
       if (error.status === 401 && !NO_SIGN_IN_REDIRECT.has(`${request.method} ${schemaPath}`)) {
         authProblemListener?.('UNAUTHENTICATED')
-      } else if (error.status === 403 && error.code === 'PASSWORD_CHANGE_REQUIRED') {
-        authProblemListener?.('PASSWORD_CHANGE_REQUIRED')
+      } else if (
+        error.status === 403 &&
+        (error.code === 'PASSWORD_CHANGE_REQUIRED' || error.code === 'FORBIDDEN_ROLE')
+      ) {
+        authProblemListener?.(error.code)
       }
       throw error
     }

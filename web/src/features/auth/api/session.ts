@@ -1,6 +1,7 @@
 import { queryOptions, useMutation, useQuery, useQueryClient, type QueryClient } from '@tanstack/react-query'
 import { useNavigate } from 'react-router'
 import { api, ApiError, type components } from '../../../lib/api'
+import { postAuthMessage } from './authChannel'
 
 export type Session = components['schemas']['SessionResponse']
 type LoginRequest = components['schemas']['LoginRequest']
@@ -11,7 +12,8 @@ export const SESSION_KEY = ['auth', 'session'] as const
 /**
  * `GET /auth/session`: the signed-in user, or `null` when anonymous (401). It also primes the `XSRF-TOKEN` cookie. The
  * root route resolves it before anything else renders (DEC-092: no parallel first requests, so a remember-me rotation
- * cannot race). It changes only by sign-in, password change and logout, which update it explicitly.
+ * cannot race). It changes by sign-in, password change and logout, which update it explicitly, and is read again after
+ * another tab's sign-in or sign-out and after a 403 `FORBIDDEN_ROLE` (T-M2.12, `connectAuthProblems`).
  */
 export const sessionQuery = queryOptions({
   queryKey: SESSION_KEY,
@@ -46,7 +48,10 @@ export async function logout() {
   await api.POST('/api/v1/auth/logout')
 }
 
-/** `POST /auth/login`. On success the session is cached; a failure leaves the cached (anonymous) session alone. */
+/**
+ * `POST /auth/login`. On success the session is cached and the other tabs are told (`signed-in`, no data); a failure
+ * leaves the cached (anonymous) session alone.
+ */
 export function useLogin() {
   const queryClient = useQueryClient()
   return useMutation({
@@ -54,7 +59,10 @@ export function useLogin() {
       const { data } = await api.POST('/api/v1/auth/login', { body })
       return data as Session
     },
-    onSuccess: (session) => queryClient.setQueryData(SESSION_KEY, session),
+    onSuccess: (session) => {
+      queryClient.setQueryData(SESSION_KEY, session)
+      postAuthMessage('signed-in')
+    },
   })
 }
 
@@ -68,8 +76,8 @@ export function useChangePassword() {
 }
 
 /**
- * Log out (FR-AUTH-04), then, also when the call failed, forget all server state and go to `/login`, whose loader reads
- * the session again (and so re-primes the `XSRF-TOKEN` cookie).
+ * Log out (FR-AUTH-04), then, also when the call failed, forget all server state, tell the other tabs (`signed-out`) and
+ * go to `/login`, whose loader reads the session again (and so re-primes the `XSRF-TOKEN` cookie).
  */
 export function useLogout() {
   const queryClient = useQueryClient()
@@ -78,6 +86,7 @@ export function useLogout() {
     mutationFn: logout,
     onSettled: async () => {
       queryClient.getQueryCache().clear()
+      postAuthMessage('signed-out')
       await navigate('/login')
     },
   })

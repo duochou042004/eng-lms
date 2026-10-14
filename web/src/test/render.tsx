@@ -26,14 +26,23 @@ export function renderWithProviders(ui: ReactElement) {
   )
 }
 
+const connections = new Set<() => void>()
+
+/** Disconnects every `renderRoute`'s auth reactions and closes its channel (after each test, test/setup.ts). */
+export function disconnectAll() {
+  for (const disconnect of connections) disconnect()
+  connections.clear()
+}
+
 /**
- * Renders the app routes in a memory router, with the API client's 401/403 reactions connected as in `App`. `path` may
+ * Renders the app routes in a memory router, with the API client's 401/403 reactions and the cross-tab channel connected as in `App`. `path` may
  * be a history stack; `initialIndex` picks the current entry. The session comes from MSW (`sessionAs` in test/server).
  */
 export function renderRoute(path: string | string[], initialIndex?: number) {
   const client = testQueryClient()
   const router = createTestRouter(client, path, initialIndex)
   const disconnect = connectAuthProblems(router, client)
+  connections.add(disconnect)
   const result = render(
     <StrictMode>
       <QueryClientProvider client={client}>

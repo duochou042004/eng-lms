@@ -87,16 +87,22 @@ describe('auth problem reactions (frontend-architecture §2)', () => {
     off()
   })
 
-  it('reports a 403 PASSWORD_CHANGE_REQUIRED, but not another 403', async () => {
+  it('reports a 403 PASSWORD_CHANGE_REQUIRED and (T-M2.12) FORBIDDEN_ROLE, but not another 403', async () => {
+    setXsrfCookie()
     const listener = vi.fn()
     const off = onAuthProblem(listener)
-    server.use(http.get('*/api/v1/meta', () => problem(403, 'FORBIDDEN_ROLE')))
-    await api.GET('/api/v1/meta').catch(() => undefined)
+    server.use(http.post('*/api/v1/auth/logout', () => problem(403, 'CSRF_INVALID')))
+    await api.POST('/api/v1/auth/logout').catch(() => undefined)
     expect(listener).not.toHaveBeenCalled()
     server.use(http.get('*/api/v1/meta', () => problem(403, 'PASSWORD_CHANGE_REQUIRED')))
     const error = await api.GET('/api/v1/meta').catch((e: unknown) => e)
     expect(error).toBeInstanceOf(ApiError)
     expect(listener.mock.calls).toEqual([['PASSWORD_CHANGE_REQUIRED']])
+    // The caller still gets its error.
+    server.use(http.get('*/api/v1/meta', () => problem(403, 'FORBIDDEN_ROLE')))
+    const forbidden = await api.GET('/api/v1/meta').catch((e: unknown) => e)
+    expect(forbidden).toMatchObject({ status: 403, code: 'FORBIDDEN_ROLE' })
+    expect(listener.mock.calls).toEqual([['PASSWORD_CHANGE_REQUIRED'], ['FORBIDDEN_ROLE']])
     off()
   })
 
