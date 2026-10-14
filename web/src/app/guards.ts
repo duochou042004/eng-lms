@@ -90,13 +90,20 @@ async function followSession(router: DataRouter, session: Session | null) {
  * forced change goes to `/change-password` with the session read again. A 403 `FORBIDDEN_ROLE` reads the session once
  * (concurrent 403s share the read); only when the user, role or sign-in changed does it drop every cached query but the
  * session and follow it. A message from another tab drops every cached query but the session, reads the session and
- * follows it. These reactions run one after another; none of them posts a message. Navigation goes through the router
+ * follows it; so does a page restored from the back/forward cache (`pageshow` with `persisted`). Queries of mounted
+ * pages are reset (they refetch for the new session), the others removed. These reactions run one after another; none
+ * of them posts a message. Navigation goes through the router
  * only. Returns the unsubscribe (which also closes the channel).
  */
 export function connectAuthProblems(router: DataRouter, queryClient: QueryClient) {
   let queue: Promise<unknown> = Promise.resolve()
   const serially = (work: () => Promise<unknown>) => (queue = queue.then(work).catch(() => undefined))
-  const dropAllButSession = () => queryClient.removeQueries({ predicate: (query) => query.queryHash !== SESSION_HASH })
+  const notSession = { predicate: (query: { queryHash: string }) => query.queryHash !== SESSION_HASH }
+  // Mounted pages' queries are reset (their observers are notified and refetch, AC11 (e)); unused ones are removed.
+  const dropAllButSession = () => {
+    void queryClient.resetQueries(notSession).catch(() => undefined)
+    queryClient.removeQueries({ ...notSession, type: 'inactive' })
+  }
   let roleCheck: Promise<unknown> | null = null
 
   const offProblems = onAuthProblem((problem) => {
@@ -119,14 +126,20 @@ export function connectAuthProblems(router: DataRouter, queryClient: QueryClient
         .then(() => router.navigate('/change-password'))
     }
   })
-  const offMessages = onAuthMessage(() => {
+  const resync = () =>
     void serially(async () => {
       dropAllButSession()
       await followSession(router, await refreshSession(queryClient))
     })
-  })
+  const offMessages = onAuthMessage(resync)
+  // A page restored from the back/forward cache missed the messages sent meanwhile: the same steps (AC11 (f)).
+  const onPageShow = (event: PageTransitionEvent) => {
+    if (event.persisted) resync()
+  }
+  window.addEventListener('pageshow', onPageShow)
   return () => {
     offProblems()
     offMessages()
+    window.removeEventListener('pageshow', onPageShow)
   }
 }

@@ -1,4 +1,5 @@
-import { screen, waitFor } from '@testing-library/react'
+import { QueryClientProvider, useQuery } from '@tanstack/react-query'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { http, HttpResponse } from 'msw'
 import { afterEach, describe, expect, it } from 'vitest'
@@ -40,6 +41,7 @@ async function tutorTab(at = '/tutor/today') {
   server.use(sessionAs('TUTOR'))
   const result = renderRoute(at)
   await screen.findByRole('heading', { level: 1, name: 'Hôm nay' })
+  await screen.findByText(META.displayName) // the shell's own GET /meta has settled
   result.queryClient.setQueryData(TUTOR_DATA, [{ name: 'An' }])
   return result
 }
@@ -267,5 +269,71 @@ describe('cross-tab sign-in/out: the posting tab (T-M2.12 AC7)', () => {
     renderRoute('/login')
     await screen.findByRole('heading', { level: 1, name: 'Đăng nhập' })
     await waitFor(() => expect(tab.received).toEqual([{ type: 'signed-out' }]))
+  })
+})
+
+describe('AC11 (e): a user switch refreshes the queries of a mounted page (SEC S4-1)', () => {
+  /** A page using a query whose answer depends on who is signed in. */
+  function Probe() {
+    const probe = useQuery({
+      queryKey: ['student', 'probe'],
+      queryFn: async () => (await api.GET('/api/v1/meta')).data!.displayName,
+    })
+    return <p>{probe.data ?? 'loading'}</p>
+  }
+
+  it('student A to student B (same role, still on /student/home): the mounted query refetches as B', async () => {
+    const studentB = { ...sessionBody('STUDENT'), userId: '00000000-0000-0000-0000-000000000003', username: 'binh' }
+    let current: 'A' | 'B' = 'A'
+    server.use(
+      http.get('*/api/v1/auth/session', () => {
+        setXsrfCookie()
+        return HttpResponse.json(current === 'A' ? sessionBody('STUDENT') : studentB)
+      }),
+      http.get('*/api/v1/meta', () => HttpResponse.json({ ...META, displayName: `data of ${current}` })),
+    )
+    const { router, queryClient } = await bareTab('/student/home')
+    render(
+      <QueryClientProvider client={queryClient}>
+        <Probe />
+      </QueryClientProvider>,
+    )
+    expect(await screen.findByText('data of A')).toBeInTheDocument()
+    current = 'B'
+    server.use(http.get('*/api/v1/meta', () => problem(403, 'FORBIDDEN_ROLE'), { once: true }))
+    await api.GET('/api/v1/meta').catch(() => undefined)
+    expect(await screen.findByText('data of B')).toBeInTheDocument()
+    expect(screen.queryByText('data of A')).not.toBeInTheDocument()
+    expect(router.state.location.pathname).toBe('/student/home')
+    expect(queryClient.getQueryData(SESSION_KEY)).toEqual(studentB)
+  })
+})
+
+describe('AC11 (f): a page restored from the back/forward cache (SEC S4-2)', () => {
+  it('pageshow with persisted: drops the cache, reads the session and follows it', async () => {
+    server.use(sessionAs('TUTOR'))
+    const { router, queryClient } = await bareTab('/tutor/today')
+    queryClient.setQueryData(TUTOR_DATA, [{ name: 'An' }])
+    server.use(sessionAs(null))
+    window.dispatchEvent(new PageTransitionEvent('pageshow', { persisted: true }))
+    await waitFor(() => expect(path(router)).toBe('/login?next=%2Ftutor%2Ftoday'))
+    expect(
+      queryClient
+        .getQueryCache()
+        .getAll()
+        .map((q) => q.queryKey),
+    ).toEqual([SESSION_KEY])
+  })
+
+  it('a normal pageshow (not from the cache) changes nothing', async () => {
+    server.use(sessionAs('TUTOR'))
+    const { router, queryClient } = await bareTab('/tutor/today')
+    queryClient.setQueryData(TUTOR_DATA, [{ name: 'An' }])
+    const calls = recordCalls()
+    window.dispatchEvent(new PageTransitionEvent('pageshow', { persisted: false }))
+    await new Promise((resolve) => setTimeout(resolve, 50))
+    expect(calls).toEqual([])
+    expect(path(router)).toBe('/tutor/today')
+    expect(queryClient.getQueryData(TUTOR_DATA)).toEqual([{ name: 'An' }])
   })
 })
