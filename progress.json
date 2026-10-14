@@ -46,6 +46,7 @@
     ],
     "nextSteps": [
       "Fresh docs-reviewer on the packet; fix; CI; DOCS-REVIEW + LC-APPROVED; merge-gate; gitlab-sync",
+      "At the start signal: set currentTask.branch to feature/T-M2.12-nav-feedback-cross-tab and status in_progress",
       "Ask the PO for the start signal (DEC); implement through G3 (QA, UX, SEC)"
     ],
     "trace": [
