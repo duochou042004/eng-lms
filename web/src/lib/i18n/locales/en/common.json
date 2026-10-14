@@ -20,7 +20,10 @@
     "description": "Reload the page. If the problem continues, try again in a few minutes.",
     "descriptionWithRequestId": "Reload the page. If the problem continues, include the request ID when you report it.",
     "requestId": "Request ID: {{requestId}}",
-    "reload": "Reload page"
+    "reload": "Reload page",
+    "offlineDescription": "You're offline. This page needs a connection to load.",
+    "chunkDescription": "This page couldn't load. Check your connection and try again.",
+    "retry": "Try again"
   },
   "meta": {
     "loading": "Loading workspace information",

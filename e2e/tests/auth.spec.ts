@@ -313,8 +313,10 @@ test.describe('anonymous', () => {
     await field(page, FIELD.new).fill(next)
     await field(page, FIELD.confirm).fill(next)
     await page.getByRole('button', { name: CHANGE, exact: true }).click()
-    await expect(page.getByRole('status')).toContainText('Đã đổi mật khẩu')
-    await expect(page.getByRole('status')).toContainText('Bạn đã bị đăng xuất trên các thiết bị khác.')
+    await expect(page.getByRole('main').getByRole('status')).toContainText('Đã đổi mật khẩu')
+    await expect(page.getByRole('main').getByRole('status')).toContainText(
+      'Bạn đã bị đăng xuất trên các thiết bị khác.',
+    )
     await expectAccessible(page)
     await shot(page, testInfo, 'change-password-success-vi')
     // This device stays signed in; the other one is signed out.
@@ -338,7 +340,7 @@ test.describe('anonymous', () => {
     await tabTo(page, field(page, FIELD.confirm))
     await page.keyboard.type(next)
     await page.keyboard.press('Enter')
-    await expect(page.getByRole('status')).toContainText('Đã đổi mật khẩu')
+    await expect(page.getByRole('main').getByRole('status')).toContainText('Đã đổi mật khẩu')
   })
 
   test('AC6: Log out ends the session; back and protected visits ask to sign in; also after an idle expiry, remembered or not', async ({

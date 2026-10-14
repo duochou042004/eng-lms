@@ -1,15 +1,17 @@
 import { QueryClientProvider } from '@tanstack/react-query'
-import { act, render, screen, waitFor } from '@testing-library/react'
+import { act, render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { StrictMode } from 'react'
 import { createMemoryRouter, RouterProvider } from 'react-router'
-import { beforeEach, describe, expect, it } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { ApiError } from '../../lib/api'
 import { changeLocale } from '../../lib/i18n'
 import { expectNoAxeViolations } from '../../test/axe'
 import { PageHeader } from '../../ui'
 import { createQueryClient } from '../queryClient'
 import { RootLayout } from '../RootLayout'
+import { server } from '../../test/server'
+import { isChunkLoadError } from './chunkError'
 import { RouteError } from './RouteError'
 
 const COPY = {
@@ -32,6 +34,8 @@ const COPY = {
     home: 'Go to the start page',
   },
 } as const
+
+const CHUNK_MESSAGE = 'Failed to fetch dynamically imported module: http://localhost:3000/assets/StudentShell-x1.js'
 
 // The app's route structure (router.tsx) with routes that fail on purpose; with `failIndex` the start page fails too.
 function renderFailing(path: string, { failIndex = false } = {}) {
@@ -62,6 +66,14 @@ function renderFailing(path: string, { failIndex = false } = {}) {
                   throw new ApiError(500, 'INTERNAL_ERROR', 'req-42')
                 },
                 element: null,
+              },
+              {
+                path: 'chunk',
+                lazy: () => Promise.reject(new TypeError(CHUNK_MESSAGE)),
+              },
+              {
+                path: '*',
+                lazy: () => Promise.reject(new TypeError(CHUNK_MESSAGE)),
               },
               {
                 path: 'crash',
@@ -166,4 +178,126 @@ describe('RouteError (DEC-045 N4)', () => {
       })
     })
   }
+})
+
+describe('RouteError: a page whose code could not load (T-M2.12 AC2, AC3, DEC-087 F-3)', () => {
+  const CHUNK = {
+    vi: {
+      offline: 'Bạn đang ngoại tuyến. Trang này cần kết nối mạng để tải.',
+      chunk: 'Không tải được trang này. Hãy kiểm tra kết nối mạng rồi thử lại.',
+      retry: 'Thử lại',
+    },
+    en: {
+      offline: "You're offline. This page needs a connection to load.",
+      chunk: "This page couldn't load. Check your connection and try again.",
+      retry: 'Try again',
+    },
+  } as const
+  let online = true
+  const location = { reload: vi.fn(), assign: vi.fn(), replace: vi.fn(), hrefSet: vi.fn() }
+
+  beforeEach(() => {
+    online = true
+    vi.spyOn(navigator, 'onLine', 'get').mockImplementation(() => online)
+    for (const fn of Object.values(location)) fn.mockReset()
+    vi.stubGlobal('location', {
+      origin: 'http://localhost:3000',
+      reload: location.reload,
+      assign: location.assign,
+      replace: location.replace,
+      set href(value: string) {
+        location.hrefSet(value)
+      },
+    })
+  })
+  afterEach(() => vi.unstubAllGlobals())
+
+  it("recognises the engines' dynamic-import errors and Vite's preload error, nothing else", () => {
+    for (const message of [
+      CHUNK_MESSAGE,
+      'error loading dynamically imported module: http://x/assets/A.js',
+      'Importing a module script failed.',
+      'Unable to preload CSS for /assets/A.css',
+    ])
+      expect(isChunkLoadError(new TypeError(message))).toBe(true)
+    expect(isChunkLoadError(new Error('boom'))).toBe(false)
+    expect(isChunkLoadError(new ApiError(500, 'INTERNAL_ERROR', 'r'))).toBe(false)
+    expect(isChunkLoadError('Importing a module script failed.')).toBe(false)
+  })
+
+  for (const lang of ['vi', 'en'] as const) {
+    const c = { ...COPY[lang], ...CHUNK[lang] }
+
+    it(`[${lang}] online: the couldn't-load copy, Retry and the start-page link; no request ID; axe clean`, async () => {
+      await changeLocale(lang)
+      const { container } = renderFailing('/chunk')
+      await screen.findByRole('heading', { level: 1, name: c.title })
+      expect(screen.getByText(c.chunk)).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: c.retry })).toBeInTheDocument()
+      expect(screen.queryByRole('button', { name: c.reload })).not.toBeInTheDocument()
+      expect(screen.getByRole('link', { name: c.home })).toHaveAttribute('href', '/')
+      expect(screen.queryByText(c.requestIdPattern)).not.toBeInTheDocument()
+      await expectNoAxeViolations(container)
+    })
+
+    it(`[${lang}] offline: the offline copy for any route error, also one with a request ID`, async () => {
+      await changeLocale(lang)
+      online = false
+      const { container } = renderFailing('/api-failure')
+      await screen.findByRole('heading', { level: 1, name: c.title })
+      expect(screen.getByText(c.offline)).toBeInTheDocument()
+      expect(screen.queryByText(c.requestIdPattern)).not.toBeInTheDocument()
+      expect(screen.getByRole('button', { name: c.retry })).toBeInTheDocument()
+      await expectNoAxeViolations(container)
+    })
+  }
+
+  it('Retry while offline keeps the page, announces the offline message again and sends no request (AC3)', async () => {
+    const requests: string[] = []
+    server.events.on('request:start', ({ request }) => requests.push(request.url))
+    online = false
+    renderFailing('/chunk')
+    await screen.findByRole('heading', { level: 1, name: COPY.vi.title })
+    const status = within(screen.getByRole('main')).getByRole('status')
+    expect(status).toHaveTextContent('')
+    await userEvent.click(screen.getByRole('button', { name: 'Thử lại' }))
+    expect(status).toHaveTextContent(CHUNK.vi.offline)
+    const first = status.firstElementChild
+    await userEvent.click(screen.getByRole('button', { name: 'Thử lại' }))
+    // A new node, so screen readers announce it again.
+    expect(status.firstElementChild).not.toBe(first)
+    expect(status).toHaveTextContent(CHUNK.vi.offline)
+    expect(screen.getByRole('heading', { level: 1, name: COPY.vi.title })).toBeInTheDocument()
+    expect(requests).toEqual([])
+    expect(location.reload).not.toHaveBeenCalled()
+  })
+
+  it('Retry online reloads the failed URL in full, never building one (assign/href), even for a //host path (N-1)', async () => {
+    renderFailing('//evil.example/x')
+    await screen.findByRole('heading', { level: 1, name: COPY.vi.title })
+    expect(screen.getByText(CHUNK.vi.chunk)).toBeInTheDocument()
+    await userEvent.click(screen.getByRole('button', { name: 'Thử lại' }))
+    expect(location.reload).toHaveBeenCalledTimes(1)
+    expect(location.assign).not.toHaveBeenCalled()
+    expect(location.replace).not.toHaveBeenCalled()
+    expect(location.hrefSet).not.toHaveBeenCalled()
+  })
+
+  it('back online after an offline failure: Retry reloads', async () => {
+    online = false
+    renderFailing('/chunk')
+    await screen.findByText(CHUNK.vi.offline)
+    online = true
+    await userEvent.click(screen.getByRole('button', { name: 'Thử lại' }))
+    expect(location.reload).toHaveBeenCalledTimes(1)
+  })
+
+  it('reloads nothing on its own: the online event changes nothing', async () => {
+    online = false
+    renderFailing('/chunk')
+    await screen.findByText(CHUNK.vi.offline)
+    online = true
+    act(() => void window.dispatchEvent(new Event('online')))
+    expect(location.reload).not.toHaveBeenCalled()
+  })
 })

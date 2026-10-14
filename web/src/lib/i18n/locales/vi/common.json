@@ -20,7 +20,10 @@
     "description": "Hãy tải lại trang. Nếu lỗi vẫn còn, hãy thử lại sau vài phút.",
     "descriptionWithRequestId": "Hãy tải lại trang. Nếu lỗi vẫn còn, hãy gửi kèm mã yêu cầu khi báo lỗi.",
     "requestId": "Mã yêu cầu: {{requestId}}",
-    "reload": "Tải lại trang"
+    "reload": "Tải lại trang",
+    "offlineDescription": "Bạn đang ngoại tuyến. Trang này cần kết nối mạng để tải.",
+    "chunkDescription": "Không tải được trang này. Hãy kiểm tra kết nối mạng rồi thử lại.",
+    "retry": "Thử lại"
   },
   "meta": {
     "loading": "Đang tải thông tin không gian dạy học",
