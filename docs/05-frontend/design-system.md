@@ -49,7 +49,7 @@ Use at most **3 sizes per screen region**.
 | Actions | `Button` (primary, secondary, quiet, danger; sizes md and lg), `ButtonLink` (a router link that looks like a `Button`), `IconButton` (label required), `Menu`, `SplitButton`, `CopyButton` |
 | Forms | `Form`, `Field` (label + hint + error wrapper), `TextField`, `TextArea` (auto-grow, counter), `NumberField`, `Select`, `ComboBox`, `StudentPicker`, `DatePicker`, `TimeField`, `DurationField`, `Checkbox`, `RadioGroup`, `SegmentedControl` (one of a few options, always one selected; e.g. the language switcher), `Switch`, `TagInput`, `FileDrop` + `UploadList`, `RichTextEditor`, `AudioRecorder`, `PasswordField` (reveal), `ErrorSummary` |
 | Data display | `DataList` (responsive table ↔ list), `Timeline`, `DescriptionList`, `StatusBadge`, `Meter` (labelled bar), `ScoreLine`, `Sparkline`, `Avatar` (initials), `EmptyState`, `KeyValueSummary`, `Countdown` |
-| Feedback | `Toast` (polite live region), `InlineAlert`, `Skeleton` (shape-matched) + `DelayedSkeleton` (the 150 ms delay), `Spinner` (only for actions under 1 s), `ProgressBar` (uploads), `ConfirmDialog`, `UnsavedChangesGuard`, `SaveIndicator` |
+| Feedback | `Toast` (polite live region), `InlineAlert`, `Skeleton` (shape-matched) + `DelayedSkeleton` (the 150 ms delay), `ProgressLine` (navigation), `Spinner` (only for actions under 1 s), `ProgressBar` (uploads), `ConfirmDialog`, `UnsavedChangesGuard`, `SaveIndicator` |
 | Reorder | `ReorderableList` (React Aria DnD with keyboard, plus a "Move to…" menu fallback) |
 
 Every component ships with: its states (default, hover, focus-visible, active, disabled, invalid, loading), keyboard behaviour, an accessible name
@@ -73,6 +73,14 @@ not redraw the page on each key press. A view switcher where the arrow keys shou
 skeletons are laid out at once but stay `visibility: hidden` until the delay has passed, so the region already has its final size (no layout shift when the
 skeleton or the data appears); the wrapper generates no box (`display: contents`). The region itself (`<output aria-busy="true" aria-label=…>`) is busy
 and labelled from 0 ms. Used by `RouteLoading` and `WorkspaceName`; new loading regions use the same wrapper, not their own timers.
+The timer itself is `useDelayed(active, delayMs = SKELETON_DELAY_MS)` (`ui/useDelayed.ts`): `true` once `active` has held for the delay,
+`false` at once when it ends; other delayed feedback (the progress line) uses it too.
+
+**`ProgressLine`** (T-M2.12; test, axe and `/dev/ui` entry): a thin indeterminate line at the top edge of the viewport
+(`position: fixed`, `--size-progress-line` = 3 px, `--color-accent`, `--z-toast`, no pointer events), so the page under it keeps its layout and
+stays usable. A 40 % bar travels across (1.2 s, `--motion-easing`); with `prefers-reduced-motion: reduce` it is a static full-width line.
+Decorative: `aria-hidden="true"`, never focusable; its owner announces the state (in `RootLayout`, one polite status region saying
+`app.loading`). Shown by `RootLayout` after 150 ms of a router navigation (frontend-architecture §3).
 
 **`PasswordField`, `Checkbox`, `ErrorSummary`** (T-M2.4; tests, axe and `/dev/ui` entries):
 - `PasswordField`: a React Aria `TextField` (label, hint, error as `TextField`) whose input sits beside a reveal toggle (`ToggleButton`, a fixed
