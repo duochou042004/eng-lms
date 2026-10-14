@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-10-12T13:55:00Z",
-  "updatedBy": "lead-coordinator (T-M2.11 merge record, session 2026-10-12, Opus 5.5)",
+  "updatedAt": "2026-10-14T04:50:00Z",
+  "updatedBy": "lead-coordinator (T-M2.12 packet, session 2026-10-14, Opus 5.5)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -31,22 +31,22 @@
   },
   "currentTask": {
     "id": "T-M2.12",
-    "title": "Navigation feedback and cross-tab session (150 ms lazy-navigation feedback, offline chunk feedback, FORBIDDEN_ROLE session refetch, cross-tab sign-in/out, UX-9 compact error)",
-    "status": "draft",
+    "title": "Navigation feedback and cross-tab session (150 ms progress line, offline chunk page with Retry, FORBIDDEN_ROLE session refetch, cross-tab sign-in/out, UX-9)",
+    "status": "ready",
     "ownerRole": "FE",
-    "branch": null,
-    "packet": null,
+    "branch": "docs/T-M2.12-nav-feedback-cross-tab",
+    "packet": "docs/tasks/T-M2.12-nav-feedback-cross-tab.md",
     "pr": null,
     "lastCommit": null,
     "startedAt": null,
     "entryGate": [
       "T-M2.11 merged — met (1af32de, DEC-115)",
-      "Packet G0 — pending",
+      "Packet G0 — in review (docs PR)",
       "PO start signal — pending"
     ],
     "nextSteps": [
-      "Write the T-M2.12 packet (task-packet skill, branch docs/T-M2.12-<slug>; SEC triggered, DEC-112); fresh docs-reviewer; merge-gate",
-      "Ask the PO for the start signal; implement through G3 (QA, UX, SEC)"
+      "Fresh docs-reviewer on the packet; fix; CI; DOCS-REVIEW + LC-APPROVED; merge-gate; gitlab-sync",
+      "Ask the PO for the start signal (DEC); implement through G3 (QA, UX, SEC)"
     ],
     "trace": [
       "backlog M2",
@@ -54,7 +54,8 @@
       "DEC-087",
       "DEC-111",
       "DEC-112",
-      "DEC-115"
+      "DEC-115",
+      "DEC-116"
     ]
   },
   "nextTask": {
@@ -329,7 +330,7 @@
   "gates": {
     "G0": {
       "status": "pending",
-      "note": "T-M2.12 packet not written (T-M2.11 passed: DOCS-REVIEW PASS round 2, PR #85)"
+      "note": "T-M2.12 packet written (DEC-116); DOCS-REVIEW pending"
     },
     "G1": {
       "status": "n/a",
@@ -356,7 +357,6 @@
   "decisions": {
     "log": "docs/10-governance/decision-log.md",
     "recent": [
-      "DEC-102",
       "DEC-103",
       "DEC-104",
       "DEC-105",
@@ -369,7 +369,8 @@
       "DEC-112",
       "DEC-113",
       "DEC-114",
-      "DEC-115"
+      "DEC-115",
+      "DEC-116"
     ],
     "pendingPO": [
       "OQ-03",
