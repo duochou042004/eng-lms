@@ -23,7 +23,9 @@
     "reload": "Tải lại trang",
     "offlineDescription": "Bạn đang ngoại tuyến. Trang này cần kết nối mạng để tải.",
     "chunkDescription": "Không tải được trang này. Hãy kiểm tra kết nối mạng rồi thử lại.",
-    "retry": "Thử lại"
+    "retry": "Thử lại",
+    "offlineTitle": "Bạn đang ngoại tuyến",
+    "chunkTitle": "Không tải được trang này"
   },
   "meta": {
     "loading": "Đang tải thông tin không gian dạy học",

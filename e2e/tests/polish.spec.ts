@@ -21,6 +21,7 @@ const COPY = {
     language: 'Ngôn ngữ',
     loading: 'Đang tải trang',
     errorTitle: 'Không hiển thị được trang này',
+    chunkTitle: 'Không tải được trang này',
     reload: 'Tải lại trang',
     retry: 'Thử lại',
     home: 'Về trang đầu',
@@ -34,6 +35,7 @@ const COPY = {
     language: 'Language',
     loading: 'Loading the page',
     errorTitle: "This page couldn't be displayed",
+    chunkTitle: "This page couldn't load",
     reload: 'Reload page',
     retry: 'Try again',
     home: 'Go to the start page',
@@ -330,8 +332,9 @@ for (const lang of ['vi', 'en'] as const) {
       await page.route(CHANGE_PASSWORD_CHUNK, (route) => route.abort())
       await openAccountSection(page, 'tutor')
       await page.getByRole('link', { name: c.toChangePassword }).click()
-      // The pathless-child boundary inside the root layout: route focus moves to the error page's h1 (T-M1.9).
-      await expect(h1(page, c.errorTitle)).toBeFocused()
+      // The pathless-child boundary inside the root layout: route focus moves to the error page's h1 (T-M1.9); a failed chunk
+      // has the couldn't-load heading (T-M2.12 AC11 (b)).
+      await expect(h1(page, c.chunkTitle)).toBeFocused()
       expect(acceptAbortedRequests(consoleGuard), 'the aborted chunk request was logged').toBeGreaterThan(0)
 
       // A failed chunk shows the chunk-error variant (T-M2.12 scope 2): Retry instead of Reload, same place and Tab order.
@@ -361,7 +364,7 @@ for (const lang of ['vi', 'en'] as const) {
       // Keyboard: the same failure again, then Tab to the link and Enter (one step).
       await openAccountSection(page, 'tutor')
       await page.getByRole('link', { name: c.toChangePassword }).click()
-      await expect(h1(page, c.errorTitle)).toBeFocused()
+      await expect(h1(page, c.chunkTitle)).toBeFocused()
       acceptAbortedRequests(consoleGuard)
       const keyboard = new StepCounter()
       await keyboard.step('Tab to "go to the start page", Enter', async () => {

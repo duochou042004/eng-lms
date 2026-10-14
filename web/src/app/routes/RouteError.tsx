@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useSyncExternalStore } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link, useLocation, useRouteError } from 'react-router'
 import { ApiError } from '../../lib/api'
@@ -17,16 +17,28 @@ import styles from './Page.module.css'
  * the failed URL in full (the address bar already shows it; no URL is built, so it cannot leave the origin), because
  * React Router keeps a rejected `lazy()` for the router's life. Nothing reloads on its own.
  */
+// The connection state, re-read on `online` / `offline` (AC11 (a)): the chunk-error copy follows it while shown.
+function subscribeToConnection(onChange: () => void) {
+  window.addEventListener('online', onChange)
+  window.addEventListener('offline', onChange)
+  return () => {
+    window.removeEventListener('online', onChange)
+    window.removeEventListener('offline', onChange)
+  }
+}
+
 export function RouteError() {
   const { t } = useTranslation()
   const error = useRouteError()
   const { pathname } = useLocation()
-  // Bumped by Retry while offline: re-renders (the copy follows `navigator.onLine`) and re-announces the message.
+  // Bumped by Retry while offline: re-announces the offline message.
   const [offlineRetries, setOfflineRetries] = useState(0)
-  const offline = isOffline()
+  const offline = useSyncExternalStore(subscribeToConnection, isOffline)
   const chunk = offline || isChunkLoadError(error)
   const requestId = !chunk && error instanceof ApiError ? error.requestId : null
-  usePageTitle(t('error.title'))
+  // The offline and couldn't-load variants have their own heading and title (AC11 (b)).
+  const title = t(chunk ? (offline ? 'error.offlineTitle' : 'error.chunkTitle') : 'error.title')
+  usePageTitle(title)
 
   const description = chunk
     ? t(offline ? 'error.offlineDescription' : 'error.chunkDescription')
@@ -41,15 +53,15 @@ export function RouteError() {
   return (
     <main id="main" className={styles.page}>
       <Stack gap={4}>
-        <PageHeader title={t('error.title')} description={description} />
+        <PageHeader title={title} description={description} />
         {requestId ? <p>{t('error.requestId', { requestId })}</p> : null}
         <div className={styles.actions}>
           {chunk ? (
-            <Button variant="secondary" onPress={retry}>
+            <Button variant="primary" onPress={retry}>
               {t('error.retry')}
             </Button>
           ) : (
-            <Button variant="secondary" onPress={() => window.location.reload()}>
+            <Button variant="primary" onPress={() => window.location.reload()}>
               {t('error.reload')}
             </Button>
           )}

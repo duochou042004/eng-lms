@@ -26,7 +26,8 @@ const shot = (page: Page, testInfo: TestInfo, name: string) => evidenceShot(page
 const COPY = {
   vi: {
     loading: 'Đang tải trang',
-    errorTitle: 'Không hiển thị được trang này',
+    offlineTitle: 'Bạn đang ngoại tuyến',
+    chunkTitle: 'Không tải được trang này',
     offline: 'Bạn đang ngoại tuyến. Trang này cần kết nối mạng để tải.',
     chunk: 'Không tải được trang này. Hãy kiểm tra kết nối mạng rồi thử lại.',
     retry: 'Thử lại',
@@ -43,7 +44,8 @@ const COPY = {
   },
   en: {
     loading: 'Loading the page',
-    errorTitle: "This page couldn't be displayed",
+    offlineTitle: "You're offline",
+    chunkTitle: "This page couldn't load",
     offline: "You're offline. This page needs a connection to load.",
     chunk: "This page couldn't load. Check your connection and try again.",
     retry: 'Try again',
@@ -205,9 +207,13 @@ test.describe('AC2, AC3: a page whose code cannot load (DEC-087 F-3)', () => {
       await context.setOffline(true)
       await page.getByRole('link', { name: c.yourHome }).click()
       // Within the navigation: no endless busy state.
-      await expect(h1(page, c.errorTitle)).toBeFocused({ timeout: 5000 })
+      await expect(h1(page, c.offlineTitle)).toBeFocused({ timeout: 5000 })
+      await expect(page).toHaveTitle(`${c.offlineTitle} · Eng-LMS`)
       await expect(page.getByText(c.offline, { exact: true })).toBeVisible()
-      await expect(page.getByRole('button', { name: c.retry })).toBeVisible()
+      const retry = page.getByRole('button', { name: c.retry })
+      await expect(retry).toBeVisible()
+      // AC11 (c): Retry has the primary style (the accent fill), the start-page link stays a quiet link.
+      await expect(retry).toHaveClass(/primary/)
       await expect(page.getByRole('link', { name: c.startPage })).toHaveAttribute('href', '/')
       await expect(page.getByTestId('progress-line')).toHaveCount(0)
       expect(new URL(page.url()).pathname).toBe('/student/home')
@@ -221,9 +227,18 @@ test.describe('AC2, AC3: a page whose code cannot load (DEC-087 F-3)', () => {
       await expect(page.getByRole('main').getByRole('status')).toHaveText(c.offline)
       await page.waitForTimeout(300)
       expect(requests, 'Retry while offline sends no request').toEqual([])
-      await expect(h1(page, c.errorTitle)).toBeVisible()
+      await expect(h1(page, c.offlineTitle)).toBeVisible()
 
+      // AC11 (a): back online, the copy follows without any action (and nothing reloads).
       await context.setOffline(false)
+      await expect(h1(page, c.chunkTitle)).toBeVisible()
+      await expect(page.getByText(c.chunk, { exact: true })).toBeVisible()
+      await expect(page).toHaveTitle(`${c.chunkTitle} · Eng-LMS`)
+      await shot(page, testInfo, `chunk-back-online-${lang}`)
+      await context.setOffline(true)
+      await expect(h1(page, c.offlineTitle)).toBeVisible()
+      await context.setOffline(false)
+      await expect(h1(page, c.chunkTitle)).toBeVisible()
       await page.getByRole('button', { name: c.retry }).click()
       await expect(h1(page, c.studentHome)).toBeVisible()
       expect(new URL(page.url()).pathname).toBe('/student/home')
@@ -240,7 +255,8 @@ test.describe('AC2, AC3: a page whose code cannot load (DEC-087 F-3)', () => {
       if (lang === 'en') await chooseLanguage(page, 'en')
       await page.route(CHUNK.student, (route) => route.abort())
       await page.getByRole('link', { name: c.yourHome }).click()
-      await expect(h1(page, c.errorTitle)).toBeFocused({ timeout: 5000 })
+      await expect(h1(page, c.chunkTitle)).toBeFocused({ timeout: 5000 })
+      await expect(page).toHaveTitle(`${c.chunkTitle} · Eng-LMS`)
       await expect(page.getByText(c.chunk, { exact: true })).toBeVisible()
       await expect(page.getByRole('link', { name: c.startPage })).toBeVisible()
       await expectNoAxeViolations(page)

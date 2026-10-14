@@ -1,5 +1,5 @@
 import { QueryClientProvider } from '@tanstack/react-query'
-import { act, render, screen, waitFor, within } from '@testing-library/react'
+import { act, cleanup, render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { StrictMode } from 'react'
 import { createMemoryRouter, RouterProvider } from 'react-router'
@@ -183,11 +183,15 @@ describe('RouteError (DEC-045 N4)', () => {
 describe('RouteError: a page whose code could not load (T-M2.12 AC2, AC3, DEC-087 F-3)', () => {
   const CHUNK = {
     vi: {
+      offlineTitle: 'Bạn đang ngoại tuyến',
+      chunkTitle: 'Không tải được trang này',
       offline: 'Bạn đang ngoại tuyến. Trang này cần kết nối mạng để tải.',
       chunk: 'Không tải được trang này. Hãy kiểm tra kết nối mạng rồi thử lại.',
       retry: 'Thử lại',
     },
     en: {
+      offlineTitle: "You're offline",
+      chunkTitle: "This page couldn't load",
       offline: "You're offline. This page needs a connection to load.",
       chunk: "This page couldn't load. Check your connection and try again.",
       retry: 'Try again',
@@ -231,7 +235,8 @@ describe('RouteError: a page whose code could not load (T-M2.12 AC2, AC3, DEC-08
     it(`[${lang}] online: the couldn't-load copy, Retry and the start-page link; no request ID; axe clean`, async () => {
       await changeLocale(lang)
       const { container } = renderFailing('/chunk')
-      await screen.findByRole('heading', { level: 1, name: c.title })
+      await screen.findByRole('heading', { level: 1, name: c.chunkTitle })
+      await waitFor(() => expect(document.title).toBe(`${c.chunkTitle} · Eng-LMS`))
       expect(screen.getByText(c.chunk)).toBeInTheDocument()
       expect(screen.getByRole('button', { name: c.retry })).toBeInTheDocument()
       expect(screen.queryByRole('button', { name: c.reload })).not.toBeInTheDocument()
@@ -244,7 +249,8 @@ describe('RouteError: a page whose code could not load (T-M2.12 AC2, AC3, DEC-08
       await changeLocale(lang)
       online = false
       const { container } = renderFailing('/api-failure')
-      await screen.findByRole('heading', { level: 1, name: c.title })
+      await screen.findByRole('heading', { level: 1, name: c.offlineTitle })
+      await waitFor(() => expect(document.title).toBe(`${c.offlineTitle} · Eng-LMS`))
       expect(screen.getByText(c.offline)).toBeInTheDocument()
       expect(screen.queryByText(c.requestIdPattern)).not.toBeInTheDocument()
       expect(screen.getByRole('button', { name: c.retry })).toBeInTheDocument()
@@ -257,7 +263,7 @@ describe('RouteError: a page whose code could not load (T-M2.12 AC2, AC3, DEC-08
     server.events.on('request:start', ({ request }) => requests.push(request.url))
     online = false
     renderFailing('/chunk')
-    await screen.findByRole('heading', { level: 1, name: COPY.vi.title })
+    await screen.findByRole('heading', { level: 1, name: CHUNK.vi.offlineTitle })
     const status = within(screen.getByRole('main')).getByRole('status')
     expect(status).toHaveTextContent('')
     await userEvent.click(screen.getByRole('button', { name: 'Thử lại' }))
@@ -267,14 +273,14 @@ describe('RouteError: a page whose code could not load (T-M2.12 AC2, AC3, DEC-08
     // A new node, so screen readers announce it again.
     expect(status.firstElementChild).not.toBe(first)
     expect(status).toHaveTextContent(CHUNK.vi.offline)
-    expect(screen.getByRole('heading', { level: 1, name: COPY.vi.title })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 1, name: CHUNK.vi.offlineTitle })).toBeInTheDocument()
     expect(requests).toEqual([])
     expect(location.reload).not.toHaveBeenCalled()
   })
 
   it('Retry online reloads the failed URL in full, never building one (assign/href), even for a //host path (N-1)', async () => {
     renderFailing('//evil.example/x')
-    await screen.findByRole('heading', { level: 1, name: COPY.vi.title })
+    await screen.findByRole('heading', { level: 1, name: CHUNK.vi.chunkTitle })
     expect(screen.getByText(CHUNK.vi.chunk)).toBeInTheDocument()
     await userEvent.click(screen.getByRole('button', { name: 'Thử lại' }))
     expect(location.reload).toHaveBeenCalledTimes(1)
@@ -299,5 +305,35 @@ describe('RouteError: a page whose code could not load (T-M2.12 AC2, AC3, DEC-08
     online = true
     act(() => void window.dispatchEvent(new Event('online')))
     expect(location.reload).not.toHaveBeenCalled()
+  })
+
+  it('the copy follows the connection while shown (AC11 (a)); Retry still decides by the state at the press', async () => {
+    online = false
+    renderFailing('/chunk')
+    await screen.findByRole('heading', { level: 1, name: CHUNK.vi.offlineTitle })
+    online = true
+    act(() => void window.dispatchEvent(new Event('online')))
+    expect(screen.getByRole('heading', { level: 1, name: CHUNK.vi.chunkTitle })).toBeInTheDocument()
+    expect(screen.getByText(CHUNK.vi.chunk)).toBeInTheDocument()
+    await waitFor(() => expect(document.title).toBe(`${CHUNK.vi.chunkTitle} · Eng-LMS`))
+    online = false
+    act(() => void window.dispatchEvent(new Event('offline')))
+    expect(screen.getByRole('heading', { level: 1, name: CHUNK.vi.offlineTitle })).toBeInTheDocument()
+    expect(screen.getByText(CHUNK.vi.offline)).toBeInTheDocument()
+    await userEvent.click(screen.getByRole('button', { name: 'Thử lại' }))
+    expect(location.reload).not.toHaveBeenCalled()
+    expect(location.assign).not.toHaveBeenCalled()
+  })
+
+  it('Retry and the generic Reload are primary buttons; the start-page link stays the quiet link (AC11 (c))', async () => {
+    renderFailing('/chunk')
+    await screen.findByRole('heading', { level: 1, name: CHUNK.vi.chunkTitle })
+    expect(screen.getByRole('button', { name: 'Thử lại' })).toHaveClass('button', 'primary')
+    expect(screen.getByRole('link', { name: COPY.vi.home })).toHaveClass('homeLink')
+    cleanup()
+    renderFailing('/crash')
+    await screen.findByRole('heading', { level: 1, name: COPY.vi.title })
+    expect(screen.getByRole('button', { name: COPY.vi.reload })).toHaveClass('button', 'primary')
+    expect(screen.getByRole('link', { name: COPY.vi.home })).toHaveClass('homeLink')
   })
 })

@@ -23,7 +23,9 @@
     "reload": "Reload page",
     "offlineDescription": "You're offline. This page needs a connection to load.",
     "chunkDescription": "This page couldn't load. Check your connection and try again.",
-    "retry": "Try again"
+    "retry": "Try again",
+    "offlineTitle": "You're offline",
+    "chunkTitle": "This page couldn't load"
   },
   "meta": {
     "loading": "Loading workspace information",
