@@ -1,0 +1,55 @@
+{
+  "viewport": {
+    "width": 360,
+    "height": 740
+  },
+  "tolerancePx": 1,
+  "selectedVi": [
+    {
+      "name": "Tiếng Việt",
+      "x": 17,
+      "width": 152,
+      "checked": true,
+      "iconVisible": true
+    },
+    {
+      "name": "English",
+      "x": 169,
+      "width": 126,
+      "checked": false,
+      "iconVisible": false
+    }
+  ],
+  "selectedEnPointer": [
+    {
+      "name": "Tiếng Việt",
+      "x": 17,
+      "width": 152,
+      "checked": false,
+      "iconVisible": false
+    },
+    {
+      "name": "English",
+      "x": 169,
+      "width": 126,
+      "checked": true,
+      "iconVisible": true
+    }
+  ],
+  "selectedViKeyboard": [
+    {
+      "name": "Tiếng Việt",
+      "x": 17,
+      "width": 152,
+      "checked": true,
+      "iconVisible": true
+    },
+    {
+      "name": "English",
+      "x": 169,
+      "width": 126,
+      "checked": false,
+      "iconVisible": false
+    }
+  ]
+}

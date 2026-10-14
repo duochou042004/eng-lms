@@ -1,0 +1,23 @@
+{
+  "viewport": {
+    "width": 1280,
+    "height": 800
+  },
+  "budget": 2,
+  "steps": {
+    "pointer /student/home": 2,
+    "pointer /student/a/b": 2
+  },
+  "keyboard": {
+    "toAccountOpener": [
+      "a:Eng-LMS",
+      "a:Trang chủ",
+      "button:e2e-laptop-caca3dcc"
+    ],
+    "insideSection": [
+      "button:Tiếng ViệtTiếng Việt",
+      "a:Đổi mật khẩu",
+      "button:Đăng xuất"
+    ]
+  }
+}

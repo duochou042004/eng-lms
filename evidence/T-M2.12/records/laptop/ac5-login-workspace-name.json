@@ -1,0 +1,48 @@
+{
+  "events": [
+    "start /api/v1/auth/session",
+    "end /api/v1/auth/session",
+    "start /api/v1/meta",
+    "end /api/v1/meta",
+    "start /api/v1/meta",
+    "end /api/v1/meta"
+  ],
+  "viewport": {
+    "width": 1280,
+    "height": 800
+  },
+  "vi": {
+    "bar": {
+      "top": 24,
+      "bottom": 70,
+      "height": 46
+    },
+    "children": [
+      {
+        "top": 34.59375,
+        "bottom": 59.390625
+      },
+      {
+        "top": 24,
+        "bottom": 70
+      }
+    ]
+  },
+  "en": {
+    "bar": {
+      "top": 24,
+      "bottom": 70,
+      "height": 46
+    },
+    "children": [
+      {
+        "top": 34.59375,
+        "bottom": 59.390625
+      },
+      {
+        "top": 24,
+        "bottom": 70
+      }
+    ]
+  }
+}

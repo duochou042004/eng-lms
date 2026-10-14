@@ -1,0 +1,16 @@
+{
+  "viewport": {
+    "width": 768,
+    "height": 1024
+  },
+  "minimum": 44,
+  "sizes": {
+    "skipLink": 44,
+    "shellHomeLink": 44,
+    "switcherSegment:Tiếng Việt": 44,
+    "switcherSegment:English": 44,
+    "changePasswordLink": 44,
+    "logoutButton": 44,
+    "notFoundHomeLink": 44
+  }
+}

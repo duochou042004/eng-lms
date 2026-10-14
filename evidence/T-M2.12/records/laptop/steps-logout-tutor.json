@@ -1,0 +1,22 @@
+{
+  "viewport": {
+    "width": 1280,
+    "height": 800
+  },
+  "budget": 2,
+  "steps": {
+    "pointer /tutor/today": 2,
+    "pointer /tutor/nope": 2
+  },
+  "keyboard": {
+    "toAccountOpener": [
+      "a:Eng-LMS",
+      "button:e2e-tutor"
+    ],
+    "insideSection": [
+      "button:Tiếng ViệtTiếng Việt",
+      "a:Đổi mật khẩu",
+      "button:Đăng xuất"
+    ]
+  }
+}

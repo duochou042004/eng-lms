@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-10-14T05:20:00Z",
-  "updatedBy": "lead-coordinator (T-M2.12 start, session 2026-10-14, Opus 5.5)",
+  "updatedAt": "2026-10-14T05:45:00Z",
+  "updatedBy": "frontend-implementer (T-M2.12 implementation, Opus 5.5)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -37,7 +37,7 @@
     "branch": "feature/T-M2.12-nav-feedback-cross-tab",
     "packet": "docs/tasks/T-M2.12-nav-feedback-cross-tab.md",
     "pr": null,
-    "lastCommit": null,
+    "lastCommit": "cfe5780",
     "startedAt": "2026-10-14T05:20:00Z",
     "entryGate": [
       "T-M2.11 merged — met (1af32de, DEC-115)",
@@ -45,7 +45,7 @@
       "PO start signal — met (DEC-117)"
     ],
     "nextSteps": [
-      "frontend-implementer on the packet; gate green twice",
+      "LC: record evidence/T-M2.12/summary.md from the implementer's returned text; open the PR",
       "G3 one reviewer at a time: QA, UX, SEC; fix S1/S2 and cheap S3/S4 in-task",
       "Verdicts on the final head after CI; merge-gate; gitlab-sync; QA report via qa/T-M2.12; merge record"
     ],
@@ -304,8 +304,8 @@
     }
   ],
   "tests": {
-    "lastRun": "2026-10-12T13:00:00Z",
-    "summary": "T-M2.11 merged: CI 7/7 at 93698aa; gate PASS x2 on 71086f4 (backend 466 tests, web 330 tests in 31 files, e2e 240 passed / 24 skipped on phone-small, tablet, laptop); QA round 3 x3/x20 repeats green.",
+    "lastRun": "2026-10-14T05:35:00Z",
+    "summary": "T-M2.12 implementation: gate PASS x2 on cfe5780 (gate-20261014T051540Z.log, gate-20261014T052536Z.log; backend 466 tests, web 364 tests in 34 files, e2e 276 passed / 30 skipped on phone-small, tablet, laptop; budget student 174.7 / tutor 174.8 KB gz); /dev/ui dev-server cases 6 passed. An earlier run (gate-20261014T050444Z.log, 09e5f18) failed at e2e (T-M1.13 AC4 locator), fixed in cfe5780.",
     "suites": [
       {
         "name": "backend (./mvnw -B verify)",
