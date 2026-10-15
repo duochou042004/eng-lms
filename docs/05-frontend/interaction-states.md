@@ -18,6 +18,13 @@
 | **Partial** | Some sections fail (dashboards) | Per-section errors; other sections render | Failing the whole page |
 | **Populated** | Data | The content, with a visible primary action | — |
 
+**Implemented (T-M2.12, DEC-116):** *navigation loading*: a client-side navigation (lazy route chunk, loaders) that takes longer than 150 ms
+shows `ProgressLine` at the top edge and a polite "Loading the page" status, the current page staying visible and usable (no skeleton swap); a
+faster one shows nothing (the first load keeps `RouteLoading`'s skeleton). *Chunk offline*: a route whose code cannot load shows the offline
+page (offline, also for any route error while `navigator.onLine` is `false`) or the couldn't-load page (online), each with its own heading,
+a primary **Retry** and the start-page link, never an endless busy state; the copy follows the connection while shown; Retry offline keeps the page and announces the message again, online it loads the URL in full. The global
+offline banner for autosave areas is still to come (M5).
+
 TanStack Query settings: `retry: 2` for GET (none for 4xx), `staleTime` 30 s by default and 0 for the Review queue and attempts, refetch on window focus
 for Today and Home.
 

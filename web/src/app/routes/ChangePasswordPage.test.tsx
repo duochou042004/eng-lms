@@ -113,7 +113,8 @@ describe('/change-password, voluntary mode (FR-AUTH-05, AC5)', () => {
     )
     const { router } = await openPage()
     await fill('mat-khau-cu-1', 'mat-khau-moi-1')
-    const success = await screen.findByRole('status')
+    // In the page (the root layout has its own navigation status region, T-M2.12).
+    const success = await within(screen.getByRole('main')).findByRole('status')
     expect(success).toHaveTextContent('Đã đổi mật khẩu')
     expect(success).toHaveTextContent('Bạn đã bị đăng xuất trên các thiết bị khác.')
     expect(bodies).toEqual([{ currentPassword: 'mat-khau-cu-1', newPassword: 'mat-khau-moi-1' }])

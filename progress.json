@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-10-14T04:50:00Z",
-  "updatedBy": "lead-coordinator (T-M2.12 packet, session 2026-10-14, Opus 5.5)",
+  "updatedAt": "2026-10-14T07:05:00Z",
+  "updatedBy": "frontend-implementer (T-M2.12 AC11, Opus 5.5)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -32,22 +32,21 @@
   "currentTask": {
     "id": "T-M2.12",
     "title": "Navigation feedback and cross-tab session (150 ms progress line, offline chunk page with Retry, FORBIDDEN_ROLE session refetch, cross-tab sign-in/out, UX-9)",
-    "status": "ready",
+    "status": "in_progress",
     "ownerRole": "FE",
-    "branch": "docs/T-M2.12-nav-feedback-cross-tab",
+    "branch": "feature/T-M2.12-nav-feedback-cross-tab",
     "packet": "docs/tasks/T-M2.12-nav-feedback-cross-tab.md",
-    "pr": "89",
-    "lastCommit": null,
-    "startedAt": null,
+    "pr": "90",
+    "lastCommit": "c4c9e02",
+    "startedAt": "2026-10-14T05:20:00Z",
     "entryGate": [
       "T-M2.11 merged — met (1af32de, DEC-115)",
-      "Packet G0 — in review (docs PR)",
-      "PO start signal — pending"
+      "Packet G0 — met (PR #89, ce4e6fc)",
+      "PO start signal — met (DEC-117)"
     ],
     "nextSteps": [
-      "Fresh docs-reviewer on the packet; fix; CI; DOCS-REVIEW + LC-APPROVED; merge-gate; gitlab-sync",
-      "At the start signal: set currentTask.branch to feature/T-M2.12-nav-feedback-cross-tab and status in_progress",
-      "Ask the PO for the start signal (DEC); implement through G3 (QA, UX, SEC)"
+      "Implementer: AC11 (a)-(f) (DEC-118); gate green twice",
+      "Re-check QA, UX, SEC on the final head; CI; verdicts; merge-gate; gitlab-sync; qa/T-M2.12; merge record"
     ],
     "trace": [
       "backlog M2",
@@ -56,7 +55,9 @@
       "DEC-111",
       "DEC-112",
       "DEC-115",
-      "DEC-116"
+      "DEC-116",
+      "DEC-117",
+      "DEC-118"
     ]
   },
   "nextTask": {
@@ -303,8 +304,8 @@
     }
   ],
   "tests": {
-    "lastRun": "2026-10-12T13:00:00Z",
-    "summary": "T-M2.11 merged: CI 7/7 at 93698aa; gate PASS x2 on 71086f4 (backend 466 tests, web 330 tests in 31 files, e2e 240 passed / 24 skipped on phone-small, tablet, laptop); QA round 3 x3/x20 repeats green.",
+    "lastRun": "2026-10-14T07:00:00Z",
+    "summary": "T-M2.12 AC11 (G3 round 1 fixes, DEC-118): gate PASS x2 on c4c9e02 (gate-20261014T064210Z.log, gate-20261014T065157Z.log; backend 466 tests, web 370 tests in 34 files, e2e 276 passed / 30 skipped on phone-small, tablet, laptop; budget student 174.8 / tutor 174.9 KB gz). Earlier: gate PASS x2 on cfe5780 (gate-20261014T051540Z.log, gate-20261014T052536Z.log).",
     "suites": [
       {
         "name": "backend (./mvnw -B verify)",
@@ -330,20 +331,20 @@
   },
   "gates": {
     "G0": {
-      "status": "pending",
-      "note": "T-M2.12 packet (DEC-116, PR #89): DOCS-REVIEW round 1 CHANGES REQUESTED (D-1..D-9 fixed), round 2 PASS WITH MINOR (N-1, N-2 fixed)"
+      "status": "pass",
+      "note": "T-M2.12 packet merged (PR #89, ce4e6fc; DOCS-REVIEW PASS round 2, DEC-117)"
     },
     "G1": {
-      "status": "n/a",
-      "note": "T-M2.12 not started (T-M2.11 passed: gate PASS x2 at 71086f4)"
+      "status": "pending",
+      "note": "T-M2.12 implementation in progress"
     },
     "G2": {
       "status": "n/a",
       "note": "T-M2.12 not started (T-M2.11 passed: CI 7/7 at 93698aa)"
     },
     "G3": {
-      "status": "n/a",
-      "note": "T-M2.12 not started (T-M2.11 passed: QA PASS, UX APPROVED at 93698aa; SEC not triggered)"
+      "status": "pending",
+      "note": "T-M2.12 round 1 at 57ce8df: QA PASS WITH MINOR, UX APPROVED, SEC APPROVED; AC11 fixes (DEC-118) then re-check"
     },
     "G4": {
       "status": "n/a",
@@ -358,8 +359,6 @@
   "decisions": {
     "log": "docs/10-governance/decision-log.md",
     "recent": [
-      "DEC-103",
-      "DEC-104",
       "DEC-105",
       "DEC-106",
       "DEC-107",
@@ -371,7 +370,9 @@
       "DEC-113",
       "DEC-114",
       "DEC-115",
-      "DEC-116"
+      "DEC-116",
+      "DEC-117",
+      "DEC-118"
     ],
     "pendingPO": [
       "OQ-03",
@@ -604,6 +605,13 @@
       "status": "approved",
       "at": "2026-10-12T03:40:00Z",
       "ref": "DEC-113"
+    },
+    {
+      "what": "Start T-M2.12 (navigation feedback and cross-tab session)",
+      "by": "PO",
+      "status": "approved",
+      "at": "2026-10-14T05:15:00Z",
+      "ref": "DEC-117"
     }
   ],
   "environment": {

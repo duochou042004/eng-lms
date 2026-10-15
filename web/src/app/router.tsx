@@ -46,6 +46,9 @@ export function createRoutes(queryClient: QueryClient): RouteObject[] {
             {
               path: 'login',
               loader: guard.login,
+              // A revalidation (another tab's message, a 403 reaction) never re-runs the must-change logout (DEC-116 (4)).
+              shouldRevalidate: ({ currentUrl, nextUrl, defaultShouldRevalidate }) =>
+                currentUrl.href === nextUrl.href ? false : defaultShouldRevalidate,
               lazy: async () => ({ Component: (await import('./routes/LoginPage')).LoginPage }),
             },
             {

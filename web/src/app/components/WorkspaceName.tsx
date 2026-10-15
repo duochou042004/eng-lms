@@ -20,15 +20,17 @@ export function WorkspaceNameLoading() {
 /**
  * The compact (header-sized) error: the message and Retry, never inside a link. `wrap` (the public frame): below 768 px
  * the message may take two lines. In a shell top bar too narrow for the message (the `workspace-error` container, set by
- * the shell, under 22rem) only an icon shows before Retry: the message stays in the alert as visually hidden text and
- * describes Retry (AC11 (c)).
+ * the shell, under 22rem) only an icon shows, with Retry right beside it and the message as the icon's `title`: the
+ * message stays in the alert as visually hidden text and describes Retry (AC11 (c); UX-9, T-M2.12).
  */
 export function WorkspaceNameError({ onRetry, wrap = false }: { onRetry: () => void; wrap?: boolean }) {
   const { t } = useTranslation()
   const messageId = useId()
   return (
     <div role="alert" className={styles.error}>
-      <CircleAlert aria-hidden="true" className={styles.errorIcon} />
+      <span className={styles.errorIcon} title={t('meta.error')}>
+        <CircleAlert aria-hidden="true" />
+      </span>
       <span
         id={messageId}
         className={cx(styles.message, wrap ? styles.clamp : styles.truncate)}

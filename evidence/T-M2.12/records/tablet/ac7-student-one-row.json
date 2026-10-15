@@ -1,0 +1,49 @@
+{
+  "viewport": {
+    "width": 768,
+    "height": 1024
+  },
+  "truncated": true,
+  "vi": {
+    "bar": {
+      "top": 0,
+      "bottom": 69,
+      "height": 69
+    },
+    "children": [
+      {
+        "top": 12,
+        "bottom": 56
+      },
+      {
+        "top": 12,
+        "bottom": 56
+      },
+      {
+        "top": 12,
+        "bottom": 56
+      }
+    ]
+  },
+  "en": {
+    "bar": {
+      "top": 0,
+      "bottom": 69,
+      "height": 69
+    },
+    "children": [
+      {
+        "top": 12,
+        "bottom": 56
+      },
+      {
+        "top": 12,
+        "bottom": 56
+      },
+      {
+        "top": 12,
+        "bottom": 56
+      }
+    ]
+  }
+}

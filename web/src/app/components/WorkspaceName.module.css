@@ -15,13 +15,16 @@
   flex: 0 1 auto;
 }
 
-/* Shown only in a narrow shell top bar (below). */
+/* Shown only in a narrow shell top bar (below). The wrapper carries the message as `title` (UX-9). */
 .errorIcon {
   display: none;
   flex: none;
+  color: var(--color-danger);
+}
+
+.errorIcon > svg {
   inline-size: var(--size-icon);
   block-size: var(--size-icon);
-  color: var(--color-danger);
 }
 
 /* One line; a long text ends in an ellipsis (its `title` holds the full text). */
@@ -52,10 +55,15 @@
   }
 }
 
-/* A narrow shell top bar (AC11 (c)): the icon and Retry; the message stays for assistive technology. */
+/* A narrow shell top bar (AC11 (c)): the icon and Retry right beside it (UX-9); the message stays for assistive
+   technology. */
 @container workspace-error (width < 22rem) {
   .errorIcon {
     display: inline-flex;
+  }
+
+  .error > :last-child {
+    margin-inline-start: 0;
   }
 
   .message {

@@ -16,6 +16,7 @@ import {
   PageHeader,
   PasswordField,
   Popover,
+  ProgressLine,
   SegmentedControl,
   Sheet,
   Skeleton,
@@ -29,6 +30,23 @@ import { registerDevNamespace } from './i18n'
 registerDevNamespace()
 
 type View = 'list' | 'week' | 'month'
+
+/** The navigation progress line (T-M2.12): fixed at the window's top edge, so it is shown on demand. */
+function ProgressLineSample() {
+  const { t } = useTranslation('dev')
+  const [shown, setShown] = useState(false)
+  return (
+    <Stack gap={3}>
+      <p>{t('sample.progressHint')}</p>
+      <div>
+        <Button variant="secondary" onPress={() => setShown((s) => !s)}>
+          {shown ? t('sample.progressHide') : t('sample.progressShow')}
+        </Button>
+      </div>
+      {shown ? <ProgressLine /> : null}
+    </Stack>
+  )
+}
 
 function SegmentedSamples() {
   const { t } = useTranslation('dev')
@@ -248,6 +266,7 @@ export function DevUiPage() {
             <Skeleton shape="block" inlineSize="100%" blockSize="4rem" />
             <Skeleton shape="circle" inlineSize="2.5rem" blockSize="2.5rem" />
           </output>
+          <ProgressLineSample />
         </Section>
         <Section title={t('sections.empty')}>
           <EmptyState

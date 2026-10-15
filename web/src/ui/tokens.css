@@ -84,10 +84,12 @@
   --size-tabbar: 3.75rem; /* student bottom tabs, without the safe-area inset */
   --size-sheet-max: 85dvh; /* bottom sheets */
   --size-marker: 3px; /* the current-item bar of NavList and BottomTabs (non-colour marker) */
+  --size-progress-line: 3px; /* the navigation progress line (ProgressLine, T-M2.12) */
 
   /* Motion */
   --motion-duration: 160ms;
   --motion-easing: ease-out;
+  --motion-duration-progress: 1.2s; /* one pass of the indeterminate ProgressLine bar (T-M2.12) */
 
   /* Z-index */
   --z-sticky: 100;

@@ -1,0 +1,8 @@
+{
+  "events": [
+    "start /api/v1/auth/session",
+    "end /api/v1/auth/session",
+    "start /api/v1/meta",
+    "end /api/v1/meta"
+  ]
+}

@@ -518,6 +518,8 @@ describe('AC11 (c): the compact meta error in a narrow shell top bar', () => {
     expect(retry).toHaveAccessibleDescription('Không tải được tên không gian dạy học')
     expect(alert).toHaveTextContent('Không tải được tên không gian dạy học')
     expect(alert.querySelector('svg')).toHaveAttribute('aria-hidden', 'true')
+    // UX-9 (T-M2.12): the icon's wrapper carries the message as its title (Retry sits right beside it, e2e).
+    expect(alert.querySelector('svg')!.parentElement).toHaveAttribute('title', 'Không tải được tên không gian dạy học')
     // The shell makes the alert the size container the narrow rule queries (WorkspaceName.module.css).
     expect(alert.parentElement).toHaveClass('identity')
     await expectNoAxeViolations(container)

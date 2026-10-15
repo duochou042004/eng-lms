@@ -1,8 +1,8 @@
-import { useEffect, useState, type ReactNode } from 'react'
+import type { ReactNode } from 'react'
+import { SKELETON_DELAY_MS, useDelayed } from './useDelayed'
 import styles from './DelayedSkeleton.module.css'
 
-/** interaction-states §1: a skeleton appears only after 150 ms, so fast loads don't flash. */
-export const SKELETON_DELAY_MS = 150
+export { SKELETON_DELAY_MS }
 
 export interface DelayedSkeletonProps {
   /** The `Skeleton`s to reveal. */
@@ -17,12 +17,7 @@ export interface DelayedSkeletonProps {
  * `aria-busy` and its label from 0 ms.
  */
 export function DelayedSkeleton({ children, delayMs = SKELETON_DELAY_MS }: DelayedSkeletonProps) {
-  const [shown, setShown] = useState(delayMs <= 0)
-  useEffect(() => {
-    if (shown) return
-    const timer = setTimeout(() => setShown(true), delayMs)
-    return () => clearTimeout(timer)
-  }, [shown, delayMs])
+  const shown = useDelayed(true, delayMs)
   return (
     <span
       className={styles.delayed}

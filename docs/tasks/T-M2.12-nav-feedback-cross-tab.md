@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Milestone | M2 |
-| Status | ready |
+| Status | in_progress |
 | Owner role | FE (frontend-implementer) |
 | Branch | `feature/T-M2.12-nav-feedback-cross-tab` (from `develop`) |
 | Depends on | T-M2.11 merged (`1af32de`, DEC-115) |
@@ -116,6 +116,17 @@ navigation; every shared-device sign-in. 5. **Hard-coded semantics?** None.
   768×1024 and 1280×800 in vi and en; the progress line is not focusable and is hidden from the accessibility tree (the status region speaks
   for it); `ProgressLine` has a `/dev/ui` entry, tests and an axe check.
 - AC10: `./scripts/gate.sh` green twice in a row on the same dev database; all existing E2E and unit assertions kept; bundle budget green.
+
+- AC11 (G3 round 1, DEC-118; cheap fixes in reused pieces made in this task, DEC-088): (a) QA F-1: the chunk-error copy follows the
+  connection while the page is shown (an `online`/`offline` listener: offline copy while offline, couldn't-load copy once online), Retry
+  unchanged; (b) UX-1: the offline and couldn't-load pages have their own `h1` and document title ("You're offline" / "Bạn đang ngoại
+  tuyến", "This page couldn't load" / "Không tải được trang này" or equivalent), the generic error keeps its title; (c) UX-2: Retry and the
+  generic Reload use the primary button style, the start-page link stays the quiet link; (d) UX-5: the progress line's animation duration is a
+  motion token in `tokens.css`; (e) SEC S4-1: a user or role change clears the other queries with `resetQueries` (observers are notified and
+  refetch) instead of `removeQueries`, with a unit test of a student-to-student switch while a page using a query stays mounted; (f) SEC
+  S4-2: a page restored from the back/forward cache (`pageshow` with `persisted`) runs the same steps as a received channel message (drop the
+  cache, read the session, follow it), with a unit test; T19 in security.md says so. Tests for each; existing assertions change only where
+  (b) or (c) changes a title or a button style.
 
 ## Test plan
 - Implementation: component tests (`ProgressLine`, `RootLayout` delay with fake timers, `RouteError` chunk/offline variants and Retry), unit

@@ -147,3 +147,13 @@
   flex-wrap: wrap;
   gap: var(--space-3);
 }
+
+/* Text for assistive technology only (the root status region, the chunk-error page's offline announcement; T-M2.12). */
+.visuallyHidden {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
