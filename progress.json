@@ -314,12 +314,12 @@
       {
         "name": "backend (./mvnw -B verify)",
         "result": "pass",
-        "details": "83 tests (SpaServingTest 25, ApplicationIntegrationTest 21, ...) at 2d3d6e1; JaCoCo report in target/site/jacoco"
+        "details": "466 tests at T-M2.12 (gate on c4c9e02); JaCoCo report in target/site/jacoco"
       },
       {
         "name": "web (pnpm test --run)",
         "result": "pass",
-        "details": "41 tests incl. csp.test.tsx"
+        "details": "370 tests in 34 files at T-M2.12 (c4c9e02)"
       },
       {
         "name": "governance scripts (scripts/tests/run-all.sh)",
@@ -329,7 +329,7 @@
       {
         "name": "gate.sh",
         "result": "pass",
-        "details": "evidence/T-M1.5/gate-20260925T143131Z.log; fail-fast demo gate-failfast-demo-20260925T143814Z.log"
+        "details": "evidence/T-M2.12/gate-20261014T064210Z.log and gate-20261014T065157Z.log (PASS, c4c9e02)"
       }
     ]
   },

@@ -34,3 +34,17 @@ D-1..D-9 fixed (verified; the must-change flow traced again: tab A goes to `/` t
 Checklist: traceability, consistency, 10 testable ACs (AC3 achievable), size, out of scope, guardrails, evidence and docs lists, SEC/UX triggers, links, progress/backlog/DEC: pass. Not checked in a browser: whether React Router keeps a `//` pathname as is (SEC to test).
 
 LC: N-1 fixed (Retry = `location.reload()`, never `assign`/`href`; unit test named in the design notes) and N-2 fixed (`shouldRevalidate` returns `false` only when `currentUrl.href === nextUrl.href`), DEC-116 (2) and (4) amended. Final: **PASS**.
+
+---
+
+## Merge record (PR #92, fresh docs-reviewer, `f023992`): DOCS-REVIEW T-M2.12: PASS
+
+Git facts, CI, DEC-119 vs DEC-116..118 and the QA/UX/SEC records, deferrals to T-M2.13, packet/backlog, progress.json, handoff and next-session prompt (3980 chars): consistent. check-docs PASS. Optional S4s:
+
+| ID | Sev | Location | Issue | Fix |
+|---|---|---|---|---|
+| D-1 | S4 (pre-existing) | `progress.json` `tests.suites` | Suite details are old (backend 83, web 41, T-M1.5 gate log). | Update to the T-M2.12 numbers and logs. |
+| D-2 | S4 (pre-existing) | `HANDOFF.md` gotchas, merge-gate tokens | `UX-REVIEW <task>: APPROVED` missing. | Add it. |
+| D-3 | S4 | `evidence/T-M2.12/review/ux.md` | Cited UX screenshots are not in the repo; DEC-119 mentions only the lost QA artifacts. | Say so in DEC-119. |
+
+LC: D-1..D-3 fixed in this PR.
