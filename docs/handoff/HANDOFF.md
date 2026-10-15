@@ -1,20 +1,21 @@
-# Handoff — 2026-10-12T14:00Z (T-M2.11 app shells done; next: the T-M2.12 packet)
+# Handoff — 2026-10-15T02:00Z (T-M2.12 done; next: the T-M2.5 packet)
 
-Phase/Milestone: P1 / M2 (in progress) · Current task: **T-M2.12 (draft: packet next)** · Branch: `develop` · Last merges on develop: `1af32de` (PR #86, T-M2.11), `3bf8c91` (PR #87, QA report); this record is the `chore/T-M2.11-merge-record` PR (check `git log` that it landed) · Remote: https://github.com/duochou042004/eng-lms (mirror: gitlab.com/duochou042004/eng-lms)
+Phase/Milestone: P1 / M2 (in progress) · Current task: **T-M2.5 (draft: packet next)** · Branch: `develop` · Last merges on develop: `b5596d3` (PR #90, T-M2.12), `0642b70` (PR #91, QA report); this record is the `chore/T-M2.12-merge-record` PR (check `git log` that it landed) · Remote: https://github.com/duochou042004/eng-lms (mirror: gitlab.com/duochou042004/eng-lms)
 
 ## Where we are
-- **T-M2.11 done** (`1af32de`, DEC-112..115): app shells (nested shell routes, 404s inside the shells, tutor sidebar/drawer, student tabs/top bar,
-  account section with language, Change password, Log out; workspace name once and on the public pages, two rows below 768 px; `Sheet`,
-  `Popover`, `NavList`, `BottomTabs`, `ButtonLink`, `breakpoints.ts` in `ui/`). QA PASS (round 3), UX APPROVED (round 2), SEC not triggered.
-  G3 fixes via AC11 (DEC-114). Deferred: UX-9 S4 (compact shell error: Retry beside its icon, icon `title`) → T-M2.12. Language from a shell is
-  now 2 steps (DEC-112 (5)).
-- **T-M2.4 done** (`9fcc992`, DEC-109..111): auth UI (login, forgot info, forced/voluntary password change, logout, role redirect, guards,
-  `/forbidden`, `?next=` allow-list T18, XSRF header with re-priming, E2E sign-in harness with `e2e-tutor` under `.data/e2e/`). QA PASS WITH MINOR,
-  UX APPROVED, SEC APPROVED (the client-side auth part of the M2 exit security review). Deferred: SEC S4-2 cross-tab session → T-M2.12 (DEC-112; was T-M2.11); SEC S4-3 CI
-  failure traces (risk-register R-22); `qa/` specs that use the anonymous `/` or the shells → T-M2.7 (DEC-111).
-- **T-M1.19 done** (`8be6d9f`, DEC-108): Docker or Podman on Linux, macOS, WSL2. This device: **Kali Linux rolling, rootless Podman 5.8.6, clone
-  `/home/kali/App_projects/eng-lms`**; known limits N-1..N-3 in development-setup §3.
-- T-M1.20 (`ed442e0`, DEC-107): GitLab CI paused; the mirror still syncs. T-M2.10 (strict JSON numbers) is in the backlog.
+- **T-M2.12 done** (`b5596d3`, DEC-116..119): 150 ms navigation `ProgressLine` + polite status; offline / couldn't-load chunk pages (own `h1`,
+  primary Retry that reloads only when online, never builds a URL; copy follows the connection); 403 `FORBIDDEN_ROLE` → one deduped session
+  read and, on a user/role change, `resetQueries` + revalidate; data-free `BroadcastChannel` `englms-auth` for sign-in/out with a `pageshow`
+  (bfcache) resync; `/login` does not revalidate while its URL is unchanged (a tab left there never ends another tab's new session); UX-9;
+  security.md T19. QA PASS (round 2), UX APPROVED, SEC APPROVED (both rounds); G3 fixes via AC11 (DEC-118). This closes T-M2.4 SEC S4-2.
+  Deferred to **T-M2.13** (FE, backlog): UX-3 meta error reachable on touch, UX-4 notice on `/login` after a cross-tab sign-out, UX-6 copy echo,
+  O-1/O-2 logout feedback (offline spinner, silent 500).
+- **T-M2.11 done** (`1af32de`, DEC-112..115): app shells (nested routes, 404s inside, tutor sidebar/drawer, student tabs/top bar, account
+  section, workspace name, `Sheet`/`Popover`/`NavList`/`BottomTabs` in `ui/`).
+- **T-M2.4 done** (`9fcc992`, DEC-109..111): auth UI. SEC S4-3 (CI failure traces with E2E credentials) is risk-register R-22; the `qa/` spec
+  updates are T-M2.7 (DEC-111).
+- This device: **Kali Linux rolling, rootless Podman 5.8.6, clone `/home/kali/App_projects/eng-lms`** (T-M1.19, DEC-108). GitLab CI paused
+  (DEC-107); the mirror still syncs.
 
 ## Another device
 - Follow development-setup §0 for its platform (Linux, macOS, Windows = WSL2 + Docker Desktop with the clone inside WSL); record OS, engine and versions in
@@ -24,11 +25,11 @@ Phase/Milestone: P1 / M2 (in progress) · Current task: **T-M2.12 (draft: packet
 - Accounts (PO): `gh auth login`, `glab auth login`, git identity, credential helpers. Clone setup: `./scripts/install-hooks.sh`, `git remote add gitlab …`.
 
 ## Next steps
-1. **T-M2.12 packet** (task-packet skill, branch `docs/T-M2.12-<slug>`): the backlog row: 150 ms lazy-navigation feedback (DEC-073), offline
-   chunk feedback (DEC-087 F-3), refetch the session on 403 `FORBIDDEN_ROLE` and broadcast sign-in/out across tabs (T-M2.4 SEC S4-2), UX-9
-   (DEC-115). **SEC triggered** (DEC-112). Size check; fresh docs-reviewer, CI, verdicts, merge-gate, gitlab-sync; ask the PO once for the start
-   signal (DEC); with it implement through G3 (QA, UX, SEC).
-2. Then T-M2.5 (students UI), T-M2.6, T-M2.7 (M2 regression incl. the `qa/` spec updates). Optional: T-M2.10.
+1. **T-M2.5 packet** (students UI; task-packet skill, branch `docs/T-M2.5-<slug>`): the backlog row is large (list, Add student flow F2 +
+   credentials card, workspace shell, profile, guardians, learning profile, status, reset password): **size check, expect a split** (DEC).
+   SEC triggered (student data, tutor-private learning profile, contact links via a scheme allow-list, DEC-100). Fresh docs-reviewer, CI,
+   verdicts, merge-gate, gitlab-sync; ask the PO once for the start signal (DEC); implement through G3 (QA, UX, SEC).
+2. T-M2.13 (small FE follow-ups) when the PO orders it; then T-M2.6, T-M2.7 (M2 regression incl. the `qa/` spec updates). Optional: T-M2.10.
 
 ## Pending PO decisions / actions
 - This device: `(cd qa && pnpm exec playwright install-deps firefox webkit)` (needs `sudo`) so `qa/` can run all three browsers (G3 of UI tasks).
@@ -44,7 +45,7 @@ Phase/Milestone: P1 / M2 (in progress) · Current task: **T-M2.12 (draft: packet
   `git checkout -- evidence/<task>`. E2E signs in as `e2e-tutor` (`.data/e2e/`); never `dev-down.sh --purge` the PO's dev database without asking.
 - **One checkout, no worktrees** (DEC-094): subagents one at a time on the task branch; only the LC switches branches, never while a subagent runs.
 - Paths in older docs/evidence name `/home/kali/App_sources/eng-lms` (the first machines); this device clones to `/home/kali/App_projects/eng-lms`.
-- **Keep LC copies of reviewer reports outside the scratchpad** (e.g. the session folder `lc-records/`): reviewers clean the shared scratchpad with globs (DEC-101).
+- **Keep LC copies of reviewer reports outside the scratchpad** (`.claude/scratch/lc-records/`, git-ignored): reviewers clean the shared scratchpad with globs (DEC-101), and an API-limit pause can empty `/tmp` (T-M2.12 QA round 2 lost its scratch files). Copy each report and its screenshots as soon as it returns.
 - Reviewer evidence (`evidence/*/review/**`) never on feature/fix branches; QA reports on `qa/<task>`; move any review/QA file an agent writes there off the
   feature branch before committing. `./scripts/check-path-ownership.sh <branch>` before pushing.
 - merge-gate tokens: `QA-VERDICT <task>: PASS`, `SEC-REVIEW <task>: APPROVED`, `DOCS-REVIEW <task>: PASS`, `LC-APPROVED <task>`; post after CI is green for the final head.
@@ -60,6 +61,6 @@ Phase/Milestone: P1 / M2 (in progress) · Current task: **T-M2.12 (draft: packet
 - Wall-clock bounds in tests flake on the 2-core CI runner (DEC-093). `git merge` is denied: `gh pr update-branch` (DEC-090).
 
 ## Files to read first
-`CLAUDE.md` → `progress.json` → this file → backlog M2 (T-M2.11) → DEC-109, DEC-111 → `docs/05-frontend/information-architecture.md` §1, §3, §5,
-`responsive-standards.md`, `frontend-architecture.md` → `docs/tasks/T-M2.4-auth-ui.md` and `evidence/T-M2.4/review/ux.md`, `security.md` →
-`web/src/app/` (router, guards, shells) → `.claude/skills/task-packet`, `frontend-standards`, `ux-review`.
+`CLAUDE.md` → `progress.json` → this file → backlog M2 (T-M2.5 row) → DEC-097, DEC-100, DEC-119 → FR-STU-01..07, FR-AUTH-07, `docs/05-frontend/ux-flows.md`
+F2, `information-architecture.md` §2 → `docs/tasks/T-M2.12-nav-feedback-cross-tab.md`, `T-M2.11-app-shells.md` → `web/src/app/` (router, guards,
+shells), `web/src/features/` → api-catalog "tutor: students" → `.claude/skills/task-packet`, `frontend-standards`, `ux-review`, `security-review`.
