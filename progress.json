@@ -32,11 +32,11 @@
   "currentTask": {
     "id": "T-M2.5",
     "title": "Students list, Add student (F2) and the workspace header (split, DEC-120)",
-    "status": "in_progress",
+    "status": "in_review",
     "ownerRole": "FE",
     "branch": "feature/T-M2.5-students-list-add",
     "packet": "docs/tasks/T-M2.5-students-list-add.md",
-    "pr": null,
+    "pr": "94",
     "lastCommit": "fa7534f",
     "startedAt": "2026-10-16T01:09:05Z",
     "entryGate": [
@@ -342,12 +342,12 @@
       "note": "T-M2.5 packet (DEC-120, PR #93, 35a1d86): DOCS-REVIEW PASS round 3; PO start signal DEC-121"
     },
     "G1": {
-      "status": "n/a",
-      "note": "T-M2.5 not started (T-M2.12 passed: gate PASS x2 at c4c9e02)"
+      "status": "pass",
+      "note": "T-M2.5: gate PASS x2 on fa7534f (evidence/T-M2.5/gate-20261016T021454Z.log, gate-20261016T022521Z.log)"
     },
     "G2": {
-      "status": "n/a",
-      "note": "T-M2.5 not started (T-M2.12 passed: CI 7/7 at 5ed3f4d)"
+      "status": "pending",
+      "note": "T-M2.5 PR #94: CI running"
     },
     "G3": {
       "status": "n/a",
