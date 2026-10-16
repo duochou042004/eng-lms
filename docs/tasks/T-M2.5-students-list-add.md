@@ -189,7 +189,11 @@ with every new student. 5. **Hard-coded semantics?** None: no level, exam or cur
   `responsive-standards.md` §1 and §3.3 describe the 768 px viewport switch for `DataList` (DEC-120) and the container query as the target
   for a narrower column; (o) UX ruling (a): `steps-f2.json` lists the named steps. (p) QA-R2-1 (S3, G3 round 2, DEC-122): at 768 and 1280 the
   table keeps usernames of up to 20 characters on one line (no mid-word break; the Username column has a minimum width or `nowrap`) and
-  its header on one line, with no horizontal scroll. Tests for each; existing assertions change only where
+  its header on one line, with no horizontal scroll. (q) UX-11 (S2, UX round 2, DEC-122; supersedes the (p) minimum width): the
+  table has no Username column; the Name cell shows `@username` as a muted second line (the narrow list's meta line drops the username,
+  which the title row now carries), and the `--size-column-id` minimum is removed, so at 768 a three-word Vietnamese name and a
+  20-character email each take at most 2 lines and a 20-character username stays on one line (E2E line counts at 768 and 1280); (r) UX-12:
+  the pager position ("Trang 1 / 133", "Page 1 of 133") never breaks inside the number group (non-breaking spaces). Tests for each; existing assertions change only where
   these items change copy, layout or a step record.
 
 ## Test plan
