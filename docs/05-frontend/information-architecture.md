@@ -22,7 +22,8 @@ work sits in the **Student workspace** (SPEC §6). A top-level "Learning Plans" 
 Assignment, Assessment, Material, Question). The account menu (language, password, logout) sits top right on desktop and in the drawer footer on mobile.
 
 Implemented in T-M2.11 (DEC-112): the tutor shell (`app/shells/TutorShell.tsx`) takes its items from one list (label key, icon, route) and lists
-only routes that exist (no dead items): **Today** for now; Students (T-M2.5), Settings (T-M2.6) and the rest add a row with their task. At ≥ 1024 px
+only routes that exist (no dead items): **Today** and **Students** (T-M2.5: icon `Users`, `/tutor/students`, current on every students page);
+Settings (T-M2.6) and the rest add a row with their task. At ≥ 1024 px
 (`lg`) a persistent sidebar (`NavList`) under a top bar with the workspace name (the home link) and the account menu button top right; below
 1024 px the top bar has a menu button that opens the navigation drawer (a start-edge `Sheet`) with the items and, in its footer, the account
 section. The account section (`AccountSection`: who is signed in, the language switcher, "Change password", "Log out" in the same visual kind) is
@@ -47,6 +48,12 @@ Tabs:   Overview | Plan | Lessons | Work | Materials | Progress | Notes | Profil
 | Progress | `/progress` | FR-PROG-01 | M7 |
 | Notes | `/notes` | Private notes timeline | M3 |
 | Profile | `/profile` | Personal info, contacts, guardians, learning profile, account (reset password, status) | M2 |
+
+**Implemented (T-M2.5, DEC-120 (3), (8)):** `/tutor/students/:studentId` shows the header (name `h1`, status, `@username`, the contact quick
+links that pass `contactHref`) and the **Profile view at the index** (personal information, contacts, note; read-only), with **no tab bar**
+while Profile is the only content, no quick actions and no next lesson. When a second tab ships (M3), the Profile moves to `/profile` and the
+index becomes the Overview, whose first content arrives with M3. A malformed or unknown `:studentId` shows the feature's own not-found view
+inside the shell. Editing, guardians, the learning profile, status and reset password: T-M2.14.
 
 ## 3. Student navigation (mobile-first)
 

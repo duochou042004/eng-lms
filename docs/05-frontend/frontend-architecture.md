@@ -30,6 +30,15 @@ web/
   e2e/ → lives at repo root /e2e (implementation-owned) ; /qa (QA-owned)
 ```
 
+**Implemented feature (T-M2.5): `features/students/`**: `routes/` (the three lazy pages `StudentsListPage`, `AddStudentPage`,
+`StudentWorkspacePage`, each imported by the router directly, so each is its own chunk and none is in a first-visit closure; the bundle budget
+fails otherwise), `components/` (the form, the credentials card, contact values, the not-found view), `api/students.ts` (query keys
+`['students','list',query]`, `['students','detail',sid]`; a create invalidates `['students','list']` and seeds nothing; the create mutation has
+`gcTime: 0` and is reset once its result is in the page's state; the username suggestion and availability are queries keyed by the debounced
+value, so a stale answer can never write the field), `model/` (URL list params and their fallbacks, the Zod schema, `contactHref`, the 422
+mapping, the credentials message; unit-tested). The page title hook moved to `lib/i18n/pageTitle.ts` (`app/routeAnnouncement.ts` re-exports
+it) and dates go through `lib/time` (`Intl.DateTimeFormat`, browser time zone), both so feature pages need nothing from `app/`.
+
 **Import rules (oxlint `no-restricted-imports` + `no-restricted-globals` with per-path overrides, `web/.oxlintrc.json`; DEC-042):** `features/*` may import `ui`, `lib`, `extensions` and their **own** folder only.
 Cross-feature needs go through `lib` or via route composition. `react-aria-components` may be imported only inside `ui/`. No `fetch` outside `lib/api`.
 
@@ -101,7 +110,9 @@ overlays (`useOverlay`) are open only while the location they were opened at is 
 them in the same commit. `RouteLoading` draws the same frame per breakpoint (tutor: menu-button skeleton below `lg`, account-button skeleton
 and sidebar at ≥ `lg`; student: bottom-tab bar below `md`, nav item and account-button skeletons at ≥ `md`); the public pages' skeleton has a
 name-shaped line before the switcher. Route focus also moves after a navigation to the page already shown (a nav item or the home link of the
-current page: a new location key without a hash); an in-page hash jump still does not move it.
+current page: a new location key without a hash); an in-page hash jump still does not move it. **A change of the search params alone** (same
+pathname: a list's search, filter, sort or page, T-M2.5) is an in-page view change and keeps focus on the control that made it. A page whose
+`h1` arrives with its data (the student workspace) moves focus to it once loaded, only after a client-side navigation (`lib/navigation.ts`).
 
 **Navigation feedback and chunk errors (T-M2.12, DEC-116).** While the router navigates (`useNavigation().state !== 'idle'`: lazy chunks and
 loaders) for longer than 150 ms (`useDelayed`, the timer behind `DelayedSkeleton`), `RootLayout` shows `ProgressLine` at the top edge of the
@@ -126,6 +137,9 @@ its URL is unchanged (`shouldRevalidate` returns `false` when `currentUrl.href =
 `dev` namespace (the `/dev/ui` gallery) is **not** there: `src/dev/i18n.ts` registers it with `i18n.addResourceBundle` when the lazily imported
 `/dev/ui` module is evaluated, and that route exists only when `import.meta.env.DEV` is true, so no `dev` string reaches `dist/` (T-M1.9 AC7). The
 `i18n-completeness` test still compares `dev` (it imports `devResources`).
+The `students` namespace (T-M2.5) follows the same pattern for production: `features/students/i18n.ts` registers it when a Students page
+module is evaluated, so its strings travel with the lazy tutor pages and never reach a student's first visit; the completeness test imports
+`studentsResources` too. Student status labels are in `common` (`status.student.*`) and `nav.students` in `shell`.
 
 ## 5. Extensions (frontend registry)
 

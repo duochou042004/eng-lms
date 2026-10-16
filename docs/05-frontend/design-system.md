@@ -123,10 +123,41 @@ Decorative: `aria-hidden="true"`, never focusable; its owner announces the state
 - Tokens: `--size-sidebar` (15rem), `--size-drawer` (20rem), `--size-popover` (18rem), `--size-account-button` (12rem), `--size-tabbar`
   (3.75rem), `--size-sheet-max` (85dvh), `--size-marker` (3px), `--color-scrim`.
 
+**Students components** (T-M2.5, DEC-120 (5); tests, axe and `/dev/ui` entries):
+- `DataList`: a semantic `table` (caption, `th scope="col"`, the first cell a row header) at ≥ 768 px (`md`), below that a `ul` of rows
+  (the first column as the title, the other values on a wrapping meta line, each led by its visually hidden header). The structure is chosen with
+  `useMinWidth('md')` (one DOM at a time, nothing duplicated for assistive technology) rather than a 640 px container query: the packet fixes
+  the switch at the 768 px viewport, and a structural switch cannot be done in CSS without rendering both. Values wrap (`overflow-wrap:
+  anywhere`), so 360 px never scrolls horizontally; an empty value is left out of the list row.
+- `StatusBadge`: icon + text + tone from `status/statusMap.ts` (§4); the label is passed translated (`ui/` has no i18n). Not interactive.
+- `Disclosure`: React Aria `Disclosure`: a button with `aria-expanded` inside a heading (level 2 or 3), a turning chevron (no movement with
+  reduced motion); the panel stays mounted while collapsed (`hidden`), so field values survive; controllable (a form opens the section that
+  holds an error).
+- `TextArea`: React Aria `TextField` + `TextArea`, grows with its content (`field-sizing: content`, from three lines); an optional
+  `maxLength` shows a counter ("120 / 2.000" in the UI locale, code points) in the description; past it the counter turns danger and typing is
+  not blocked (validation reports it).
+- `CopyButton`: `navigator.clipboard.writeText`; "Copied" in a polite `output` beside the button (and a check icon for 4 s); where the
+  clipboard is missing (insecure context) or refuses, the manual-copy message stays until the next attempt. `accessibleLabel` may extend the
+  visible label ("Copy Zalo", WCAG 2.5.3).
+- `ConfirmDialog`: the WAI-ARIA alert dialog pattern on a React Aria modal `Dialog` (`role="alertdialog"`): a named heading, the consequence,
+  a danger confirm and a safe cancel that has focus on open; Esc cancels; an outside click does nothing; focus returns. Also the unsaved
+  changes guard's dialog (React Router `useBlocker`; no separate `UnsavedChangesGuard` component yet).
+- `DescriptionList`: a `dl`; two columns (term `--size-term`) when its own container is ≥ 32rem, else the term above the value; an empty
+  value shows the given label ("Not added") in subtle text.
+- `SearchField`: React Aria `SearchField` (role `searchbox`) with a visible label, a decorative icon, a ≥ 44 px clear button while filled,
+  Esc clears; 16 px text. The owner debounces.
+- `PageHeader` gained `meta` (an identity line under the title: status badge, `@username`). Tokens: `--size-reading-max` (40rem, the Add
+  student form and the credentials card), `--size-field-min` (18rem), `--size-term` (8rem), `--font-family-mono` (the temporary password).
+- Bundle note: every `ui/` module is reached through the `ui/index.ts` barrel, so the components used only by tutor pages ship in the shared
+  chunk too (the student first visit grew from 174.7 to 180.5 KB gz of its 200 KB budget with these eight).
+
 ## 4. Status vocabulary (one mapping, used everywhere)
 
 | Domain status | Label (en / vi) | Tone | Icon |
 |---|---|---|---|
+| Student: ACTIVE | Active / Đang học | success | check-circle (`CircleCheck`) |
+| Student: PAUSED | Paused / Tạm nghỉ | warning | pause-circle (`CirclePause`) |
+| Student: ARCHIVED | Archived / Đã lưu trữ | neutral | archive (`Archive`) |
 | Work: ASSIGNED | To do / Cần làm | neutral | circle |
 | Work: overdue (derived) | Overdue / Quá hạn | danger | alert-circle |
 | Work: IN_PROGRESS | In progress / Đang làm | info | timer |
@@ -137,7 +168,8 @@ Decorative: `aria-hidden="true"`, never focusable; its owner announces the state
 | Lesson: SCHEDULED / COMPLETED / STUDENT_ABSENT / CANCELLED / RESCHEDULED | Scheduled / Completed / Absent / Cancelled / Rescheduled | neutral / success / warning / neutral / neutral | calendar / check / user-x / x / repeat |
 | Plan item: NOT_STARTED / IN_PROGRESS / COMPLETED / PAUSED / SKIPPED | ○ / ▶ / ✓ / ‖ / ↷ with text | neutral / info / success / warning / neutral | as shown |
 
-The mapping lives in `web/src/ui/status/statusMap.ts`. Features must not invent their own colours or labels for these statuses.
+The mapping lives in `web/src/ui/status/statusMap.ts` (student statuses since T-M2.5: `STUDENT_STATUS`, labels in the `common` namespace under
+`status.student.*`; the other rows join with their modules). Features must not invent their own colours or labels for these statuses.
 
 ## 5. Layout patterns (use these; don't invent new ones without a UX review)
 
