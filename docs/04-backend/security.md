@@ -31,7 +31,9 @@ Actors: anonymous internet users, an authenticated student (curious or malicious
 | T9 | Malicious upload (HTML or SVG script, polyglot, zip bomb, huge file) | Tika sniff + allow-list; SVG and HTML rejected; size limits; never inline except safe types; `nosniff`; no archive extraction | File tests |
 | T10 | Embed injection (arbitrary iframe) | Only allow-listed providers; the URL is parsed and re-built into a canonical embed URL; iframe `sandbox`; CSP `frame-src` | Embed tests |
 | T11 | Privilege escalation to tutor | No self-registration; one TUTOR (DB constraint); role never taken from the client | Authz matrix |
-| T12 | Account takeover through the password reset flow | Tutor-only reset of student passwords; the tutor's own password only by the operator on the host (runbooks §4, FR-AUTH-09); temporary passwords expire (7 days, also the operator's reset: DEC-089 (8)) and require a change; sessions and remember-me tokens revoked **Frontend (T-M2.5):** the one-time temporary password of a create lives only in the Add student page's component state (the credentials card): the create mutation has `gcTime: 0` and is reset once its result is in state, nothing is seeded into a query, and it never reaches the URL, history state, storage or a log; Back or leaving the page drops it for good (a later visit shows an empty form); it is shown as text (no input, no autocomplete) | Tests (T-M2.1 CLI test; `AddStudentPage.test.tsx`, `students.spec.ts` AC7) |
+| T12 | Account takeover through the password reset flow | Tutor-only reset of student passwords; the tutor's own password only by the operator on the host (runbooks §4, FR-AUTH-09); temporary passwords expire (7 days, also the operator's reset: DEC-089 (8)) and require a change; sessions and remember-me tokens revoked **Frontend (T-M2.5):** the one-time temporary password of a create lives only in the Add student page's component state (the credentials card): the create mutation has `gcTime: 0` and is reset once its result is in state, nothing is seeded into a query, and it never reaches the URL, history state, storage or a log; Back or leaving the page drops it for good (a later visit shows an empty form), and `pagehide` drops the card first, so a
+back/forward-cache restore never shows it (AC12 (m)); a dirty Add student form never blocks the forced redirect to `/change-password`
+(the auth reaction marks it `state.forced`; the user's own link still asks, AC12 (l)); it is shown as text (no input, no autocomplete) | Tests (T-M2.1 CLI test; `AddStudentPage.test.tsx`, `students.spec.ts` AC7) |
 | T13 | Data loss (disk failure, bad migration) | Backups + restore drill; forward-only migrations; pre-deploy backup | Release gate |
 | T14 | Secrets leak (repo, logs) | gitleaks; Podman secrets; log masking; no secrets in `application.yml` | CI, review |
 | T15 | Vulnerable dependency | Dependabot, `pnpm audit`, Trivy at release | Release gate |
@@ -204,9 +206,10 @@ The **authz matrix test** enumerates `RequestMappingHandlerMapping`. For each ha
   An unknown provider is rejected, and the tutor is told to use the LINK kind instead.
 - Markdown in notes: a minimal subset rendered on the client with a safe renderer (no raw HTML).
 - **Student contact values (T-M2.5, DEC-100 SEC S4-8):** the frontend builds an `href` from a student's phone, email or contact handle only
-  through `features/students/model/contactHref.ts`: `tel:` (a leading `+` and digits, ≥ 3 digits), `mailto:` (exactly one address with no
-  whitespace, `?`, `#`, `,`, `;`, `%` or control character) or a handle that parses to `https:` with a host (`target="_blank"
-  rel="noopener noreferrer"`). Every other value (`http:`, `javascript:`, `data:`, `zalo:`, protocol-relative, plain text) is text with a copy
+  through `features/students/model/contactHref.ts`: `tel:` (a leading `+` and digits, ≥ 3 digits), `mailto:` (exactly one address with a
+  dotted domain and no whitespace, `?`, `#`, `,`, `;`, `%`, `:`, `/`, `<`, `>`, `"`, `\` or control character) or a handle that parses to
+  `https:` with a host and no user name or password (`https://zalo.me@evil.example/` is refused; `target="_blank"
+  rel="noopener noreferrer"`) (AC12 (j), (k)). Every other value (`http:`, `javascript:`, `data:`, `zalo:`, protocol-relative, plain text) is text with a copy
   button. Table test `contactHref.test.ts`.
 
 ## 7. Files (details: files-and-storage.md)

@@ -128,7 +128,8 @@ Decorative: `aria-hidden="true"`, never focusable; its owner announces the state
   (the first column as the title, the other values on a wrapping meta line, each led by its visually hidden header). The structure is chosen with
   `useMinWidth('md')` (one DOM at a time, nothing duplicated for assistive technology) rather than a 640 px container query: the packet fixes
   the switch at the 768 px viewport, and a structural switch cannot be done in CSS without rendering both. Values wrap (`overflow-wrap:
-  anywhere`), so 360 px never scrolls horizontally; an empty value is left out of the list row.
+  anywhere`), so 360 px never scrolls horizontally; an empty value is left out of the list row. AC12 (DEC-122): a column may be `nowrap`
+  (one line in the table: phone, status) or `inTitle` (beside the list row's title: the status badge).
 - `StatusBadge`: icon + text + tone from `status/statusMap.ts` (§4); the label is passed translated (`ui/` has no i18n). Not interactive.
 - `Disclosure`: React Aria `Disclosure`: a button with `aria-expanded` inside a heading (level 2 or 3), a turning chevron (no movement with
   reduced motion); the panel stays mounted while collapsed (`hidden`), so field values survive; controllable (a form opens the section that
@@ -136,13 +137,15 @@ Decorative: `aria-hidden="true"`, never focusable; its owner announces the state
 - `TextArea`: React Aria `TextField` + `TextArea`, grows with its content (`field-sizing: content`, from three lines); an optional
   `maxLength` shows a counter ("120 / 2.000" in the UI locale, code points) in the description; past it the counter turns danger and typing is
   not blocked (validation reports it).
-- `CopyButton`: `navigator.clipboard.writeText`; "Copied" in a polite `output` beside the button (and a check icon for 4 s); where the
+- `CopyButton`: `navigator.clipboard.writeText`; "Copied" announced in a polite `output` but visually hidden (the button's icon turns to a
+  check for 4 s, so nothing moves, AC12 (g)); where the
   clipboard is missing (insecure context) or refuses, the manual-copy message stays until the next attempt. `accessibleLabel` may extend the
   visible label ("Copy Zalo", WCAG 2.5.3).
 - `ConfirmDialog`: the WAI-ARIA alert dialog pattern on a React Aria modal `Dialog` (`role="alertdialog"`): a named heading, the consequence,
   a danger confirm and a safe cancel that has focus on open; Esc cancels; an outside click does nothing; focus returns. Also the unsaved
   changes guard's dialog (React Router `useBlocker`; no separate `UnsavedChangesGuard` component yet).
-- `DescriptionList`: a `dl`; two columns (term `--size-term`) when its own container is ≥ 32rem, else the term above the value; an empty
+- `DescriptionList`: a `dl`; two columns (term `--size-term`, baseline-aligned with its value) when its own container is ≥ 32rem, else the
+  term above the value; an empty
   value shows the given label ("Not added") in subtle text.
 - `SearchField`: React Aria `SearchField` (role `searchbox`) with a visible label, a decorative icon, a ≥ 44 px clear button while filled,
   Esc clears; 16 px text. The owner debounces.
