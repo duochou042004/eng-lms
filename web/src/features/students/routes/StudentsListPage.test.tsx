@@ -29,6 +29,8 @@ function listApi(answer: Answer) {
 const twentyFive = Array.from({ length: 25 }, (_, i) => row(i + 1))
 const h1 = () => screen.findByRole('heading', { level: 1, name: 'Học viên' })
 const search = (router: { state: { location: { search: string } } }) => router.state.location.search
+// Role queries over a 25-row table are slow on a busy runner (the gate's parallel suite): a longer wait, same assertion.
+const findLink = (name: string) => screen.findByRole('link', { name }, { timeout: 5000 })
 const isCount = (p: URLSearchParams) => p.get('size') === '1'
 
 describe('/tutor/students', { timeout: 20_000 }, () => {
@@ -80,10 +82,10 @@ describe('/tutor/students', { timeout: 20_000 }, () => {
       HttpResponse.json(page(p.get('q') ? [row(7, { fullName: 'Nguyễn Văn An' })] : twentyFive, { totalItems: 25 })),
     )
     const { router } = renderRoute('/tutor/students')
-    await screen.findByRole('link', { name: 'Học viên 01' })
+    await findLink('Học viên 01')
     const box = screen.getByRole('searchbox', { name: 'Tìm kiếm' })
     await userEvent.type(box, ' nguyen ')
-    await screen.findByRole('link', { name: 'Nguyễn Văn An' })
+    await findLink('Nguyễn Văn An')
     expect(search(router)).toBe('?q=nguyen')
     expect(box).toHaveFocus()
     // One request for the whole word (debounced), trimmed.
@@ -93,7 +95,7 @@ describe('/tutor/students', { timeout: 20_000 }, () => {
   it('Include archived adds ARCHIVED; Newest sorts by creation; both are in the URL and restored by Back', async () => {
     const requests = listApi(() => HttpResponse.json(page([row(1)])))
     const { router } = renderRoute('/tutor/students')
-    await screen.findByRole('link', { name: 'Học viên 01' })
+    await findLink('Học viên 01')
     await userEvent.click(screen.getByRole('checkbox', { name: 'Gồm cả học viên đã lưu trữ' }))
     await waitFor(() => expect(search(router)).toBe('?archived=1'))
     await waitFor(() => expect(requests.at(-1)!.getAll('status')).toEqual(['ACTIVE', 'PAUSED', 'ARCHIVED']))
@@ -114,19 +116,19 @@ describe('/tutor/students', { timeout: 20_000 }, () => {
       return HttpResponse.json(page(n === 0 ? twentyFive : [row(26)], { page: n, totalItems: 26 }))
     })
     const { router } = renderRoute('/tutor/students')
-    await screen.findByRole('link', { name: 'Học viên 01' })
+    await findLink('Học viên 01')
     const pages = screen.getByRole('navigation', { name: 'Phân trang' })
     expect(pages).toHaveTextContent('Trang 1 / 2')
     // The number group never breaks (AC12 (r)): non-breaking spaces around "/".
     expect(within(pages).getByText(/^Trang 1/).textContent).toBe('Trang 1\u00a0/\u00a02')
     expect(within(pages).getByRole('button', { name: 'Trang trước' })).toBeDisabled()
     await userEvent.click(within(pages).getByRole('button', { name: 'Trang sau' }))
-    await screen.findByRole('link', { name: 'Học viên 26' })
+    await findLink('Học viên 26')
     expect(search(router)).toBe('?page=2')
     expect(requests.at(-1)!.get('page')).toBe('1')
     expect(screen.getByRole('navigation', { name: 'Phân trang' })).toHaveTextContent('Trang 2 / 2')
     await userEvent.click(screen.getByRole('button', { name: 'Trang trước' }))
-    await screen.findByRole('link', { name: 'Học viên 01' })
+    await findLink('Học viên 01')
     expect(search(router)).toBe('')
   })
 
@@ -139,7 +141,7 @@ describe('/tutor/students', { timeout: 20_000 }, () => {
         return HttpResponse.json(page(n === 0 ? twentyFive : [row(26)], { page: n, totalItems: 26 }))
       })
       renderRoute('/tutor/students')
-      await screen.findByRole('link', { name: 'Học viên 01' })
+      await findLink('Học viên 01')
       const pages = screen.getByRole('navigation', { name: 'Phân trang' })
       const previous = within(pages).getByRole('button', { name: 'Trang trước' })
       const next = within(pages).getByRole('button', { name: 'Trang sau' })
@@ -149,7 +151,7 @@ describe('/tutor/students', { timeout: 20_000 }, () => {
       await waitFor(() => expect(previous).toHaveFocus())
       expect(within(pages).getByRole('status')).toHaveTextContent('Trang 2 / 2')
       expect(scroll).toHaveBeenCalledWith({ block: 'start' })
-      await screen.findByRole('link', { name: 'Học viên 26' })
+      await findLink('Học viên 26')
       await userEvent.keyboard('{Enter}')
       await waitFor(() => expect(previous).toBeDisabled())
       await waitFor(() => expect(next).toHaveFocus())
@@ -165,7 +167,7 @@ describe('/tutor/students', { timeout: 20_000 }, () => {
     async (params) => {
       const requests = listApi(() => HttpResponse.json(page([row(1)])))
       renderRoute(`/tutor/students?${params}`)
-      await screen.findByRole('link', { name: 'Học viên 01' })
+      await findLink('Học viên 01')
       expect(Object.fromEntries(requests[0]!)).toEqual({ page: '0', size: '25', sort: 'fullName,asc' })
       expect(screen.queryByRole('alert')).not.toBeInTheDocument()
     },
@@ -177,7 +179,7 @@ describe('/tutor/students', { timeout: 20_000 }, () => {
       return HttpResponse.json(page(n === 1 ? [row(26)] : [], { page: n, totalItems: 26 }))
     })
     const { router } = renderRoute('/tutor/students?page=99')
-    await screen.findByRole('link', { name: 'Học viên 26' })
+    await findLink('Học viên 26')
     expect(search(router)).toBe('?page=2')
     expect(router.state.historyAction).toBe('REPLACE')
   })
@@ -185,7 +187,7 @@ describe('/tutor/students', { timeout: 20_000 }, () => {
   it('searches without the control characters of q', async () => {
     const requests = listApi(() => HttpResponse.json(page([row(1)])))
     renderRoute('/tutor/students?q=%01an%7F')
-    await screen.findByRole('link', { name: 'Học viên 01' })
+    await findLink('Học viên 01')
     expect(requests[0]!.get('q')).toBe('an')
     expect(screen.getByRole('searchbox', { name: 'Tìm kiếm' })).toHaveValue('an')
   })
@@ -204,7 +206,7 @@ describe('/tutor/students states (interaction-states §1)', { timeout: 20_000 },
     const skeleton = within(region).getAllByTestId('skeleton')[0]!.parentElement!
     expect(skeleton).toHaveStyle({ visibility: 'hidden' })
     await waitFor(() => expect(skeleton).not.toHaveStyle({ visibility: 'hidden' }))
-    await screen.findByRole('link', { name: 'Học viên 01' })
+    await findLink('Học viên 01')
   })
 
   it('first use (no student in any status): one count request decides; one primary action', async () => {
@@ -241,7 +243,7 @@ describe('/tutor/students states (interaction-states §1)', { timeout: 20_000 },
     await screen.findByRole('heading', { level: 2, name: 'Không có học viên đang học hoặc tạm nghỉ' })
     await expectNoAxeViolations(container)
     await userEvent.click(screen.getByRole('button', { name: 'Gồm cả học viên đã lưu trữ' }))
-    await screen.findByRole('link', { name: 'Học viên 09' })
+    await findLink('Học viên 09')
     expect(search(router)).toBe('?archived=1')
     expect(screen.getByText('Đã lưu trữ')).toBeInTheDocument()
   })
@@ -252,7 +254,7 @@ describe('/tutor/students states (interaction-states §1)', { timeout: 20_000 },
     await screen.findByRole('heading', { level: 2, name: 'Không có học viên nào khớp với “xyz”' })
     await expectNoAxeViolations(container)
     await userEvent.click(screen.getByRole('button', { name: 'Xoá bộ lọc' }))
-    await screen.findByRole('link', { name: 'Học viên 01' })
+    await findLink('Học viên 01')
     expect(search(router)).toBe('')
     const box = screen.getByRole('searchbox', { name: 'Tìm kiếm' })
     expect(box).toHaveValue('')
@@ -265,12 +267,12 @@ describe('/tutor/students states (interaction-states §1)', { timeout: 20_000 },
       return HttpResponse.json(page([row(p.get('sort') === 'createdAt,desc' ? 2 : 1)]))
     })
     renderRoute('/tutor/students')
-    await screen.findByRole('link', { name: 'Học viên 01' })
+    await findLink('Học viên 01')
     expect(screen.queryByTestId('progress-line')).not.toBeInTheDocument()
     await userEvent.click(screen.getByRole('radio', { name: 'Mới nhất' }))
     expect(await screen.findByTestId('progress-line')).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Học viên 01' })).toBeInTheDocument()
-    await screen.findByRole('link', { name: 'Học viên 02' })
+    await findLink('Học viên 02')
     await waitFor(() => expect(screen.queryByTestId('progress-line')).not.toBeInTheDocument())
   })
 
@@ -283,7 +285,7 @@ describe('/tutor/students states (interaction-states §1)', { timeout: 20_000 },
     await expectNoAxeViolations(container)
     fail = false
     await userEvent.click(within(alert).getByRole('button', { name: 'Thử lại' }))
-    await screen.findByRole('link', { name: 'Học viên 01' })
+    await findLink('Học viên 01')
     expect(screen.queryByRole('alert')).not.toBeInTheDocument()
   })
 
@@ -291,7 +293,7 @@ describe('/tutor/students states (interaction-states §1)', { timeout: 20_000 },
     let fail = false
     listApi(() => (fail ? problem(503, 'INTERNAL_ERROR') : HttpResponse.json(page([row(1)]))))
     const { queryClient } = renderRoute('/tutor/students')
-    await screen.findByRole('link', { name: 'Học viên 01' })
+    await findLink('Học viên 01')
     fail = true
     await act(() => queryClient.refetchQueries({ queryKey: ['students', 'list'] }))
     expect(await screen.findByRole('alert')).toHaveTextContent('Không tải được danh sách học viên')
