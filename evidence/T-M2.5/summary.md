@@ -43,3 +43,12 @@ Recorded by the LC from the frontend-implementer's report (the agent cannot writ
 4. Each E2E run adds ~20–25 students to the dev database (paging students reused).
 5. Some component tests wait up to 1 s after a 300 ms debounce.
 6. Chromium only (Firefox/WebKit host libraries pending, PO `sudo`).
+
+## Round 2: AC12 (a)–(o) (G3 round 1 fixes, DEC-122)
+- Commits: `cee33ff` contactHref (j, k), `6dde9af` ui (d, e, g, h), `3485f65` students (a–c, f, h, i, l, m), `ca98c09` E2E + named step log (o), `7915a95` docs (n), `be0daf7` evidence and progress.
+- Gates: `gate-20261016T084230Z.log` and `gate-20261016T085300Z.log` PASS on `7915a95` (13 steps; web 538 in 51 files, backend 466, E2E 306 passed / 30 skipped; budget student 180.6, tutor 180.8 KB gz; contrast 32 pairs). The round-1 logs were replaced.
+- (a)–(c) pager: focus to the enabled pager button, list top scrolled into view, "Trang n / m" announced politely; Previous/Next at the row's ends at 360 (`impl/*/list-pager-vi.png`). (d), (e) phone and status `nowrap`; badge in the title row at 360.
+- (f) neutral greeting vi/en (no name, no "em"); expiry and Added on "10:25, 23/10/2026" (`lib/time`). (g) "Copied" visually hidden, icon swap, no shift (E2E).
+- (h), (i) quick-link kind icons (`aria-hidden`), baseline-aligned `DescriptionList`, handle label above value. (j), (k) https with userinfo refused; email refuses `: / < > " \` and needs a dotted domain.
+- (l) forced `/change-password` carries `state.forced` and passes the guard; the user's own link still asks. (m) `pagehide` drops the card. (n) responsive-standards §1, §3.3. (o) `steps-f2.json` lists the 6 named steps; wall time 3.4 / 3.5 / 3.1 s, reported (DEC-093).
+- Deviations: (g) icon swap only (label kept to avoid a width change); Added on uses the new date format too; the gate refreshed other specs' `impl/` screenshots.
