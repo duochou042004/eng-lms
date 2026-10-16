@@ -1,0 +1,36 @@
+.field {
+  min-inline-size: 0;
+}
+
+.control {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.icon {
+  position: absolute;
+  inset-inline-start: var(--space-3);
+  inline-size: var(--size-icon);
+  block-size: var(--size-icon);
+  color: var(--color-text-muted);
+  pointer-events: none;
+}
+
+/* Room for the icon and the clear button; 16 px text, so iOS does not zoom (responsive-standards §3.4). */
+.input {
+  flex: 1 1 auto;
+  min-inline-size: 0;
+  padding-inline: calc(var(--space-3) + var(--size-icon) + var(--space-2)) var(--size-control-md);
+  font-size: var(--font-size-md);
+}
+
+/* The engine's own clear button would duplicate ours. */
+.input::-webkit-search-cancel-button {
+  appearance: none;
+}
+
+.clear {
+  position: absolute;
+  inset-inline-end: 0;
+}

@@ -13,7 +13,8 @@
     "errorSummary": "Tóm tắt lỗi",
     "navigation": "Điều hướng",
     "overlays": "Sheet và popover",
-    "buttonLink": "Liên kết dạng nút"
+    "buttonLink": "Liên kết dạng nút",
+    "students": "Thành phần cho Học viên (T-M2.5)"
   },
   "sample": {
     "primary": "Lưu",
@@ -80,6 +81,37 @@
     "linkQuiet": "Xem tất cả",
     "progressShow": "Hiện đường tiến trình",
     "progressHide": "Ẩn đường tiến trình",
-    "progressHint": "Đường mảnh ở mép trên cửa sổ, khi một lần chuyển trang kéo dài hơn 150 ms. Khi giảm chuyển động: một đường tĩnh."
+    "progressHint": "Đường mảnh ở mép trên cửa sổ, khi một lần chuyển trang kéo dài hơn 150 ms. Khi giảm chuyển động: một đường tĩnh.",
+    "statusActive": "Đang học",
+    "statusPaused": "Tạm nghỉ",
+    "statusArchived": "Đã lưu trữ",
+    "searchLabel": "Tìm kiếm",
+    "searchHint": "Tên, tên đăng nhập hoặc email",
+    "searchClear": "Xoá nội dung tìm kiếm",
+    "dataListLabel": "Học viên mẫu",
+    "colName": "Họ tên",
+    "colUsername": "Tên đăng nhập",
+    "colStatus": "Trạng thái",
+    "colEmail": "Email",
+    "rowLong": "Nguyễn Thị Phương Lan Anh Hoàng Bảo Ngọc (tên rất dài)",
+    "disclosureTitle": "Liên hệ (không bắt buộc)",
+    "disclosureBody": "Các trường trong phần thu gọn vẫn giữ giá trị.",
+    "textAreaLabel": "Ghi chú",
+    "textAreaHint": "Điều bạn muốn ghi nhớ.",
+    "textAreaInvalid": "Ghi chú (quá dài)",
+    "textAreaError": "Tối đa 2.000 ký tự.",
+    "textAreaDisabled": "Ghi chú (không khả dụng)",
+    "copyLabel": "Sao chép tin nhắn",
+    "copied": "Đã sao chép",
+    "copyFailed": "Không sao chép được. Hãy chọn đoạn chữ rồi tự sao chép.",
+    "confirmOpen": "Rời biểu mẫu",
+    "confirmTitle": "Bỏ học viên này?",
+    "confirmBody": "Những thông tin bạn đã nhập sẽ mất.",
+    "confirmDiscard": "Bỏ",
+    "confirmKeep": "Tiếp tục nhập",
+    "dlEmpty": "Chưa có",
+    "dlName": "Họ tên",
+    "dlEmail": "Email",
+    "dlNote": "Ghi chú"
   }
 }

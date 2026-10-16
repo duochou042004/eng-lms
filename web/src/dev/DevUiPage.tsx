@@ -8,6 +8,11 @@ import {
   Button,
   ButtonLink,
   Checkbox,
+  ConfirmDialog,
+  CopyButton,
+  DataList,
+  DescriptionList,
+  Disclosure,
   EmptyState,
   ErrorSummary,
   IconButton,
@@ -17,10 +22,14 @@ import {
   PasswordField,
   Popover,
   ProgressLine,
+  SearchField,
   SegmentedControl,
   Sheet,
   Skeleton,
   Stack,
+  StatusBadge,
+  STUDENT_STATUS,
+  TextArea,
   TextField,
 } from '../ui'
 import styles from './DevUiPage.module.css'
@@ -155,6 +164,110 @@ function OverlaySamples() {
   )
 }
 
+/** The T-M2.5 components: StatusBadge, SearchField, DataList, Disclosure, TextArea, CopyButton, ConfirmDialog, DescriptionList. */
+function StudentsSamples() {
+  const { t } = useTranslation('dev')
+  const [query, setQuery] = useState('')
+  const [note, setNote] = useState('')
+  const [confirm, setConfirm] = useState(false)
+  const badge = (status: keyof typeof STUDENT_STATUS, label: string) => (
+    <StatusBadge status={STUDENT_STATUS[status]} label={label} />
+  )
+  const columns = [
+    { id: 'name', header: t('sample.colName') },
+    { id: 'username', header: t('sample.colUsername') },
+    { id: 'status', header: t('sample.colStatus') },
+    { id: 'email', header: t('sample.colEmail') },
+  ] as const
+  const rows = [
+    {
+      id: '1',
+      cells: {
+        name: 'Nguyễn Văn An',
+        username: 'nguyenvanan',
+        status: badge('ACTIVE', t('sample.statusActive')),
+        email: 'an@example.com',
+      },
+    },
+    {
+      id: '2',
+      cells: {
+        name: t('sample.rowLong'),
+        username: 'nguyenthiphuonglananhhoangbaongoc',
+        status: badge('PAUSED', t('sample.statusPaused')),
+        email: 'nguyen.thi.phuong.lan.anh.hoang.bao.ngoc@example.com',
+      },
+    },
+    {
+      id: '3',
+      cells: {
+        name: 'Trần Bình',
+        username: 'tranbinh',
+        status: badge('ARCHIVED', t('sample.statusArchived')),
+        email: null,
+      },
+    },
+  ]
+  return (
+    <Stack gap={5}>
+      <div className={styles.row}>
+        {badge('ACTIVE', t('sample.statusActive'))}
+        {badge('PAUSED', t('sample.statusPaused'))}
+        {badge('ARCHIVED', t('sample.statusArchived'))}
+      </div>
+      <SearchField
+        label={t('sample.searchLabel')}
+        hint={t('sample.searchHint')}
+        clearLabel={t('sample.searchClear')}
+        value={query}
+        onChange={setQuery}
+      />
+      <DataList label={t('sample.dataListLabel')} columns={columns} rows={rows} />
+      <Disclosure title={t('sample.disclosureTitle')}>
+        <p>{t('sample.disclosureBody')}</p>
+      </Disclosure>
+      <TextArea
+        label={t('sample.textAreaLabel')}
+        hint={t('sample.textAreaHint')}
+        maxLength={2000}
+        value={note}
+        onChange={setNote}
+      />
+      <TextArea label={t('sample.textAreaInvalid')} isInvalid errorMessage={t('sample.textAreaError')} />
+      <TextArea label={t('sample.textAreaDisabled')} isDisabled defaultValue="…" />
+      <div className={styles.row}>
+        <CopyButton
+          variant="primary"
+          text="Eng-LMS"
+          label={t('sample.copyLabel')}
+          copiedMessage={t('sample.copied')}
+          failedMessage={t('sample.copyFailed')}
+        />
+        <Button variant="secondary" onPress={() => setConfirm(true)}>
+          {t('sample.confirmOpen')}
+        </Button>
+      </div>
+      <ConfirmDialog
+        isOpen={confirm}
+        title={t('sample.confirmTitle')}
+        description={t('sample.confirmBody')}
+        confirmLabel={t('sample.confirmDiscard')}
+        cancelLabel={t('sample.confirmKeep')}
+        onConfirm={() => setConfirm(false)}
+        onCancel={() => setConfirm(false)}
+      />
+      <DescriptionList
+        emptyLabel={t('sample.dlEmpty')}
+        items={[
+          { id: 'name', term: t('sample.dlName'), description: 'Nguyễn Văn An' },
+          { id: 'email', term: t('sample.dlEmail'), description: null },
+          { id: 'note', term: t('sample.dlNote'), description: t('sample.disclosureBody') },
+        ]}
+      />
+    </Stack>
+  )
+}
+
 function Section({ title, children }: { title: string; children: ReactNode }) {
   return (
     <section className={styles.section}>
@@ -267,6 +380,9 @@ export function DevUiPage() {
             <Skeleton shape="circle" inlineSize="2.5rem" blockSize="2.5rem" />
           </output>
           <ProgressLineSample />
+        </Section>
+        <Section title={t('sections.students')}>
+          <StudentsSamples />
         </Section>
         <Section title={t('sections.empty')}>
           <EmptyState
