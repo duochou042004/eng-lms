@@ -102,12 +102,27 @@ test.describe('Add student (F2) and the credentials card', () => {
     await expect(card).toContainText('Mật khẩu này chỉ hiện một lần.')
     await expectAccessible(page)
     await shot(page, testInfo, 'credentials-card-vi')
+    const copyPassword = card.getByRole('button', { name: 'Sao chép mật khẩu' })
+    // Position within the card (the page may scroll to the clicked button).
+    const place = () =>
+      copyPassword.evaluate((el) => {
+        const own = el.getBoundingClientRect()
+        const box = el.closest('section')!.getBoundingClientRect()
+        return { x: own.left - box.left, y: own.top - box.top, width: own.width, height: own.height }
+      })
+    const before = await place()
     await steps.step('Copy message', async () => {
       await card.getByRole('button', { name: 'Sao chép tin nhắn' }).click()
-      await expect(card.getByText('Đã sao chép')).toBeVisible()
+      await expect(card.getByRole('status').filter({ hasText: 'Đã sao chép' })).toHaveCount(1)
     })
+    // "Copied" is announced without moving anything (AC12 (g)).
+    expect(await place()).toEqual(before)
     const message = await page.evaluate(() => navigator.clipboard.readText())
-    for (const value of [username, password, new URL('/login', page.url()).href, name]) expect(message).toContain(value)
+    for (const value of [username, password, new URL('/login', page.url()).href]) expect(message).toContain(value)
+    // A neutral greeting, no name; the expiry as "10:25, 23/10/2026" (AC12 (f)).
+    expect(message.split('\n')[0]).toBe('Xin chào,')
+    expect(message).not.toContain(name)
+    expect(message).toMatch(/hết hạn lúc \d\d:\d\d, \d\d\/\d\d\/\d{4}\./)
     expect(message).toContain('tự đặt mật khẩu mới ở lần đăng nhập đầu tiên')
     await steps.step('Open workspace', async () => {
       await card.getByRole('link', { name: 'Mở không gian học viên' }).click()
@@ -122,6 +137,7 @@ test.describe('Add student (F2) and the credentials card', () => {
       flow: 'F2 Add student (ux-flows, budget ≤ 6 steps, ≤ 90 s reported)',
       viewport: page.viewportSize(),
       steps: steps.count,
+      named: steps.steps,
       budget: 6,
       wallSeconds: Number(wallSeconds.toFixed(1)),
       note: 'Wall time includes Playwright waits for the suggestion, availability and focus assertions; not asserted (DEC-093).',
@@ -353,6 +369,7 @@ test.describe('Students list', () => {
     await apiStudent(page, {
       fullName: longName,
       username: `e2e-long-${t}`,
+      phone: '+84 90 123 4567',
       email: `nguyen.thi.phuong.lan.anh.hoang.bao.ngoc.${t}@example.com`,
     })
     await page.reload()
@@ -384,9 +401,24 @@ test.describe('Students list', () => {
     await expect(page.getByRole('link', { name: `${prefix} 01` })).toBeVisible()
     const pages = page.getByRole('navigation', { name: 'Phân trang' })
     await expect(pages).toContainText('Trang 1 / 2')
+    // Previous at the start, Next at the end on one row, the position between (AC12 (c)).
+    const pager = await pages.evaluate((nav) => {
+      const box = (el: Element) => el.getBoundingClientRect()
+      const [prev, number, next] = [...nav.children].map(box)
+      return { nav: box(nav), prev: prev!, number: number!, next: next! }
+    })
+    expect(Math.abs(pager.prev.left - pager.nav.left)).toBeLessThanOrEqual(1)
+    expect(Math.abs(pager.next.right - pager.nav.right)).toBeLessThanOrEqual(1)
+    expect(Math.abs(pager.prev.top - pager.next.top)).toBeLessThanOrEqual(1)
+    expect(pager.number.left).toBeGreaterThanOrEqual(pager.prev.right)
+    expect(pager.number.right).toBeLessThanOrEqual(pager.next.left)
+    await shot(page, testInfo, 'list-pager-vi')
     await pages.getByRole('button', { name: 'Trang sau' }).click()
     await expect(page.getByRole('link', { name: `${prefix} 26` })).toBeVisible()
     await expect(page).toHaveURL(/page=2/)
+    // Next is disabled on the last page: focus moved to Previous, not the body; the page is announced (AC12 (a), (b)).
+    await expect(pages.getByRole('button', { name: 'Trang trước' })).toBeFocused()
+    await expect(pages.getByRole('status')).toHaveText('Trang 2 / 2')
     await page.reload()
     await expect(page.getByRole('link', { name: `${prefix} 26` })).toBeVisible()
     await page.goBack()
@@ -431,9 +463,21 @@ test.describe('Students list', () => {
         'Email',
         'Điện thoại',
       ])
+      // Phone and status stay on one line (AC12 (d)).
+      const lines = await page.getByRole('cell', { name: '+84 90 123 4567' }).evaluate((cell) => {
+        const range = document.createRange()
+        range.selectNodeContents(cell)
+        return new Set([...range.getClientRects()].map((r) => Math.round(r.top))).size
+      })
+      expect(lines).toBe(1)
     } else {
       await expect(page.getByRole('table')).toHaveCount(0)
       await expect(page.getByRole('list', { name: 'Học viên' })).toBeVisible()
+      // The status badge sits in the title row; the meta line holds username, email and phone (AC12 (e)).
+      const item = page.getByRole('listitem').filter({ has: link })
+      await expect(item.locator(':scope > div').first()).toContainText('Đang học')
+      await expect(item.locator(':scope > div').last()).not.toContainText('Đang học')
+      await expect(item.locator(':scope > div').last()).toContainText('+84 90 123 4567')
     }
     await expectNoHorizontalScroll(page)
     const viewport = page.viewportSize()!.width
@@ -474,6 +518,7 @@ test.describe('Workspace page', () => {
       'data:text/html,x',
       'mailto:a@b?cc=c',
       '//evil.example',
+      'https://zalo.me@evil.example/',
     ]
     const created = await apiStudent(page, {
       fullName: `Giá Trị Lạ ${t}`,

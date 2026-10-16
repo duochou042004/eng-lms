@@ -12,6 +12,11 @@ export class StepCounter {
     return test.step(`step ${this.labels.length}: ${label}`, action)
   }
 
+  /** The named steps in order (the evidence step log, T-M2.5 AC12 (o)). */
+  get steps(): readonly string[] {
+    return [...this.labels]
+  }
+
   get count() {
     return this.labels.length
   }
