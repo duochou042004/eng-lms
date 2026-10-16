@@ -1,6 +1,6 @@
-# Handoff — 2026-10-15T02:00Z (T-M2.12 done; next: the T-M2.5 packet)
+# Handoff — 2026-10-16T01:10Z (T-M2.5 packet in review, PR #93; split T-M2.14, DEC-120)
 
-Phase/Milestone: P1 / M2 (in progress) · Current task: **T-M2.5 (draft: packet next)** · Branch: `develop` · Last merges on develop: `b5596d3` (PR #90, T-M2.12), `0642b70` (PR #91, QA report); this record is the `chore/T-M2.12-merge-record` PR (check `git log` that it landed) · Remote: https://github.com/duochou042004/eng-lms (mirror: gitlab.com/duochou042004/eng-lms)
+Phase/Milestone: P1 / M2 (in progress) · Current task: **T-M2.5 (packet in DOCS-REVIEW, PR #93)** · Branch: `docs/T-M2.5-students-list-add` · Last merges on develop: `b5596d3` (PR #90, T-M2.12), `0642b70` (PR #91, QA report); this record is the `chore/T-M2.12-merge-record` PR (check `git log` that it landed) · Remote: https://github.com/duochou042004/eng-lms (mirror: gitlab.com/duochou042004/eng-lms)
 
 ## Where we are
 - **T-M2.12 done** (`b5596d3`, DEC-116..119): 150 ms navigation `ProgressLine` + polite status; offline / couldn't-load chunk pages (own `h1`,

@@ -36,7 +36,7 @@
     "ownerRole": "FE",
     "branch": "docs/T-M2.5-students-list-add",
     "packet": "docs/tasks/T-M2.5-students-list-add.md",
-    "pr": null,
+    "pr": "93",
     "lastCommit": null,
     "startedAt": null,
     "entryGate": [
@@ -338,7 +338,7 @@
   "gates": {
     "G0": {
       "status": "pending",
-      "note": "T-M2.5 packet written (DEC-120, split: T-M2.14); DOCS-REVIEW pending"
+      "note": "T-M2.5 packet (DEC-120, split: T-M2.14, PR #93): DOCS-REVIEW round 1 CHANGES REQUESTED (D-1..D-15 fixed); round 2 pending"
     },
     "G1": {
       "status": "n/a",
