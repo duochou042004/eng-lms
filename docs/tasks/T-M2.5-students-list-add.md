@@ -187,7 +187,9 @@ with every new student. 5. **Hard-coded semantics?** None: no level, exam or cur
   through (the auth reaction marks its navigation, e.g. router state), while the user's own "Change password" link still asks; (m) SEC
   S4-4: the credentials card is dropped on `pagehide`, so a back/forward-cache restore never shows the password; (n) UX-5:
   `responsive-standards.md` §1 and §3.3 describe the 768 px viewport switch for `DataList` (DEC-120) and the container query as the target
-  for a narrower column; (o) UX ruling (a): `steps-f2.json` lists the named steps. Tests for each; existing assertions change only where
+  for a narrower column; (o) UX ruling (a): `steps-f2.json` lists the named steps. (p) QA-R2-1 (S3, G3 round 2, DEC-122): at 768 and 1280 the
+  table keeps usernames of up to 20 characters on one line (no mid-word break; the Username column has a minimum width or `nowrap`) and
+  its header on one line, with no horizontal scroll. Tests for each; existing assertions change only where
   these items change copy, layout or a step record.
 
 ## Test plan
