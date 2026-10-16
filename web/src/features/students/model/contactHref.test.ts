@@ -29,6 +29,17 @@ describe('contactHref', () => {
     ['email', '@b', null],
     ['email', 'a@', null],
     ['email', 'an', null],
+    // AC12 (k): no :, /, <, >, ", \ and a dotted domain.
+    ['email', 'a@b', null],
+    ['email', 'a@.b', null],
+    ['email', 'a@b.', null],
+    ['email', 'a@b..c', null],
+    ['email', 'javascript:a@b.c', null],
+    ['email', 'a/b@c.d', null],
+    ['email', '<a@b.c>', null],
+    ['email', '"a"@b.c', null],
+    ['email', 'a\\b@c.d', null],
+    ['email', 'an@mail.example.vn', 'mailto:an@mail.example.vn'],
     // Handle: https with a host only.
     ['handle', 'https://zalo.me/0901234567', 'https://zalo.me/0901234567'],
     ['handle', ' https://www.facebook.com/an.nguyen ', 'https://www.facebook.com/an.nguyen'],
@@ -44,6 +55,10 @@ describe('contactHref', () => {
     ['handle', 'an.nguyen', null],
     ['handle', 'https://', null],
     ['handle', 'file:///etc/passwd', null],
+    // AC12 (j): no user name or password in the URL.
+    ['handle', 'https://zalo.me@evil.example/', null],
+    ['handle', 'https://user:pw@evil.example/', null],
+    ['handle', 'https://:pw@evil.example/', null],
   ])('%s %j → %j', (kind, value, expected) => {
     expect(contactHref(kind, value)).toBe(expected)
   })
