@@ -373,14 +373,13 @@ test.describe('Students list', () => {
       phone: '+84 90 123 4567',
       email: `nguyen.thi.phuong.lan.anh.hoang.bao.ngoc.${t}@example.com`,
     })
-    // 20 characters: stays on one line at 768 and 1280 (AC12 (p)).
+    // A three-word Vietnamese name, a 20-character username and a 20-character email (AC12 (q)).
     const twenty = `e2e-twenty-ab-${t}`
-    await apiStudent(page, {
-      fullName: `Hai Mươi Ký Tự ${t}`,
-      username: twenty,
-      phone: '0901 234 567',
-      email: `hm.${t}@example.com`,
-    })
+    const threeWords = `Phạm Ngọc ${t}`
+    const email20 = `h.${t}@example.com`
+    expect(twenty).toHaveLength(20)
+    expect(email20).toHaveLength(20)
+    await apiStudent(page, { fullName: threeWords, username: twenty, phone: '0901 234 567', email: email20 })
     await page.reload()
     await expect(h1(page, 'Học viên')).toBeVisible()
     await expectAccessible(page)
@@ -465,30 +464,30 @@ test.describe('Students list', () => {
     await expect(link).toBeVisible()
     if (wide(page)) {
       await expect(page.getByRole('table', { name: 'Học viên' })).toBeVisible()
-      await expect(page.getByRole('columnheader')).toHaveText([
-        'Họ tên',
-        'Tên đăng nhập',
-        'Trạng thái',
-        'Email',
-        'Điện thoại',
-      ])
+      // No Username column (AC12 (q)): `@username` is the name cell's second line.
+      await expect(page.getByRole('columnheader')).toHaveText(['Họ tên', 'Trạng thái', 'Email', 'Điện thoại'])
       const lineCount = (target: Locator) =>
         target.evaluate((cell) => {
           const range = document.createRange()
           range.selectNodeContents(cell)
           return new Set([...range.getClientRects()].map((r) => Math.round(r.top))).size
         })
-      // Phone and status stay on one line (AC12 (d)); so do a 20-character username and the Username header (AC12 (p)).
+      // Phone and status stay on one line (AC12 (d)). A three-word name and a 20-character email take at most 2 lines,
+      // a 20-character username one (AC12 (q)); a 40-character username is fully there.
       expect(await lineCount(page.getByRole('cell', { name: '+84 90 123 4567' }))).toBe(1)
-      expect(await lineCount(page.getByRole('cell', { name: twenty, exact: true }))).toBe(1)
-      expect(await lineCount(page.getByRole('columnheader', { name: 'Tên đăng nhập' }))).toBe(1)
-      await expect(page.getByRole('cell', { name: `e2e-long-${t}-`.padEnd(40, 'x'), exact: true })).toBeVisible()
+      for (const name of [threeWords, diacritic.student.fullName])
+        expect(await lineCount(page.getByRole('link', { name, exact: true })), name).toBeLessThanOrEqual(2)
+      expect(await lineCount(page.getByRole('cell', { name: email20, exact: true }))).toBeLessThanOrEqual(2)
+      expect(await lineCount(page.getByText(`@${twenty}`, { exact: true }))).toBe(1)
+      await expect(page.getByText(`@${`e2e-long-${t}-`.padEnd(40, 'x')}`, { exact: true })).toBeVisible()
     } else {
       await expect(page.getByRole('table')).toHaveCount(0)
       await expect(page.getByRole('list', { name: 'Học viên' })).toBeVisible()
-      // The status badge sits in the title row; the meta line holds username, email and phone (AC12 (e)).
+      // The title row holds the name, `@username` and the badge; the meta line email and phone (AC12 (e), (q)).
       const item = page.getByRole('listitem').filter({ has: link })
       await expect(item.locator(':scope > div').first()).toContainText('Đang học')
+      await expect(item.locator(':scope > div').first()).toContainText(`@e2e-long-${t}-`)
+      await expect(item.locator(':scope > div').last()).not.toContainText('e2e-long-')
       await expect(item.locator(':scope > div').last()).not.toContainText('Đang học')
       await expect(item.locator(':scope > div').last()).toContainText('+84 90 123 4567')
     }
