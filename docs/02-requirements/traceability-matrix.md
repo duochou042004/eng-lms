@@ -10,7 +10,7 @@
 | 2 | Tutor builds everything; no hard-coded curriculum | Generic engines; forbidden-identifier test | FR-STU-04, FR-ACT-03 AC, coding-agent-rules §7 | all | M1+ | MVP |
 | 3 | Two roles | `Role {TUTOR, STUDENT}`; one-tutor constraint (live T-M2.1: `identity.Role`, L1 URL gate) | FR-AUTH-02 | identity | M2 | MVP |
 | 4.1 | No public registration | No route or endpoint (verified T-M2.1: `/api/v1/auth/register` → 404) | FR-AUTH-01 | identity | M2 | MVP |
-| 4.2 | Tutor creates student account | Create student + account + credentials card (live T-M2.3: `POST /tutor/students` with server-generated credentials once, username suggestion/availability; UI T-M2.5; guardians at create live T-M2.9: `guardians?` in `POST /tutor/students`, same transaction; first goal T-M7.1/T-M7.2, DEC-102) | FR-STU-01, FR-AUTH-06 | students, identity | M2 | MVP |
+| 4.2 | Tutor creates student account | Create student + account + credentials card (live T-M2.3: `POST /tutor/students` with server-generated credentials once, username suggestion/availability; UI T-M2.5 (DEC-120); guardians at create live T-M2.9: `guardians?` in `POST /tutor/students`, same transaction (UI T-M2.14); first goal T-M7.1/T-M7.2, DEC-102) | FR-STU-01, FR-AUTH-06 | students, identity | M2 | MVP |
 | 4.3 | Login, logout, change password, forgot (later) | Session auth; tutor reset (live T-M2.1: `/auth/session`, `/auth/login`, `/auth/logout`, `/auth/password`, must-change gate, lockout, throttle, operator reset CLI FR-AUTH-09, disable FR-AUTH-10; UI in T-M2.4; tutor's student reset live T-M2.3: `POST /tutor/students/{sid}/password-reset`, FR-AUTH-07) | FR-AUTH-03..08 | identity | M2 | MVP |
 | 5.1 | No enrolment | — | scope.md §4 | — | — | NEVER |
 | 5.2 | No payment | — | scope.md §4 | — | — | NEVER |

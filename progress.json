@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-10-15T02:00:00Z",
-  "updatedBy": "lead-coordinator (T-M2.12 merge record, session 2026-10-14/15, Opus 5.5)",
+  "updatedAt": "2026-10-16T00:50:57Z",
+  "updatedBy": "lead-coordinator (T-M2.5 packet, session 2026-10-16, Opus 5.5)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -31,11 +31,11 @@
   },
   "currentTask": {
     "id": "T-M2.5",
-    "title": "Students UI (list, add student flow F2, workspace shell, profile, guardians, learning profile, status, reset password)",
-    "status": "draft",
+    "title": "Students list, Add student (F2) and the workspace header (split, DEC-120)",
+    "status": "ready",
     "ownerRole": "FE",
-    "branch": null,
-    "packet": null,
+    "branch": "docs/T-M2.5-students-list-add",
+    "packet": "docs/tasks/T-M2.5-students-list-add.md",
     "pr": null,
     "lastCommit": null,
     "startedAt": null,
@@ -44,25 +44,26 @@
       "T-M2.4 merged — met (9fcc992)",
       "T-M2.11 merged — met (1af32de)",
       "T-M2.12 merged — met (b5596d3, DEC-119)",
-      "Packet G0 — pending",
+      "Packet G0 — in review (docs PR)",
       "PO start signal — pending"
     ],
     "nextSteps": [
-      "Write the T-M2.5 packet (task-packet skill; size check, likely split: list + add flow F2 vs profile/guardians/learning profile/status/reset); SEC triggered (student data, tutor-private learning profile); fresh docs-reviewer; merge-gate",
-      "Ask the PO for the start signal; implement through G3 (QA, UX, SEC)"
+      "Fresh docs-reviewer on the packet; fix; CI; DOCS-REVIEW + LC-APPROVED; merge-gate; gitlab-sync",
+      "At the start signal: set currentTask.branch to feature/T-M2.5-students-list-add and status in_progress",
+      "Ask the PO for the start signal (DEC); implement through G3 (QA, UX, SEC)"
     ],
     "trace": [
       "backlog M2",
-      "FR-STU-01..07",
-      "FR-AUTH-07",
+      "FR-STU-01, 02, 06, 07",
       "DEC-097",
       "DEC-100",
-      "DEC-119"
+      "DEC-102",
+      "DEC-120"
     ]
   },
   "nextTask": {
-    "id": "T-M2.13",
-    "title": "Auth and shell feedback follow-ups (UX-3 touch-reachable meta error, UX-4 cross-tab sign-out notice, UX-6 copy echo, O-1/O-2 logout feedback)",
+    "id": "T-M2.14",
+    "title": "Student profile editing (profile and contacts, username, guardians, learning profile, status, reset password; split from T-M2.5, DEC-120)",
     "status": "draft",
     "ownerRole": "FE",
     "branch": null,
@@ -71,14 +72,15 @@
     "lastCommit": null,
     "startedAt": null,
     "entryGate": [
-      "T-M2.12 merged — met (b5596d3)"
+      "T-M2.5 merged — pending"
     ],
     "nextSteps": [
-      "Packet when the PO orders it (before or after T-M2.5)"
+      "Packet after T-M2.5 merges; T-M2.13 (small FE follow-ups) when the PO orders it"
     ],
     "trace": [
-      "DEC-118",
-      "DEC-119"
+      "DEC-120",
+      "FR-STU-03, 04, 05",
+      "FR-AUTH-07"
     ]
   },
   "completed": [
@@ -336,7 +338,7 @@
   "gates": {
     "G0": {
       "status": "pending",
-      "note": "T-M2.5 packet not written (T-M2.12 passed: DOCS-REVIEW PASS round 2, PR #89)"
+      "note": "T-M2.5 packet written (DEC-120, split: T-M2.14); DOCS-REVIEW pending"
     },
     "G1": {
       "status": "n/a",
@@ -363,7 +365,6 @@
   "decisions": {
     "log": "docs/10-governance/decision-log.md",
     "recent": [
-      "DEC-106",
       "DEC-107",
       "DEC-108",
       "DEC-109",
@@ -376,7 +377,8 @@
       "DEC-116",
       "DEC-117",
       "DEC-118",
-      "DEC-119"
+      "DEC-119",
+      "DEC-120"
     ],
     "pendingPO": [
       "OQ-03",
