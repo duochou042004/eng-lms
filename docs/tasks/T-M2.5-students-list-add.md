@@ -35,8 +35,8 @@ password reset are the follow-up **T-M2.14** (DEC-120).
      stripped from `q` and it is trimmed before it is sent. The user never sees a 422.
   3. **List states** (interaction-states §1): initial loading → `DelayedSkeleton` of the rows (same heights); a refetch keeps the rows and shows the existing
      `ProgressLine` under the page header while it runs (after 150 ms); **first use** (no student in any status) → `EmptyState` "Add your first
-     student" explaining that the student gets their own sign-in, with one primary action. First use is detected only when the default view
-     (no `q`, archived off) is empty: then one count request with all three statuses and `size=1` decides; when it finds students (all
+     student" explaining that the student gets their own sign-in, with one primary action. With **Include archived** on and no `q`, an empty list is first use
+     directly (no count request). When the default view (no `q`, archived off) is empty, one count request with all three statuses and `size=1` decides; when it finds students (all
      archived), the list says "No active or paused students" with the action **Include archived** instead; **filtered empty** → "No students match “…”" with **Clear filters**; **error** → `InlineAlert` with Retry, rows kept if cached.
   4. **Add student** `/tutor/students/new` (FR-STU-01, ux-flows F2): React Hook Form + Zod (`model/`, aligned with validation-rules) with
      **Full name** (required) and **Username** (required): while the username is untouched, typing the name fills it from
@@ -51,9 +51,10 @@ password reset are the follow-up **T-M2.14** (DEC-120).
      on Username and focus there; 422 → mapped to fields by `field` (contact rows by index), unknown ones to the `ErrorSummary` (the form has
      > 4 fields: summary on top, focus moves to it); network/5xx → `InlineAlert` above the actions, input kept. **Cancel** returns to the list.
      **Unsaved changes guard** (interaction-states §2.6): leaving the dirty form in-app asks through a new `ui/` `ConfirmDialog` ("Discard this
-     student?" · **Discard** / **Keep editing**); `beforeunload` while dirty. Successful create turns the guard off. The guard blocks only
-     navigations to another path under `/tutor/`: a sign-out (own Log out, another tab's sign-out, a 401) and every guard redirect go to
-     `/login`, `/change-password` or `/forbidden` and are never blocked, so a dirty form never keeps a signed-out page open.
+     student?" · **Discard** / **Keep editing**); `beforeunload` while dirty. Successful create turns the guard off. The guard blocks every
+     navigation to another pathname (the shell links, the home link `/`, the account section's "Change password") except a target of `/login`
+     or `/forbidden`: a sign-out (own Log out, another tab's sign-out, a 401) and a role redirect are never blocked, so a dirty form never keeps
+     a signed-out page open.
   5. **Credentials card** (FR-STU-01, F2 step 6, security.md T12): after a 201 the page replaces the form with the card (the card, with
      its `h2` "Student created" receiving focus, is the create success feedback instead of the toast of interaction-states §2.5, DEC-120 (7)): student name,
      username, temporary password (monospace, selectable), the expiry date (`expiresAt`, in the tutor's locale), the login URL
@@ -123,8 +124,8 @@ with every new student. 5. **Hard-coded semantics?** None: no level, exam or cur
   the state is gone.
 - **Workspace not-found**: the page renders its own not-found view (scope 6) for a 404 `ApiError` (or a non-UUID `:sid`), not a redirect,
   so the address stays and route focus lands on its `h1`.
-- **Unsaved changes guard**: `useBlocker(({ nextLocation }) => dirty && nextLocation.pathname.startsWith('/tutor/'))` (scope 4), so sign-out
-  and guard redirects pass.
+- **Unsaved changes guard**: `useBlocker(({ currentLocation, nextLocation }) => dirty && nextLocation.pathname !== currentLocation.pathname &&
+  !['/login', '/forbidden'].includes(nextLocation.pathname))` (scope 4), so sign-out and role redirects pass.
 - **Contact links**: `contactHref` returns `string | null`; components render `<a>` only for a non-null result. Unit table tests cover each
   scheme and the refused forms listed in scope 7.
 
@@ -150,8 +151,8 @@ with every new student. 5. **Hard-coded semantics?** None: no level, exam or cur
 - AC6 (FR-STU-01 errors, interaction-states §2): a 409 `USERNAME_TAKEN` (e.g. another tab took the name) shows the inline error on
   Username and focuses it; 422 field errors map to their fields (`contactHandles[1].value` → that row) and unknown ones to the
   `ErrorSummary` with focus on it; a 500 shows the `InlineAlert` and keeps every input; Create is disabled while pending and a double click
-  sends one request; leaving a dirty form via the nav asks Discard / Keep editing, and a clean form or a created student leaves without asking; a sign-out (own Log out or another tab's) while the form is dirty
-  lands on `/login` without a dialog.
+  sends one request; leaving a dirty form via the nav asks Discard / Keep editing, and a clean form or a created student leaves without asking; the shell's home link and "Change password" also ask; a sign-out (own Log out or another
+  tab's) while the form is dirty lands on `/login` without a dialog.
 - AC7 (FR-STU-01, security.md T12): after Create, focus moves to the card's "Student created" heading; the card shows username, temporary password, expiry date, login URL and the "shown only now"
   notice; **Copy message** puts the localised message (vi and en) with those values on the clipboard and announces "Copied"; a refused
   clipboard shows the manual-copy text; **Open workspace** goes to the new student's page; after Open workspace, browser Back to
@@ -193,7 +194,7 @@ with every new student. 5. **Hard-coded semantics?** None: no level, exam or cur
 ## Docs to update
 - `design-system.md` §3 (implemented notes for the new components) and §4 (student statuses), `information-architecture.md` §1 (Students item
   implemented) and §2 (M2: Profile view at the index, no tab bar until a second tab; then Profile at `/profile` and the Overview at the index,
-  whose first content arrives with M3, DEC-120 (3)), `interaction-states.md` §2.5 (the credentials card is the create success feedback,
+  whose first content arrives with M3, DEC-120 (3), (8)), `interaction-states.md` §2.5 (the credentials card is the create success feedback,
   DEC-120 (7)), `frontend-architecture.md` §1 (the students feature),
   `ux-flows.md` F2 (implemented; no guardian section until T-M2.14), `security.md` (T12: the card keeps the password in component state only;
   contact links through `contactHref`, DEC-100), backlog (T-M2.5 done note), `progress.json`.

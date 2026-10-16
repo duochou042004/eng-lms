@@ -338,7 +338,7 @@
   "gates": {
     "G0": {
       "status": "pending",
-      "note": "T-M2.5 packet (DEC-120, split: T-M2.14, PR #93): DOCS-REVIEW round 1 CHANGES REQUESTED (D-1..D-15 fixed); round 2 pending"
+      "note": "T-M2.5 packet (DEC-120, split: T-M2.14, PR #93): DOCS-REVIEW round 1 CHANGES REQUESTED (D-1..D-15 fixed), round 2 CHANGES REQUESTED (N-1..N-3 fixed); round 3 pending"
     },
     "G1": {
       "status": "n/a",

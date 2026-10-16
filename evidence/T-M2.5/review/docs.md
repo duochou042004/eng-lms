@@ -23,3 +23,13 @@ check-docs PASS. Live API, `ui/` reuse, E2E helpers and the DEC-100 S4-8 allow-l
 | D-13 | S4 | 11 ACs at the 2-day limit | Accepted with the split line; cut order named (Risks) |
 | D-14 | S4 | Empty-value rendering undefined | "Not added", editing with T-M2.14 (scope 6, AC8) |
 | D-15 | S4 | `ready` before PASS; uncommitted `pr`; HANDOFF stale | `pr` committed; HANDOFF updated; `ready` kept per the T-M2.12 precedent (the packet merges only after PASS) |
+
+## Round 2 (same reviewer, delta, `e9f426d`): DOCS-REVIEW T-M2.5: CHANGES REQUESTED
+
+D-1..D-7, D-9..D-14 correct; D-15 accepted. check-docs PASS.
+
+| ID | Sev | Issue | Fix (LC) |
+|---|---|---|---|
+| N-1 | S3 | The D-8 `useBlocker` rule (`/tutor/` only) lets the home link `/` and "Change password" drop a dirty form | Block every pathname change except `/login` and `/forbidden` (scope 4, design notes, AC6) |
+| N-2 | S4 | Include archived + no `q` + empty would fall to filtered-empty | That case is first use directly, no count request (scope 3) |
+| N-3 | S4 | IA §2 docs item cites only DEC-120 (3) | Cites (3), (8) |
