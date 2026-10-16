@@ -34,7 +34,7 @@ password reset are the follow-up **T-M2.14** (DEC-120).
      `items` with `totalItems > 0`, e.g. a stale link) replaces the URL with the last page; control characters (U+0000–U+001F, U+007F) are
      stripped from `q` and it is trimmed before it is sent. The user never sees a 422.
   3. **List states** (interaction-states §1): initial loading → `DelayedSkeleton` of the rows (same heights); a refetch keeps the rows and shows the existing
-     `ProgressLine` under the page header while it runs (after 150 ms); **first use** (no student in any status) → `EmptyState` "Add your first
+     `ProgressLine` at the top edge of the viewport (design-system §3; G3 QA-1) while it runs (after 150 ms); **first use** (no student in any status) → `EmptyState` "Add your first
      student" explaining that the student gets their own sign-in, with one primary action. With **Include archived** on and no `q`, an empty list is first use
      directly (no count request). When the default view (no `q`, archived off) is empty, one count request with all three statuses and `size=1` decides; when it finds students (all
      archived), the list says "No active or paused students" with the action **Include archived** instead; **filtered empty** → "No students match “…”" with **Clear filters**; **error** → `InlineAlert` with Retry, rows kept if cached.
@@ -171,6 +171,24 @@ with every new student. 5. **Hard-coded semantics?** None: no level, exam or cur
   new `ui/` component has a `/dev/ui` entry, a unit test and an axe check; status is never colour-only.
 - AC11: `./scripts/gate.sh` green twice in a row on the same dev database; all existing unit and E2E assertions kept; the API types are
   regenerated only if `api/openapi.json` changed (it must not).
+
+- AC12 (G3 round 1, DEC-122; S2/S3 and cheap S4 fixes made in this task, DEC-088): (a) UX-1 (S2): when a pager button becomes disabled
+  after a page change, focus moves to the other pager button (or the labelled list region), never to `body`; unit test at both ends;
+  (b) UX-2: a page change scrolls the list top into view and announces "Page n of m" / "Trang n / m" politely; (c) UX-3, QA-4: at 360 px the
+  pager keeps Previous at the start and Next at the end in vi and en ("Page n of m" on its own row if needed); (d) UX-4: `DataList` columns
+  can be `nowrap`, used for phone and status (no phone wrap at 768 and 1280); (e) UX-6: in the narrow list the `StatusBadge` sits in the
+  title row and the meta line holds username, email and phone; (f) UX-7: the vi message uses a neutral greeting (no full name, no "em"
+  form; en adjusted to match) and the expiry reads "10:25, 23/10/2026" style (design-system §7) in both languages; (g) UX-8: "Copied"
+  causes no layout shift (label/icon swap inside the button, announcement visually hidden); (h) UX-9: the header quick links carry
+  `aria-hidden` Phone/Mail/Link icons and `DescriptionList` values align with their terms at 768; (i) UX-10: handle rows stack the label
+  above the value consistently at 360; (j) QA-2, SEC S4-1: `contactHref` refuses an https URL with a username or password
+  (`https://zalo.me@evil.example/`, `https://user:pw@evil.example/`); (k) QA-3, SEC S4-2: the email check also refuses `:`, `/`, `<`, `>`,
+  `"`, `\` and requires a dot in the domain; (l) SEC S4-3: the unsaved changes guard also lets a forced redirect to `/change-password`
+  through (the auth reaction marks its navigation, e.g. router state), while the user's own "Change password" link still asks; (m) SEC
+  S4-4: the credentials card is dropped on `pagehide`, so a back/forward-cache restore never shows the password; (n) UX-5:
+  `responsive-standards.md` §1 and §3.3 describe the 768 px viewport switch for `DataList` (DEC-120) and the container query as the target
+  for a narrower column; (o) UX ruling (a): `steps-f2.json` lists the named steps. Tests for each; existing assertions change only where
+  these items change copy, layout or a step record.
 
 ## Test plan
 - Implementation: unit (`contactHref` table; list param parsing and fallbacks; username suggestion/availability race; the copy-message

@@ -32,7 +32,7 @@
   "currentTask": {
     "id": "T-M2.5",
     "title": "Students list, Add student (F2) and the workspace header (split, DEC-120)",
-    "status": "in_review",
+    "status": "in_progress",
     "ownerRole": "FE",
     "branch": "feature/T-M2.5-students-list-add",
     "packet": "docs/tasks/T-M2.5-students-list-add.md",
@@ -59,7 +59,8 @@
       "DEC-100",
       "DEC-102",
       "DEC-120",
-      "DEC-121"
+      "DEC-121",
+      "DEC-122"
     ]
   },
   "nextTask": {
@@ -350,8 +351,8 @@
       "note": "T-M2.5 PR #94: CI running"
     },
     "G3": {
-      "status": "n/a",
-      "note": "T-M2.5 not started (T-M2.12 passed: QA PASS, UX APPROVED, SEC APPROVED at 5ed3f4d)"
+      "status": "pending",
+      "note": "T-M2.5 round 1 at 24dda26: QA PASS WITH MINOR, UX CHANGES REQUESTED (UX-1 S2), SEC APPROVED; fixes via AC12 (DEC-122)"
     },
     "G4": {
       "status": "n/a",
@@ -366,7 +367,6 @@
   "decisions": {
     "log": "docs/10-governance/decision-log.md",
     "recent": [
-      "DEC-108",
       "DEC-109",
       "DEC-110",
       "DEC-111",
@@ -379,7 +379,8 @@
       "DEC-118",
       "DEC-119",
       "DEC-120",
-      "DEC-121"
+      "DEC-121",
+      "DEC-122"
     ],
     "pendingPO": [
       "OQ-03",
