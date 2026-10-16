@@ -33,3 +33,7 @@ D-1..D-7, D-9..D-14 correct; D-15 accepted. check-docs PASS.
 | N-1 | S3 | The D-8 `useBlocker` rule (`/tutor/` only) lets the home link `/` and "Change password" drop a dirty form | Block every pathname change except `/login` and `/forbidden` (scope 4, design notes, AC6) |
 | N-2 | S4 | Include archived + no `q` + empty would fall to filtered-empty | That case is first use directly, no count request (scope 3) |
 | N-3 | S4 | IA §2 docs item cites only DEC-120 (3) | Cites (3), (8) |
+
+## Round 3 (same reviewer, delta, `c906271`): DOCS-REVIEW T-M2.5: PASS
+
+N-1..N-3 fixed with no new inconsistency (the guard asks for the home link and "Change password"; sign-out and role redirects pass). check-docs PASS. No findings.
