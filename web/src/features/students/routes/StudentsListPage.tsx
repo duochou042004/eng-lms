@@ -29,7 +29,7 @@ import { cleanQuery, parseListView, toSearchParams, type ListSort, type ListView
 
 const SEARCH_DEBOUNCE_MS = 300
 const SEARCH_ID = 'students-search'
-type Column = 'name' | 'username' | 'status' | 'email' | 'phone'
+type Column = 'name' | 'status' | 'email' | 'phone'
 
 /**
  * `/tutor/students` (FR-STU-02 as the API serves it, DEC-097 (5); T-M2.5 scopes 2–3): the searchable, filterable,
@@ -223,7 +223,6 @@ function ListBody({
   }
   const columns: Array<DataListColumn<Column>> = [
     { id: 'name', header: t('list.columns.name') },
-    { id: 'username', header: t('list.columns.username'), minInlineSize: 'var(--size-column-id)' },
     { id: 'status', header: t('list.columns.status'), nowrap: true, inTitle: true },
     { id: 'email', header: t('list.columns.email') },
     { id: 'phone', header: t('list.columns.phone'), nowrap: true },
@@ -231,12 +230,15 @@ function ListBody({
   const rows: DataListRow<Column>[] = data.items.map((student: StudentRow) => ({
     id: student.id,
     cells: {
+      // The username as a muted second line of the name (AC12 (q)): no column of its own, so names and emails keep room.
       name: (
-        <Link to={`/tutor/students/${student.id}`} state={{ listSearch }} className={styles.nameLink}>
-          {student.fullName}
-        </Link>
+        <span className={styles.nameCell}>
+          <Link to={`/tutor/students/${student.id}`} state={{ listSearch }} className={styles.nameLink}>
+            {student.fullName}
+          </Link>{' '}
+          <span className={styles.username}>@{student.username}</span>
+        </span>
       ),
-      username: student.username,
       status: <StudentStatusBadge status={student.status} />,
       email: student.email,
       phone: student.phone,

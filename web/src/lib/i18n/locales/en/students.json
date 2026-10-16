@@ -14,13 +14,12 @@
     "sortNewest": "Newest",
     "columns": {
       "name": "Name",
-      "username": "Username",
       "status": "Status",
       "email": "Email",
       "phone": "Phone"
     },
     "pagination": "Pages",
-    "page": "Page {{page}} of {{pages}}",
+    "page": "Page {{page}} of {{pages}}",
     "previous": "Previous",
     "next": "Next",
     "firstUseTitle": "Add your first student",

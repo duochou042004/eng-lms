@@ -91,7 +91,6 @@
   --size-reading-max: 40rem; /* one-column forms and panels with long content (Add student, credentials card) */
   --size-field-min: 18rem; /* the smallest comfortable search field before the list controls wrap */
   --size-term: 8rem; /* DescriptionList term column (two-column layout) */
-  --size-column-id: 15rem; /* a DataList column of short ids: a 20-character username on one line, padding included (AC12 (p)) */
 
   /* Motion */
   --motion-duration: 160ms;

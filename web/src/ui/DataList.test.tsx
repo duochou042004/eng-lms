@@ -69,22 +69,4 @@ describe('DataList', () => {
     expect(item.lastElementChild).toHaveTextContent('Điện thoại: 0901 234 567')
     expect(item.lastElementChild).not.toHaveTextContent('Trạng thái')
   })
-
-  it('gives a table column its minimum width (AC12 (p))', () => {
-    setViewportWidth(1024)
-    render(
-      <DataList
-        label="Học viên"
-        columns={[
-          { id: 'name', header: 'Họ tên' },
-          { id: 'username', header: 'Tên đăng nhập', minInlineSize: 'var(--size-column-id)' },
-        ]}
-        rows={[{ id: '1', cells: { name: 'An', username: 'an' } }]}
-      />,
-    )
-    expect(screen.getByRole('columnheader', { name: 'Tên đăng nhập' })).toHaveStyle({
-      minInlineSize: 'var(--size-column-id)',
-    })
-    expect(screen.getByRole('columnheader', { name: 'Họ tên' })).not.toHaveAttribute('style')
-  })
 })

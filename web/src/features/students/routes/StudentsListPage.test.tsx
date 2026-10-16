@@ -45,13 +45,14 @@ describe('/tutor/students', { timeout: 20_000 }, () => {
       within(table)
         .getAllByRole('columnheader')
         .map((h) => h.textContent),
-    ).toEqual(['Họ tên', 'Tên đăng nhập', 'Trạng thái', 'Email', 'Điện thoại'])
+    ).toEqual(['Họ tên', 'Trạng thái', 'Email', 'Điện thoại'])
     const first = within(table).getAllByRole('row')[1]!
     expect(within(first).getByRole('link', { name: 'Học viên 01' })).toHaveAttribute(
       'href',
       `/tutor/students/${row(1).id}`,
     )
-    expect(first).toHaveTextContent('hocvien1')
+    // No Username column (AC12 (q)): `@username` is the name cell's second line.
+    expect(within(first).getByRole('rowheader')).toHaveTextContent('Học viên 01 @hocvien1')
     expect(first).toHaveTextContent('Đang học')
     expect(first).toHaveTextContent('0901 000 001')
     expect(within(table).getAllByRole('row')[2]).toHaveTextContent('Tạm nghỉ')
@@ -66,7 +67,11 @@ describe('/tutor/students', { timeout: 20_000 }, () => {
     const { container } = renderRoute('/tutor/students')
     const list = await screen.findByRole('list', { name: 'Học viên' })
     expect(screen.queryByRole('table')).not.toBeInTheDocument()
-    expect(within(list).getByRole('listitem')).toHaveTextContent('Học viên 01Đang họcTên đăng nhập: hocvien1')
+    const item = within(list).getByRole('listitem')
+    // The title row carries the name, `@username` and the badge; the meta line has no username (AC12 (e), (q)).
+    expect(item.firstElementChild).toHaveTextContent('Học viên 01 @hocvien1Đang học')
+    expect(item.lastElementChild).toHaveTextContent('Email: hv1@example.comĐiện thoại: 0901 000 001')
+    expect(item.lastElementChild).not.toHaveTextContent('hocvien1')
     await expectNoAxeViolations(container)
   })
 
@@ -112,6 +117,8 @@ describe('/tutor/students', { timeout: 20_000 }, () => {
     await screen.findByRole('link', { name: 'Học viên 01' })
     const pages = screen.getByRole('navigation', { name: 'Phân trang' })
     expect(pages).toHaveTextContent('Trang 1 / 2')
+    // The number group never breaks (AC12 (r)): non-breaking spaces around "/".
+    expect(within(pages).getByText(/^Trang 1/).textContent).toBe('Trang 1\u00a0/\u00a02')
     expect(within(pages).getByRole('button', { name: 'Trang trước' })).toBeDisabled()
     await userEvent.click(within(pages).getByRole('button', { name: 'Trang sau' }))
     await screen.findByRole('link', { name: 'Học viên 26' })

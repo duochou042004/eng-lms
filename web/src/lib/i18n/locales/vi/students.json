@@ -14,13 +14,12 @@
     "sortNewest": "Mới nhất",
     "columns": {
       "name": "Họ tên",
-      "username": "Tên đăng nhập",
       "status": "Trạng thái",
       "email": "Email",
       "phone": "Điện thoại"
     },
     "pagination": "Phân trang",
-    "page": "Trang {{page}} / {{pages}}",
+    "page": "Trang {{page}} / {{pages}}",
     "previous": "Trang trước",
     "next": "Trang sau",
     "firstUseTitle": "Thêm học viên đầu tiên",
