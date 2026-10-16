@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-10-16T00:50:57Z",
-  "updatedBy": "lead-coordinator (T-M2.5 packet, session 2026-10-16, Opus 5.5)",
+  "updatedAt": "2026-10-16T01:09:05Z",
+  "updatedBy": "lead-coordinator (T-M2.5 start, session 2026-10-16, Opus 5.5)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -32,25 +32,25 @@
   "currentTask": {
     "id": "T-M2.5",
     "title": "Students list, Add student (F2) and the workspace header (split, DEC-120)",
-    "status": "ready",
+    "status": "in_progress",
     "ownerRole": "FE",
-    "branch": "docs/T-M2.5-students-list-add",
+    "branch": "feature/T-M2.5-students-list-add",
     "packet": "docs/tasks/T-M2.5-students-list-add.md",
-    "pr": "93",
+    "pr": null,
     "lastCommit": null,
-    "startedAt": null,
+    "startedAt": "2026-10-16T01:09:05Z",
     "entryGate": [
       "T-M2.3, T-M2.9 merged — met",
       "T-M2.4 merged — met (9fcc992)",
       "T-M2.11 merged — met (1af32de)",
       "T-M2.12 merged — met (b5596d3, DEC-119)",
-      "Packet G0 — in review (docs PR)",
-      "PO start signal — pending"
+      "Packet G0 — met (PR #93, 35a1d86)",
+      "PO start signal — met (DEC-121)"
     ],
     "nextSteps": [
-      "Fresh docs-reviewer on the packet; fix; CI; DOCS-REVIEW + LC-APPROVED; merge-gate; gitlab-sync",
-      "At the start signal: set currentTask.branch to feature/T-M2.5-students-list-add and status in_progress",
-      "Ask the PO for the start signal (DEC); implement through G3 (QA, UX, SEC)"
+      "frontend-implementer on feature/T-M2.5-students-list-add; gate green twice",
+      "Open PR; CI; G3 one reviewer at a time: QA, UX, SEC; fix in-task",
+      "Verdicts on the final head; merge-gate; gitlab-sync; QA report via qa/T-M2.5; merge record"
     ],
     "trace": [
       "backlog M2",
@@ -58,7 +58,8 @@
       "DEC-097",
       "DEC-100",
       "DEC-102",
-      "DEC-120"
+      "DEC-120",
+      "DEC-121"
     ]
   },
   "nextTask": {
@@ -337,8 +338,8 @@
   },
   "gates": {
     "G0": {
-      "status": "pending",
-      "note": "T-M2.5 packet (DEC-120, split: T-M2.14, PR #93): DOCS-REVIEW round 1 CHANGES REQUESTED (D-1..D-15 fixed), round 2 CHANGES REQUESTED (N-1..N-3 fixed), round 3 PASS"
+      "status": "pass",
+      "note": "T-M2.5 packet (DEC-120, PR #93, 35a1d86): DOCS-REVIEW PASS round 3; PO start signal DEC-121"
     },
     "G1": {
       "status": "n/a",
@@ -365,7 +366,6 @@
   "decisions": {
     "log": "docs/10-governance/decision-log.md",
     "recent": [
-      "DEC-107",
       "DEC-108",
       "DEC-109",
       "DEC-110",
@@ -378,7 +378,8 @@
       "DEC-117",
       "DEC-118",
       "DEC-119",
-      "DEC-120"
+      "DEC-120",
+      "DEC-121"
     ],
     "pendingPO": [
       "OQ-03",
