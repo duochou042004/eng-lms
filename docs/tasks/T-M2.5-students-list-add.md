@@ -193,7 +193,11 @@ with every new student. 5. **Hard-coded semantics?** None: no level, exam or cur
   table has no Username column; the Name cell shows `@username` as a muted second line (the narrow list's meta line drops the username,
   which the title row now carries), and the `--size-column-id` minimum is removed, so at 768 a three-word Vietnamese name and a
   20-character email each take at most 2 lines and a 20-character username stays on one line (E2E line counts at 768 and 1280); (r) UX-12:
-  the pager position ("Trang 1 / 133", "Page 1 of 133") never breaks inside the number group (non-breaking spaces). Tests for each; existing assertions change only where
+  the pager position ("Trang 1 / 133", "Page 1 of 133") never breaks inside the number group (non-breaking spaces). (s) QA-R3-1 (S3) and UX-13 (S4), round 3: table cells (the
+  `@username` line, email) wrap with `overflow-wrap: break-word` rather than `anywhere`, so a column never shrinks below its longest
+  unbreakable value when there is room: at 768 vi a 20-character username stays on one line and a short email does not break before
+  its last letter even with a very long email on the same page; a value longer than its cell still wraps, fully visible, no horizontal
+  scroll (E2E at 768 with the long-email row). Tests for each; existing assertions change only where
   these items change copy, layout or a step record.
 
 ## Test plan
