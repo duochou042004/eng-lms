@@ -223,7 +223,7 @@ function ListBody({
   }
   const columns: Array<DataListColumn<Column>> = [
     { id: 'name', header: t('list.columns.name') },
-    { id: 'username', header: t('list.columns.username') },
+    { id: 'username', header: t('list.columns.username'), minInlineSize: 'var(--size-column-id)' },
     { id: 'status', header: t('list.columns.status'), nowrap: true, inTitle: true },
     { id: 'email', header: t('list.columns.email') },
     { id: 'phone', header: t('list.columns.phone'), nowrap: true },

@@ -9,6 +9,11 @@ export interface DataListColumn<K extends string> {
   header: string
   /** Keep the value on one line in the table (short values such as a phone number or a status badge). */
   nowrap?: boolean
+  /**
+   * The table column's smallest width (a size token, e.g. `var(--size-column-id)`), so short unbreakable values such as
+   * usernames stay on one line beside `nowrap` columns; longer values still wrap (T-M2.5 AC12 (p)).
+   */
+  minInlineSize?: string
   /** In the narrow list, show the value beside the title instead of on the meta line (e.g. a status badge). */
   inTitle?: boolean
 }
@@ -45,7 +50,12 @@ export function DataList<K extends string>({ label, columns, rows }: DataListPro
         <thead>
           <tr>
             {columns.map((column) => (
-              <th key={column.id} scope="col" className={styles.header}>
+              <th
+                key={column.id}
+                scope="col"
+                className={styles.header}
+                style={column.minInlineSize ? { minInlineSize: column.minInlineSize } : undefined}
+              >
                 {column.header}
               </th>
             ))}
