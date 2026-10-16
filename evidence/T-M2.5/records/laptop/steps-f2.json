@@ -1,0 +1,11 @@
+{
+  "flow": "F2 Add student (ux-flows, budget ≤ 6 steps, ≤ 90 s reported)",
+  "viewport": {
+    "width": 1280,
+    "height": 800
+  },
+  "steps": 6,
+  "budget": 6,
+  "wallSeconds": 3.1,
+  "note": "Wall time includes Playwright waits for the suggestion, availability and focus assertions; not asserted (DEC-093)."
+}

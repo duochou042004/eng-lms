@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-10-16T01:09:05Z",
-  "updatedBy": "lead-coordinator (T-M2.5 start, session 2026-10-16, Opus 5.5)",
+  "updatedAt": "2026-10-16T02:40:00Z",
+  "updatedBy": "frontend-implementer (T-M2.5 implementation, gates PASS ×2 on fa7534f)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -37,7 +37,7 @@
     "branch": "feature/T-M2.5-students-list-add",
     "packet": "docs/tasks/T-M2.5-students-list-add.md",
     "pr": null,
-    "lastCommit": null,
+    "lastCommit": "fa7534f",
     "startedAt": "2026-10-16T01:09:05Z",
     "entryGate": [
       "T-M2.3, T-M2.9 merged — met",
