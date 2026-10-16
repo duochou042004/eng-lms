@@ -6,6 +6,7 @@ import { expectNoAxeViolations } from '../../test/axe'
 import { renderRoute } from '../../test/render'
 import { problem, server, sessionAs, sessionBody, setXsrfCookie } from '../../test/server'
 import { openAccountMenu } from '../../test/shell'
+import { listOf, row } from '../../test/students'
 
 const LABEL = {
   current: 'Mật khẩu hiện tại (bắt buộc)',
@@ -124,10 +125,10 @@ describe('/change-password, voluntary mode (FR-AUTH-05, AC5)', () => {
   })
 
   it('Cancel goes back', async () => {
-    server.use(sessionAs('TUTOR'))
+    server.use(sessionAs('TUTOR'), listOf([row(1)]))
     const { router } = renderRoute('/tutor/students')
-    // T-M2.11: no Students page yet, so the 404 inside the tutor shell; the link is in the account menu.
-    await screen.findByRole('heading', { level: 1, name: 'Không tìm thấy trang' })
+    // T-M2.5: the Students list (T-M2.11 used the shell's 404 here); the link is in the account menu.
+    await screen.findByRole('heading', { level: 1, name: 'Học viên' })
     await openAccountMenu()
     await userEvent.click(screen.getByRole('link', { name: 'Đổi mật khẩu' }))
     await userEvent.click(await screen.findByRole('button', { name: 'Huỷ' }))

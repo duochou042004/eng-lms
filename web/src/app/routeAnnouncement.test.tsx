@@ -72,6 +72,19 @@ describe('route focus and document titles', () => {
     expect(document.activeElement).toBe(document.body)
   })
 
+  it('does not move focus when only the search params change (an in-page view change, T-M2.5)', async () => {
+    server.use(sessionAs('TUTOR'))
+    const { router } = renderRoute('/tutor')
+    await h1('Hôm nay')
+    await act(() => router.navigate('/tutor/today?view=week'))
+    expect(document.activeElement).toBe(document.body)
+    await act(() => router.navigate(-1))
+    expect(document.activeElement).toBe(document.body)
+    // A new pathname still moves it.
+    await act(() => router.navigate('/khong-co?view=week'))
+    await waitFor(() => expect(screen.getByRole('heading', { level: 1, name: 'Không tìm thấy trang' })).toHaveFocus())
+  })
+
   it('updates the title on a language change without a navigation, and titles English pages', async () => {
     server.use(sessionAs('TUTOR'))
     renderRoute('/tutor')

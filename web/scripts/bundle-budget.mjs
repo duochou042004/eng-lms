@@ -14,8 +14,13 @@ const BUDGETS = [
 ]
 const FORBIDDEN_IN_PRODUCTION = ['src/dev/DevUiPage.tsx']
 // T-M2.11 AC10: the student's first visit never loads the tutor shell (its navigation and pages), statically or as a
-// shared chunk.
-const FORBIDDEN_IN_CLOSURE = [{ budget: 'student', key: 'src/app/shells/TutorShell.tsx' }]
+// shared chunk. T-M2.5 AC1: no Students feature module (a key under the prefix) in either first visit: its pages are
+// lazy chunks of their own, so their form libraries stay out of the tutor's first visit and never reach a student.
+const FORBIDDEN_IN_CLOSURE = [
+  { budget: 'student', key: 'src/app/shells/TutorShell.tsx' },
+  { budget: 'student', prefix: 'src/features/students/' },
+  { budget: 'tutor', prefix: 'src/features/students/' },
+]
 
 function closure(key, seen = new Set()) {
   if (seen.has(key)) return seen
@@ -40,8 +45,11 @@ const entry = Object.keys(manifest).find((k) => manifest[k].isEntry)
 for (const { name, route, limitKb } of BUDGETS) {
   const keys = new Set([...closure(entry), ...closure(route)])
   for (const forbidden of FORBIDDEN_IN_CLOSURE.filter((f) => f.budget === name)) {
-    if (keys.has(forbidden.key)) {
-      console.log(`FAIL  ${name}: ${forbidden.key} is in its first-visit chunks`)
+    const hits = forbidden.key
+      ? [...keys].filter((k) => k === forbidden.key)
+      : [...keys].filter((k) => k.startsWith(forbidden.prefix))
+    for (const hit of hits) {
+      console.log(`FAIL  ${name}: ${hit} is in its first-visit chunks`)
       failed = true
     }
   }

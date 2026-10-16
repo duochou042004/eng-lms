@@ -1,11 +1,15 @@
 import { describe, expect, it } from 'vitest'
 import { devResources } from '../../dev/i18n'
+import { studentsResources } from '../../features/students/i18n'
 import { LOCALES, resources } from '.'
 
-/** Every catalogue, including the development-only `dev` namespace (registered lazily, not shipped in production). */
+/**
+ * Every catalogue, including the lazily registered ones: `students` (with the Students pages, T-M2.5) and the
+ * development-only `dev` namespace (not shipped in production).
+ */
 const catalogues = {
-  vi: { ...resources.vi, ...devResources.vi },
-  en: { ...resources.en, ...devResources.en },
+  vi: { ...resources.vi, ...studentsResources.vi, ...devResources.vi },
+  en: { ...resources.en, ...studentsResources.en, ...devResources.en },
 }
 
 /** Flattens a nested catalogue into dotted keys. */
@@ -39,7 +43,7 @@ describe('i18n completeness (NFR-I18N-01)', () => {
   })
 
   it('covers the dev namespace', () => {
-    expect(Object.keys(catalogues.vi)).toEqual(expect.arrayContaining(['common', 'shell', 'auth', 'dev']))
+    expect(Object.keys(catalogues.vi)).toEqual(expect.arrayContaining(['common', 'shell', 'auth', 'students', 'dev']))
     expect(Object.keys(resources.vi)).not.toContain('dev')
   })
 

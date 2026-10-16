@@ -22,7 +22,8 @@ import { RouteLoading } from './routes/RouteLoading'
  *
  * Shells (T-M2.11): `/tutor` and `/student` are layout routes (the shell renders an `<Outlet />`). The role guard sits on
  * the parent, so it runs before any child, unknown paths included: the shell's 404 (`*`) never shows to the wrong
- * visitor. Every child imports its shell's module, so each shell stays one lazy chunk.
+ * visitor. Every child imports its shell's module, so each shell stays one lazy chunk; the Students pages (T-M2.5) are
+ * their own chunks.
  */
 export function createRoutes(queryClient: QueryClient): RouteObject[] {
   const guard = createGuards(queryClient)
@@ -64,6 +65,26 @@ export function createRoutes(queryClient: QueryClient): RouteObject[] {
               children: [
                 { index: true, loader: indexOf('TUTOR', '/tutor/today') },
                 { path: 'today', lazy: async () => ({ Component: (await import('./shells/TutorShell')).TutorToday }) },
+                // T-M2.5: each Students page is its own chunk, imported from the feature (not through the shell), so
+                // its form libraries stay out of the tutor's first visit and never reach a student (NFR-PERF-03).
+                {
+                  path: 'students',
+                  lazy: async () => ({
+                    Component: (await import('../features/students/routes/StudentsListPage')).StudentsListPage,
+                  }),
+                },
+                {
+                  path: 'students/new',
+                  lazy: async () => ({
+                    Component: (await import('../features/students/routes/AddStudentPage')).AddStudentPage,
+                  }),
+                },
+                {
+                  path: 'students/:studentId',
+                  lazy: async () => ({
+                    Component: (await import('../features/students/routes/StudentWorkspacePage')).StudentWorkspacePage,
+                  }),
+                },
                 { path: '*', lazy: async () => ({ Component: (await import('./shells/TutorShell')).ShellNotFound }) },
               ],
             },
