@@ -168,6 +168,8 @@ export function AddStudentForm({ onCreated, focusFirstField = false }: AddStuden
           setFormError(t('form.networkError'))
         } else if (error.status === 409 && error.code === 'USERNAME_TAKEN') {
           setError('username', { type: 'server', message: 'form.errors.USERNAME_TAKEN' })
+          // The earlier "Available" is out of date: ask again, so the field says Taken once the tutor edits it.
+          void availability.refetch()
           setSummaryShown(false)
           document.getElementById(id.username)?.focus()
         } else if (error.status === 422) {

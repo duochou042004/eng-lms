@@ -44,6 +44,7 @@
   transform: rotate(90deg);
 }
 
-.panel {
+/* Only while expanded: a collapsed panel (hidden="until-found") keeps its box, so no padding then. */
+.disclosure[data-expanded] .panel {
   padding-block-end: var(--space-4);
 }
