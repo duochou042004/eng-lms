@@ -38,6 +38,11 @@
 .username {
   color: var(--color-text-muted);
   font-size: var(--font-size-sm);
+  overflow-wrap: break-word; /* table cell: min-content stays the longest word (AC12 (s)) */
+}
+
+/* A long email in a table cell may break anywhere (AC12 (s); short values keep the cell's break-word). */
+.longValue {
   overflow-wrap: anywhere;
 }
 
@@ -47,7 +52,7 @@
   align-items: center;
   min-block-size: var(--size-control-md);
   font-weight: var(--font-weight-medium);
-  overflow-wrap: anywhere;
+  overflow-wrap: break-word; /* table cell: min-content stays the longest word (AC12 (s)) */
 }
 
 .skeletonRows {

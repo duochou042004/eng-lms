@@ -1,3 +1,6 @@
+/* Cell text uses `overflow-wrap: break-word`, not `anywhere`: `anywhere` lets a column's min-content shrink below its
+   longest word, so the table squeezes a column and breaks short values mid-word (T-M2.5 AC12 (s)). */
+
 /* Below 768 px (md, src/ui/breakpoints.ts) a list; at >= 768 px a table (chosen in JS: one DOM structure at a time). */
 .table {
   inline-size: 100%;
@@ -21,7 +24,7 @@
   font-weight: var(--font-weight-regular);
   text-align: start;
   vertical-align: middle;
-  overflow-wrap: anywhere;
+  overflow-wrap: break-word;
 }
 
 .nowrap {
@@ -57,7 +60,7 @@
   align-items: center;
   gap: var(--space-2);
   min-inline-size: 0;
-  overflow-wrap: anywhere;
+  overflow-wrap: break-word;
 }
 
 .titleValue {
@@ -75,7 +78,7 @@
 
 .metaValue {
   min-inline-size: 0;
-  overflow-wrap: anywhere;
+  overflow-wrap: break-word;
 }
 
 .visuallyHidden {
