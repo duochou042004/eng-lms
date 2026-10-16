@@ -39,7 +39,7 @@ Tabs:   Overview | Plan | Lessons | Work | Materials | Progress | Notes | Profil
 
 | Tab | Route suffix | Content | M |
 |---|---|---|---|
-| Overview | (index) | Attention reasons, goals summary, current plan phase, last lesson summary + private note, open work, recent results | M2→M7 |
+| Overview | (index) | Attention reasons, goals summary, current plan phase, last lesson summary + private note, open work, recent results (until a second tab ships, the index shows the Profile view, DEC-120 (8)) | M3→M7 |
 | Plan | `/plan` | Plans (phases and items, reorderable) | M7 |
 | Lessons | `/lessons` | History timeline + upcoming | M3 |
 | Work | `/work` | Student activities grouped by status; assign | M5 |
