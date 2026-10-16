@@ -100,7 +100,7 @@ function Workspace({ student }: { student: Student }) {
           <ul className={styles.quickLinks}>
             {quickLinks.map((c, index) => (
               <li key={`${c.kind}-${index}`}>
-                <ContactValue {...c} />
+                <ContactValue {...c} withIcon />
               </li>
             ))}
           </ul>
@@ -148,8 +148,8 @@ function Workspace({ student }: { student: Student }) {
                 student.contactHandles.length > 0 ? (
                   <ul className={styles.handlesList}>
                     {student.contactHandles.map((h, index) => (
-                      <li key={index}>
-                        <span className={styles.handleLabel}>{h.label}: </span>
+                      <li key={index} className={styles.handleItem}>
+                        <span className={styles.handleLabel}>{h.label}</span>
                         {h.value ? (
                           <ContactValue kind="handle" value={h.value} label={h.label ?? ''} />
                         ) : (

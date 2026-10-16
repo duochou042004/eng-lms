@@ -110,7 +110,7 @@
     "copyFailed": "Không sao chép được. Hãy chọn đoạn chữ rồi tự sao chép.",
     "openWorkspace": "Mở không gian học viên",
     "addAnother": "Thêm học viên khác",
-    "message": "Chào {{name}},\nTài khoản của em tại {{workspace}} đã sẵn sàng.\nĐăng nhập tại: {{url}}\nTên đăng nhập: {{username}}\nMật khẩu tạm: {{password}}\nMật khẩu tạm hết hạn lúc {{expiry}}. Em sẽ tự đặt mật khẩu mới ở lần đăng nhập đầu tiên."
+    "message": "Xin chào,\nTài khoản của bạn tại {{workspace}} đã sẵn sàng.\nĐăng nhập tại: {{url}}\nTên đăng nhập: {{username}}\nMật khẩu tạm: {{password}}\nMật khẩu tạm hết hạn lúc {{expiry}}. Bạn sẽ tự đặt mật khẩu mới ở lần đăng nhập đầu tiên."
   },
   "workspace": {
     "title": "Học viên",

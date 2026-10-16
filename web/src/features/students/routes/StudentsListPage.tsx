@@ -1,5 +1,5 @@
 import { Archive, SearchX, UserPlus } from 'lucide-react'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, type RefObject } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link, useLocation, useSearchParams } from 'react-router'
 import { usePageTitle } from '../../../lib/i18n/pageTitle'
@@ -18,6 +18,7 @@ import {
   Skeleton,
   Stack,
   useDelayed,
+  type DataListColumn,
   type DataListRow,
 } from '../../../ui'
 import { useAnyStudent, useStudentList, type StudentRow } from '../api/students'
@@ -186,6 +187,7 @@ function ListBody({
   onPage,
 }: ListBodyProps) {
   const { t } = useTranslation('students')
+  const listTop = useRef<HTMLDivElement>(null)
   if (loading) return <ListSkeleton />
   if (!data) return null
   if (data.totalItems === 0) {
@@ -219,12 +221,12 @@ function ListBody({
     }
     return null
   }
-  const columns: Array<{ id: Column; header: string }> = [
+  const columns: Array<DataListColumn<Column>> = [
     { id: 'name', header: t('list.columns.name') },
     { id: 'username', header: t('list.columns.username') },
-    { id: 'status', header: t('list.columns.status') },
+    { id: 'status', header: t('list.columns.status'), nowrap: true, inTitle: true },
     { id: 'email', header: t('list.columns.email') },
-    { id: 'phone', header: t('list.columns.phone') },
+    { id: 'phone', header: t('list.columns.phone'), nowrap: true },
   ]
   const rows: DataListRow<Column>[] = data.items.map((student: StudentRow) => ({
     id: student.id,
@@ -242,23 +244,59 @@ function ListBody({
   }))
   return (
     <Stack gap={4}>
-      <div aria-busy={busy || undefined}>
+      <div ref={listTop} aria-busy={busy || undefined}>
         <DataList label={t('list.label')} columns={columns} rows={rows} />
       </div>
       {data.totalPages > 1 ? (
-        <nav aria-label={t('list.pagination')} className={styles.pagination}>
-          <Button variant="secondary" isDisabled={view.page <= 1} onPress={() => onPage(view.page - 1)}>
-            {t('list.previous')}
-          </Button>
-          <span className={styles.pageNumber}>
-            {t('list.page', { page: view.page, pages: Math.max(data.totalPages, view.page) })}
-          </span>
-          <Button variant="secondary" isDisabled={view.page >= data.totalPages} onPress={() => onPage(view.page + 1)}>
-            {t('list.next')}
-          </Button>
-        </nav>
+        <Pager page={view.page} pages={Math.max(data.totalPages, view.page)} listTop={listTop} onPage={onPage} />
       ) : null}
     </Stack>
+  )
+}
+
+interface PagerProps {
+  page: number
+  pages: number
+  listTop: RefObject<HTMLDivElement | null>
+  onPage: (page: number) => void
+}
+
+/**
+ * Previous / Next with "Page n of m" (T-M2.5 scope 2, AC12 (a)–(c)). After a page change from here, the list top
+ * scrolls into view and the new position is announced politely; when the pressed button is now disabled (first or
+ * last page), focus moves to the other one instead of dropping to the body (WCAG 2.4.3).
+ */
+function Pager({ page, pages, listTop, onPage }: PagerProps) {
+  const { t } = useTranslation('students')
+  const nav = useRef<HTMLElement>(null)
+  const pressed = useRef(false)
+  const [announcement, setAnnouncement] = useState('')
+  const label = t('list.page', { page, pages })
+  useEffect(() => {
+    if (!pressed.current) return
+    pressed.current = false
+    const active = document.activeElement
+    if (active === document.body || (active instanceof HTMLButtonElement && active.disabled)) {
+      nav.current?.querySelector<HTMLButtonElement>('button:not([disabled])')?.focus({ preventScroll: true })
+    }
+    listTop.current?.scrollIntoView?.({ block: 'start' })
+    setAnnouncement(label)
+  }, [page, label, listTop])
+  const go = (next: number) => {
+    pressed.current = true
+    onPage(next)
+  }
+  return (
+    <nav ref={nav} aria-label={t('list.pagination')} className={styles.pagination}>
+      <Button variant="secondary" isDisabled={page <= 1} onPress={() => go(page - 1)}>
+        {t('list.previous')}
+      </Button>
+      <span className={styles.pageNumber}>{label}</span>
+      <Button variant="secondary" isDisabled={page >= pages} onPress={() => go(page + 1)}>
+        {t('list.next')}
+      </Button>
+      <output className={styles.visuallyHidden}>{announcement}</output>
+    </nav>
   )
 }
 

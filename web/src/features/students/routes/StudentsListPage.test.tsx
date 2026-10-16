@@ -1,7 +1,7 @@
 import { act, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { delay, http, HttpResponse } from 'msw'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import { expectNoAxeViolations } from '../../../test/axe'
 import { renderRoute } from '../../../test/render'
 import { problem, server, sessionAs } from '../../../test/server'
@@ -66,7 +66,7 @@ describe('/tutor/students', { timeout: 20_000 }, () => {
     const { container } = renderRoute('/tutor/students')
     const list = await screen.findByRole('list', { name: 'Học viên' })
     expect(screen.queryByRole('table')).not.toBeInTheDocument()
-    expect(within(list).getByRole('listitem')).toHaveTextContent('Học viên 01Tên đăng nhập: hocvien1')
+    expect(within(list).getByRole('listitem')).toHaveTextContent('Học viên 01Đang họcTên đăng nhập: hocvien1')
     await expectNoAxeViolations(container)
   })
 
@@ -121,6 +121,36 @@ describe('/tutor/students', { timeout: 20_000 }, () => {
     await userEvent.click(screen.getByRole('button', { name: 'Trang trước' }))
     await screen.findByRole('link', { name: 'Học viên 01' })
     expect(search(router)).toBe('')
+  })
+
+  it('a page change keeps focus on a pager button (never the body), scrolls to the list top and announces the page (AC12 (a), (b))', async () => {
+    const scroll = vi.fn()
+    Element.prototype.scrollIntoView = scroll
+    try {
+      listApi((p) => {
+        const n = Number(p.get('page'))
+        return HttpResponse.json(page(n === 0 ? twentyFive : [row(26)], { page: n, totalItems: 26 }))
+      })
+      renderRoute('/tutor/students')
+      await screen.findByRole('link', { name: 'Học viên 01' })
+      const pages = screen.getByRole('navigation', { name: 'Phân trang' })
+      const previous = within(pages).getByRole('button', { name: 'Trang trước' })
+      const next = within(pages).getByRole('button', { name: 'Trang sau' })
+      expect(within(pages).getByRole('status')).toBeEmptyDOMElement()
+      await userEvent.click(next)
+      await waitFor(() => expect(next).toBeDisabled())
+      await waitFor(() => expect(previous).toHaveFocus())
+      expect(within(pages).getByRole('status')).toHaveTextContent('Trang 2 / 2')
+      expect(scroll).toHaveBeenCalledWith({ block: 'start' })
+      await screen.findByRole('link', { name: 'Học viên 26' })
+      await userEvent.keyboard('{Enter}')
+      await waitFor(() => expect(previous).toBeDisabled())
+      await waitFor(() => expect(next).toHaveFocus())
+      expect(within(pages).getByRole('status')).toHaveTextContent('Trang 1 / 2')
+      expect(document.activeElement).not.toBe(document.body)
+    } finally {
+      delete (Element.prototype as Partial<Element>).scrollIntoView
+    }
   })
 
   it.each(['page=-1', 'page=abc', 'sort=x', 'page=0&sort=&archived=yes'])(

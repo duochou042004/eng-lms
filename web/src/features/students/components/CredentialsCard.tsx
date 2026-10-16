@@ -27,7 +27,6 @@ export function CredentialsCard({ created, onAddAnother }: CredentialsCardProps)
   const loginUrl = `${window.location.origin}/login`
   const message = credentialsMessage(t, i18n.language, {
     workspace,
-    fullName: student.fullName,
     loginUrl,
     username: credentials.username,
     temporaryPassword: credentials.temporaryPassword,

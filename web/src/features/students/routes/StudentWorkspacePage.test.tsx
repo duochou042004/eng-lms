@@ -2,6 +2,7 @@ import { act, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { delay, http, HttpResponse } from 'msw'
 import { describe, expect, it } from 'vitest'
+import { formatDate } from '../../../lib/time'
 import { expectNoAxeViolations } from '../../../test/axe'
 import { renderRoute } from '../../../test/render'
 import { problem, server, sessionAs } from '../../../test/server'
@@ -39,9 +40,8 @@ describe('/tutor/students/:studentId', { timeout: 20_000 }, () => {
         .getAllByRole('term')
         .map((t) => t.textContent),
     ).toEqual(['Họ tên', 'Tên đăng nhập', 'Trạng thái', 'Ngày thêm'])
-    expect(personal).toHaveTextContent(
-      new Intl.DateTimeFormat('vi', { dateStyle: 'medium' }).format(new Date(student().createdAt)),
-    )
+    expect(personal).toHaveTextContent(formatDate(student().createdAt, 'vi'))
+    expect(personal).toHaveTextContent(/\d\d\/\d\d\/2026/)
     const note = within(screen.getByRole('region', { name: 'Ghi chú' })).getByText(/Dòng một/)
     expect(note.textContent).toBe('Dòng một\nDòng hai')
     expect(note).toHaveClass('note')
@@ -64,8 +64,15 @@ describe('/tutor/students/:studentId', { timeout: 20_000 }, () => {
     expect(zalo).toHaveAttribute('target', '_blank')
     expect(zalo).toHaveAttribute('rel', 'noopener noreferrer')
     expect(zalo).toHaveTextContent('https://zalo.me/0901234567')
+    // Decorative kind icons in the quick links (AC12 (h)).
+    for (const link of within(quick).getAllByRole('link'))
+      expect(link.querySelector('svg')).toHaveAttribute('aria-hidden', 'true')
     const contacts = screen.getByRole('region', { name: 'Liên hệ' })
     expect(within(contacts).getAllByRole('link')).toHaveLength(3)
+    // A handle: its label above its value (AC12 (i)).
+    const handle = within(contacts).getByText('Zalo').closest('li')!
+    expect(handle).toHaveClass('handleItem')
+    expect(handle.firstElementChild).toHaveTextContent(/^Zalo$/)
   })
 
   it('shows every other contact value as text with a copy button and no link', async () => {

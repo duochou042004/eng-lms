@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { flushSync } from 'react-dom'
 import { useTranslation } from 'react-i18next'
 import { usePageTitle } from '../../../lib/i18n/pageTitle'
 import { PageHeader, Stack } from '../../../ui'
@@ -17,6 +18,13 @@ export function AddStudentPage() {
   usePageTitle(t('form.title'))
   const [created, setCreated] = useState<CreatedStudent | null>(null)
   const [round, setRound] = useState(0)
+  // Leaving the document (also into the back/forward cache) drops the credentials, so a restore never shows them
+  // (AC12 (m)); committed synchronously, before the page is frozen.
+  useEffect(() => {
+    const drop = () => flushSync(() => setCreated(null))
+    window.addEventListener('pagehide', drop)
+    return () => window.removeEventListener('pagehide', drop)
+  }, [])
   return (
     <Stack gap={6}>
       <PageHeader title={t('form.title')} description={created ? undefined : t('form.description')} />

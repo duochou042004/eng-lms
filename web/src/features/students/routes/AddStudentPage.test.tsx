@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event'
 import { delay, http, HttpResponse } from 'msw'
 import { describe, expect, it, vi } from 'vitest'
 import { AUTH_CHANNEL } from '../../auth/api/authChannel'
+import { formatDateTime } from '../../../lib/time'
 import { expectNoAxeViolations } from '../../../test/axe'
 import { renderRoute } from '../../../test/render'
 import { META, problem, server, sessionAs } from '../../../test/server'
@@ -417,6 +418,16 @@ describe('Add student: the unsaved changes guard (AC6)', { timeout: 20_000 }, ()
     other.close()
   })
 
+  it('a forced change of password (403 PASSWORD_CHANGE_REQUIRED) passes the dirty form without a dialog (AC12 (l))', async () => {
+    formApi()
+    server.use(http.get('*/api/v1/tutor/usernames/suggestion', () => problem(403, 'PASSWORD_CHANGE_REQUIRED')))
+    const { router } = await openForm()
+    server.use(sessionAs('TUTOR', true))
+    await userEvent.type(fullName(), 'Nguyễn Văn An')
+    await waitFor(() => expect(path(router)).toBe('/change-password'))
+    expect(screen.queryByRole('alertdialog')).not.toBeInTheDocument()
+  })
+
   it('warns before the tab closes while dirty (beforeunload)', async () => {
     formApi()
     await openForm()
@@ -447,10 +458,7 @@ describe('Add student: the credentials card (AC7)', { timeout: 20_000 }, () => {
     const card = heading.closest('section')!
     expect(card).toHaveTextContent('nguyenvanan')
     expect(within(card).getByText(CREDENTIALS.temporaryPassword).tagName).toBe('SPAN')
-    const expiry = new Intl.DateTimeFormat('vi', { dateStyle: 'medium', timeStyle: 'short' }).format(
-      new Date(CREDENTIALS.expiresAt),
-    )
-    expect(card).toHaveTextContent(expiry)
+    expect(card).toHaveTextContent(formatDateTime(CREDENTIALS.expiresAt, 'vi'))
     expect(card).toHaveTextContent(`${window.location.origin}/login`)
     expect(card).toHaveTextContent('Mật khẩu này chỉ hiện một lần.')
     expect(container.querySelector('input[type="password"], input[autocomplete]')).toBeNull()
@@ -507,6 +515,17 @@ describe('Add student: the credentials card (AC7)', { timeout: 20_000 }, () => {
     expect(screen.queryByText(secret)).not.toBeInTheDocument()
     expect(JSON.stringify(router.state.location)).not.toContain(secret)
     expect(JSON.stringify(window.history.state)).not.toContain(secret)
+  })
+
+  it('pagehide (leaving, or entering the back/forward cache) drops the card and its password (AC12 (m))', async () => {
+    await created()
+    expect(screen.getByText(CREDENTIALS.temporaryPassword)).toBeInTheDocument()
+    act(() => {
+      window.dispatchEvent(new Event('pagehide'))
+    })
+    expect(screen.queryByText(CREDENTIALS.temporaryPassword)).not.toBeInTheDocument()
+    expect(screen.queryByRole('heading', { level: 2, name: 'Đã tạo học viên' })).not.toBeInTheDocument()
+    expect(fullName()).toHaveValue('')
   })
 
   it('Add another student shows an empty form with focus on Full name', async () => {

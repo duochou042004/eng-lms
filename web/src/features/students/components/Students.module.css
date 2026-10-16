@@ -14,14 +14,15 @@
 }
 
 .pagination {
-  display: flex;
-  flex-wrap: wrap;
+  /* Previous at the start, Next at the end, the position between (it wraps inside its cell at 360 px, AC12 (c)). */
+  display: grid;
+  grid-template-columns: auto 1fr auto;
   align-items: center;
-  justify-content: space-between;
   gap: var(--space-3);
 }
 
 .pageNumber {
+  text-align: center;
   color: var(--color-text-muted);
   font-variant-numeric: tabular-nums;
 }
@@ -175,6 +176,7 @@
 .link {
   display: inline-flex;
   align-items: center;
+  gap: var(--space-1);
   min-block-size: var(--size-control-md);
   overflow-wrap: anywhere;
 }
@@ -203,14 +205,23 @@
 .handlesList {
   display: flex;
   flex-direction: column;
-  gap: var(--space-1);
+  gap: var(--space-3);
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
+/* A handle: its label above its value at every width (AC12 (i)). */
+.handleItem {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-inline-size: 0;
+}
+
 .handleLabel {
   color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
 }
 
 .visuallyHidden {

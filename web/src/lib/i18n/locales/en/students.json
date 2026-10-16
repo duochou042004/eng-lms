@@ -110,7 +110,7 @@
     "copyFailed": "Couldn't copy. Select the text and copy it.",
     "openWorkspace": "Open workspace",
     "addAnother": "Add another student",
-    "message": "Hello {{name}},\nYour account in {{workspace}} is ready.\nSign in at: {{url}}\nUsername: {{username}}\nTemporary password: {{password}}\nThe temporary password expires on {{expiry}}. You will choose your own password at first sign-in."
+    "message": "Hello,\nYour account in {{workspace}} is ready.\nSign in at: {{url}}\nUsername: {{username}}\nTemporary password: {{password}}\nThe temporary password expires at {{expiry}}. You will choose your own password at first sign-in."
   },
   "workspace": {
     "title": "Student",

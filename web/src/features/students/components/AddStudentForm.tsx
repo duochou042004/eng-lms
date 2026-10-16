@@ -131,7 +131,9 @@ export function AddStudentForm({ onCreated, focusFirstField = false }: AddStuden
     ({ currentLocation, nextLocation }) =>
       isDirty &&
       nextLocation.pathname !== currentLocation.pathname &&
-      !['/login', '/forbidden'].includes(nextLocation.pathname),
+      !['/login', '/forbidden'].includes(nextLocation.pathname) &&
+      // The auth reaction's forced change of password (403 PASSWORD_CHANGE_REQUIRED) is never blocked (AC12 (l)).
+      (nextLocation.state as { forced?: unknown } | null)?.forced !== true,
   )
   useEffect(() => {
     if (!isDirty) return
