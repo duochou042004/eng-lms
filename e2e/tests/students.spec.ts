@@ -16,7 +16,9 @@ import { StepCounter } from '../support/steps'
 test.use({ storageState: TUTOR_STATE })
 
 const h1 = (page: Page, name: string | RegExp) => page.getByRole('heading', { level: 1, name })
-const shot = (page: Page, testInfo: TestInfo, name: string) => evidenceShot(page, testInfo, name, 'impl')
+// The temporary password is masked in every evidence screenshot (a working credential of the dev database).
+const shot = (page: Page, testInfo: TestInfo, name: string) =>
+  evidenceShot(page, testInfo, name, 'impl', [page.locator('[class*="secret"]')])
 const token = () => randomBytes(3).toString('hex')
 
 interface Created {
