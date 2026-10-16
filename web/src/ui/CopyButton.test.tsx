@@ -21,6 +21,9 @@ describe('CopyButton', () => {
     await user.click(screen.getByRole('button', { name: 'Sao chép mật khẩu' }))
     expect(write).toHaveBeenCalledWith('mật-khẩu-tạm')
     await waitFor(() => expect(status).toHaveTextContent('Đã sao chép'))
+    // Announced, not shown: no layout shift (AC12 (g)); the button keeps its label and its icon turns to a check.
+    expect(screen.getByText('Đã sao chép')).toHaveClass('visuallyHidden')
+    expect(screen.getByRole('button', { name: 'Sao chép mật khẩu' }).querySelector('svg')).toHaveClass('lucide-check')
     await expectNoAxeViolations(container)
   })
 

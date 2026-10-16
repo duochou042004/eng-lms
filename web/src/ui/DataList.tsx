@@ -1,11 +1,16 @@
 import type { ReactNode } from 'react'
 import { useMinWidth } from './breakpoints'
+import { cx } from './cx'
 import styles from './DataList.module.css'
 
 export interface DataListColumn<K extends string> {
   id: K
   /** The column header (table) and the visually hidden label of the value (list). */
   header: string
+  /** Keep the value on one line in the table (short values such as a phone number or a status badge). */
+  nowrap?: boolean
+  /** In the narrow list, show the value beside the title instead of on the meta line (e.g. a status badge). */
+  inTitle?: boolean
 }
 
 export interface DataListRow<K extends string> {
@@ -26,7 +31,8 @@ export interface DataListProps<K extends string> {
  * A responsive collection (design-system §3, responsive-standards §3.3): at ≥ 768 px (`md`) a semantic table with column
  * headers; below, a list of rows whose first column is the title and the others a wrapping meta line, each value led by
  * its visually hidden header. One DOM structure at a time (chosen with `useMinWidth`), so nothing is duplicated for
- * assistive technology. Long values wrap (`overflow-wrap: anywhere`): never a horizontal scroll at 360 px.
+ * assistive technology. Long values wrap (`overflow-wrap: anywhere`): never a horizontal scroll at 360 px; a `nowrap`
+ * column keeps short values on one line in the table, an `inTitle` column sits beside the list row's title (T-M2.5 AC12).
  */
 export function DataList<K extends string>({ label, columns, rows }: DataListProps<K>) {
   const wide = useMinWidth('md')
@@ -54,7 +60,7 @@ export function DataList<K extends string>({ label, columns, rows }: DataListPro
                     {row.cells[column.id]}
                   </th>
                 ) : (
-                  <td key={column.id} className={styles.cell}>
+                  <td key={column.id} className={cx(styles.cell, column.nowrap && styles.nowrap)}>
                     {row.cells[column.id]}
                   </td>
                 ),
@@ -69,10 +75,19 @@ export function DataList<K extends string>({ label, columns, rows }: DataListPro
     <ul aria-label={label} className={styles.list}>
       {rows.map((row) => (
         <li key={row.id} className={styles.item}>
-          <div className={styles.title}>{row.cells[first.id]}</div>
+          <div className={styles.title}>
+            {row.cells[first.id]}
+            {rest
+              .filter((column) => column.inTitle)
+              .map((column) => (
+                <span key={column.id} className={styles.titleValue}>
+                  {row.cells[column.id]}
+                </span>
+              ))}
+          </div>
           <div className={styles.meta}>
             {rest.map((column) =>
-              row.cells[column.id] === null ? null : (
+              column.inTitle || row.cells[column.id] === null ? null : (
                 <span key={column.id} className={styles.metaValue}>
                   <span className={styles.visuallyHidden}>{`${column.header}: `}</span>
                   {row.cells[column.id]}

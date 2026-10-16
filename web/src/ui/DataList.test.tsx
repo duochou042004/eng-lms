@@ -50,4 +50,23 @@ describe('DataList', () => {
     expect(screen.queryByRole('table')).not.toBeInTheDocument()
     expect(screen.getByRole('list', { name: 'Học viên' })).toBeInTheDocument()
   })
+
+  it('keeps a nowrap column on one line in the table and shows an inTitle column beside the list title (AC12 (d), (e))', () => {
+    const cols = [
+      { id: 'name', header: 'Họ tên' },
+      { id: 'status', header: 'Trạng thái', nowrap: true, inTitle: true },
+      { id: 'phone', header: 'Điện thoại', nowrap: true },
+    ] as const
+    const data = [{ id: '1', cells: { name: 'An', status: <span>Đang học</span>, phone: '0901 234 567' } }]
+    setViewportWidth(1024)
+    const { unmount } = render(<DataList label="Học viên" columns={cols} rows={data} />)
+    expect(screen.getByRole('cell', { name: '0901 234 567' })).toHaveClass('nowrap')
+    unmount()
+    setViewportWidth(360)
+    render(<DataList label="Học viên" columns={cols} rows={data} />)
+    const item = screen.getByRole('listitem')
+    expect(item.firstElementChild).toHaveTextContent('AnĐang học')
+    expect(item.lastElementChild).toHaveTextContent('Điện thoại: 0901 234 567')
+    expect(item.lastElementChild).not.toHaveTextContent('Trạng thái')
+  })
 })

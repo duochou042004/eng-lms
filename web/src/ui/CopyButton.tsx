@@ -22,7 +22,8 @@ const RESET_MS = 4000
 
 /**
  * Copies a text with `navigator.clipboard.writeText` (design-system §3). The result goes into a polite status region
- * beside the button: "Copied" (and a check icon on the button for a few seconds), or, where the clipboard is unavailable
+ * beside the button: "Copied", announced only (the button's icon turns to a check for a few seconds; no layout shift),
+ * or, where the clipboard is unavailable
  * or the browser refuses, the manual-copy message, which stays until the next attempt (the text it refers to must stay
  * selectable on the page). States: as `Button`, plus copied and failed.
  */
@@ -59,8 +60,11 @@ export function CopyButton({
         )}
         {label}
       </Button>
-      <output className={state === 'failed' ? styles.failed : styles.copied}>
-        {state === 'copied' ? copiedMessage : state === 'failed' ? failedMessage : ''}
+      {/* "Copied" is announced but not shown (the button's check icon shows it), so nothing moves (AC12 (g)); the
+          manual-copy message is shown, the text it refers to must be selected by hand. */}
+      <output className={styles.failed}>
+        {state === 'copied' ? <span className={styles.visuallyHidden}>{copiedMessage}</span> : null}
+        {state === 'failed' ? failedMessage : null}
       </output>
     </span>
   )
