@@ -380,6 +380,10 @@ test.describe('Students list', () => {
     expect(twenty).toHaveLength(20)
     expect(email20).toHaveLength(20)
     await apiStudent(page, { fullName: threeWords, username: twenty, phone: '0901 234 567', email: email20 })
+    // QA-R3-1: a long email on the same page must not squeeze the name column or break short values (AC12 (s)).
+    const longEmail = `nguyen.thi.phuong.lan.anh.hoang.${t}@subdomain.example-long.com`
+    const dotted = `nguyenvanan.${t}`
+    await apiStudent(page, { fullName: `Nguyễn Văn An ${t}`, username: dotted, email: longEmail })
     await page.reload()
     await expect(h1(page, 'Học viên')).toBeVisible()
     await expectAccessible(page)
@@ -478,6 +482,11 @@ test.describe('Students list', () => {
       for (const name of [threeWords, diacritic.student.fullName])
         expect(await lineCount(page.getByRole('link', { name, exact: true })), name).toBeLessThanOrEqual(2)
       expect(await lineCount(page.getByRole('cell', { name: email20, exact: true }))).toBeLessThanOrEqual(2)
+      // AC12 (s): with the long email on the page, a short email and the usernames stay whole on one line; the long
+      // email wraps between its parts and stays fully there.
+      expect(await lineCount(page.getByRole('cell', { name: email20, exact: true }))).toBe(1)
+      expect(await lineCount(page.getByText(`@${dotted}`, { exact: true }))).toBe(1)
+      await expect(page.getByRole('cell', { name: longEmail, exact: true })).toHaveText(longEmail)
       expect(await lineCount(page.getByText(`@${twenty}`, { exact: true }))).toBe(1)
       await expect(page.getByText(`@${`e2e-long-${t}-`.padEnd(40, 'x')}`, { exact: true })).toBeVisible()
     } else {
