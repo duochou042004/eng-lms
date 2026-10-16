@@ -368,9 +368,18 @@ test.describe('Students list', () => {
     const longName = `Nguyễn Thị Phương Lan Anh Hoàng Bảo Ngọc Trâm Khuê Diệp ${t}`
     await apiStudent(page, {
       fullName: longName,
-      username: `e2e-long-${t}`,
+      // 40 characters, the longest username: it may wrap, fully visible, never a horizontal scroll (AC3, AC12 (p)).
+      username: `e2e-long-${t}-`.padEnd(40, 'x'),
       phone: '+84 90 123 4567',
       email: `nguyen.thi.phuong.lan.anh.hoang.bao.ngoc.${t}@example.com`,
+    })
+    // 20 characters: stays on one line at 768 and 1280 (AC12 (p)).
+    const twenty = `e2e-twenty-ab-${t}`
+    await apiStudent(page, {
+      fullName: `Hai Mươi Ký Tự ${t}`,
+      username: twenty,
+      phone: '0901 234 567',
+      email: `hm.${t}@example.com`,
     })
     await page.reload()
     await expect(h1(page, 'Học viên')).toBeVisible()
@@ -463,13 +472,17 @@ test.describe('Students list', () => {
         'Email',
         'Điện thoại',
       ])
-      // Phone and status stay on one line (AC12 (d)).
-      const lines = await page.getByRole('cell', { name: '+84 90 123 4567' }).evaluate((cell) => {
-        const range = document.createRange()
-        range.selectNodeContents(cell)
-        return new Set([...range.getClientRects()].map((r) => Math.round(r.top))).size
-      })
-      expect(lines).toBe(1)
+      const lineCount = (target: Locator) =>
+        target.evaluate((cell) => {
+          const range = document.createRange()
+          range.selectNodeContents(cell)
+          return new Set([...range.getClientRects()].map((r) => Math.round(r.top))).size
+        })
+      // Phone and status stay on one line (AC12 (d)); so do a 20-character username and the Username header (AC12 (p)).
+      expect(await lineCount(page.getByRole('cell', { name: '+84 90 123 4567' }))).toBe(1)
+      expect(await lineCount(page.getByRole('cell', { name: twenty, exact: true }))).toBe(1)
+      expect(await lineCount(page.getByRole('columnheader', { name: 'Tên đăng nhập' }))).toBe(1)
+      await expect(page.getByRole('cell', { name: `e2e-long-${t}-`.padEnd(40, 'x'), exact: true })).toBeVisible()
     } else {
       await expect(page.getByRole('table')).toHaveCount(0)
       await expect(page.getByRole('list', { name: 'Học viên' })).toBeVisible()
