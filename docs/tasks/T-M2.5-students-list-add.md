@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Milestone | M2 |
-| Status | ready |
+| Status | done (`84c97c1`, DEC-123) |
 | Owner role | FE (frontend-implementer) |
 | Branch | `feature/T-M2.5-students-list-add` (from `develop`) |
 | Depends on | T-M2.3 (`f0e228c`), T-M2.9 (`37e8ce0`), T-M2.4 (`9fcc992`), T-M2.11 (`1af32de`), T-M2.12 (`b5596d3`): all merged |
