@@ -37,7 +37,7 @@
     "branch": "feature/T-M2.5-students-list-add",
     "packet": "docs/tasks/T-M2.5-students-list-add.md",
     "pr": "94",
-    "lastCommit": "8356290",
+    "lastCommit": "26897a7",
     "startedAt": "2026-10-16T01:09:05Z",
     "entryGate": [
       "T-M2.3, T-M2.9 merged — met",
@@ -344,7 +344,7 @@
     },
     "G1": {
       "status": "pass",
-      "note": "T-M2.5: gate PASS x2 on fa7534f (evidence/T-M2.5/gate-20261016T021454Z.log, gate-20261016T022521Z.log)"
+      "note": "T-M2.5: gate PASS x2 on 26897a7 (evidence/T-M2.5/gate-20261017T015842Z.log, gate-20261017T020928Z.log)"
     },
     "G2": {
       "status": "pending",
