@@ -556,6 +556,13 @@ test.describe('Students table with realistic data (AC12 (t))', () => {
       username: `nguyenvanan.${t}`,
       email: `nguyen.thi.phuong.lan.anh.hoang.${t}@subdomain.example-long.com`,
     })
+    // QA-R5-1: a short example.com email and a phone with a hyphen group (AC12 (u)).
+    await apiStudent(page, {
+      fullName: 'Trần Văn An',
+      username: `an.${t}`,
+      email: `an.${t}@example.com`,
+      phone: '+84 (90) 123-4567',
+    })
     const archived = await apiStudent(page, {
       fullName: 'Phạm Ngọc Anh',
       username: twenty,
@@ -577,7 +584,7 @@ test.describe('Students table with realistic data (AC12 (t))', () => {
         await page.setViewportSize({ width, height: 900 })
         await page.goto(`/tutor/students?q=${t}&archived=1`)
         const table = page.getByRole('table')
-        await expect(table.getByRole('row')).toHaveCount(5)
+        await expect(table.getByRole('row')).toHaveCount(6)
         await expectNoHorizontalScroll(page)
         const report = await table.evaluate((el) => {
           const overflowing = [...el.querySelectorAll('td, th')]
@@ -609,6 +616,23 @@ test.describe('Students table with realistic data (AC12 (t))', () => {
         ).toBe(1)
         for (const phone of await page.getByRole('cell', { name: /^\+84 90 123 4567$/ }).all())
           expect(await lineCount(phone), `${label}: phone`).toBe(1)
+        // Emails wrap only after @ or before a dot: the domain stays on one line; the hyphen phone stays whole (AC12 (u)).
+        for (const email of [`binh.le.${t}@gmail.com`, `phuongthao.${t}@gmail.com`, `an.${t}@example.com`]) {
+          const domainLines = await page.getByRole('cell', { name: email, exact: true }).evaluate((cell) => {
+            const nodes = [...cell.childNodes].filter((n) => n.nodeType === Node.TEXT_NODE)
+            const at = nodes.findIndex((n) => n.textContent!.endsWith('@'))
+            const range = document.createRange()
+            range.setStartBefore(nodes[at + 1]!)
+            range.setEndAfter(nodes.at(-1)!)
+            return new Set([...range.getClientRects()].map((r) => Math.round(r.top))).size
+          })
+          expect(domainLines, `${label}: ${email} domain on one line`).toBe(1)
+        }
+        if (width <= 1024)
+          expect(
+            await lineCount(page.getByRole('cell', { name: '+84 (90) 123-4567', exact: true })),
+            `${label}: +84 (90) 123-4567`,
+          ).toBe(1)
         await shot(page, testInfo, `list-realistic-${lang}-${width}`)
       }
     }
