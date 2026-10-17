@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-10-17T00:30:00Z",
-  "updatedBy": "frontend-implementer (T-M2.5 AC12 (s), gates PASS ×2 on 7120f50)",
+  "updatedAt": "2026-10-17T01:40:00Z",
+  "updatedBy": "frontend-implementer (T-M2.5 AC12 (t), gates PASS ×2 on 8356290)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -37,7 +37,7 @@
     "branch": "feature/T-M2.5-students-list-add",
     "packet": "docs/tasks/T-M2.5-students-list-add.md",
     "pr": "94",
-    "lastCommit": "7120f50",
+    "lastCommit": "8356290",
     "startedAt": "2026-10-16T01:09:05Z",
     "entryGate": [
       "T-M2.3, T-M2.9 merged — met",
