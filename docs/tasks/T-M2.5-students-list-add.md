@@ -202,7 +202,11 @@ with every new student. 5. **Hard-coded semantics?** None: no level, exam or cur
   so the Status badge and a phone fit on one line), and cell text wraps inside its column (`overflow-wrap: anywhere` is acceptable again,
   since the column width no longer depends on content); at 768, 1024 and 1280 in vi and en with realistic rows (a 28-character username
   with a ~28-character Gmail address, QA's 67-character email, a three-word Vietnamese name) there is no horizontal scroll and every value
-  is fully visible, a 20-character username stays on one line and a 20-character email stays on one line (E2E at 768, 1024 and 1280). Tests for each; existing assertions change only where
+  is fully visible, a 20-character username stays on one line and a 20-character email stays on one line (E2E at 768, 1024 and 1280). (u) QA-R5-1 (S3, round 5): within the fixed columns, an email breaks
+  only at natural points first (a break opportunity after `@` and before each `.`, e.g. `<wbr>`; a token longer than the column still
+  wraps) and a phone keeps its groups together (non-breaking hyphen and spaces where it fits); at 768 `binh.le.qwokro1@gmail.com`,
+  `an.qxbif0iw@example.com` and `phuongthao.qwokro1@gmail.com` never split inside `gmail.com` / `example.com`, `+84 (90) 123-4567` stays
+  on one line, and (t) still holds (no horizontal scroll, no overflowing cell) (E2E at 768 and 1024). Tests for each; existing assertions change only where
   these items change copy, layout or a step record.
 
 ## Test plan
