@@ -50,6 +50,14 @@ function acceptStatus(consoleGuard: string[], status: number, path: string | Reg
   }
 }
 
+/** How many line boxes a cell's or element's text takes. */
+const lineCount = (target: Locator) =>
+  target.evaluate((el) => {
+    const range = document.createRange()
+    range.selectNodeContents(el)
+    return new Set([...range.getClientRects()].map((r) => Math.round(r.top))).size
+  })
+
 const wide = (page: Page) => page.viewportSize()!.width >= 768
 
 /** The tutor navigation's Students item: the sidebar at ≥ 1024 px, else in the drawer (opened first). */
@@ -470,12 +478,6 @@ test.describe('Students list', () => {
       await expect(page.getByRole('table', { name: 'Học viên' })).toBeVisible()
       // No Username column (AC12 (q)): `@username` is the name cell's second line.
       await expect(page.getByRole('columnheader')).toHaveText(['Họ tên', 'Trạng thái', 'Email', 'Điện thoại'])
-      const lineCount = (target: Locator) =>
-        target.evaluate((cell) => {
-          const range = document.createRange()
-          range.selectNodeContents(cell)
-          return new Set([...range.getClientRects()].map((r) => Math.round(r.top))).size
-        })
       // Phone and status stay on one line (AC12 (d)). A three-word name and a 20-character email take at most 2 lines,
       // a 20-character username one (AC12 (q)); a 40-character username is fully there.
       expect(await lineCount(page.getByRole('cell', { name: '+84 90 123 4567' }))).toBe(1)
@@ -522,6 +524,95 @@ test.describe('Students list', () => {
     await expect(page.getByRole('main').getByRole('link', { name: 'Thêm học viên' })).toHaveCount(1)
     await expectAccessible(page)
     await shot(page, testInfo, 'list-first-use-vi')
+  })
+})
+
+test.describe('Students table with realistic data (AC12 (t))', () => {
+  test('fixed column shares at 768, 1024 and 1280 in vi and en: no horizontal scroll, every value whole', async ({
+    page,
+  }, testInfo) => {
+    const project = testInfo.project.name
+    test.skip(project === 'phone-small', 'the table starts at 768 px')
+    const widths = project === 'laptop' ? [768, 1024, 1280] : [page.viewportSize()!.width]
+    const t = token()
+    await page.goto('/tutor/students')
+    // QA-R4-1's rows, QA-R3-1's long email and a three-word name with a 20-character username and email.
+    const twenty = `e2e-twenty-ab-${t}`
+    const email20 = `h.${t}@example.com`
+    await apiStudent(page, {
+      fullName: 'Nguyễn Hoàng Phương Thảo',
+      username: `nguyenhoangphuongthao${t}`,
+      email: `phuongthao.${t}@gmail.com`,
+      phone: '+84 90 123 4567',
+    })
+    await apiStudent(page, {
+      fullName: 'Lê Văn Bình',
+      username: `binh.le.${t}`,
+      email: `binh.le.${t}@gmail.com`,
+      phone: '0901 234 567',
+    })
+    await apiStudent(page, {
+      fullName: 'Nguyễn Văn An',
+      username: `nguyenvanan.${t}`,
+      email: `nguyen.thi.phuong.lan.anh.hoang.${t}@subdomain.example-long.com`,
+    })
+    const archived = await apiStudent(page, {
+      fullName: 'Phạm Ngọc Anh',
+      username: twenty,
+      email: email20,
+      phone: '+84 90 123 4567',
+    })
+    // An archived row too, so the longest badge ("Đã lưu trữ" / "Archived") is measured.
+    expect(
+      (
+        await apiCall(page, 'POST', `/api/v1/tutor/students/${archived.student.id}/status`, {
+          status: 'ARCHIVED',
+          version: archived.student.version,
+        })
+      ).status,
+    ).toBe(200)
+    for (const lang of ['vi', 'en'] as const) {
+      await page.evaluate((l) => localStorage.setItem('englms.locale', l), lang)
+      for (const width of widths) {
+        await page.setViewportSize({ width, height: 900 })
+        await page.goto(`/tutor/students?q=${t}&archived=1`)
+        const table = page.getByRole('table')
+        await expect(table.getByRole('row')).toHaveCount(5)
+        await expectNoHorizontalScroll(page)
+        const report = await table.evaluate((el) => {
+          const overflowing = [...el.querySelectorAll('td, th')]
+            .filter((cell) => cell.scrollWidth > cell.clientWidth + 1)
+            .map((cell) => cell.textContent)
+          // Each badge inside its cell.
+          const badges = [...el.querySelectorAll('tbody td span[class*="badge"]')].filter((badge) => {
+            const cell = badge.closest('td')!.getBoundingClientRect()
+            const box = badge.getBoundingClientRect()
+            return box.right > cell.right || box.left < cell.left
+          })
+          return {
+            tableWidth: el.getBoundingClientRect().width,
+            parentWidth: el.parentElement!.getBoundingClientRect().width,
+            overflowing,
+            badges: badges.length,
+          }
+        })
+        const label = `${lang} ${width}px`
+        expect(report.tableWidth, `${label}: the table fits its container`).toBeLessThanOrEqual(report.parentWidth + 1)
+        expect(report.overflowing, `${label}: no cell content overflows`).toEqual([])
+        expect(report.badges, `${label}: badges inside their cells`).toBe(0)
+        expect(await lineCount(page.getByText(`@${twenty}`, { exact: true })), `${label}: 20-character username`).toBe(
+          1,
+        )
+        expect(
+          await lineCount(page.getByRole('cell', { name: email20, exact: true })),
+          `${label}: 20-character email`,
+        ).toBe(1)
+        for (const phone of await page.getByRole('cell', { name: /^\+84 90 123 4567$/ }).all())
+          expect(await lineCount(phone), `${label}: phone`).toBe(1)
+        await shot(page, testInfo, `list-realistic-${lang}-${width}`)
+      }
+    }
+    await page.evaluate(() => localStorage.setItem('englms.locale', 'vi'))
   })
 })
 
