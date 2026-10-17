@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-10-17T01:40:00Z",
-  "updatedBy": "frontend-implementer (T-M2.5 AC12 (t), gates PASS ×2 on 8356290)",
+  "updatedAt": "2026-10-17T15:40:20Z",
+  "updatedBy": "lead-coordinator (T-M2.5 merge record, session 2026-10-16/17, Opus 5.5)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -30,40 +30,6 @@
     "exitCriteria": "FR-AUTH-01..10 and FR-STU-01..07 accepted; authorization-matrix and student-isolation harnesses fail on any unregistered endpoint; add-student flow E2E at 360/768/1280 within its step budget; security review of authentication passed (docs/01-product/roadmap.md)."
   },
   "currentTask": {
-    "id": "T-M2.5",
-    "title": "Students list, Add student (F2) and the workspace header (split, DEC-120)",
-    "status": "in_progress",
-    "ownerRole": "FE",
-    "branch": "feature/T-M2.5-students-list-add",
-    "packet": "docs/tasks/T-M2.5-students-list-add.md",
-    "pr": "94",
-    "lastCommit": "26897a7",
-    "startedAt": "2026-10-16T01:09:05Z",
-    "entryGate": [
-      "T-M2.3, T-M2.9 merged — met",
-      "T-M2.4 merged — met (9fcc992)",
-      "T-M2.11 merged — met (1af32de)",
-      "T-M2.12 merged — met (b5596d3, DEC-119)",
-      "Packet G0 — met (PR #93, 35a1d86)",
-      "PO start signal — met (DEC-121)"
-    ],
-    "nextSteps": [
-      "frontend-implementer on feature/T-M2.5-students-list-add; gate green twice",
-      "Open PR; CI; G3 one reviewer at a time: QA, UX, SEC; fix in-task",
-      "Verdicts on the final head; merge-gate; gitlab-sync; QA report via qa/T-M2.5; merge record"
-    ],
-    "trace": [
-      "backlog M2",
-      "FR-STU-01, 02, 06, 07",
-      "DEC-097",
-      "DEC-100",
-      "DEC-102",
-      "DEC-120",
-      "DEC-121",
-      "DEC-122"
-    ]
-  },
-  "nextTask": {
     "id": "T-M2.14",
     "title": "Student profile editing (profile and contacts, username, guardians, learning profile, status, reset password; split from T-M2.5, DEC-120)",
     "status": "draft",
@@ -74,15 +40,40 @@
     "lastCommit": null,
     "startedAt": null,
     "entryGate": [
-      "T-M2.5 merged — pending"
+      "T-M2.5 merged — met (84c97c1, DEC-123)",
+      "Packet G0 — pending",
+      "PO start signal — pending"
     ],
     "nextSteps": [
-      "Packet after T-M2.5 merges; T-M2.13 (small FE follow-ups) when the PO orders it"
+      "Write the T-M2.14 packet (task-packet skill; size check; SEC triggered: tutor-private learning profile, password reset; include T-M2.5 SEC S4-5); fresh docs-reviewer; merge-gate",
+      "Ask the PO for the start signal; implement through G3 (QA, UX, SEC)"
     ],
     "trace": [
       "DEC-120",
+      "DEC-123",
       "FR-STU-03, 04, 05",
       "FR-AUTH-07"
+    ]
+  },
+  "nextTask": {
+    "id": "T-M2.13",
+    "title": "Auth and shell feedback follow-ups (UX-3 touch-reachable meta error, UX-4 cross-tab sign-out notice, UX-6 copy echo, O-1/O-2 logout feedback)",
+    "status": "draft",
+    "ownerRole": "FE",
+    "branch": null,
+    "packet": null,
+    "pr": null,
+    "lastCommit": null,
+    "startedAt": null,
+    "entryGate": [
+      "T-M2.12 merged — met (b5596d3)"
+    ],
+    "nextSteps": [
+      "Packet when the PO orders it (before or after T-M2.14)"
+    ],
+    "trace": [
+      "DEC-118",
+      "DEC-119"
     ]
   },
   "completed": [
@@ -309,11 +300,19 @@
       "mergeCommit": "b5596d3",
       "evidence": "evidence/T-M2.12/summary.md",
       "note": "PR #90 via merge-gate at head 5ed3f4d; CI 7/7; gate PASS x2 per round (cfe5780, c4c9e02). QA PASS (round 2; round 1 PASS WITH MINOR), UX APPROVED (rounds 1-2), SEC APPROVED (rounds 1-2). G3 fixes via AC11 (DEC-118); UX-3, UX-4, UX-6, O-1, O-2 to T-M2.13 (DEC-119). QA report via qa/T-M2.12 (PR #91); records evidence/T-M2.12/review/{docs,ux,security}.md."
+    },
+    {
+      "id": "T-M2.5",
+      "title": "Students list, Add student (F2) and the workspace header",
+      "completedAt": "2026-10-17T15:40:20Z",
+      "mergeCommit": "84c97c1",
+      "evidence": "evidence/T-M2.5/summary.md",
+      "note": "PR #94 via merge-gate at head cec675b; CI 7/7; gate PASS x2 per fix round (final 26897a7). QA PASS (round 6; rounds 1-5 PASS WITH MINOR x4, FAIL x1), UX APPROVED (round 4), SEC APPROVED (rounds 1-2). G3 fixes via AC12 (a)-(u) (DEC-122); SEC S4-5 to T-M2.14 (DEC-123). QA report via qa/T-M2.5 (PR #105); records evidence/T-M2.5/review/{docs,ux,security}.md."
     }
   ],
   "tests": {
-    "lastRun": "2026-10-15T01:30:00Z",
-    "summary": "T-M2.12 merged: CI 7/7 at 5ed3f4d; gate PASS x2 on c4c9e02 (backend 466, web 370 in 34 files, e2e 276 passed / 30 skipped on phone-small, tablet, laptop); QA round 2 gate PASS at 5ed3f4d, repeats x3/x20 green.",
+    "lastRun": "2026-10-17T15:40:20Z",
+    "summary": "T-M2.5 merged: CI 7/7 at cec675b; gate PASS x2 on 26897a7 (backend 466, web 539, e2e 308 passed / 31 skipped on phone-small, tablet, laptop); QA students spec x3 96/96 (round 6), F2 x20 120/120 (round 2).",
     "suites": [
       {
         "name": "backend (./mvnw -B verify)",
@@ -323,7 +322,7 @@
       {
         "name": "web (pnpm test --run)",
         "result": "pass",
-        "details": "370 tests in 34 files at T-M2.12 (c4c9e02)"
+        "details": "539 tests at T-M2.5 (26897a7)"
       },
       {
         "name": "governance scripts (scripts/tests/run-all.sh)",
@@ -333,30 +332,30 @@
       {
         "name": "gate.sh",
         "result": "pass",
-        "details": "evidence/T-M2.12/gate-20261014T064210Z.log and gate-20261014T065157Z.log (PASS, c4c9e02)"
+        "details": "evidence/T-M2.5/gate-20261017T015842Z.log and gate-20261017T020928Z.log (PASS, 26897a7)"
       }
     ]
   },
   "gates": {
     "G0": {
-      "status": "pass",
-      "note": "T-M2.5 packet (DEC-120, PR #93, 35a1d86): DOCS-REVIEW PASS round 3; PO start signal DEC-121"
+      "status": "pending",
+      "note": "T-M2.14 packet not written (T-M2.5 passed: DOCS-REVIEW PASS round 3, PR #93)"
     },
     "G1": {
-      "status": "pass",
-      "note": "T-M2.5: gate PASS x2 on 26897a7 (evidence/T-M2.5/gate-20261017T015842Z.log, gate-20261017T020928Z.log)"
+      "status": "n/a",
+      "note": "T-M2.14 not started (T-M2.5 passed: gate PASS x2 on 26897a7)"
     },
     "G2": {
-      "status": "pending",
-      "note": "T-M2.5 PR #94: CI running"
+      "status": "n/a",
+      "note": "T-M2.14 not started (T-M2.5 passed: CI 7/7 at cec675b)"
     },
     "G3": {
-      "status": "pending",
-      "note": "T-M2.5 round 1 at 24dda26: QA PASS WITH MINOR, UX CHANGES REQUESTED (UX-1 S2), SEC APPROVED; fixes via AC12 (DEC-122)"
+      "status": "n/a",
+      "note": "T-M2.14 not started (T-M2.5 passed: QA PASS, UX APPROVED, SEC APPROVED at cec675b)"
     },
     "G4": {
       "status": "n/a",
-      "note": "T-M2.5 not started (T-M2.12 passed: merge-gate PR #90, b5596d3)"
+      "note": "T-M2.14 not started (T-M2.5 passed: merge-gate PR #94, 84c97c1)"
     },
     "G5": {
       "status": "pass",
@@ -367,7 +366,6 @@
   "decisions": {
     "log": "docs/10-governance/decision-log.md",
     "recent": [
-      "DEC-109",
       "DEC-110",
       "DEC-111",
       "DEC-112",
@@ -380,7 +378,8 @@
       "DEC-119",
       "DEC-120",
       "DEC-121",
-      "DEC-122"
+      "DEC-122",
+      "DEC-123"
     ],
     "pendingPO": [
       "OQ-03",
