@@ -197,7 +197,12 @@ with every new student. 5. **Hard-coded semantics?** None: no level, exam or cur
   `@username` line, email) wrap with `overflow-wrap: break-word` rather than `anywhere`, so a column never shrinks below its longest
   unbreakable value when there is room: at 768 vi a 20-character username stays on one line and a short email does not break before
   its last letter even with a very long email on the same page; a value longer than its cell still wraps, fully visible, no horizontal
-  scroll (E2E at 768 with the long-email row). Tests for each; existing assertions change only where
+  scroll (E2E at 768 with the long-email row). (t) QA-R4-1 (S2, round 4; supersedes the (s) column sizing): the table
+  never outgrows its container: `table-layout: fixed` with set column shares (e.g. Name ~36 %, Status ~16 %, Email ~30 %, Phone ~18 %, tuned
+  so the Status badge and a phone fit on one line), and cell text wraps inside its column (`overflow-wrap: anywhere` is acceptable again,
+  since the column width no longer depends on content); at 768, 1024 and 1280 in vi and en with realistic rows (a 28-character username
+  with a ~28-character Gmail address, QA's 67-character email, a three-word Vietnamese name) there is no horizontal scroll and every value
+  is fully visible, a 20-character username stays on one line and a 20-character email stays on one line (E2E at 768, 1024 and 1280). Tests for each; existing assertions change only where
   these items change copy, layout or a step record.
 
 ## Test plan
