@@ -7,8 +7,11 @@ export interface DataListColumn<K extends string> {
   id: K
   /** The column header (table) and the visually hidden label of the value (list). */
   header: string
-  /** Keep the value on one line in the table (short values such as a phone number or a status badge). */
-  nowrap?: boolean
+  /**
+   * The column's share of the table (e.g. `'30%'`). When columns have widths the table uses `table-layout: fixed`, so its
+   * width never depends on the content: values wrap inside their column (T-M2.5 AC12 (t)).
+   */
+  width?: string
   /** In the narrow list, show the value beside the title instead of on the meta line (e.g. a status badge). */
   inTitle?: boolean
 }
@@ -31,8 +34,8 @@ export interface DataListProps<K extends string> {
  * A responsive collection (design-system §3, responsive-standards §3.3): at ≥ 768 px (`md`) a semantic table with column
  * headers; below, a list of rows whose first column is the title and the others a wrapping meta line, each value led by
  * its visually hidden header. One DOM structure at a time (chosen with `useMinWidth`), so nothing is duplicated for
- * assistive technology. Long values wrap (`overflow-wrap: anywhere`): never a horizontal scroll at 360 px; a `nowrap`
- * column keeps short values on one line in the table, an `inTitle` column sits beside the list row's title (T-M2.5 AC12).
+ * assistive technology. Long values wrap (`overflow-wrap: anywhere`): never a horizontal scroll; columns with a `width`
+ * share a fixed-layout table, and an `inTitle` column sits beside the list row's title (T-M2.5 AC12).
  */
 export function DataList<K extends string>({ label, columns, rows }: DataListProps<K>) {
   const wide = useMinWidth('md')
@@ -40,8 +43,15 @@ export function DataList<K extends string>({ label, columns, rows }: DataListPro
   if (!first) return null
   if (wide) {
     return (
-      <table className={styles.table}>
+      <table className={cx(styles.table, columns.some((c) => c.width) && styles.fixed)}>
         <caption className={styles.visuallyHidden}>{label}</caption>
+        {columns.some((c) => c.width) ? (
+          <colgroup>
+            {columns.map((column) => (
+              <col key={column.id} style={column.width ? { inlineSize: column.width } : undefined} />
+            ))}
+          </colgroup>
+        ) : null}
         <thead>
           <tr>
             {columns.map((column) => (
@@ -60,7 +70,7 @@ export function DataList<K extends string>({ label, columns, rows }: DataListPro
                     {row.cells[column.id]}
                   </th>
                 ) : (
-                  <td key={column.id} className={cx(styles.cell, column.nowrap && styles.nowrap)}>
+                  <td key={column.id} className={styles.cell}>
                     {row.cells[column.id]}
                   </td>
                 ),

@@ -1,6 +1,3 @@
-/* Cell text uses `overflow-wrap: break-word`, not `anywhere`: `anywhere` lets a column's min-content shrink below its
-   longest word, so the table squeezes a column and breaks short values mid-word (T-M2.5 AC12 (s)). */
-
 /* Below 768 px (md, src/ui/breakpoints.ts) a list; at >= 768 px a table (chosen in JS: one DOM structure at a time). */
 .table {
   inline-size: 100%;
@@ -8,8 +5,13 @@
   table-layout: auto;
 }
 
+/* Columns with set shares: the width never depends on the content (T-M2.5 AC12 (t)). */
+.fixed {
+  table-layout: fixed;
+}
+
 .header {
-  padding: var(--space-2) var(--space-3);
+  padding: var(--space-2);
   border-block-end: var(--border-width) solid var(--color-border-strong);
   background: var(--color-surface-sunken);
   color: var(--color-text-muted);
@@ -19,17 +21,12 @@
 }
 
 .cell {
-  padding: var(--space-3);
+  padding: var(--space-3) var(--space-2); /* slim inline padding: more room for values at 768 px (AC12 (t)) */
   border-block-end: var(--border-width) solid var(--color-border);
   font-weight: var(--font-weight-regular);
   text-align: start;
   vertical-align: middle;
-  overflow-wrap: break-word;
-}
-
-.nowrap {
-  white-space: nowrap;
-  overflow-wrap: normal;
+  overflow-wrap: anywhere;
 }
 
 .row:hover {
@@ -60,7 +57,7 @@
   align-items: center;
   gap: var(--space-2);
   min-inline-size: 0;
-  overflow-wrap: break-word;
+  overflow-wrap: anywhere;
 }
 
 .titleValue {
@@ -78,7 +75,7 @@
 
 .metaValue {
   min-inline-size: 0;
-  overflow-wrap: break-word;
+  overflow-wrap: anywhere;
 }
 
 .visuallyHidden {

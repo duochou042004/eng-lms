@@ -43,7 +43,7 @@ E2E on all six (nightly) and on the three mandatory ones per PR.
 2. Fluid containers (`max-width` + `%`/`min()`). No fixed pixel widths for content. Images and media use `max-width: 100%`.
 3. **Tables:** below the 768 px viewport (§1; a 640 px container is the target for narrower placements), `DataList` renders each row as a list
    item: the primary field is the title (with any `inTitle` value such as a status badge beside it), 2–3 secondary fields sit on a meta line,
-   and actions move into a `⋯` menu. In the table, short values (phone, status) can be `nowrap`. A table that must stay tabular (e.g. the grading rubric) scrolls **inside its own container** with a sticky first
+   and actions move into a `⋯` menu. In the table, columns can have fixed shares (`width`, `table-layout: fixed`), so the table never grows with its content (T-M2.5 AC12 (t)). A table that must stay tabular (e.g. the grading rubric) scrolls **inside its own container** with a sticky first
    column and a visible scroll affordance.
 4. **Forms:** a single column below `md`. Labels always sit above inputs. Inputs are ≥ 44 px tall, with `font-size ≥ 16px` (prevents iOS zoom). The primary action sits in a
    `StickyFooter` on `xs`/`sm` for long forms. Correct `inputmode` and `autocomplete` for keyboards.

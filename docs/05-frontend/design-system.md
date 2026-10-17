@@ -128,8 +128,11 @@ Decorative: `aria-hidden="true"`, never focusable; its owner announces the state
   (the first column as the title, the other values on a wrapping meta line, each led by its visually hidden header). The structure is chosen with
   `useMinWidth('md')` (one DOM at a time, nothing duplicated for assistive technology) rather than a 640 px container query: the packet fixes
   the switch at the 768 px viewport, and a structural switch cannot be done in CSS without rendering both. Values wrap (`overflow-wrap:
-  anywhere`), so 360 px never scrolls horizontally; an empty value is left out of the list row. AC12 (DEC-122): a column may be `nowrap`
-  (one line in the table: phone, status) or `inTitle` (beside the list row's title: the status badge). The Students list has no Username column (AC12 (q), superseding (p)'s minimum width): `@username` is a muted
+  anywhere`), so 360 px never scrolls horizontally; an empty value is left out of the list row. AC12 (DEC-122): a column may have a `width`
+  (a share such as `31%`; then the table uses `table-layout: fixed`, so its width never depends on the content, AC12 (t), superseding the
+  (d) `nowrap` and (s) `break-word` sizing) and may be `inTitle` (beside the list row's title: the status badge). The Students table uses
+  Name 31 %, Status 17 %, Email 31 %, Phone 21 % with 8 px inline cell padding, so the longest badge (vi, en), a phone and a 20-character
+  email or username fit one line at 768 px. The Students list has no Username column (AC12 (q), superseding (p)'s minimum width): `@username` is a muted
   second line of the Name cell, so at 768 px names and emails keep room.
 - `StatusBadge`: icon + text + tone from `status/statusMap.ts` (§4); the label is passed translated (`ui/` has no i18n). Not interactive.
 - `Disclosure`: React Aria `Disclosure`: a button with `aria-expanded` inside a heading (level 2 or 3), a turning chevron (no movement with

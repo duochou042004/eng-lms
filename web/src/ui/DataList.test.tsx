@@ -19,6 +19,9 @@ describe('DataList', () => {
     setViewportWidth(768)
     const { container } = render(<DataList label="Học viên" columns={columns} rows={rows} />)
     const table = screen.getByRole('table', { name: 'Học viên' })
+    // Without widths: the automatic layout, no colgroup.
+    expect(table).not.toHaveClass('fixed')
+    expect(table.querySelector('colgroup')).toBeNull()
     expect(
       within(table)
         .getAllByRole('columnheader')
@@ -51,16 +54,17 @@ describe('DataList', () => {
     expect(screen.getByRole('list', { name: 'Học viên' })).toBeInTheDocument()
   })
 
-  it('keeps a nowrap column on one line in the table and shows an inTitle column beside the list title (AC12 (d), (e))', () => {
+  it('gives columns fixed shares (fixed layout) and shows an inTitle column beside the list title (AC12 (e), (t))', () => {
     const cols = [
-      { id: 'name', header: 'Họ tên' },
-      { id: 'status', header: 'Trạng thái', nowrap: true, inTitle: true },
-      { id: 'phone', header: 'Điện thoại', nowrap: true },
+      { id: 'name', header: 'Họ tên', width: '50%' },
+      { id: 'status', header: 'Trạng thái', width: '20%', inTitle: true },
+      { id: 'phone', header: 'Điện thoại', width: '30%' },
     ] as const
     const data = [{ id: '1', cells: { name: 'An', status: <span>Đang học</span>, phone: '0901 234 567' } }]
     setViewportWidth(1024)
     const { unmount } = render(<DataList label="Học viên" columns={cols} rows={data} />)
-    expect(screen.getByRole('cell', { name: '0901 234 567' })).toHaveClass('nowrap')
+    expect(screen.getByRole('table')).toHaveClass('fixed')
+    expect([...document.querySelectorAll('col')].map((c) => c.style.inlineSize)).toEqual(['50%', '20%', '30%'])
     unmount()
     setViewportWidth(360)
     render(<DataList label="Học viên" columns={cols} rows={data} />)

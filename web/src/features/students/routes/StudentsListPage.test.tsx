@@ -63,12 +63,14 @@ describe('/tutor/students', { timeout: 20_000 }, () => {
     await expectNoAxeViolations(container)
   })
 
-  it('lets only a long email (over 32 characters) break anywhere in its cell (AC12 (s))', async () => {
-    const long = 'nguyen.thi.phuong.lan.anh.hoang.x@subdomain.example-long.com'
-    listApi(() => HttpResponse.json(page([row(1), row(2, { email: long })])))
+  it('sizes the table by fixed column shares, not by its content (AC12 (t))', async () => {
+    listApi(() =>
+      HttpResponse.json(page([row(1, { email: 'nguyen.thi.phuong.lan.anh.hoang.x@subdomain.example-long.com' })])),
+    )
     renderRoute('/tutor/students')
-    expect(await screen.findByText(long)).toHaveClass('longValue')
-    expect(screen.getByRole('cell', { name: 'hv1@example.com' }).querySelector('.longValue')).toBeNull()
+    const table = await screen.findByRole('table', { name: 'Học viên' })
+    expect(table).toHaveClass('fixed')
+    expect([...table.querySelectorAll('col')].map((c) => c.style.inlineSize)).toEqual(['31%', '17%', '31%', '21%'])
   })
 
   it('renders the rows as a list below 768 px', async () => {
@@ -82,8 +84,6 @@ describe('/tutor/students', { timeout: 20_000 }, () => {
     expect(item.firstElementChild).toHaveTextContent('Học viên 01 @hocvien1Đang học')
     expect(item.lastElementChild).toHaveTextContent('Email: hv1@example.comĐiện thoại: 0901 000 001')
     expect(item.lastElementChild).not.toHaveTextContent('hocvien1')
-    // A short email keeps the cell's break-word wrapping (AC12 (s)).
-    expect(item.querySelector('.longValue')).toBeNull()
     await expectNoAxeViolations(container)
   })
 

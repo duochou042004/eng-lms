@@ -222,10 +222,11 @@ function ListBody({
     return null
   }
   const columns: Array<DataListColumn<Column>> = [
-    { id: 'name', header: t('list.columns.name') },
-    { id: 'status', header: t('list.columns.status'), nowrap: true, inTitle: true },
-    { id: 'email', header: t('list.columns.email') },
-    { id: 'phone', header: t('list.columns.phone'), nowrap: true },
+    // Fixed shares (AC12 (t)): the table never grows with its content; the badge (vi, en) and a phone fit their columns.
+    { id: 'name', header: t('list.columns.name'), width: '31%' },
+    { id: 'status', header: t('list.columns.status'), width: '17%', inTitle: true },
+    { id: 'email', header: t('list.columns.email'), width: '31%' },
+    { id: 'phone', header: t('list.columns.phone'), width: '21%' },
   ]
   const rows: DataListRow<Column>[] = data.items.map((student: StudentRow) => ({
     id: student.id,
@@ -240,7 +241,7 @@ function ListBody({
         </span>
       ),
       status: <StudentStatusBadge status={student.status} />,
-      email: student.email ? <Email value={student.email} /> : null,
+      email: student.email,
       phone: student.phone,
     },
   }))
@@ -300,16 +301,6 @@ function Pager({ page, pages, listTop, onPage }: PagerProps) {
       <output className={styles.visuallyHidden}>{announcement}</output>
     </nav>
   )
-}
-
-/**
- * Table cells wrap with `overflow-wrap: break-word`, so a value's longest word is its column's minimum (AC12 (s)): a short
- * email stays whole. A long email (over 32 characters) may break anywhere instead, so it never forces its whole length
- * as the column's minimum (no squeezed names, no horizontal scroll); it stays fully visible.
- */
-const LONG_EMAIL = 32
-function Email({ value }: { value: string }) {
-  return value.length > LONG_EMAIL ? <span className={styles.longValue}>{value}</span> : <>{value}</>
 }
 
 /** The rows' shape while the first page loads (shown after 150 ms; the region is busy and labelled at once). */
