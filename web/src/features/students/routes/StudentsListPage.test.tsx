@@ -70,7 +70,18 @@ describe('/tutor/students', { timeout: 20_000 }, () => {
     renderRoute('/tutor/students')
     const table = await screen.findByRole('table', { name: 'Học viên' })
     expect(table).toHaveClass('fixed')
-    expect([...table.querySelectorAll('col')].map((c) => c.style.inlineSize)).toEqual(['31%', '17%', '31%', '21%'])
+    expect([...table.querySelectorAll('col')].map((c) => c.style.inlineSize)).toEqual(['29%', '16.5%', '31%', '23.5%'])
+  })
+
+  it('renders emails with break points after @ and before dots, phones in whole groups; the text unchanged (AC12 (u))', async () => {
+    listApi(() => HttpResponse.json(page([row(1, { email: 'binh.le.qwokro1@gmail.com', phone: '+84 (90) 123-4567' })])))
+    renderRoute('/tutor/students')
+    const email = await screen.findByRole('cell', { name: 'binh.le.qwokro1@gmail.com' })
+    expect(email.querySelectorAll('wbr')).toHaveLength(3)
+    expect(email.textContent).toBe('binh.le.qwokro1@gmail.com')
+    const phone = screen.getByRole('cell', { name: '+84 (90) 123-4567' })
+    expect([...phone.querySelectorAll('.nowrap')].map((g) => g.textContent)).toEqual(['+84', '(90)', '123-4567'])
+    expect(phone.textContent).toBe('+84 (90) 123-4567')
   })
 
   it('renders the rows as a list below 768 px', async () => {

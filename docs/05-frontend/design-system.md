@@ -131,8 +131,9 @@ Decorative: `aria-hidden="true"`, never focusable; its owner announces the state
   anywhere`), so 360 px never scrolls horizontally; an empty value is left out of the list row. AC12 (DEC-122): a column may have a `width`
   (a share such as `31%`; then the table uses `table-layout: fixed`, so its width never depends on the content, AC12 (t), superseding the
   (d) `nowrap` and (s) `break-word` sizing) and may be `inTitle` (beside the list row's title: the status badge). The Students table uses
-  Name 31 %, Status 17 %, Email 31 %, Phone 21 % with 8 px inline cell padding, so the longest badge (vi, en), a phone and a 20-character
-  email or username fit one line at 768 px. The Students list has no Username column (AC12 (q), superseding (p)'s minimum width): `@username` is a muted
+  Name 29 %, Status 16.5 %, Email 31 %, Phone 23.5 % with 8 px inline cell padding, so the longest badge (vi, en), a phone and a 20-character
+  email or username fit one line at 768 px. Emails wrap after `@` or before a dot of the local part (`<wbr>`; a domain over 16 characters
+  before its dots too) and phones only between their space-separated groups (AC12 (u), `features/students/model/lineBreaks.ts`). The Students list has no Username column (AC12 (q), superseding (p)'s minimum width): `@username` is a muted
   second line of the Name cell, so at 768 px names and emails keep room.
 - `StatusBadge`: icon + text + tone from `status/statusMap.ts` (§4); the label is passed translated (`ui/` has no i18n). Not interactive.
 - `Disclosure`: React Aria `Disclosure`: a button with `aria-expanded` inside a heading (level 2 or 3), a turning chevron (no movement with

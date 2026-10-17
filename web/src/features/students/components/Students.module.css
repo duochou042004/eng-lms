@@ -41,6 +41,11 @@
   overflow-wrap: anywhere;
 }
 
+/* A phone group kept whole (at most 12 characters, so it fits the phone column, AC12 (u)). */
+.nowrap {
+  white-space: nowrap;
+}
+
 /* The name in a row: a link that is a 44 px target in the list layout and wraps long names. */
 .nameLink {
   display: inline-flex;

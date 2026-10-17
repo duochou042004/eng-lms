@@ -1,5 +1,5 @@
 import { Archive, SearchX, UserPlus } from 'lucide-react'
-import { useEffect, useRef, useState, type RefObject } from 'react'
+import { Fragment, useEffect, useRef, useState, type RefObject } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link, useLocation, useSearchParams } from 'react-router'
 import { usePageTitle } from '../../../lib/i18n/pageTitle'
@@ -25,6 +25,7 @@ import { useAnyStudent, useStudentList, type StudentRow } from '../api/students'
 import { StudentStatusBadge } from '../components/StudentStatusBadge'
 import styles from '../components/Students.module.css'
 import '../i18n'
+import { emailParts, phoneGroups } from '../model/lineBreaks'
 import { cleanQuery, parseListView, toSearchParams, type ListSort, type ListView } from '../model/listParams'
 
 const SEARCH_DEBOUNCE_MS = 300
@@ -223,10 +224,10 @@ function ListBody({
   }
   const columns: Array<DataListColumn<Column>> = [
     // Fixed shares (AC12 (t)): the table never grows with its content; the badge (vi, en) and a phone fit their columns.
-    { id: 'name', header: t('list.columns.name'), width: '31%' },
-    { id: 'status', header: t('list.columns.status'), width: '17%', inTitle: true },
+    { id: 'name', header: t('list.columns.name'), width: '29%' },
+    { id: 'status', header: t('list.columns.status'), width: '16.5%', inTitle: true },
     { id: 'email', header: t('list.columns.email'), width: '31%' },
-    { id: 'phone', header: t('list.columns.phone'), width: '21%' },
+    { id: 'phone', header: t('list.columns.phone'), width: '23.5%' },
   ]
   const rows: DataListRow<Column>[] = data.items.map((student: StudentRow) => ({
     id: student.id,
@@ -241,8 +242,8 @@ function ListBody({
         </span>
       ),
       status: <StudentStatusBadge status={student.status} />,
-      email: student.email,
-      phone: student.phone,
+      email: student.email ? <EmailText value={student.email} /> : null,
+      phone: student.phone ? <PhoneText value={student.phone} /> : null,
     },
   }))
   return (
@@ -300,6 +301,37 @@ function Pager({ page, pages, listTop, onPage }: PagerProps) {
       </Button>
       <output className={styles.visuallyHidden}>{announcement}</output>
     </nav>
+  )
+}
+
+/** An email that wraps after `@` or before a dot of its local part, never inside `gmail.com` (AC12 (u)); its text stays the address. */
+function EmailText({ value }: { value: string }) {
+  return (
+    <>
+      {emailParts(value).map((part, i) => (
+        <Fragment key={i}>
+          {i > 0 ? <wbr /> : null}
+          {part}
+        </Fragment>
+      ))}
+    </>
+  )
+}
+
+/** A phone that wraps only between its groups (`123-4567` stays together, AC12 (u)). */
+function PhoneText({ value }: { value: string }) {
+  return (
+    <>
+      {phoneGroups(value).map((group, i) =>
+        group.whole ? (
+          <span key={i} className={styles.nowrap}>
+            {group.text}
+          </span>
+        ) : (
+          <Fragment key={i}>{group.text}</Fragment>
+        ),
+      )}
+    </>
   )
 }
 
