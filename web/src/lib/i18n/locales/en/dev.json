@@ -13,7 +13,8 @@
     "errorSummary": "Error summary",
     "navigation": "Navigation",
     "overlays": "Sheets and popover",
-    "buttonLink": "Button-styled link"
+    "buttonLink": "Button-styled link",
+    "students": "Students components (T-M2.5)"
   },
   "sample": {
     "primary": "Save",
@@ -80,6 +81,37 @@
     "linkQuiet": "See all",
     "progressShow": "Show the progress line",
     "progressHide": "Hide the progress line",
-    "progressHint": "A thin line at the top edge of the window while a navigation takes longer than 150 ms. With reduced motion: a static line."
+    "progressHint": "A thin line at the top edge of the window while a navigation takes longer than 150 ms. With reduced motion: a static line.",
+    "statusActive": "Active",
+    "statusPaused": "Paused",
+    "statusArchived": "Archived",
+    "searchLabel": "Search",
+    "searchHint": "Name, username or email",
+    "searchClear": "Clear search",
+    "dataListLabel": "Sample students",
+    "colName": "Name",
+    "colUsername": "Username",
+    "colStatus": "Status",
+    "colEmail": "Email",
+    "rowLong": "Nguyễn Thị Phương Lan Anh Hoàng Bảo Ngọc (a very long name)",
+    "disclosureTitle": "Contact (optional)",
+    "disclosureBody": "Fields inside a collapsed section keep their values.",
+    "textAreaLabel": "Note",
+    "textAreaHint": "Anything you want to remember.",
+    "textAreaInvalid": "Note (too long)",
+    "textAreaError": "Use at most 2,000 characters.",
+    "textAreaDisabled": "Note (disabled)",
+    "copyLabel": "Copy message",
+    "copied": "Copied",
+    "copyFailed": "Couldn't copy. Select the text and copy it.",
+    "confirmOpen": "Leave the form",
+    "confirmTitle": "Discard this student?",
+    "confirmBody": "The details you entered will be lost.",
+    "confirmDiscard": "Discard",
+    "confirmKeep": "Keep editing",
+    "dlEmpty": "Not added",
+    "dlName": "Full name",
+    "dlEmail": "Email",
+    "dlNote": "Note"
   }
 }

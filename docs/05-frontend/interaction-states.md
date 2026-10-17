@@ -34,7 +34,9 @@ for Today and Home.
 2. Validation: client (Zod) on blur and on submit; server errors (`errors[]`) are mapped to fields by `field`; unknown field errors go to the `ErrorSummary`.
 3. On a failed submit: show the `ErrorSummary` at the top (for forms with > 4 fields) listing the errors as links, and move focus to it. Otherwise focus the first invalid field.
 4. Submit button: disabled only while submitting (with a spinner inside and the label "Saving…"); double submit prevented; idempotency key for commands.
-5. Success: a toast ("Student created") **and** navigation or an in-place update. Never a success modal.
+5. Success: a toast ("Student created") **and** navigation or an in-place update. Never a success modal. **Exception (T-M2.5, DEC-120 (7)):**
+   Add student's success feedback is the credentials card that replaces the form in place, its `h2` "Student created" taking focus (no toast
+   until `Toast` ships with T-M2.14); the card shows the one-time temporary password, so it is the confirmation.
 6. **Unsaved changes guard** on every form and editor: in-app navigation shows a ConfirmDialog; `beforeunload` for tab closing.
 7. **Autosave** (builder, rich text editors, attempts): a debounced save (≤ 1 s for attempts, 10 s for drafts) plus save on blur and on route leave. The
    `SaveIndicator` shows `Saving… / Saved 19:04 / Offline, will retry / Couldn't save, Retry`. A local draft buffer (IndexedDB with a sessionStorage

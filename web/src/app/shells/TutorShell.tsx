@@ -1,4 +1,4 @@
-import { CalendarCheck, Menu, NotebookPen } from 'lucide-react'
+import { CalendarCheck, Menu, NotebookPen, Users } from 'lucide-react'
 import { useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Outlet } from 'react-router'
@@ -12,7 +12,10 @@ import { useOverlay } from './useOverlay'
 export { ShellNotFound } from './ShellParts'
 
 /** The tutor's navigation (information-architecture §1): only routes that exist (no dead items); a task adds a row. */
-const NAV = [{ id: 'today', labelKey: 'nav.today', icon: <CalendarCheck />, to: '/tutor/today' }] as const
+const NAV = [
+  { id: 'today', labelKey: 'nav.today', icon: <CalendarCheck />, to: '/tutor/today' },
+  { id: 'students', labelKey: 'nav.students', icon: <Users />, to: '/tutor/students' },
+] as const
 
 /**
  * The tutor shell (a lazy chunk of its own, NFR-PERF-03; T-M2.11): at ≥ lg a top bar (workspace name, account menu

@@ -1,0 +1,253 @@
+/* The Students pages (T-M2.5): layout only; every visual value is a token. */
+
+/* The list's controls: the search grows; the checkbox and the sort wrap below it on narrow screens. */
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--space-3) var(--space-5);
+}
+
+.search {
+  flex: 1 1 var(--size-field-min);
+  min-inline-size: 0;
+}
+
+.pagination {
+  /* Previous at the start, Next at the end, the position between (it wraps inside its cell at 360 px, AC12 (c)). */
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.pageNumber {
+  text-align: center;
+  color: var(--color-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+/* A row's name cell: the name link, then `@username` on its own muted line (AC12 (q)). */
+.nameCell {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-inline-size: 0;
+}
+
+.username {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  overflow-wrap: anywhere;
+}
+
+/* A phone group kept whole (at most 12 characters, so it fits the phone column, AC12 (u)). */
+.nowrap {
+  white-space: nowrap;
+}
+
+/* The name in a row: a link that is a 44 px target in the list layout and wraps long names. */
+.nameLink {
+  display: inline-flex;
+  align-items: center;
+  min-block-size: var(--size-control-md);
+  font-weight: var(--font-weight-medium);
+  overflow-wrap: anywhere;
+}
+
+.skeletonRows {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+/* The form: one column, at most the reading width; its sections are separated by the disclosures' hairlines. */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  max-inline-size: var(--size-reading-max);
+}
+
+.handles {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.handle {
+  display: grid;
+  gap: var(--space-3);
+  margin: 0;
+  padding: var(--space-3);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-md);
+  min-inline-size: 0;
+}
+
+.legend {
+  padding-inline: var(--space-1);
+  font-weight: var(--font-weight-semibold);
+}
+
+.handleRemove {
+  justify-self: start;
+}
+
+.mutedText {
+  color: var(--color-text-muted);
+}
+
+.availability {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  min-block-size: calc(1em * var(--line-height-body));
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+.availability[data-tone='success'] {
+  color: var(--color-success-text);
+}
+
+.availability[data-tone='danger'] {
+  color: var(--color-danger-text);
+}
+
+.availabilityIcon {
+  flex: none;
+  inline-size: 1.1em;
+  block-size: 1.1em;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+/* The credentials card: one bordered panel (not a card in a card); the password in a monospace, selectable line. */
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  max-inline-size: var(--size-reading-max);
+  padding: var(--space-5);
+  border: var(--border-width) solid var(--color-border-strong);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+}
+
+.cardTitle {
+  font-size: var(--font-size-xl);
+}
+
+.cardTitle:focus {
+  outline: none;
+}
+
+.secret {
+  font-family: var(--font-family-mono);
+  font-size: var(--font-size-lg);
+  overflow-wrap: anywhere;
+  user-select: all;
+}
+
+/* The workspace page. */
+.backLink {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  align-self: flex-start;
+  min-block-size: var(--size-control-md);
+  font-weight: var(--font-weight-medium);
+}
+
+.icon {
+  flex: none;
+  inline-size: var(--size-icon);
+  block-size: var(--size-icon);
+}
+
+.quickLinks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.sectionTitle {
+  margin-block-end: var(--space-2);
+  font-size: var(--font-size-lg);
+}
+
+.note {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  min-block-size: var(--size-control-md);
+  overflow-wrap: anywhere;
+}
+
+.contactText {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  min-inline-size: 0;
+}
+
+.value {
+  overflow-wrap: anywhere;
+  user-select: text;
+}
+
+.textLink {
+  display: inline-flex;
+  align-items: center;
+  min-block-size: var(--size-control-md);
+  padding-inline: var(--space-2);
+  font-weight: var(--font-weight-medium);
+}
+
+.handlesList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* A handle: its label above its value at every width (AC12 (i)). */
+.handleItem {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-inline-size: 0;
+}
+
+.handleLabel {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
+.visuallyHidden {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}

@@ -1,0 +1,88 @@
+/* Below 768 px (md, src/ui/breakpoints.ts) a list; at >= 768 px a table (chosen in JS: one DOM structure at a time). */
+.table {
+  inline-size: 100%;
+  border-collapse: collapse;
+  table-layout: auto;
+}
+
+/* Columns with set shares: the width never depends on the content (T-M2.5 AC12 (t)). */
+.fixed {
+  table-layout: fixed;
+}
+
+.header {
+  padding: var(--space-2);
+  border-block-end: var(--border-width) solid var(--color-border-strong);
+  background: var(--color-surface-sunken);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  text-align: start;
+}
+
+.cell {
+  padding: var(--space-3) var(--space-2); /* slim inline padding: more room for values at 768 px (AC12 (t)) */
+  border-block-end: var(--border-width) solid var(--color-border);
+  font-weight: var(--font-weight-regular);
+  text-align: start;
+  vertical-align: middle;
+  overflow-wrap: anywhere;
+}
+
+.row:hover {
+  background: var(--color-surface-sunken);
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-block-start: var(--border-width) solid var(--color-border);
+}
+
+.item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding-block: var(--space-3);
+  border-block-end: var(--border-width) solid var(--color-border);
+  min-inline-size: 0;
+}
+
+.title {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  min-inline-size: 0;
+  overflow-wrap: anywhere;
+}
+
+.titleValue {
+  flex: none;
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-3);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  min-inline-size: 0;
+}
+
+.metaValue {
+  min-inline-size: 0;
+  overflow-wrap: anywhere;
+}
+
+.visuallyHidden {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}

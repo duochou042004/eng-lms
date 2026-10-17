@@ -1,0 +1,22 @@
+.textArea {
+  min-block-size: calc(3lh + 2 * var(--space-2));
+  field-sizing: content;
+  resize: vertical;
+}
+
+.description {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.counter {
+  margin-inline-start: auto;
+  font-variant-numeric: tabular-nums;
+}
+
+.counter[data-over] {
+  color: var(--color-danger);
+  font-weight: var(--font-weight-medium);
+}

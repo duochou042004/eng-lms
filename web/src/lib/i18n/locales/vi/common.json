@@ -31,5 +31,12 @@
     "loading": "Đang tải thông tin không gian dạy học",
     "error": "Không tải được tên không gian dạy học",
     "retry": "Thử lại"
+  },
+  "status": {
+    "student": {
+      "ACTIVE": "Đang học",
+      "PAUSED": "Tạm nghỉ",
+      "ARCHIVED": "Đã lưu trữ"
+    }
   }
 }

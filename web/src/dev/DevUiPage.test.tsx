@@ -5,7 +5,8 @@ import { i18n } from '../lib/i18n'
 import { expectNoAxeViolations } from '../test/axe'
 import { renderRoute } from '../test/render'
 
-describe('/dev/ui (development builds only)', () => {
+// The gallery grows with every ui/ component (T-M2.5 added eight): axe over the whole page takes seconds on a busy runner.
+describe('/dev/ui (development builds only)', { timeout: 20_000 }, () => {
   it('registers the dev namespace when its module loads and shows the translated gallery with the SegmentedControl', async () => {
     expect(i18n.hasResourceBundle('vi', 'dev')).toBe(false)
     const { container } = renderRoute('/dev/ui')
@@ -70,5 +71,28 @@ describe('/dev/ui (development builds only)', () => {
     await expectNoAxeViolations(container)
     await userEvent.click(screen.getByRole('button', { name: 'Ẩn đường tiến trình' }))
     expect(screen.queryByTestId('progress-line')).not.toBeInTheDocument()
+  })
+
+  it('shows the T-M2.5 components in their states: StatusBadge, SearchField, DataList, Disclosure, TextArea, CopyButton, ConfirmDialog, DescriptionList', async () => {
+    const { container } = renderRoute('/dev/ui')
+    await screen.findByRole('heading', { level: 1, name: 'Thư viện thành phần' })
+    for (const label of ['Đang học', 'Tạm nghỉ', 'Đã lưu trữ'])
+      expect(screen.getAllByText(label).length).toBeGreaterThan(0)
+    expect(screen.getByRole('searchbox', { name: 'Tìm kiếm' })).toBeInTheDocument()
+    expect(screen.getByRole('table', { name: 'Học viên mẫu' })).toBeInTheDocument()
+    const trigger = screen.getByRole('button', { name: 'Liên hệ (không bắt buộc)' })
+    expect(trigger).toHaveAttribute('aria-expanded', 'false')
+    expect(screen.getByRole('textbox', { name: 'Ghi chú (quá dài)' })).toHaveAttribute('aria-invalid', 'true')
+    expect(screen.getByRole('textbox', { name: 'Ghi chú (không khả dụng)' })).toBeDisabled()
+    expect(screen.getByRole('button', { name: 'Sao chép tin nhắn' })).toBeInTheDocument()
+    expect(screen.getByText('Chưa có')).toBeInTheDocument()
+    await expectNoAxeViolations(container)
+    await userEvent.click(trigger)
+    expect(trigger).toHaveAttribute('aria-expanded', 'true')
+    await userEvent.click(screen.getByRole('button', { name: 'Rời biểu mẫu' }))
+    expect(await screen.findByRole('alertdialog', { name: 'Bỏ học viên này?' })).toBeInTheDocument()
+    await expectNoAxeViolations(document.body)
+    await userEvent.click(screen.getByRole('button', { name: 'Tiếp tục nhập' }))
+    await waitFor(() => expect(screen.queryByRole('alertdialog')).not.toBeInTheDocument())
   })
 })

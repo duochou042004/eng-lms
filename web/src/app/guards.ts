@@ -123,7 +123,8 @@ export function connectAuthProblems(router: DataRouter, queryClient: QueryClient
     } else if (pathname !== '/change-password') {
       void refreshSession(queryClient)
         .catch(() => undefined)
-        .then(() => router.navigate('/change-password'))
+        // Marked as forced, so an unsaved changes guard lets it through (T-M2.5 AC12 (l)); the user's own link still asks.
+        .then(() => router.navigate('/change-password', { state: { forced: true } }))
     }
   })
   const resync = () =>

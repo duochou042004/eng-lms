@@ -34,7 +34,7 @@ password reset are the follow-up **T-M2.14** (DEC-120).
      `items` with `totalItems > 0`, e.g. a stale link) replaces the URL with the last page; control characters (U+0000–U+001F, U+007F) are
      stripped from `q` and it is trimmed before it is sent. The user never sees a 422.
   3. **List states** (interaction-states §1): initial loading → `DelayedSkeleton` of the rows (same heights); a refetch keeps the rows and shows the existing
-     `ProgressLine` under the page header while it runs (after 150 ms); **first use** (no student in any status) → `EmptyState` "Add your first
+     `ProgressLine` at the top edge of the viewport (design-system §3; G3 QA-1) while it runs (after 150 ms); **first use** (no student in any status) → `EmptyState` "Add your first
      student" explaining that the student gets their own sign-in, with one primary action. With **Include archived** on and no `q`, an empty list is first use
      directly (no count request). When the default view (no `q`, archived off) is empty, one count request with all three statuses and `size=1` decides; when it finds students (all
      archived), the list says "No active or paused students" with the action **Include archived** instead; **filtered empty** → "No students match “…”" with **Clear filters**; **error** → `InlineAlert` with Retry, rows kept if cached.
@@ -171,6 +171,43 @@ with every new student. 5. **Hard-coded semantics?** None: no level, exam or cur
   new `ui/` component has a `/dev/ui` entry, a unit test and an axe check; status is never colour-only.
 - AC11: `./scripts/gate.sh` green twice in a row on the same dev database; all existing unit and E2E assertions kept; the API types are
   regenerated only if `api/openapi.json` changed (it must not).
+
+- AC12 (G3 round 1, DEC-122; S2/S3 and cheap S4 fixes made in this task, DEC-088): (a) UX-1 (S2): when a pager button becomes disabled
+  after a page change, focus moves to the other pager button (or the labelled list region), never to `body`; unit test at both ends;
+  (b) UX-2: a page change scrolls the list top into view and announces "Page n of m" / "Trang n / m" politely; (c) UX-3, QA-4: at 360 px the
+  pager keeps Previous at the start and Next at the end in vi and en ("Page n of m" on its own row if needed); (d) UX-4: `DataList` columns
+  can be `nowrap`, used for phone and status (no phone wrap at 768 and 1280); (e) UX-6: in the narrow list the `StatusBadge` sits in the
+  title row and the meta line holds username, email and phone; (f) UX-7: the vi message uses a neutral greeting (no full name, no "em"
+  form; en adjusted to match) and the expiry reads "10:25, 23/10/2026" style (design-system §7) in both languages; (g) UX-8: "Copied"
+  causes no layout shift (label/icon swap inside the button, announcement visually hidden); (h) UX-9: the header quick links carry
+  `aria-hidden` Phone/Mail/Link icons and `DescriptionList` values align with their terms at 768; (i) UX-10: handle rows stack the label
+  above the value consistently at 360; (j) QA-2, SEC S4-1: `contactHref` refuses an https URL with a username or password
+  (`https://zalo.me@evil.example/`, `https://user:pw@evil.example/`); (k) QA-3, SEC S4-2: the email check also refuses `:`, `/`, `<`, `>`,
+  `"`, `\` and requires a dot in the domain; (l) SEC S4-3: the unsaved changes guard also lets a forced redirect to `/change-password`
+  through (the auth reaction marks its navigation, e.g. router state), while the user's own "Change password" link still asks; (m) SEC
+  S4-4: the credentials card is dropped on `pagehide`, so a back/forward-cache restore never shows the password; (n) UX-5:
+  `responsive-standards.md` §1 and §3.3 describe the 768 px viewport switch for `DataList` (DEC-120) and the container query as the target
+  for a narrower column; (o) UX ruling (a): `steps-f2.json` lists the named steps. (p) QA-R2-1 (S3, G3 round 2, DEC-122): at 768 and 1280 the
+  table keeps usernames of up to 20 characters on one line (no mid-word break; the Username column has a minimum width or `nowrap`) and
+  its header on one line, with no horizontal scroll. (q) UX-11 (S2, UX round 2, DEC-122; supersedes the (p) minimum width): the
+  table has no Username column; the Name cell shows `@username` as a muted second line (the narrow list's meta line drops the username,
+  which the title row now carries), and the `--size-column-id` minimum is removed, so at 768 a three-word Vietnamese name and a
+  20-character email each take at most 2 lines and a 20-character username stays on one line (E2E line counts at 768 and 1280); (r) UX-12:
+  the pager position ("Trang 1 / 133", "Page 1 of 133") never breaks inside the number group (non-breaking spaces). (s) QA-R3-1 (S3) and UX-13 (S4), round 3: table cells (the
+  `@username` line, email) wrap with `overflow-wrap: break-word` rather than `anywhere`, so a column never shrinks below its longest
+  unbreakable value when there is room: at 768 vi a 20-character username stays on one line and a short email does not break before
+  its last letter even with a very long email on the same page; a value longer than its cell still wraps, fully visible, no horizontal
+  scroll (E2E at 768 with the long-email row). (t) QA-R4-1 (S2, round 4; supersedes the (s) column sizing): the table
+  never outgrows its container: `table-layout: fixed` with set column shares (e.g. Name ~36 %, Status ~16 %, Email ~30 %, Phone ~18 %, tuned
+  so the Status badge and a phone fit on one line), and cell text wraps inside its column (`overflow-wrap: anywhere` is acceptable again,
+  since the column width no longer depends on content); at 768, 1024 and 1280 in vi and en with realistic rows (a 28-character username
+  with a ~28-character Gmail address, QA's 67-character email, a three-word Vietnamese name) there is no horizontal scroll and every value
+  is fully visible, a 20-character username stays on one line and a 20-character email stays on one line (E2E at 768, 1024 and 1280). (u) QA-R5-1 (S3, round 5): within the fixed columns, an email breaks
+  only at natural points first (a break opportunity after `@` and before each `.`, e.g. `<wbr>`; a token longer than the column still
+  wraps) and a phone keeps its groups together (non-breaking hyphen and spaces where it fits); at 768 `binh.le.qwokro1@gmail.com`,
+  `an.qxbif0iw@example.com` and `phuongthao.qwokro1@gmail.com` never split inside `gmail.com` / `example.com`, `+84 (90) 123-4567` stays
+  on one line, and (t) still holds (no horizontal scroll, no overflowing cell) (E2E at 768 and 1024). Tests for each; existing assertions change only where
+  these items change copy, layout or a step record.
 
 ## Test plan
 - Implementation: unit (`contactHref` table; list param parsing and fallbacks; username suggestion/availability race; the copy-message

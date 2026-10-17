@@ -54,6 +54,13 @@ button is sticky at the bottom on mobile; the unsaved-changes guard is on. Failu
 Step 2 (DEC-097 (2), confirmed DEC-098): the server generates the password on Create unless the tutor types one; "regenerate" later is the
 password-reset action (no password-suggestion endpoint). The template step (SPEC §49 step 7) is P2 (OQ-04). Nothing else is required, and the student is usable immediately (NFR-UX-02).
 
+**Implemented (T-M2.5, DEC-120):** Students → **Add student** (the list's primary action; "+ New" arrives later) → Full name (the username
+follows the name until edited; "Available" / "Taken" / "Not a valid username") → optional collapsed Password, Contact (email, phone, up to 30
+handles) and Note → **Create** → the credentials card (focus on "Student created") → **Copy message** → **Open workspace**. No guardian section
+until T-M2.14 and no first goal until T-M7.2 (DEC-102). Measured by `e2e/tests/students.spec.ts` (`steps-f2` record): 6 counted steps at
+360, 768 and 1280 px, with ux-flows step [3] "expand Contact → phone" counted as one step as listed above (strictly, the expand click and the
+phone entry are two actions); the wall time is reported, not asserted (DEC-093). Keyboard-only F2: `keyboard-f2` record.
+
 ## F3 Schedule a lesson: budget ≤ 5 steps
 
 ```text

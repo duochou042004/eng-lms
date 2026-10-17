@@ -1,0 +1,17 @@
+{
+  "viewport": {
+    "width": 360,
+    "height": 740
+  },
+  "measures": {
+    "Trang chủ": 60,
+    "Thêm": 60
+  },
+  "layout": {
+    "barTop": 679,
+    "barHeight": 61,
+    "lastContentBottom": 358.09375,
+    "mainPaddingEnd": 84,
+    "safeArea": true
+  }
+}

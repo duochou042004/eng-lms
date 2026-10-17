@@ -1,0 +1,39 @@
+.container {
+  container-type: inline-size;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+}
+
+.item {
+  display: grid;
+  gap: var(--space-1);
+  padding-block: var(--space-3);
+  border-block-end: var(--border-width) solid var(--color-border);
+}
+
+.term {
+  color: var(--color-text-muted);
+  font-weight: var(--font-weight-medium);
+}
+
+.description {
+  min-inline-size: 0;
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.empty {
+  color: var(--color-text-subtle);
+}
+
+@container (width >= 32rem) {
+  .item {
+    grid-template-columns: minmax(var(--size-term), 1fr) 3fr;
+    align-items: baseline; /* a value holding a 44 px link or button stays on its term's line (AC12 (h)) */
+    gap: var(--space-4);
+  }
+}

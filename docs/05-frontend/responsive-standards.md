@@ -18,8 +18,10 @@
 The values live in `ui/breakpoints.ts` (`BREAKPOINTS`, and `useMinWidth(name)`, which the shells use to pick their frame). There is no
 custom-media plugin: a stylesheet that needs a breakpoint repeats its value with a comment naming that file (T-M2.11).
 
-Components adapt with **container queries** (`@container`) against their own width, not the viewport. For example, `DataList` switches
-from a table to a list below a 640 px container width wherever it is placed.
+Components adapt with **container queries** (`@container`) against their own width, not the viewport (e.g. `DescriptionList`). Exception
+(T-M2.5, DEC-120, DEC-122): `DataList` changes its DOM structure (table ↔ list), which CSS cannot do without rendering both, so it switches at
+the 768 px **viewport** (`md`, `useMinWidth`). A container query (a 640 px container) stays the target for a `DataList` placed in a narrower
+column (a split view or a side panel), once such a placement exists.
 
 ## 2. Reference viewports (Playwright projects; evidence screenshots)
 
@@ -39,8 +41,9 @@ E2E on all six (nightly) and on the three mandatory ones per PR.
 
 1. No horizontal page scroll at any reference viewport, or at 320 px with 400% zoom (reflow). An E2E helper asserts `document.scrollingElement.scrollWidth <= innerWidth`.
 2. Fluid containers (`max-width` + `%`/`min()`). No fixed pixel widths for content. Images and media use `max-width: 100%`.
-3. **Tables:** below a 640 px container width, `DataList` renders each row as a list item: the primary field is the title, 2–3 secondary fields sit on a meta line,
-   and actions move into a `⋯` menu. A table that must stay tabular (e.g. the grading rubric) scrolls **inside its own container** with a sticky first
+3. **Tables:** below the 768 px viewport (§1; a 640 px container is the target for narrower placements), `DataList` renders each row as a list
+   item: the primary field is the title (with any `inTitle` value such as a status badge beside it), 2–3 secondary fields sit on a meta line,
+   and actions move into a `⋯` menu. In the table, columns can have fixed shares (`width`, `table-layout: fixed`), so the table never grows with its content (T-M2.5 AC12 (t)). A table that must stay tabular (e.g. the grading rubric) scrolls **inside its own container** with a sticky first
    column and a visible scroll affordance.
 4. **Forms:** a single column below `md`. Labels always sit above inputs. Inputs are ≥ 44 px tall, with `font-size ≥ 16px` (prevents iOS zoom). The primary action sits in a
    `StickyFooter` on `xs`/`sm` for long forms. Correct `inputmode` and `autocomplete` for keyboards.
