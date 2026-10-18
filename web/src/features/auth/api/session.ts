@@ -1,4 +1,4 @@
-import { queryOptions, useMutation, useQuery, useQueryClient, type QueryClient } from '@tanstack/react-query'
+import { hashKey, queryOptions, useMutation, useQuery, useQueryClient, type QueryClient } from '@tanstack/react-query'
 import { useNavigate } from 'react-router'
 import { api, ApiError, type components } from '../../../lib/api'
 import { postAuthMessage } from './authChannel'
@@ -8,6 +8,7 @@ type LoginRequest = components['schemas']['LoginRequest']
 type ChangePasswordRequest = components['schemas']['ChangePasswordRequest']
 
 export const SESSION_KEY = ['auth', 'session'] as const
+const SESSION_HASH = hashKey(SESSION_KEY)
 
 /**
  * `GET /auth/session`: the signed-in user, or `null` when anonymous (401). It also primes the `XSRF-TOKEN` cookie. The
@@ -49,8 +50,8 @@ export async function logout() {
 }
 
 /**
- * `POST /auth/login`. On success the session is cached and the other tabs are told (`signed-in`, no data); a failure
- * leaves the cached (anonymous) session alone.
+ * `POST /auth/login`. On success every other query is removed and the session is cached, and the other tabs are told
+ * (`signed-in`, no data); a failure leaves the cached (anonymous) session alone.
  */
 export function useLogin() {
   const queryClient = useQueryClient()
@@ -60,6 +61,8 @@ export function useLogin() {
       return data as Session
     },
     onSuccess: (session) => {
+      // Nothing of an earlier session survives into this one, e.g. a write answered after its sign-out (AC12 (j)).
+      queryClient.removeQueries({ predicate: (query) => query.queryHash !== SESSION_HASH })
       queryClient.setQueryData(SESSION_KEY, session)
       postAuthMessage('signed-in')
     },

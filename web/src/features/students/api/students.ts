@@ -2,11 +2,14 @@ import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tansta
 import { api, type components } from '../../../lib/api'
 import { ALL_STATUSES, toListQuery, type ListView } from '../model/listParams'
 import type { toCreateRequest } from '../model/createSchema'
+import type { UpdateStudentRequest } from '../model/editSchema'
 
 export type StudentRow = components['schemas']['StudentRow']
 export type Student = components['schemas']['StudentResponse']
 export type StudentPage = components['schemas']['PageResponseStudentRow']
 export type CreatedStudent = components['schemas']['CreatedStudentResponse']
+export type Credentials = components['schemas']['CredentialsResponse']
+export type StudentStatusValue = Student['status']
 
 /** Query keys (frontend-architecture §2: `[feature, resource, params]`). */
 export const studentKeys = {
@@ -86,6 +89,51 @@ export function useCreateStudent() {
       (await api.POST('/api/v1/tutor/students', { body })).data!,
     gcTime: 0,
     onSuccess: () => queryClient.invalidateQueries({ queryKey: studentKeys.list }),
+  })
+}
+
+/**
+ * A write's answer is the latest student (T-M2.14 "version bookkeeping"): it replaces the detail entry, so the next write
+ * sends its `version` (never `+1`: a username-only PATCH keeps it), and the list is invalidated.
+ */
+function useStoreStudent(sid: string) {
+  const queryClient = useQueryClient()
+  return (student: Student) => {
+    queryClient.setQueryData(studentKeys.detail(sid), student)
+    void queryClient.invalidateQueries({ queryKey: studentKeys.list })
+  }
+}
+
+/** `PATCH /tutor/students/{sid}` with `version` and the changed fields (FR-STU-03). */
+export function useUpdateStudent(sid: string) {
+  const store = useStoreStudent(sid)
+  return useMutation({
+    mutationFn: async (body: UpdateStudentRequest): Promise<Student> =>
+      (await api.PATCH('/api/v1/tutor/students/{sid}', { params: { path: { sid } }, body })).data!,
+    onSuccess: store,
+  })
+}
+
+/** `POST /tutor/students/{sid}/status` `{status, version}` (FR-STU-05); no confirmation, the caller sends the latest version. */
+export function useChangeStatus(sid: string) {
+  const store = useStoreStudent(sid)
+  return useMutation({
+    mutationFn: async (body: { status: StudentStatusValue; version: number }): Promise<Student> =>
+      (await api.POST('/api/v1/tutor/students/{sid}/status', { params: { path: { sid } }, body })).data!,
+    onSuccess: store,
+  })
+}
+
+/**
+ * `POST /tutor/students/{sid}/password-reset` (FR-AUTH-07, security.md T12): the answer holds the one-time temporary
+ * password. As `useCreateStudent`: `gcTime: 0`, nothing seeded into a query; the caller moves the answer into its
+ * component state and resets the mutation.
+ */
+export function useResetPassword(sid: string) {
+  return useMutation({
+    mutationFn: async (): Promise<Credentials> =>
+      (await api.POST('/api/v1/tutor/students/{sid}/password-reset', { params: { path: { sid } } })).data!,
+    gcTime: 0,
   })
 }
 

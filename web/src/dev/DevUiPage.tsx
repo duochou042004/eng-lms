@@ -1,5 +1,5 @@
 import { CalendarCheck, CircleUser, Ellipsis, House, Plus, Users } from 'lucide-react'
-import { useState, type ReactNode } from 'react'
+import { useEffect, useState, type ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import { LanguageSwitcher } from '../app/components/LanguageSwitcher'
 import { usePageTitle } from '../app/routeAnnouncement'
@@ -31,6 +31,9 @@ import {
   STUDENT_STATUS,
   TextArea,
   TextField,
+  toast,
+  ToastRegion,
+  UnsavedChangesGuard,
 } from '../ui'
 import styles from './DevUiPage.module.css'
 import { registerDevNamespace } from './i18n'
@@ -268,6 +271,120 @@ function StudentsSamples() {
   )
 }
 
+/** The T-M2.14 components: Toast (with and without an action), UnsavedChangesGuard and the ConfirmDialog variants. */
+function ProfileSamples() {
+  const { t } = useTranslation('dev')
+  const [dirty, setDirty] = useState(false)
+  const [dialog, setDialog] = useState<'primary' | 'pending' | 'content' | null>(null)
+  const close = () => setDialog(null)
+  return (
+    <Stack gap={5}>
+      <div className={styles.row}>
+        <Button variant="secondary" onPress={() => toast.success(t('sample.toastMessage'))}>
+          {t('sample.toastShow')}
+        </Button>
+        <Button
+          variant="secondary"
+          onPress={() => {
+            const key = toast.success(t('sample.toastActionMessage'), {
+              action: {
+                label: t('sample.toastUndo'),
+                onAction: () => {
+                  toast.close(key)
+                  toast.success(t('sample.toastUndone'))
+                },
+              },
+            })
+          }}
+        >
+          {t('sample.toastShowAction')}
+        </Button>
+      </div>
+      <Stack gap={3}>
+        <Checkbox label={t('sample.guardDirty')} isSelected={dirty} onChange={setDirty} />
+        <div>
+          <ButtonLink variant="secondary" to="/">
+            {t('sample.guardLeave')}
+          </ButtonLink>
+        </div>
+        <UnsavedChangesGuard
+          isDirty={dirty}
+          title={t('sample.guardTitle')}
+          description={t('sample.guardBody')}
+          confirmLabel={t('sample.guardDiscard')}
+          cancelLabel={t('sample.guardKeep')}
+        />
+      </Stack>
+      <div className={styles.row}>
+        <Button variant="secondary" onPress={() => setDialog('primary')}>
+          {t('sample.confirmPrimaryOpen')}
+        </Button>
+        <Button variant="secondary" onPress={() => setDialog('pending')}>
+          {t('sample.confirmPendingOpen')}
+        </Button>
+        <Button variant="secondary" onPress={() => setDialog('content')}>
+          {t('sample.confirmContentOpen')}
+        </Button>
+      </div>
+      <ConfirmDialog
+        isOpen={dialog === 'primary'}
+        title={t('sample.conflictTitle')}
+        description={t('sample.conflictBody')}
+        confirmLabel={t('sample.conflictReload')}
+        confirmVariant="primary"
+        cancelLabel={t('sample.conflictCancel')}
+        onConfirm={close}
+        onCancel={close}
+      >
+        <div>
+          <CopyButton
+            text={t('sample.dlNote')}
+            label={t('sample.conflictCopy')}
+            copiedMessage={t('sample.copied')}
+            failedMessage={t('sample.copyFailed')}
+          />
+        </div>
+      </ConfirmDialog>
+      {/* Pending: Esc and Cancel do nothing; the gallery closes it after a few seconds so it can be seen and left. */}
+      <PendingDialog isOpen={dialog === 'pending'} onDone={close} />
+      <ConfirmDialog
+        isOpen={dialog === 'content'}
+        title={t('sample.resetTitle')}
+        description={t('sample.resetBody')}
+        confirmLabel={t('sample.resetConfirm')}
+        cancelLabel={t('sample.resetCancel')}
+        onConfirm={close}
+        onCancel={close}
+      >
+        <InlineAlert tone="danger" title={t('sample.resetFailed')} />
+      </ConfirmDialog>
+      <ToastRegion label={t('sample.toastRegion')} dismissLabel={t('sample.toastDismiss')} />
+    </Stack>
+  )
+}
+
+function PendingDialog({ isOpen, onDone }: { isOpen: boolean; onDone: () => void }) {
+  const { t } = useTranslation('dev')
+  useEffect(() => {
+    if (!isOpen) return
+    const timer = setTimeout(onDone, 4000)
+    return () => clearTimeout(timer)
+  }, [isOpen, onDone])
+  return (
+    <ConfirmDialog
+      isOpen={isOpen}
+      title={t('sample.resetTitle')}
+      description={t('sample.resetBody')}
+      confirmLabel={t('sample.resetConfirm')}
+      cancelLabel={t('sample.resetCancel')}
+      isPending
+      pendingLabel={t('sample.resetPending')}
+      onConfirm={() => {}}
+      onCancel={onDone}
+    />
+  )
+}
+
 function Section({ title, children }: { title: string; children: ReactNode }) {
   return (
     <section className={styles.section}>
@@ -383,6 +500,9 @@ export function DevUiPage() {
         </Section>
         <Section title={t('sections.students')}>
           <StudentsSamples />
+        </Section>
+        <Section title={t('sections.profile')}>
+          <ProfileSamples />
         </Section>
         <Section title={t('sections.empty')}>
           <EmptyState

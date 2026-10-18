@@ -130,6 +130,27 @@
   gap: var(--space-3);
 }
 
+/* T-M2.14 layout rules (fixed): below 768 px (breakpoints.ts `md`) the edit form's Save/Cancel, the Account actions and
+   the credentials card's actions stack full width in source order; at >= 768 px they sit inline, start-aligned. */
+.stackedActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+@media (width < 768px) {
+  .stackedActions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  /* A button, a link-button or a CopyButton (its button inside its wrapper) takes the full width. */
+  .stackedActions > *,
+  .stackedActions > * > button {
+    inline-size: 100%;
+  }
+}
+
 /* The credentials card: one bordered panel (not a card in a card); the password in a monospace, selectable line. */
 .card {
   display: flex;
@@ -185,6 +206,57 @@
 .sectionTitle {
   margin-block-end: var(--space-2);
   font-size: var(--font-size-lg);
+}
+
+/* The Account section (T-M2.14 scope 5): its parts one under the other. */
+.account {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.sectionTitle:focus {
+  outline: none;
+}
+
+.subTitle {
+  font-size: var(--font-size-md);
+}
+
+/* Under a .subTitle h3 (the edit form's "Other contacts" h4, AC12 (e)): not larger, no legend padding. */
+.subSubTitle {
+  margin: 0;
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-semibold);
+}
+
+/* The "Personal information" heading row (T-M2.14 layout rules): below 768 px a column (Edit profile under the
+   heading), at >= 768 px one row (the heading grows, the button at the end). */
+.headingRow {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-2);
+  margin-block-end: var(--space-2);
+}
+
+.headingRow > h2 {
+  margin-block-end: 0;
+}
+
+@media (width >= 768px) {
+  .headingRow {
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .headingRow > h2 {
+    flex: 1 1 auto;
+  }
+
+  .headingRow > button {
+    flex: none;
+  }
 }
 
 .note {

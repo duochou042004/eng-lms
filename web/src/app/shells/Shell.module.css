@@ -101,6 +101,16 @@
   outline: none;
 }
 
+/* While a toast shows (ui/Toast publishes its height on :root), room for it below the content, and the document
+   scroller keeps a focused control clear of it (T-M2.14 scope 9, WCAG 2.2 SC 2.4.11). */
+:root[data-toasts] {
+  scroll-padding-block-end: calc(var(--toast-stack-size) + var(--space-4) + env(safe-area-inset-bottom));
+}
+
+:root[data-toasts] .main {
+  padding-block-end: calc(var(--toast-stack-size) + var(--space-4) + env(safe-area-inset-bottom));
+}
+
 /* Room for the fixed bottom tabs (and the safe area), so no content sits behind them. */
 .withTabs {
   padding-block-end: calc(var(--size-tabbar) + env(safe-area-inset-bottom) + var(--space-6));

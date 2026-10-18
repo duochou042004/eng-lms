@@ -26,5 +26,9 @@
     "changePassword": "Đổi mật khẩu",
     "logout": "Đăng xuất"
   },
-  "close": "Đóng"
+  "close": "Đóng",
+  "toast": {
+    "region": "Thông báo",
+    "dismiss": "Đóng thông báo"
+  }
 }

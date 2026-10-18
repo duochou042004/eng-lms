@@ -106,6 +106,14 @@ Login → Home "To do" → item → Start → (answer; autosave) → Submit → 
 
 Home → "Recent results" item → the result page with feedback. Or More → Progress.
 
+## F10 Reset a student's password (FR-AUTH-07, T-M2.14): budget ≤ 3 steps
+
+From the student's workspace page, Account section: **Reset password** → the confirmation names the student and the consequences
+(signed out everywhere, a new password at the next sign-in, 7-day expiry) → **Reset password** (danger) → the credentials card replaces the
+Account actions (focus on "New temporary password") → **Copy message** (the same localised message as F2). **Done** closes the card (focus
+back to Reset password); it is not counted. E2E: `e2e/tests/students.spec.ts` (step log `evidence/T-M2.14/records/<project>/steps-f10.json`,
+3 steps at 360, 768 and 1280).
+
 ## Flow review checklist (UX reviewer)
 
 - [ ] The budget is met at all 3 viewports (E2E counter evidence).

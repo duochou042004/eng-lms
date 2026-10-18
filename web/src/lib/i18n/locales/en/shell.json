@@ -26,5 +26,9 @@
     "changePassword": "Change password",
     "logout": "Log out"
   },
-  "close": "Close"
+  "close": "Close",
+  "toast": {
+    "region": "Notifications",
+    "dismiss": "Dismiss"
+  }
 }

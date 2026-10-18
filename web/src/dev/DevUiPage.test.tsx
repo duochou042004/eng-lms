@@ -95,4 +95,61 @@ describe('/dev/ui (development builds only)', { timeout: 20_000 }, () => {
     await userEvent.click(screen.getByRole('button', { name: 'Tiếp tục nhập' }))
     await waitFor(() => expect(screen.queryByRole('alertdialog')).not.toBeInTheDocument())
   })
+
+  it('shows the T-M2.14 components: Toast (with and without Undo), UnsavedChangesGuard and the ConfirmDialog variants', async () => {
+    const { router } = renderRoute('/dev/ui')
+    await screen.findByRole('heading', { level: 1, name: 'Thư viện thành phần' })
+    await userEvent.click(screen.getByRole('button', { name: 'Hiện thông báo thành công' }))
+    const region = await screen.findByRole('region', { name: 'Thông báo' })
+    expect(within(region).getByRole('status')).toHaveTextContent('Đã lưu hồ sơ')
+    await userEvent.click(screen.getByRole('button', { name: 'Hiện thông báo có Hoàn tác' }))
+    await userEvent.click(within(region).getByRole('button', { name: 'Hoàn tác' }))
+    await waitFor(() =>
+      expect(
+        within(region)
+          .getAllByRole('status')
+          .map((s) => s.textContent),
+      ).toContain('Đã hoàn tác lưu trữ'),
+    )
+    await expectNoAxeViolations(document.body)
+
+    await userEvent.click(screen.getByRole('button', { name: 'Mở hộp thoại xung đột (chính)' }))
+    const conflict = await screen.findByRole('alertdialog', { name: 'Đã có thay đổi ở nơi khác' })
+    expect(within(conflict).getByRole('button', { name: 'Tải lại' })).toHaveClass('primary')
+    expect(within(conflict).getByRole('button', { name: 'Sao chép ghi chú của tôi' })).toBeInTheDocument()
+    await userEvent.click(within(conflict).getByRole('button', { name: 'Huỷ' }))
+    await waitFor(() =>
+      expect(screen.queryByRole('alertdialog', { name: /Đặt lại|Đã có thay đổi|Bỏ các/ })).not.toBeInTheDocument(),
+    )
+    await userEvent.click(screen.getByRole('button', { name: 'Mở hộp thoại đang xử lý' }))
+    const pending = await screen.findByRole('alertdialog', { name: 'Đặt lại mật khẩu cho Nguyễn Văn An?' })
+    expect(within(pending).getByRole('button', { name: 'Đang đặt lại…' })).toHaveAttribute('aria-disabled', 'true')
+    await userEvent.keyboard('{Escape}')
+    expect(pending).toBeInTheDocument()
+    await waitFor(
+      () =>
+        expect(screen.queryByRole('alertdialog', { name: /Đặt lại|Đã có thay đổi|Bỏ các/ })).not.toBeInTheDocument(),
+      { timeout: 6000 },
+    )
+    await userEvent.click(screen.getByRole('button', { name: 'Mở hộp thoại có nội dung' }))
+    expect(
+      within(await screen.findByRole('alertdialog', { name: 'Đặt lại mật khẩu cho Nguyễn Văn An?' })).getByRole(
+        'alert',
+      ),
+    ).toHaveTextContent('Không đặt lại được mật khẩu. Hãy thử lại.')
+    await expectNoAxeViolations(document.body)
+    await userEvent.keyboard('{Escape}')
+    await waitFor(() =>
+      expect(screen.queryByRole('alertdialog', { name: /Đặt lại|Đã có thay đổi|Bỏ các/ })).not.toBeInTheDocument(),
+    )
+
+    await userEvent.click(screen.getByText('Biểu mẫu mẫu này có thay đổi chưa lưu'))
+    await userEvent.click(screen.getByRole('link', { name: 'Rời thư viện (về trang đầu)' }))
+    const guard = await screen.findByRole('alertdialog', { name: 'Bỏ các thay đổi?' })
+    await userEvent.click(within(guard).getByRole('button', { name: 'Tiếp tục sửa' }))
+    await waitFor(() =>
+      expect(screen.queryByRole('alertdialog', { name: /Đặt lại|Đã có thay đổi|Bỏ các/ })).not.toBeInTheDocument(),
+    )
+    expect(router.state.location.pathname).toBe('/dev/ui')
+  })
 })

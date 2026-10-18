@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Milestone | M2 |
-| Status | ready (G0 in review) |
+| Status | in_progress (DEC-125) |
 | Owner role | FE (frontend-implementer) |
 | Branch | `feature/T-M2.14-student-profile-account` (from `develop`) |
 | Depends on | T-M2.3 (`f0e228c`), T-M2.5 (`84c97c1`): merged |
@@ -195,6 +195,24 @@ every "I forgot my password". 5. **Hard-coded semantics?** None: no level, exam 
   with one named exception: `StudentWorkspacePage.test.tsx`'s Personal information terms become `['Họ tên', 'Tên đăng nhập', 'Ngày thêm']`
   (scope 1 drops the Status row; the status is checked in the Account section);
   the bundle budget green with no students code in either first-visit closure; `api/openapi.json` unchanged.
+
+- AC12 (G3 round 1, DEC-126; S2/S3 and cheap S4 fixes made in this task, DEC-088): (a) UX-1 (S2): while a modal dialog is open, toasts are
+  neither visible nor reachable: the toast region sits under the modal overlay (`--z-toast` below `--z-overlay`, the scrim covers it, the
+  region is `inert`), its timers pause, and it returns when the dialog closes; E2E at 360×740 with three toasts (one the archive toast):
+  the conflict dialog's Reload and Cancel boxes overlap no toast box and `elementFromPoint` at the focused button's centre returns that
+  button (also the reset dialog); (b) UX-2: after Undo, focus that is still inside the toast region (or on `body`) moves to the Account `h2`;
+  test with two other toasts open; (c) UX-3: vi copy `account.resume` "Tiếp tục học", `account.resumed` "Đã cho {{name}} học tiếp",
+  `account.paused` "Đã chuyển {{name}} sang Tạm nghỉ" (all four status toasts start with "Đã …"), `account.failed.resume` "Không cho học viên
+  học tiếp được. Hãy thử lại."; (d) UX-4, QA-4: a timed toast pushed out of the 3 visible is closed at once, never shown later (an action
+  toast is never dropped); test with 4 quick toasts; (e) UX-5: in edit mode the handles title is an `h4` no larger than the Contacts `h3`,
+  with no inline padding outside its fieldset; (f) UX-6: in a toast with an action the icon aligns with the message's first line; (g)
+  UX-7: the vi discard button reads "Bỏ thay đổi"; (h) QA-2: the Account alerts E2E waits for the archive toast or Reactivate before reading
+  `version`; (i) QA-3: the Pause/Resume/Archive E2E is split (or marked slow) so no test depends on ~20 s of waits within the 30 s timeout;
+  both pass a `--repeat-each=20` run at phone-small, tablet and laptop; (j) SEC S-1 (S3): a sign-in removes every query except the
+  session before storing the new one, so a write answered after sign-out never survives into the next session (test: late write answer →
+  logout → login → no `students` query); (k) SEC S-2: the toast queue is also cleared when a toast region mounts (a toast queued after
+  sign-out never shows in the next session). (l) UX-8 (S3, UX round 2, DEC-126): (d) holds for every add, including an action toast: after any add, every timed toast outside the visible 3 is closed (test: three timed toasts + one action toast, then the action toast closes; no earlier timed toast comes back). Recorded UX ruling: opening Edit profile moves focus to Full name (the trigger disappears).
+  Tests for each; existing assertions change only where these items change copy or layout.
 
 ## Test plan
 - Implementation: unit (`toPatchRequest` changed-fields table incl. `null` clears and unchanged handles; the guard predicate incl. forced

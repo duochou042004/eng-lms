@@ -123,6 +123,17 @@ Decorative: `aria-hidden="true"`, never focusable; its owner announces the state
 - Tokens: `--size-sidebar` (15rem), `--size-drawer` (20rem), `--size-popover` (18rem), `--size-account-button` (12rem), `--size-tabbar`
   (3.75rem), `--size-sheet-max` (85dvh), `--size-marker` (3px), `--color-scrim`.
 
+**Profile and account components** (T-M2.14; tests, axe and `/dev/ui` entries):
+- `Toast` (`ToastRegion` + the `toast` queue): React Aria's `UNSTABLE_Toast*` wrapped in `ui/Toast.tsx` and `ui/toastQueue.ts` only
+  (`shortcut:` comment). Placement, timing and the `--toast-stack-size` room: interaction-states §4. Token `--size-toast` (24rem). The region
+  remounts when it gets its first toast, so React Aria registers it as an F6 landmark (its label is fixed). Under an open modal
+  (`ConfirmDialog`, `Sheet` report themselves through `ui/modalStack.ts`) it is hidden, inert and paused (AC12 (a), DEC-126);
+  `--z-toast` is now 150, below `--z-overlay`.
+- `UnsavedChangesGuard`: `useBlocker` + `beforeunload` rendering the `ConfirmDialog` while `isDirty`; the predicate `blocksNavigation` (own
+  module): every move to another pathname except `/login` and `/forbidden`; a navigation with `state.forced === true` passes only to
+  `/change-password` (DEC-123 SEC S4-5). Used by Add student ("Discard this student?") and Edit profile ("Discard your changes?").
+- `Button`: the cleanup of a vanished button's pending announcement runs again after React Aria's 100 ms first-announcement delay.
+
 **Students components** (T-M2.5, DEC-120 (5); tests, axe and `/dev/ui` entries):
 - `DataList`: a semantic `table` (caption, `th scope="col"`, the first cell a row header) at ≥ 768 px (`md`), below that a `ul` of rows
   (the first column as the title, the other values on a wrapping meta line, each led by its visually hidden header). The structure is chosen with
@@ -148,7 +159,9 @@ Decorative: `aria-hidden="true"`, never focusable; its owner announces the state
   visible label ("Copy Zalo", WCAG 2.5.3).
 - `ConfirmDialog`: the WAI-ARIA alert dialog pattern on a React Aria modal `Dialog` (`role="alertdialog"`): a named heading, the consequence,
   a danger confirm and a safe cancel that has focus on open; Esc cancels; an outside click does nothing; focus returns. Also the unsaved
-  changes guard's dialog (React Router `useBlocker`; no separate `UnsavedChangesGuard` component yet).
+  changes guard's dialog. **T-M2.14:** `confirmVariant` (`danger` default, `primary` for a safe confirm such as Reload), `isPending` +
+  `pendingLabel` (the confirm shows the pending label; Esc, Cancel and the overlay do nothing meanwhile) and a `children` content slot under
+  the description (an `InlineAlert`, a `CopyButton`).
 - `DescriptionList`: a `dl`; two columns (term `--size-term`, baseline-aligned with its value) when its own container is ≥ 32rem, else the
   term above the value; an empty
   value shows the given label ("Not added") in subtle text.

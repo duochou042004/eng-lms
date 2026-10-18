@@ -55,6 +55,14 @@ while Profile is the only content, no quick actions and no next lesson. When a s
 index becomes the Overview, whose first content arrives with M3. A malformed or unknown `:studentId` shows the feature's own not-found view
 inside the shell. Editing, status and reset password: T-M2.14; guardians and the learning profile: T-M2.15 (DEC-124).
 
+**Implemented (T-M2.14, DEC-124):** the Profile view has one **Edit profile** button in the "Personal information" heading row (under the
+heading below 768 px, at the row's end from 768 px). It turns Personal information, Contacts and Note into one form in place (fields as the
+add form, contacts and note expanded, "Added on" read-only, Save / Cancel); the header keeps the saved values while editing. The Personal
+information list no longer shows the status: the last section **Account** (`h2`) shows it with the actions for it (Active: Pause, Archive,
+Reset password; Paused: Resume, Archive, Reset password; Archived: Reactivate and a hint) and, after a reset, the one-time credentials card in
+place of the actions. One form at a time: the Account actions are disabled while the profile form is open, Edit profile while a status or
+reset request runs or the card is shown. Guardians and the learning profile: T-M2.15.
+
 ## 3. Student navigation (mobile-first)
 
 | Item | Route | Content |

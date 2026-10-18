@@ -38,6 +38,10 @@ fails otherwise), `components/` (the form, the credentials card, contact values,
 value, so a stale answer can never write the field), `model/` (URL list params and their fallbacks, the Zod schema, `contactHref`, the 422
 mapping, the credentials message; unit-tested). The page title hook moved to `lib/i18n/pageTitle.ts` (`app/routeAnnouncement.ts` re-exports
 it) and dates go through `lib/time` (`Intl.DateTimeFormat`, browser time zone), both so feature pages need nothing from `app/`.
+**T-M2.14** adds to `features/students/`: `components/ProfileForm.tsx`, `AccountSection.tsx`, `ConflictDialog.tsx`, the field parts both
+forms share (`StudentFields.tsx`, `useUsernameCheck.ts`), `model/editSchema.ts` (`toPatchRequest`), `model/studentFields.ts` (field ids, the
+error summary), `model/useSummaryFocus.ts`; `api/students.ts` gains `useUpdateStudent`, `useChangeStatus`, `useResetPassword` (each write
+replaces the detail entry with its answer and invalidates the list). Import rules unchanged.
 
 **Import rules (oxlint `no-restricted-imports` + `no-restricted-globals` with per-path overrides, `web/.oxlintrc.json`; DEC-042):** `features/*` may import `ui`, `lib`, `extensions` and their **own** folder only.
 Cross-feature needs go through `lib` or via route composition. `react-aria-components` may be imported only inside `ui/`. No `fetch` outside `lib/api`.
