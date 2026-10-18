@@ -375,7 +375,6 @@
   "decisions": {
     "log": "docs/10-governance/decision-log.md",
     "recent": [
-      "DEC-113",
       "DEC-114",
       "DEC-115",
       "DEC-116",
@@ -388,6 +387,7 @@
       "DEC-123",
       "DEC-124",
       "DEC-125",
+      "DEC-126",
       "DEC-127"
     ],
     "pendingPO": [
