@@ -142,8 +142,12 @@ the packaged app used by E2E has no `/dev/ui`). The impl folder also holds the o
 - **Status buttons are keyed by position**, so after Archive the focused button becomes Reactivate (AC9 bounding-box check); after an Undo
   the previously focused Account button is disabled while the requests run, so focus ends on the Account `h2` (the packet's fallback).
 - **Toast layout**: icon | message | Dismiss on one row; with an action (Undo) it sits on its own line under the message, so a 360 px
-  toast stays readable. Toasts render above an open dialog's scrim (React Aria's top layer, `--z-toast` > `--z-overlay`).
+  toast stays readable. Toasts rendered above an open dialog's scrim before G3; superseded by AC12 (a): under a modal the region is hidden and inert (`--z-toast` 150 < `--z-overlay` 200).
 - **Edit form focus**: opening the form focuses Full name (the Edit profile button disappears while editing).
 - `shortcut:` comments: `ui/toastQueue.ts` / `ui/Toast.tsx` (React Aria `UNSTABLE_` toast API wrapped there only); `ui/Button.tsx`
   (relies on React Aria's announcer DOM and its 100 ms first-announcement delay).
 - Known server limit (packet Risks, T-M2.16): a username-only PATCH does not bump `version`.
+
+## G3 and merge (LC)
+- QA rounds 1–3 (final PASS WITH MINOR at `d1e5fbd`; report `evidence/T-M2.14/qa/report.md` via `qa/T-M2.14`, PR #109), UX rounds 1–3 (APPROVED), SEC rounds 1–2 (APPROVED); records `evidence/T-M2.14/review/{docs,ux,security}.md`; fixes via AC12 (a)–(l) (DEC-126).
+- Merged via merge-gate: PR #108, `6073e71` (DEC-127).

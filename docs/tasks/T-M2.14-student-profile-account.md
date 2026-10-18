@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Milestone | M2 |
-| Status | in_progress (DEC-125) |
+| Status | done (`6073e71`, DEC-127) |
 | Owner role | FE (frontend-implementer) |
 | Branch | `feature/T-M2.14-student-profile-account` (from `develop`) |
 | Depends on | T-M2.3 (`f0e228c`), T-M2.5 (`84c97c1`): merged |
