@@ -1,47 +1,44 @@
-# Handoff — 2026-10-17 (T-M2.5 done; next: the T-M2.14 packet)
+# Handoff — 2026-10-18 (T-M2.14 done; next: the T-M2.15 packet)
 
-Phase/Milestone: P1 / M2 (in progress) · Current task: **T-M2.14 (draft: packet next)** · Branch: `develop` · Last merges on develop: `84c97c1` (PR #94, T-M2.5), `624a346` (PR #105, QA report); this record is the `chore/T-M2.5-merge-record` PR (check `git log` that it landed) · Remote: https://github.com/duochou042004/eng-lms (mirror: gitlab.com/duochou042004/eng-lms)
+Phase/Milestone: P1 / M2 (in progress) · Current task: **T-M2.15 (draft: packet next)** · Branch: `develop` · Last merges on develop: `6073e71` (PR #108, T-M2.14); the QA report is PR #109 (`qa/T-M2.14`) and this record is the `chore/T-M2.14-merge-record` PR (check `git log` that both landed) · Remote: https://github.com/duochou042004/eng-lms (mirror: gitlab.com/duochou042004/eng-lms)
 
 ## Where we are
-- **T-M2.5 done** (`84c97c1`, DEC-120..123): split from the big students-UI row (DEC-120) into T-M2.5 and **T-M2.14**. Delivered: Students
-  nav item; list (`DataList` with fixed column shares 29/16.5/31/23.5 %, search, include archived, Name/Newest, 1-based paging, URL state, all
-  data states); Add student flow F2 (6 named steps; suggestion + availability; generated password unless typed; collapsed Contact/Note;
-  unsaved changes guard that lets sign-out, `/forbidden` and a forced `/change-password` through); the one-time credentials card (component
-  state only, dropped on `pagehide`); read-only workspace page (header + Profile view, no tab bar until a second tab; Overview arrives in M3,
-  DEC-120 (8)); contact links only `tel:`, `mailto:`, `https:` without userinfo; student statuses in `ui/status/statusMap.ts`; new `ui/`
-  components `DataList`, `StatusBadge`, `Disclosure`, `TextArea`, `CopyButton`, `ConfirmDialog`, `DescriptionList`, `SearchField`.
-  G3 took QA 6 rounds (one FAIL: table wider than the viewport at 768/1024), UX 4, SEC 2; all fixes via AC12 (a)–(u) (DEC-122).
-  Deferred: SEC S4-5 (guard should check that `state.forced` targets `/change-password`) → T-M2.14.
-- **T-M2.12 done** (`b5596d3`, DEC-119); T-M2.13 (small FE follow-ups: UX-3, UX-4, UX-6, O-1, O-2) still in the backlog.
-- This device: **Kali Linux rolling, rootless Podman 5.8.6, clone `/home/kali/App_projects/eng-lms`** (T-M1.19, DEC-108). GitLab CI paused
-  (DEC-107); the mirror still syncs.
+- **T-M2.14 done** (`6073e71`, DEC-124..127): the T-M2.14 row was split again (DEC-124) into T-M2.14 and **T-M2.15** (guardians + learning
+  profile), with **T-M2.16** (BE: a username-only PATCH does not bump `version`) added from the docs review. Delivered: one Edit profile form
+  (personal info, contacts, note, username; changed fields only; 409 → "This was changed elsewhere" with Reload / Copy my note); the Account
+  section (Pause, Resume, Archive + persistent Undo toast, Reactivate; errors as `InlineAlert`); Reset password (confirm dialog, shared
+  credentials card, component state only); new `ui/` `Toast`, `UnsavedChangesGuard` (forced navigation passes only to `/change-password`,
+  T-M2.5 SEC S4-5), `ConfirmDialog` primary/pending/content, `modalStack`; sign-in drops every query but the session. F10 (reset) = 3 steps.
+  G3: QA 3 rounds (final PASS WITH MINOR; QA-5 S4 informational), UX 3 (APPROVED), SEC 2 (APPROVED); fixes via AC12 (a)–(l) (DEC-126).
+  Recorded for later: the SEC residual (skip the detail store when the session is not the tutor) → T-M2.15 row; T-M2.16.
+- T-M2.13 (small FE follow-ups) still in the backlog. This device: Kali Linux rolling, rootless Podman 5.8.6, clone
+  `/home/kali/App_projects/eng-lms` (T-M1.19, DEC-108). GitLab CI paused (DEC-107); the mirror still syncs.
 
 ## Another device
-- Follow development-setup §0 for its platform (Linux, macOS, Windows = WSL2 + Docker Desktop with the clone inside WSL); record OS, engine and versions in
-  `progress.json` `environment` and the clone path in `project.repoLocal` (DEC-083). Only Linux + Podman is proven end to end so far.
-- Not in git: `.env` (`cp .env.example .env`, dev-only, DEC-094), `.data/**`, the dev database volume, `.claude/settings.local.json`, Playwright browsers
-  (`cd e2e && pnpm browsers`; `qa/` needs chromium, firefox and webkit; on this device firefox/webkit lack host libraries: PO `sudo` `playwright install-deps`).
-- Accounts (PO): `gh auth login`, `glab auth login`, git identity, credential helpers. Clone setup: `./scripts/install-hooks.sh`, `git remote add gitlab …`.
+- Follow development-setup §0 for its platform; record OS, engine and versions in `progress.json` `environment` and the clone path in
+  `project.repoLocal` (DEC-083). Not in git: `.env` (`cp .env.example .env`), `.data/**`, the dev DB volume, `.claude/settings.local.json`,
+  Playwright browsers (`cd e2e && pnpm browsers`). Accounts (PO): `gh auth login`, `glab auth login`, git identity, credential helpers;
+  `./scripts/install-hooks.sh`, `git remote add gitlab …`.
 
 ## Next steps
-1. **T-M2.14 packet** (student profile editing: edit profile and contacts with optimistic locking/Reload, username change, guardians incl.
-   the add-form section, learning profile with `TagInput`, status changes with archive toast + Undo, reset password with the credentials card,
-   `Toast`; plus T-M2.5 SEC S4-5). Size check, likely split (DEC). SEC triggered. Fresh docs-reviewer, CI, verdicts, merge-gate, gitlab-sync;
-   ask the PO once for the start signal (DEC); implement through G3.
-2. T-M2.13 when the PO orders it; then T-M2.6, T-M2.7 (M2 regression incl. the `qa/` spec updates). Optional: T-M2.10.
+1. **T-M2.15 packet** (guardians on the Profile view: list, add, edit, delete ≤ 10 with optimistic locking, and the guardian section of the
+   add form; the tutor-private learning profile with `TagInput` and ≤ 30 custom fields; the T-M2.14 SEC residual). Size check (split if
+   needed, DEC). SEC triggered. Fixed layout rules up front. Fresh docs-reviewer, CI, verdicts, merge-gate, gitlab-sync; ask the PO once for
+   the start signal (DEC); implement through G3.
+2. T-M2.13 and T-M2.16 when the PO orders them; then T-M2.6, T-M2.7 (M2 regression incl. the `qa/` spec updates). Optional: T-M2.10.
 
 ## Pending PO decisions / actions
-- **Dependabot PRs #95–#104** (react-aria-components 1.22.1, zod, i18next, react-i18next, Playwright 1.64, @types/node, actions, tooling):
-  opened during T-M2.5; untouched. Say whether to review and merge them (each needs CI; the merge-gate expects a task ID).
-- This device: `(cd qa && pnpm exec playwright install-deps firefox webkit)` (needs `sudo`) so `qa/` can run all three browsers (G3 of UI tasks).
-- Dev database: reviewer and E2E runs added a few hundred test students (no purge). Say if you want it cleaned (`dev-down.sh --purge` wipes everything).
-- Open T-M2.5 points: the `ui/index.ts` barrel ships tutor-only components in the student first visit (+5.9 KB gz, under the 200 KB budget);
-  dates use the browser's time zone, not the account's (`shortcut:` in `lib/time`; settle with T-M2.6 settings).
-- Production needs `SERVER_FORWARDHEADERSSTRATEGY=native` (deployment.md §3) — at deployment time (M8).
-- QA F4 / T-M2.3 SEC S4-9: the bundled common-password list barely filters at the 10-character minimum (`password123` passes); say if a stronger list is wanted.
-- Recommended (DEC-061): `glab` deny rules. OQ-03..OQ-14 (defaults documented).
+- **Dependabot PRs #95–#104**: untouched; say whether to review and merge them.
+- This device: `(cd qa && pnpm exec playwright install-deps firefox webkit)` (needs `sudo`) so G3 can cover all three browsers.
+- Dev database: reviewer and E2E runs added several hundred test students (about 60 more in T-M2.14; no purge). Say if you want it cleaned.
+- Open points: the `ui/index.ts` barrel ships tutor-only components in the student first visit (under budget: student 186.6 KB gz);
+  dates use the browser's time zone (`shortcut:` in `lib/time`; T-M2.6); production needs `SERVER_FORWARDHEADERSSTRATEGY=native` (M8);
+  the common-password list barely filters at 10 characters (T-M2.3 SEC S4-9); `glab` deny rules (DEC-061); OQ-03..OQ-14 (defaults documented).
 
 ## Gotchas
+- **Toasts (T-M2.14):** `ui/Toast` is the only toast; errors are never toasts (interaction-states §4). Under a modal the region is hidden and inert (`ui/modalStack.ts`); the queue closes timed toasts pushed out of the visible 3 and is cleared on region mount/unmount.
+- **Two API-limit pauses this session** stopped the implementer and QA mid-run; both resumed with SendMessage after checking `git status`/`git log` and `evidence/<task>/gate-*.log` (the implementer had finished both gates but not committed).
+- CI `backend` can fail on a Maven Central **403** as well as a 429: `gh run rerun <id> --failed`.
 - **Layout ACs need fixed rules.** T-M2.5's table went through four content-driven sizing attempts (min width, `nowrap`, `break-word`) before `table-layout: fixed` with column shares; write column shares and break rules into the packet up front.
 - An API usage limit can stop the implementer after its gates finished but before the evidence commit: check `git log`, the newest `evidence/<task>/gate-*.log` heads and `git status` before resuming it; the LC may commit the evidence itself.
 - An API usage limit can stop a subagent mid-run: check `podman ps` and `pgrep -af 'java -jar'` (its JAR may still run), then resume it with
@@ -67,6 +64,7 @@ Phase/Milestone: P1 / M2 (in progress) · Current task: **T-M2.14 (draft: packet
 - Wall-clock bounds in tests flake on the 2-core CI runner (DEC-093). `git merge` is denied: `gh pr update-branch` (DEC-090).
 
 ## Files to read first
-`CLAUDE.md` → `progress.json` → this file → backlog M2 (T-M2.14 row) → DEC-120..123 → FR-STU-01 (guardians), 03, 04, 05, FR-AUTH-07 →
-interaction-states §2 → `docs/tasks/T-M2.5-students-list-add.md` → `web/src/features/students/`, `web/src/ui/` → api-catalog "tutor: students"
-→ `.claude/skills/task-packet`, `frontend-standards`, `ux-review`, `security-review`.
+`CLAUDE.md` → `progress.json` → this file → backlog M2 (T-M2.15, T-M2.16, T-M2.13 rows) → DEC-124..127 → FR-STU-01 (guardians), 03, 04 →
+interaction-states §2, §4 → information-architecture §2 → api-catalog "tutor: students" (guardians, learning-profile rows) →
+`docs/tasks/T-M2.14-student-profile-account.md` → `web/src/features/students/`, `web/src/ui/` → `.claude/skills/task-packet`,
+`frontend-standards`, `ux-review`, `security-review`.
