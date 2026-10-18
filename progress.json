@@ -36,7 +36,7 @@
     "ownerRole": "FE",
     "branch": "feature/T-M2.14-student-profile-account",
     "packet": "docs/tasks/T-M2.14-student-profile-account.md",
-    "pr": null,
+    "pr": "108",
     "lastCommit": "3d0958f",
     "startedAt": "2026-10-18T01:39:14Z",
     "entryGate": [
