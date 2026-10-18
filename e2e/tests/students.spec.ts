@@ -814,6 +814,29 @@ async function expectToastPlacement(page: Page) {
   await expectNoHorizontalScroll(page)
 }
 
+/**
+ * Records live-announcer entries that still point at a missing element one task after they were inserted (a
+ * screen reader or axe would meet them; T-M2.14 CI role-img-alt). Returns a reader of the ids recorded.
+ */
+async function watchDanglingAnnouncements(page: Page) {
+  await page.evaluate(() => {
+    const seen: string[] = []
+    ;(window as unknown as { __dangling: string[] }).__dangling = seen
+    new MutationObserver((records) => {
+      for (const record of records)
+        for (const node of record.addedNodes) {
+          if (!(node instanceof Element) || !node.closest('[data-live-announcer]')) continue
+          const id = node.getAttribute('aria-labelledby')?.split(' ')[0]
+          if (!id) continue
+          setTimeout(() => {
+            if (node.isConnected && !document.getElementById(id)) seen.push(id)
+          }, 0)
+        }
+    }).observe(document.body, { childList: true, subtree: true })
+  })
+  return () => page.evaluate(() => (window as unknown as { __dangling: string[] }).__dangling)
+}
+
 test.describe('Edit profile (T-M2.14)', () => {
   test('AC1/AC10: Edit profile layout, errors, save of only the changed fields, toast, list; axe; the guard asks', async ({
     page,
@@ -862,16 +885,26 @@ test.describe('Edit profile (T-M2.14)', () => {
     await expect(discard).toBeVisible()
     await discard.getByRole('button', { name: 'Tiếp tục sửa' }).click()
     await expect(page).toHaveURL(new RegExp(`/tutor/students/${created.student.id}$`))
+    // The dialog (and below 1024 px the drawer it was opened from) restores focus once it has closed: let that
+    // happen before typing, or the keystrokes follow the restored focus.
+    await expect(discard).toHaveCount(0)
+    await expect(page.locator('[data-exiting]')).toHaveCount(0)
+    await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))))
 
     await fullNameField(page).fill(created.student.fullName)
+    await expect(fullNameField(page)).toHaveValue(created.student.fullName)
     await form.getByRole('textbox', { name: 'Email' }).fill(`moi.${t}@example.com`)
     await form.getByRole('textbox', { name: 'Điện thoại' }).fill('')
     await form.getByRole('button', { name: 'Thêm liên hệ' }).click()
     const handle = form.getByRole('group').last()
     await handle.getByRole('textbox', { name: 'Tên kênh (bắt buộc)' }).fill('Zalo')
     await handle.getByRole('textbox', { name: 'Đường dẫn hoặc ID' }).fill('https://zalo.me/0901234567')
+    const dangling = await watchDanglingAnnouncements(page)
     await page.getByRole('button', { name: 'Lưu', exact: true }).click()
     await expect(edit).toBeFocused()
+    // React Aria's (first) pending announcement of Save may arrive after the form closed: never left dangling.
+    await page.waitForTimeout(600)
+    expect(await dangling(), 'announcer entries pointing at a missing element').toEqual([])
     expect(requests).toEqual([
       {
         version: created.student.version,

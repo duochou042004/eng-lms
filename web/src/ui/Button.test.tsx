@@ -66,6 +66,50 @@ describe('Button', () => {
     expect(entries()).toEqual([])
   })
 
+  it('drops an announcement that arrives after it is gone (React Aria delays its first one) before another task sees it', async () => {
+    const { unmount } = render(<Button id="late-save">Lưu</Button>)
+    unmount()
+    // React Aria's first announcement, added 100 ms after the button left: an entry pointing at the missing button.
+    const announcer = document.createElement('div')
+    announcer.setAttribute('data-live-announcer', 'true')
+    const log = document.createElement('div')
+    announcer.append(log)
+    document.body.append(announcer)
+    const late = document.createElement('div')
+    late.setAttribute('role', 'img')
+    late.setAttribute('aria-labelledby', 'late-save')
+    const other = document.createElement('div')
+    other.setAttribute('role', 'img')
+    other.setAttribute('aria-labelledby', 'another-button')
+    log.append(late, other)
+    // The observer runs before the next task (a screen reader, axe) can look.
+    await new Promise((resolve) => setTimeout(resolve, 0))
+    expect(late.isConnected).toBe(false)
+    expect(other.isConnected).toBe(true)
+    announcer.remove()
+  })
+
+  it('stops watching after the late-announcement window', async () => {
+    vi.useFakeTimers()
+    try {
+      const { unmount } = render(<Button id="old-save">Lưu</Button>)
+      unmount()
+      vi.advanceTimersByTime(1000) // past the 500 ms window
+      vi.useRealTimers()
+      const announcer = document.createElement('div')
+      announcer.setAttribute('data-live-announcer', 'true')
+      const entry = document.createElement('div')
+      entry.setAttribute('aria-labelledby', 'old-save')
+      document.body.append(announcer)
+      announcer.append(entry)
+      await new Promise((resolve) => setTimeout(resolve, 0))
+      expect(entry.isConnected).toBe(true)
+      announcer.remove()
+    } finally {
+      vi.useRealTimers()
+    }
+  })
+
   it('supports the large size', () => {
     render(<Button size="lg">Bắt đầu</Button>)
     expect(screen.getByRole('button')).toHaveClass('lg')
