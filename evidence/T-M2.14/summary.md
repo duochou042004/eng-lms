@@ -2,6 +2,40 @@
 
 Branch `feature/T-M2.14-student-profile-account` · packet `docs/tasks/T-M2.14-student-profile-account.md` · DEC-124, DEC-125
 
+## G3 round 1 fixes: AC12 (a)–(k) (DEC-126), commit `6883cd5`
+
+| Item | Change | Test |
+|---|---|---|
+| (a) UX-1 | `ui/modalStack.ts`: `ConfirmDialog` and `Sheet` report while open. Under an open modal, `ToastRegion` is `inert`, `visibility: hidden` (`data-under-modal`) and its timers pause; they resume when the last modal closes. `--z-toast` 300 → 150 (below `--z-overlay` 200). | `ui/Toast.test.tsx` (inert, hidden, timers wait, resume). E2E "AC12 (a), (b)": three toasts (one the archive toast) under the conflict dialog and the reset dialog at 360×740 (and 768, 1280): no shown toast overlaps the dialog buttons, `elementFromPoint` at the focused button hits it, the region is inert, and the toasts return after closing. |
+| (b) UX-2 | `AccountSection`: after Undo, focus on `body` or still inside `[data-toast-region]` moves to the Account `h2`. | E2E: Undo by F6/Tab/Enter with two other toasts open, focus on the `h2`. A component test exists too, but it passes even without the fix in jsdom, so the E2E is the proof. |
+| (c) UX-3 | vi copy: `account.resume` "Tiếp tục học", `account.resumed` "Đã cho {{name}} học tiếp", `account.paused` "Đã chuyển {{name}} sang Tạm nghỉ", `account.failed.resume` "Không cho học viên học tiếp được. Hãy thử lại." | Component and E2E tests (copy-changed assertions below). |
+| (d) UX-4/QA-4 | `ui/toastQueue.ts`: a timed toast pushed out of the 3 visible is closed at once; an action toast waits. | `ui/Toast.test.tsx`: 4 quick toasts; an action toast pushed out comes back. |
+| (e) UX-5 | `ContactFields` `handlesHeadingLevel`: in edit mode "Other contacts" is an `h4` (`.subSubTitle`: `--font-size-md`, no padding). The add form is unchanged. | `StudentProfileEdit.test.tsx` (h3 + h4, class). E2E AC1: h4 font size ≤ h3, `padding-inline` 0, start-aligned with the h3. |
+| (f) UX-6 | With an action, the icon sits on the message's first line (`align-self: start`, `margin-block-start: calc((1lh - icon) / 2)`). | E2E archive test: icon centre within 2 px of the first line box's centre. |
+| (g) UX-7 | vi `profile.discard` "Bỏ thay đổi" (and the `/dev/ui` sample). | `StudentProfileEdit.test.tsx` (copy-changed assertions below). |
+| (h) QA-2 | The Account alerts E2E waits for the archive toast's Undo and for Reactivate before reading `version`. | `--repeat-each=20` below. |
+| (i) QA-3 | The Pause/Resume/Archive E2E is split in three: Pause and Resume; Archive + persistence + F6 Undo + sign-in; Reactivate + leaving the page. | `--repeat-each=20` below. |
+| (j) SEC S-1 | `useLogin` `onSuccess` removes every query except the session before storing the new one. | `features/auth/api/session.test.tsx`: a late PATCH answer after the logout cache clear → login → only `['auth','session']` remains. Fails without the fix. |
+| (k) SEC S-2 | `ToastRegion` also clears the queue when it mounts. | `ui/Toast.test.tsx`: a toast queued after a region unmounted never shows in the next region. |
+
+Also found by the new E2E: a toast landing on the focused control (360 px, two toasts) partly covered it. The region now scrolls the focused
+control clear when its height changes (`scrollIntoView({block:'nearest'})` with the existing `scroll-padding-block-end`; scope 9 / SC
+2.4.11). It publishes its height rounded up to whole pixels, because a fractional height left a 0.19 px overlap. Covered by a
+`ui/Toast.test.tsx` test and an E2E check that the focused Pause is clear of the two toasts. The Pause/Resume E2E moves the pointer away
+before waiting for the timed toasts to close: hover pauses them, as designed.
+
+**Existing assertions changed (copy or layout from these items only):**
+- `StudentAccount.test.tsx`: 'Học lại' → 'Tiếp tục học'; the toast texts → 'Đã chuyển Nguyễn Văn An sang Tạm nghỉ' and 'Đã cho Nguyễn Văn An học tiếp' ((c)).
+- `StudentProfileEdit.test.tsx`: the profile discard button 'Bỏ' → 'Bỏ thay đổi', twice ((g)).
+- `e2e/tests/students.spec.ts`: the same copy in the split status tests and the AC4 test ((c)); the old single status test is replaced by the three split tests ((i)) with the same assertions plus the new ones.
+
+**Repeat runs:** `--repeat-each=20 --grep "Account section (T-M2.14)"` at phone-small, tablet and laptop covers the Account alerts test
+(QA-2), the three split status tests (QA-3) and the new AC12 (a), (b) test: **300 passed, 0 failed** (5.1 min).
+
+**Gate on `6883cd5`:** `evidence/T-M2.14/gate-20261018T110127Z.log` **PASS** and `evidence/T-M2.14/gate-20261018T111221Z.log` **PASS**,
+back to back, same dev database. 13 steps each: backend 466, web 633 tests in 58 files, E2E 344 passed (the one `✘` is the console guard's
+expected-failure self-test). Budget: student 186.6 KB gz ≤ 200, tutor 186.8 KB gz ≤ 300. `api/openapi.json` unchanged.
+
 ## CI fix: axe `role-img-alt` on `:root` (PR #108, e2e-smoke run 39093117152)
 
 - **Symptom:** `students.spec.ts` "Edit profile › AC1/AC10" failed at tablet and laptop in `expectAccessible` after Save:
