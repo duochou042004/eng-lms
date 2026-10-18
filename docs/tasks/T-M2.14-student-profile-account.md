@@ -55,7 +55,9 @@ profile are the follow-up **T-M2.15** (DEC-124).
      closed, Undo is pressed, or the tutor leaves that student's workspace page (it is removed then; the Account section offers Reactivate).
      **Undo** restores the previous status with the `version` of the latest detail (the cache entry; refetched first if missing): from
      ACTIVE one request (`ARCHIVED → ACTIVE`); from PAUSED two in sequence (`ARCHIVED → ACTIVE`, then `ACTIVE → PAUSED` with the first
-     answer's `version`); success → the toast "Archiving undone". **Any** Undo failure (409 `STALE_VERSION` or `INVALID_STATE_TRANSITION`,
+     answer's `version`); success → the toast "Archiving undone". Any later
+     successful status action or reset on that student closes the archive toast by its key. Focus after Undo: back to the element focused
+     before the tutor moved into the region (React Aria's region restores it); if that element is gone, the Account `h2`. **Any** Undo failure (409 `STALE_VERSION` or `INVALID_STATE_TRANSITION`,
      network, 5xx) refetches the student and shows an `InlineAlert` in the Account section, never the conflict dialog: "Couldn't undo. Use
      Reactivate." when the first request failed, "Couldn't restore Paused. The student is active." when the second did. Other errors
      (§4: errors are never toasts) show an `InlineAlert` (danger) at the top of the Account section, focus unchanged, nothing changed on
@@ -92,7 +94,10 @@ profile are the follow-up **T-M2.15** (DEC-124).
      dependency) in a `polite` region; one region in the tutor shell (this task), a queue API `toast.success(message, {action?})` returning
      a key the caller can close; the queue is cleared when the tutor shell unmounts (a sign-out, own or cross-tab, never leaves a toast). Fixed placement rules: bottom-centre below 768 px with a 16 px inline gutter
      (`inline-size: calc(100% - 2 × --space-4)`, max `--size-reading-max`), bottom-end at ≥ 768 px (fixed `inline-size: 24rem`), above page
-     content (`--z-toast`), bottom offset `--space-4` + `env(safe-area-inset-bottom)`. At most 3 visible, newest last. Timing (§4): a toast
+     content (`--z-toast`), bottom offset `--space-4` + `env(safe-area-inset-bottom)`. While the region holds a toast it publishes its height
+     as a CSS variable on the shell (`--toast-stack-size`), and the tutor shell's scroll container gets `padding-block-end` and
+     `scroll-padding-block-end` of that height + `--space-4` + the safe-area inset, so no toast can hide the focused control or the page end
+     (WCAG 2.2 SC 2.4.11). At most 3 visible, newest last. Timing (§4): a toast
      without an action closes after 5 s, the timer pauses while the pointer is over the region or focus is inside it; a toast with an
      action stays until closed or removed by its caller; each toast has a Close button (`IconButton`, "Dismiss") and a `CircleCheck` icon
      with its text. F6 / the region's landmark reaches it from the keyboard (React Aria).
@@ -157,7 +162,7 @@ every "I forgot my password". 5. **Hard-coded semantics?** None: no level, exam 
   the page); Undo returns an archived-from-ACTIVE student to ACTIVE (one request) and an archived-from-PAUSED student to PAUSED (two
   requests, in order, each with the latest version); an Undo after another tab changed the student (409) shows "Couldn't undo. Use
   Reactivate." in the Account section and the refetched status, with no conflict dialog; a failing second request shows "Couldn't
-  restore Paused. The student is active."; ARCHIVED shows
+  restore Paused. The student is active."; a Reactivate (or any other successful status action or reset) closes the open archive toast; ARCHIVED shows
   only Reactivate and the reset hint; Reactivate → ACTIVE; while the profile form is open the Account actions are disabled with the hint,
   and while a status request is pending every Account action and Edit profile are disabled; an `INVALID_STATE_TRANSITION` and a network
   error show their `InlineAlert` in the Account section (no error toast) and leave the screen consistent with the server (component tests;
@@ -178,14 +183,17 @@ every "I forgot my password". 5. **Hard-coded semantics?** None: no level, exam 
 - AC9 (design-system §3, interaction-states §4, scope 9): each toast is announced through the `polite` region (React Aria) when it
   appears; a toast without an action closes after 5 s, paused while hovered or focused; the archive toast with Undo stays until closed,
   Undo or leaving the page; Close dismisses; Undo is reachable by keyboard (F6 to the region, Tab to Undo); no error is ever a toast; after
-  a sign-out (own or cross-tab) no toast remains; at 360×740 a toast spans the width minus the 16 px gutters, at 768 and 1280 it is 24rem at
+  a sign-out (own or cross-tab) no toast remains; at 360×740, after Archive with the page scrolled to the end, the
+  focused Reactivate button's bounding box does not overlap the toast's; a toast spans the width minus the 16 px gutters, at 768 and 1280 it is 24rem at
   the bottom end; no horizontal scroll; at most 3 visible. `ConfirmDialog`'s primary variant, pending state and content slot work, and its
   existing tests pass (unit tests with fake timers + E2E bounding boxes).
 - AC10 (NFR-A11Y-01, 02, responsive): axe shows no serious or critical issue on the Profile view (read, edit with errors), the Account
   section in each status, the reset dialog, the credentials card and a visible toast at 360×740, 768×1024 and 1280×800 in vi and en; the
   layout rules hold (actions stacked full width below 768, inline at ≥ 768; Edit profile sits under its heading below 768 and at the end of the heading row at ≥ 768); keyboard-only
-  edit, archive + Undo and reset; status never colour-only; reset = ≤ 3 user steps (Reset password → confirm → Copy message, ux-flows F10).
-- AC11: `./scripts/gate.sh` green twice in a row on the same dev database; all existing unit and E2E assertions kept (F2 still ≤ 6 steps);
+  edit, archive + Undo (focus after Undo returns to the element focused before entering the region, else the Account `h2`) and reset; status never colour-only; reset = ≤ 3 user steps (Reset password → confirm → Copy message, ux-flows F10).
+- AC11: `./scripts/gate.sh` green twice in a row on the same dev database; all existing unit and E2E assertions kept (F2 still ≤ 6 steps),
+  with one named exception: `StudentWorkspacePage.test.tsx`'s Personal information terms become `['Họ tên', 'Tên đăng nhập', 'Ngày thêm']`
+  (scope 1 drops the Status row; the status is checked in the Account section);
   the bundle budget green with no students code in either first-visit closure; `api/openapi.json` unchanged.
 
 ## Test plan
@@ -204,8 +212,9 @@ every "I forgot my password". 5. **Hard-coded semantics?** None: no level, exam 
 ## Evidence required
 - `evidence/T-M2.14/summary.md`, gate logs (both runs), screenshots under `evidence/T-M2.14/impl/` at 360×740, 768×1024 and 1280×800: the
   Profile view with Edit profile, the edit form (with errors), the conflict dialog, the Account section (ACTIVE, PAUSED, ARCHIVED), the
-  archive toast with Undo, the reset dialog, the credentials card, in vi and en at least once each; `/dev/ui` `Toast` and
-  `UnsavedChangesGuard`; axe results; the reset step log. QA report via `qa/T-M2.14`; UX and SEC verdicts as PR records (reviewer evidence
+  archive toast with Undo, the reset dialog, the credentials card, in vi and en at least once each; `/dev/ui` `Toast`,
+  `UnsavedChangesGuard` and the `ConfirmDialog` variants (primary, pending, with content); the Account section's `InlineAlert` states
+  (status error, Undo failure, archived-meanwhile reset); axe results; the reset step log. QA report via `qa/T-M2.14`; UX and SEC verdicts as PR records (reviewer evidence
   never on the feature branch).
 
 ## Docs to update
