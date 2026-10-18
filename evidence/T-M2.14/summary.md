@@ -2,6 +2,28 @@
 
 Branch `feature/T-M2.14-student-profile-account` · packet `docs/tasks/T-M2.14-student-profile-account.md` · DEC-124, DEC-125
 
+## CI fix: axe `role-img-alt` on `:root` (PR #108, e2e-smoke run 39093117152)
+
+- **Symptom:** `students.spec.ts` "Edit profile › AC1/AC10" failed at tablet and laptop in `expectAccessible` after Save:
+  `role-img-alt (serious) … [:root]`; it passed locally.
+- **Root cause:** React Aria announces a focused button's pending state with a live-announcer entry `div[role="img"]`
+  `aria-labelledby="<button id>"`. It creates the announcer lazily and adds that first announcement 100 ms late. A fast Save closed the form
+  (the button unmounted) before the entry arrived, and `ui/Button`'s timer-based drop (150 ms after unmount) left it dangling for up to
+  ~50 ms. On the faster CI runner axe started inside that window; the drop then removed the node mid-scan, so axe could only name it `:root`.
+- **Fix (`ui/Button.tsx`, `0e1c7ef`):** a gone button watches the document for 500 ms and removes a late entry pointing at it in the task
+  that inserts it (`MutationObserver` callbacks run as microtasks), so no other task (a screen reader, axe) can see it dangle. The window
+  closes after React Aria's delay (its timer was set first, so it fires first). No axe rule, node or check was excluded or loosened.
+- **Tests that catch it:** `ui/Button.test.tsx` adds a late entry after the unmount and asserts it is gone before the next task (fails on
+  the old code, passes now), plus that the watcher ends. The E2E test records announcer entries still dangling one task after insertion
+  around Save (`watchDanglingAnnouncements`): on the old code it failed 7 of 10 repeats at tablet/laptop; with the fix 40/40 passed
+  (`--repeat-each=20`, tablet + laptop).
+- **Second, test-only race found by the repeats:** at tablet the guard dialog is opened from the navigation drawer; its focus restore after
+  closing could land in the middle of Playwright's `fill`, so Full name stayed empty (1 of 20 runs). The test now waits for the dialog to
+  finish closing before typing and asserts the typed value. Focus restore on close is correct product behaviour, so nothing changed there.
+- **Gate after the fix:** `evidence/T-M2.14/gate-20261018T091320Z.log` PASS and `evidence/T-M2.14/gate-20261018T092437Z.log` PASS (13
+  steps each; backend 466, web 627 in 57 files, E2E 335 passed; budget student 186.2 / tutor 186.4 KB gz), back to back on the same dev
+  database, on `0e1c7ef`.
+
 ## Implementation (frontend-implementer)
 
 ### What was built (by packet scope)
