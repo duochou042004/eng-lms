@@ -86,8 +86,10 @@ export function AccountSection({
   useEffect(() => {
     if (!focus) return
     if (focus.to === 'afterUndo') {
-      // React Aria's region gave focus back to where it was before the region; when that element is gone, the h2.
-      if (!document.activeElement || document.activeElement === document.body) titleRef.current?.focus()
+      // React Aria's region gave focus back to where it was before the region; when that element is gone, or focus is
+      // still in the region (another toast took it, AC12 (b)), the h2.
+      const active = document.activeElement
+      if (!active || active === document.body || active.closest('[data-toast-region]')) titleRef.current?.focus()
     } else document.getElementById(focus.to === 'first' ? ids.first : ids.reset)?.focus()
   }, [focus, ids.first, ids.reset])
 

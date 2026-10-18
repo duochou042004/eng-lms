@@ -74,6 +74,11 @@ most `--size-reading-max`), bottom end at ≥ 768 px (24rem, `--size-toast`), `-
 shows, the region publishes its height as `--toast-stack-size` (and `data-toasts`) on `:root`; the shell's `main` gets that much
 `padding-block-end` and `:root` `scroll-padding-block-end`, so no toast hides the focused control or the page end (WCAG 2.2 SC 2.4.11).
 Unmounting the shell (any sign-out) clears the queue. Errors stay `InlineAlert`s.
+**AC12 (DEC-126):** while a modal dialog or sheet is open the region sits under its overlay (`--z-toast` 150 < `--z-overlay` 200), is
+hidden and `inert`, and its timers wait; it returns when the last one closes. A timed toast pushed out of the 3 visible is closed at once
+(never shown late); an action toast waits for a place. A toast landing on the focused control scrolls that control clear (the published
+height is rounded up to whole pixels). The queue is also cleared when a region mounts. After **Undo**, focus left inside the region (or
+on `body`) moves to the Account `h2`. With an action, the icon sits on the message's first line and the action under the message.
 
 ## 5. Attempt-specific states (student)
 

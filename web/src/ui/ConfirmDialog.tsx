@@ -2,6 +2,7 @@ import { useEffect, useId, type ReactNode } from 'react'
 import { Dialog, Heading, Modal, ModalOverlay } from 'react-aria-components'
 import { Button } from './Button'
 import styles from './ConfirmDialog.module.css'
+import { useModalOpen } from './modalStack'
 
 export interface ConfirmDialogProps {
   isOpen: boolean
@@ -45,6 +46,7 @@ export function ConfirmDialog({
   children,
 }: ConfirmDialogProps) {
   const cancelId = useId()
+  useModalOpen(isOpen)
   return (
     <ModalOverlay
       isOpen={isOpen}

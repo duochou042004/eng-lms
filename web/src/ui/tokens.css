@@ -103,7 +103,7 @@
   /* Z-index */
   --z-sticky: 100;
   --z-overlay: 200;
-  --z-toast: 300;
+  --z-toast: 150; /* under the modal overlay: an open dialog covers the toasts (T-M2.14 AC12 (a)) */
 }
 
 @media (prefers-reduced-motion: reduce) {

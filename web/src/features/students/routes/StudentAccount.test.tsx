@@ -38,7 +38,7 @@ async function openWorkspace(initial: Record<string, unknown> = {}) {
 describe('Account section: status (AC5)', { timeout: 20_000 }, () => {
   it.each([
     ['ACTIVE', ['Tạm nghỉ', 'Lưu trữ', 'Đặt lại mật khẩu'], 'Đang học'],
-    ['PAUSED', ['Học lại', 'Lưu trữ', 'Đặt lại mật khẩu'], 'Tạm nghỉ'],
+    ['PAUSED', ['Tiếp tục học', 'Lưu trữ', 'Đặt lại mật khẩu'], 'Tạm nghỉ'],
     ['ARCHIVED', ['Kích hoạt lại'], 'Đã lưu trữ'],
   ])('a %s student shows its actions in order (axe clean)', async (status, actions, badge) => {
     const { container } = await openWorkspace({ status })
@@ -54,18 +54,18 @@ describe('Account section: status (AC5)', { timeout: 20_000 }, () => {
   it('Pause → PAUSED (badges, toast, focus on Resume) and Resume back, each with the latest version', async () => {
     const { api } = await openWorkspace()
     await press('Tạm nghỉ')
-    await waitFor(() => expect(within(account()).getByRole('button', { name: 'Học lại' })).toHaveFocus())
+    await waitFor(() => expect(within(account()).getByRole('button', { name: 'Tiếp tục học' })).toHaveFocus())
     expect(screen.getByRole('heading', { level: 1 }).closest('header')).toHaveTextContent('Tạm nghỉ')
     expect(within(account()).getByRole('definition')).toHaveTextContent('Tạm nghỉ')
-    expect(toastTexts()).toEqual(['Nguyễn Văn An đã tạm nghỉ'])
+    expect(toastTexts()).toEqual(['Đã chuyển Nguyễn Văn An sang Tạm nghỉ'])
     await expectNoAxeViolations(document.body)
-    await press('Học lại')
+    await press('Tiếp tục học')
     await waitFor(() => expect(within(account()).getByRole('definition')).toHaveTextContent('Đang học'))
     expect(api.calls.status).toEqual([
       { status: 'PAUSED', version: 0 },
       { status: 'ACTIVE', version: 1 },
     ])
-    expect(toastTexts()).toEqual(['Nguyễn Văn An đã tạm nghỉ', 'Nguyễn Văn An đã học lại'])
+    expect(toastTexts()).toEqual(['Đã chuyển Nguyễn Văn An sang Tạm nghỉ', 'Đã cho Nguyễn Văn An học tiếp'])
   })
 
   it('Archive → ARCHIVED with a persistent toast and Undo; Undo from ACTIVE is one request', async () => {
@@ -109,6 +109,20 @@ describe('Account section: status (AC5)', { timeout: 20_000 }, () => {
     await userEvent.keyboard('{Enter}')
     await waitFor(() => expect(within(account()).getByRole('definition')).toHaveTextContent('Đang học'))
     await waitFor(() => expect(screen.getByRole('heading', { level: 2, name: 'Tài khoản' })).toHaveFocus())
+  })
+
+  it('Undo with two other toasts open: focus left in the region moves to the Account heading (AC12 (b))', async () => {
+    await openWorkspace()
+    await press('Tạm nghỉ')
+    await press('Tiếp tục học')
+    await press('Lưu trữ')
+    await waitFor(() => expect(toastTexts()).toHaveLength(3))
+    const undo = within(toastRegion()!).getByRole('button', { name: 'Hoàn tác' })
+    act(() => undo.focus())
+    await userEvent.keyboard('{Enter}')
+    await waitFor(() => expect(within(account()).getByRole('definition')).toHaveTextContent('Đang học'))
+    await waitFor(() => expect(screen.getByRole('heading', { level: 2, name: 'Tài khoản' })).toHaveFocus())
+    expect(toastRegion()!.contains(document.activeElement)).toBe(false)
   })
 
   it('an Undo after another tab changed the student shows "Couldn\'t undo" with the refetched status, no conflict dialog', async () => {

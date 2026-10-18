@@ -223,6 +223,13 @@
   font-size: var(--font-size-md);
 }
 
+/* Under a .subTitle h3 (the edit form's "Other contacts" h4, AC12 (e)): not larger, no legend padding. */
+.subSubTitle {
+  margin: 0;
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-semibold);
+}
+
 /* The "Personal information" heading row (T-M2.14 layout rules): below 768 px a column (Edit profile under the
    heading), at >= 768 px one row (the heading grows, the button at the end). */
 .headingRow {

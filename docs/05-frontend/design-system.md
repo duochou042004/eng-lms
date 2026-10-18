@@ -126,7 +126,9 @@ Decorative: `aria-hidden="true"`, never focusable; its owner announces the state
 **Profile and account components** (T-M2.14; tests, axe and `/dev/ui` entries):
 - `Toast` (`ToastRegion` + the `toast` queue): React Aria's `UNSTABLE_Toast*` wrapped in `ui/Toast.tsx` and `ui/toastQueue.ts` only
   (`shortcut:` comment). Placement, timing and the `--toast-stack-size` room: interaction-states §4. Token `--size-toast` (24rem). The region
-  remounts when it gets its first toast, so React Aria registers it as an F6 landmark (its label is fixed).
+  remounts when it gets its first toast, so React Aria registers it as an F6 landmark (its label is fixed). Under an open modal
+  (`ConfirmDialog`, `Sheet` report themselves through `ui/modalStack.ts`) it is hidden, inert and paused (AC12 (a), DEC-126);
+  `--z-toast` is now 150, below `--z-overlay`.
 - `UnsavedChangesGuard`: `useBlocker` + `beforeunload` rendering the `ConfirmDialog` while `isDirty`; the predicate `blocksNavigation` (own
   module): every move to another pathname except `/login` and `/forbidden`; a navigation with `state.forced === true` passes only to
   `/change-password` (DEC-123 SEC S4-5). Used by Add student ("Discard this student?") and Edit profile ("Discard your changes?").

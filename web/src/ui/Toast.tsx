@@ -11,7 +11,8 @@ import { cx } from './cx'
 import { IconButton } from './IconButton'
 import styles from './Toast.module.css'
 
-import { queue, TOAST_STACK_VAR } from './toastQueue'
+import { useAnyModalOpen } from './modalStack'
+import { queue, toast, TOAST_STACK_VAR } from './toastQueue'
 
 // shortcut: React Aria's toast is UNSTABLE_-prefixed; see toastQueue.ts.
 
@@ -37,7 +38,20 @@ export function ToastRegion({ label, dismissLabel }: ToastRegionProps) {
     (onChange) => queue.subscribe(onChange),
     () => queue.visibleToasts,
   )
-  useEffect(() => () => queue.clear(), [])
+  // A fresh region starts empty and leaves nothing behind: a toast queued after a sign-out never shows in the next
+  // session (AC12 (k)).
+  useEffect(() => {
+    toast.clear()
+    return () => toast.clear()
+  }, [])
+  // Under an open modal the region is hidden, inert and its timers wait (AC12 (a)); they run again when it closes.
+  const underModal = useAnyModalOpen()
+  const wasUnderModal = useRef(false)
+  useEffect(() => {
+    if (underModal) queue.pauseAll()
+    else if (wasUnderModal.current) queue.resumeAll()
+    wasUnderModal.current = underModal
+  }, [underModal, visible])
   const regionRef = useRef<HTMLDivElement>(null)
   useStackSize(regionRef, visible.length > 0)
   return (
@@ -49,6 +63,9 @@ export function ToastRegion({ label, dismissLabel }: ToastRegionProps) {
       aria-label={label}
       ref={regionRef}
       className={styles.region}
+      inert={underModal}
+      data-under-modal={underModal || undefined}
+      data-toast-region
     >
       {/* Newest last: React Aria's queue lists the newest first. */}
       <ol className={styles.list}>
@@ -92,7 +109,18 @@ function useStackSize(ref: RefObject<HTMLDivElement | null>, shown: boolean) {
       delete root.dataset.toasts
     }
     if (!shown || !region) return remove()
-    const publish = () => root.style.setProperty(TOAST_STACK_VAR, `${region.getBoundingClientRect().height}px`)
+    const publish = () => {
+      const box = region.getBoundingClientRect()
+      // Whole pixels, rounded up: scroll positions are whole, so a fractional height could leave a sliver overlapped.
+      root.style.setProperty(TOAST_STACK_VAR, `${Math.ceil(box.height)}px`)
+      // A toast that lands on the focused control scrolls it clear (`scroll-padding-block-end` keeps room for the stack),
+      // so no toast hides the focused control (WCAG 2.2 SC 2.4.11, scope 9).
+      const focused = document.activeElement
+      if (focused instanceof HTMLElement && focused !== document.body && !region.contains(focused)) {
+        const own = focused.getBoundingClientRect()
+        if (own.bottom > box.top && own.top < box.bottom) focused.scrollIntoView?.({ block: 'nearest' })
+      }
+    }
     publish()
     root.dataset.toasts = ''
     const observer = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(publish)

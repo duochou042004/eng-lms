@@ -45,6 +45,11 @@ describe('Edit profile: open and save (AC1)', { timeout: 20_000 }, () => {
         .getAllByRole('term')
         .map((t) => t.textContent),
     ).toEqual(['Ngày thêm'])
+    // AC12 (e): "Other contacts" is an h4 under the Contacts h3, without the fieldset legend's padding.
+    expect(within(form).getByRole('heading', { level: 3, name: 'Liên hệ' })).toBeInTheDocument()
+    const handlesTitle = within(form).getByRole('heading', { level: 4, name: 'Liên hệ khác' })
+    expect(handlesTitle).toHaveClass('subSubTitle')
+    expect(handlesTitle).not.toHaveClass('legend')
     expect(screen.queryByRole('button', { name: 'Sửa hồ sơ' })).not.toBeInTheDocument()
     expect(screen.queryByRole('region', { name: 'Liên hệ' })).not.toBeInTheDocument()
     await userEvent.clear(field('Họ tên (bắt buộc)'))
@@ -306,7 +311,7 @@ describe('Edit profile: the unsaved changes guard (AC8)', { timeout: 20_000 }, (
     expect(path(router)).toBe(`/tutor/students/${SID}`)
     expect(field('Email')).toHaveValue('an@example.comx')
     await userEvent.click(screen.getByRole('link', { name: 'Lớp cô Lan' }))
-    await userEvent.click(within(await screen.findByRole('alertdialog')).getByRole('button', { name: 'Bỏ' }))
+    await userEvent.click(within(await screen.findByRole('alertdialog')).getByRole('button', { name: 'Bỏ thay đổi' }))
     await waitFor(() => expect(path(router)).toBe('/tutor/today'))
   })
 
@@ -328,7 +333,7 @@ describe('Edit profile: the unsaved changes guard (AC8)', { timeout: 20_000 }, (
     await waitFor(() => expect(screen.queryByRole('alertdialog')).not.toBeInTheDocument())
     expect(field('Email')).toHaveValue('an@example.comx')
     await userEvent.click(screen.getByRole('button', { name: 'Huỷ' }))
-    await userEvent.click(within(await screen.findByRole('alertdialog')).getByRole('button', { name: 'Bỏ' }))
+    await userEvent.click(within(await screen.findByRole('alertdialog')).getByRole('button', { name: 'Bỏ thay đổi' }))
     await waitFor(() => expect(editButton()).toHaveFocus())
     expect(within(screen.getByRole('region', { name: 'Liên hệ' })).getByText('an@example.com')).toBeInTheDocument()
     await userEvent.click(editButton())

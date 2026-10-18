@@ -113,7 +113,14 @@ function availabilityTone(state: Availability) {
 }
 
 /** Email, phone and the contact handles (≤ 30 label + value rows, add and remove). */
-export function ContactFields<T extends Fields>({ control }: { control: Control<T> }) {
+export function ContactFields<T extends Fields>({
+  control,
+  handlesHeadingLevel = 3,
+}: {
+  control: Control<T>
+  /** The "Other contacts" title: 3 in the add form's Contact section, 4 under the edit form's Contacts `h3`. */
+  handlesHeadingLevel?: 3 | 4
+}) {
   const { t, message, required } = useMessage()
   const handles = useFieldArray({ control: shared(control), name: 'contactHandles' })
   // A new contact row: focus its first field. A removed one: focus "Add a contact".
@@ -169,7 +176,11 @@ export function ContactFields<T extends Fields>({ control }: { control: Control<
       />
       <div className={styles.form}>
         <div>
-          <h3 className={styles.legend}>{t('form.handlesTitle')}</h3>
+          {handlesHeadingLevel === 4 ? (
+            <h4 className={styles.subSubTitle}>{t('form.handlesTitle')}</h4>
+          ) : (
+            <h3 className={styles.legend}>{t('form.handlesTitle')}</h3>
+          )}
           <p className={styles.mutedText}>{t('form.handlesHint')}</p>
         </div>
         {handles.fields.length > 0 ? (

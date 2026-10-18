@@ -138,7 +138,7 @@ export function ProfileForm({ student, onClose, onReload, onNotFound }: ProfileF
         <FullNameField control={control} />
         <UsernameField control={control} hint={t('profile.usernameHint')} availability={availability.state} />
         <h3 className={styles.subTitle}>{t('workspace.contacts')}</h3>
-        <ContactFields control={control} />
+        <ContactFields control={control} handlesHeadingLevel={4} />
         <NoteField control={control} />
         {formError ? <InlineAlert tone="danger" title={formError} /> : null}
         <div className={styles.stackedActions}>

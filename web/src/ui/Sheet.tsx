@@ -3,6 +3,7 @@ import type { ReactNode } from 'react'
 import { Dialog, Heading, Modal, ModalOverlay } from 'react-aria-components'
 import { cx } from './cx'
 import { IconButton } from './IconButton'
+import { useModalOpen } from './modalStack'
 import styles from './Sheet.module.css'
 
 export interface SheetProps {
@@ -27,6 +28,7 @@ export interface SheetProps {
  * duration token is 0 ms).
  */
 export function Sheet({ isOpen, onOpenChange, title, closeLabel, placement, children, footer }: SheetProps) {
+  useModalOpen(isOpen)
   return (
     <ModalOverlay isOpen={isOpen} onOpenChange={onOpenChange} isDismissable className={styles.overlay}>
       <Modal className={cx(styles.sheet, styles[placement])} data-placement={placement}>

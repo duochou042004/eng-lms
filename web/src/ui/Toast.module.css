@@ -19,6 +19,11 @@
   }
 }
 
+/* Under an open modal (AC12 (a)): not shown and not reachable (the region is also inert); it returns afterwards. */
+.region[data-under-modal] {
+  visibility: hidden;
+}
+
 .region[data-focus-visible] {
   outline: var(--focus-ring-width) solid var(--color-focus);
   outline-offset: var(--focus-ring-offset);
@@ -84,6 +89,16 @@
 
 .close {
   grid-area: close;
+}
+
+/* With an action the message may take several lines: the icon sits on its first line (AC12 (f)). */
+.withAction .icon {
+  align-self: start;
+  margin-block-start: calc((1lh - var(--size-icon)) / 2);
+}
+
+.withAction .content {
+  align-self: start;
 }
 
 .withAction .close {
