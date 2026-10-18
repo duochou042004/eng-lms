@@ -53,7 +53,7 @@ Tabs:   Overview | Plan | Lessons | Work | Materials | Progress | Notes | Profil
 links that pass `contactHref`) and the **Profile view at the index** (personal information, contacts, note; read-only), with **no tab bar**
 while Profile is the only content, no quick actions and no next lesson. When a second tab ships (M3), the Profile moves to `/profile` and the
 index becomes the Overview, whose first content arrives with M3. A malformed or unknown `:studentId` shows the feature's own not-found view
-inside the shell. Editing, guardians, the learning profile, status and reset password: T-M2.14.
+inside the shell. Editing, status and reset password: T-M2.14; guardians and the learning profile: T-M2.15 (DEC-124).
 
 ## 3. Student navigation (mobile-first)
 
