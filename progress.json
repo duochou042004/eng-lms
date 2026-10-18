@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-10-18T01:16:32Z",
-  "updatedBy": "lead-coordinator (T-M2.14 packet, session 2026-10-18, Opus 5.5)",
+  "updatedAt": "2026-10-18T01:39:14Z",
+  "updatedBy": "lead-coordinator (T-M2.14 start, session 2026-10-18, Opus 5.5)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -32,22 +32,21 @@
   "currentTask": {
     "id": "T-M2.14",
     "title": "Student profile editing, status and password reset (split, DEC-124)",
-    "status": "ready",
+    "status": "in_progress",
     "ownerRole": "FE",
-    "branch": "docs/T-M2.14-student-profile-account",
+    "branch": "feature/T-M2.14-student-profile-account",
     "packet": "docs/tasks/T-M2.14-student-profile-account.md",
-    "pr": "107",
-    "lastCommit": null,
-    "startedAt": null,
+    "pr": null,
+    "lastCommit": "356a5c0",
+    "startedAt": "2026-10-18T01:39:14Z",
     "entryGate": [
       "T-M2.5 merged — met (84c97c1, DEC-123)",
-      "Packet G0 — DOCS-REVIEW PASS (round 3); merge pending",
-      "PO start signal — pending"
+      "Packet G0 — met (PR #107, 356a5c0, DEC-125)",
+      "PO start signal — met (DEC-125)"
     ],
     "nextSteps": [
-      "CI green; DOCS-REVIEW + LC-APPROVED; merge-gate; gitlab-sync",
-      "At the start signal: set currentTask.branch to feature/T-M2.14-student-profile-account and status in_progress",
-      "Ask the PO for the start signal (DEC); implement through G3 (QA, UX, SEC)"
+      "frontend-implementer on the packet; gate green twice",
+      "G3: QA, UX, SEC one at a time; fixes in-task (AC12 + DEC); merge-gate; gitlab-sync; QA report via qa/; merge record PR"
     ],
     "trace": [
       "backlog M2",
@@ -343,12 +342,12 @@
   },
   "gates": {
     "G0": {
-      "status": "pending",
-      "note": "T-M2.14 packet: DOCS-REVIEW PASS round 3 (evidence/T-M2.14/review/docs.md); merge pending"
+      "status": "pass",
+      "note": "T-M2.14 packet DOCS-REVIEW PASS round 3 (PR #107, 356a5c0)"
     },
     "G1": {
-      "status": "n/a",
-      "note": "T-M2.14 not started (T-M2.5 passed: gate PASS x2 on 26897a7)"
+      "status": "pending",
+      "note": "T-M2.14 in progress"
     },
     "G2": {
       "status": "n/a",
@@ -371,7 +370,6 @@
   "decisions": {
     "log": "docs/10-governance/decision-log.md",
     "recent": [
-      "DEC-111",
       "DEC-112",
       "DEC-113",
       "DEC-114",
@@ -384,7 +382,8 @@
       "DEC-121",
       "DEC-122",
       "DEC-123",
-      "DEC-124"
+      "DEC-124",
+      "DEC-125"
     ],
     "pendingPO": [
       "OQ-03",
@@ -631,6 +630,13 @@
       "status": "approved",
       "at": "2026-10-16T01:40:00Z",
       "ref": "DEC-121"
+    },
+    {
+      "what": "Start T-M2.14 (student profile editing, status, reset password)",
+      "by": "PO",
+      "status": "approved",
+      "at": "2026-10-18T01:39:14Z",
+      "ref": "DEC-125"
     }
   ],
   "environment": {
@@ -1098,6 +1104,11 @@
       "at": "2026-10-18T01:16:32Z",
       "actor": "lead-coordinator",
       "event": "T-M2.14 split (DEC-124) into T-M2.14 (profile editing, status, reset password, Toast, guard S4-5) and T-M2.15 (guardians, learning profile); T-M2.14 packet written, G0 in review."
+    },
+    {
+      "at": "2026-10-18T01:39:14Z",
+      "actor": "lead-coordinator",
+      "event": "T-M2.14 packet merged at G0 (PR #107, 356a5c0); PO start signal (DEC-125); implementation started on feature/T-M2.14-student-profile-account."
     }
   ]
 }
