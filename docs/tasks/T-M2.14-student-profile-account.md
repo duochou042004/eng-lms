@@ -211,7 +211,7 @@ every "I forgot my password". 5. **Hard-coded semantics?** None: no level, exam 
   both pass a `--repeat-each=20` run at phone-small, tablet and laptop; (j) SEC S-1 (S3): a sign-in removes every query except the
   session before storing the new one, so a write answered after sign-out never survives into the next session (test: late write answer →
   logout → login → no `students` query); (k) SEC S-2: the toast queue is also cleared when a toast region mounts (a toast queued after
-  sign-out never shows in the next session). Recorded UX ruling: opening Edit profile moves focus to Full name (the trigger disappears).
+  sign-out never shows in the next session). (l) UX-8 (S3, UX round 2, DEC-126): (d) holds for every add, including an action toast: after any add, every timed toast outside the visible 3 is closed (test: three timed toasts + one action toast, then the action toast closes; no earlier timed toast comes back). Recorded UX ruling: opening Edit profile moves focus to Full name (the trigger disappears).
   Tests for each; existing assertions change only where these items change copy or layout.
 
 ## Test plan
