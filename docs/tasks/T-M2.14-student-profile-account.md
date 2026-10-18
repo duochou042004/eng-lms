@@ -95,8 +95,8 @@ profile are the follow-up **T-M2.15** (DEC-124).
      a key the caller can close; the queue is cleared when the tutor shell unmounts (a sign-out, own or cross-tab, never leaves a toast). Fixed placement rules: bottom-centre below 768 px with a 16 px inline gutter
      (`inline-size: calc(100% - 2 × --space-4)`, max `--size-reading-max`), bottom-end at ≥ 768 px (fixed `inline-size: 24rem`), above page
      content (`--z-toast`), bottom offset `--space-4` + `env(safe-area-inset-bottom)`. While the region holds a toast it publishes its height
-     as a CSS variable on the shell (`--toast-stack-size`), and the tutor shell's scroll container gets `padding-block-end` and
-     `scroll-padding-block-end` of that height + `--space-4` + the safe-area inset, so no toast can hide the focused control or the page end
+     as a CSS variable on the shell (`--toast-stack-size`), and the tutor shell's `main` gets `padding-block-end` and `:root` (the
+     document scroller) `scroll-padding-block-end` of that height + `--space-4` + the safe-area inset, so no toast can hide the focused control or the page end
      (WCAG 2.2 SC 2.4.11). At most 3 visible, newest last. Timing (§4): a toast
      without an action closes after 5 s, the timer pauses while the pointer is over the region or focus is inside it; a toast with an
      action stays until closed or removed by its caller; each toast has a Close button (`IconButton`, "Dismiss") and a `CircleCheck` icon

@@ -41,11 +41,11 @@
     "startedAt": null,
     "entryGate": [
       "T-M2.5 merged — met (84c97c1, DEC-123)",
-      "Packet G0 — in review (docs PR)",
+      "Packet G0 — DOCS-REVIEW PASS (round 3); merge pending",
       "PO start signal — pending"
     ],
     "nextSteps": [
-      "Fresh docs-reviewer on the packet; fix; CI; DOCS-REVIEW + LC-APPROVED; merge-gate; gitlab-sync",
+      "CI green; DOCS-REVIEW + LC-APPROVED; merge-gate; gitlab-sync",
       "At the start signal: set currentTask.branch to feature/T-M2.14-student-profile-account and status in_progress",
       "Ask the PO for the start signal (DEC); implement through G3 (QA, UX, SEC)"
     ],
@@ -344,7 +344,7 @@
   "gates": {
     "G0": {
       "status": "pending",
-      "note": "T-M2.14 packet in review on docs/T-M2.14-student-profile-account (DEC-124)"
+      "note": "T-M2.14 packet: DOCS-REVIEW PASS round 3 (evidence/T-M2.14/review/docs.md); merge pending"
     },
     "G1": {
       "status": "n/a",
