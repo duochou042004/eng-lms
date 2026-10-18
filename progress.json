@@ -16,7 +16,7 @@
       }
     ]
   },
-  "updatedAt": "2026-10-18T11:40:00Z",
+  "updatedAt": "2026-10-18T15:20:00Z",
   "updatedBy": "frontend-implementer (T-M2.14 implementation, session 2026-10-18, Opus 5.5)",
   "phase": {
     "id": "P1",
@@ -37,7 +37,7 @@
     "branch": "feature/T-M2.14-student-profile-account",
     "packet": "docs/tasks/T-M2.14-student-profile-account.md",
     "pr": "108",
-    "lastCommit": "6883cd5",
+    "lastCommit": "157425c",
     "startedAt": "2026-10-18T01:39:14Z",
     "entryGate": [
       "T-M2.5 merged — met (84c97c1, DEC-123)",
@@ -315,8 +315,8 @@
     }
   ],
   "tests": {
-    "lastRun": "2026-10-18T11:23:00Z",
-    "summary": "T-M2.14 AC12 (a)-(k) (6883cd5): gate PASS x2 (backend 466, web 633 in 58 files, e2e 344 passed on phone-small, tablet, laptop); Account section E2E --repeat-each=20 x3 projects 300/300; budget student 186.6 / tutor 186.8 KB gz.",
+    "lastRun": "2026-10-18T15:16:00Z",
+    "summary": "T-M2.14 AC12 (l) (157425c): gate PASS x2 (backend 466, web 634 in 58 files, e2e 344 passed on phone-small, tablet, laptop); budget student 186.6 / tutor 186.8 KB gz.",
     "suites": [
       {
         "name": "backend (./mvnw -B verify)",
@@ -326,7 +326,7 @@
       {
         "name": "web (pnpm test --run)",
         "result": "pass",
-        "details": "633 tests in 58 files at T-M2.14 (gate on 6883cd5)"
+        "details": "634 tests in 58 files at T-M2.14 (gate on 157425c)"
       },
       {
         "name": "governance scripts (scripts/tests/run-all.sh)",

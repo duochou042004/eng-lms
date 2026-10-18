@@ -18,6 +18,14 @@ Branch `feature/T-M2.14-student-profile-account` · packet `docs/tasks/T-M2.14-s
 | (j) SEC S-1 | `useLogin` `onSuccess` removes every query except the session before storing the new one. | `features/auth/api/session.test.tsx`: a late PATCH answer after the logout cache clear → login → only `['auth','session']` remains. Fails without the fix. |
 | (k) SEC S-2 | `ToastRegion` also clears the queue when it mounts. | `ui/Toast.test.tsx`: a toast queued after a region unmounted never shows in the next region. |
 
+**AC12 (l) (UX-8, G3 round 2, commit `157425c`):** `toast.success` returned before its sweep for an action toast, so a timed toast that an
+action toast pushed out of the 3 visible stayed queued. It came back when the action toast closed (×, a failed Undo, leaving the page),
+possibly on another student's page. The sweep that closes hidden timed toasts now runs after every `queue.add`, timed or action. Test:
+`ui/Toast.test.tsx` adds 3 timed toasts, then 1 action toast, then closes the action toast: only Toast 2 and 3 remain and Toast 1 never
+comes back. It fails on the old code; every existing test stays green. Gate on `157425c`: `evidence/T-M2.14/gate-20261018T145335Z.log`
+**PASS** and `evidence/T-M2.14/gate-20261018T150511Z.log` **PASS**, back to back, same dev database (13 steps each; backend 466, web 634 in
+58 files, E2E 344 passed; budget student 186.6 / tutor 186.8 KB gz).
+
 Also found by the new E2E: a toast landing on the focused control (360 px, two toasts) partly covered it. The region now scrolls the focused
 control clear when its height changes (`scrollIntoView({block:'nearest'})` with the existing `scroll-padding-block-end`; scope 9 / SC
 2.4.11). It publishes its height rounded up to whole pixels, because a fractional height left a 0.19 px overlap. Covered by a
