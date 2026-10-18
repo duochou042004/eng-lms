@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-10-17T15:40:20Z",
-  "updatedBy": "lead-coordinator (T-M2.5 merge record, session 2026-10-16/17, Opus 5.5)",
+  "updatedAt": "2026-10-18T01:16:32Z",
+  "updatedBy": "lead-coordinator (T-M2.14 packet, session 2026-10-18, Opus 5.5)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -31,33 +31,36 @@
   },
   "currentTask": {
     "id": "T-M2.14",
-    "title": "Student profile editing (profile and contacts, username, guardians, learning profile, status, reset password; split from T-M2.5, DEC-120)",
-    "status": "draft",
+    "title": "Student profile editing, status and password reset (split, DEC-124)",
+    "status": "ready",
     "ownerRole": "FE",
-    "branch": null,
-    "packet": null,
-    "pr": null,
+    "branch": "docs/T-M2.14-student-profile-account",
+    "packet": "docs/tasks/T-M2.14-student-profile-account.md",
+    "pr": "107",
     "lastCommit": null,
     "startedAt": null,
     "entryGate": [
       "T-M2.5 merged — met (84c97c1, DEC-123)",
-      "Packet G0 — pending",
+      "Packet G0 — DOCS-REVIEW PASS (round 3); merge pending",
       "PO start signal — pending"
     ],
     "nextSteps": [
-      "Write the T-M2.14 packet (task-packet skill; size check; SEC triggered: tutor-private learning profile, password reset; include T-M2.5 SEC S4-5); fresh docs-reviewer; merge-gate",
-      "Ask the PO for the start signal; implement through G3 (QA, UX, SEC)"
+      "CI green; DOCS-REVIEW + LC-APPROVED; merge-gate; gitlab-sync",
+      "At the start signal: set currentTask.branch to feature/T-M2.14-student-profile-account and status in_progress",
+      "Ask the PO for the start signal (DEC); implement through G3 (QA, UX, SEC)"
     ],
     "trace": [
+      "backlog M2",
+      "FR-STU-03, 05, 06",
+      "FR-AUTH-07",
       "DEC-120",
       "DEC-123",
-      "FR-STU-03, 04, 05",
-      "FR-AUTH-07"
+      "DEC-124"
     ]
   },
   "nextTask": {
-    "id": "T-M2.13",
-    "title": "Auth and shell feedback follow-ups (UX-3 touch-reachable meta error, UX-4 cross-tab sign-out notice, UX-6 copy echo, O-1/O-2 logout feedback)",
+    "id": "T-M2.15",
+    "title": "Guardians and learning profile (split from T-M2.14, DEC-124)",
     "status": "draft",
     "ownerRole": "FE",
     "branch": null,
@@ -66,14 +69,16 @@
     "lastCommit": null,
     "startedAt": null,
     "entryGate": [
-      "T-M2.12 merged — met (b5596d3)"
+      "T-M2.14 merged — pending"
     ],
     "nextSteps": [
-      "Packet when the PO orders it (before or after T-M2.14)"
+      "Packet after T-M2.14 merges; T-M2.13 (small FE follow-ups) when the PO orders it"
     ],
     "trace": [
-      "DEC-118",
-      "DEC-119"
+      "DEC-124",
+      "FR-STU-01 (guardians)",
+      "FR-STU-03 (guardians)",
+      "FR-STU-04"
     ]
   },
   "completed": [
@@ -339,7 +344,7 @@
   "gates": {
     "G0": {
       "status": "pending",
-      "note": "T-M2.14 packet not written (T-M2.5 passed: DOCS-REVIEW PASS round 3, PR #93)"
+      "note": "T-M2.14 packet: DOCS-REVIEW PASS round 3 (evidence/T-M2.14/review/docs.md); merge pending"
     },
     "G1": {
       "status": "n/a",
@@ -366,7 +371,6 @@
   "decisions": {
     "log": "docs/10-governance/decision-log.md",
     "recent": [
-      "DEC-110",
       "DEC-111",
       "DEC-112",
       "DEC-113",
@@ -379,7 +383,8 @@
       "DEC-120",
       "DEC-121",
       "DEC-122",
-      "DEC-123"
+      "DEC-123",
+      "DEC-124"
     ],
     "pendingPO": [
       "OQ-03",
@@ -1088,6 +1093,11 @@
       "at": "2026-10-17T15:43:51Z",
       "actor": "lead-coordinator",
       "event": "T-M2.5 merged via merge-gate (PR #94, 84c97c1, DEC-123): QA PASS (round 6), UX APPROVED (round 4), SEC APPROVED (round 2); mirror synced. QA report PR #105; this merge record. Next: T-M2.14 packet."
+    },
+    {
+      "at": "2026-10-18T01:16:32Z",
+      "actor": "lead-coordinator",
+      "event": "T-M2.14 split (DEC-124) into T-M2.14 (profile editing, status, reset password, Toast, guard S4-5) and T-M2.15 (guardians, learning profile); T-M2.14 packet written, G0 in review."
     }
   ]
 }
