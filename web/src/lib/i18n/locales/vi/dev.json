@@ -14,7 +14,8 @@
     "navigation": "Điều hướng",
     "overlays": "Sheet và popover",
     "buttonLink": "Liên kết dạng nút",
-    "students": "Thành phần cho Học viên (T-M2.5)"
+    "students": "Thành phần cho Học viên (T-M2.5)",
+    "profile": "Thành phần hồ sơ và tài khoản (T-M2.14)"
   },
   "sample": {
     "primary": "Lưu",
@@ -112,6 +113,34 @@
     "dlEmpty": "Chưa có",
     "dlName": "Họ tên",
     "dlEmail": "Email",
-    "dlNote": "Ghi chú"
+    "dlNote": "Ghi chú",
+    "toastShow": "Hiện thông báo thành công",
+    "toastShowAction": "Hiện thông báo có Hoàn tác",
+    "toastMessage": "Đã lưu hồ sơ",
+    "toastActionMessage": "Đã lưu trữ Nguyễn Văn An. Học viên không đăng nhập được nữa.",
+    "toastUndo": "Hoàn tác",
+    "toastUndone": "Đã hoàn tác lưu trữ",
+    "toastRegion": "Thông báo",
+    "toastDismiss": "Đóng thông báo",
+    "guardDirty": "Biểu mẫu mẫu này có thay đổi chưa lưu",
+    "guardLeave": "Rời thư viện (về trang đầu)",
+    "guardTitle": "Bỏ các thay đổi?",
+    "guardBody": "Những thay đổi bạn vừa nhập cho hồ sơ này sẽ mất.",
+    "guardDiscard": "Bỏ",
+    "guardKeep": "Tiếp tục sửa",
+    "confirmPrimaryOpen": "Mở hộp thoại xung đột (chính)",
+    "confirmPendingOpen": "Mở hộp thoại đang xử lý",
+    "confirmContentOpen": "Mở hộp thoại có nội dung",
+    "conflictTitle": "Đã có thay đổi ở nơi khác",
+    "conflictBody": "Học viên này vừa được thay đổi ở một tab hoặc cửa sổ khác. Tải lại để xem bản mới nhất; những thay đổi chưa lưu của bạn sẽ mất.",
+    "conflictReload": "Tải lại",
+    "conflictCancel": "Huỷ",
+    "conflictCopy": "Sao chép ghi chú của tôi",
+    "resetTitle": "Đặt lại mật khẩu cho Nguyễn Văn An?",
+    "resetBody": "Mật khẩu hiện tại sẽ không dùng được nữa, học viên bị đăng xuất trên mọi thiết bị và tự đặt mật khẩu mới ở lần đăng nhập tới.",
+    "resetConfirm": "Đặt lại mật khẩu",
+    "resetPending": "Đang đặt lại…",
+    "resetCancel": "Huỷ",
+    "resetFailed": "Không đặt lại được mật khẩu. Hãy thử lại."
   }
 }

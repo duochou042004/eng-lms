@@ -2,7 +2,17 @@ import { CalendarCheck, Menu, NotebookPen, Users } from 'lucide-react'
 import { useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Outlet } from 'react-router'
-import { EmptyState, IconButton, NavList, PageHeader, Sheet, Stack, useMinWidth, type NavItem } from '../../ui'
+import {
+  EmptyState,
+  IconButton,
+  NavList,
+  PageHeader,
+  Sheet,
+  Stack,
+  ToastRegion,
+  useMinWidth,
+  type NavItem,
+} from '../../ui'
 import { usePageTitle } from '../routeAnnouncement'
 import styles from './Shell.module.css'
 import { AccountMenu, AccountSection, ShellHomeLink, SkipLink } from './ShellParts'
@@ -20,7 +30,8 @@ const NAV = [
 /**
  * The tutor shell (a lazy chunk of its own, NFR-PERF-03; T-M2.11): at ≥ lg a top bar (workspace name, account menu
  * top right) over a persistent sidebar; below lg a top bar with a menu button that opens the navigation drawer, whose
- * footer holds the account section. The pages render in `main` (`<Outlet />`).
+ * footer holds the account section. The pages render in `main` (`<Outlet />`). The shell holds the one toast region
+ * (T-M2.14); unmounting it (a sign-out, own or another tab's) clears the queue.
  */
 export function TutorShell() {
   const { t } = useTranslation('shell')
@@ -67,6 +78,7 @@ export function TutorShell() {
           <NavList label={t('tutor.navLabel')} items={items} onNavigate={drawer.close} />
         </Sheet>
       )}
+      <ToastRegion label={t('toast.region')} dismissLabel={t('toast.dismiss')} />
     </div>
   )
 }

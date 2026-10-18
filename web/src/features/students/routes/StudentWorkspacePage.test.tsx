@@ -39,7 +39,8 @@ describe('/tutor/students/:studentId', { timeout: 20_000 }, () => {
       within(personal)
         .getAllByRole('term')
         .map((t) => t.textContent),
-    ).toEqual(['Họ tên', 'Tên đăng nhập', 'Trạng thái', 'Ngày thêm'])
+      // T-M2.14 AC11: the Status row moved to the Account section (scope 1).
+    ).toEqual(['Họ tên', 'Tên đăng nhập', 'Ngày thêm'])
     expect(personal).toHaveTextContent(formatDate(student().createdAt, 'vi'))
     expect(personal).toHaveTextContent(/\d\d\/\d\d\/2026/)
     const note = within(screen.getByRole('region', { name: 'Ghi chú' })).getByText(/Dòng một/)

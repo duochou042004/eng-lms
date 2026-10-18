@@ -60,3 +60,52 @@ describe('ConfirmDialog', () => {
     expect(onConfirm).toHaveBeenCalledTimes(1)
   })
 })
+
+// T-M2.14 scope 9: the primary variant, the pending state (not dismissible) and the content slot.
+describe('ConfirmDialog variants', () => {
+  function Variant({ isPending = false, onCancel = () => {} }: { isPending?: boolean; onCancel?: () => void }) {
+    return (
+      <ConfirmDialog
+        isOpen
+        title="Đã có thay đổi ở nơi khác"
+        description="Tải lại để xem bản mới nhất."
+        confirmLabel="Tải lại"
+        confirmVariant="primary"
+        cancelLabel="Huỷ"
+        isPending={isPending}
+        pendingLabel="Đang tải lại…"
+        onConfirm={() => {}}
+        onCancel={onCancel}
+      >
+        <button>Sao chép ghi chú của tôi</button>
+      </ConfirmDialog>
+    )
+  }
+
+  it('a primary confirm and a content slot under the description', async () => {
+    render(<Variant />)
+    const dialog = await screen.findByRole('alertdialog', { name: 'Đã có thay đổi ở nơi khác' })
+    expect(screen.getByRole('button', { name: 'Tải lại' })).toHaveClass('primary')
+    const slot = screen.getByRole('button', { name: 'Sao chép ghi chú của tôi' })
+    expect(dialog.querySelector('p')!.compareDocumentPosition(slot) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
+    await expectNoAxeViolations(document.body)
+  })
+
+  it('while pending: the pending label, and Esc and Cancel do nothing', async () => {
+    const onCancel = vi.fn()
+    render(<Variant isPending onCancel={onCancel} />)
+    await screen.findByRole('alertdialog')
+    const confirm = screen.getByRole('button', { name: 'Đang tải lại…' })
+    expect(confirm).toHaveAttribute('aria-disabled', 'true')
+    await userEvent.keyboard('{Escape}')
+    await userEvent.click(screen.getByRole('button', { name: 'Huỷ' }))
+    expect(onCancel).not.toHaveBeenCalled()
+    expect(screen.getByRole('alertdialog')).toBeInTheDocument()
+  })
+
+  it('confirms with the danger variant by default', async () => {
+    render(<Harness />)
+    await userEvent.click(screen.getByRole('button', { name: 'Rời trang' }))
+    expect(await screen.findByRole('button', { name: 'Bỏ' })).toHaveClass('danger')
+  })
+})

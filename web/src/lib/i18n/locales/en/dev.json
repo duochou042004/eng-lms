@@ -14,7 +14,8 @@
     "navigation": "Navigation",
     "overlays": "Sheets and popover",
     "buttonLink": "Button-styled link",
-    "students": "Students components (T-M2.5)"
+    "students": "Students components (T-M2.5)",
+    "profile": "Profile and account components (T-M2.14)"
   },
   "sample": {
     "primary": "Save",
@@ -112,6 +113,34 @@
     "dlEmpty": "Not added",
     "dlName": "Full name",
     "dlEmail": "Email",
-    "dlNote": "Note"
+    "dlNote": "Note",
+    "toastShow": "Show a success toast",
+    "toastShowAction": "Show a toast with Undo",
+    "toastMessage": "Profile saved",
+    "toastActionMessage": "Nguyen Van An archived. They can no longer sign in.",
+    "toastUndo": "Undo",
+    "toastUndone": "Archiving undone",
+    "toastRegion": "Notifications",
+    "toastDismiss": "Dismiss",
+    "guardDirty": "This sample form has unsaved changes",
+    "guardLeave": "Leave the gallery (to the start page)",
+    "guardTitle": "Discard your changes?",
+    "guardBody": "The changes you made to this profile will be lost.",
+    "guardDiscard": "Discard",
+    "guardKeep": "Keep editing",
+    "confirmPrimaryOpen": "Open the conflict dialog (primary)",
+    "confirmPendingOpen": "Open a pending dialog",
+    "confirmContentOpen": "Open a dialog with content",
+    "conflictTitle": "This was changed elsewhere",
+    "conflictBody": "Someone changed this student in another tab or window. Reload to see the latest version; your unsaved changes will be lost.",
+    "conflictReload": "Reload",
+    "conflictCancel": "Cancel",
+    "conflictCopy": "Copy my note",
+    "resetTitle": "Reset the password for Nguyen Van An?",
+    "resetBody": "Their current password stops working, they're signed out on every device, and they choose a new password at their next sign-in.",
+    "resetConfirm": "Reset password",
+    "resetPending": "Resetting…",
+    "resetCancel": "Cancel",
+    "resetFailed": "Couldn't reset the password. Try again."
   }
 }

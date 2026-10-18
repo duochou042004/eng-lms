@@ -1,0 +1,88 @@
+/* Toast placement (T-M2.14 scope 9, fixed rules): bottom centre below 768 px (breakpoints.ts `md`) with 16 px gutters,
+   at most the reading width; bottom end at >= 768 px, 24rem wide. Above page content. */
+.region {
+  position: fixed;
+  inset-block-end: calc(var(--space-4) + env(safe-area-inset-bottom));
+  inset-inline: 0;
+  z-index: var(--z-toast);
+  inline-size: calc(100% - 2 * var(--space-4));
+  max-inline-size: var(--size-reading-max);
+  margin-inline: auto;
+  outline: none;
+}
+
+@media (width >= 768px) {
+  .region {
+    inset-inline: auto var(--space-4);
+    inline-size: var(--size-toast);
+    margin-inline: 0;
+  }
+}
+
+.region[data-focus-visible] {
+  outline: var(--focus-ring-width) solid var(--color-focus);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.item {
+  display: block;
+}
+
+.toast {
+  /* The message keeps the toast's width: the action (Undo) sits on its own line under it, Close at the end. */
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  grid-template-areas:
+    'icon message close'
+    '. action close';
+  align-items: center;
+  column-gap: var(--space-3);
+  padding-block: var(--space-2);
+  padding-inline: var(--space-4) var(--space-2);
+  border: var(--border-width) solid var(--color-border-strong);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-overlay);
+  outline: none;
+}
+
+.toast[data-focus-visible] {
+  outline: var(--focus-ring-width) solid var(--color-focus);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.icon {
+  grid-area: icon;
+  inline-size: var(--size-icon);
+  block-size: var(--size-icon);
+  color: var(--color-success);
+}
+
+.content {
+  grid-area: message;
+  min-inline-size: 0;
+}
+
+.action {
+  grid-area: action;
+  justify-self: start;
+  padding-block-end: var(--space-1);
+}
+
+.close {
+  grid-area: close;
+  align-self: start;
+}
+
+.message {
+  overflow-wrap: anywhere;
+}

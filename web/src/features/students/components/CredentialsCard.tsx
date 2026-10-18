@@ -1,29 +1,40 @@
-import { useEffect, useId, useRef } from 'react'
+import { useEffect, useId, useRef, type ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import { formatDateTime } from '../../../lib/time'
-import { Button, ButtonLink, CopyButton, DescriptionList, InlineAlert } from '../../../ui'
-import { useWorkspaceDisplayName, type CreatedStudent } from '../api/students'
+import { CopyButton, DescriptionList, InlineAlert } from '../../../ui'
+import { useWorkspaceDisplayName } from '../api/students'
 import { credentialsMessage } from '../model/credentialsMessage'
 import styles from './Students.module.css'
 
+export interface CardCredentials {
+  fullName: string
+  username: string
+  temporaryPassword: string
+  expiresAt: string
+}
+
 export interface CredentialsCardProps {
-  created: CreatedStudent
-  onAddAnother: () => void
+  credentials: CardCredentials
+  /** The `h2` ("Student created", "New temporary password"); it takes focus when the card appears. */
+  title: string
+  /** The line under it, naming the student. */
+  intro: string
+  /** The card's own actions, after the copy buttons. */
+  actions: ReactNode
 }
 
 /**
- * The credentials card (FR-STU-01, F2 step 6, security.md T12): shown once after a create, as its success feedback
- * (focus on its heading, DEC-120 (7)). The temporary password lives only in the props it gets from the page's state:
- * leaving the page drops it for good. It is text (no input, no autocomplete); the copy actions use the clipboard and
- * fall back to selecting the text.
+ * The credentials card (FR-STU-01 F2 step 6, FR-AUTH-07 F10, security.md T12): shown once after a create or a password
+ * reset, as its feedback (focus on its heading, DEC-120 (7)). The temporary password lives only in the props it gets
+ * from the page's state: leaving the page drops it for good. It is text (no input, no autocomplete); the copy actions
+ * use the clipboard and fall back to selecting the text. Copy message is the same message for both uses.
  */
-export function CredentialsCard({ created, onAddAnother }: CredentialsCardProps) {
+export function CredentialsCard({ credentials, title, intro, actions }: CredentialsCardProps) {
   const { t, i18n } = useTranslation('students')
   const workspace = useWorkspaceName()
   const titleId = useId()
   const titleRef = useRef<HTMLHeadingElement>(null)
   useEffect(() => titleRef.current?.focus(), [])
-  const { student, credentials } = created
   const loginUrl = `${window.location.origin}/login`
   const message = credentialsMessage(t, i18n.language, {
     workspace,
@@ -35,13 +46,13 @@ export function CredentialsCard({ created, onAddAnother }: CredentialsCardProps)
   return (
     <section aria-labelledby={titleId} className={styles.card}>
       <h2 id={titleId} ref={titleRef} tabIndex={-1} className={styles.cardTitle}>
-        {t('card.title')}
+        {title}
       </h2>
-      <p>{t('card.intro', { name: student.fullName })}</p>
+      <p>{intro}</p>
       <DescriptionList
         emptyLabel={t('workspace.notAdded')}
         items={[
-          { id: 'name', term: t('card.name'), description: student.fullName },
+          { id: 'name', term: t('card.name'), description: credentials.fullName },
           { id: 'username', term: t('card.username'), description: credentials.username },
           {
             id: 'password',
@@ -53,7 +64,7 @@ export function CredentialsCard({ created, onAddAnother }: CredentialsCardProps)
         ]}
       />
       <InlineAlert tone="warning" title={t('card.notice')} />
-      <div className={styles.actions}>
+      <div className={styles.stackedActions}>
         <CopyButton
           variant="primary"
           text={message}
@@ -68,14 +79,7 @@ export function CredentialsCard({ created, onAddAnother }: CredentialsCardProps)
           failedMessage={t('card.copyFailed')}
         />
       </div>
-      <div className={styles.actions}>
-        <ButtonLink variant="secondary" to={`/tutor/students/${student.id}`}>
-          {t('card.openWorkspace')}
-        </ButtonLink>
-        <Button variant="quiet" onPress={onAddAnother}>
-          {t('card.addAnother')}
-        </Button>
-      </div>
+      <div className={styles.stackedActions}>{actions}</div>
     </section>
   )
 }

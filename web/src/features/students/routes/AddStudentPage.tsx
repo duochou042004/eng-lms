@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { flushSync } from 'react-dom'
 import { useTranslation } from 'react-i18next'
 import { usePageTitle } from '../../../lib/i18n/pageTitle'
-import { PageHeader, Stack } from '../../../ui'
+import { Button, ButtonLink, PageHeader, Stack } from '../../../ui'
 import type { CreatedStudent } from '../api/students'
 import { AddStudentForm } from '../components/AddStudentForm'
 import { CredentialsCard } from '../components/CredentialsCard'
@@ -30,11 +30,25 @@ export function AddStudentPage() {
       <PageHeader title={t('form.title')} description={created ? undefined : t('form.description')} />
       {created ? (
         <CredentialsCard
-          created={created}
-          onAddAnother={() => {
-            setCreated(null)
-            setRound((n) => n + 1)
-          }}
+          credentials={{ ...created.credentials, fullName: created.student.fullName }}
+          title={t('card.title')}
+          intro={t('card.intro', { name: created.student.fullName })}
+          actions={
+            <>
+              <ButtonLink variant="secondary" to={`/tutor/students/${created.student.id}`}>
+                {t('card.openWorkspace')}
+              </ButtonLink>
+              <Button
+                variant="quiet"
+                onPress={() => {
+                  setCreated(null)
+                  setRound((n) => n + 1)
+                }}
+              >
+                {t('card.addAnother')}
+              </Button>
+            </>
+          }
         />
       ) : (
         <AddStudentForm key={round} onCreated={setCreated} focusFirstField={round > 0} />

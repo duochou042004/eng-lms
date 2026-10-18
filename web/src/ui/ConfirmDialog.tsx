@@ -1,4 +1,4 @@
-import { useEffect, useId } from 'react'
+import { useEffect, useId, type ReactNode } from 'react'
 import { Dialog, Heading, Modal, ModalOverlay } from 'react-aria-components'
 import { Button } from './Button'
 import styles from './ConfirmDialog.module.css'
@@ -9,36 +9,48 @@ export interface ConfirmDialogProps {
   title: string
   /** The consequence, in one or two sentences. */
   description: string
-  /** The confirming verb ("Discard"); a danger button. */
+  /** The confirming verb ("Discard"). */
   confirmLabel: string
+  /** `danger` (default) for a destructive step; `primary` for a safe one ("Reload"). */
+  confirmVariant?: 'danger' | 'primary'
   /** The safe way out ("Keep editing"); it has focus when the dialog opens. */
   cancelLabel: string
+  /** The confirm request is running: the confirm button shows `pendingLabel`; Esc and Cancel do nothing. */
+  isPending?: boolean
+  pendingLabel?: string
   onConfirm: () => void
   /** Cancel, Esc. */
   onCancel: () => void
+  /** Extra content under the description: an `InlineAlert`, a `CopyButton`. */
+  children?: ReactNode
 }
 
 /**
- * A confirmation before a destructive or irreversible step (design-system §3, interaction-states §2.6 and §2.9), in the
- * WAI-ARIA alert dialog pattern on React Aria's modal `Dialog` (`role="alertdialog"`): focus moves to the safe action
- * and is contained, Esc cancels, an outside click does nothing (the choice is explicit), and focus returns to where it
- * was. Also the unsaved changes guard's dialog.
+ * A confirmation before a destructive or irreversible step (design-system §3, interaction-states §2.6, §2.8 and §2.9),
+ * in the WAI-ARIA alert dialog pattern on React Aria's modal `Dialog` (`role="alertdialog"`): focus moves to the safe
+ * action and is contained, Esc cancels, an outside click does nothing (the choice is explicit), and focus returns to
+ * where it was. While `isPending` it cannot be dismissed. Also the unsaved changes guard's and the conflict dialog.
  */
 export function ConfirmDialog({
   isOpen,
   title,
   description,
   confirmLabel,
+  confirmVariant = 'danger',
   cancelLabel,
+  isPending = false,
+  pendingLabel,
   onConfirm,
   onCancel,
+  children,
 }: ConfirmDialogProps) {
   const cancelId = useId()
   return (
     <ModalOverlay
       isOpen={isOpen}
+      isKeyboardDismissDisabled={isPending}
       onOpenChange={(open) => {
-        if (!open) onCancel()
+        if (!open && !isPending) onCancel()
       }}
       className={styles.overlay}
     >
@@ -48,11 +60,18 @@ export function ConfirmDialog({
             {title}
           </Heading>
           <p className={styles.description}>{description}</p>
+          {children ? <div className={styles.content}>{children}</div> : null}
           <div className={styles.actions}>
-            <Button variant="danger" onPress={onConfirm}>
-              {confirmLabel}
+            <Button variant={confirmVariant} isPending={isPending} onPress={onConfirm}>
+              {isPending && pendingLabel ? pendingLabel : confirmLabel}
             </Button>
-            <Button id={cancelId} variant="secondary" onPress={onCancel}>
+            <Button
+              id={cancelId}
+              variant="secondary"
+              onPress={() => {
+                if (!isPending) onCancel()
+              }}
+            >
               {cancelLabel}
             </Button>
             <FocusOnMount id={cancelId} />

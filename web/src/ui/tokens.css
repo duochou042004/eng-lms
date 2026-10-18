@@ -92,6 +92,9 @@
   --size-field-min: 18rem; /* the smallest comfortable search field before the list controls wrap */
   --size-term: 8rem; /* DescriptionList term column (two-column layout) */
 
+  /* Toasts (T-M2.14) */
+  --size-toast: 24rem; /* a toast's fixed width at >= 768 px (bottom end) */
+
   /* Motion */
   --motion-duration: 160ms;
   --motion-easing: ease-out;

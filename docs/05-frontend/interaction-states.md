@@ -36,12 +36,17 @@ for Today and Home.
 4. Submit button: disabled only while submitting (with a spinner inside and the label "Saving…"); double submit prevented; idempotency key for commands.
 5. Success: a toast ("Student created") **and** navigation or an in-place update. Never a success modal. **Exception (T-M2.5, DEC-120 (7)):**
    Add student's success feedback is the credentials card that replaces the form in place, its `h2` "Student created" taking focus (no toast
-   until `Toast` ships with T-M2.14); the card shows the one-time temporary password, so it is the confirmation.
+   until `Toast` ships with T-M2.14); the card shows the one-time temporary password, so it is the confirmation. **T-M2.14:** `Toast`
+   ships (§4); Add student keeps the card as its feedback (DEC-120 (7)); Edit profile's Save closes the form, focuses **Edit profile** and
+   toasts "Profile saved"; the status actions toast their result (Archive with **Undo**).
 6. **Unsaved changes guard** on every form and editor: in-app navigation shows a ConfirmDialog; `beforeunload` for tab closing.
 7. **Autosave** (builder, rich text editors, attempts): a debounced save (≤ 1 s for attempts, 10 s for drafts) plus save on blur and on route leave. The
    `SaveIndicator` shows `Saving… / Saved 19:04 / Offline, will retry / Couldn't save, Retry`. A local draft buffer (IndexedDB with a sessionStorage
    fallback) keeps unsent attempt responses until the server acknowledges them (NFR-OPS-05).
 8. Conflicts (409 `STALE_VERSION`): a dialog "This was changed elsewhere" with **Reload** (discard mine) or **Copy my text** (for long text), then reload.
+   **As built (T-M2.14, `features/students/components/ConflictDialog.tsx` on `ConfirmDialog`):** a stale profile save or status button opens
+   it; **Reload** (primary) refetches the student and closes the form; **Cancel** keeps the form as typed; when the note was changed the
+   dialog's content slot holds **Copy my note**. A failed **Undo** never opens it (an `InlineAlert` in the Account section instead).
 9. Destructive actions: a `ConfirmDialog` that names the object ("Delete folder 'Listening'?"). The consequence is stated ("3 materials will move to
    'Library'"). The danger button repeats the verb ("Delete folder"). Archive needs no confirmation (it is reversible) and shows a toast with **Undo**.
 
@@ -59,6 +64,16 @@ for Today and Home.
 
 A toast is for **confirmation of success** or for an undoable action. It auto-dismisses after 5 s (pausable; persistent if it contains an action). A toast is
 never used for errors that need action (use an `InlineAlert` near the problem). Toasts sit in a `polite` live region, errors in `assertive`.
+
+**Implemented (T-M2.14, `ui/Toast.tsx`, `ui/toastQueue.ts`):** one region in the tutor shell (React Aria's toast; an F6 landmark named
+"Notifications"); `toast.success(message, {action?})` returns a key the caller can close. Without an action a toast closes after 5 s, paused
+while the pointer is over the region or focus is inside it; with an action (Archive's **Undo**) it stays until closed, its action, a later
+status success or reset on that student, or leaving the student's page. Each toast: `CircleCheck` icon, the message (`role="status"`,
+polite), the action under it, a **Dismiss** button. At most 3 visible, newest last. Bottom centre below 768 px (width minus 16 px gutters, at
+most `--size-reading-max`), bottom end at ≥ 768 px (24rem, `--size-toast`), `--z-toast`, 16 px + safe area from the bottom. While a toast
+shows, the region publishes its height as `--toast-stack-size` (and `data-toasts`) on `:root`; the shell's `main` gets that much
+`padding-block-end` and `:root` `scroll-padding-block-end`, so no toast hides the focused control or the page end (WCAG 2.2 SC 2.4.11).
+Unmounting the shell (any sign-out) clears the queue. Errors stay `InlineAlert`s.
 
 ## 5. Attempt-specific states (student)
 
