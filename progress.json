@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-10-18T01:39:14Z",
-  "updatedBy": "lead-coordinator (T-M2.14 start, session 2026-10-18, Opus 5.5)",
+  "updatedAt": "2026-10-18T03:20:00Z",
+  "updatedBy": "frontend-implementer (T-M2.14 implementation, session 2026-10-18, Opus 5.5)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -32,12 +32,12 @@
   "currentTask": {
     "id": "T-M2.14",
     "title": "Student profile editing, status and password reset (split, DEC-124)",
-    "status": "in_progress",
+    "status": "in_review",
     "ownerRole": "FE",
     "branch": "feature/T-M2.14-student-profile-account",
     "packet": "docs/tasks/T-M2.14-student-profile-account.md",
     "pr": null,
-    "lastCommit": "356a5c0",
+    "lastCommit": "3d0958f",
     "startedAt": "2026-10-18T01:39:14Z",
     "entryGate": [
       "T-M2.5 merged — met (84c97c1, DEC-123)",
@@ -45,7 +45,7 @@
       "PO start signal — met (DEC-125)"
     ],
     "nextSteps": [
-      "frontend-implementer on the packet; gate green twice",
+      "LC: open the PR from feature/T-M2.14-student-profile-account (implementation pushed, gate PASS x2 on 3d0958f)",
       "G3: QA, UX, SEC one at a time; fixes in-task (AC12 + DEC); merge-gate; gitlab-sync; QA report via qa/; merge record PR"
     ],
     "trace": [
@@ -315,8 +315,8 @@
     }
   ],
   "tests": {
-    "lastRun": "2026-10-17T15:40:20Z",
-    "summary": "T-M2.5 merged: CI 7/7 at cec675b; gate PASS x2 on 26897a7 (backend 466, web 546 in 52 files, e2e 308 passed / 31 skipped on phone-small, tablet, laptop); QA students spec x3 96/96 (round 6), F2 x20 120/120 (round 2).",
+    "lastRun": "2026-10-18T03:15:00Z",
+    "summary": "T-M2.14 implementation: gate PASS x2 on 3d0958f (backend 466, web 625 in 57 files, e2e 335 passed on phone-small, tablet, laptop; T-M2.14 E2E 9 tests x 3); budget student 186.2 / tutor 186.3 KB gz.",
     "suites": [
       {
         "name": "backend (./mvnw -B verify)",
@@ -326,7 +326,7 @@
       {
         "name": "web (pnpm test --run)",
         "result": "pass",
-        "details": "546 tests in 52 files at T-M2.5 (26897a7)"
+        "details": "625 tests in 57 files at T-M2.14 (gate on 3d0958f)"
       },
       {
         "name": "governance scripts (scripts/tests/run-all.sh)",
