@@ -45,8 +45,8 @@
       "PO start signal — met (DEC-125)"
     ],
     "nextSteps": [
-      "LC: open the PR from feature/T-M2.14-student-profile-account (implementation pushed, gate PASS x2 on 3d0958f)",
-      "G3: QA, UX, SEC one at a time; fixes in-task (AC12 + DEC); merge-gate; gitlab-sync; QA report via qa/; merge record PR"
+      "Implementer fixes AC12 (a)-(k) (DEC-126); gate green twice",
+      "Re-check QA, UX, SEC on the final head; CI green; verdicts; merge-gate; gitlab-sync; QA report via qa/; merge record PR"
     ],
     "trace": [
       "backlog M2",
@@ -354,8 +354,8 @@
       "note": "T-M2.14 not started (T-M2.5 passed: CI 7/7 at cec675b)"
     },
     "G3": {
-      "status": "n/a",
-      "note": "T-M2.14 not started (T-M2.5 passed: QA PASS, UX APPROVED, SEC APPROVED at cec675b)"
+      "status": "pending",
+      "note": "T-M2.14 round 1 at 982bb71: QA PASS WITH MINOR, UX CHANGES REQUESTED, SEC APPROVED; fixes via AC12 (DEC-126)"
     },
     "G4": {
       "status": "n/a",
