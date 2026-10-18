@@ -29,13 +29,18 @@ const timed = new Set<string>()
  * The toast queue (design-system §3, interaction-states §4): success confirmations and undoable actions only, never
  * errors. `success` returns the toast's key; a toast with an action stays until it is closed (by the user, its caller
  * or `clear`), one without closes after 5 s. A timed toast pushed out of the 3 visible is closed at once, so it never
- * shows late (AC12 (d)); an action toast is never dropped (it waits for a free place).
+ * shows late (AC12 (d), (l)); an action toast is never dropped (it waits for a free place).
  */
 export const toast = {
   success(message: string, options: { action?: ToastAction } = {}): string {
-    if (options.action) return queue.add({ message, action: options.action })
-    const key = queue.add({ message }, { timeout: TOAST_TIMEOUT_MS, onClose: () => timed.delete(key) })
-    timed.add(key)
+    let key: string
+    if (options.action) key = queue.add({ message, action: options.action })
+    else {
+      key = queue.add({ message }, { timeout: TOAST_TIMEOUT_MS, onClose: () => timed.delete(key) })
+      timed.add(key)
+    }
+    // After every add, timed or action: a timed toast out of the visible 3 would otherwise come back later, possibly on
+    // another student's page (AC12 (l)).
     const visible = new Set(queue.visibleToasts.map((t) => t.key))
     for (const hidden of [...timed].filter((k) => !visible.has(k))) queue.close(hidden)
     return key

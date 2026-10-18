@@ -146,6 +146,24 @@ describe('Toast', () => {
     expect(texts()).toEqual(['Có hành động', 'Toast 5', 'Toast 6'])
   })
 
+  it('an action toast that pushes a timed toast out closes it: no timed toast comes back when the action toast closes (AC12 (l))', () => {
+    renderRegion()
+    let action = ''
+    act(() => {
+      for (const n of [1, 2, 3]) toast.success(`Toast ${n}`)
+      action = toast.success('Đã lưu trữ An.', { action: { label: 'Hoàn tác', onAction: () => {} } })
+    })
+    const texts = () =>
+      region()
+        ? within(region()!)
+            .getAllByRole('status')
+            .map((s) => s.textContent)
+        : []
+    expect(texts()).toEqual(['Toast 2', 'Toast 3', 'Đã lưu trữ An.'])
+    act(() => toast.close(action))
+    expect(texts()).toEqual(['Toast 2', 'Toast 3'])
+  })
+
   it('a toast queued while no region is mounted (after a sign-out) never shows in the next region (AC12 (k))', () => {
     const { unmount } = renderRegion()
     unmount()
