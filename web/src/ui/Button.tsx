@@ -38,7 +38,10 @@ export function Button({ variant = 'primary', size = 'md', children, id, ...prop
   useEffect(
     () => () => {
       dropAnnouncementsFor(buttonId)
-      setTimeout(() => dropAnnouncementsFor(buttonId), FIRST_ANNOUNCEMENT_DELAY_MS)
+      // The document may be gone by then (a closed test environment).
+      setTimeout(() => {
+        if (typeof document !== 'undefined') dropAnnouncementsFor(buttonId)
+      }, FIRST_ANNOUNCEMENT_DELAY_MS)
     },
     [buttonId],
   )
