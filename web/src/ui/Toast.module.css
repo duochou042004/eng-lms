@@ -41,9 +41,7 @@
   /* The message keeps the toast's width: the action (Undo) sits on its own line under it, Close at the end. */
   display: grid;
   grid-template-columns: auto 1fr auto;
-  grid-template-areas:
-    'icon message close'
-    '. action close';
+  grid-template-areas: 'icon message close';
   align-items: center;
   column-gap: var(--space-3);
   padding-block: var(--space-2);
@@ -53,6 +51,12 @@
   background: var(--color-surface);
   box-shadow: var(--shadow-overlay);
   outline: none;
+}
+
+.withAction {
+  grid-template-areas:
+    'icon message close'
+    '. action close';
 }
 
 .toast[data-focus-visible] {
@@ -80,6 +84,9 @@
 
 .close {
   grid-area: close;
+}
+
+.withAction .close {
   align-self: start;
 }
 

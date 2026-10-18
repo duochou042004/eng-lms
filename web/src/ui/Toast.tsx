@@ -7,6 +7,7 @@ import {
   UNSTABLE_ToastRegion as AriaToastRegion,
 } from 'react-aria-components'
 import { Button } from './Button'
+import { cx } from './cx'
 import { IconButton } from './IconButton'
 import styles from './Toast.module.css'
 
@@ -53,7 +54,7 @@ export function ToastRegion({ label, dismissLabel }: ToastRegionProps) {
       <ol className={styles.list}>
         {[...visible].reverse().map((item) => (
           <li key={item.key} className={styles.item}>
-            <AriaToast toast={item} className={styles.toast}>
+            <AriaToast toast={item} className={cx(styles.toast, item.content.action && styles.withAction)}>
               <CircleCheck aria-hidden="true" className={styles.icon} />
               <AriaToastContent {...POLITE} className={styles.content}>
                 <Text slot="title" className={styles.message}>
