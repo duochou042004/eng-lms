@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-10-19T08:59:35Z",
-  "updatedBy": "lead-coordinator (T-M2.18 and T-M2.15 merged, DEC-133; session 2026-10-19, Opus 5.5)",
+  "updatedAt": "2026-10-19T09:44:17Z",
+  "updatedBy": "lead-coordinator (T-M2.19 packet at G0; session end 2026-10-19, Opus 5.5)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -32,24 +32,25 @@
   "currentTask": {
     "id": "T-M2.19",
     "title": "Automated UI checks from the G3 measurement (DEC-131 (1))",
-    "status": "draft",
+    "status": "ready",
     "ownerRole": "FE",
-    "branch": null,
-    "packet": null,
+    "branch": "feature/T-M2.19-ui-checks",
+    "packet": "docs/tasks/T-M2.19-ui-checks.md",
     "pr": null,
     "lastCommit": null,
-    "startedAt": null,
+    "startedAt": "2026-10-19T09:32:52Z",
     "entryGate": [
       "T-M2.18 merged — met (5dab35e)",
-      "Packet G0 — pending",
-      "PO start signal — pending"
+      "Packet G0 — met (PR #116, DOCS-REVIEW round 3 delta PASS, DEC-134)",
+      "PO start signal — met (DEC-134)"
     ],
     "nextSteps": [
-      "Records PR (docs/T-M2.15-records) and the qa/T-M2.15 QA report PR",
-      "T-M2.19 packet (task-packet skill, risk tier M) when the PO orders it"
+      "Create feature/T-M2.19-ui-checks from develop; frontend-implementer on the packet; one gate + CI",
+      "G3 tier M: one combined QA+UX reviewer (vacuous-check focus); DEC-131 finding rules; G3 cost table; merge-gate; records"
     ],
     "trace": [
-      "DEC-131"
+      "DEC-131",
+      "DEC-134"
     ]
   },
   "nextTask": {
@@ -358,8 +359,8 @@
   },
   "gates": {
     "G0": {
-      "status": "pending",
-      "note": "T-M2.19 packet not written"
+      "status": "pass",
+      "note": "T-M2.19: DOCS-REVIEW round 3 (delta) PASS (PR #116)"
     },
     "G1": {
       "status": "n/a",
@@ -386,7 +387,6 @@
   "decisions": {
     "log": "docs/10-governance/decision-log.md",
     "recent": [
-      "DEC-120",
       "DEC-121",
       "DEC-122",
       "DEC-123",
@@ -399,7 +399,8 @@
       "DEC-130",
       "DEC-131",
       "DEC-132",
-      "DEC-133"
+      "DEC-133",
+      "DEC-134"
     ],
     "pendingPO": [
       "OQ-03",
@@ -1164,6 +1165,16 @@
       "at": "2026-10-19T08:59:35Z",
       "actor": "lead-coordinator",
       "event": "T-M2.18 merged (PR #113, 5dab35e) and T-M2.15 merged (PR #112, 9b9e133) via merge-gate; mirror synced. Records: DEC-133, review records; QA report via qa/T-M2.15. Next: T-M2.19."
+    },
+    {
+      "at": "2026-10-19T09:32:52Z",
+      "actor": "lead-coordinator",
+      "event": "T-M2.19 packet written (DEC-134; PO start signal after G0); tier M."
+    },
+    {
+      "at": "2026-10-19T09:44:17Z",
+      "actor": "lead-coordinator",
+      "event": "T-M2.19 packet G0: docs review 3 rounds (1 full, 2 delta; 92k tokens in all), PR #116; session ends (PO). Next: implement T-M2.19."
     }
   ]
 }

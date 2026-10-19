@@ -1,19 +1,23 @@
-# Handoff — 2026-10-19 (T-M2.18 and T-M2.15 merged under DEC-131; next: T-M2.19)
+# Handoff — 2026-10-19 (T-M2.19 packet at G0; next: implement T-M2.19)
 
-Phase/Milestone: P1 / M2 (in progress) · Current: **T-M2.19 automated UI checks (FE, draft)** · Next: **T-M2.17 learning profile** ·
-Last merges on develop: `9b9e133` (PR #112, T-M2.15), `5dab35e` (PR #113, T-M2.18) · Records: `docs/T-M2.15-records`, `qa/T-M2.15` ·
-Remote: https://github.com/duochou042004/eng-lms (mirror: gitlab.com/duochou042004/eng-lms)
+Phase/Milestone: P1 / M2 (in progress) · Current task: **T-M2.19 automated UI checks (FE, ready, tier M)** · Next: **T-M2.17 learning
+profile** · Last merges on develop: the T-M2.19 packet (PR #116), `9b6922c` (PR #115 QA report), PR #114 (records), `9b9e133` (T-M2.15),
+`5dab35e` (T-M2.18) · Remote: https://github.com/duochou042004/eng-lms (mirror: gitlab.com/duochou042004/eng-lms)
 
 ## Where we are
 - **The quality process is DEC-131** (T-M2.18): risk tier per packet; tier H = SEC + one combined QA+UX reviewer; tier M = one combined
   QA+UX reviewer; tier L = docs review; S1/S2 → AC + **delta** re-check; S3 cheap in-task, LC-verified from test + diff; S4 → the M2 polish
   row **T-M2.20**; one local gate per head + CI (the gate skips backend/contract-drift for web-only diffs, repeats changed specs ×3);
   reviewers return text only and the LC records and posts; PNGs git-ignored; a **G3 cost** table in every summary.
-- **First run of the new process (T-M2.15, DEC-132/133):** 2 review agents (≈ 157k tokens, ≈ 26 min) + 1 fix round + 1 gate run (10.6 min)
-  vs T-M2.14's 8 review rounds and 8 gate runs (87 min). No S1/S2; 3 S3 fixed via AC11; 4 S4 → T-M2.20.
-- Open: the records PR (review records, DEC-133, this handoff) and the `qa/T-M2.15` QA report PR (also untracks the 61 tracked
-  `evidence/*/qa/**/*.png`). T-M2.13, T-M2.16, T-M2.17, T-M2.19, T-M2.20 open in the backlog. This device: Kali Linux rolling, rootless
-  Podman 5.8.6, clone `/home/kali/App_projects/eng-lms`. GitLab CI paused (DEC-107); the mirror syncs.
+- **T-M2.15 under it (DEC-132/133):** 2 review agents (≈ 157k tokens, ≈ 26 min) + 1 fix round + 1 gate run (10.6 min) vs T-M2.14's 8 rounds
+  and 8 gate runs (87 min).
+- **T-M2.19** (packet `docs/tasks/T-M2.19-ui-checks.md`, DEC-134; PO start signal given): shared E2E checks `expectNoMidWordBreak`,
+  `expectFocusNotLost`, `expectSettledAccessible`, the `longData(token)` fixture and a long-data walk over the students screens, focus checks
+  after every removing/disabling control (inclusion rule, scope 5), proofs against violating fixtures (`checks.spec.ts`), a stylelint rule
+  against raw durations with `--motion-duration-spin` / `--motion-duration-pulse`. G0 docs review: round 1 full CHANGES REQUESTED (D-1..D-8),
+  rounds 2 and 3 delta (N-1, N-2) → PASS (`evidence/T-M2.19/review/docs.md`). **No implementation yet; no feature branch.**
+- Open in the backlog: T-M2.13, T-M2.16, T-M2.17, T-M2.20. This device: Kali Linux rolling, rootless Podman 5.8.6, clone
+  `/home/kali/App_projects/eng-lms`. GitLab CI paused (DEC-107); the mirror syncs.
 
 ## Another device
 - Follow development-setup §0 for its platform; record OS, engine and versions in `progress.json` `environment` and the clone path in
@@ -22,10 +26,12 @@ Remote: https://github.com/duochou042004/eng-lms (mirror: gitlab.com/duochou0420
   `./scripts/install-hooks.sh`, `git remote add gitlab …`.
 
 ## Next steps
-1. If still open: merge the records PR and the `qa/T-M2.15` PR (merge-gate), `gitlab-sync.sh`.
-2. **T-M2.19** (FE, tier M; the PO orders it): packet with the task-packet skill (UI rules, risk tier), the E2E checks of DEC-131 (1) in
-   `e2e/support/checks.ts` (long data, focus-not-lost, axe per state) and the stylelint motion rule; each check proven against a violating fixture.
-3. **T-M2.17** learning profile (FE, SEC trigger → tier H), then T-M2.20 polish, T-M2.13, T-M2.16; then T-M2.6, T-M2.7 (M2 regression, G5).
+1. **T-M2.19 implementation:** `git switch -c feature/T-M2.19-ui-checks origin/develop`; progress.json `in_progress` with the branch; a
+   frontend-implementer subagent on the packet (one gate run with `ENGLMS_TASK=T-M2.19`, the self-check, the G3 cost table, a PR); CI green.
+2. **G3 tier M:** one fresh combined QA+UX reviewer (qa-protocol §2a), focused on vacuous checks (does each helper really fail on a
+   violation?) and the Spinner/Skeleton motion; DEC-131 finding rules; post `QA-VERDICT`, `UX-REVIEW`, `LC-APPROVED` after CI is green on the
+   final head; merge-gate `--dry-run` then real; gitlab-sync; records (merge DEC; review records on a docs branch; QA report on `qa/T-M2.19`).
+3. Then **T-M2.17** learning profile (tier H: SEC + combined QA+UX), T-M2.20 polish, T-M2.13, T-M2.16; then T-M2.6, T-M2.7 (M2 regression, G5).
 
 ## Pending PO decisions / actions
 - **Dependabot PRs #95–#104**: untouched; say whether to review and merge them.
@@ -65,5 +71,6 @@ Remote: https://github.com/duochou042004/eng-lms (mirror: gitlab.com/duochou0420
 - Wall-clock bounds in tests flake on the 2-core CI runner (DEC-093). `git merge` is denied: `gh pr update-branch` (DEC-090).
 
 ## Files to read first
-`CLAUDE.md` → `progress.json` → this file → DEC-131..133 → backlog M2 (T-M2.19, T-M2.20, T-M2.17 rows) → `quality-gates.md` G1/G3 →
-`qa-protocol.md` §2a/§2b → `evidence-protocol.md` §2 → `task-packet-template.md` → `e2e/support/checks.ts` → `.claude/skills/task-packet`, `frontend-standards`.
+`CLAUDE.md` → `progress.json` → this file → DEC-131..134 → `docs/tasks/T-M2.19-ui-checks.md` → `quality-gates.md` G1/G3 →
+`qa-protocol.md` §2a/§2b → `evidence-protocol.md` §2 → `e2e/support/checks.ts`, `e2e/tests/students.spec.ts` (helpers at the top) →
+`web/stylelint.config.*`, `web/src/ui/tokens.css` (Motion) → `.claude/skills/frontend-standards`.
