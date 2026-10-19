@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-10-18T15:50:46Z",
-  "updatedBy": "lead-coordinator (T-M2.14 merge record, session 2026-10-18, Opus 5.5)",
+  "updatedAt": "2026-10-19T01:49:13Z",
+  "updatedBy": "lead-coordinator (T-M2.15 packet, session 2026-10-19, Opus 5.5)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -31,29 +31,29 @@
   },
   "currentTask": {
     "id": "T-M2.15",
-    "title": "Guardians and learning profile (split from T-M2.14, DEC-124)",
-    "status": "draft",
+    "title": "Guardians on the student profile and in Add student (split from T-M2.14, DEC-124; split again DEC-128)",
+    "status": "ready",
     "ownerRole": "FE",
-    "branch": null,
-    "packet": null,
-    "pr": null,
+    "branch": "docs/T-M2.15-guardians-packet",
+    "packet": "docs/tasks/T-M2.15-guardians.md",
+    "pr": "111",
     "lastCommit": null,
     "startedAt": null,
     "entryGate": [
       "T-M2.14 merged — met (6073e71, DEC-127)",
-      "Packet G0 — pending",
+      "Packet G0 — in review (docs/T-M2.15-guardians-packet)",
       "PO start signal — pending"
     ],
     "nextSteps": [
-      "Write the T-M2.15 packet (task-packet skill; size check; SEC triggered: tutor-private learning profile; include the T-M2.14 SEC residual); fresh docs-reviewer; merge-gate",
+      "Fresh docs-reviewer on the packet; fix in-task; CI; DOCS-REVIEW + LC-APPROVED; merge-gate; gitlab-sync",
       "Ask the PO for the start signal; implement through G3 (QA, UX, SEC)"
     ],
     "trace": [
       "DEC-124",
       "DEC-127",
+      "DEC-128",
       "FR-STU-01 (guardians)",
-      "FR-STU-03 (guardians)",
-      "FR-STU-04"
+      "FR-STU-03 (guardians)"
     ]
   },
   "nextTask": {
@@ -348,7 +348,7 @@
   "gates": {
     "G0": {
       "status": "pending",
-      "note": "T-M2.15 packet not written (T-M2.14 passed: DOCS-REVIEW PASS round 3, PR #107)"
+      "note": "T-M2.15 packet: DOCS-REVIEW PASS round 2 (PR #111; evidence/T-M2.15/review/docs.md); merge-gate pending"
     },
     "G1": {
       "status": "n/a",
@@ -375,7 +375,6 @@
   "decisions": {
     "log": "docs/10-governance/decision-log.md",
     "recent": [
-      "DEC-114",
       "DEC-115",
       "DEC-116",
       "DEC-117",
@@ -388,7 +387,8 @@
       "DEC-124",
       "DEC-125",
       "DEC-126",
-      "DEC-127"
+      "DEC-127",
+      "DEC-128"
     ],
     "pendingPO": [
       "OQ-03",
