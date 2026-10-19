@@ -1,0 +1,14 @@
+{
+  "flow": "F11 Add a guardian (ux-flows, budget ≤ 3 steps)",
+  "viewport": {
+    "width": 768,
+    "height": 1024
+  },
+  "steps": 3,
+  "named": [
+    "Add guardian",
+    "type the name",
+    "Save"
+  ],
+  "budget": 3
+}

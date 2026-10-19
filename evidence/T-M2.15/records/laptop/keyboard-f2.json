@@ -1,0 +1,12 @@
+{
+  "viewport": {
+    "width": 1280,
+    "height": 800
+  },
+  "actions": [
+    "Enter on Add student",
+    "type the name",
+    "Enter on Create",
+    "Enter on Open workspace"
+  ]
+}
