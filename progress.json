@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-10-19T09:32:52Z",
-  "updatedBy": "lead-coordinator (T-M2.18 and T-M2.15 merged, DEC-133; session 2026-10-19, Opus 5.5)",
+  "updatedAt": "2026-10-19T09:44:17Z",
+  "updatedBy": "lead-coordinator (T-M2.19 packet at G0; session end 2026-10-19, Opus 5.5)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -34,19 +34,19 @@
     "title": "Automated UI checks from the G3 measurement (DEC-131 (1))",
     "status": "ready",
     "ownerRole": "FE",
-    "branch": "docs/T-M2.19-ui-checks-packet",
+    "branch": "feature/T-M2.19-ui-checks",
     "packet": "docs/tasks/T-M2.19-ui-checks.md",
     "pr": null,
     "lastCommit": null,
     "startedAt": "2026-10-19T09:32:52Z",
     "entryGate": [
       "T-M2.18 merged — met (5dab35e)",
-      "Packet G0 — in review (docs/T-M2.19-ui-checks-packet)",
-      "PO start signal — met (DEC-134, after G0)"
+      "Packet G0 — met (PR #116, DOCS-REVIEW round 3 delta PASS, DEC-134)",
+      "PO start signal — met (DEC-134)"
     ],
     "nextSteps": [
-      "Fresh docs-reviewer on the packet (delta re-checks); merge-gate",
-      "feature/T-M2.19-ui-checks: frontend-implementer; one gate + CI; G3 combined QA+UX (tier M); merge-gate"
+      "Create feature/T-M2.19-ui-checks from develop; frontend-implementer on the packet; one gate + CI",
+      "G3 tier M: one combined QA+UX reviewer (vacuous-check focus); DEC-131 finding rules; G3 cost table; merge-gate; records"
     ],
     "trace": [
       "DEC-131",
@@ -359,8 +359,8 @@
   },
   "gates": {
     "G0": {
-      "status": "pending",
-      "note": "T-M2.19 packet in review"
+      "status": "pass",
+      "note": "T-M2.19: DOCS-REVIEW round 3 (delta) PASS (PR #116)"
     },
     "G1": {
       "status": "n/a",
@@ -1170,6 +1170,11 @@
       "at": "2026-10-19T09:32:52Z",
       "actor": "lead-coordinator",
       "event": "T-M2.19 packet written (DEC-134; PO start signal after G0); tier M."
+    },
+    {
+      "at": "2026-10-19T09:44:17Z",
+      "actor": "lead-coordinator",
+      "event": "T-M2.19 packet G0: docs review 3 rounds (1 full, 2 delta; 92k tokens in all), PR #116; session ends (PO). Next: implement T-M2.19."
     }
   ]
 }
