@@ -164,8 +164,8 @@ lesson moves. 5. **Hard-coded semantics?** None: Relationship is free text (the 
 - **Isolation**: no new endpoint; the guardian endpoints are `@Audience(TUTOR)` with authz-matrix and isolation entries since T-M2.9. QA
   confirms a student session gets 403 on `GET /api/v1/tutor/students/{sid}/guardians` and that no student response holds a guardian value.
 - SEC: **triggered** (third-party personal data — guardians' phone, email, notes — on screen and in the cache; the scope 8 residual; SEC
-  confirms that sign-out, own and cross-tab, also drops `['students','guardians',*]`: `useLogout` and the cross-tab handler clear the whole
-  query cache today, `features/auth/api/session.ts`, `app/guards.ts`). UX:
+  confirms that sign-out, own and cross-tab, also drops `['students','guardians',*]`: `useLogout` and a 401 clear the whole query cache; a
+  cross-tab message drops every query but the session, `dropAllButSession` in `app/guards.ts`). UX:
   **triggered** (new section, forms, dialog, add form section).
 
 ## Evidence required
@@ -173,7 +173,7 @@ lesson moves. 5. **Hard-coded semantics?** None: Relationship is free text (the 
   Guardians section (0, 2 and 10 guardians), the guardian form (add, edit with errors), the conflict dialog with Copy my notes, the remove
   dialog (and its error), the removed-elsewhere alert, the add form with guardian rows (with an error), in vi and en at least once each; axe
   results; the F11 step log. E2E data and screenshots use **fictitious** guardians only (invented names, `example.com` emails,
-  phone numbers from a non-dialable range such as `0900 000 0xx`), never real people's data. QA report via `qa/T-M2.15`; UX and SEC verdicts as PR records (reviewer evidence never on the feature branch).
+  phone numbers from the range reserved for fiction, `+1 555 0100`–`0199`), never real people's data. QA report via `qa/T-M2.15`; UX and SEC verdicts as PR records (reviewer evidence never on the feature branch).
 
 ## Docs to update
 - `information-architecture.md` §2 (Profile: guardians implemented; learning profile T-M2.17), `interaction-states.md` §2.8 (the conflict

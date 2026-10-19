@@ -16,7 +16,7 @@
       }
     ]
   },
-  "updatedAt": "2026-10-19T01:42:43Z",
+  "updatedAt": "2026-10-19T01:49:13Z",
   "updatedBy": "lead-coordinator (T-M2.15 packet, session 2026-10-19, Opus 5.5)",
   "phase": {
     "id": "P1",
@@ -348,7 +348,7 @@
   "gates": {
     "G0": {
       "status": "pending",
-      "note": "T-M2.15 packet written (DEC-128 split: T-M2.17 learning profile); docs review pending"
+      "note": "T-M2.15 packet: DOCS-REVIEW PASS round 2 (PR #111; evidence/T-M2.15/review/docs.md); merge-gate pending"
     },
     "G1": {
       "status": "n/a",
