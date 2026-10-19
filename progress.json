@@ -36,7 +36,7 @@
     "ownerRole": "FE",
     "branch": "feature/T-M2.15-guardians",
     "packet": "docs/tasks/T-M2.15-guardians.md",
-    "pr": null,
+    "pr": "112",
     "lastCommit": "8f33041",
     "startedAt": "2026-10-19T02:07:10Z",
     "entryGate": [
