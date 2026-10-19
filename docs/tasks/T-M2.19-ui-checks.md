@@ -45,11 +45,14 @@ during a fade-in, and raw motion values. Each check is proven to fail on a viola
      form, and Add student with the long values typed: `expectSettledAccessible` on each, and `expectNoMidWordBreak` on the full name in the
      list row, the `h1`, the guardian `h3`, the section `h2`s and the action buttons.
   5. `expectFocusNotLost`, called after the action's end state is visible (dialog gone, toast shown, row removed, list loaded), after each
-     action of the students screens that removes or disables the focused element. This list is exhaustive for M2 (every pressed control
-     that unmounts or becomes disabled):
-     - already performed by an E2E test (add the assertion there): the pager's last Next; Edit profile Save and Cancel; guardian form Save
-       and Cancel; the guardian Remove confirm and the remove dialog's Cancel; the Archive Undo in the toast; the Reset password confirm;
-       the conflict dialog's Reload and Cancel; Discard in the unsaved changes dialog;
+     action of the students screens that removes or disables the focused element. Inclusion rule (N-1): every pressed control in
+     `web/src/features/students/**` that unmounts, or becomes disabled, as a result of its own press. The list below is the LC's reading of that
+     rule; the implementer greps the feature for more and adds any it finds (named in the summary), so AC4 cannot pass by omission:
+     - the pager's last Next; Edit profile Save and Cancel; guardian form Save and Cancel; the guardian Remove confirm and the remove dialog's
+       Cancel; the Archive Undo in the toast; the Reset password confirm; the conflict dialog's Reload and Cancel; Discard in the unsaved
+       changes dialog; the contact-handle Remove (`StudentFields`); the list and workspace error-state Try again (`StudentsListPage`,
+       `StudentWorkspacePage`); the guardian form's Add guardian row control: add the assertion where an E2E test already presses the
+       control, otherwise add the press;
      - **new** (D-4; no E2E test performs them today): the guardians **Try again** (`page.route('**/api/v1/tutor/students/*/guardians', …)`
        answering 503 until the alert shows, then passing through), and the Add student guardian-row **Remove** of the first, a middle and the
        last row (three rows typed, each removed in turn).
@@ -80,7 +83,9 @@ gate. 5. Hard-coded semantics? None.
 - AC4: `expectFocusNotLost` runs after each action listed in scope 5 and passes.
 - AC5: the stylelint rule fires on a raw duration and on a module custom property (Vitest proof) and `pnpm lint` passes with the two new tokens
   in place; the rendered Spinner and Skeleton keep 800 ms and 1.4 s and stop under reduced motion as before, asserted in E2E (computed
-  `animation-duration` on `/dev/ui` or a loading state; jsdom does not resolve CSS modules or `var()`, D-5).
+  `animation-duration` in the packaged app: the Skeleton in the Students list loading state (the list request held with `page.route` past the
+  150 ms delay) and the Spinner in a pending Button (a held guardian Save); `/dev/ui` is not in the production build; jsdom does not resolve
+  CSS modules or `var()`, D-5, N-2).
 - AC6: docs of scope 7 updated.
 - AC7: `./scripts/gate.sh` green once on the final head and CI green; every existing assertion kept (DEC-131 (6)); the gate's changed-spec ×3
   run passes for `students.spec.ts` and `checks.spec.ts`; the bundle budget unchanged.
