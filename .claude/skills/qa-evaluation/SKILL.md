@@ -17,4 +17,4 @@ Authoritative: `docs/06-quality/qa-protocol.md`.
 5. **Verdict:** `QA-VERDICT <task-id>: PASS | PASS WITH MINOR | FAIL` as the first line (the LC posts it). Any S1/S2/SCOPE finding means FAIL. Text only: no PR comments.
 6. **Delta re-check** after an S1/S2 or behaviour-changing S3 fix (qa-protocol §2b): only the findings, the changed files and their specs; append; never rewrite the history.
 
-Write only in `qa/**` and `evidence/<task-id>/qa/**`.
+Write only in `qa/**` and `evidence/<task-id>/qa/**`, on a `qa/<task>` branch when the LC asks; otherwise return text only.

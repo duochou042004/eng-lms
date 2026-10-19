@@ -30,7 +30,7 @@
 - [ ] The branch is up to date with `develop`. There are no merge conflicts.
 - [ ] Conventional commit messages with a `Task: <id>` trailer.
 
-## G3 Independent evaluation gate. Owners: QA (always), SEC (if triggered), UX (if the UI changed)
+## G3 Independent evaluation gate. Owners: the reviewers of the packet's risk tier (table below)
 
 Review effort follows the packet's **risk tier** (set by the LC at G0, DEC-131 (4)):
 
@@ -51,7 +51,7 @@ Review effort follows the packet's **risk tier** (set by the LC at G0, DEC-131 (
   - **S4:** batched into one polish packet per milestone, unless it is a one-line fix the LC verifies (supersedes DEC-088 for S4).
 - [ ] `evidence/<task>/summary.md` has the **G3 cost** table (evidence-protocol §2).
 - **Docs and chore packets (no product behaviour change):** G3 is satisfied by a **docs review**. A fresh-context reviewer checks consistency, links,
-  traceability and that no scope was added, and posts `DOCS-REVIEW <task-id>: PASS`. Planning baselines and scope changes additionally require
+  traceability and that no scope was added, and returns `DOCS-REVIEW <task-id>: PASS`; the LC posts it. Planning baselines and scope changes additionally require
   **PO approval** (`PO-APPROVED <task-id>`, recorded in the decision log).
 
 ## G4 Merge gate. Owner: LC

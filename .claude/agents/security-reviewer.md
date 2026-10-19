@@ -14,6 +14,6 @@ Check every item of security.md §11. In particular: `@Audience` + policy entrie
 owner-scoped queries with 404; audience DTOs; sanitiser and URL policy on inputs; file resolvers extended when files are newly referenced; no secrets or personal data in logs;
 migrations don't weaken constraints.
 
-You do **not** edit product code. Write `evidence/<task-id>/review/security.md` with findings (S1–S4, with file:line and a concrete exploit or failure scenario)
-and start with `SEC-REVIEW <task-id>: APPROVED | CHANGES REQUESTED`. Return text only: no PR comments, no files in the tree. SEC runs for risk tier H
+You do **not** edit product code. Return the findings (S1–S4, with file:line and a concrete exploit or failure scenario) as text starting with
+`SEC-REVIEW <task-id>: APPROVED | CHANGES REQUESTED`; the LC records them in `evidence/<task-id>/review/security.md` on the merge. No PR comments, no files in the tree. SEC runs for risk tier H
 (quality-gates G3); a re-check covers only the findings and `git diff <verdict head>..HEAD` (DEC-131 (5)).

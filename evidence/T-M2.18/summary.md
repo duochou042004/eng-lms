@@ -13,7 +13,7 @@
 | AC4 | `docs/09-harness/evidence-protocol.md` intro, §1 screenshot rule, §2 self-check and G3 cost table | done |
 | AC5 | `docs/09-harness/task-packet-template.md` (Risk tier, UI rules, evidence/gate AC); `.claude/skills/task-packet/SKILL.md` step 6 and checklist | done |
 | AC6 | `.claude/agents/{qa-evaluator,ux-reviewer,security-reviewer,frontend-implementer}.md`; skills `qa-evaluation`, `ux-review`, `security-review`, `frontend-standards` (self-check), `evidence-and-handoff`; `agent-roles.md`; `coding-agent-rules.md` §2.1, §6.4 | done |
-| AC7 | `scripts/gate.sh` (`backend_changed`, `e2e_repeat`); `scripts/tests/gate.test.sh` 50 passed (12 new DEC-131 cases); `scripts/tests/run-all.sh` PASS | done |
+| AC7 | `scripts/gate.sh` (`backend_changed`, `e2e_repeat`); `scripts/tests/gate.test.sh` 50 passed (17 new DEC-131 cases); `scripts/tests/run-all.sh` PASS | done |
 | AC8 | `.gitignore` `evidence/**/*.png`; `git ls-files 'evidence/**/*.png'` → 61, all under `evidence/*/qa/**` (1,484 untracked, files kept; the QA-owned 61 go with `qa/T-M2.15`, path ownership); `check-docs.sh` PASS | done |
 | AC9 | DEC-131, backlog T-M2.19; path ownership and CI: see the PR | in review |
 
@@ -31,8 +31,9 @@ git ls-files 'evidence/**/*.png' | wc -l   # 61 (QA-owned)
 - No gate run: no product code changed.
 
 ## Reviews
-- DOCS: pending
+- DOCS: round 1 CHANGES REQUESTED (S3 D-1..D-4 verdict posting/recording contradictions; S4 D-5..D-11), all fixed in-task; round 2 (delta): pending
 
 ## G3 cost (DEC-131 (9))
 | Round | Reviewer | Head | Verdict | S1/S2/S3/S4 | Scope | Agent tokens | Agent min | Gate runs | Gate min |
 |---|---|---|---|---|---|---|---|---|---|
+| 1 | docs-reviewer | aed6a52 | CHANGES REQUESTED | 0/0/4/7 | full | 70,438 | 2.2 | 0 | 0 |

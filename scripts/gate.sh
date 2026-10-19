@@ -20,8 +20,8 @@ usage() { sed -n '2,7p' "$0" | sed 's/^# \{0,1\}//'; }
 changed_files() {
   local base=${ENGLMS_GATE_BASE:-origin/develop}
   git -C "$ROOT" rev-parse --verify -q "$base" >/dev/null || return 1
-  { git -C "$ROOT" diff --name-only "$base"...HEAD && git -C "$ROOT" diff --name-only HEAD \
-      && git -C "$ROOT" ls-files --others --exclude-standard; } 2>/dev/null || return 1
+  local g=(git -C "$ROOT" -c core.quotePath=false)
+  { "${g[@]}" diff --name-only "$base"...HEAD && "${g[@]}" diff --name-only HEAD && "${g[@]}" ls-files --others --exclude-standard; } 2>/dev/null || return 1
 }
 backend_changed() {
   [[ "${ENGLMS_GATE_FULL:-}" == 1 ]] && return 0

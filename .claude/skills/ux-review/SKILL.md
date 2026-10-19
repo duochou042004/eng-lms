@@ -20,5 +20,5 @@ description: Review an Eng-LMS UI change (PR or branch) against the design syste
 - [ ] **Budgets:** the step counts of the affected flows are within ux-flows.md.
 
 ## Output
-`evidence/<task>/review/ux.md`: a findings table (ID · Sev S1–S4 · screen/viewport · issue · screenshot · suggested fix) and the final line
-`UX-REVIEW <task-id>: APPROVED | CHANGES REQUESTED` (first line of the returned text; the LC posts it). S1/S2 findings mean CHANGES REQUESTED.
+Return a findings table (ID · Sev S1–S4 · screen/viewport · issue · what the screenshot shows · suggested fix) with
+`UX-REVIEW <task-id>: APPROVED | CHANGES REQUESTED` as the first line; the LC records it in `evidence/<task>/review/ux.md` and posts the line. S1/S2 findings mean CHANGES REQUESTED.

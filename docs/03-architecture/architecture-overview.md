@@ -140,7 +140,7 @@ Consumer in the MVP: `audit`. (Result → metric observation is a **direct API c
 /deploy         Containerfile, compose.dev.yaml, quadlet/*.container, Caddyfile, backup scripts
 /scripts        gate.sh, check-docs.sh, dev helpers (bash, POSIX tools only)
 /docs           This documentation system
-/evidence       Per-task evidence summaries (small text + key screenshots)
+/evidence       Per-task evidence summaries (text evidence; PNGs git-ignored, DEC-131)
 /.github        CI workflows, PR template
 /.claude        Agent definitions and project skills (the harness)
 progress.json   Machine-readable project state

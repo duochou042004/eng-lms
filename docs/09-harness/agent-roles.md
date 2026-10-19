@@ -29,7 +29,7 @@ reports and posts the verdict lines after CI is green on the final head.
 | Run build, tests, E2E locally | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
 | Run the app (dev/e2e profile) | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
 | Browser automation (built-in browser / Playwright) | ✓ | – | ✓ | ✓ | ✓ | ✓ |
-| `git commit` / push feature branch | ✓ (docs/chore) | ✓ | ✓ | ✓ (qa/ branch or PR comments) | – | – |
+| `git commit` / push feature branch | ✓ (docs/chore) | ✓ | ✓ | ✓ (qa/ branch only) | – | – |
 | Open PR (`gh pr create`) | ✓ | ✓ | ✓ | – | – | – |
 | Comment on PR | ✓ | ✓ | ✓ | – (text to the LC) | – | – |
 | **Merge PR** (`scripts/merge-gate.sh`) | ✓ **only** | – | – | – | – | – |

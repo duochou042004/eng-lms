@@ -137,6 +137,18 @@ expect_output_contains "e2e --no-build --project=phone-small --project=tablet --
   "DEC-131: the changed spec runs x3 without retries after e2e"
 check '[[ $(grep -c "^e2e " "$calls") == 2 ]]' "DEC-131: e2e then one repeat run"
 
+echo "t" >"$repo/e2e/tests/học viên.spec.ts"; g add -A; g commit -qm vi
+: >"$calls"
+expect_exit 0 "DEC-131: a non-ASCII spec name passes" -- gbase env
+LAST_OUTPUT=$(grep '^e2e ' "$calls" | tail -1)
+expect_output_contains "tests/học viên.spec.ts" "DEC-131: a spec with a vi name and a space is repeated (core.quotePath=false)"
+g rm -q "e2e/tests/học viên.spec.ts"; g commit -qm rm-vi
+
+: >"$calls"
+expect_exit 0 "DEC-131: a missing base ref passes" -- env ENGLMS_GATE_BASE=missing PATH="$work/bin:$PATH" "$repo/scripts/gate.sh"
+expect_output_contains "e2e repeat skipped (changed files unknown)" "DEC-131: a missing base skips only the repeat"
+check 'grep -q "^backend " "$calls" && grep -q "^contract-drift " "$calls"' "DEC-131: a missing base runs backend and contract-drift"
+
 g rm -q e2e/tests/new.spec.ts; g commit -qm rm
 : >"$calls"
 expect_exit 0 "DEC-131: a deleted spec passes" -- gbase env
