@@ -43,7 +43,8 @@ self-check; 21 needed a reviewer. Re-check rounds mostly re-ran the whole regres
   5. `agent-roles.md`: the combined QA+UX reviewer.
   6. `task-packet-template.md` and the `task-packet` skill: **Risk tier** field, the **UI rules** block, the evidence list, the gate AC.
   7. Agents and skills: `qa-evaluator`, `ux-reviewer`, `security-reviewer`, `frontend-implementer`; `qa-evaluation`, `ux-review`,
-     `security-review`, `frontend-standards` (self-check list), `evidence-and-handoff`; `coding-agent-rules.md` (screenshots, DEC-088).
+     `security-review`, `frontend-standards` (self-check list), `evidence-and-handoff`; `coding-agent-rules.md` (screenshots, DEC-088);
+     `.github/pull_request_template.md` (screenshots local, one gate run, risk tier).
   8. `scripts/gate.sh`: skip `backend` and `contract-drift` when no file under `backend/`, `api/` or `scripts/contract-drift.sh` changed
      since `origin/develop` (`ENGLMS_GATE_FULL=1` forces them; no git or no base → run everything); after `e2e`, run the new or changed
      `e2e/tests/*.spec.ts` ×3 (`--repeat-each=3 --retries=0`, the mandatory viewports, `--no-build`). Tests in `scripts/tests/gate.test.sh`.
