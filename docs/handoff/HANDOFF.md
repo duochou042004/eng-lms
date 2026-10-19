@@ -1,6 +1,6 @@
-# Handoff — 2026-10-18 (T-M2.14 done; next: the T-M2.15 packet)
+# Handoff — 2026-10-19 (T-M2.15 guardians packet in G0 review; T-M2.17 learning profile split off)
 
-Phase/Milestone: P1 / M2 (in progress) · Current task: **T-M2.15 (draft: packet next)** · Branch: `develop` · Last merges on develop: `6073e71` (PR #108, T-M2.14); the QA report is PR #109 (`qa/T-M2.14`) and this record is the `chore/T-M2.14-merge-record` PR (check `git log` that both landed) · Remote: https://github.com/duochou042004/eng-lms (mirror: gitlab.com/duochou042004/eng-lms)
+Phase/Milestone: P1 / M2 (in progress) · Current task: **T-M2.15 guardians (packet in G0 review, PR #111, DEC-128)** · Branch: `develop` · Last merges on develop: `6073e71` (PR #108, T-M2.14); the QA report is PR #109 (`qa/T-M2.14`) and this record is the `chore/T-M2.14-merge-record` PR (check `git log` that both landed) · Remote: https://github.com/duochou042004/eng-lms (mirror: gitlab.com/duochou042004/eng-lms)
 
 ## Where we are
 - **T-M2.14 done** (`6073e71`, DEC-124..127): the T-M2.14 row was split again (DEC-124) into T-M2.14 and **T-M2.15** (guardians + learning
@@ -21,10 +21,9 @@ Phase/Milestone: P1 / M2 (in progress) · Current task: **T-M2.15 (draft: packet
   `./scripts/install-hooks.sh`, `git remote add gitlab …`.
 
 ## Next steps
-1. **T-M2.15 packet** (guardians on the Profile view: list, add, edit, delete ≤ 10 with optimistic locking, and the guardian section of the
-   add form; the tutor-private learning profile with `TagInput` and ≤ 30 custom fields; the T-M2.14 SEC residual). Size check (split if
-   needed, DEC). SEC triggered. Fixed layout rules up front. Fresh docs-reviewer, CI, verdicts, merge-gate, gitlab-sync; ask the PO once for
-   the start signal (DEC); implement through G3.
+1. **T-M2.15 guardians** (packet `docs/tasks/T-M2.15-guardians.md`, PR #111; DEC-128 split the learning profile into **T-M2.17**):
+   finish G0 (docs review, CI, merge-gate, gitlab-sync), ask the PO once for the start signal (DEC), implement through G3 (QA, UX, SEC).
+   Then the T-M2.17 packet (learning profile + `TagInput`).
 2. T-M2.13 and T-M2.16 when the PO orders them; then T-M2.6, T-M2.7 (M2 regression incl. the `qa/` spec updates). Optional: T-M2.10.
 
 ## Pending PO decisions / actions

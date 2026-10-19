@@ -20,30 +20,31 @@ tutor-private learning profile and `TagInput` are the follow-up **T-M2.17** (DEC
 ## Scope
 - In:
   1. **Guardians section** (IA §2 Profile "guardians", FR-STU-03): a section **Guardians** (`h2`) on the Profile view between **Note** and
-     **Account**, shown in read mode and while the profile form is open. Data: `GET /tutor/students/{sid}/guardians` under the query key
+     **Account** (while the profile form is open: after the form, before Account), shown in both modes. Data: `GET /tutor/students/{sid}/guardians` under the query key
      `['students','guardians',sid]` (insertion order). Each guardian is an `li` of a list (`ul`, no bullets) with the name as `h3`, a
-     `DescriptionList` (Relationship, Phone, Email, Notes; empty values "Not added", the same `emptyLabel` as the Profile view; phone and
+     `DescriptionList` (Relationship, Phone, Email, Notes — the Notes value keeps its line breaks; empty values "Not added", the same `emptyLabel` as the Profile view; phone and
      email through `ContactValue`, so they link as on the Profile view) and an action row: **Edit** and **Remove** (both secondary; their
-     accessible names include the guardian's name, e.g. "Edit Nguyễn Thị Lan", visible text "Edit" / "Remove"). Under the list: **Add
-     guardian** (secondary). No guardians: the muted text "No guardians added." and **Add guardian**. Ten guardians: no Add button; the
-     muted text "Up to 10 guardians. Remove one to add another." States (interaction-states §1): loading → a `DelayedSkeleton` of two rows
-     inside the section (the rest of the page renders); error → an `InlineAlert` (danger) in the section ("Couldn't load the guardians.")
+     accessible names include the guardian's name, e.g. "Edit Nguyễn Thị Lan", visible text "Edit" / "Remove"). Under the list, once the
+     guardians have loaded (never while loading or in the error state): **Add guardian** (secondary). No guardians: the muted text "No guardians added." and **Add guardian**. Ten guardians: no Add button; the
+     muted text "Up to 10 guardians. Remove one to add another." States (interaction-states §1): loading → an `output` with `aria-busy="true"` and
+     the label "Loading the guardians" from 0 ms holding a `DelayedSkeleton` of two rows (as `WorkspaceSkeleton`), inside the section (the
+     rest of the page renders); error → an `InlineAlert` (danger) in the section ("Couldn't load the guardians.")
      with **Retry**; the rest of the page is unaffected; a 404 → the feature's not-found view.
   2. **Guardian form** (add and edit, in place): **Add guardian** opens an empty form after the list (the Add button is hidden while it is
      open); **Edit** turns that guardian's `li` into the form with its saved values. One `GuardianForm` component for both (React Hook Form
      + Zod, `model/guardianSchema.ts`): Name (required, 1–120), Relationship (0–40, hint "For example: mother, father, partner"), Phone and
      Email (the add form's rules, `model/createSchema.ts`), Notes (`TextArea` with counter, 0–2,000); **Save** / **Cancel**.
      Focus: opening the form moves focus to Name. The form's group is labelled ("New guardian" / "Edit guardian {name}").
-  3. **Save**: add sends `POST …/guardians` with the trimmed values (an empty optional field is left out); edit sends `PATCH
-     /tutor/guardians/{gid}` with `version` and **only the changed fields** (an emptied optional field as `null`; nothing changed → the form
+  3. **Save**: add sends `POST …/guardians` with the trimmed values (an optional field empty after trimming is left out); edit sends
+     `PATCH /tutor/guardians/{gid}` with `version` and **only the fields whose trimmed value changed** (an emptied optional field as `null`; nothing changed → the form
      closes without a request). Pending: "Saving…", double submit impossible. Success: the answer updates the guardians cache entry in place
      (append for POST, replace by `id` for PATCH; no refetch), the form closes and a `Toast` says "Guardian added" / "Guardian saved"; focus
      moves to the new or saved guardian's **Edit** button. Errors: 422 → fields by `field` (unknown ones to the form's `ErrorSummary`); a 422
      `TOO_MANY` on `guardians` (another tab added the 10th) → the guardians query is refetched and an `InlineAlert` in the form says "This
-     student already has 10 guardians." (input kept); 409 `STALE_VERSION` → scope 5; a 404 on PATCH (another tab removed the guardian) →
+     student already has 10 guardians." (input kept, focus on the alert, no `ErrorSummary`); 409 `STALE_VERSION` → scope 5; a 404 on PATCH (another tab removed the guardian) →
      the guardians are refetched, the form closes and an `InlineAlert` (warning) at the top of the section says "This guardian was removed
-     in another tab or window."; a 404 on POST → the not-found view; network/5xx → `InlineAlert` above Save/Cancel, input kept. Every failed
-     submit with a field error shows the `ErrorSummary` and focuses it (the form has 5 fields, interaction-states §2.3).
+     in another tab or window." (focus on the alert; it clears on the next guardian action: Add, Edit, Remove); a 404 on POST → the not-found view; network/5xx → `InlineAlert` above Save/Cancel, input kept. Every failed
+     submit with a field error (client, or a 422 other than `TOO_MANY`) shows the `ErrorSummary` and focuses it (the form has 5 fields, interaction-states §2.3).
   4. **Remove** (interaction-states §2.9, irreversible): **Remove** opens a `ConfirmDialog` "Remove {name} from the guardians?" ·
      "Their contact details will be deleted. This can't be undone." · **Remove guardian** (danger) / **Cancel**. Confirm sends `DELETE
      /tutor/guardians/{gid}`; pending: the confirm button shows "Removing…" and the dialog cannot be dismissed (the T-M2.14 `isPending`).
@@ -62,8 +63,9 @@ tutor-private learning profile and `TagInput` are the follow-up **T-M2.17** (DEC
      closes it, focus back to the trigger (**Add guardian** or that guardian's **Edit**).
   7. **Guardians in Add student** (FR-STU-01): a collapsed `Disclosure` **Guardians** between **Contact** and **Note** in the add form. It
      holds 0–10 guardian rows (each a `fieldset` with the legend "Guardian {n}" and the five fields of scope 2, stacked) and **Add guardian**
-     (adds a row and focuses its Name; hidden at 10 with the scope 1 limit text); each row has **Remove** (`IconButton` "Remove guardian
-     {n}"; focus moves to the previous row's Name, or **Add guardian** when none is left). A row whose five fields are all empty is left out
+     (adds a row and focuses its Name; hidden at 10 with the scope 1 limit text); each row ends with **Remove guardian {n}** (a quiet `Button` with the Trash icon and visible text, the contact-handle rows' pattern in
+     `StudentFields.tsx`; focus moves to the previous row's Name; when the first row is removed, to the new first row's Name; when no row
+     is left, to **Add guardian**). A row whose five fields are all empty after trimming is left out
      of the request; a row with any value needs a Name ("Enter the guardian's name"). The request's `guardians` holds the kept rows in order
      (left out when none); a 422 on `guardians[i].<field>` maps to that row's field (index of the sent rows → the form row), other `guardians`
      errors to the `ErrorSummary` (`TOO_MANY` → "Up to 10 guardians."). The section opens itself when a submit has an error inside it. The
@@ -99,17 +101,19 @@ lesson moves. 5. **Hard-coded semantics?** None: Relationship is free text (the 
 - **Version bookkeeping**: each guardian has its own `version`; a PATCH sends the cached guardian's `version` and the answer replaces it.
   Guardian writes never touch the student's `version` or detail entry.
 - **Layout rules (fixed, not content-driven)**: the section keeps the Profile view's column (`max-inline-size: var(--size-reading-max)`);
-  guardian items stack with `gap: var(--space-4)`, each with a `1px` `--color-border` block-start divider except the first; the form fields
+  guardian items stack with `gap: var(--space-4)`, each with a `var(--border-width) solid var(--color-border)` block-start divider except the first; the guardian `h3` wraps with
+  `overflow-wrap: anywhere`; the Notes value uses the Profile view's `.note` class (`white-space: pre-wrap`, `overflow-wrap: anywhere`); the form fields
   are full width of the column, one per row at every width (no grid); action rows (`.actions`) as in T-M2.14: below 768 px stacked full
   width in source order, at ≥ 768 px inline, start-aligned, `gap: var(--space-3)`. The add form's guardian rows: each `fieldset` full width,
-  the legend on its own line, the **Remove** `IconButton` at the legend row's inline end (the row is `display: flex; justify-content:
-  space-between; align-items: center`), fields stacked below. Long values (notes, email) wrap with `overflow-wrap: anywhere` inside the
+  the legend alone on its line, the fields stacked below, the **Remove guardian {n}** button last in the fieldset (start-aligned, as the
+  contact-handle rows). Long values (notes, email) wrap with `overflow-wrap: anywhere` inside the
   `DescriptionList` (its existing rule).
 
 ## Acceptance criteria
 - AC1 (FR-STU-03, IA §2): the Profile view shows **Guardians** between Note and Account with each guardian's name, relationship, phone and
-  email links and notes in insertion order, "Not added" for empty values, and "No guardians added." when there are none; the loading
-  skeleton and the error alert with Retry stay inside the section while the rest of the page works (component tests with MSW + E2E).
+  email links and notes in insertion order (a multi-line note keeps its line breaks), "Not added" for empty values, and "No guardians added." when there are none; the loading
+  region (`aria-busy`, "Loading the guardians") and the error alert with Retry stay inside the section, with no **Add guardian**, while
+  the rest of the page works (component tests with MSW + E2E).
 - AC2 (FR-STU-03): **Add guardian** with only a name sends a POST with `{name}`; with all fields the trimmed five; the guardian appears at
   the end of the list without a refetch, "Guardian added" shows and focus is on its **Edit**; at 10 guardians the Add button is gone and the
   limit text shows; a 422 `TOO_MANY` from another tab's 10th shows "This student already has 10 guardians." and the refetched list (component
@@ -117,12 +121,13 @@ lesson moves. 5. **Hard-coded semantics?** None: Relationship is free text (the 
 - AC3 (FR-STU-03): **Edit** opens the form with the saved values and focus on Name; changing the phone and clearing the email sends a PATCH
   with `version`, `phone` and `email: null` only; an unchanged form sends nothing; after Save the item shows the new values, "Guardian
   saved" shows and focus is on its **Edit**; client validation (required name, limits: name 120, relationship 40, notes 2,000, email/phone
-  rules) and a 422 map to the fields; the `ErrorSummary` is focused on every failed submit; a 500 keeps the input with the `InlineAlert`;
+  rules) and a 422 map to the fields; the `ErrorSummary` is focused on every failed submit with a field error (client, or a 422 other than `TOO_MANY`); `TOO_MANY` focuses its
+  `InlineAlert`; a whitespace-only change sends nothing; a 500 keeps the input with the `InlineAlert`;
   double click sends one request.
 - AC4 (interaction-states §2.8): a guardian saved in another tab first → Save answers 409 and the "This was changed elsewhere" dialog
   appears; **Reload** shows the other tab's values and closes the form; with changed notes **Copy my notes** copies them; **Cancel** keeps
   the typed values; a guardian removed in another tab → Save answers 404, the list is refetched without it and "This guardian was removed in
-  another tab or window." shows (component tests + E2E with two pages for the 409).
+  another tab or window." shows (focused) until the next guardian action (component tests + E2E with two pages for the 409).
 - AC5 (interaction-states §2.9): **Remove** asks first (the dialog names the guardian and says it can't be undone); Cancel sends nothing;
   confirm removes it from the list, toasts "{name} removed" and focuses the **Guardians** heading; while pending the dialog cannot be
   dismissed; a 5xx keeps the dialog open with its alert; a 404 closes it and refetches.
@@ -131,7 +136,7 @@ lesson moves. 5. **Hard-coded semantics?** None: Relationship is free text (the 
   changes?" on Cancel and on navigation (shell nav, home link) and passes a sign-out and a forced `/change-password` as T-M2.14 AC8; a clean
   Cancel returns focus to the trigger.
 - AC7 (FR-STU-01): in Add student the collapsed **Guardians** section adds up to 10 rows (Add hidden at 10) and removes rows (focus as scope
-  7); creating a student with two guardians (one row left empty) sends `guardians` with the two filled rows in order, and the new student's
+  7, including removing the first of several rows and the last remaining row); creating a student with two guardians (one row left empty, one whitespace-only) sends `guardians` with the two filled rows in order, and the new student's
   Profile view lists them; a row with a phone and no name shows "Enter the guardian's name" and opens the section; a 422 on
   `guardians[1].email` marks the second sent row's Email; a student without guardians still takes ≤ 6 steps (F2) and its request has no
   `guardians` (component tests + E2E).
@@ -148,29 +153,33 @@ lesson moves. 5. **Hard-coded semantics?** None: Relationship is free text (the 
   green with no students code in either first-visit closure; `api/openapi.json` unchanged.
 
 ## Test plan
-- Implementation: unit (`toGuardianPatch` changed-fields table incl. `null` clears; the add form's row filtering and index mapping; the
+- Implementation: unit (`toGuardianPatch` changed-fields table incl. `null` clears, trailing spaces and whitespace-only values; the add form's row filtering and index mapping; the
   scope 8 session check), component tests with MSW (section states, add/edit/remove with errors, 409/404/`TOO_MANY`, one-form lock, the add
   form's guardian rows), E2E `students.spec.ts` (AC1–AC7, AC9 at phone-small, tablet, laptop; two pages for 409 and `TOO_MANY`), axe.
 - Independent QA focus: two tabs editing and removing the same guardian; adding the 10th in two tabs at once; clearing every optional field;
-  120-character names and 2,000-character notes at 360; profile form open + guardian edit attempts; the add form with 10 rows, removing from
-  the middle, a 422 on a later row after an empty row was dropped; vi/en. Exploratory charter: find a way to leave a guardian form's changes
+  120-character names and 2,000-character notes at 360; profile form open + guardian edit attempts; the add form with 10 rows, removing the first, one from
+  the middle and the last, a 422 on a later row after an empty row was dropped; vi/en. Exploratory charter: find a way to leave a guardian form's changes
   without the discard question, to save over another tab's guardian change without the conflict dialog, or to see a guardian in any student
   session response.
 - **Isolation**: no new endpoint; the guardian endpoints are `@Audience(TUTOR)` with authz-matrix and isolation entries since T-M2.9. QA
   confirms a student session gets 403 on `GET /api/v1/tutor/students/{sid}/guardians` and that no student response holds a guardian value.
-- SEC: **triggered** (third-party personal data — guardians' phone, email, notes — on screen and in the cache; the scope 8 residual). UX:
+- SEC: **triggered** (third-party personal data — guardians' phone, email, notes — on screen and in the cache; the scope 8 residual; SEC
+  confirms that sign-out, own and cross-tab, also drops `['students','guardians',*]`: `useLogout` and the cross-tab handler clear the whole
+  query cache today, `features/auth/api/session.ts`, `app/guards.ts`). UX:
   **triggered** (new section, forms, dialog, add form section).
 
 ## Evidence required
 - `evidence/T-M2.15/summary.md`, gate logs (both runs), screenshots under `evidence/T-M2.15/impl/` at 360×740, 768×1024 and 1280×800: the
   Guardians section (0, 2 and 10 guardians), the guardian form (add, edit with errors), the conflict dialog with Copy my notes, the remove
   dialog (and its error), the removed-elsewhere alert, the add form with guardian rows (with an error), in vi and en at least once each; axe
-  results; the F11 step log. QA report via `qa/T-M2.15`; UX and SEC verdicts as PR records (reviewer evidence never on the feature branch).
+  results; the F11 step log. E2E data and screenshots use **fictitious** guardians only (invented names, `example.com` emails,
+  phone numbers from a non-dialable range such as `0900 000 0xx`), never real people's data. QA report via `qa/T-M2.15`; UX and SEC verdicts as PR records (reviewer evidence never on the feature branch).
 
 ## Docs to update
 - `information-architecture.md` §2 (Profile: guardians implemented; learning profile T-M2.17), `interaction-states.md` §2.8 (the conflict
-  dialog for guardians) and §2.9 (Remove guardian as built), `ux-flows.md` (new **F11 Add a guardian: ≤ 3 steps**; F2 notes the optional
-  Guardians section), `security.md` T12 or the students data note (the scope 8 session check), backlog (T-M2.15 done note), `progress.json`.
+  dialog for guardians) and §2.9 (Remove guardian as built), `ux-flows.md` (new **F11 Add a guardian: ≤ 3 steps**; F2: replace "No guardian section until
+  T-M2.14" with the optional, collapsed Guardians section of T-M2.15), `security.md` T19 (the scope 8 session check: a write answer is
+  stored only while a tutor session is cached), backlog (T-M2.15 done note), `progress.json`.
 
 ## Risks & assumptions
 - **Size**: 10 ACs, about 1.5–2 agent-days; the lift of "which form is open" touches `StudentWorkspacePage.tsx` and `AccountSection.tsx`
