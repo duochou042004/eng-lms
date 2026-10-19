@@ -148,9 +148,14 @@ lesson moves. 5. **Hard-coded semantics?** None: Relationship is free text (the 
   en; the layout rules hold (actions stacked full width below 768, inline at ≥ 768; fields one per row; no horizontal scroll with a 120-character
   name and a 2,000-character note); keyboard-only add, edit, remove; the guardian action buttons' accessible names include the name; add a
   guardian = ≤ 3 user steps (Add guardian → type the name → Save; new ux-flows **F11**).
-- AC10: `./scripts/gate.sh` green twice in a row on the same dev database; all existing unit and E2E assertions kept (F2 ≤ 6, F10 ≤ 3),
+- AC10: `./scripts/gate.sh` green twice in a row on the same dev database (met on `7128127`; after the AC11 fixes once on the final head + CI, DEC-131 (6)); all existing unit and E2E assertions kept (F2 ≤ 6, F10 ≤ 3),
   with one named exception: the `ConflictDialog` copy button's label becomes a prop (its tests pass the profile label); the bundle budget
   green with no students code in either first-visit closure; `api/openapi.json` unchanged.
+- AC11 (G3 round 1, DEC-132; S3 fixed in-task, DEC-131 (5)): (a) **QA-1** after **Try again** in the guardians error state, focus moves to the
+  Guardians `h2` (never `body`); (b) **UX-1** the guardian conflict dialog says the guardian changed ("Someone changed this guardian in another
+  tab or window…"; vi with the glossary term "phụ huynh", glossary.md), the profile dialog keeps its text (the description becomes a prop like the copy
+  label); (c) **UX-2** (LC ruling) the Guardians section follows the Profile view's own column: no `--size-reading-max` cap on `.guardians`, so
+  its term/value columns line up with Personal information and Contacts at 768 and 1280. Unit tests prove (a) and (b).
 
 ## Test plan
 - Implementation: unit (`toGuardianPatch` changed-fields table incl. `null` clears, trailing spaces and whitespace-only values; the add form's row filtering and index mapping; the
