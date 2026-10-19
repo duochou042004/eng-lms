@@ -65,7 +65,5 @@ Remote: https://github.com/duochou042004/eng-lms (mirror: gitlab.com/duochou0420
 - Wall-clock bounds in tests flake on the 2-core CI runner (DEC-093). `git merge` is denied: `gh pr update-branch` (DEC-090).
 
 ## Files to read first
-`CLAUDE.md` → `progress.json` → this file → backlog M2 (T-M2.15, T-M2.16, T-M2.13 rows) → DEC-124..127 → FR-STU-01 (guardians), 03, 04 →
-interaction-states §2, §4 → information-architecture §2 → api-catalog "tutor: students" (guardians, learning-profile rows) →
-`docs/tasks/T-M2.14-student-profile-account.md` → `web/src/features/students/`, `web/src/ui/` → `.claude/skills/task-packet`,
-`frontend-standards`, `ux-review`, `security-review`.
+`CLAUDE.md` → `progress.json` → this file → DEC-131..133 → backlog M2 (T-M2.19, T-M2.20, T-M2.17 rows) → `quality-gates.md` G1/G3 →
+`qa-protocol.md` §2a/§2b → `evidence-protocol.md` §2 → `task-packet-template.md` → `e2e/support/checks.ts` → `.claude/skills/task-packet`, `frontend-standards`.
