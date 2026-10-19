@@ -1,6 +1,6 @@
-# Handoff — 2026-10-19 (T-M2.15 guardians packet in G0 review; T-M2.17 learning profile split off)
+# Handoff — 2026-10-19 (T-M2.15 guardians implemented, G1 pass; PAUSED before G3 for the PO, DEC-129)
 
-Phase/Milestone: P1 / M2 (in progress) · Current task: **T-M2.15 guardians (packet in G0 review, PR #111, DEC-128)** · Branch: `develop` · Last merges on develop: `6073e71` (PR #108, T-M2.14); the QA report is PR #109 (`qa/T-M2.14`) and this record is the `chore/T-M2.14-merge-record` PR (check `git log` that both landed) · Remote: https://github.com/duochou042004/eng-lms (mirror: gitlab.com/duochou042004/eng-lms)
+Phase/Milestone: P1 / M2 (in progress) · Current task: **T-M2.15 guardians (in progress: G1 pass; PR #112; paused before G3, DEC-129)** · Branch: `feature/T-M2.15-guardians` · Last merges on develop: `6073e71` (PR #108, T-M2.14); the QA report is PR #109 (`qa/T-M2.14`) and this record is the `chore/T-M2.14-merge-record` PR (check `git log` that both landed) · Remote: https://github.com/duochou042004/eng-lms (mirror: gitlab.com/duochou042004/eng-lms)
 
 ## Where we are
 - **T-M2.14 done** (`6073e71`, DEC-124..127): the T-M2.14 row was split again (DEC-124) into T-M2.14 and **T-M2.15** (guardians + learning
@@ -21,9 +21,10 @@ Phase/Milestone: P1 / M2 (in progress) · Current task: **T-M2.15 guardians (pac
   `./scripts/install-hooks.sh`, `git remote add gitlab …`.
 
 ## Next steps
-1. **T-M2.15 guardians** (packet `docs/tasks/T-M2.15-guardians.md`, PR #111; DEC-128 split the learning profile into **T-M2.17**):
-   finish G0 (docs review, CI, merge-gate, gitlab-sync), ask the PO once for the start signal (DEC), implement through G3 (QA, UX, SEC).
-   Then the T-M2.17 packet (learning profile + `TagInput`).
+1. **T-M2.15 guardians** (packet `docs/tasks/T-M2.15-guardians.md`, G0 PR #111 `eeee2bd`; start DEC-129): implemented on
+   `feature/T-M2.15-guardians` (PR #112), gate PASS ×2 on `7128127`, evidence `evidence/T-M2.15/summary.md`. **Paused before G3**: the PO
+   wants to discuss why G3 runs behind schedule first (DEC-129). Then G3 one reviewer at a time (QA, UX, SEC), merge-gate, QA report via
+   `qa/T-M2.15`, merge-record PR. Then the T-M2.17 packet (learning profile + `TagInput`, DEC-128).
 2. T-M2.13 and T-M2.16 when the PO orders them; then T-M2.6, T-M2.7 (M2 regression incl. the `qa/` spec updates). Optional: T-M2.10.
 
 ## Pending PO decisions / actions
