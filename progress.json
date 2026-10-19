@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-10-19T01:49:13Z",
-  "updatedBy": "lead-coordinator (T-M2.15 packet, session 2026-10-19, Opus 5.5)",
+  "updatedAt": "2026-10-19T02:07:10Z",
+  "updatedBy": "lead-coordinator (T-M2.15 start, session 2026-10-19, Opus 5.5)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -32,28 +32,30 @@
   "currentTask": {
     "id": "T-M2.15",
     "title": "Guardians on the student profile and in Add student (split from T-M2.14, DEC-124; split again DEC-128)",
-    "status": "ready",
+    "status": "in_progress",
     "ownerRole": "FE",
-    "branch": "docs/T-M2.15-guardians-packet",
+    "branch": "feature/T-M2.15-guardians",
     "packet": "docs/tasks/T-M2.15-guardians.md",
-    "pr": "111",
+    "pr": null,
     "lastCommit": null,
-    "startedAt": null,
+    "startedAt": "2026-10-19T02:07:10Z",
     "entryGate": [
       "T-M2.14 merged — met (6073e71, DEC-127)",
-      "Packet G0 — in review (docs/T-M2.15-guardians-packet)",
-      "PO start signal — pending"
+      "Packet G0 — met (PR #111, eeee2bd, DEC-129)",
+      "PO start signal — met (DEC-129)"
     ],
     "nextSteps": [
-      "Fresh docs-reviewer on the packet; fix in-task; CI; DOCS-REVIEW + LC-APPROVED; merge-gate; gitlab-sync",
-      "Ask the PO for the start signal; implement through G3 (QA, UX, SEC)"
+      "frontend-implementer on feature/T-M2.15-guardians; gate green twice",
+      "PAUSE for the PO before G3 (DEC-129)",
+      "G3: QA, UX, SEC; merge-gate"
     ],
     "trace": [
       "DEC-124",
       "DEC-127",
       "DEC-128",
       "FR-STU-01 (guardians)",
-      "FR-STU-03 (guardians)"
+      "FR-STU-03 (guardians)",
+      "DEC-129"
     ]
   },
   "nextTask": {
@@ -347,12 +349,12 @@
   },
   "gates": {
     "G0": {
-      "status": "pending",
-      "note": "T-M2.15 packet: DOCS-REVIEW PASS round 2 (PR #111; evidence/T-M2.15/review/docs.md); merge-gate pending"
+      "status": "pass",
+      "note": "T-M2.15: DOCS-REVIEW PASS round 2 (PR #111, eeee2bd)"
     },
     "G1": {
-      "status": "n/a",
-      "note": "T-M2.15 not started (T-M2.14 passed: gate PASS x2 on 157425c)"
+      "status": "pending",
+      "note": "T-M2.15 implementation in progress"
     },
     "G2": {
       "status": "n/a",
@@ -375,7 +377,6 @@
   "decisions": {
     "log": "docs/10-governance/decision-log.md",
     "recent": [
-      "DEC-115",
       "DEC-116",
       "DEC-117",
       "DEC-118",
@@ -388,7 +389,8 @@
       "DEC-125",
       "DEC-126",
       "DEC-127",
-      "DEC-128"
+      "DEC-128",
+      "DEC-129"
     ],
     "pendingPO": [
       "OQ-03",
@@ -642,6 +644,13 @@
       "status": "approved",
       "at": "2026-10-18T01:39:14Z",
       "ref": "DEC-125"
+    },
+    {
+      "what": "Start T-M2.15 (guardians); pause before G3",
+      "by": "PO",
+      "status": "approved",
+      "at": "2026-10-19T02:07:10Z",
+      "ref": "DEC-129"
     }
   ],
   "environment": {

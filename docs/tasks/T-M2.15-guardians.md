@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Milestone | M2 |
-| Status | ready |
+| Status | in_progress |
 | Owner role | FE (frontend-implementer) |
 | Branch | `feature/T-M2.15-guardians` (from `develop`) |
 | Depends on | T-M2.9 (`37e8ce0`, the guardian endpoints), T-M2.14 (`6073e71`): merged |
