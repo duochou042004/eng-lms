@@ -26,6 +26,14 @@ in either first-visit closure. `api/openapi.json` unchanged.
 | AC8 | pass | `StudentWriteSession.test.tsx` (10 cases; all fail with the check disabled), `tutorSession.test.ts` |
 | AC9 | pass | axe 360/768/1280 vi+en; layout checks; keyboard-only add/edit/remove (`keyboard-guardians.json`); F11 = 3 steps (`steps-f11.json`) |
 | AC10 | pass | both gates; existing assertions kept; `ConflictDialog` copy label as a prop (`copy={{text, label}}`); OpenAPI unchanged |
+| AC11 | pass | `1a9d606`. (a) `StudentGuardians.test.tsx` "error: the alert with Retry inside the section, no Add guardian; Retry loads; the rest of the page works" (the `h2` has focus after Try again; fails without the fix); (b) "a stale save opens the conflict dialog: Copy my notes, Cancel keeps the input, Reload shows the other tab and closes" (guardian text, no "Học viên này") + `StudentProfileEdit.test.tsx` "a stale save opens "This was changed elsewhere"…" (student text kept); `ConflictDialog` `description` prop; (c) `.guardians` uncapped (CSS); gate `gate-20261019T082248Z.log` on `1a9d606` (PASS, 635 s; web 701 tests, E2E 380 passed / 31 skipped; contract-drift skipped, web-only) |
+
+## Frontend-standards self-check (AC11 round)
+- [x] The packet's **UI rules** block is met; AC11 (c) supersedes the layout rule's `--size-reading-max` cap (packet line 103, LC-owned, not edited).
+- [x] Long data at 360/768/1280: unchanged wrapping rules; removing the cap only widens the section to the Profile column.
+- [x] Focus never lands on `body` after an action that removes or disables the focused element (AC11 (a): Try again → Guardians `h2`).
+- [x] vi buttons carry the verb; heading levels never invert; no new buttons or counters.
+- [x] Docs named in the packet are in sync (no doc change needed for AC11).
 
 ## Screenshots (`impl/<phone-small|tablet|laptop>/`, fictitious data: invented names, example.com, +1 555 01xx)
 guardians-empty, -two, -ten (vi, en); guardian-add-form-vi; guardian-edit-errors (vi, en); guardian-conflict (vi, en); guardian-remove-dialog
@@ -41,7 +49,7 @@ guardians-empty, -two, -ten (vi, en); guardian-add-form-vi; guardian-edit-errors
 - Add student section title "Guardians (optional)", as "Contact (optional)".
 - Messages end with a period, as the existing ones.
 - `TOO_LONG` numbers unformatted ("2000"), as the existing note error.
-- The conflict dialog description says "this student" on a guardian conflict (scope 5 made only the copy label a prop).
+- ~~The conflict dialog description says "this student" on a guardian conflict~~: fixed by AC11 (b).
 - vi term "Phụ huynh" (glossary).
 
 ## Not covered
