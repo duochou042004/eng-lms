@@ -142,6 +142,8 @@ describe('Guardians: the section (AC1)', { timeout: 20_000 }, () => {
     await userEvent.click(within(alert).getByRole('button', { name: 'Thử lại' }))
     expect(await within(section()).findByRole('heading', { level: 3, name: 'Nguyễn Thị Lan' })).toBeInTheDocument()
     expect(addButton()).toBeInTheDocument()
+    // AC11 (a): the pressed button is gone; focus is on the section heading, never on body.
+    expect(screen.getByRole('heading', { level: 2, name: 'Phụ huynh' })).toHaveFocus()
   })
 
   it('a 404 on the guardians shows the not-found view', async () => {
@@ -395,6 +397,11 @@ describe('Guardians: conflict and removed elsewhere (AC4)', { timeout: 20_000 },
     await userEvent.type(input('Ghi chú'), 'Ghi chú của tôi')
     await userEvent.click(save())
     const dialog = await screen.findByRole('alertdialog', { name: 'Đã có thay đổi ở nơi khác' })
+    // AC11 (b): the guardian's text, not the profile's "Học viên này…".
+    expect(dialog).toHaveTextContent(
+      'Phụ huynh này vừa được thay đổi ở một tab hoặc cửa sổ khác. Tải lại để xem bản mới nhất; những thay đổi chưa lưu của bạn sẽ mất.',
+    )
+    expect(dialog).not.toHaveTextContent('Học viên này')
     await expectNoAxeViolations(document.body)
     const user = userEvent.setup()
     const write = vi.spyOn(navigator.clipboard, 'writeText').mockResolvedValue()

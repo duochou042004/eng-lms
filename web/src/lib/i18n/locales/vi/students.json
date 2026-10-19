@@ -165,6 +165,7 @@
   "conflict": {
     "title": "Đã có thay đổi ở nơi khác",
     "description": "Học viên này vừa được thay đổi ở một tab hoặc cửa sổ khác. Tải lại để xem bản mới nhất; những thay đổi chưa lưu của bạn sẽ mất.",
+    "guardianDescription": "Phụ huynh này vừa được thay đổi ở một tab hoặc cửa sổ khác. Tải lại để xem bản mới nhất; những thay đổi chưa lưu của bạn sẽ mất.",
     "reload": "Tải lại",
     "cancel": "Huỷ",
     "copyNote": "Sao chép ghi chú của tôi",

@@ -354,6 +354,7 @@ export function GuardianForm({
       />
       <ConflictDialog
         isOpen={conflict !== null}
+        description={t('conflict.guardianDescription')}
         copy={conflict?.notes !== undefined ? { text: conflict.notes, label: t('conflict.copyNotes') } : undefined}
         onCancel={() => setConflict(null)}
         onReload={() => {

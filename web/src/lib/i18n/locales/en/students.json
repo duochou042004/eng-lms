@@ -165,6 +165,7 @@
   "conflict": {
     "title": "This was changed elsewhere",
     "description": "Someone changed this student in another tab or window. Reload to see the latest version; your unsaved changes will be lost.",
+    "guardianDescription": "Someone changed this guardian in another tab or window. Reload to see the latest version; your unsaved changes will be lost.",
     "reload": "Reload",
     "cancel": "Cancel",
     "copyNote": "Copy my note",

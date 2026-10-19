@@ -157,7 +157,14 @@ export function GuardiansSection({ studentId, openForm, onOpenFormChange, onNotF
           tone="danger"
           title={t('guardians.errorTitle')}
           action={
-            <Button variant="secondary" onPress={() => void guardians.refetch()}>
+            <Button
+              variant="secondary"
+              onPress={() => {
+                // The alert and its button unmount on success: focus goes to the heading, never to body (AC11).
+                focusTo(TITLE_ID)
+                void guardians.refetch()
+              }}
+            >
               {t('guardians.retry')}
             </Button>
           }

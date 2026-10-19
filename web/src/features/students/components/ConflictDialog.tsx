@@ -7,6 +7,8 @@ export interface ConflictDialogProps {
   onReload: () => void
   /** Cancel: the form stays as typed. */
   onCancel: () => void
+  /** What changed: "Someone changed this student…" for the profile and status, "…this guardian…" for a guardian. */
+  description: string
   /**
    * The typed text when it was changed, offered before Reload discards it, with its button label: "Copy my note" for
    * the profile, "Copy my notes" for a guardian (T-M2.15 scope 5).
@@ -19,13 +21,13 @@ export interface ConflictDialogProps {
  * profile save, a status button or a guardian save. Reload is the primary action; Cancel keeps the form; with a changed
  * note, the copy button copies it.
  */
-export function ConflictDialog({ isOpen, onReload, onCancel, copy }: ConflictDialogProps) {
+export function ConflictDialog({ isOpen, onReload, onCancel, description, copy }: ConflictDialogProps) {
   const { t } = useTranslation('students')
   return (
     <ConfirmDialog
       isOpen={isOpen}
       title={t('conflict.title')}
-      description={t('conflict.description')}
+      description={description}
       confirmLabel={t('conflict.reload')}
       confirmVariant="primary"
       cancelLabel={t('conflict.cancel')}

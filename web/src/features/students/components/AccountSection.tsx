@@ -262,6 +262,7 @@ export function AccountSection({
       </ConfirmDialog>
       <ConflictDialog
         isOpen={conflict}
+        description={t('conflict.description')}
         onCancel={() => setConflict(false)}
         onReload={() => {
           setConflict(false)

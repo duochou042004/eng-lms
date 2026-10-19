@@ -179,6 +179,7 @@ export function ProfileForm({ student, onClose, onReload, onNotFound }: ProfileF
       />
       <ConflictDialog
         isOpen={conflict !== null}
+        description={t('conflict.description')}
         copy={conflict?.note !== undefined ? { text: conflict.note, label: t('conflict.copyNote') } : undefined}
         onCancel={() => setConflict(null)}
         onReload={() => {

@@ -324,13 +324,13 @@
   white-space: nowrap;
 }
 
-/* The Guardians section (T-M2.15 layout rules, fixed): the Profile view's reading column; the guardians stack with a
-   hairline between them; a name wraps anywhere. */
+/* The Guardians section (T-M2.15 layout rules, AC11 (c)): the Profile view's own column, uncapped like Personal
+   information and Contacts so the term/value columns line up; the guardians stack with a hairline between them; a name
+   wraps anywhere. */
 .guardians {
   display: flex;
   flex-direction: column;
   gap: var(--space-4);
-  max-inline-size: var(--size-reading-max);
 }
 
 .guardians > h2 {
