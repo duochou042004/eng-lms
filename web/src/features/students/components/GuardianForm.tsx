@@ -119,15 +119,19 @@ export function GuardianRows({ control }: { control: Control<AddStudentValues> }
   const { t } = useTranslation('students')
   const rows = useFieldArray({ control, name: 'guardians' })
   const count = rows.fields.length
-  const focusNext = useRef<string | null>(null)
+  // The row (by position: React Aria updates a moved row's input ids a render later) or Add guardian to focus.
+  const focusNext = useRef<number | 'add' | null>(null)
+  const listRef = useRef<HTMLUListElement>(null)
   useEffect(() => {
-    if (focusNext.current) document.getElementById(focusNext.current)?.focus()
+    const next = focusNext.current
     focusNext.current = null
+    if (next === 'add') document.getElementById(ADD_GUARDIAN_ROW_ID)?.focus()
+    else if (next !== null) listRef.current?.children[next]?.querySelector('input')?.focus()
   }, [count])
   return (
     <div className={styles.form}>
       {count > 0 ? (
-        <ul className={styles.handles}>
+        <ul ref={listRef} className={styles.handles}>
           {rows.fields.map((row, index) => (
             <li key={row.id}>
               <fieldset className={styles.handle}>
@@ -141,8 +145,7 @@ export function GuardianRows({ control }: { control: Control<AddStudentValues> }
                   <Button
                     variant="quiet"
                     onPress={() => {
-                      focusNext.current =
-                        count === 1 ? ADD_GUARDIAN_ROW_ID : fieldId.guardian(Math.max(index - 1, 0), 'name')
+                      focusNext.current = count === 1 ? 'add' : Math.max(index - 1, 0)
                       rows.remove(index)
                     }}
                   >
@@ -163,7 +166,7 @@ export function GuardianRows({ control }: { control: Control<AddStudentValues> }
             id={ADD_GUARDIAN_ROW_ID}
             variant="secondary"
             onPress={() => {
-              focusNext.current = fieldId.guardian(count, 'name')
+              focusNext.current = count
               rows.append(EMPTY_GUARDIAN, { shouldFocus: false })
             }}
           >

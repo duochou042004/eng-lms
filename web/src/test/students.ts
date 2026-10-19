@@ -49,32 +49,73 @@ export const RESET_CREDENTIALS = {
   expiresAt: '2026-10-25T03:25:00Z',
 }
 
+/** A guardian DTO (GuardianResponse, T-M2.15). */
+export function guardian(index: number, overrides: Record<string, unknown> = {}) {
+  return {
+    id: `aaaaaaaa-0000-4000-8000-${String(index).padStart(12, '0')}`,
+    name: `Phụ huynh ${String(index).padStart(2, '0')}`,
+    relationship: 'Mẹ',
+    phone: '0912 345 678',
+    email: `ph${index}@example.com`,
+    notes: null,
+    version: 0,
+    ...overrides,
+  }
+}
+
 export interface WorkspaceCalls {
   gets: number
   patch: Record<string, unknown>[]
   status: Array<{ status: string; version: number }>
   reset: number
   availability: string[]
+  guardianGets: number
+  guardianPost: Record<string, unknown>[]
+  guardianPatch: Array<{ gid: string; body: Record<string, unknown> }>
+  guardianDelete: string[]
 }
 
 /**
  * The workspace page's API (T-M2.14) as a small server: GET answers the current student; PATCH applies the body and
  * bumps `version` (not for a username-only change, api-catalog); a status change sets the status and bumps it; a reset
- * answers `RESET_CREDENTIALS`. Stale versions answer 409 `STALE_VERSION`. `taken` usernames are unavailable.
+ * answers `RESET_CREDENTIALS`. Stale versions answer 409 `STALE_VERSION`. `taken` usernames are unavailable. The
+ * guardians (T-M2.15): GET lists them in order; POST appends (an 11th answers 422 `TOO_MANY`); PATCH applies the body
+ * and bumps the guardian's `version` (409 when stale, 404 when gone); DELETE removes (404 when gone).
  */
 export function workspaceApi(
   initial: Record<string, unknown> = {},
-  { taken = ['tranbinh'] }: { taken?: string[] } = {},
+  {
+    taken = ['tranbinh'],
+    guardians: initialGuardians = [],
+  }: { taken?: string[]; guardians?: Array<Record<string, unknown>> } = {},
 ) {
   let current: Record<string, unknown> = student(initial)
-  const calls: WorkspaceCalls = { gets: 0, patch: [], status: [], reset: 0, availability: [] }
-  const stale = (version: unknown) =>
-    version !== current.version
+  let guardians = [...initialGuardians]
+  let nextGuardian = 100
+  const calls: WorkspaceCalls = {
+    gets: 0,
+    patch: [],
+    status: [],
+    reset: 0,
+    availability: [],
+    guardianGets: 0,
+    guardianPost: [],
+    guardianPatch: [],
+    guardianDelete: [],
+  }
+  const notFound = () =>
+    HttpResponse.json(
+      { type: 'about:blank', title: 'Not found', status: 404, code: 'NOT_FOUND', requestId: 'req-404' },
+      { status: 404, headers: { 'Content-Type': 'application/problem+json' } },
+    )
+  const staleFor = (version: unknown, saved: unknown) =>
+    version !== saved
       ? HttpResponse.json(
           { type: 'about:blank', title: 'Conflict', status: 409, code: 'STALE_VERSION', requestId: 'req-1' },
           { status: 409, headers: { 'Content-Type': 'application/problem+json' } },
         )
       : null
+  const stale = (version: unknown) => staleFor(version, current.version)
   server.use(
     sessionAs('TUTOR'),
     http.get('*/api/v1/tutor/students/:sid', () => {
@@ -109,11 +150,66 @@ export function workspaceApi(
       const available = !taken.includes(username)
       return HttpResponse.json({ username, available, reason: available ? null : 'TAKEN' })
     }),
+    http.get('*/api/v1/tutor/students/:sid/guardians', () => {
+      calls.guardianGets += 1
+      return HttpResponse.json(guardians)
+    }),
+    http.post('*/api/v1/tutor/students/:sid/guardians', async ({ request }) => {
+      const body = (await request.json()) as Record<string, unknown>
+      calls.guardianPost.push(body)
+      if (guardians.length >= 10)
+        return HttpResponse.json(
+          {
+            type: 'about:blank',
+            title: 'Invalid',
+            status: 422,
+            code: 'VALIDATION_FAILED',
+            requestId: 'req-422',
+            errors: [{ field: 'guardians', code: 'TOO_MANY' }],
+          },
+          { status: 422, headers: { 'Content-Type': 'application/problem+json' } },
+        )
+      const created = guardian(nextGuardian++, { relationship: null, phone: null, email: null, notes: null, ...body })
+      guardians = [...guardians, created]
+      return HttpResponse.json(created, { status: 201 })
+    }),
+    http.patch('*/api/v1/tutor/guardians/:gid', async ({ request, params }) => {
+      const gid = params.gid as string
+      const { version, ...changes } = (await request.json()) as Record<string, unknown>
+      calls.guardianPatch.push({ gid, body: { version, ...changes } })
+      const found = guardians.find((g) => g.id === gid)
+      if (!found) return notFound()
+      const conflict = staleFor(version, found.version)
+      if (conflict) return conflict
+      const updated = { ...found, ...changes, version: Number(found.version) + 1 }
+      guardians = guardians.map((g) => (g.id === gid ? updated : g))
+      return HttpResponse.json(updated)
+    }),
+    http.delete('*/api/v1/tutor/guardians/:gid', ({ params }) => {
+      const gid = params.gid as string
+      calls.guardianDelete.push(gid)
+      if (!guardians.some((g) => g.id === gid)) return notFound()
+      guardians = guardians.filter((g) => g.id !== gid)
+      return new HttpResponse(null, { status: 204 })
+    }),
   )
   return {
     calls,
     get current() {
       return current
+    },
+    get guardians() {
+      return guardians
+    },
+    /** Another tab's guardian change, removal or addition. */
+    changeGuardianElsewhere(gid: string, changes: Record<string, unknown>) {
+      guardians = guardians.map((g) => (g.id === gid ? { ...g, ...changes, version: Number(g.version) + 1 } : g))
+    },
+    removeGuardianElsewhere(gid: string) {
+      guardians = guardians.filter((g) => g.id !== gid)
+    },
+    addGuardianElsewhere(added: Record<string, unknown>) {
+      guardians = [...guardians, added]
     },
     /** Another tab's change: the server's student moves on without this page knowing. */
     changeElsewhere(changes: Record<string, unknown>) {

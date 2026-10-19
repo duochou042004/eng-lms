@@ -537,3 +537,163 @@ describe('Add student: the credentials card (AC7)', { timeout: 20_000 }, () => {
     expect(screen.queryByText(CREDENTIALS.temporaryPassword)).not.toBeInTheDocument()
   })
 })
+
+describe('Add student: guardians (T-M2.15 AC7)', { timeout: 30_000 }, () => {
+  const section = () => screen.getByRole('button', { name: 'Phụ huynh (không bắt buộc)' })
+  const addRow = () => screen.queryByRole('button', { name: 'Thêm phụ huynh' })
+  const rowGroup = (n: number) => screen.getByRole('group', { name: `Phụ huynh ${n}` })
+  const rowField = (n: number, name: string) => within(rowGroup(n)).getByRole('textbox', { name })
+  const rowCount = () => screen.queryAllByRole('group', { name: /^Phụ huynh \d+$/ }).length
+
+  async function named() {
+    const calls = formApi()
+    const result = await openForm()
+    await userEvent.type(fullName(), 'Nguyễn Văn An')
+    await waitFor(() => expect(username()).toHaveValue('nguyenvanan'))
+    return { calls, ...result }
+  }
+
+  it('a collapsed section between Contact and Note; rows up to 10 (Add hidden), focus on add and on each removal', async () => {
+    await named()
+    const triggers = screen
+      .getAllByRole('button', { expanded: false })
+      .map((b) => b.textContent)
+      .filter((text) => text?.includes('(không bắt buộc)'))
+    expect(triggers).toEqual([
+      'Mật khẩu (không bắt buộc)',
+      'Liên hệ (không bắt buộc)',
+      'Phụ huynh (không bắt buộc)',
+      'Ghi chú (không bắt buộc)',
+    ])
+    expect(addRow()).not.toBeInTheDocument()
+    await userEvent.click(section())
+    for (let n = 1; n <= 10; n++) {
+      await userEvent.click(addRow()!)
+      await waitFor(() => expect(rowField(n, 'Tên (bắt buộc)')).toHaveFocus())
+    }
+    expect(addRow()).not.toBeInTheDocument()
+    expect(screen.getByText('Tối đa 10 phụ huynh. Hãy xoá bớt một người để thêm người khác.')).toBeInTheDocument()
+    // Each row: legend, the five fields stacked, Remove last.
+    expect(
+      within(rowGroup(1))
+        .getAllByRole('textbox')
+        .map((t) => t.getAttribute('name')),
+    ).toEqual([
+      'guardians.0.name',
+      'guardians.0.relationship',
+      'guardians.0.phone',
+      'guardians.0.email',
+      'guardians.0.notes',
+    ])
+    // From the middle: the previous row's Name.
+    await userEvent.type(rowField(5, 'Tên (bắt buộc)'), 'Năm')
+    await userEvent.type(rowField(6, 'Tên (bắt buộc)'), 'Sáu')
+    await userEvent.click(within(rowGroup(5)).getByRole('button', { name: 'Xoá phụ huynh 5' }))
+    await waitFor(() => expect(rowField(4, 'Tên (bắt buộc)')).toHaveFocus())
+    expect(rowCount()).toBe(9)
+    expect(rowField(5, 'Tên (bắt buộc)')).toHaveValue('Sáu')
+    expect(addRow()).toBeInTheDocument()
+    // The first of several: the new first row's Name.
+    await userEvent.type(rowField(2, 'Tên (bắt buộc)'), 'Hai')
+    await userEvent.click(within(rowGroup(1)).getByRole('button', { name: 'Xoá phụ huynh 1' }))
+    await waitFor(() => expect(rowField(1, 'Tên (bắt buộc)')).toHaveFocus())
+    expect(rowField(1, 'Tên (bắt buộc)')).toHaveValue('Hai')
+    // Down to the last one: Add guardian.
+    while (rowCount() > 1)
+      await userEvent.click(within(rowGroup(rowCount())).getByRole('button', { name: `Xoá phụ huynh ${rowCount()}` }))
+    await userEvent.click(within(rowGroup(1)).getByRole('button', { name: 'Xoá phụ huynh 1' }))
+    await waitFor(() => expect(addRow()).toHaveFocus())
+    expect(rowCount()).toBe(0)
+  })
+
+  it('sends the filled rows in order (an empty and a whitespace-only row left out); none → no guardians', async () => {
+    const { calls } = await named()
+    await userEvent.click(section())
+    for (let n = 0; n < 4; n++) await userEvent.click(addRow()!)
+    await userEvent.type(rowField(1, 'Tên (bắt buộc)'), ' Nguyễn Thị Lan ')
+    await userEvent.type(rowField(1, 'Điện thoại'), '0912 345 678')
+    await userEvent.type(rowField(2, 'Quan hệ'), '   ')
+    await userEvent.type(rowField(2, 'Ghi chú'), ' ')
+    await userEvent.type(rowField(4, 'Tên (bắt buộc)'), 'Trần Văn Ba')
+    await userEvent.type(rowField(4, 'Quan hệ'), 'Bố')
+    await userEvent.type(rowField(4, 'Email'), 'ba@example.com')
+    await userEvent.type(rowField(4, 'Ghi chú'), 'Dòng một{Enter}Dòng hai')
+    await userEvent.click(createButton())
+    await screen.findByRole('heading', { level: 2, name: 'Đã tạo học viên' })
+    expect(calls.create).toEqual([
+      {
+        fullName: 'Nguyễn Văn An',
+        username: 'nguyenvanan',
+        guardians: [
+          { name: 'Nguyễn Thị Lan', phone: '0912 345 678' },
+          { name: 'Trần Văn Ba', relationship: 'Bố', email: 'ba@example.com', notes: 'Dòng một\nDòng hai' },
+        ],
+      },
+    ])
+  })
+
+  it('without rows (or only empty ones) the request has no guardians', async () => {
+    const { calls } = await named()
+    await userEvent.click(section())
+    await userEvent.click(addRow()!)
+    await userEvent.click(createButton())
+    await screen.findByRole('heading', { level: 2, name: 'Đã tạo học viên' })
+    expect(calls.create).toEqual([{ fullName: 'Nguyễn Văn An', username: 'nguyenvanan' }])
+  })
+
+  it('a row with a phone and no name: "Enter the guardian\'s name", the section opens, the summary takes focus (axe)', async () => {
+    const { calls, container } = await named()
+    await userEvent.click(section())
+    await userEvent.click(addRow()!)
+    await userEvent.click(addRow()!)
+    await userEvent.type(rowField(1, 'Tên (bắt buộc)'), 'Nguyễn Thị Lan')
+    await userEvent.type(rowField(2, 'Điện thoại'), '0912 345 678')
+    await userEvent.click(section())
+    expect(section()).toHaveAttribute('aria-expanded', 'false')
+    await userEvent.click(createButton())
+    const summary = screen.getByRole('alert', { name: 'Chưa tạo được học viên' })
+    await waitFor(() => expect(summary).toHaveFocus())
+    expect(section()).toHaveAttribute('aria-expanded', 'true')
+    expect(
+      within(summary)
+        .getAllByRole('link')
+        .map((l) => l.textContent),
+    ).toEqual(['Hãy nhập tên phụ huynh.'])
+    expect(rowField(2, 'Tên (bắt buộc)')).toHaveAttribute('aria-invalid', 'true')
+    expect(within(rowGroup(2)).getByText('Hãy nhập tên phụ huynh.')).toBeInTheDocument()
+    expect(calls.create).toEqual([])
+    await expectNoAxeViolations(container)
+  })
+
+  it('a 422 on guardians[1].email marks the second sent row (after an empty row was dropped); TOO_MANY to the summary', async () => {
+    formApi({
+      create: () =>
+        problem(422, 'VALIDATION_FAILED', 'req-422', {
+          errors: [
+            { field: 'guardians[1].email', code: 'INVALID_FORMAT' },
+            { field: 'guardians', code: 'TOO_MANY' },
+          ],
+        }),
+    })
+    await openForm()
+    await userEvent.type(fullName(), 'Nguyễn Văn An')
+    await waitFor(() => expect(username()).toHaveValue('nguyenvanan'))
+    await userEvent.click(section())
+    for (let n = 0; n < 3; n++) await userEvent.click(addRow()!)
+    await userEvent.type(rowField(1, 'Tên (bắt buộc)'), 'Nguyễn Thị Lan')
+    await userEvent.type(rowField(3, 'Tên (bắt buộc)'), 'Trần Văn Ba')
+    await userEvent.type(rowField(3, 'Email'), 'ba@example.com')
+    await userEvent.click(section())
+    await userEvent.click(createButton())
+    const summary = await screen.findByRole('alert', { name: 'Chưa tạo được học viên' })
+    await waitFor(() => expect(summary).toHaveFocus())
+    expect(section()).toHaveAttribute('aria-expanded', 'true')
+    expect(rowField(3, 'Email')).toHaveAttribute('aria-invalid', 'true')
+    expect(rowField(1, 'Email')).not.toHaveAttribute('aria-invalid', 'true')
+    expect(
+      within(summary)
+        .getAllByRole('listitem')
+        .map((l) => l.textContent),
+    ).toEqual(['Giá trị này có ký tự hoặc định dạng không được phép.', 'Tối đa 10 phụ huynh.'])
+  })
+})
