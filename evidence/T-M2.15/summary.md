@@ -69,4 +69,5 @@ nothing is cached to invalidate after a re-login).
 | fix | frontend-implementer (AC11) | 1a9d606 | — | — | 3 findings | 51,765 | 23.9 | 1 | 10.6 |
 | verify | LC (diff + tests) | 1a9d606 | verified | — | delta | — | — | 0 | 0 |
 
+Agent tokens and minutes are the Agent result's `subagent_tokens` and `duration_ms` (the reviewers' own wall-clock estimates were ≈ 25 and ≈ 7 min).
 Total G3: 2 review agents, 1 fix round, 1 gate run (10.6 min). T-M2.14: 8 review rounds (3 QA, 3 UX, 2 SEC) and 6 gate runs after G1 (8 in all, 87 min).
