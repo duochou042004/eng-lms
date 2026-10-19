@@ -13,13 +13,15 @@ description: Write or refine a G0-complete task packet for Eng-LMS from the back
 3. Answer the five **guardrail** questions (`docs/01-product/scope.md` §6) explicitly.
 4. Write **testable ACs**. Reuse or refine the FR's ACs; don't invent new behaviour. Add UX step budgets for affected flows (`docs/05-frontend/ux-flows.md`).
 5. Test plan: implementation levels + **independent QA focus** + the isolation and authz entries for any new endpoint.
-6. Evidence list: summary, gate log, the mandatory viewport screenshots for UI, and the triggered reviews (SEC if identity, student API, files, sanitiser or endpoints; UX if UI).
+6. Evidence list: summary (self-check list, G3 cost table), one gate log on the final head + green CI, local viewport screenshots for UI (not committed),
+   and the reviews of the **risk tier** (quality-gates G3: H = SEC trigger → SEC + QA(+UX); M = UI/behaviour → one combined QA+UX reviewer; L = docs review).
+   Set the **Risk tier** field. For UI packets fill the **UI rules** block (column shares and break rules, focus targets, layering, validation rules, vi verbs; DEC-131).
 7. Size check: ≤ 2 agent-days, ≤ ~10 ACs, one PR. Split otherwise (update the backlog).
 8. Dependencies merged? Blocking OQs answered or defaults accepted? Then set the status to `ready` in the packet **and** in `progress.json` (`nextTask`/`currentTask`).
 9. Run `./scripts/check-docs.sh`.
 
 ## Checklist (G0)
 - [ ] Trace complete · [ ] Out of scope explicit · [ ] Guardrail answered · [ ] ACs testable · [ ] Test plan incl. QA focus
-- [ ] Evidence list · [ ] Docs to update · [ ] Risks and assumptions · [ ] Reproducible commands · [ ] progress.json updated
+- [ ] Evidence list · [ ] Risk tier · [ ] UI rules (UI packets) · [ ] Docs to update · [ ] Risks and assumptions · [ ] Reproducible commands · [ ] progress.json updated
 
 See `docs/06-quality/quality-gates.md` G0 and `docs/09-harness/hoh-operating-model.md`.

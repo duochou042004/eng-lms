@@ -35,7 +35,8 @@ Trailers: `Task: T-M2.3`, `Refs: FR-STU-01, DEC-012`, and the co-author attribut
 
 - One task → one PR → one merge. Template: `.github/pull_request_template.md` (trace, summary, screenshots, checklist, evidence).
 - Titles follow the commit convention and include the task ID: `feat(students): add student with credentials card [T-M2.3]`.
-- Reviews: QA, SEC and UX post verdicts as PR comments using fixed prefixes (`QA-VERDICT T-M2.3: PASS`, `SEC-REVIEW T-M2.3: APPROVED`, `UX-REVIEW T-M2.3: APPROVED`).
+- Reviews: reviewers return their verdict line as text; the LC posts each line as a PR comment after CI is green on the final head (DEC-131), with fixed
+  prefixes (`QA-VERDICT T-M2.3: PASS`, `SEC-REVIEW T-M2.3: APPROVED`, `UX-REVIEW T-M2.3: APPROVED`, `DOCS-REVIEW T-M2.3: PASS`).
   The LC approves with `LC-APPROVED T-M2.3` (or a formal review when branch protection is available).
 
 ## 4. Merging

@@ -14,7 +14,7 @@
 ## 2. Scope and traceability
 
 1. MUST implement only what the packet's acceptance criteria require. MUST NOT add "nice to have" features. Propose them as OQs instead. Exception: an AC
-   the LC adds under quality-gates G3 for a cheap S3/S4 fix (DEC-088) is in scope.
+   the LC adds under quality-gates G3 for an S1/S2 or a cheap S3 fix (DEC-088, DEC-131) is in scope.
 2. MUST reference FR/NFR/DEC IDs in the commit trailer (`Task: T-M2.3`, `Refs: FR-STU-01`) and in the PR.
 3. MUST apply the scope guardrail (scope.md §6) whenever something seems useful but is untraced. **Stop and ask**, don't build.
 4. MUST record assumptions in the packet (and in `docs/01-product/assumptions.md` if they are product-level). Never guess silently.
@@ -55,7 +55,7 @@
 1. Use `ui/` components only. No raw colour or spacing values (stylelint). No direct RAC imports outside `ui/`.
 2. Every data view has the states in interaction-states.md. Every form follows its form rules.
 3. Every new string is an i18n key in **both** `vi` and `en`.
-4. Responsive: verify the mandatory viewports and attach screenshots. No horizontal scroll.
+4. Responsive: verify the mandatory viewports and keep the screenshots locally (git-ignored, evidence-protocol §3). No horizontal scroll. Meet the packet's UI rules block and tick the `frontend-standards` self-check list in summary.md.
 5. Accessibility checklist (accessibility.md §2) for every UI PR.
 6. Server state only via TanStack Query hooks in `features/*/api`. No ad-hoc `fetch`.
 7. Before building a new component, check the `ui/` inventory (design-system.md §3). If it is missing, propose adding it to `ui/` (UX review), not inline in a feature.

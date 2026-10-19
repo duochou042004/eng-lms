@@ -19,10 +19,26 @@
 1. Prepare   : verify the checkout is on the PR head (the LC switches branches, DEC-094); ./scripts/dev-up (DB) ; build & run packaged app with e2e profile ; seed QA world (scripts/seed-e2e)
 2. Plan      : write qa/plans/<task-id>.md — each AC → scenario(s) (happy, edge, negative, isolation), viewports, a11y checks, exploratory charter
 3. Execute   : automated scenarios (qa/e2e/<task-id>.spec.ts, Playwright) + manual exploratory session (timeboxed 30–60 min) with notes
-4. Evidence  : evidence/<task-id>/qa/{report.md, screenshots/*.png, playwright-report link or summary, a11y.json}
-5. Verdict   : PASS | PASS WITH MINOR (S3/S4 only) | FAIL (any S1/S2/SCOPE) — in report.md header + PR comment "QA-VERDICT <task-id>: PASS|FAIL"
-6. Re-test   : after fixes, re-run failed scenarios + smoke; append to report (never overwrite history)
+4. Evidence  : evidence/<task-id>/qa/{report.md, playwright-report link or summary, a11y.json}; screenshots stay local (git-ignored PNGs, DEC-131 (8)):
+               the report describes what each one shows
+5. Cost      : one row per round in the summary's G3 cost table (evidence-protocol §2): agent tokens and minutes from the Agent result
+6. Verdict   : PASS | PASS WITH MINOR (S3/S4 only) | FAIL (any S1/S2/SCOPE) — the first line of the returned text; the LC records it and posts
+               "QA-VERDICT <task-id>: PASS|FAIL" after CI is green on the final head (reviewers return text only: no PR comments, no files in the tree)
+7. Re-check  : a delta re-check (§2b), only after an S1/S2 fix or a behaviour-changing S3 fix; append to the report (never overwrite history)
 ```
+
+### 2a. Combined QA+UX pass (tiers M and H, DEC-131 (4))
+
+One fresh reviewer runs the procedure above **and** the `ux-review` checklist in the same app session (same build, same seeded data, the three
+mandatory viewports, vi and en). It returns one text with two verdict lines first, `QA-VERDICT <task-id>: …` and `UX-REVIEW <task-id>: …`, a
+single findings table (ID prefix `QA-` or `UX-`), and the UX rulings. Independence is unchanged (no implementation reading before the verdict
+draft). For tier H the SEC review is a separate agent; the LC may split UX into its own agent for new shared `ui/` primitives.
+
+### 2b. Delta re-check
+
+Scope: the findings being closed, the files changed since the verdict (`git diff <verdict head>..<new head> --stat`) and the specs covering
+them. Run the changed specs ×3 (and ×20 when they cover focus, loading or keyboard behaviour). No full AC regression, no reviewer gate run
+(CI on the new head is the regression), unless the LC names a wider scope because the fix touched a shared piece.
 
 **Tooling (T-M1.6, DEC-057):** `qa/` has its own pinned Playwright package and config, independent of the implementer's `e2e/`
 (6 reference viewports; `QA_ENGINES=all` adds Firefox and WebKit for the milestone regression). See `qa/README.md`. The packaged app for step 1
@@ -39,8 +55,8 @@ comes from `scripts/e2e-run.sh` (the jar with the SPA) or the image; the e2e pro
 - **Responsive:** no horizontal scroll; sticky footers do not cover inputs with the keyboard open (mobile emulation); long Vietnamese names wrap.
 - **i18n:** switch to en and vi. No missing keys, and no English leaking into the vi UI.
 - **Budgets:** step count for the affected critical flows.
-- **Repeat runs (DEC-088):** for any E2E change, run the new or changed specs ×3 (`--repeat-each=3`, no retries); specs covering changed focus, loading or
-  keyboard behaviour (step budgets) ×20 on `phone-small`, `tablet` and `laptop`, even if the spec itself is unchanged. An intermittent failure is a
+- **Repeat runs (DEC-088, DEC-131 (7)):** the gate already runs the new or changed specs ×3 (`--repeat-each=3`, no retries); QA reruns them ×20
+  on `phone-small`, `tablet` and `laptop` only when they cover changed focus, loading or keyboard behaviour (step budgets). An intermittent failure is a
   flaky-test finding under test-strategy §3; a consistent failure is a defect.
 - **Scope:** anything present that is not in the ACs is flagged `SCOPE`.
 
@@ -62,5 +78,5 @@ Verdict: PASS | PASS WITH MINOR | FAIL · Build: <commit sha> · Date: · Evalua
 
 ## 5. Milestone regression
 
-At each milestone gate, QA runs `qa/regression/*.spec.ts` (accumulated scenarios) on all six viewports and three engines, plus a 90-minute exploratory
+The milestone regression is the only full regression (per-task QA runs targeted specs, DEC-131 (7)). At each milestone gate, QA runs `qa/regression/*.spec.ts` (accumulated scenarios) on all six viewports and three engines, plus a 90-minute exploratory
 session on the milestone's user journeys. The report goes to `evidence/<milestone>/qa-regression.md`.

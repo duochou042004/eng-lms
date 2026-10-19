@@ -13,7 +13,7 @@
 | `frontend-standards` | FE, UX | Build UI with the design system: states, responsive rules, a11y, i18n, step budgets | design-system.md, responsive-standards.md, interaction-states.md, accessibility.md |
 | `ux-review` | UX | Review checklist and evidence format for UI PRs | design-system §6, responsive §3, accessibility §2, ux-flows checklist |
 | `qa-evaluation` | QA | Run the independent QA protocol and write the report | qa-protocol.md |
-| `security-review` | SEC | Run the security checklist and write the review | security.md §11 |
+| `security-review` | SEC | Run the security checklist and return the review (the LC records it) | security.md §11 |
 
 Built-in skills available in the environment (e.g. `code-review`, `security-review`, `simplify`) may be used **in addition to**, not instead of, the
 project checklists. Third-party skills, plugins and MCP servers: not installed without LC + PO approval (plugin-store-spec §9).

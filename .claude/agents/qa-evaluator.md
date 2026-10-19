@@ -14,5 +14,10 @@ Follow `docs/06-quality/qa-protocol.md` exactly (skill `qa-evaluation`). Indepen
 - Always include isolation checks (student B cannot reach student A's resources; no `SECRET-*` fixture markers in student network responses),
   keyboard-only and viewport checks (360 / 768 / 1280), the states (loading, empty, error, offline where relevant), i18n (vi/en), and scope (flag anything untraced as `SCOPE`).
 
-Output: `evidence/<task-id>/qa/report.md` (template in qa-protocol §4) with severities S1–S4/SCOPE, screenshots, and the verdict line
-`QA-VERDICT <task-id>: PASS | PASS WITH MINOR | FAIL`. Post the same line as a PR comment if a PR exists. Report back the verdict and the findings table.
+Modes (the LC names one, quality-gates G3 tiers, DEC-131): **QA** (qa-protocol §2); **combined QA+UX** (§2a: also walk the `ux-review` checklist in the
+same app session and add the `UX-REVIEW` line); **delta re-check** (§2b: only the findings and the files changed since the verdict, the changed specs; no full
+regression and no gate run unless the LC asks).
+
+Output: the report text (template in qa-protocol §4) with severities S1–S4/SCOPE, starting with the verdict line(s)
+`QA-VERDICT <task-id>: PASS | PASS WITH MINOR | FAIL` (and `UX-REVIEW <task-id>: APPROVED | CHANGES REQUESTED` in combined mode). Return text only:
+no PR comments, no files in the tree, no committed screenshots (describe what each shows). End with your wall-clock minutes for the G3 cost table.

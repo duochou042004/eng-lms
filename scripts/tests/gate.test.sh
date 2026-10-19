@@ -97,4 +97,61 @@ else
   FAIL_COUNT=$((FAIL_COUNT + 1)); echo "  FAIL - no gate log with the failure under evidence/T-X1.1/"
 fi
 
+# DEC-131 (6): path-aware steps and the changed-spec repeat, in a git repo with a base ref. Outside git (above) nothing is skipped.
+g() { git -C "$repo" -c user.name=t -c user.email=t@t "$@" >/dev/null 2>&1; }
+g init -q && g add -A && g commit -qm base && g branch base
+mkdir -p "$repo/e2e/tests"
+gbase() { env ENGLMS_GATE_BASE=base PATH="$work/bin:$PATH" "$@" "$repo/scripts/gate.sh"; }
+ran() { cut -d' ' -f1 "$calls" | paste -sd' ' -; }
+check() { if eval "$1"; then PASS_COUNT=$((PASS_COUNT + 1)); echo "  ok   - $2"; else FAIL_COUNT=$((FAIL_COUNT + 1)); echo "  FAIL - $2 (ran: $(ran))"; fi; }
+
+echo "x" >"$repo/web/a.ts"; g add -A; g commit -qm web
+: >"$calls"
+expect_exit 0 "DEC-131: a web-only diff passes" -- gbase env
+expect_output_contains "gate: backend skipped: no backend/ or api/ change" "DEC-131: says why backend is skipped"
+check '! grep -qE "^(backend|contract-drift) " "$calls"' "DEC-131: a web-only diff skips backend and contract-drift"
+check '[[ $(grep -c "^e2e " "$calls") == 1 ]]' "DEC-131: no changed spec, no repeat run"
+expect_output_contains "e2e repeat: no new or changed spec" "DEC-131: says no spec changed"
+
+: >"$calls"
+expect_exit 0 "DEC-131: ENGLMS_GATE_FULL=1 passes" -- gbase env ENGLMS_GATE_FULL=1
+check 'grep -q "^backend " "$calls" && grep -q "^contract-drift " "$calls"' "DEC-131: ENGLMS_GATE_FULL=1 runs backend and contract-drift"
+
+echo "y" >"$repo/backend/A.java"
+: >"$calls"
+expect_exit 0 "DEC-131: an uncommitted backend change passes" -- gbase env
+check 'grep -q "^backend " "$calls" && grep -q "^contract-drift " "$calls"' "DEC-131: a backend change (untracked) runs backend and contract-drift"
+rm "$repo/backend/A.java"
+
+mkdir -p "$repo/api"; echo "z" >"$repo/api/openapi.json"
+g add -A; g commit -qm api
+: >"$calls"
+expect_exit 0 "DEC-131: an api change passes" -- gbase env
+check 'grep -q "^backend " "$calls"' "DEC-131: an api/ change runs backend"
+
+echo "t" >"$repo/e2e/tests/new.spec.ts"; g add -A; g commit -qm spec
+: >"$calls"
+expect_exit 0 "DEC-131: a changed spec passes" -- gbase env
+LAST_OUTPUT=$(grep '^e2e ' "$calls" | tail -1)
+expect_output_contains "e2e --no-build --project=phone-small --project=tablet --project=laptop --repeat-each=3 --retries=0 tests/new.spec.ts" \
+  "DEC-131: the changed spec runs x3 without retries after e2e"
+check '[[ $(grep -c "^e2e " "$calls") == 2 ]]' "DEC-131: e2e then one repeat run"
+
+echo "t" >"$repo/e2e/tests/học viên.spec.ts"; g add -A; g commit -qm vi
+: >"$calls"
+expect_exit 0 "DEC-131: a non-ASCII spec name passes" -- gbase env
+LAST_OUTPUT=$(grep '^e2e ' "$calls" | tail -1)
+expect_output_contains "tests/học viên.spec.ts" "DEC-131: a spec with a vi name and a space is repeated (core.quotePath=false)"
+g rm -q "e2e/tests/học viên.spec.ts"; g commit -qm rm-vi
+
+: >"$calls"
+expect_exit 0 "DEC-131: a missing base ref passes" -- env ENGLMS_GATE_BASE=missing PATH="$work/bin:$PATH" "$repo/scripts/gate.sh"
+expect_output_contains "e2e repeat skipped (changed files unknown)" "DEC-131: a missing base skips only the repeat"
+check 'grep -q "^backend " "$calls" && grep -q "^contract-drift " "$calls"' "DEC-131: a missing base runs backend and contract-drift"
+
+g rm -q e2e/tests/new.spec.ts; g commit -qm rm
+: >"$calls"
+expect_exit 0 "DEC-131: a deleted spec passes" -- gbase env
+check '[[ $(grep -c "^e2e " "$calls") == 1 ]]' "DEC-131: a deleted spec is not repeated"
+
 finish

@@ -8,7 +8,8 @@ description: Record task evidence, update progress.json, and write the session h
 ## A. Evidence (per task), per `docs/09-harness/evidence-protocol.md`
 1. `evidence/<task-id>/summary.md`: an AC → proof table, the commands run (copy-pasteable), the results (counts, coverage, budgets, axe), deviations with DEC/OQ refs, and review verdicts.
 2. `gate-<UTC>.log` (trimmed ≤ 300 lines; full log in `raw/`, which is git-ignored).
-3. UI: `impl/<viewport>-<route>-<state>.png` for phone-small, tablet and laptop.
+3. UI: `impl/<viewport>-<route>-<state>.png` for phone-small, tablet and laptop (local only: `evidence/**/*.png` is git-ignored, DEC-131); the self-check list.
+3a. The **G3 cost** table: one row per review round (reviewer, head, verdict, findings, full/delta, agent tokens and minutes from the Agent result, gate runs and minutes).
 4. No secrets or real personal data. Use synthetic fixtures only.
 
 ## B. Handoff, per `docs/09-harness/session-handoff-protocol.md`

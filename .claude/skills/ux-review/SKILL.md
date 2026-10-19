@@ -1,12 +1,13 @@
 ---
 name: ux-review
-description: Review an Eng-LMS UI change (PR or branch) against the design system, responsive rules, interaction states, accessibility and critical-flow step budgets, and write evidence/<task>/review/ux.md with a verdict. Use at G3 for UI PRs.
+description: Review an Eng-LMS UI change (PR or branch) against the design system, responsive rules, interaction states, accessibility and critical-flow step budgets, and return the findings with a verdict (the LC records evidence/<task>/review/ux.md). Use at G3 for UI PRs.
 ---
 
 # UX review
 
 1. Get the packet ACs and affected flows. Run the app (or the e2e build) and open each changed screen at **360×740, 768×1024 and 1280×800**.
-2. Walk the checklist and capture a screenshot for each finding (`review/ux-<n>.png`).
+2. Walk the checklist and capture a screenshot for each finding (local only, git-ignored; describe it in the finding). Usually this checklist runs inside the
+   combined QA+UX pass (qa-protocol §2a, DEC-131); a re-check is a delta re-check (§2b).
 
 ## Checklist
 - [ ] **Hierarchy:** one h1, one primary action, a scannable top-down order; the page answers its daily question (product-brief §2).
@@ -19,5 +20,5 @@ description: Review an Eng-LMS UI change (PR or branch) against the design syste
 - [ ] **Budgets:** the step counts of the affected flows are within ux-flows.md.
 
 ## Output
-`evidence/<task>/review/ux.md`: a findings table (ID · Sev S1–S4 · screen/viewport · issue · screenshot · suggested fix) and the final line
-`UX-REVIEW <task-id>: APPROVED | CHANGES REQUESTED` (also posted as a PR comment). S1/S2 findings mean CHANGES REQUESTED.
+Return a findings table (ID · Sev S1–S4 · screen/viewport · issue · what the screenshot shows · suggested fix) with
+`UX-REVIEW <task-id>: APPROVED | CHANGES REQUESTED` as the first line; the LC records it in `evidence/<task>/review/ux.md` and posts the line. S1/S2 findings mean CHANGES REQUESTED.
