@@ -63,6 +63,14 @@ Reset password; Paused: Resume, Archive, Reset password; Archived: Reactivate an
 place of the actions. One form at a time: the Account actions are disabled while the profile form is open, Edit profile while a status or
 reset request runs or the card is shown. Guardians: T-M2.15; the learning profile: T-M2.17 (DEC-128).
 
+**Implemented (T-M2.15, DEC-128):** a section **Guardians** (`h2`) between Note and Account (after the profile form while it is open) lists
+the student's guardians in insertion order, each with its name (`h3`), Relationship, Phone, Email (links as on the Profile view), Notes (line
+breaks kept) and **Edit** / **Remove** (accessible names include the guardian's name); **Add guardian** under the list, replaced at 10 by
+"Up to 10 guardians. Remove one to add another."; "No guardians added." when there are none. Loading and error states stay inside the
+section. Add and Edit open one guardian form in place (Name, Relationship, Phone, Email, Notes); Remove asks first (irreversible). One form at
+a time on the page: the profile form, the add-guardian form or one guardian's edit form; the others' triggers and the Account actions are
+disabled meanwhile. Add student has an optional, collapsed **Guardians** section (0–10 rows). The learning profile: T-M2.17.
+
 ## 3. Student navigation (mobile-first)
 
 | Item | Route | Content |

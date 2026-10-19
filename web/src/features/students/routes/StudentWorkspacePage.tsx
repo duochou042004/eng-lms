@@ -25,7 +25,8 @@ const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 
 /**
  * `/tutor/students/:studentId` (FR-STU-03, 05, 06, 07; T-M2.5 scopes 6–7, T-M2.14): the workspace header (name, status,
- * username, contact quick links) and the Profile view, with Edit profile and the Account section. No tab bar while
+ * username, contact quick links) and the Profile view, with Edit profile, the Guardians section (T-M2.15) and the Account
+ * section; one form at a time among the profile form and the guardian forms. No tab bar while
  * Profile is the only content (DEC-120 (3), (8)). A 404 or a `:studentId` that is not a UUID (no request) shows the
  * feature's not-found view inside the shell. Each student gets a fresh page state (keyed), so nothing of one student's
  * form, toast or reset card reaches another's.

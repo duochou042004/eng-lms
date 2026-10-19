@@ -56,8 +56,9 @@ password-reset action (no password-suggestion endpoint). The template step (SPEC
 
 **Implemented (T-M2.5, DEC-120):** Students → **Add student** (the list's primary action; "+ New" arrives later) → Full name (the username
 follows the name until edited; "Available" / "Taken" / "Not a valid username") → optional collapsed Password, Contact (email, phone, up to 30
-handles) and Note → **Create** → the credentials card (focus on "Student created") → **Copy message** → **Open workspace**. No guardian section
-until T-M2.14 and no first goal until T-M7.2 (DEC-102). Measured by `e2e/tests/students.spec.ts` (`steps-f2` record): 6 counted steps at
+handles), Guardians (T-M2.15: 0–10 rows of name, relationship, phone, email and notes; an all-empty row is left out) and Note → **Create** →
+the credentials card (focus on "Student created") → **Copy message** → **Open workspace**. The Guardians section is optional and collapsed, so
+F2 without guardians keeps its steps; no first goal until T-M7.2 (DEC-102). Measured by `e2e/tests/students.spec.ts` (`steps-f2` record): 6 counted steps at
 360, 768 and 1280 px, with ux-flows step [3] "expand Contact → phone" counted as one step as listed above (strictly, the expand click and the
 phone entry are two actions); the wall time is reported, not asserted (DEC-093). Keyboard-only F2: `keyboard-f2` record.
 
@@ -113,6 +114,12 @@ From the student's workspace page, Account section: **Reset password** → the c
 Account actions (focus on "New temporary password") → **Copy message** (the same localised message as F2). **Done** closes the card (focus
 back to Reset password); it is not counted. E2E: `e2e/tests/students.spec.ts` (step log `evidence/T-M2.14/records/<project>/steps-f10.json`,
 3 steps at 360, 768 and 1280).
+
+## F11 Add a guardian (FR-STU-03, T-M2.15): budget ≤ 3 steps
+
+From the student's Profile view, Guardians section: **Add guardian** (the form opens after the list, focus on Name) → type the name →
+**Save** (the guardian is appended, "Guardian added" toasts, focus on its **Edit**). Relationship, phone, email and notes are optional and not
+counted. E2E: `e2e/tests/students.spec.ts` (step log `evidence/T-M2.15/records/<project>/steps-f11.json`, 3 steps at 360, 768 and 1280).
 
 ## Flow review checklist (UX reviewer)
 
