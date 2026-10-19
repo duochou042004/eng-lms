@@ -12,10 +12,24 @@ develop: `eeee2bd` (PR #111, the T-M2.15 packet) · Remote: https://github.com/d
   (web 701, E2E 380 passed); all 10 ACs pass per `evidence/T-M2.15/summary.md` (deviations and open questions listed there). **G3 has not run.**
 - **PO observations (DEC-130):** G3 (three sequential reviewers + fix rounds + two full gates per round) costs more time and quota than the
   coding (T-M2.5: three quota resets for G3; T-M2.14: 3 QA + 3 UX + 2 SEC rounds, 8 gate runs ≈ 90 min of gates); re-checks repeat passed
-  features and trivial checks; the cost grows with every feature; evidence PNGs are tracked in git (1,949 files, 74.8 MB; `.git` 122 MB).
+  features and trivial checks; the cost grows with every feature; evidence PNGs are tracked in git (1,949 files, 74.8 MB; GitHub repository ≈ 99 MB).
   The PO paused T-M2.15 at G1: **T-M2.18 comes first**, then T-M2.15's G3 under the approved process.
 - T-M2.13, T-M2.16, T-M2.17 open in the backlog. This device: Kali Linux rolling, rootless Podman 5.8.6, clone
   `/home/kali/App_projects/eng-lms` (T-M1.19, DEC-108). GitLab CI paused (DEC-107); the mirror still syncs.
+
+## T-M2.18 brief: the PO's observations (2026-10-19, DEC-130)
+- The PO is not against G3: it protects quality. But G3 (QA, UX, SEC in sequence, then fix rounds, each round re-running two full
+  gates and full re-reviews) takes more time and usage quota than the coding and fixing. T-M2.5 needed three quota resets for G3 alone;
+  T-M2.14 had 3 QA + 3 UX + 2 SEC rounds and 8 gate runs (≈ 90 min of gates).
+- Re-checks re-test features that already passed, and whole rounds run for very minor findings. Long runs are fine only for something
+  significant that affects the whole workflow. At this pace the first release could take a year, and the cost grows with every feature.
+- The PO wants a smarter, leaner QA approach (process **and** test scripts) that keeps or raises the **implementation quality**: the aim
+  is not fewer checks for their own sake, but catching problems earlier and cheaper, and spending review effort where the risk is.
+- Evidence PNGs are committed: 1,949 tracked files, 74.8 MB; GitHub reports the repository at ≈ 99 MB (`size` 101,274 KB). The PO does
+  not think they belong in the repo ("up to you").
+- Order the PO asked for: stop at G1 for T-M2.15, review and upgrade the testing strategy and its docs first (T-M2.18), then continue.
+- Not available as data: per-round token use of past reviews (never recorded); the quota side is the PO's observation. Start recording
+  agent tokens and minutes per round (the Agent result reports them) so the new process can be compared.
 
 ## Another device
 - Follow development-setup §0 for its platform; record OS, engine and versions in `progress.json` `environment` and the clone path in
@@ -24,12 +38,13 @@ develop: `eeee2bd` (PR #111, the T-M2.15 packet) · Remote: https://github.com/d
   `./scripts/install-hooks.sh`, `git remote add gitlab …`.
 
 ## Next steps
-1. **T-M2.18 quality-process upgrade** (LC, DEC-130; backlog row): measure where G3 time and quota went (T-M2.5, T-M2.12, T-M2.14:
-   rounds, findings by severity, what each re-check re-tested, gate runs, evidence size); research leaner options and propose one process:
-   review depth by risk tier, a combined review pass, delta-only re-checks, S3/S4 to the backlog, one local gate + CI, targeted E2E per task
-   and full regression at the milestone gate, screenshots out of git (CI artifacts or git-ignored) and a plan for the tracked ones (no
-   history rewrite without the PO). Write the packet and the doc changes (quality-gates, qa-protocol, evidence-protocol, test-strategy,
-   agent-roles, the review skills, merge-gate tokens if they change); PO approval.
+1. **T-M2.18 quality-process upgrade** (LC, DEC-130; backlog row; read the brief above): (a) measure T-M2.5, T-M2.12, T-M2.14 (rounds
+   per reviewer, findings by severity and type, which an automated check or a packet rule could have caught, what each re-check re-tested,
+   gate runs and step minutes from the gate logs, evidence MB); (b) draft one proposal (≤ 1 page, with trade-offs) on two levers:
+   **prevent** (turn recurring finding types into automated checks, fixed packet rules and implementer self-checks) and **proportion**
+   (review depth by risk tier, a combined review pass, delta-only re-checks, S3/S4 batched to the backlog, one local gate + CI, targeted
+   E2E per task with full regression at milestones, screenshots out of git); (c) **show it to the PO and get the decision before writing
+   docs** (DEC); (d) then the packet and the doc/skill/agent/script changes, docs review, merge.
 2. **T-M2.15 G3** under the approved process on PR #112, then merge-gate, the QA report and the merge record. Then T-M2.17.
 3. T-M2.13 and T-M2.16 when the PO orders them; then T-M2.6, T-M2.7 (M2 regression incl. the `qa/` spec updates). Optional: T-M2.10.
 
@@ -42,6 +57,12 @@ develop: `eeee2bd` (PR #111, the T-M2.15 packet) · Remote: https://github.com/d
   the common-password list barely filters at 10 characters (T-M2.3 SEC S4-9); `glab` deny rules (DEC-061); OQ-03..OQ-14 (defaults documented).
 
 ## Gotchas
+- **Branch-state collision (PR #112 vs T-M2.18):** PR #112 changes `progress.json`, `decision-log.md` (DEC-129, DEC-130), `backlog.md`,
+  `HANDOFF.md`, `next-session-prompt.md` and the T-M2.15 packet; a T-M2.18 PR from `develop` will change some of the same files, so after it
+  merges `gh pr update-branch 112` conflicts and `git merge` is denied (DEC-090). Procedure on the feature branch: save
+  `git diff $(git merge-base origin/develop HEAD) HEAD -- <shared files>`; `git checkout origin/develop -- <shared files>`; commit and push
+  (both sides now agree, so the update is clean); `gh pr update-branch 112`; pull; re-apply only PR #112's own edits from the saved diff
+  (T-M2.15 status lines, its backlog note) as a new commit. Never force-push. Keep T-M2.18 off T-M2.15's files.
 - **Toasts (T-M2.14):** `ui/Toast` is the only toast; errors are never toasts (interaction-states §4). Under a modal the region is hidden and inert (`ui/modalStack.ts`); the queue closes timed toasts pushed out of the visible 3 and is cleared on region mount/unmount.
 - **Two API-limit pauses this session** stopped the implementer and QA mid-run; both resumed with SendMessage after checking `git status`/`git log` and `evidence/<task>/gate-*.log` (the implementer had finished both gates but not committed).
 - CI `backend` can fail on a Maven Central **403** as well as a 429: `gh run rerun <id> --failed`.
