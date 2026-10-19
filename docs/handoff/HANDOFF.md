@@ -1,17 +1,20 @@
-# Handoff — 2026-10-19 (T-M2.15 guardians implemented, G1 pass; PAUSED before G3 for the PO, DEC-129)
+# Handoff — 2026-10-19 (T-M2.15 at G1, G3 held; next: T-M2.18 quality-process upgrade, DEC-130)
 
-Phase/Milestone: P1 / M2 (in progress) · Current task: **T-M2.15 guardians (in progress: G1 pass; PR #112; paused before G3, DEC-129)** · Branch: `feature/T-M2.15-guardians` · Last merges on develop: `6073e71` (PR #108, T-M2.14); the QA report is PR #109 (`qa/T-M2.14`) and this record is the `chore/T-M2.14-merge-record` PR (check `git log` that both landed) · Remote: https://github.com/duochou042004/eng-lms (mirror: gitlab.com/duochou042004/eng-lms)
+Phase/Milestone: P1 / M2 (in progress) · Current task: **T-M2.15 guardians (blocked: G1 pass, G3 held, DEC-130)** · Next: **T-M2.18
+quality-process upgrade (LC, draft)** · Branch: `feature/T-M2.15-guardians` (PR #112, open; this handoff lives there) · Last merges on
+develop: `eeee2bd` (PR #111, the T-M2.15 packet) · Remote: https://github.com/duochou042004/eng-lms (mirror: gitlab.com/duochou042004/eng-lms)
 
 ## Where we are
-- **T-M2.14 done** (`6073e71`, DEC-124..127): the T-M2.14 row was split again (DEC-124) into T-M2.14 and **T-M2.15** (guardians + learning
-  profile), with **T-M2.16** (BE: a username-only PATCH does not bump `version`) added from the docs review. Delivered: one Edit profile form
-  (personal info, contacts, note, username; changed fields only; 409 → "This was changed elsewhere" with Reload / Copy my note); the Account
-  section (Pause, Resume, Archive + persistent Undo toast, Reactivate; errors as `InlineAlert`); Reset password (confirm dialog, shared
-  credentials card, component state only); new `ui/` `Toast`, `UnsavedChangesGuard` (forced navigation passes only to `/change-password`,
-  T-M2.5 SEC S4-5), `ConfirmDialog` primary/pending/content, `modalStack`; sign-in drops every query but the session. F10 (reset) = 3 steps.
-  G3: QA 3 rounds (final PASS WITH MINOR; QA-5 S4 informational), UX 3 (APPROVED), SEC 2 (APPROVED); fixes via AC12 (a)–(l) (DEC-126).
-  Recorded for later: the SEC residual (skip the detail store when the session is not the tutor) → T-M2.15 row; T-M2.16.
-- T-M2.13 (small FE follow-ups) still in the backlog. This device: Kali Linux rolling, rootless Podman 5.8.6, clone
+- **T-M2.15 guardians** (DEC-128 split: the learning profile → **T-M2.17**): packet merged at G0 (PR #111, `eeee2bd`; docs review 2 rounds,
+  `evidence/T-M2.15/review/docs.md`); PO start signal DEC-129. Implemented on `feature/T-M2.15-guardians` (PR #112, CI 7/7): Guardians section
+  (list, add, edit with changed fields and the conflict dialog, confirmed remove, ≤ 10, removed-elsewhere), the Add student Guardians rows, the
+  DEC-127 SEC residual (a write stores its answer only while a tutor session is cached, `api/tutorSession.ts`). Gate PASS ×2 on `7128127`
+  (web 701, E2E 380 passed); all 10 ACs pass per `evidence/T-M2.15/summary.md` (deviations and open questions listed there). **G3 has not run.**
+- **PO observations (DEC-130):** G3 (three sequential reviewers + fix rounds + two full gates per round) costs more time and quota than the
+  coding (T-M2.5: three quota resets for G3; T-M2.14: 3 QA + 3 UX + 2 SEC rounds, 8 gate runs ≈ 90 min of gates); re-checks repeat passed
+  features and trivial checks; the cost grows with every feature; evidence PNGs are tracked in git (1,949 files, 74.8 MB; `.git` 122 MB).
+  The PO paused T-M2.15 at G1: **T-M2.18 comes first**, then T-M2.15's G3 under the approved process.
+- T-M2.13, T-M2.16, T-M2.17 open in the backlog. This device: Kali Linux rolling, rootless Podman 5.8.6, clone
   `/home/kali/App_projects/eng-lms` (T-M1.19, DEC-108). GitLab CI paused (DEC-107); the mirror still syncs.
 
 ## Another device
@@ -21,11 +24,14 @@ Phase/Milestone: P1 / M2 (in progress) · Current task: **T-M2.15 guardians (in 
   `./scripts/install-hooks.sh`, `git remote add gitlab …`.
 
 ## Next steps
-1. **T-M2.15 guardians** (packet `docs/tasks/T-M2.15-guardians.md`, G0 PR #111 `eeee2bd`; start DEC-129): implemented on
-   `feature/T-M2.15-guardians` (PR #112), gate PASS ×2 on `7128127`, evidence `evidence/T-M2.15/summary.md`. **Paused before G3**: the PO
-   wants to discuss why G3 runs behind schedule first (DEC-129). Then G3 one reviewer at a time (QA, UX, SEC), merge-gate, QA report via
-   `qa/T-M2.15`, merge-record PR. Then the T-M2.17 packet (learning profile + `TagInput`, DEC-128).
-2. T-M2.13 and T-M2.16 when the PO orders them; then T-M2.6, T-M2.7 (M2 regression incl. the `qa/` spec updates). Optional: T-M2.10.
+1. **T-M2.18 quality-process upgrade** (LC, DEC-130; backlog row): measure where G3 time and quota went (T-M2.5, T-M2.12, T-M2.14:
+   rounds, findings by severity, what each re-check re-tested, gate runs, evidence size); research leaner options and propose one process:
+   review depth by risk tier, a combined review pass, delta-only re-checks, S3/S4 to the backlog, one local gate + CI, targeted E2E per task
+   and full regression at the milestone gate, screenshots out of git (CI artifacts or git-ignored) and a plan for the tracked ones (no
+   history rewrite without the PO). Write the packet and the doc changes (quality-gates, qa-protocol, evidence-protocol, test-strategy,
+   agent-roles, the review skills, merge-gate tokens if they change); PO approval.
+2. **T-M2.15 G3** under the approved process on PR #112, then merge-gate, the QA report and the merge record. Then T-M2.17.
+3. T-M2.13 and T-M2.16 when the PO orders them; then T-M2.6, T-M2.7 (M2 regression incl. the `qa/` spec updates). Optional: T-M2.10.
 
 ## Pending PO decisions / actions
 - **Dependabot PRs #95–#104**: untouched; say whether to review and merge them.

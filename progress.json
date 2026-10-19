@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-10-19T03:03:18Z",
-  "updatedBy": "lead-coordinator (T-M2.15 G1, session 2026-10-19, Opus 5.5)",
+  "updatedAt": "2026-10-19T03:56:38Z",
+  "updatedBy": "lead-coordinator (T-M2.15 held at G1, DEC-130; session 2026-10-19, Opus 5.5)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -32,7 +32,7 @@
   "currentTask": {
     "id": "T-M2.15",
     "title": "Guardians on the student profile and in Add student (split from T-M2.14, DEC-124; split again DEC-128)",
-    "status": "in_progress",
+    "status": "blocked",
     "ownerRole": "FE",
     "branch": "feature/T-M2.15-guardians",
     "packet": "docs/tasks/T-M2.15-guardians.md",
@@ -42,11 +42,12 @@
     "entryGate": [
       "T-M2.14 merged — met (6073e71, DEC-127)",
       "Packet G0 — met (PR #111, eeee2bd, DEC-129)",
-      "PO start signal — met (DEC-129)"
+      "PO start signal — met (DEC-129)",
+      "G3 held for the T-M2.18 quality-process upgrade (DEC-130)"
     ],
     "nextSteps": [
-      "PAUSED for the PO before G3 (DEC-129): discuss why G3 runs behind schedule",
-      "G3: QA, UX, SEC (one at a time); merge-gate"
+      "T-M2.18 first (DEC-130): quality-process upgrade, PO approval",
+      "Then T-M2.15 G3 under the approved process; merge-gate; merge record"
     ],
     "trace": [
       "DEC-124",
@@ -54,28 +55,28 @@
       "DEC-128",
       "FR-STU-01 (guardians)",
       "FR-STU-03 (guardians)",
-      "DEC-129"
+      "DEC-129",
+      "DEC-130"
     ]
   },
   "nextTask": {
-    "id": "T-M2.13",
-    "title": "Auth and shell feedback follow-ups (UX-3 touch-reachable meta error, UX-4 cross-tab sign-out notice, UX-6 copy echo, O-1/O-2 logout feedback)",
+    "id": "T-M2.18",
+    "title": "Quality-process upgrade: leaner risk-based G3, evidence out of git (PO, DEC-130)",
     "status": "draft",
-    "ownerRole": "FE",
+    "ownerRole": "LC",
     "branch": null,
     "packet": null,
     "pr": null,
     "lastCommit": null,
     "startedAt": null,
     "entryGate": [
-      "T-M2.12 merged — met (b5596d3)"
+      "T-M2.15 at G1 — met (PR #112, 7128127)"
     ],
     "nextSteps": [
-      "Packet when the PO orders it; T-M2.16 (BE, username-only version) also open"
+      "Measure G3 cost (rounds, gate runs, quota, evidence size); research options; write the T-M2.18 packet and the proposed doc changes; PO approval"
     ],
     "trace": [
-      "DEC-118",
-      "DEC-119"
+      "DEC-130"
     ]
   },
   "completed": [
@@ -360,8 +361,8 @@
       "note": "T-M2.15 not started (T-M2.14 passed: CI 7/7 at d1e5fbd)"
     },
     "G3": {
-      "status": "n/a",
-      "note": "T-M2.15 not started (T-M2.14 passed: QA PASS WITH MINOR, UX APPROVED, SEC APPROVED at d1e5fbd)"
+      "status": "pending",
+      "note": "T-M2.15 G3 held for T-M2.18 (DEC-130)"
     },
     "G4": {
       "status": "n/a",
@@ -372,11 +373,17 @@
       "note": "M1 closed by the PO (DEC-088)"
     }
   },
-  "blockers": [],
+  "blockers": [
+    {
+      "id": "B-T-M2.15-G3",
+      "description": "T-M2.15 G3 held until the T-M2.18 quality-process upgrade is approved (DEC-130)",
+      "owner": "PO",
+      "since": "2026-10-19T03:56:38Z"
+    }
+  ],
   "decisions": {
     "log": "docs/10-governance/decision-log.md",
     "recent": [
-      "DEC-116",
       "DEC-117",
       "DEC-118",
       "DEC-119",
@@ -389,7 +396,8 @@
       "DEC-126",
       "DEC-127",
       "DEC-128",
-      "DEC-129"
+      "DEC-129",
+      "DEC-130"
     ],
     "pendingPO": [
       "OQ-03",
@@ -650,6 +658,13 @@
       "status": "approved",
       "at": "2026-10-19T02:07:10Z",
       "ref": "DEC-129"
+    },
+    {
+      "what": "Hold T-M2.15 at G1; T-M2.18 quality-process upgrade first",
+      "by": "PO",
+      "status": "approved",
+      "at": "2026-10-19T03:56:38Z",
+      "ref": "DEC-130"
     }
   ],
   "environment": {
