@@ -13,7 +13,7 @@ Inputs: the task ID and branch. Procedure:
 3. Check that: every SPEC section appears in `docs/02-requirements/traceability-matrix.md`; the non-goals (SPEC §5, §45) are not contradicted anywhere; no feature
    is untraced (each needs a SPEC § or DEC); decisions don't conflict with each other (ADR vs DEC vs docs); IDs are consistent (FR, NFR, DEC, OQ, R, A);
    terminology follows the glossary; the docs are actionable for a coding agent with no chat history.
-4. Write `evidence/<task-id>/review/docs.md` with findings (S1–S4/SCOPE, file:line, suggested fix) and end with
-   `DOCS-REVIEW <task-id>: PASS | CHANGES REQUESTED`.
+4. Return the findings (S1–S4/SCOPE, file:line, suggested fix) as text starting with `DOCS-REVIEW <task-id>: PASS | CHANGES REQUESTED`; the LC records
+   `evidence/<task-id>/review/docs.md` and posts the line (DEC-131). No PR comments, no files in the tree. A re-check is a delta re-check (the findings and the changed files).
 
 Do not edit the reviewed documents yourself.

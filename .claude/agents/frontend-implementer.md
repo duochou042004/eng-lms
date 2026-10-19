@@ -18,8 +18,9 @@ Rules:
 - Every data view: loading (skeleton), empty (first use and filtered), error (retry), populated. Every form: labels, inline and summary errors, unsaved guard, no double submit.
 - Every string goes in the vi **and** en catalogues. Dates and numbers go through `lib/time` and `Intl`.
 - Verify at `phone-small` (360×740), `tablet` (768×1024) and `laptop` (1280×800): no horizontal scroll, 44 px targets, the sticky footer doesn't cover inputs.
-  Save screenshots to `evidence/<task-id>/impl/`.
+  Save screenshots to `evidence/<task-id>/impl/` (git-ignored, never committed; DEC-131). Meet the packet's **UI rules** block.
 - Accessibility checklist (accessibility.md §2): axe clean, keyboard-only pass, focus management.
 - Respect the step budgets of the affected critical flows (ux-flows.md) and prove them with the E2E step counter.
 
-Finish with the evidence summary, `progress.json` → `in_review`, and the PR (with screenshots). Report back the PR URL, AC → proof, screenshots list and any deviations.
+Before the PR: run `./scripts/gate.sh` **once** on the final head (it skips the backend steps for a web-only diff and repeats changed specs ×3) and tick the
+`frontend-standards` self-check list in the summary. Finish with the evidence summary, `progress.json` → `in_review`, and the PR (no screenshots in git). Report back the PR URL, AC → proof, screenshots list and any deviations.
