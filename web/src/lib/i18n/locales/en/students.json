@@ -73,6 +73,11 @@
     "discardDescription": "The details you entered will be lost.",
     "discard": "Discard",
     "keepEditing": "Keep editing",
+    "guardiansSection": "Guardians (optional)",
+    "guardianLegend": "Guardian {{number}}",
+    "removeGuardian": "Remove guardian {{number}}",
+    "addGuardian": "Add guardian",
+    "guardiansFull": "Up to {{max}} guardians. Remove one to add another.",
     "errors": {
       "fullNameRequired": "Enter the student's full name.",
       "usernameRequired": "Enter a username.",
@@ -91,7 +96,9 @@
       "PASSWORD_TOO_LONG": "Use at most 128 characters.",
       "PASSWORD_TOO_COMMON": "This password is too common. Choose another one.",
       "PASSWORD_EQUALS_USERNAME": "The password can't be the username.",
-      "server": "The server refused a value. Check the form and try again."
+      "server": "The server refused a value. Check the form and try again.",
+      "guardianNameRequired": "Enter the guardian's name.",
+      "guardiansTooMany": "Up to 10 guardians."
     }
   },
   "card": {
@@ -158,9 +165,59 @@
   "conflict": {
     "title": "This was changed elsewhere",
     "description": "Someone changed this student in another tab or window. Reload to see the latest version; your unsaved changes will be lost.",
+    "guardianDescription": "Someone changed this guardian in another tab or window. Reload to see the latest version; your unsaved changes will be lost.",
     "reload": "Reload",
     "cancel": "Cancel",
-    "copyNote": "Copy my note"
+    "copyNote": "Copy my note",
+    "copyNotes": "Copy my notes"
+  },
+  "guardians": {
+    "title": "Guardians",
+    "loading": "Loading the guardians",
+    "errorTitle": "Couldn't load the guardians.",
+    "retry": "Try again",
+    "empty": "No guardians added.",
+    "limit": "Up to {{max}} guardians. Remove one to add another.",
+    "add": "Add guardian",
+    "relationship": "Relationship",
+    "phone": "Phone",
+    "email": "Email",
+    "notes": "Notes",
+    "edit": "Edit",
+    "editLabel": "Edit {{name}}",
+    "remove": "Remove",
+    "removeLabel": "Remove {{name}}",
+    "added": "Guardian added",
+    "saved": "Guardian saved",
+    "removed": "{{name}} removed",
+    "removedElsewhere": "This guardian was removed in another tab or window.",
+    "removeTitle": "Remove {{name}} from the guardians?",
+    "removeDescription": "Their contact details will be deleted. This can't be undone.",
+    "removeConfirm": "Remove guardian",
+    "removing": "Removing…",
+    "removeCancel": "Cancel",
+    "removeFailed": "Couldn't remove the guardian. Try again."
+  },
+  "guardianForm": {
+    "newLabel": "New guardian",
+    "editLabel": "Edit guardian {{name}}",
+    "name": "Name",
+    "relationship": "Relationship",
+    "relationshipHint": "For example: mother, father, partner",
+    "phone": "Phone",
+    "email": "Email",
+    "notes": "Notes",
+    "save": "Save",
+    "saving": "Saving…",
+    "cancel": "Cancel",
+    "summaryTitle": "The guardian wasn't saved",
+    "tooMany": "This student already has {{max}} guardians.",
+    "serverError": "The guardian couldn't be saved. Your input is kept: try again.",
+    "networkError": "The server can't be reached. Your input is kept: check your connection and try again.",
+    "discardTitle": "Discard your changes?",
+    "discardDescription": "The changes you made to this guardian will be lost.",
+    "discard": "Discard",
+    "keepEditing": "Keep editing"
   },
   "account": {
     "title": "Account",

@@ -1,0 +1,28 @@
+{
+  "viewport": {
+    "width": 768,
+    "height": 1024
+  },
+  "control": "account",
+  "skeleton": {
+    "x": 560,
+    "y": 12,
+    "width": 192,
+    "height": 44
+  },
+  "switcher": {
+    "x": 560,
+    "y": 12,
+    "width": 192,
+    "height": 44
+  },
+  "inlineSizeDeltaPx": 0,
+  "inlineSizeLimitPx": 8,
+  "inlineEndDeltaPx": 0,
+  "inlineEndLimitPx": 1,
+  "layoutShift": {
+    "total": 0.00024185977720965943,
+    "entries": 2
+  },
+  "clsLimit": 0.05
+}

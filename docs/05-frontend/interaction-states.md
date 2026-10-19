@@ -47,8 +47,16 @@ for Today and Home.
    **As built (T-M2.14, `features/students/components/ConflictDialog.tsx` on `ConfirmDialog`):** a stale profile save or status button opens
    it; **Reload** (primary) refetches the student and closes the form; **Cancel** keeps the form as typed; when the note was changed the
    dialog's content slot holds **Copy my note**. A failed **Undo** never opens it (an `InlineAlert` in the Account section instead).
+   **T-M2.15:** a stale guardian save opens the same dialog; **Reload** refetches the guardians and closes the guardian form; **Cancel**
+   keeps it as typed; when the guardian's notes were changed the copy button reads **Copy my notes** (the copy label is a prop of
+   `ConflictDialog`). A save of a guardian another tab removed (404) refetches the guardians, closes the form and shows a warning
+   `InlineAlert` "This guardian was removed in another tab or window." at the top of the section (focused; cleared by the next guardian action).
 9. Destructive actions: a `ConfirmDialog` that names the object ("Delete folder 'Listening'?"). The consequence is stated ("3 materials will move to
    'Library'"). The danger button repeats the verb ("Delete folder"). Archive needs no confirmation (it is reversible) and shows a toast with **Undo**.
+   **As built (T-M2.15, Remove guardian):** "Remove {name} from the guardians?" · "Their contact details will be deleted. This can't be
+   undone." · **Remove guardian** (danger) / **Cancel**; while pending the confirm reads "Removing…" and the dialog cannot be dismissed; on
+   success a toast "{name} removed" (no Undo) and focus on the **Guardians** heading; a 404 (removed elsewhere) counts as removed and refetches;
+   a network or server failure keeps the dialog open with an `InlineAlert` "Couldn't remove the guardian. Try again.".
 
 ## 3. Feedback timing
 

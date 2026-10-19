@@ -1,8 +1,9 @@
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { api, type components } from '../../../lib/api'
 import { ALL_STATUSES, toListQuery, type ListView } from '../model/listParams'
-import type { toCreateRequest } from '../model/createSchema'
 import type { UpdateStudentRequest } from '../model/editSchema'
+import type { CreateStudentRequest } from '../model/guardianSchema'
+import { isTutorSession } from './tutorSession'
 
 export type StudentRow = components['schemas']['StudentRow']
 export type Student = components['schemas']['StudentResponse']
@@ -85,7 +86,7 @@ export function useUsernameAvailability(username: string, enabled: boolean) {
 export function useCreateStudent() {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: async (body: ReturnType<typeof toCreateRequest>): Promise<CreatedStudent> =>
+    mutationFn: async (body: CreateStudentRequest): Promise<CreatedStudent> =>
       (await api.POST('/api/v1/tutor/students', { body })).data!,
     gcTime: 0,
     onSuccess: () => queryClient.invalidateQueries({ queryKey: studentKeys.list }),
@@ -94,11 +95,13 @@ export function useCreateStudent() {
 
 /**
  * A write's answer is the latest student (T-M2.14 "version bookkeeping"): it replaces the detail entry, so the next write
- * sends its `version` (never `+1`: a username-only PATCH keeps it), and the list is invalidated.
+ * sends its `version` (never `+1`: a username-only PATCH keeps it), and the list is invalidated. Only while the tutor's
+ * session is cached (scope 8): an answer that outlived the session is dropped.
  */
 function useStoreStudent(sid: string) {
   const queryClient = useQueryClient()
   return (student: Student) => {
+    if (!isTutorSession(queryClient)) return
     queryClient.setQueryData(studentKeys.detail(sid), student)
     void queryClient.invalidateQueries({ queryKey: studentKeys.list })
   }

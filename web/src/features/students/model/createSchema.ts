@@ -24,11 +24,21 @@ const length = (value: string) => [...value].length
 /** Free text refuses control characters other than tab, line feed and carriage return (validation-rules). */
 const noControl = (value: string) => ![...value].some((c) => isControl(c) && c !== '\t' && c !== '\n' && c !== '\r')
 
-const text = (max: number) =>
+export const text = (max: number) =>
   z
     .string()
     .refine(noControl, 'form.errors.INVALID_FORMAT')
     .refine((v) => length(v.trim()) <= max, 'form.errors.TOO_LONG')
+
+/** The "Common" email and phone rules (validation-rules), shared with the guardian fields. */
+export const emailRule = text(EMAIL_MAX).refine(
+  (v) => v.trim() === '' || /^[^\s@]+@[^\s@]+$/.test(v.trim()),
+  'form.errors.emailFormat',
+)
+export const phoneRule = z.string().refine((v) => {
+  const p = v.trim()
+  return p === '' || (length(p) >= 6 && length(p) <= 20 && /^[0-9 +().-]+$/.test(p))
+}, 'form.errors.phoneFormat')
 
 export const createStudentSchema = z.object({
   fullName: text(FULL_NAME_MAX).refine((v) => v.trim() !== '', 'form.errors.fullNameRequired'),
@@ -43,14 +53,8 @@ export const createStudentSchema = z.object({
     .string()
     .refine((v) => v === '' || length(v) >= PASSWORD_MIN, 'form.errors.PASSWORD_TOO_SHORT')
     .refine((v) => length(v) <= PASSWORD_MAX, 'form.errors.PASSWORD_TOO_LONG'),
-  email: text(EMAIL_MAX).refine(
-    (v) => v.trim() === '' || /^[^\s@]+@[^\s@]+$/.test(v.trim()),
-    'form.errors.emailFormat',
-  ),
-  phone: z.string().refine((v) => {
-    const p = v.trim()
-    return p === '' || (length(p) >= 6 && length(p) <= 20 && /^[0-9 +().-]+$/.test(p))
-  }, 'form.errors.phoneFormat'),
+  email: emailRule,
+  phone: phoneRule,
   contactHandles: z
     .array(
       z.object({

@@ -14,22 +14,24 @@ import {
   type ErrorSummaryItem,
 } from '../../../ui'
 import { useCreateStudent, useUsernameSuggestion, type CreatedStudent } from '../api/students'
+import { canSuggest } from '../model/createSchema'
 import {
-  canSuggest,
-  createStudentSchema,
-  EMPTY_STUDENT,
-  toCreateRequest,
-  type CreateStudentValues,
-} from '../model/createSchema'
+  addStudentSchema,
+  EMPTY_ADD_STUDENT,
+  sentGuardianRows,
+  toAddStudentRequest,
+  type AddStudentValues,
+} from '../model/guardianSchema'
 import { mapServerErrors } from '../model/serverErrors'
 import { DEBOUNCE_MS, fieldId, summaryOf } from '../model/studentFields'
 import { useSummaryFocus } from '../model/useSummaryFocus'
 import { useDebounced } from '../model/useDebounced'
+import { GuardianRows } from './GuardianForm'
 import { ContactFields, FullNameField, NoteField, UsernameField } from './StudentFields'
 import styles from './Students.module.css'
 import { useUsernameCheck } from './useUsernameCheck'
 
-type Section = 'password' | 'contact' | 'note'
+type Section = 'password' | 'contact' | 'guardians' | 'note'
 
 export interface AddStudentFormProps {
   onCreated: (created: CreatedStudent) => void
@@ -38,8 +40,8 @@ export interface AddStudentFormProps {
 }
 
 /**
- * The Add student form (FR-STU-01, ux-flows F2; T-M2.5 scope 4): Full name and Username (suggested from the name and
- * checked for availability), then the collapsed optional Password, Contact and Note sections. Client checks on submit
+ * The Add student form (FR-STU-01, ux-flows F2; T-M2.5 scope 4, T-M2.15 scope 7): Full name and Username (suggested
+ * from the name and checked for availability), then the collapsed optional Password, Contact, Guardians and Note sections. Client checks on submit
  * (then on change); server errors on their fields, the rest in the error summary, which takes focus; a taken username
  * focuses the field; a network or server failure keeps every input. Leaving the dirty form in-app asks first, closing the
  * tab warns (`UnsavedChangesGuard`).
@@ -51,7 +53,12 @@ export function AddStudentForm({ onCreated, focusFirstField = false }: AddStuden
   const [formError, setFormError] = useState<string | null>(null)
   const [unknownErrors, setUnknownErrors] = useState<string[]>([])
   const [summaryShown, setSummaryShown] = useState(false)
-  const [open, setOpen] = useState<Record<Section, boolean>>({ password: false, contact: false, note: false })
+  const [open, setOpen] = useState<Record<Section, boolean>>({
+    password: false,
+    contact: false,
+    guardians: false,
+    note: false,
+  })
   const {
     control,
     handleSubmit,
@@ -59,9 +66,9 @@ export function AddStudentForm({ onCreated, focusFirstField = false }: AddStuden
     setError,
     getValues,
     formState: { errors, isDirty, isSubmitted },
-  } = useForm<CreateStudentValues>({
-    resolver: zodResolver(createStudentSchema),
-    defaultValues: EMPTY_STUDENT,
+  } = useForm<AddStudentValues>({
+    resolver: zodResolver(addStudentSchema),
+    defaultValues: EMPTY_ADD_STUDENT,
     mode: 'onSubmit',
     reValidateMode: 'onChange',
   })
@@ -100,6 +107,7 @@ export function AddStudentForm({ onCreated, focusFirstField = false }: AddStuden
     setOpen((current) => ({
       password: current.password || names.includes('password'),
       contact: current.contact || names.some((n) => ['email', 'phone', 'contactHandles'].includes(n)),
+      guardians: current.guardians || names.includes('guardians'),
       note: current.note || names.includes('note'),
     }))
   const showSummary = (names: readonly string[]) => {
@@ -113,7 +121,7 @@ export function AddStudentForm({ onCreated, focusFirstField = false }: AddStuden
       setFormError(null)
       setUnknownErrors([])
       try {
-        const created = await create.mutateAsync(toCreateRequest(values))
+        const created = await create.mutateAsync(toAddStudentRequest(values))
         // The credentials move to the page's state; the mutation (and its cache entry, gcTime 0) is dropped.
         create.reset()
         onCreated(created)
@@ -127,7 +135,11 @@ export function AddStudentForm({ onCreated, focusFirstField = false }: AddStuden
           setSummaryShown(false)
           document.getElementById(fieldId.username)?.focus()
         } else if (error.status === 422) {
-          const mapped = mapServerErrors(error.fieldErrors, values.contactHandles.length)
+          const mapped = mapServerErrors(
+            error.fieldErrors,
+            values.contactHandles.length,
+            sentGuardianRows(values.guardians),
+          )
           for (const { path, message } of mapped.fields) setError(path, { type: 'server', message })
           setUnknownErrors(mapped.unknown)
           showSummary(mapped.fields.map((f) => f.path.split('.')[0]!))
@@ -204,6 +216,14 @@ export function AddStudentForm({ onCreated, focusFirstField = false }: AddStuden
           onExpandedChange={(contact) => setOpen((o) => ({ ...o, contact }))}
         >
           <ContactFields control={control} />
+        </Disclosure>
+
+        <Disclosure
+          title={t('form.guardiansSection')}
+          isExpanded={open.guardians}
+          onExpandedChange={(guardians) => setOpen((o) => ({ ...o, guardians }))}
+        >
+          <GuardianRows control={control} />
         </Disclosure>
 
         <Disclosure

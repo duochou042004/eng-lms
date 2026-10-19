@@ -36,8 +36,13 @@ describe('useLogin', () => {
       write = result.current.update.mutateAsync({ version: 0, email: 'tre@example.com' })
     })
     await act(() => arrived)
-    // Logout: the whole cache is forgotten (useLogout), then the write's answer arrives and stores the student.
-    act(() => client.getQueryCache().clear())
+    // Logout: the whole cache is forgotten (useLogout), then the write's answer arrives and stores the student. Since
+    // T-M2.15 scope 8 an answer is stored only while a tutor session is cached: one is (another tab signed the tutor in
+    // again meanwhile), so the stale entry exists and the sign-in below must still drop it.
+    act(() => {
+      client.getQueryCache().clear()
+      client.setQueryData(SESSION_KEY, sessionBody('TUTOR'))
+    })
     release()
     await act(() => write)
     expect(client.getQueryData(['students', 'detail', SID])).toBeDefined()
