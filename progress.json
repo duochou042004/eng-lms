@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-10-19T08:45:05Z",
-  "updatedBy": "lead-coordinator (T-M2.18 quality-process upgrade, DEC-131; session 2026-10-19, Opus 5.5)",
+  "updatedAt": "2026-10-19T08:59:35Z",
+  "updatedBy": "lead-coordinator (T-M2.18 and T-M2.15 merged, DEC-133; session 2026-10-19, Opus 5.5)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -30,38 +30,6 @@
     "exitCriteria": "FR-AUTH-01..10 and FR-STU-01..07 accepted; authorization-matrix and student-isolation harnesses fail on any unregistered endpoint; add-student flow E2E at 360/768/1280 within its step budget; security review of authentication passed (docs/01-product/roadmap.md)."
   },
   "currentTask": {
-    "id": "T-M2.15",
-    "title": "Guardians on the student profile and in Add student (split from T-M2.14, DEC-124; split again DEC-128)",
-    "status": "awaiting_approval",
-    "ownerRole": "FE",
-    "branch": "feature/T-M2.15-guardians",
-    "packet": "docs/tasks/T-M2.15-guardians.md",
-    "pr": "112",
-    "lastCommit": "1a9d606",
-    "startedAt": "2026-10-19T02:07:10Z",
-    "entryGate": [
-      "T-M2.14 merged — met (6073e71, DEC-127)",
-      "Packet G0 — met (PR #111, eeee2bd, DEC-129)",
-      "PO start signal — met (DEC-129)",
-      "T-M2.18 merged — met (5dab35e, DEC-131)"
-    ],
-    "nextSteps": [
-      "CI green on the final head; post QA-VERDICT, UX-REVIEW, SEC-REVIEW, LC-APPROVED; merge-gate --dry-run then real; gitlab-sync",
-      "Records PR (docs/T-M2.15-records): evidence/T-M2.15/review/{ux,security}.md, evidence/T-M2.18/review/docs.md, merge DEC; QA report via qa/T-M2.15 (+ untrack the 61 evidence/*/qa PNGs)"
-    ],
-    "trace": [
-      "DEC-124",
-      "DEC-127",
-      "DEC-128",
-      "FR-STU-01 (guardians)",
-      "FR-STU-03 (guardians)",
-      "DEC-129",
-      "DEC-130",
-      "DEC-131",
-      "DEC-132"
-    ]
-  },
-  "nextTask": {
     "id": "T-M2.19",
     "title": "Automated UI checks from the G3 measurement (DEC-131 (1))",
     "status": "draft",
@@ -72,13 +40,36 @@
     "lastCommit": null,
     "startedAt": null,
     "entryGate": [
-      "T-M2.18 merged — met (5dab35e)"
+      "T-M2.18 merged — met (5dab35e)",
+      "Packet G0 — pending",
+      "PO start signal — pending"
     ],
     "nextSteps": [
-      "Packet after T-M2.15 merges"
+      "Records PR (docs/T-M2.15-records) and the qa/T-M2.15 QA report PR",
+      "T-M2.19 packet (task-packet skill, risk tier M) when the PO orders it"
     ],
     "trace": [
       "DEC-131"
+    ]
+  },
+  "nextTask": {
+    "id": "T-M2.17",
+    "title": "Learning profile (split from T-M2.15, DEC-128)",
+    "status": "draft",
+    "ownerRole": "FE",
+    "branch": null,
+    "packet": null,
+    "pr": null,
+    "lastCommit": null,
+    "startedAt": null,
+    "entryGate": [
+      "T-M2.15 merged — met (9b9e133)"
+    ],
+    "nextSteps": [
+      "Packet after T-M2.19"
+    ],
+    "trace": [
+      "DEC-128"
     ]
   },
   "completed": [
@@ -329,6 +320,14 @@
       "mergeCommit": "5dab35e",
       "evidence": "evidence/T-M2.18/summary.md",
       "note": "PR #113 via merge-gate; DOCS-REVIEW round 2 (delta) PASS; DEC-131"
+    },
+    {
+      "id": "T-M2.15",
+      "title": "Guardians on the student profile and in Add student",
+      "completedAt": "2026-10-19T08:58:44Z",
+      "mergeCommit": "9b9e133",
+      "evidence": "evidence/T-M2.15/summary.md",
+      "note": "PR #112 via merge-gate; G3 under DEC-131: combined QA+UX PASS WITH MINOR/APPROVED, SEC APPROVED, one round each; DEC-132, DEC-133"
     }
   ],
   "tests": {
@@ -359,35 +358,34 @@
   },
   "gates": {
     "G0": {
-      "status": "pass",
-      "note": "T-M2.15: DOCS-REVIEW PASS round 2 (PR #111, eeee2bd)"
+      "status": "pending",
+      "note": "T-M2.19 packet not written"
     },
     "G1": {
-      "status": "pass",
-      "note": "T-M2.15: gate PASS on 1a9d606 (evidence/T-M2.15/gate-20261019T082248Z.log, 635 s, backend skipped)"
+      "status": "n/a",
+      "note": "T-M2.19 not started (T-M2.15 passed: gate on 1a9d606)"
     },
     "G2": {
-      "status": "pass",
-      "note": "T-M2.15: PR #112, CI 7/7 at 7128127 (re-run on the updated head pending)"
+      "status": "n/a",
+      "note": "T-M2.15 passed: CI 7/7 at 0e13fda"
     },
     "G3": {
-      "status": "pass",
-      "note": "T-M2.15: QA PASS WITH MINOR / UX APPROVED (one combined pass), SEC APPROVED; S3 fixed via AC11, LC-verified (DEC-132)"
+      "status": "n/a",
+      "note": "T-M2.15 passed: QA+UX combined, SEC (DEC-132)"
     },
     "G4": {
-      "status": "n/a",
-      "note": "T-M2.15 not started (T-M2.14 passed: merge-gate PR #108, 6073e71)"
+      "status": "pass",
+      "note": "T-M2.15 merged via merge-gate (9b9e133); T-M2.18 (5dab35e)"
     },
     "G5": {
-      "status": "pass",
-      "note": "M1 closed by the PO (DEC-088)"
+      "status": "n/a",
+      "note": "M2 in progress"
     }
   },
   "blockers": [],
   "decisions": {
     "log": "docs/10-governance/decision-log.md",
     "recent": [
-      "DEC-119",
       "DEC-120",
       "DEC-121",
       "DEC-122",
@@ -400,7 +398,8 @@
       "DEC-129",
       "DEC-130",
       "DEC-131",
-      "DEC-132"
+      "DEC-132",
+      "DEC-133"
     ],
     "pendingPO": [
       "OQ-03",
@@ -661,6 +660,13 @@
       "status": "approved",
       "at": "2026-10-19T07:28:44Z",
       "ref": "DEC-131"
+    },
+    {
+      "what": "LC-APPROVED T-M2.18 (PR #113) and T-M2.15 (PR #112)",
+      "by": "LC",
+      "status": "approved",
+      "at": "2026-10-19T08:59:35Z",
+      "ref": "DEC-133"
     }
   ],
   "environment": {
@@ -1153,6 +1159,11 @@
       "at": "2026-10-19T08:45:05Z",
       "actor": "lead-coordinator",
       "event": "T-M2.15 G3 under DEC-131: combined QA+UX PASS WITH MINOR/APPROVED, SEC APPROVED (one round each); S3 QA-1, UX-1, UX-2 fixed via AC11 (1a9d606), LC-verified; S4 to T-M2.20 (DEC-132). 1 gate run (10.6 min) vs T-M2.14's 8."
+    },
+    {
+      "at": "2026-10-19T08:59:35Z",
+      "actor": "lead-coordinator",
+      "event": "T-M2.18 merged (PR #113, 5dab35e) and T-M2.15 merged (PR #112, 9b9e133) via merge-gate; mirror synced. Records: DEC-133, review records; QA report via qa/T-M2.15. Next: T-M2.19."
     }
   ]
 }
