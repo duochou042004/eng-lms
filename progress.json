@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-10-19T03:05:00Z",
-  "updatedBy": "frontend-implementer (T-M2.15 implementation, gates green twice, Opus 5.5)",
+  "updatedAt": "2026-10-19T03:03:18Z",
+  "updatedBy": "lead-coordinator (T-M2.15 G1, session 2026-10-19, Opus 5.5)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -37,7 +37,7 @@
     "branch": "feature/T-M2.15-guardians",
     "packet": "docs/tasks/T-M2.15-guardians.md",
     "pr": null,
-    "lastCommit": null,
+    "lastCommit": "8f33041",
     "startedAt": "2026-10-19T02:07:10Z",
     "entryGate": [
       "T-M2.14 merged — met (6073e71, DEC-127)",
@@ -45,9 +45,8 @@
       "PO start signal — met (DEC-129)"
     ],
     "nextSteps": [
-      "frontend-implementer on feature/T-M2.15-guardians; gate green twice (done: gate-20261019T023810Z, gate-20261019T024949Z); LC records evidence/T-M2.15/summary.md from the implementer report",
-      "PAUSE for the PO before G3 (DEC-129)",
-      "G3: QA, UX, SEC; merge-gate"
+      "PAUSED for the PO before G3 (DEC-129): discuss why G3 runs behind schedule",
+      "G3: QA, UX, SEC (one at a time); merge-gate"
     ],
     "trace": [
       "DEC-124",
@@ -322,8 +321,8 @@
     }
   ],
   "tests": {
-    "lastRun": "2026-10-18T15:50:46Z",
-    "summary": "T-M2.14 merged: CI 7/7 at d1e5fbd; gate PASS x2 on 157425c (backend 466, web 634 in 58 files, e2e 344 passed / 31 skipped on phone-small, tablet, laptop); QA T-M2.14 specs x20 720/720 (round 2), x5 180/180 (round 3).",
+    "lastRun": "2026-10-19T03:03:18Z",
+    "summary": "T-M2.15 G1: gate PASS x2 on 7128127 (web 701 in 62 files, e2e 380 passed / 31 skipped; budget student 186.6, tutor 186.8 KB gz).",
     "suites": [
       {
         "name": "backend (./mvnw -B verify)",
@@ -353,8 +352,8 @@
       "note": "T-M2.15: DOCS-REVIEW PASS round 2 (PR #111, eeee2bd)"
     },
     "G1": {
-      "status": "pending",
-      "note": "T-M2.15 implementation in progress"
+      "status": "pass",
+      "note": "T-M2.15: gate PASS x2 on 7128127 (evidence/T-M2.15/gate-20261019T023810Z.log, gate-20261019T024949Z.log)"
     },
     "G2": {
       "status": "n/a",
