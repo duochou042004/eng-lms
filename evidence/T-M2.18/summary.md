@@ -14,7 +14,7 @@
 | AC5 | `docs/09-harness/task-packet-template.md` (Risk tier, UI rules, evidence/gate AC); `.claude/skills/task-packet/SKILL.md` step 6 and checklist | done |
 | AC6 | `.claude/agents/{qa-evaluator,ux-reviewer,security-reviewer,frontend-implementer}.md`; skills `qa-evaluation`, `ux-review`, `security-review`, `frontend-standards` (self-check), `evidence-and-handoff`; `agent-roles.md`; `coding-agent-rules.md` §2.1, §6.4 | done |
 | AC7 | `scripts/gate.sh` (`backend_changed`, `e2e_repeat`); `scripts/tests/gate.test.sh` 50 passed (12 new DEC-131 cases); `scripts/tests/run-all.sh` PASS | done |
-| AC8 | `.gitignore` `evidence/**/*.png`; `git ls-files 'evidence/**/*.png'` → 0 (1,545 untracked, files kept); `check-docs.sh` PASS | done |
+| AC8 | `.gitignore` `evidence/**/*.png`; `git ls-files 'evidence/**/*.png'` → 61, all under `evidence/*/qa/**` (1,484 untracked, files kept; the QA-owned 61 go with `qa/T-M2.15`, path ownership); `check-docs.sh` PASS | done |
 | AC9 | DEC-131, backlog T-M2.19; path ownership and CI: see the PR | in review |
 
 ## Commands run
@@ -22,7 +22,7 @@
 bash scripts/tests/gate.test.sh        # 50 passed, 0 failed
 ./scripts/tests/run-all.sh             # script tests: PASS
 ./scripts/check-docs.sh
-git ls-files 'evidence/**/*.png' | wc -l   # 0
+git ls-files 'evidence/**/*.png' | wc -l   # 61 (QA-owned)
 ```
 
 ## Deviations & known limitations

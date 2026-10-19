@@ -12,7 +12,7 @@ develop: `eeee2bd` (PR #111) · Remote: https://github.com/duochou042004/eng-lms
   H/M/L; S1/S2 delta re-check, S3 cheap in-task LC-verified, S4 to the milestone polish packet), qa-protocol §2a combined QA+UX pass and §2b
   delta re-check, test-strategy, evidence-protocol (PNGs git-ignored, G3 cost table, self-check), agent-roles, packet template (Risk tier,
   UI rules), agents and skills, `gate.sh` (skips backend/contract-drift without a backend/api change; changed specs ×3), `.gitignore`
-  `evidence/**/*.png`, 1,545 PNGs untracked (files kept on disk). New backlog row **T-M2.19** (FE: long-data, focus-not-lost, axe-per-state
+  `evidence/**/*.png`, 1,484 PNGs untracked (files kept on disk; the 61 under `evidence/*/qa/**` are QA-owned: untrack them on `qa/T-M2.15`). New backlog row **T-M2.19** (FE: long-data, focus-not-lost, axe-per-state
   checks, stylelint motion rule).
 - **T-M2.15 guardians**: implemented, gate PASS ×2 on `7128127`, CI 7/7, all 10 ACs per `evidence/T-M2.15/summary.md`; **G3 not run**.
   Under DEC-131 it is tier H (SEC trigger DEC-128 (5)): one combined QA+UX reviewer + SEC; record the G3 cost table and compare with
@@ -31,7 +31,7 @@ develop: `eeee2bd` (PR #111) · Remote: https://github.com/duochou042004/eng-lms
    `merge-gate.sh --dry-run` then real, `gitlab-sync.sh`, the docs review record and the merge DEC.
 2. **T-M2.15 G3** on PR #112: the branch-state collision procedure (Gotchas) before `gh pr update-branch 112`; `git rm --cached` its
    `evidence/T-M2.15/**/*.png`; one combined QA+UX reviewer (qa-protocol §2a) and SEC; S1/S2 → AC + delta re-check; G3 cost table;
-   merge-gate; QA report via `qa/T-M2.15`; merge DEC. Then T-M2.19 (prevent checks) and T-M2.17.
+   merge-gate; QA report via `qa/T-M2.15` (also `git rm --cached` the 61 tracked `evidence/*/qa/**/*.png`); merge DEC. Then T-M2.19 (prevent checks) and T-M2.17.
 3. T-M2.13 and T-M2.16 when the PO orders them; then T-M2.6, T-M2.7 (M2 regression incl. the `qa/` spec updates). Optional: T-M2.10.
 
 ## Pending PO decisions / actions

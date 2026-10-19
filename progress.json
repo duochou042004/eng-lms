@@ -1136,7 +1136,7 @@
     {
       "at": "2026-10-19T07:28:44Z",
       "actor": "lead-coordinator",
-      "event": "T-M2.18: measured G3 cost of T-M2.5/12/14 (47 findings; 26 preventable; gate 21/43/87 min); PO approved the proposal as written and no history rewrite (DEC-131). Packet and changes on docs/T-M2.18-quality-process; 1,545 PNGs untracked."
+      "event": "T-M2.18: measured G3 cost of T-M2.5/12/14 (47 findings; 26 preventable; gate 21/43/87 min); PO approved the proposal as written and no history rewrite (DEC-131). Packet and changes on docs/T-M2.18-quality-process; 1,484 PNGs untracked (61 QA-owned PNGs left for qa/T-M2.15, path ownership)."
     }
   ]
 }

@@ -48,7 +48,8 @@ self-check; 21 needed a reviewer. Re-check rounds mostly re-ran the whole regres
      since `origin/develop` (`ENGLMS_GATE_FULL=1` forces them; no git or no base → run everything); after `e2e`, run the new or changed
      `e2e/tests/*.spec.ts` ×3 (`--repeat-each=3 --retries=0`, the mandatory viewports, `--no-build`). Tests in `scripts/tests/gate.test.sh`.
      `development-setup.md` §4 table row.
-  9. `.gitignore`: `evidence/**/*.png`; the tracked PNGs untracked with `git rm --cached` (files stay on disk; history kept, no rewrite).
+  9. `.gitignore`: `evidence/**/*.png`; the tracked PNGs untracked with `git rm --cached` (files stay on disk; history kept, no rewrite), except the 61
+     under `evidence/*/qa/**`, which a docs branch may not change (path ownership): the next `qa/` branch (`qa/T-M2.15`) untracks them.
   10. Backlog: the T-M2.18 row and the new T-M2.19 row; DEC-129, DEC-130 (as on PR #112) and DEC-131 in the decision log.
 - Out of scope: the E2E helpers and the stylelint rule (T-M2.19); any product code; a history rewrite (PO: no); CI workflow changes
   (CI keeps running every required check); T-M2.15's own files (its PNGs are untracked on its branch in its G3, DEC-131 (8)).
@@ -77,7 +78,7 @@ self-check; 21 needed a reviewer. Re-check rounds mostly re-ran the whole regres
 - AC7: `gate.sh` skips `backend` and `contract-drift` (printing why) for a web-only diff, runs them for a `backend/` or `api/` diff, with
   `ENGLMS_GATE_FULL=1`, and outside git; runs changed specs ×3 after `e2e` and nothing extra when no spec changed; `gate.test.sh` proves
   each case; `scripts/tests/run-all.sh` green.
-- AC8: `git ls-files 'evidence/**/*.png'` is empty and `.gitignore` ignores them; `./scripts/check-docs.sh` passes (no Markdown link to a PNG).
+- AC8: `git ls-files 'evidence/**/*.png'` lists only the 61 QA-owned PNGs (untracked by `qa/T-M2.15`) and `.gitignore` ignores new ones; `./scripts/check-docs.sh` passes (no Markdown link to a PNG).
 - AC9: DEC-131 and the T-M2.19 row exist; `./scripts/check-path-ownership.sh` passes; CI is green.
 
 ## Test plan
