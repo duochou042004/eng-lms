@@ -1,6 +1,6 @@
 ---
 name: security-review
-description: Run the Eng-LMS security and privacy review checklist on a PR (identity, student API, files, sanitisation, endpoints, personal-data migrations) and write evidence/<task>/review/security.md with a verdict.
+description: Run the Eng-LMS security and privacy review checklist on a PR (identity, student API, files, sanitisation, endpoints, personal-data migrations) and return the findings with a verdict (the LC records evidence/<task>/review/security.md).
 ---
 
 # Security review

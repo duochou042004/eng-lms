@@ -44,7 +44,7 @@ self-check; 21 needed a reviewer. Re-check rounds mostly re-ran the whole regres
   6. `task-packet-template.md` and the `task-packet` skill: **Risk tier** field, the **UI rules** block, the evidence list, the gate AC.
   7. Agents and skills: `qa-evaluator`, `ux-reviewer`, `security-reviewer`, `docs-reviewer`, `frontend-implementer`; `qa-evaluation`, `ux-review`,
      `security-review`, `frontend-standards` (self-check list), `evidence-and-handoff`; `coding-agent-rules.md` (screenshots, DEC-088);
-     `.github/pull_request_template.md` (screenshots local, one gate run, risk tier); `git-governance.md` (the LC posts verdicts), `architecture-overview.md` (`/evidence`) (docs review round 1, D-1..D-11).
+     `.github/pull_request_template.md` (screenshots local, one gate run, risk tier); `git-governance.md` (the LC posts verdicts), `architecture-overview.md` (`/evidence`) (docs review round 1, D-1..D-11); `skills-catalog.md` and the review skill descriptions (round 2, N-1, N-2).
   8. `scripts/gate.sh`: skip `backend` and `contract-drift` when no file under `backend/`, `api/` or `scripts/contract-drift.sh` changed
      since `origin/develop` (`ENGLMS_GATE_FULL=1` forces them; no git or no base → run everything); after `e2e`, run the new or changed
      `e2e/tests/*.spec.ts` ×3 (`--repeat-each=3 --retries=0`, the mandatory viewports, `--no-build`). Tests in `scripts/tests/gate.test.sh`.

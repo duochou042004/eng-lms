@@ -1,6 +1,6 @@
 ---
 name: ux-review
-description: Review an Eng-LMS UI change (PR or branch) against the design system, responsive rules, interaction states, accessibility and critical-flow step budgets, and write evidence/<task>/review/ux.md with a verdict. Use at G3 for UI PRs.
+description: Review an Eng-LMS UI change (PR or branch) against the design system, responsive rules, interaction states, accessibility and critical-flow step budgets, and return the findings with a verdict (the LC records evidence/<task>/review/ux.md). Use at G3 for UI PRs.
 ---
 
 # UX review

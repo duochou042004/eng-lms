@@ -31,9 +31,12 @@ git ls-files 'evidence/**/*.png' | wc -l   # 61 (QA-owned)
 - No gate run: no product code changed.
 
 ## Reviews
-- DOCS: round 1 CHANGES REQUESTED (S3 D-1..D-4 verdict posting/recording contradictions; S4 D-5..D-11), all fixed in-task; round 2 (delta): pending
+- DOCS: round 1 CHANGES REQUESTED (S3 D-1..D-4 verdict posting/recording contradictions; S4 D-5..D-11), all fixed in-task; round 2 (delta, fresh reviewer) **PASS** on ff02d9b; S4 N-1, N-2 (skill descriptions, skills-catalog) one-line fixes verified by the LC (DEC-131 (5)), N-3 no change
 
 ## G3 cost (DEC-131 (9))
 | Round | Reviewer | Head | Verdict | S1/S2/S3/S4 | Scope | Agent tokens | Agent min | Gate runs | Gate min |
 |---|---|---|---|---|---|---|---|---|---|
 | 1 | docs-reviewer | aed6a52 | CHANGES REQUESTED | 0/0/4/7 | full | 70,438 | 2.2 | 0 | 0 |
+| 2 | docs-reviewer (delta) | ff02d9b | PASS | 0/0/0/3 | delta | 24,330 | 0.2 | 0 | 0 |
+
+Compared with a full re-review the delta round cost about a third of the tokens (24k vs 70k).

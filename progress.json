@@ -36,7 +36,7 @@
     "ownerRole": "LC",
     "branch": "docs/T-M2.18-quality-process",
     "packet": "docs/tasks/T-M2.18-quality-process.md",
-    "pr": null,
+    "pr": "113",
     "lastCommit": null,
     "startedAt": "2026-10-19T07:28:44Z",
     "entryGate": [
@@ -355,11 +355,11 @@
     },
     "G2": {
       "status": "pending",
-      "note": "T-M2.18: PR and CI"
+      "note": "T-M2.18: PR #113, CI on the final head"
     },
     "G3": {
-      "status": "pending",
-      "note": "T-M2.18: docs review (tier L)"
+      "status": "pass",
+      "note": "T-M2.18: DOCS-REVIEW round 1 CHANGES REQUESTED (S3 D-1..D-4), fixed; round 2 delta PASS"
     },
     "G4": {
       "status": "pending",
