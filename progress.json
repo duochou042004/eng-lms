@@ -16,7 +16,7 @@
       }
     ]
   },
-  "updatedAt": "2026-10-19T07:52:04Z",
+  "updatedAt": "2026-10-19T08:45:05Z",
   "updatedBy": "lead-coordinator (T-M2.18 quality-process upgrade, DEC-131; session 2026-10-19, Opus 5.5)",
   "phase": {
     "id": "P1",
@@ -32,12 +32,12 @@
   "currentTask": {
     "id": "T-M2.15",
     "title": "Guardians on the student profile and in Add student (split from T-M2.14, DEC-124; split again DEC-128)",
-    "status": "qa",
+    "status": "awaiting_approval",
     "ownerRole": "FE",
     "branch": "feature/T-M2.15-guardians",
     "packet": "docs/tasks/T-M2.15-guardians.md",
     "pr": "112",
-    "lastCommit": "7128127",
+    "lastCommit": "1a9d606",
     "startedAt": "2026-10-19T02:07:10Z",
     "entryGate": [
       "T-M2.14 merged — met (6073e71, DEC-127)",
@@ -46,8 +46,8 @@
       "T-M2.18 merged — met (5dab35e, DEC-131)"
     ],
     "nextSteps": [
-      "G3 tier H (DEC-131): one combined QA+UX reviewer + SEC, fresh, text only; S1/S2 → AC + delta re-check",
-      "G3 cost table vs T-M2.14; merge-gate; QA report via qa/T-M2.15 (also untrack the 61 evidence/*/qa PNGs); records PR with the T-M2.18 docs review record"
+      "CI green on the final head; post QA-VERDICT, UX-REVIEW, SEC-REVIEW, LC-APPROVED; merge-gate --dry-run then real; gitlab-sync",
+      "Records PR (docs/T-M2.15-records): evidence/T-M2.15/review/{ux,security}.md, evidence/T-M2.18/review/docs.md, merge DEC; QA report via qa/T-M2.15 (+ untrack the 61 evidence/*/qa PNGs)"
     ],
     "trace": [
       "DEC-124",
@@ -57,7 +57,8 @@
       "FR-STU-03 (guardians)",
       "DEC-129",
       "DEC-130",
-      "DEC-131"
+      "DEC-131",
+      "DEC-132"
     ]
   },
   "nextTask": {
@@ -331,8 +332,8 @@
     }
   ],
   "tests": {
-    "lastRun": "2026-10-19T03:03:18Z",
-    "summary": "T-M2.15 G1: gate PASS x2 on 7128127 (web 701 in 62 files, e2e 380 passed / 31 skipped; budget student 186.6, tutor 186.8 KB gz).",
+    "lastRun": "2026-10-19T08:45:05Z",
+    "summary": "T-M2.15 AC11: gate PASS on 1a9d606 (web 701, e2e 380 passed / 31 skipped + changed specs x3 312 passed; backend and contract-drift skipped, web-only diff).",
     "suites": [
       {
         "name": "backend (./mvnw -B verify)",
@@ -363,15 +364,15 @@
     },
     "G1": {
       "status": "pass",
-      "note": "T-M2.15: gate PASS x2 on 7128127 (evidence/T-M2.15/gate-20261019T023810Z.log, gate-20261019T024949Z.log)"
+      "note": "T-M2.15: gate PASS on 1a9d606 (evidence/T-M2.15/gate-20261019T082248Z.log, 635 s, backend skipped)"
     },
     "G2": {
       "status": "pass",
       "note": "T-M2.15: PR #112, CI 7/7 at 7128127 (re-run on the updated head pending)"
     },
     "G3": {
-      "status": "pending",
-      "note": "T-M2.15: tier H (combined QA+UX + SEC), DEC-131"
+      "status": "pass",
+      "note": "T-M2.15: QA PASS WITH MINOR / UX APPROVED (one combined pass), SEC APPROVED; S3 fixed via AC11, LC-verified (DEC-132)"
     },
     "G4": {
       "status": "n/a",
@@ -386,7 +387,6 @@
   "decisions": {
     "log": "docs/10-governance/decision-log.md",
     "recent": [
-      "DEC-118",
       "DEC-119",
       "DEC-120",
       "DEC-121",
@@ -399,7 +399,8 @@
       "DEC-128",
       "DEC-129",
       "DEC-130",
-      "DEC-131"
+      "DEC-131",
+      "DEC-132"
     ],
     "pendingPO": [
       "OQ-03",
@@ -1147,6 +1148,11 @@
       "at": "2026-10-19T07:52:04Z",
       "actor": "lead-coordinator",
       "event": "T-M2.18 merged via merge-gate (PR #113, 5dab35e). T-M2.15: collision procedure, gh pr update-branch 112, its 404 PNGs untracked; G3 under DEC-131 next."
+    },
+    {
+      "at": "2026-10-19T08:45:05Z",
+      "actor": "lead-coordinator",
+      "event": "T-M2.15 G3 under DEC-131: combined QA+UX PASS WITH MINOR/APPROVED, SEC APPROVED (one round each); S3 QA-1, UX-1, UX-2 fixed via AC11 (1a9d606), LC-verified; S4 to T-M2.20 (DEC-132). 1 gate run (10.6 min) vs T-M2.14's 8."
     }
   ]
 }

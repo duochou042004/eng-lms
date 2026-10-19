@@ -55,3 +55,18 @@ guardians-empty, -two, -ten (vi, en); guardian-add-form-vi; guardian-edit-errors
 ## Not covered
 Firefox/WebKit (host libraries pending, PO `sudo`); the create-student request is not session-gated (scope 8 lists the store hooks only;
 nothing is cached to invalidate after a re-login).
+
+## Reviews (G3 tier H, DEC-131)
+- QA+UX (one combined fresh reviewer, qa-protocol §2a): **QA PASS WITH MINOR / UX APPROVED** on `7c3bfb8` (S3 QA-1, UX-1, UX-2; S4 UX-3, UX-4). SEC: **APPROVED** (S4 S-1, S-2).
+- The S3 fixed through AC11 (DEC-132) in `1a9d606`, verified by the LC from the tests and the diff (DEC-131 (5): no reviewer round). The S4 → T-M2.20.
+- Not verified by eye: the UX-2 column alignment after the fix (CSS diff + green E2E layout checks only).
+
+## G3 cost (DEC-131 (9)) vs T-M2.14
+| Round | Reviewer | Head | Verdict | S1/S2/S3/S4 | Scope | Agent tokens | Agent min | Gate runs | Gate min |
+|---|---|---|---|---|---|---|---|---|---|
+| 1 | QA+UX combined | 7c3bfb8 | PASS WITH MINOR / APPROVED | 0/0/3/2 | full | 113,942 | 23.5 | 0 | 0 |
+| 1 | SEC | 7c3bfb8 | APPROVED | 0/0/0/2 | full diff | 43,088 | 2.0 | 0 | 0 |
+| fix | frontend-implementer (AC11) | 1a9d606 | — | — | 3 findings | 51,765 | 23.9 | 1 | 10.6 |
+| verify | LC (diff + tests) | 1a9d606 | verified | — | delta | — | — | 0 | 0 |
+
+Total G3: 2 review agents, 1 fix round, 1 gate run (10.6 min). T-M2.14: 8 review rounds (3 QA, 3 UX, 2 SEC) and 6 gate runs after G1 (8 in all, 87 min).

@@ -100,7 +100,7 @@ lesson moves. 5. **Hard-coded semantics?** None: Relationship is free text (the 
   unchanged.
 - **Version bookkeeping**: each guardian has its own `version`; a PATCH sends the cached guardian's `version` and the answer replaces it.
   Guardian writes never touch the student's `version` or detail entry.
-- **Layout rules (fixed, not content-driven)**: the section keeps the Profile view's column (`max-inline-size: var(--size-reading-max)`);
+- **Layout rules (fixed, not content-driven)**: the section keeps the Profile view's own column (uncapped since AC11 (c), DEC-132);
   guardian items stack with `gap: var(--space-4)`, each with a `var(--border-width) solid var(--color-border)` block-start divider except the first; the guardian `h3` wraps with
   `overflow-wrap: anywhere`; the Notes value uses the Profile view's `.note` class (`white-space: pre-wrap`, `overflow-wrap: anywhere`); the form fields
   are full width of the column, one per row at every width (no grid); action rows (`.actions`) as in T-M2.14: below 768 px stacked full
