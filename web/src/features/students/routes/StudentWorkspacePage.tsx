@@ -12,6 +12,7 @@ import { useStudent, type Student } from '../api/students'
 import { AccountSection } from '../components/AccountSection'
 import { ContactValue } from '../components/ContactValue'
 import type { CardCredentials } from '../components/CredentialsCard'
+import { GuardiansSection, type OpenForm } from '../components/GuardiansSection'
 import { ProfileForm } from '../components/ProfileForm'
 import { StudentNotFound } from '../components/StudentNotFound'
 import { StudentStatusBadge } from '../components/StudentStatusBadge'
@@ -95,7 +96,9 @@ interface WorkspaceProps {
 
 function Workspace({ student, onRefetch, onNotFound }: WorkspaceProps) {
   const { t, i18n } = useTranslation('students')
-  const [editing, setEditing] = useState(false)
+  // One form at a time (T-M2.15 scope 6): the profile form, the add-guardian form or one guardian's edit form.
+  const [openForm, setOpenForm] = useState<OpenForm>(null)
+  const editing = openForm === 'profile'
   const [accountBusy, setAccountBusy] = useState(false)
   // The reset's one-time credentials: this component's state only (security.md T12), never the cache, URL or storage.
   const [credentials, setCredentials] = useState<CardCredentials | null>(null)
@@ -109,8 +112,8 @@ function Workspace({ student, onRefetch, onNotFound }: WorkspaceProps) {
   useEffect(() => {
     if (focusEdit > 0) document.getElementById(EDIT_ID)?.focus()
   }, [focusEdit])
-  // Only one form at a time: Edit profile waits for a status or reset request and for the reset card.
-  const editLocked = accountBusy || credentials !== null
+  // Only one form at a time: Edit profile waits for a guardian form, a status or reset request and the reset card.
+  const editLocked = openForm !== null || accountBusy || credentials !== null
   const contacts = [
     ...(student.phone ? [{ kind: 'phone' as const, value: student.phone, label: t('workspace.phone') }] : []),
     ...(student.email ? [{ kind: 'email' as const, value: student.email, label: t('workspace.email') }] : []),
@@ -147,7 +150,7 @@ function Workspace({ student, onRefetch, onNotFound }: WorkspaceProps) {
             {t('workspace.personal')}
           </h2>
           {editing ? null : (
-            <Button id={EDIT_ID} variant="secondary" isDisabled={editLocked} onPress={() => setEditing(true)}>
+            <Button id={EDIT_ID} variant="secondary" isDisabled={editLocked} onPress={() => setOpenForm('profile')}>
               {t('profile.edit')}
             </Button>
           )}
@@ -158,7 +161,7 @@ function Workspace({ student, onRefetch, onNotFound }: WorkspaceProps) {
             onReload={onRefetch}
             onNotFound={onNotFound}
             onClose={(saved) => {
-              setEditing(false)
+              setOpenForm(null)
               setFocusEdit((n) => n + 1)
               if (saved) toast.success(t('profile.saved'))
             }}
@@ -179,9 +182,15 @@ function Workspace({ student, onRefetch, onNotFound }: WorkspaceProps) {
         )}
       </section>
       {editing ? null : <ProfileDetails student={student} />}
+      <GuardiansSection
+        studentId={student.id}
+        openForm={openForm}
+        onOpenFormChange={setOpenForm}
+        onNotFound={onNotFound}
+      />
       <AccountSection
         student={student}
-        isEditing={editing}
+        isEditing={openForm !== null}
         isBusy={accountBusy}
         onBusyChange={setAccountBusy}
         credentials={credentials}

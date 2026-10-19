@@ -7,15 +7,19 @@ export interface ConflictDialogProps {
   onReload: () => void
   /** Cancel: the form stays as typed. */
   onCancel: () => void
-  /** The typed note when it was changed: offered as **Copy my note** before Reload discards it. */
-  note?: string
+  /**
+   * The typed text when it was changed, offered before Reload discards it, with its button label: "Copy my note" for
+   * the profile, "Copy my notes" for a guardian (T-M2.15 scope 5).
+   */
+  copy?: { text: string; label: string }
 }
 
 /**
- * "This was changed elsewhere" (interaction-states §2.8, T-M2.14 scope 3): a 409 `STALE_VERSION` on a profile save or a
- * status button. Reload is the primary action; Cancel keeps the form; with a changed note, Copy my note copies it.
+ * "This was changed elsewhere" (interaction-states §2.8, T-M2.14 scope 3, T-M2.15 scope 5): a 409 `STALE_VERSION` on a
+ * profile save, a status button or a guardian save. Reload is the primary action; Cancel keeps the form; with a changed
+ * note, the copy button copies it.
  */
-export function ConflictDialog({ isOpen, onReload, onCancel, note }: ConflictDialogProps) {
+export function ConflictDialog({ isOpen, onReload, onCancel, copy }: ConflictDialogProps) {
   const { t } = useTranslation('students')
   return (
     <ConfirmDialog
@@ -28,11 +32,11 @@ export function ConflictDialog({ isOpen, onReload, onCancel, note }: ConflictDia
       onConfirm={onReload}
       onCancel={onCancel}
     >
-      {note !== undefined ? (
+      {copy ? (
         <div>
           <CopyButton
-            text={note}
-            label={t('conflict.copyNote')}
+            text={copy.text}
+            label={copy.label}
             copiedMessage={t('card.copied')}
             failedMessage={t('card.copyFailed')}
           />

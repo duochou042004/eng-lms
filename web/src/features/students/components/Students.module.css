@@ -323,3 +323,48 @@
   clip-path: inset(50%);
   white-space: nowrap;
 }
+
+/* The Guardians section (T-M2.15 layout rules, fixed): the Profile view's reading column; the guardians stack with a
+   hairline between them; a name wraps anywhere. */
+.guardians {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  max-inline-size: var(--size-reading-max);
+}
+
+.guardians > h2 {
+  margin-block-end: 0;
+}
+
+.guardianList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.guardianItem {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  min-inline-size: 0;
+}
+
+.guardianItem + .guardianItem {
+  padding-block-start: var(--space-4);
+  border-block-start: var(--border-width) solid var(--color-border);
+}
+
+.guardianName {
+  font-size: var(--font-size-md);
+  overflow-wrap: anywhere;
+}
+
+/* A programmatic focus target around an alert (the removed-elsewhere and the 10-guardians alerts). */
+.focusTarget:focus {
+  outline: var(--focus-ring-width) solid var(--color-focus);
+  outline-offset: var(--focus-ring-offset);
+}

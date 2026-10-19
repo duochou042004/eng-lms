@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { ApiError } from '../../../lib/api'
 import { Button, ConfirmDialog, DescriptionList, InlineAlert, toast } from '../../../ui'
 import { studentKeys, useChangeStatus, useResetPassword, type Student, type StudentStatusValue } from '../api/students'
+import { isTutorSession } from '../api/tutorSession'
 import { ConflictDialog } from './ConflictDialog'
 import { CredentialsCard, type CardCredentials } from './CredentialsCard'
 import { StudentStatusBadge } from './StudentStatusBadge'
@@ -31,7 +32,7 @@ const ACTIONS: Record<StudentStatusValue, Action[]> = {
 
 export interface AccountSectionProps {
   student: Student
-  /** The profile form is open: every action is disabled with a hint. */
+  /** A form of the page (profile or guardian) is open: every action is disabled with a hint. */
   isEditing: boolean
   /** A status or reset request is pending (here): the page disables Edit profile meanwhile. */
   isBusy: boolean
@@ -108,6 +109,8 @@ export function AccountSection({
     busy(true)
     try {
       await change.mutateAsync({ status: TARGET[action], version: await latestVersion() })
+      // An answer that outlived the tutor's session toasts nothing and moves no focus (T-M2.15 scope 8).
+      if (!isTutorSession(queryClient)) return
       closeArchiveToast()
       const message = t(DONE[action], { name: student.fullName })
       if (action === 'archive')
@@ -135,17 +138,19 @@ export function AccountSection({
     setAlert(null)
     busy(true)
     let restoredActive = false
+    let stored = true
     try {
       const active = await change.mutateAsync({ status: 'ACTIVE', version: await latestVersion() })
       restoredActive = true
       if (previous === 'PAUSED') await change.mutateAsync({ status: 'PAUSED', version: active.version })
-      toast.success(t('account.undone'))
+      stored = isTutorSession(queryClient)
+      if (stored) toast.success(t('account.undone'))
     } catch {
       void onRefetch()
       setAlert(t(restoredActive ? 'account.restorePausedFailed' : 'account.undoFailed'))
     } finally {
       busy(false)
-      focusTo('afterUndo')
+      if (stored) focusTo('afterUndo')
     }
   }
 

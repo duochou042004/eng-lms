@@ -25,6 +25,11 @@ export type FormFieldPath =
   | 'note'
   | `contactHandles.${number}.label`
   | `contactHandles.${number}.value`
+  | `guardians.${number}.${GuardianField}`
+
+type GuardianField = 'name' | 'relationship' | 'phone' | 'email' | 'notes'
+/** The paths of the student's own fields (the edit form never sends guardians). */
+export type StudentFieldPath = Exclude<FormFieldPath, `guardians.${number}.${GuardianField}`>
 
 export interface MappedErrors {
   /** Errors on a field of the form (react-hook-form paths) with their message key. */
@@ -37,13 +42,22 @@ export const messageFor = (code: string) => `form.errors.${KNOWN_CODES.has(code)
 
 /**
  * Maps a 422's `errors[]` to the form (interaction-states §2.2): a top-level field by name, a contact handle by index
- * (`contactHandles[1].value` → that row, when the row exists); anything else to the summary.
+ * (`contactHandles[1].value` → that row, when the row exists), a guardian by its index in the request
+ * (`guardians[1].email` → the form row `guardianRows[1]`, T-M2.15 scope 7); anything else to the summary.
  */
-export function mapServerErrors(errors: readonly FieldError[], handleCount: number): MappedErrors {
+export function mapServerErrors(
+  errors: readonly FieldError[],
+  handleCount: number,
+  guardianRows: readonly number[] = [],
+): MappedErrors {
   const mapped: MappedErrors = { fields: [], unknown: [] }
   for (const { field, code } of errors) {
     const handle = /^contactHandles\[(\d+)\]\.(label|value)$/.exec(field)
+    const guardian = /^guardians\[(\d+)\]\.(name|relationship|phone|email|notes)$/.exec(field)
+    const row = guardian ? guardianRows[Number(guardian[1])] : undefined
     if (FIELDS.has(field)) mapped.fields.push({ path: field as FormFieldPath, message: messageFor(code) })
+    else if (guardian && row !== undefined)
+      mapped.fields.push({ path: `guardians.${row}.${guardian[2] as GuardianField}`, message: messageFor(code) })
     else if (handle && Number(handle[1]) < handleCount)
       mapped.fields.push({
         path: `contactHandles.${Number(handle[1])}.${handle[2] as 'label' | 'value'}`,
@@ -52,8 +66,32 @@ export function mapServerErrors(errors: readonly FieldError[], handleCount: numb
     // A limit without its field cannot say its number: the generic message, except for the list of contacts.
     else
       mapped.unknown.push(
-        field === 'contactHandles' && code === 'TOO_MANY' ? 'form.errors.handlesTooMany' : messageFor('server'),
+        code === 'TOO_MANY' && field === 'contactHandles'
+          ? 'form.errors.handlesTooMany'
+          : code === 'TOO_MANY' && field === 'guardians'
+            ? 'form.errors.guardiansTooMany'
+            : messageFor('server'),
       )
+  }
+  return mapped
+}
+
+const GUARDIAN_FIELDS = new Set<string>(['name', 'relationship', 'phone', 'email', 'notes'])
+
+export interface MappedGuardianErrors {
+  fields: Array<{ path: GuardianField; message: string }>
+  unknown: string[]
+  /** A 422 `TOO_MANY` on `guardians`: another tab added the 10th (T-M2.15 scope 3). */
+  tooMany: boolean
+}
+
+/** Maps a guardian write's 422 `errors[]` to the guardian form: its five fields by name; the rest to the summary. */
+export function mapGuardianErrors(errors: readonly FieldError[]): MappedGuardianErrors {
+  const mapped: MappedGuardianErrors = { fields: [], unknown: [], tooMany: false }
+  for (const { field, code } of errors) {
+    if (field === 'guardians' && code === 'TOO_MANY') mapped.tooMany = true
+    else if (GUARDIAN_FIELDS.has(field)) mapped.fields.push({ path: field as GuardianField, message: messageFor(code) })
+    else mapped.unknown.push(messageFor('server'))
   }
   return mapped
 }

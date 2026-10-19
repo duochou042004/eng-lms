@@ -1,4 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useQueryClient } from '@tanstack/react-query'
 import { useEffect, useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
@@ -14,8 +15,9 @@ import {
   type ErrorSummaryItem,
 } from '../../../ui'
 import { useUpdateStudent, type Student } from '../api/students'
+import { isTutorSession } from '../api/tutorSession'
 import { editStudentSchema, toEditValues, toPatchRequest, type EditStudentValues } from '../model/editSchema'
-import { mapServerErrors } from '../model/serverErrors'
+import { mapServerErrors, type StudentFieldPath } from '../model/serverErrors'
 import { fieldId, summaryOf } from '../model/studentFields'
 import { useSummaryFocus } from '../model/useSummaryFocus'
 import { ConflictDialog } from './ConflictDialog'
@@ -41,6 +43,7 @@ export interface ProfileFormProps {
  */
 export function ProfileForm({ student, onClose, onReload, onNotFound }: ProfileFormProps) {
   const { t, i18n } = useTranslation('students')
+  const queryClient = useQueryClient()
   const update = useUpdateStudent(student.id)
   const inFlight = useRef(false)
   // The values and the version the form was opened with: the base of the change set and of the conflict check.
@@ -83,7 +86,8 @@ export function ProfileForm({ student, onClose, onReload, onNotFound }: ProfileF
     if (!body) return onClose(false)
     try {
       await update.mutateAsync(body)
-      onClose(true)
+      // An answer that outlived the tutor's session closes nothing, toasts nothing (scope 8).
+      if (isTutorSession(queryClient)) onClose(true)
     } catch (error) {
       if (!(error instanceof ApiError) || error.status === 0) {
         setFormError(t('profile.networkError'))
@@ -97,7 +101,7 @@ export function ProfileForm({ student, onClose, onReload, onNotFound }: ProfileF
       } else if (error.status === 422) {
         const mapped = mapServerErrors(error.fieldErrors, values.contactHandles.length)
         for (const { path, message } of mapped.fields)
-          if (path !== 'password') setError(path, { type: 'server', message })
+          if (path !== 'password') setError(path as Exclude<StudentFieldPath, 'password'>, { type: 'server', message })
         setUnknownErrors(mapped.unknown)
         showSummary()
       } else if (error.status === 404) {
@@ -175,7 +179,7 @@ export function ProfileForm({ student, onClose, onReload, onNotFound }: ProfileF
       />
       <ConflictDialog
         isOpen={conflict !== null}
-        note={conflict?.note}
+        copy={conflict?.note !== undefined ? { text: conflict.note, label: t('conflict.copyNote') } : undefined}
         onCancel={() => setConflict(null)}
         onReload={() => {
           setConflict(null)
