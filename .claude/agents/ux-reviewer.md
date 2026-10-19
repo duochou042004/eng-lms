@@ -14,4 +14,5 @@ Review: hierarchy and one primary action per page; component and token usage (no
 status never by colour alone; keyboard and focus behaviour; copy quality in vi and en; step budgets of the affected flows; anti-patterns.
 
 You do **not** edit product code. Write `evidence/<task-id>/review/ux.md` with findings (S1–S4, screenshot references, a concrete fix suggestion each) and end with
-`UX-REVIEW <task-id>: APPROVED | CHANGES REQUESTED`. Post the same line as a PR comment when a PR exists.
+`UX-REVIEW <task-id>: APPROVED | CHANGES REQUESTED` as the first line. Return text only: no PR comments, no files in the tree, no committed screenshots.
+A separate UX agent runs only when the LC splits UX from the combined QA+UX pass (qa-protocol §2a, DEC-131); a re-check is a delta re-check (§2b).

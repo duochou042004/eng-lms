@@ -19,4 +19,5 @@ description: Run the Eng-LMS security and privacy review checklist on a PR (iden
    - [ ] Migrations: constraints not weakened; sensitive columns documented.
    - [ ] New dependencies: justified; no known critical CVE.
 4. For each finding, give a concrete exploit or failure scenario (inputs → wrong outcome) and file:line.
-5. Write `evidence/<task>/review/security.md` → the last line `SEC-REVIEW <task-id>: APPROVED | CHANGES REQUESTED` (also as a PR comment).
+5. Return the report text starting with `SEC-REVIEW <task-id>: APPROVED | CHANGES REQUESTED` (the LC records it in `evidence/<task>/review/security.md` on the merge
+   and posts the line; no PR comments). Runs for risk tier H; a re-check covers only the findings and `git diff <verdict head>..HEAD` (DEC-131 (5)).

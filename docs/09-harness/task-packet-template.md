@@ -14,6 +14,7 @@
 | Branch | feature/<task-id>-<slug> |
 | Depends on | <task IDs, merged> |
 | Estimate | ≤ 2 agent-days |
+| Risk tier | H / M / L and why (quality-gates G3: H = SEC trigger, M = UI or behaviour, L = docs/chore/scripts) |
 | Trace | SPEC §…, FR-…, NFR-…, DEC-…, ADR-… |
 
 ## Goal
@@ -30,6 +31,13 @@ One paragraph: the user-visible or engineering outcome.
 ## Design notes
 Modules/packages/routes/components touched; API changes (link api-catalog rows); migrations; extension points; decisions needed.
 
+## UI rules (UI packets; fixed at G0, DEC-131 (2))
+- Columns per breakpoint and their shares (`table-layout: fixed`), where each value may break (names at spaces, emails at `@`/`.`, phones never), what never wraps.
+- Focus target after every action that removes or disables the focused element (delete, close, last page, pending buttons).
+- Layering: toasts vs modals and sheets; what is inert while a dialog is open.
+- Validation rule per field (validation-rules.md row) and URL/contact schemes.
+- Copy: the vi verb on each button; counters with non-breaking spaces.
+
 ## Acceptance criteria
 - AC1 (FR-…): Given … when … then …
 - …
@@ -39,7 +47,9 @@ Modules/packages/routes/components touched; API changes (link api-catalog rows);
 - Independent QA focus: scenarios, isolation checks, viewports, exploratory charter (1–2 lines)
 
 ## Evidence required
-- evidence/<task-id>/summary.md, gate log, screenshots (phone-small/tablet/laptop) for …, QA report, SEC/UX reviews (if triggered)
+- evidence/<task-id>/summary.md (with the self-check list and the G3 cost table), one gate log on the final head + green CI, local screenshots
+  (phone-small/tablet/laptop, not committed) for …, the G3 reviews of the risk tier
+- The gate AC reads: "`./scripts/gate.sh` green once on the final head and CI green; existing assertions kept"
 
 ## Docs to update
 - …

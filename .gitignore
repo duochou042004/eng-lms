@@ -49,3 +49,6 @@ e2e/test-results/
 # --- QA (qa/, committed on qa/<task> branches) ---
 qa/playwright-report/
 qa/test-results/
+
+# --- Evidence screenshots: local only (DEC-131 (8)); summaries, logs and records JSON stay tracked ---
+evidence/**/*.png

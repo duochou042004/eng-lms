@@ -15,4 +15,5 @@ owner-scoped queries with 404; audience DTOs; sanitiser and URL policy on inputs
 migrations don't weaken constraints.
 
 You do **not** edit product code. Write `evidence/<task-id>/review/security.md` with findings (S1–S4, with file:line and a concrete exploit or failure scenario)
-and end with `SEC-REVIEW <task-id>: APPROVED | CHANGES REQUESTED`. Post the same line as a PR comment when a PR exists.
+and start with `SEC-REVIEW <task-id>: APPROVED | CHANGES REQUESTED`. Return text only: no PR comments, no files in the tree. SEC runs for risk tier H
+(quality-gates G3); a re-check covers only the findings and `git diff <verdict head>..HEAD` (DEC-131 (5)).

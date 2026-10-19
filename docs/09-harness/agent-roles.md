@@ -11,12 +11,14 @@
 | **Lead Coordinator (LC)** | Plan, slice and gate; keep state; approve and merge | `docs/**` (except `qa/`), `progress.json`, task packets, decision log, risk register, `.claude/**`, `.github/**` | Write product code in the same task it approves (no self-approval); merge without the G1–G3 evidence |
 | **Backend Implementer (BE)** | Implement backend packets with tests | `backend/**`, `api/openapi.json` (generated), backend docs sections named in the packet, `evidence/<task>/impl/**` | Touch `web/`, `qa/`, `master`/`develop`; add dependencies without packet approval; edit applied migrations |
 | **Frontend Implementer (FE)** | Implement UI packets to design standards | `web/**`, `e2e/**`, frontend docs sections named in the packet, `evidence/<task>/impl/**` | Touch `backend/` (except when regenerating the contract is required), `qa/`; import RAC outside `ui/`; raw styles |
-| **QA Evaluator (QA)** | Independent black-box verification | `qa/**`, `evidence/<task>/qa/**`, PR comments | Read the implementation before the verdict; edit product code or implementer tests; approve merges |
-| **Security Reviewer (SEC)** | Security and privacy review of triggered PRs | `evidence/<task>/review/security.md`, PR comments | Edit product code (proposes changes as findings) |
-| **UX Reviewer (UX)** | Design-system, responsive, a11y and flow-budget review | `evidence/<task>/review/ux.md`, PR comments | Edit product code |
-| **Docs Reviewer (DOC)** | Fresh-context G3 review of docs/chore packets (consistency, traceability, links, scope) | `evidence/<task>/review/docs.md`, PR comments | Edit the reviewed docs; review docs it wrote |
+| **QA Evaluator (QA)** | Independent black-box verification; for tiers M and H also the UX checklist in the same pass (combined QA+UX reviewer, qa-protocol §2a, DEC-131) | `qa/**`, `evidence/<task>/qa/**` (text; the LC posts the verdicts) | Read the implementation before the verdict; edit product code or implementer tests; approve merges |
+| **Security Reviewer (SEC)** | Security and privacy review of triggered PRs | `evidence/<task>/review/security.md` (recorded by the LC) | Edit product code (proposes changes as findings) |
+| **UX Reviewer (UX)** | Design-system, responsive, a11y and flow-budget review | `evidence/<task>/review/ux.md` (recorded by the LC) | Edit product code |
+| **Docs Reviewer (DOC)** | Fresh-context G3 review of docs/chore packets (consistency, traceability, links, scope) | `evidence/<task>/review/docs.md` (recorded by the LC) | Edit the reviewed docs; review docs it wrote |
 
-One agent may play several roles **across different tasks**, but never implementer + evaluator on the same task.
+One agent may play several roles **across different tasks**, but never implementer + evaluator on the same task. The combined QA+UX reviewer plays QA and UX
+in one fresh context on the same task (both are evaluator roles). Reviewers return text only: no PR comments and no files in the tree; the LC records the
+reports and posts the verdict lines after CI is green on the final head.
 
 ## 2. Tool permissions matrix
 
@@ -29,7 +31,7 @@ One agent may play several roles **across different tasks**, but never implement
 | Browser automation (built-in browser / Playwright) | ✓ | – | ✓ | ✓ | ✓ | ✓ |
 | `git commit` / push feature branch | ✓ (docs/chore) | ✓ | ✓ | ✓ (qa/ branch or PR comments) | – | – |
 | Open PR (`gh pr create`) | ✓ | ✓ | ✓ | – | – | – |
-| Comment on PR | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Comment on PR | ✓ | ✓ | ✓ | – (text to the LC) | – | – |
 | **Merge PR** (`scripts/merge-gate.sh`) | ✓ **only** | – | – | – | – | – |
 | Push to `develop`/`master`, force-push, delete remote branches (except the merged task branch) | – | – | – | – | – | – |
 | Add a dependency | approve | propose in packet | propose in packet | – | review | – |

@@ -1,6 +1,6 @@
 # Evidence Protocol
 
-> Evidence = reproducible proof that a task meets its gates. It is committed with the task (small text and key images). Bulky raw artefacts go to CI artefacts
+> Evidence = reproducible proof that a task meets its gates. It is committed with the task (text only: summaries, logs, records JSON; PNGs are git-ignored since DEC-131). Bulky raw artefacts go to CI artefacts
 > or `evidence/**/raw/` (git-ignored) and are **referenced** from the summary.
 
 ## 1. Layout
@@ -20,6 +20,8 @@ evidence/
 ```
 
 Screenshot naming: `<viewport>-<route-slug>-<state>.png`, e.g. `phone-small-tutor-students-new-error.png`. Use PNG with a width ≤ 1440 px. Crop to the relevant region when possible.
+Screenshots are **local working evidence**: `evidence/**/*.png` is git-ignored (DEC-131 (8)); the E2E helper still writes them, and reviewers look at them in the
+session. The summary and the reports describe what each one shows. The PNGs tracked before DEC-131 were untracked (`git rm --cached`); history keeps them (no rewrite, PO).
 
 ## 2. `summary.md` template
 
@@ -31,8 +33,12 @@ Screenshot naming: `<viewport>-<route-slug>-<state>.png`, e.g. `phone-small-tuto
 ## Commands run (copy-pasteable, in order)
 ## Results (counts: tests passed/failed/skipped; coverage; budgets; axe)
 ## Deviations & known limitations (with DEC/OQ refs)
+## Implementer self-check (UI tasks; frontend-standards)
+- [ ] UI rules block met · [ ] long-data check at 360/768/1280 · [ ] vi button verbs · [ ] heading order · [ ] counters with non-breaking spaces · [ ] docs in sync
 ## Reviews
 - QA: <verdict> (qa/report.md) · SEC: … · UX: …
+## G3 cost (one row per round; DEC-131 (9))
+| Round | Reviewer | Head | Verdict | S1/S2/S3/S4 | Scope (full / delta) | Agent tokens | Agent min | Gate runs | Gate min |
 ```
 
 ## 3. Rules

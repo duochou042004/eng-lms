@@ -17,8 +17,8 @@
 | Migration | Flyway on an empty DB + `ddl-auto=validate`; upgrade test from the previous release dump (from M8) | Schema correctness | Implementer | Every build / release |
 | Mutation | PIT on `activities..grading` and the question handlers | Test quality for grading | Implementer | Nightly + release (≥ 70%) |
 | Unit/component (web) | Vitest + Testing Library + MSW + vitest-axe | `model/` logic, `ui/` components (all states), feature components | Implementer | Every build |
-| E2E (implementation) | Playwright in `/e2e` against the packaged jar + PostgreSQL | Critical flows F1–F9 on the mandatory viewports, axe, step budgets, visual snapshots | Implementer (frontend) | PR (mandatory viewports), nightly (all 6 + Firefox + WebKit) |
-| **Independent QA** | Playwright + manual exploratory in `/qa` | Acceptance criteria black-box; exploratory charters; viewports; accessibility spot checks | **QA Evaluator** | Per task (G3) + milestone regression |
+| E2E (implementation) | Playwright in `/e2e` against the packaged jar + PostgreSQL | Critical flows F1–F9 on the mandatory viewports, axe, step budgets, visual snapshots; the new or changed specs ×3 in the gate (DEC-131) | Implementer (frontend) | PR (mandatory viewports), nightly (all 6 + Firefox + WebKit) |
+| **Independent QA** | Playwright + manual exploratory in `/qa` | Acceptance criteria black-box; exploratory charters; viewports; accessibility spot checks | **QA Evaluator** (combined with UX for tiers M/H, qa-protocol §2a) | Per task (G3, targeted) + milestone regression (full, G5) |
 | Performance | Seeded dataset + load script; Lighthouse | NFR-PERF | LC / QA | M8 + release |
 | Security | Authz and isolation suites; header checks; dependency scans; manual review | security.md | Security Reviewer | Per PR (triggered) + release |
 
@@ -91,7 +91,8 @@ Coverage is a floor, not a goal. Reviewers still judge assertion quality (R-18).
 ## 6. Commands (reproducible; wired into `scripts/gate.sh` in T-M1.x)
 
 ```bash
-./scripts/gate.sh            # everything below (12 steps, the last is e2e), fail-fast, writes evidence/<task>/gate-<timestamp>.log
+./scripts/gate.sh            # everything below (13 steps, the last is e2e + the changed specs x3), fail-fast, writes evidence/<task>/gate-<timestamp>.log
+                             # backend and contract-drift skipped without a backend/ or api/ change (DEC-131 (6)); ENGLMS_GATE_FULL=1 runs them
 (cd backend && ./mvnw -B verify)                     # unit + integration + authz + isolation + arch + jacoco
 (cd web && pnpm lint && pnpm typecheck && pnpm test --run && pnpm build && pnpm budget)
 ./scripts/e2e-run.sh --project=phone-small --project=tablet --project=laptop   # packaged app + Playwright (T-M1.6)
