@@ -1,23 +1,23 @@
-# Handoff — 2026-10-19 (T-M2.19 packet at G0; next: implement T-M2.19)
+# Handoff — 2026-10-20 (T-M2.19 merged; next: the T-M2.17 packet)
 
-Phase/Milestone: P1 / M2 (in progress) · Current task: **T-M2.19 automated UI checks (FE, ready, tier M)** · Next: **T-M2.17 learning
-profile** · Last merges on develop: the T-M2.19 packet (PR #116), `9b6922c` (PR #115 QA report), PR #114 (records), `9b9e133` (T-M2.15),
-`5dab35e` (T-M2.18) · Remote: https://github.com/duochou042004/eng-lms (mirror: gitlab.com/duochou042004/eng-lms)
+Phase/Milestone: P1 / M2 (in progress) · Current task: **T-M2.17 learning profile (FE, draft, tier H): packet to write** · Next: **T-M2.20
+M2 polish** · Last merges on develop: `d165a4e` (T-M2.19, PR #117), the T-M2.19 packet (PR #116), `9b9e133` (T-M2.15), `5dab35e` (T-M2.18) ·
+Remote: https://github.com/duochou042004/eng-lms (mirror: gitlab.com/duochou042004/eng-lms)
 
 ## Where we are
 - **The quality process is DEC-131** (T-M2.18): risk tier per packet; tier H = SEC + one combined QA+UX reviewer; tier M = one combined
-  QA+UX reviewer; tier L = docs review; S1/S2 → AC + **delta** re-check; S3 cheap in-task, LC-verified from test + diff; S4 → the M2 polish
-  row **T-M2.20**; one local gate per head + CI (the gate skips backend/contract-drift for web-only diffs, repeats changed specs ×3);
-  reviewers return text only and the LC records and posts; PNGs git-ignored; a **G3 cost** table in every summary.
-- **T-M2.15 under it (DEC-132/133):** 2 review agents (≈ 157k tokens, ≈ 26 min) + 1 fix round + 1 gate run (10.6 min) vs T-M2.14's 8 rounds
-  and 8 gate runs (87 min).
-- **T-M2.19** (packet `docs/tasks/T-M2.19-ui-checks.md`, DEC-134; PO start signal given): shared E2E checks `expectNoMidWordBreak`,
-  `expectFocusNotLost`, `expectSettledAccessible`, the `longData(token)` fixture and a long-data walk over the students screens, focus checks
-  after every removing/disabling control (inclusion rule, scope 5), proofs against violating fixtures (`checks.spec.ts`), a stylelint rule
-  against raw durations with `--motion-duration-spin` / `--motion-duration-pulse`. G0 docs review: round 1 full CHANGES REQUESTED (D-1..D-8),
-  rounds 2 and 3 delta (N-1, N-2) → PASS (`evidence/T-M2.19/review/docs.md`). **No implementation yet; no feature branch.**
-- Open in the backlog: T-M2.13, T-M2.16, T-M2.17, T-M2.20. This device: Kali Linux rolling, rootless Podman 5.8.6, clone
-  `/home/kali/App_projects/eng-lms`. GitLab CI paused (DEC-107); the mirror syncs.
+  QA+UX reviewer; tier L = docs review; S1/S2 → AC + **delta** re-check; S3 cheap in-task, LC-verified from test + diff (a delta re-check
+  when the fix changes behaviour); S4 → **T-M2.20** unless one line; one local gate per head + CI; reviewers return text only and the LC
+  records and posts; PNGs git-ignored; a **G3 cost** table in every summary.
+- **T-M2.19 merged** (PR #117, `d165a4e`, DEC-138): `e2e/support/checks.ts` has `expectNoMidWordBreak`, `expectFocusNotLost` (also fails on
+  a disabled/unrendered or inert active element), `expectSettledAccessible`; `e2e/support/longData.ts`; proofs in `e2e/tests/checks.spec.ts`;
+  stylelint rejects raw `ms`/`s` outside `src/ui/tokens.css` (`--motion-duration-spin`, `--motion-duration-pulse`). **Later UI packets reuse
+  these helpers** (call `expectFocusNotLost` after each removing/disabling control; `expectSettledAccessible` instead of a bare axe call).
+  The new focus check found 4 real defects before review (AC8, DEC-135); G3: one reviewer, round 1 + one delta re-check (DEC-136, DEC-137).
+- Records: `evidence/T-M2.19/summary.md`, `review/ux.md`, `review/docs.md`; the QA report on `qa/T-M2.19` (PR #118, needs only
+  `LC-APPROVED T-M2.19` via merge-gate if not merged yet).
+- Open in the backlog: T-M2.13, T-M2.16, T-M2.17, T-M2.20 (now also T-M2.19 QA-5, QA-8). This device: Kali Linux rolling, rootless Podman
+  5.8.6, clone `/home/kali/App_projects/eng-lms`. GitLab CI paused (DEC-107); the mirror syncs.
 
 ## Another device
 - Follow development-setup §0 for its platform; record OS, engine and versions in `progress.json` `environment` and the clone path in
@@ -26,12 +26,10 @@ profile** · Last merges on develop: the T-M2.19 packet (PR #116), `9b6922c` (PR
   `./scripts/install-hooks.sh`, `git remote add gitlab …`.
 
 ## Next steps
-1. **T-M2.19 implementation:** `git switch -c feature/T-M2.19-ui-checks origin/develop`; progress.json `in_progress` with the branch; a
-   frontend-implementer subagent on the packet (one gate run with `ENGLMS_TASK=T-M2.19`, the self-check, the G3 cost table, a PR); CI green.
-2. **G3 tier M:** one fresh combined QA+UX reviewer (qa-protocol §2a), focused on vacuous checks (does each helper really fail on a
-   violation?) and the Spinner/Skeleton motion; DEC-131 finding rules; post `QA-VERDICT`, `UX-REVIEW`, `LC-APPROVED` after CI is green on the
-   final head; merge-gate `--dry-run` then real; gitlab-sync; records (merge DEC; review records on a docs branch; QA report on `qa/T-M2.19`).
-3. Then **T-M2.17** learning profile (tier H: SEC + combined QA+UX), T-M2.20 polish, T-M2.13, T-M2.16; then T-M2.6, T-M2.7 (M2 regression, G5).
+1. If PR #118 (`qa/T-M2.19`) or the T-M2.19 records PR is still open: merge it via merge-gate (`--dry-run` first), then gitlab-sync.
+2. **T-M2.17 packet** (task-packet skill; split from T-M2.15, DEC-128): tier H (student personal data: SEC + combined QA+UX); a UI rules block
+   (DEC-131 (2)); the T-M2.19 helpers in its test plan; G0 docs review (tier L, delta rounds); then the PO start signal.
+3. Then T-M2.20 polish, T-M2.13, T-M2.16; then T-M2.6, T-M2.7 (M2 regression, G5).
 
 ## Pending PO decisions / actions
 - **Dependabot PRs #95–#104**: untouched; say whether to review and merge them.
@@ -42,6 +40,9 @@ profile** · Last merges on develop: the T-M2.19 packet (PR #116), `9b6922c` (PR
   the common-password list barely filters at 10 characters (T-M2.3 SEC S4-9); `glab` deny rules (DEC-061); OQ-03..OQ-14 (defaults documented).
 
 ## Gotchas
+- **Resumed subagents report cumulative `subagent_tokens`:** the round's cost is the delta from the previous result (T-M2.19 summary).
+- An implementer may leave known failures as `test.fail` when a packet forbids the fix: the LC rules (an AC + DEC, as DEC-135) before G3,
+  so the reviewer sees the final product.
 - **Measure every G3:** fill the summary's G3 cost table from each Agent result (tokens, duration) as soon as it returns; compare tasks by it.
 - **Toasts (T-M2.14):** `ui/Toast` is the only toast; errors are never toasts (interaction-states §4). Under a modal the region is hidden and inert (`ui/modalStack.ts`); the queue closes timed toasts pushed out of the visible 3 and is cleared on region mount/unmount.
 - **Two API-limit pauses this session** stopped the implementer and QA mid-run; both resumed with SendMessage after checking `git status`/`git log` and `evidence/<task>/gate-*.log` (the implementer had finished both gates but not committed).
@@ -71,6 +72,5 @@ profile** · Last merges on develop: the T-M2.19 packet (PR #116), `9b6922c` (PR
 - Wall-clock bounds in tests flake on the 2-core CI runner (DEC-093). `git merge` is denied: `gh pr update-branch` (DEC-090).
 
 ## Files to read first
-`CLAUDE.md` → `progress.json` → this file → DEC-131..134 → `docs/tasks/T-M2.19-ui-checks.md` → `quality-gates.md` G1/G3 →
-`qa-protocol.md` §2a/§2b → `evidence-protocol.md` §2 → `e2e/support/checks.ts`, `e2e/tests/students.spec.ts` (helpers at the top) →
-`web/stylelint.config.*`, `web/src/ui/tokens.css` (Motion) → `.claude/skills/frontend-standards`.
+`CLAUDE.md` → `progress.json` → this file → DEC-128, DEC-131, DEC-138 → `docs/tasks/backlog.md` (T-M2.17, T-M2.20) → the task-packet
+skill → `docs/tasks/T-M2.15-guardians.md` and `T-M2.19-ui-checks.md` (packet shape, UI rules block) → `quality-gates.md` G0 → `e2e/support/checks.ts`.
