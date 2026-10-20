@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-10-20T08:29:03Z",
-  "updatedBy": "lead-coordinator (T-M2.19 G3 passed, merge pending)",
+  "updatedAt": "2026-10-20T08:44:32Z",
+  "updatedBy": "lead-coordinator (T-M2.19 merged; next: T-M2.17 packet)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -30,33 +30,6 @@
     "exitCriteria": "FR-AUTH-01..10 and FR-STU-01..07 accepted; authorization-matrix and student-isolation harnesses fail on any unregistered endpoint; add-student flow E2E at 360/768/1280 within its step budget; security review of authentication passed (docs/01-product/roadmap.md)."
   },
   "currentTask": {
-    "id": "T-M2.19",
-    "title": "Automated UI checks from the G3 measurement (DEC-131 (1))",
-    "status": "in_review",
-    "ownerRole": "FE",
-    "branch": "feature/T-M2.19-ui-checks",
-    "packet": "docs/tasks/T-M2.19-ui-checks.md",
-    "pr": "117",
-    "lastCommit": "c2e300e",
-    "startedAt": "2026-10-19T09:32:52Z",
-    "entryGate": [
-      "T-M2.18 merged — met (5dab35e)",
-      "Packet G0 — met (PR #116, DOCS-REVIEW round 3 delta PASS, DEC-134)",
-      "PO start signal — met (DEC-134)"
-    ],
-    "nextSteps": [
-      "CI green on the final head; post QA-VERDICT, UX-REVIEW, LC-APPROVED; merge-gate --dry-run then real; gitlab-sync",
-      "Records: merge DEC + review record on a docs branch; QA report on qa/T-M2.19; then T-M2.17 packet (tier H)"
-    ],
-    "trace": [
-      "DEC-131",
-      "DEC-134",
-      "DEC-135",
-      "DEC-136",
-      "DEC-137"
-    ]
-  },
-  "nextTask": {
     "id": "T-M2.17",
     "title": "Learning profile (split from T-M2.15, DEC-128)",
     "status": "draft",
@@ -70,10 +43,33 @@
       "T-M2.15 merged — met (9b9e133)"
     ],
     "nextSteps": [
-      "Packet after T-M2.19"
+      "LC writes the T-M2.17 packet (tier H: SEC + combined QA+UX); G0 docs review; PO start signal"
     ],
     "trace": [
       "DEC-128"
+    ]
+  },
+  "nextTask": {
+    "id": "T-M2.20",
+    "title": "M2 polish batch (S4 findings, DEC-131 (5))",
+    "status": "draft",
+    "ownerRole": "FE",
+    "branch": null,
+    "packet": null,
+    "pr": null,
+    "lastCommit": null,
+    "startedAt": null,
+    "entryGate": [
+      "Order: after T-M2.17 (handoff); dependency T-M2.15 met (9b9e133)"
+    ],
+    "nextSteps": [
+      "Packet from the backlog row (T-M2.15 UX-3/UX-4/S-1/S-2, T-M2.19 QA-5/QA-8)"
+    ],
+    "trace": [
+      "DEC-131",
+      "DEC-132",
+      "DEC-136",
+      "DEC-137"
     ]
   },
   "completed": [
@@ -332,11 +328,19 @@
       "mergeCommit": "9b9e133",
       "evidence": "evidence/T-M2.15/summary.md",
       "note": "PR #112 via merge-gate; G3 under DEC-131: combined QA+UX PASS WITH MINOR/APPROVED, SEC APPROVED, one round each; DEC-132, DEC-133"
+    },
+    {
+      "id": "T-M2.19",
+      "title": "Automated UI checks from the G3 measurement (DEC-131 (1))",
+      "completedAt": "2026-10-20T08:44:32Z",
+      "mergeCommit": "d165a4e",
+      "evidence": "evidence/T-M2.19/summary.md",
+      "note": "PR #117 via merge-gate (head 6bcaffa, CI 7/7); AC8 (DEC-135) from the implementer's open question; G3 tier M: one combined QA+UX reviewer, round 1 PASS WITH MINOR/APPROVED + one delta re-check after AC9 (DEC-136, DEC-137); QA-5, QA-8 to T-M2.20; DEC-138"
     }
   ],
   "tests": {
-    "lastRun": "2026-10-19T08:45:05Z",
-    "summary": "T-M2.15 AC11: gate PASS on 1a9d606 (web 701, e2e 380 passed / 31 skipped + changed specs x3 312 passed; backend and contract-drift skipped, web-only diff).",
+    "lastRun": "2026-10-20T08:02:02Z",
+    "summary": "T-M2.19 AC9: gate PASS on c2e300e (web 705, e2e 458 passed / 31 skipped + changed specs x3 546 passed / 3 skipped; backend and contract-drift skipped, web-only diff).",
     "suites": [
       {
         "name": "backend (./mvnw -B verify)",
@@ -362,24 +366,24 @@
   },
   "gates": {
     "G0": {
-      "status": "pass",
-      "note": "T-M2.19: DOCS-REVIEW round 3 (delta) PASS (PR #116)"
+      "status": "n/a",
+      "note": "T-M2.17 packet not written yet (T-M2.19: DOCS-REVIEW PASS, PR #116)"
     },
     "G1": {
-      "status": "n/a",
-      "note": "T-M2.19 not started (T-M2.15 passed: gate on 1a9d606)"
+      "status": "pass",
+      "note": "T-M2.19: gate PASS on c2e300e (694 s)"
     },
     "G2": {
-      "status": "n/a",
-      "note": "T-M2.15 passed: CI 7/7 at 0e13fda"
+      "status": "pass",
+      "note": "T-M2.19: CI 7/7 on 6bcaffa"
     },
     "G3": {
-      "status": "n/a",
-      "note": "T-M2.15 passed: QA+UX combined, SEC (DEC-132)"
+      "status": "pass",
+      "note": "T-M2.19: combined QA+UX PASS WITH MINOR/APPROVED, round 1 + delta re-check (DEC-136, DEC-137)"
     },
     "G4": {
       "status": "pass",
-      "note": "T-M2.15 merged via merge-gate (9b9e133); T-M2.18 (5dab35e)"
+      "note": "T-M2.19 merged via merge-gate (d165a4e)"
     },
     "G5": {
       "status": "n/a",
@@ -1178,6 +1182,11 @@
       "at": "2026-10-19T09:44:17Z",
       "actor": "lead-coordinator",
       "event": "T-M2.19 packet G0: docs review 3 rounds (1 full, 2 delta; 92k tokens in all), PR #116; session ends (PO). Next: implement T-M2.19."
+    },
+    {
+      "at": "2026-10-20T08:44:32Z",
+      "actor": "lead-coordinator",
+      "event": "T-M2.19 merged (PR #117, d165a4e): 1 implementer (3 rounds: G1, AC8, AC9; 265,704 tokens), 1 combined QA+UX reviewer (round 1 + delta; 132,392 tokens), 4 gate runs (one failed fast). Next: the T-M2.17 packet."
     }
   ]
 }
