@@ -13,6 +13,7 @@ description: Record task evidence, update progress.json, and write the session h
 4. No secrets or real personal data. Use synthetic fixtures only.
 
 ## C. Records at every merge (LC; lessons-learned L-09)
+0. Each reviewer or implementer report is copied to `.claude/scratch/lc-records/<task>-<round>.md` as soon as it returns (L-06).
 1. The backlog row → `**done** (`<merge sha>`, DEC-<n>, packet link)`; the packet's Status → `done (<sha>, DEC-<n>)`.
 2. `progress.json`: the task into `completed[]`, `currentTask`/`nextTask` moved, `gates`, `tests`, `history`.
 3. The merge DEC and the review records (`evidence/<task>/review/*`) on a docs branch; the QA report on `qa/<task>`.

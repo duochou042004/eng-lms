@@ -58,7 +58,7 @@
 1. Use `ui/` components only. No raw colour or spacing values (stylelint). No direct RAC imports outside `ui/`.
 2. Every data view has the states in interaction-states.md. Every form follows its form rules.
 3. Every new string is an i18n key in **both** `vi` and `en`.
-4. Responsive: verify the mandatory viewports and keep the screenshots locally (git-ignored, evidence-protocol §3). No horizontal scroll. Meet the packet's UI rules block and tick the `frontend-standards` self-check list in summary.md.
+4. Responsive: verify the mandatory viewports and keep the screenshots locally (git-ignored, evidence-protocol §3). No horizontal scroll. Meet the packet's UI rules block and tick the `frontend-standards` self-check list in the returned summary (the LC records it, L-07).
 5. Accessibility checklist (accessibility.md §2) for every UI PR.
 6. Server state only via TanStack Query hooks in `features/*/api`. No ad-hoc `fetch`.
 7. Before building a new component, check the `ui/` inventory (design-system.md §3). If it is missing, propose adding it to `ui/` (UX review), not inline in a feature.
@@ -77,7 +77,7 @@
 
 A new dependency MUST be listed in the packet with its justification, added to tech-stack.md (§2/§3 + §7 pinned version), and be license-compatible
 (permissive: MIT, Apache-2.0, BSD, EPL for JVM, MPL acceptable). Prefer the platform or existing dependencies. A dependency that adds architecture → ADR.
-A version bump (Dependabot included) of a package named in a `shortcut:` comment (`grep -rn 'shortcut:.*<package>'`) needs a local
+A version bump (Dependabot included) of a package named in a `shortcut:` comment (`grep -rnE '(shortcut|ponytail):.*<package>'`) needs a local
 verification of the screens or paths that comment names, not only green CI; the LC holds the PR until then (lessons-learned L-11, DEC-139).
 
 ## 9. Spring Boot 4 / Java 25 pitfalls (verify against the official docs; do not code from Boot 2/3 memory)

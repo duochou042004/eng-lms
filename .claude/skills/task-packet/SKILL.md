@@ -8,7 +8,7 @@ description: Write or refine a G0-complete task packet for Eng-LMS from the back
 **Inputs:** the backlog stub (`docs/tasks/backlog.md`), `progress.json`, the relevant FR/NFR/ADR docs, open questions.
 
 ## Procedure
-0. Read `docs/09-harness/lessons-learned.md` and grep the touched area for `shortcut:` markers whose trigger this packet fires.
+0. Read `docs/09-harness/lessons-learned.md` and grep the touched area for `shortcut:`/`ponytail:` markers (`grep -rnE '(shortcut|ponytail):'`) whose trigger this packet fires.
 1. Copy `docs/09-harness/task-packet-template.md` → `docs/tasks/<task-id>-<slug>.md`.
 2. Fill **Trace** with SPEC §, FR/NFR IDs, DEC/ADR IDs. If you can't trace a scope item, remove it or raise an OQ (`docs/10-governance/open-questions.md`).
 2a. **Contradiction scan** (lessons L-03): for each touched area grep the kept E2E and unit assertions, interaction-states, api-conventions,

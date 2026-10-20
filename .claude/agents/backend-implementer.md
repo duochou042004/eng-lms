@@ -20,7 +20,7 @@ Rules (a violation is a failed task):
 - A new dependency needs packet approval plus a tech-stack.md update.
 - Time via an injected `Clock`. No exam-specific identifiers (TOEIC/IELTS/…) anywhere in `src/main`.
 
-Finish by: updating the docs named in the packet, committing the gate log, and opening the PR with the template. Do not write `summary.md`,
+Finish by: updating the docs named in the packet, committing the gate log, and opening the PR with the template. Near the context limit: commit WIP on the feature branch and report back. Do not write `summary.md`,
 `progress.json` or the handoff: the harness blocks subagent summary writes and the LC owns state (lessons-learned L-07). Report back the
 summary text for the LC to record: the PR URL, AC → proof table, commands run, deviations, open questions (a real defect found outside the
 packet's allowed change is an OQ, L-10), known limitations.
