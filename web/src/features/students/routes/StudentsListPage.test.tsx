@@ -267,6 +267,8 @@ describe('/tutor/students states (interaction-states §1)', { timeout: 20_000 },
     await findLink('Học viên 09')
     expect(search(router)).toBe('?archived=1')
     expect(screen.getByText('Đã lưu trữ')).toBeInTheDocument()
+    // T-M2.19 AC8: the empty state's button is gone; focus is on the toolbar's Include archived.
+    expect(screen.getByRole('checkbox', { name: 'Gồm cả học viên đã lưu trữ' })).toHaveFocus()
   })
 
   it('filtered empty: the query and Clear filters, which resets the URL params and focuses the search', async () => {
@@ -308,6 +310,8 @@ describe('/tutor/students states (interaction-states §1)', { timeout: 20_000 },
     await userEvent.click(within(alert).getByRole('button', { name: 'Thử lại' }))
     await findLink('Học viên 01')
     expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+    // T-M2.19 AC8: focus goes to the page h1, not body.
+    expect(screen.getByRole('heading', { level: 1, name: 'Học viên' })).toHaveFocus()
   })
 
   it('a failing refetch of the same view keeps the cached rows beside the alert', async () => {

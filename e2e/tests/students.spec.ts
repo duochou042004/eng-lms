@@ -2206,9 +2206,8 @@ async function failRequests(page: Page, url: string, matches: (requestUrl: URL) 
 }
 
 test.describe('Focus after an action removes or disables its own control (T-M2.19 AC4)', () => {
-  // OQ T-M2.19-1: these controls unmount with their alert or empty state and focus drops to body (no focus target in
-  // StudentsListPage). A focus change is out of this packet's scope (UI rules): each check is kept as an expected
-  // failure, which turns into an error once the focus is fixed (remove its `test.fail` then).
+  // AC8 (DEC-135, OQ T-M2.19-1): these controls unmount with their alert or empty state; focus goes to `main h1`, or for
+  // Include archived to the toolbar's Include archived.
   const listAlert = (page: Page) => page.getByRole('alert').filter({ hasText: 'Không tải được danh sách học viên' })
   const listShown = (page: Page) => page.getByRole('table').or(page.getByRole('list', { name: 'Học viên' }))
   const anyCheck = (url: URL) => url.searchParams.get('size') === '1'
@@ -2223,11 +2222,7 @@ test.describe('Focus after an action removes or disables its own control (T-M2.1
   const noActive = (page: Page) =>
     page.getByRole('heading', { level: 2, name: 'Không có học viên đang học hoặc tạm nghỉ' })
 
-  test('the list error: Try again (expected to fail: focus drops to body, OQ T-M2.19-1)', async ({
-    page,
-    consoleGuard,
-  }) => {
-    test.fail(true, 'known: focus is lost after the list error Try again (OQ T-M2.19-1)')
+  test('the list error: Try again: focus to the h1', async ({ page, consoleGuard }) => {
     const recover = await failRequests(page, '**/api/v1/tutor/students?**')
     await page.goto('/tutor/students')
     await expect(listAlert(page)).toBeVisible({ timeout: 15_000 })
@@ -2237,13 +2232,10 @@ test.describe('Focus after an action removes or disables its own control (T-M2.1
     await expect(listAlert(page)).toHaveCount(0)
     await expect(listShown(page)).toBeVisible()
     await expectFocusNotLost(page)
+    await expect(h1(page, 'Học viên')).toBeFocused()
   })
 
-  test('the any-student check error: Try again (expected to fail: focus drops to body, OQ T-M2.19-1)', async ({
-    page,
-    consoleGuard,
-  }) => {
-    test.fail(true, 'known: focus is lost after the any-student check Try again (OQ T-M2.19-1)')
+  test('the any-student check error: Try again: focus to the h1', async ({ page, consoleGuard }) => {
     const recover = await failRequests(page, '**/api/v1/tutor/students?**', anyCheck)
     await onlyArchived(page)
     await page.goto('/tutor/students')
@@ -2253,18 +2245,17 @@ test.describe('Focus after an action removes or disables its own control (T-M2.1
     await listAlert(page).getByRole('button', { name: 'Thử lại' }).click()
     await expect(noActive(page)).toBeVisible()
     await expectFocusNotLost(page)
+    await expect(h1(page, 'Học viên')).toBeFocused()
   })
 
-  test('only archived students: Include archived (expected to fail: focus drops to body, OQ T-M2.19-1)', async ({
-    page,
-  }) => {
-    test.fail(true, 'known: focus is lost after the empty state Include archived (OQ T-M2.19-1)')
+  test('only archived students: Include archived: focus to the toolbar control', async ({ page }) => {
     await onlyArchived(page)
     await page.goto('/tutor/students')
     await page.getByRole('main').getByRole('button', { name: 'Gồm cả học viên đã lưu trữ' }).click()
     await expect(noActive(page)).toHaveCount(0)
     await expect(page.getByText('Đã lưu trữ', { exact: true }).first()).toBeVisible()
     await expectFocusNotLost(page)
+    await expect(page.getByRole('checkbox', { name: 'Gồm cả học viên đã lưu trữ' })).toBeFocused()
   })
 
   test('a search that finds nothing: Clear filters', async ({ page }) => {
@@ -2274,12 +2265,8 @@ test.describe('Focus after an action removes or disables its own control (T-M2.1
     await expectFocusNotLost(page)
   })
 
-  // OQ T-M2.19-1: as the list's, the workspace's Try again unmounts with its alert and focus drops to body.
-  test('the workspace error: Try again (expected to fail: focus drops to body, OQ T-M2.19-1)', async ({
-    page,
-    consoleGuard,
-  }) => {
-    test.fail(true, 'known: focus is lost after the workspace error Try again (OQ T-M2.19-1)')
+  // AC8: the workspace's Try again unmounts with the error view; focus goes to the student's h1.
+  test('the workspace error: Try again: focus to the h1', async ({ page, consoleGuard }) => {
     const created = await profileStudent(page, 'Thử Lại')
     const url = `/api/v1/tutor/students/${created.student.id}`
     const recover = await failRequests(page, `**${url}`)
@@ -2291,6 +2278,7 @@ test.describe('Focus after an action removes or disables its own control (T-M2.1
     await alert.getByRole('button', { name: 'Thử lại' }).click()
     await expect(h1(page, created.student.fullName)).toBeVisible()
     await expectFocusNotLost(page)
+    await expect(h1(page, created.student.fullName)).toBeFocused()
   })
 
   test('D-4: the guardians error: Try again (503 until the alert, then passed through) focuses the section heading', async ({
