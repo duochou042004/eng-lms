@@ -65,7 +65,8 @@ Review effort follows the packet's **risk tier** (set by the LC at G0, DEC-131 (
 
 - [ ] Every packet in the milestone is merged, and the milestone exit criteria in roadmap.md are met.
 - [ ] Milestone regression (the only full regression; per task G3 runs targeted specs, DEC-131 (7)): full E2E on all 6 viewports × Chromium, plus smoke on Firefox and WebKit. The QA milestone report is in `evidence/<milestone>/`.
-- [ ] Risk register, decision log and roadmap reviewed (retrospective notes in `evidence/<milestone>/retro.md`).
+- [ ] Risk register, decision log and roadmap reviewed (retrospective notes in `evidence/<milestone>/retro.md`); `docs/09-harness/lessons-learned.md`
+  updated; the `shortcut:` ledger reviewed (`/ponytail-debt`: any trigger the next milestone fires becomes a backlog item); the README roadmap row updated.
 - [ ] For user-facing milestones (M2, M3, M5, M7): the PO demo (a recorded walkthrough or a live session) is accepted, and the feedback is logged as tasks or DEC entries.
 
 ## G6 Release gate (`develop` → `master`). Owners: LC + PO

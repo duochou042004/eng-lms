@@ -29,4 +29,4 @@ Every Bash call is a fresh shell: when SDKMAN/nvm are installed, `source ~/.sdkm
 Podman for Testcontainers (development-setup §3). Use fully qualified image names (`docker.io/library/postgres:18`).
 
 ## Map
-Docs index: `docs/README.md` · Roles: `docs/09-harness/agent-roles.md` · Gates: `docs/06-quality/quality-gates.md` · Subagents: `.claude/agents/` · Skills: `.claude/skills/`.
+Docs index: `docs/README.md` · Lessons (read before a packet): `docs/09-harness/lessons-learned.md` · Roles: `docs/09-harness/agent-roles.md` · Gates: `docs/06-quality/quality-gates.md` · Subagents: `.claude/agents/` · Skills: `.claude/skills/`.

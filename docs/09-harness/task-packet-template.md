@@ -38,6 +38,15 @@ Modules/packages/routes/components touched; API changes (link api-catalog rows);
 - Validation rule per field (validation-rules.md row) and URL/contact schemes.
 - Copy: the vi verb on each button; counters with non-breaking spaces.
 
+## Domain rules (packets that write data; fixed at G0, lessons-learned L-04)
+- Invariants (what is always true; which DB constraint or check enforces each).
+- Transitions: a table of state × action → new state or the refusal (problem code), illegal transitions included.
+- Concurrency: the version rule (stale write → 409 `STALE_VERSION`), locks and what they must never span (e.g. no lock across bcrypt).
+- Idempotency of creates and retries; the transaction boundary; events published and their listeners.
+- Time: which instants are stored (UTC) and which zone a date is computed in (the account's `timeZone`, not the browser's).
+- Audit entries; the audience DTOs and what each audience never sees (ADR-0016).
+- Tests: one table-driven test over every transition (legal and illegal) and one concurrent-update test per writable aggregate.
+
 ## Acceptance criteria
 - AC1 (FR-…): Given … when … then …
 - …

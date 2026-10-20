@@ -15,6 +15,9 @@ description: Add or change a feature inside an Eng-LMS Spring Modulith module (p
 ## Procedure
 1. Check the allowed dependency graph (module-boundaries.md). If you need a new cross-module dependency, stop and ask the LC (it may create a cycle).
 2. Domain first: aggregate methods that enforce invariants, with unit tests (`Clock` injected; `BigDecimal` for scores).
+   With the packet's **Domain rules** block (lessons-learned L-04): one table-driven test over every transition, legal and illegal (each illegal
+   one → its problem code), and one concurrent-update test per writable aggregate (two writers, the stale one → 409 `STALE_VERSION`); no lock
+   held across slow work (bcrypt, I/O).
 3. Persistence: a migration (skill `db-migration`), an entity mapping, repository methods (owner-scoped for the student audience: `findByIdAndStudentId`).
    **Owner-scoped convention (ADR-0016 §3, as built T-M2.3):** a `..web.student..` handler declares `CurrentStudent me` (`com.englms.shared.web`,
    `{studentId, userId}`; resolved from the session, never from the request) and passes `me.studentId()` to the service, whose repository call is

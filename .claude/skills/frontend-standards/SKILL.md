@@ -27,6 +27,7 @@ horizontal scroll · raw colours or spacing · emoji as icons · modals for long
 - [ ] The packet's **UI rules** block is met (column shares, break points, focus targets, layering, validation rules).
 - [ ] Long data at 360/768/1280 (`e2e/support/longData.ts`): `expectSettledAccessible` and `expectNoMidWordBreak` (`e2e/support/checks.ts`) on each changed screen.
 - [ ] `expectFocusNotLost` after every action that removes or disables the focused element.
+- [ ] Async state is read through polling assertions (`expect.poll`, `toHave*`), never a single `evaluate`; each new check seen failing (coding-agent-rules §4).
 - [ ] vi buttons carry the verb ("Bỏ thay đổi", not "Bỏ"); heading levels never invert; counters use non-breaking spaces ("1 / 133").
 - [ ] Docs named in the packet are in sync (responsive-standards, design-system, api-catalog).
 

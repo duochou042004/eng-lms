@@ -53,6 +53,7 @@
 | 08 Extensibility | [plugin-store-spec.md](08-extensibility/plugin-store-spec.md) | Internal extension registry ("plugin store") |
 | 09 Harness | [hoh-operating-model.md](09-harness/hoh-operating-model.md) | HoH loops, principles, cadence, escalation |
 | | [agent-roles.md](09-harness/agent-roles.md) | Roles, tool permissions, path ownership |
+| | [lessons-learned.md](09-harness/lessons-learned.md) | Mistakes so far, their causes and the rules they produced (read before a packet) |
 | | [skills-catalog.md](09-harness/skills-catalog.md) | Project skills |
 | | [coding-agent-rules.md](09-harness/coding-agent-rules.md) | Binding rules for coding agents; Boot 4 pitfalls |
 | | [git-governance.md](09-harness/git-governance.md) | Branches, commits, PRs, merges, releases |

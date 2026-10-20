@@ -37,6 +37,9 @@
 2. MUST NOT delete, skip or weaken tests (or relax assertions) to make a build pass. A needed exception gets a DEC entry.
 3. MUST keep `./scripts/gate.sh` green before opening a PR, and attach its log to the evidence.
 4. MUST inject `Clock` for anything time-based and never call `Instant.now()` or `LocalDate.now()` directly (an ArchUnit rule enforces this).
+5. MUST prove every new check, guard, validation or gate rule failing on a violating input in the same PR (a fixture, a negative case or a
+   mutation); gate tooling fails closed. A check never seen red is not done (lessons-learned L-01).
+6. MUST read asynchronous state through a polling assertion (`expect.poll`, `toHave*`, `waitFor`), never a single read; no wall-clock bounds (L-05).
 
 ## 5. Backend rules
 
@@ -74,6 +77,8 @@
 
 A new dependency MUST be listed in the packet with its justification, added to tech-stack.md (§2/§3 + §7 pinned version), and be license-compatible
 (permissive: MIT, Apache-2.0, BSD, EPL for JVM, MPL acceptable). Prefer the platform or existing dependencies. A dependency that adds architecture → ADR.
+A version bump (Dependabot included) of a package named in a `shortcut:` comment (`grep -rn 'shortcut:.*<package>'`) needs a local
+verification of the screens or paths that comment names, not only green CI; the LC holds the PR until then (lessons-learned L-11, DEC-139).
 
 ## 9. Spring Boot 4 / Java 25 pitfalls (verify against the official docs; do not code from Boot 2/3 memory)
 
