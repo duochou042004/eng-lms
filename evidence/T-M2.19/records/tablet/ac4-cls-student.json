@@ -1,0 +1,19 @@
+{
+  "viewport": {
+    "width": 768,
+    "height": 1024
+  },
+  "heldChunkUntilScreenshot": true,
+  "metaDelayMs": 700,
+  "loadingRegionBox": {
+    "x": 0,
+    "y": 0,
+    "width": 768,
+    "height": 1024
+  },
+  "layoutShift": {
+    "total": 0.00024185977720965943,
+    "entries": 2
+  },
+  "limit": 0.05
+}

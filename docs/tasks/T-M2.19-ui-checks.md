@@ -71,6 +71,7 @@ during a fade-in, and raw motion values. Each check is proven to fail on a viola
 
 ## UI rules (DEC-131 (2))
 - No layout, focus, copy or validation change, and no visual change: the Spinner and Skeleton keep their durations, now through tokens.
+  Exception (AC8, DEC-135): the focus target after the four controls of OQ T-M2.19-1.
 
 ## Guardrail answers (scope.md §6)
 1. Trace: DEC-131 (1), DEC-134. 2. Drifts toward excluded scope? No (test tooling). 3. Mandatory setup added? No. 4. Weekly use? Every UI task's
@@ -87,6 +88,16 @@ gate. 5. Hard-coded semantics? None.
   150 ms delay) and the Spinner in a pending Button (a held guardian Save); `/dev/ui` is not in the production build; jsdom does not resolve
   CSS modules or `var()`, D-5, N-2).
 - AC6: docs of scope 7 updated.
+- AC8 (DEC-135, OQ T-M2.19-1): focus is not lost after the list error Try again, the any-student check error Try again, Include archived
+  in the all-archived empty state (`StudentsListPage`) and the workspace error Try again (`StudentWorkspacePage`): once the new state is
+  visible, focus moves to `main h1`, except Include archived, which moves it to the list toolbar's Include archived control when that renders
+  (else `main h1`); their four `test.fail` marks are removed and the `expectFocusNotLost` tests pass; no other behaviour, copy or layout change.
+- AC9 (DEC-136, G3 round 1 findings): (a) QA-1: the workspace error Try again also leaves focus on `main h1` when the retry fails again (the
+  error view renders again), with an E2E case for the retry-fails path; (b) QA-2: `expectFocusNotLost` also fails when the active element is
+  `:disabled` or not visible (`checkVisibility()`), with a disabled and a `display:none` failing case in `checks.spec.ts`; (c) QA-3: the
+  Motion tokens test reads the computed `animation-duration` through `expect.poll`; (d) QA-4: the inert test's name says focus is lost to
+  `body` after an inert freeze; (e) QA-7: the hidden-element case first asserts its locator matches one element; (f) QA-6: the stylelint
+  test's comment matches its jsdom environment (the deviation stays: `src/test/setup.ts` needs `window`). QA-5 goes to T-M2.20.
 - AC7: `./scripts/gate.sh` green once on the final head and CI green; every existing assertion kept (DEC-131 (6)); the gate's changed-spec ×3
   run passes for `students.spec.ts` and `checks.spec.ts`; the bundle budget unchanged.
 

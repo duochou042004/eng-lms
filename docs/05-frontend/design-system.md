@@ -38,7 +38,7 @@ Use at most **3 sizes per screen region**.
 
 **Spacing:** 4 px grid → `--space-1..10` = 4, 8, 12, 16, 20, 24, 32, 40, 48, 64. **Controls:** `--size-control-md` 44 px (2.75rem; inputs and primary targets), `--size-control-lg` 48 px. **Radii:** `--radius-sm` 6, `--radius-md` 10, `--radius-full`.
 **Elevation:** only `--shadow-overlay` (menus, popovers, sheets). Resting surfaces use borders, not shadows. **Motion:** 120–200 ms ease-out. Honour
-`prefers-reduced-motion` (no movement, fade only). **Z-index:** `--z-sticky`, `--z-overlay`, `--z-toast` only.
+`prefers-reduced-motion` (no movement, fade only). Durations come only from the motion tokens in `tokens.css` (stylelint rejects `ms`/`s` in `transition*`, `animation*` and custom properties elsewhere; T-M2.19): `--motion-duration`, `--motion-duration-progress` (1.2 s), `--motion-duration-spin` (800 ms, one Spinner turn) and `--motion-duration-pulse` (1.4 s, one Skeleton pulse); the Spinner and Skeleton stop under reduced motion. **Z-index:** `--z-sticky`, `--z-overlay`, `--z-toast` only.
 
 ## 3. Components (inventory, all in `ui/`; feature code imports only from here)
 

@@ -144,6 +144,8 @@ describe('/tutor/students/:studentId', { timeout: 20_000 }, () => {
     fail = false
     await userEvent.click(within(alert).getByRole('button', { name: 'Thử lại' }))
     await h1('Nguyễn Văn An')
+    // T-M2.19 AC8: focus goes to the student's h1, not body.
+    await waitFor(() => expect(screen.getByRole('heading', { level: 1, name: 'Nguyễn Văn An' })).toHaveFocus())
   })
 
   it('shows the skeleton after 150 ms while loading', async () => {

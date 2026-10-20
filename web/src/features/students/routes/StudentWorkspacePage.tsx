@@ -45,6 +45,16 @@ function StudentWorkspace({ studentId }: { studentId: string }) {
   const notFound = !valid || gone || (student.error instanceof ApiError && student.error.status === 404)
   usePageTitle(notFound ? t('workspace.notFoundTitle') : (student.data?.fullName ?? t('workspace.title')))
   useFocusWhenLoaded(student.data !== undefined || notFound || student.isError)
+  // Try again unmounts with the error view: once the student, the not-found view or the error again shows, focus goes
+  // to its h1 (T-M2.19 AC8, AC9 (a)).
+  const retried = useRef(false)
+  const shown = student.data !== undefined || notFound || (student.isError && !student.isFetching)
+  useEffect(() => {
+    if (!retried.current || !shown) return
+    retried.current = false
+    document.querySelector<HTMLElement>('main h1')?.focus()
+    // The results too: a fast answer can batch the fetch and its result into one render, so `shown` never turns false.
+  }, [shown, student.data, student.errorUpdatedAt])
 
   if (notFound) return <StudentNotFound />
   return (
@@ -59,7 +69,13 @@ function StudentWorkspace({ studentId }: { studentId: string }) {
             tone="danger"
             title={t('workspace.errorTitle')}
             action={
-              <Button variant="secondary" onPress={() => void student.refetch()}>
+              <Button
+                variant="secondary"
+                onPress={() => {
+                  retried.current = true
+                  void student.refetch()
+                }}
+              >
                 {t('workspace.retry')}
               </Button>
             }

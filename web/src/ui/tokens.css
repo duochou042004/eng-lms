@@ -99,6 +99,8 @@
   --motion-duration: 160ms;
   --motion-easing: ease-out;
   --motion-duration-progress: 1.2s; /* one pass of the indeterminate ProgressLine bar (T-M2.12) */
+  --motion-duration-spin: 800ms; /* one turn of the Spinner (T-M2.19) */
+  --motion-duration-pulse: 1.4s; /* one pulse of the Skeleton (T-M2.19) */
 
   /* Z-index */
   --z-sticky: 100;

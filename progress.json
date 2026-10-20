@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-10-19T09:44:17Z",
-  "updatedBy": "lead-coordinator (T-M2.19 packet at G0; session end 2026-10-19, Opus 5.5)",
+  "updatedAt": "2026-10-20T08:29:03Z",
+  "updatedBy": "lead-coordinator (T-M2.19 G3 passed, merge pending)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -32,12 +32,12 @@
   "currentTask": {
     "id": "T-M2.19",
     "title": "Automated UI checks from the G3 measurement (DEC-131 (1))",
-    "status": "ready",
+    "status": "in_review",
     "ownerRole": "FE",
     "branch": "feature/T-M2.19-ui-checks",
     "packet": "docs/tasks/T-M2.19-ui-checks.md",
-    "pr": null,
-    "lastCommit": null,
+    "pr": "117",
+    "lastCommit": "c2e300e",
     "startedAt": "2026-10-19T09:32:52Z",
     "entryGate": [
       "T-M2.18 merged — met (5dab35e)",
@@ -45,12 +45,15 @@
       "PO start signal — met (DEC-134)"
     ],
     "nextSteps": [
-      "Create feature/T-M2.19-ui-checks from develop; frontend-implementer on the packet; one gate + CI",
-      "G3 tier M: one combined QA+UX reviewer (vacuous-check focus); DEC-131 finding rules; G3 cost table; merge-gate; records"
+      "CI green on the final head; post QA-VERDICT, UX-REVIEW, LC-APPROVED; merge-gate --dry-run then real; gitlab-sync",
+      "Records: merge DEC + review record on a docs branch; QA report on qa/T-M2.19; then T-M2.17 packet (tier H)"
     ],
     "trace": [
       "DEC-131",
-      "DEC-134"
+      "DEC-134",
+      "DEC-135",
+      "DEC-136",
+      "DEC-137"
     ]
   },
   "nextTask": {

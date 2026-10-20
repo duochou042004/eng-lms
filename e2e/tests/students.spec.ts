@@ -10,9 +10,17 @@ import {
   TUTOR_USERNAME,
   tutorPassword,
 } from '../support/auth'
-import { expectNoAxeViolations, expectNoHorizontalScroll } from '../support/checks'
+import {
+  expectFocusNotLost,
+  expectNoAxeViolations,
+  expectNoHorizontalScroll,
+  expectNoMidWordBreak,
+  expectSettledAccessible,
+  lineCount,
+} from '../support/checks'
 import { evidenceRecord, evidenceShot } from '../support/evidence'
 import { expect, test } from '../support/fixtures'
+import { longData } from '../support/longData'
 import { openAccountSection } from '../support/shell'
 import { StepCounter } from '../support/steps'
 
@@ -43,13 +51,6 @@ async function apiStudent(page: Page, body: Record<string, unknown>) {
   return created.body
 }
 
-async function expectAccessible(page: Page) {
-  // A dialog that is still fading in would be measured at part opacity: wait until it has settled.
-  await expect(page.locator('[data-entering]')).toHaveCount(0)
-  await expectNoAxeViolations(page)
-  await expectNoHorizontalScroll(page)
-}
-
 /** Removes the console entries of a response a test provokes on purpose (only that status from that API path). */
 function acceptStatus(consoleGuard: string[], status: number, path: string | RegExp) {
   const prefix = `console.error: Failed to load resource: the server responded with a status of ${status} `
@@ -61,14 +62,6 @@ function acceptStatus(consoleGuard: string[], status: number, path: string | Reg
       consoleGuard.splice(i, 1)
   }
 }
-
-/** How many line boxes a cell's or element's text takes. */
-const lineCount = (target: Locator) =>
-  target.evaluate((el) => {
-    const range = document.createRange()
-    range.selectNodeContents(el)
-    return new Set([...range.getClientRects()].map((r) => Math.round(r.top))).size
-  })
 
 const wide = (page: Page) => page.viewportSize()!.width >= 768
 
@@ -120,7 +113,7 @@ test.describe('Add student (F2) and the credentials card', () => {
     await expect(card).toContainText(username)
     await expect(card).toContainText(new URL('/login', page.url()).href)
     await expect(card).toContainText('Mật khẩu này chỉ hiện một lần.')
-    await expectAccessible(page)
+    await expectSettledAccessible(page)
     await shot(page, testInfo, 'credentials-card-vi')
     const copyPassword = card.getByRole('button', { name: 'Sao chép mật khẩu' })
     // Position within the card (the page may scroll to the clicked button).
@@ -181,7 +174,7 @@ test.describe('Add student (F2) and the credentials card', () => {
     const name = `Trần Thị Liên Hệ ${testInfo.project.name} ${t}`
     await page.goto('/tutor/students/new')
     await expect(h1(page, 'Thêm học viên')).toBeVisible()
-    await expectAccessible(page)
+    await expectSettledAccessible(page)
     await shot(page, testInfo, 'add-empty-vi')
     await fullNameField(page).fill(name)
     await expect(usernameField(page)).toHaveValue(/^tranthilienhe/)
@@ -199,7 +192,7 @@ test.describe('Add student (F2) and the credentials card', () => {
     }
     await page.getByRole('button', { name: 'Ghi chú (không bắt buộc)' }).click()
     await page.getByRole('textbox', { name: 'Ghi chú' }).fill('Thích luyện nói.\nHọc tối thứ Ba.')
-    await expectAccessible(page)
+    await expectSettledAccessible(page)
     await shot(page, testInfo, 'add-filled-vi')
     await page.getByRole('button', { name: 'Tạo', exact: true }).click()
     await expect(page.getByRole('heading', { level: 2, name: 'Đã tạo học viên' })).toBeFocused()
@@ -224,7 +217,7 @@ test.describe('Add student (F2) and the credentials card', () => {
     await expect(note).toHaveText('Thích luyện nói.\nHọc tối thứ Ba.')
     // Two lines: the line break is kept (white-space: pre-wrap).
     expect(await note.evaluate((el) => getComputedStyle(el).whiteSpace)).toBe('pre-wrap')
-    await expectAccessible(page)
+    await expectSettledAccessible(page)
     await shot(page, testInfo, 'workspace-vi')
   })
 
@@ -239,7 +232,7 @@ test.describe('Add student (F2) and the credentials card', () => {
     await page.getByRole('button', { name: 'Tạo', exact: true }).click()
     const summary = page.getByRole('alert').filter({ hasText: 'Chưa tạo được học viên' })
     await expect(summary).toBeFocused()
-    await expectAccessible(page)
+    await expectSettledAccessible(page)
     await shot(page, testInfo, 'add-errors-vi')
 
     const username = `e2e-taken-${t}`
@@ -257,7 +250,7 @@ test.describe('Add student (F2) and the credentials card', () => {
     await usernameField(page).fill(`${username}x`)
     await usernameField(page).fill(username)
     await expect(page.getByText('Đã có người dùng')).toBeVisible()
-    await expectAccessible(page)
+    await expectSettledAccessible(page)
   })
 
   test('AC6: leaving a dirty form asks (navigation, home link); a clean or created form leaves; sign-out never asks', async ({
@@ -276,10 +269,13 @@ test.describe('Add student (F2) and the credentials card', () => {
     await dialog.getByRole('button', { name: 'Tiếp tục nhập' }).click()
     await expect(page).toHaveURL(/\/tutor\/students\/new$/)
     await expect(fullNameField(page)).toHaveValue('Chưa lưu')
+    await expect(dialog).toHaveCount(0)
+    await expectFocusNotLost(page)
     await page.getByRole('banner').getByRole('link').first().click() // the workspace name: the home link
     await expect(dialog).toBeVisible()
     await dialog.getByRole('button', { name: 'Bỏ', exact: true }).click()
     await expect(page).toHaveURL(/\/tutor\/today$/)
+    await expectFocusNotLost(page)
 
     // A clean form leaves without asking.
     await page.goto('/tutor/students/new')
@@ -406,7 +402,7 @@ test.describe('Students list', () => {
     await apiStudent(page, { fullName: `Nguyễn Văn An ${t}`, username: dotted, email: longEmail })
     await page.reload()
     await expect(h1(page, 'Học viên')).toBeVisible()
-    await expectAccessible(page)
+    await expectSettledAccessible(page)
     await shot(page, testInfo, 'list-populated-vi')
 
     const box = page.getByRole('searchbox', { name: 'Tìm kiếm' })
@@ -421,7 +417,7 @@ test.describe('Students list', () => {
     await expect(
       page.getByRole('heading', { level: 2, name: `Không có học viên nào khớp với “luu tru ${t}”` }),
     ).toBeVisible()
-    await expectAccessible(page)
+    await expectSettledAccessible(page)
     await shot(page, testInfo, 'list-filtered-empty-vi')
     await page.getByText('Gồm cả học viên đã lưu trữ').click()
     await expect(page.getByRole('link', { name: `Lưu Trữ ${t}` })).toBeVisible()
@@ -451,12 +447,18 @@ test.describe('Students list', () => {
     // Next is disabled on the last page: focus moved to Previous, not the body; the page is announced (AC12 (a), (b)).
     await expect(pages.getByRole('button', { name: 'Trang trước' })).toBeFocused()
     await expect(pages.getByRole('status')).toHaveText('Trang 2 / 2')
+    await expectFocusNotLost(page)
     await page.reload()
     await expect(page.getByRole('link', { name: `${prefix} 26` })).toBeVisible()
     await page.goBack()
     await expect(page.getByRole('link', { name: `${prefix} 01` })).toBeVisible()
     await page.goForward()
     await expect(page.getByRole('link', { name: `${prefix} 26` })).toBeVisible()
+    // T-M2.19 AC4: Previous on the second page is disabled by its own press: focus moves to Next.
+    await pages.getByRole('button', { name: 'Trang trước' }).click()
+    await expect(page.getByRole('link', { name: `${prefix} 01` })).toBeVisible()
+    await expect(pages.getByRole('status')).toHaveText('Trang 1 / 2')
+    await expectFocusNotLost(page)
 
     // Newest: by creation, newest first.
     await page.goto(`/tutor/students?q=${encodeURIComponent(prefix)}`)
@@ -534,7 +536,7 @@ test.describe('Students list', () => {
     await page.goto('/tutor/students')
     await expect(page.getByRole('heading', { level: 2, name: 'Thêm học viên đầu tiên' })).toBeVisible()
     await expect(page.getByRole('main').getByRole('link', { name: 'Thêm học viên' })).toHaveCount(1)
-    await expectAccessible(page)
+    await expectSettledAccessible(page)
     await shot(page, testInfo, 'list-first-use-vi')
   })
 })
@@ -684,7 +686,7 @@ test.describe('Workspace page', () => {
       '/tutor/students',
     ])
     await expect(contacts.getByText('Chưa có').first()).toBeVisible()
-    await expectAccessible(page)
+    await expectSettledAccessible(page)
     await shot(page, testInfo, 'workspace-refused-values-vi')
 
     await page.goto('/tutor/students/00000000-0000-4000-8000-000000000000')
@@ -694,7 +696,7 @@ test.describe('Workspace page', () => {
       '/tutor/students',
     )
     acceptStatus(consoleGuard, 404, /^\/api\/v1\/tutor\/students\//)
-    await expectAccessible(page)
+    await expectSettledAccessible(page)
     await shot(page, testInfo, 'workspace-not-found-vi')
     const requests: string[] = []
     page.on('request', (r) => requests.push(new URL(r.url()).pathname))
@@ -715,25 +717,25 @@ test.describe('English UI (AC10)', () => {
     await page.goto('/tutor/students')
     await expect(h1(page, 'Students')).toBeVisible()
     await expect(page.getByRole('table').or(page.getByRole('list', { name: 'Students' }))).toBeVisible()
-    await expectAccessible(page)
+    await expectSettledAccessible(page)
     await shot(page, testInfo, 'list-populated-en')
     await page.getByRole('main').getByRole('link', { name: 'Add student' }).first().click()
     await expect(h1(page, 'Add student')).toBeFocused()
     await page.getByRole('button', { name: 'Create', exact: true }).click()
     await expect(page.getByRole('alert').filter({ hasText: "The student wasn't created" })).toBeFocused()
-    await expectAccessible(page)
+    await expectSettledAccessible(page)
     await shot(page, testInfo, 'add-errors-en')
     const name = `English Card ${testInfo.project.name} ${token()}`
     await page.getByRole('textbox', { name: 'Full name (required)' }).fill(name)
     await expect(page.getByText('Available', { exact: true })).toBeVisible()
     await page.getByRole('button', { name: 'Create', exact: true }).click()
     await expect(page.getByRole('heading', { level: 2, name: 'Student created' })).toBeFocused()
-    await expectAccessible(page)
+    await expectSettledAccessible(page)
     await shot(page, testInfo, 'credentials-card-en')
     await page.getByRole('link', { name: 'Open workspace' }).click()
     await expect(h1(page, name)).toBeVisible()
     await expect(page.getByText('Not added').first()).toBeVisible()
-    await expectAccessible(page)
+    await expectSettledAccessible(page)
     await shot(page, testInfo, 'workspace-en')
   })
 })
@@ -861,13 +863,14 @@ test.describe('Edit profile (T-M2.14)', () => {
       expect(Math.abs(e.x - h.x), 'start-aligned').toBeLessThanOrEqual(1)
     }
     await expectActionRow(page, accountRegion(page).locator('[class*="stackedActions"]'))
-    await expectAccessible(page)
+    await expectSettledAccessible(page)
     await shot(page, testInfo, 'profile-view-vi')
 
     await edit.click()
     const form = page.getByRole('form', { name: 'Sửa hồ sơ' })
     await expect(form).toBeVisible()
     await expect(fullNameField(page)).toBeFocused()
+    await expectFocusNotLost(page)
     await expect(accountRegion(page).getByText('Hãy lưu hoặc huỷ thay đổi trước.')).toBeVisible()
     // AC12 (e): "Other contacts" is an h4 no larger than the Contacts h3, with no inline padding.
     const sizes = await form.evaluate((el) => {
@@ -889,7 +892,7 @@ test.describe('Edit profile (T-M2.14)', () => {
     await fullNameField(page).fill('')
     await page.getByRole('button', { name: 'Lưu', exact: true }).click()
     await expect(page.getByRole('alert').filter({ hasText: 'Chưa lưu được hồ sơ' })).toBeFocused()
-    await expectAccessible(page)
+    await expectSettledAccessible(page)
     await shot(page, testInfo, 'edit-errors-vi')
     expect(requests).toEqual([])
 
@@ -904,6 +907,7 @@ test.describe('Edit profile (T-M2.14)', () => {
     await expect(discard).toHaveCount(0)
     await expect(page.locator('[data-exiting]')).toHaveCount(0)
     await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))))
+    await expectFocusNotLost(page)
 
     await fullNameField(page).fill(created.student.fullName)
     await expect(fullNameField(page)).toHaveValue(created.student.fullName)
@@ -931,8 +935,9 @@ test.describe('Edit profile (T-M2.14)', () => {
     await expect(contacts.getByRole('link', { name: `Gửi email tới moi.${t}@example.com` })).toBeVisible()
     const saved = toastRegion(page).getByRole('status').filter({ hasText: 'Đã lưu hồ sơ' })
     await expect(saved).toBeVisible()
+    await expectFocusNotLost(page)
     await expectToastPlacement(page)
-    await expectAccessible(page)
+    await expectSettledAccessible(page)
     await shot(page, testInfo, 'profile-saved-toast-vi')
     // A toast without an action closes by itself (5 s, interaction-states §4).
     await expect(toastRegion(page)).toBeHidden({ timeout: 15_000 })
@@ -996,16 +1001,19 @@ test.describe('Edit profile (T-M2.14)', () => {
     const dialog = page.getByRole('alertdialog', { name: 'Đã có thay đổi ở nơi khác' })
     await expect(dialog).toBeVisible()
     await expect(dialog.getByRole('button', { name: 'Huỷ' })).toBeFocused()
-    await expectAccessible(page)
+    await expectSettledAccessible(page)
     await shot(page, testInfo, 'conflict-dialog-vi')
     await dialog.getByRole('button', { name: 'Sao chép ghi chú của tôi' }).click()
     expect(await page.evaluate(() => navigator.clipboard.readText())).toBe('Ghi chú của tab này')
     await dialog.getByRole('button', { name: 'Huỷ' }).click()
     await expect(page.getByRole('textbox', { name: 'Ghi chú' })).toHaveValue('Ghi chú của tab này')
+    await expect(dialog).toHaveCount(0)
+    await expectFocusNotLost(page)
     await page.getByRole('button', { name: 'Lưu', exact: true }).click()
     await dialog.getByRole('button', { name: 'Tải lại' }).click()
     await expect(page.getByRole('form')).toHaveCount(0)
     await expect(page.getByRole('region', { name: 'Liên hệ', exact: true })).toContainText('tab.khac@example.com')
+    await expectFocusNotLost(page)
 
     // A status button with a stale version: the same dialog.
     await other.reload()
@@ -1015,6 +1023,8 @@ test.describe('Edit profile (T-M2.14)', () => {
     await expect(dialog).toBeVisible()
     await dialog.getByRole('button', { name: 'Tải lại' }).click()
     await expect(accountRegion(page).getByRole('button', { name: 'Tiếp tục học' })).toBeVisible()
+    await expect(dialog).toHaveCount(0)
+    await expectFocusNotLost(page)
     acceptStatus(consoleGuard, 409, new RegExp(`^/api/v1/tutor/students/${created.student.id}(/status)?$`))
   })
 
@@ -1062,7 +1072,7 @@ test.describe('Account section (T-M2.14)', () => {
     await expect(page.locator('main header')).toContainText('Tạm nghỉ')
     await expect(toastRegion(page)).toContainText(`Đã chuyển ${created.student.fullName} sang Tạm nghỉ`)
     await expectToastPlacement(page)
-    await expectAccessible(page)
+    await expectSettledAccessible(page)
     await shot(page, testInfo, 'account-paused-vi')
     await account.getByRole('button', { name: 'Tiếp tục học' }).click()
     await expect(account).toContainText('Đang học')
@@ -1122,7 +1132,7 @@ test.describe('Account section (T-M2.14)', () => {
     const [r, toastBox] = [await box(reactivate), await box(toastRegion(page))]
     expect(r.y + r.height, 'Reactivate above the toast').toBeLessThanOrEqual(toastBox.y)
     await expectToastPlacement(page)
-    await expectAccessible(page)
+    await expectSettledAccessible(page)
     await shot(page, testInfo, 'archive-toast-vi')
     // Persistent: still there after 10 s (an action toast has no timeout).
     await page.waitForTimeout(10_500)
@@ -1140,6 +1150,7 @@ test.describe('Account section (T-M2.14)', () => {
     await expect(account.getByRole('button', { name: 'Tạm nghỉ' })).toBeVisible()
     await expect(toastRegion(page)).toContainText('Đã hoàn tác lưu trữ')
     await expect(page.getByRole('heading', { level: 2, name: 'Tài khoản' })).toBeFocused()
+    await expectFocusNotLost(page)
     expect(await trySignIn(browser, student.credentials)).toBe(200)
     acceptStatus(consoleGuard, 401, '/api/v1/auth/login')
   })
@@ -1243,10 +1254,12 @@ test.describe('Account section (T-M2.14)', () => {
     await expect(conflict.getByRole('button', { name: 'Huỷ' })).toBeFocused()
     acceptStatus(consoleGuard, 409, `/api/v1/tutor/students/${created.student.id}/status`)
     await expectUnobscured(conflict, ['Tải lại', 'Huỷ'])
-    await expectAccessible(page)
+    await expectSettledAccessible(page)
     await shot(page, testInfo, 'conflict-over-toasts-vi')
     await conflict.getByRole('button', { name: 'Tải lại' }).click()
     await expect(account.getByRole('button', { name: 'Đặt lại mật khẩu' })).toBeVisible()
+    await expect(conflict).toHaveCount(0)
+    await expectFocusNotLost(page)
     // The toasts come back once the dialog is closed.
     await expect(toastRegion(page)).toBeVisible()
     await expect(toastRegion(page)).not.toHaveAttribute('inert')
@@ -1258,6 +1271,7 @@ test.describe('Account section (T-M2.14)', () => {
     await expectUnobscured(reset, ['Đặt lại mật khẩu', 'Huỷ'])
     await reset.getByRole('button', { name: 'Huỷ' }).click()
     await expect(reset).toHaveCount(0)
+    await expectFocusNotLost(page)
 
     // AC12 (b): Undo with two other toasts open: focus does not stay in the region.
     await page.reload()
@@ -1272,6 +1286,7 @@ test.describe('Account section (T-M2.14)', () => {
     await page.keyboard.press('Enter')
     await expect(account.getByRole('button', { name: 'Tạm nghỉ' })).toBeVisible()
     await expect(page.getByRole('heading', { level: 2, name: 'Tài khoản' })).toBeFocused()
+    await expectFocusNotLost(page)
   })
 
   test('AC5/AC7: the Account alerts: a status error, an Undo failure, a reset on a student archived meanwhile', async ({
@@ -1295,7 +1310,7 @@ test.describe('Account section (T-M2.14)', () => {
     await expect(account.getByRole('alert')).toHaveText('Không chuyển học viên sang tạm nghỉ được. Hãy thử lại.')
     await expect(toastRegion(page)).toHaveCount(0)
     await expect(account).toContainText('Đang học')
-    await expectAccessible(page)
+    await expectSettledAccessible(page)
     await shot(page, testInfo, 'account-alert-status-vi')
     await page.unroute(statusUrl)
 
@@ -1333,7 +1348,7 @@ test.describe('Account section (T-M2.14)', () => {
     await expect(account.getByRole('alert')).toHaveText('Học viên này đã được lưu trữ. Hãy kích hoạt lại trước.')
     await expect(account.getByRole('button', { name: 'Kích hoạt lại' })).toBeVisible()
     await expect(page.getByRole('heading', { name: 'Mật khẩu tạm mới' })).toHaveCount(0)
-    await expectAccessible(page)
+    await expectSettledAccessible(page)
     await shot(page, testInfo, 'account-alert-reset-archived-vi')
     acceptStatus(consoleGuard, 503, `/api/v1/tutor/students/${created.student.id}/status`)
     acceptStatus(
@@ -1365,13 +1380,15 @@ test.describe('Reset password (F10, T-M2.14)', () => {
     })
     await expect(dialog).toContainText('đăng xuất trên mọi thiết bị')
     await expect(dialog.getByRole('button', { name: 'Huỷ' })).toBeFocused()
-    await expectAccessible(page)
+    await expectSettledAccessible(page)
     await shot(page, testInfo, 'reset-dialog-vi')
     const heading = page.getByRole('heading', { level: 2, name: 'Mật khẩu tạm mới' })
     await steps.step('Confirm Reset password', async () => {
       await dialog.getByRole('button', { name: 'Đặt lại mật khẩu' }).click()
       await expect(heading).toBeFocused()
     })
+    await expect(dialog).toHaveCount(0)
+    await expectFocusNotLost(page)
     const card = page.locator('section[class*="card"]', { has: heading })
     await expect(card).toContainText(`Gửi cho ${created.student.fullName} thông tin đăng nhập mới này.`)
     await expect(card).toContainText(new URL('/login', page.url()).href)
@@ -1379,7 +1396,7 @@ test.describe('Reset password (F10, T-M2.14)', () => {
     const password = (await card.locator('dd span[class*="secret"]').textContent())!.trim()
     expect(password.length).toBeGreaterThanOrEqual(14)
     await expectActionRow(page, card.locator('[class*="stackedActions"]').first())
-    await expectAccessible(page)
+    await expectSettledAccessible(page)
     await shot(page, testInfo, 'reset-card-vi')
     await steps.step('Copy message', async () => {
       await card.getByRole('button', { name: 'Sao chép tin nhắn' }).click()
@@ -1406,6 +1423,7 @@ test.describe('Reset password (F10, T-M2.14)', () => {
     expect(kept).not.toContain(password)
     await page.getByRole('button', { name: 'Xong' }).click()
     await expect(account.getByRole('button', { name: 'Đặt lại mật khẩu' })).toBeFocused()
+    await expectFocusNotLost(page)
     await expect(page.getByText(password)).toHaveCount(0)
 
     // The student's open session ended; the old password fails; the temporary one signs in to the forced change.
@@ -1459,13 +1477,13 @@ test.describe('English UI (T-M2.14 AC10)', () => {
     const url = `/tutor/students/${created.student.id}`
     await page.goto(url)
     await expect(h1(page, created.student.fullName)).toBeVisible()
-    await expectAccessible(page)
+    await expectSettledAccessible(page)
     await shot(page, testInfo, 'profile-view-en')
     await page.getByRole('button', { name: 'Edit profile' }).click()
     await page.getByRole('textbox', { name: 'Full name (required)' }).fill('')
     await page.getByRole('button', { name: 'Save', exact: true }).click()
     await expect(page.getByRole('alert').filter({ hasText: "The profile wasn't saved" })).toBeFocused()
-    await expectAccessible(page)
+    await expectSettledAccessible(page)
     await shot(page, testInfo, 'edit-errors-en')
     // A conflict: another tab saves first.
     await page.getByRole('textbox', { name: 'Full name (required)' }).fill(created.student.fullName)
@@ -1479,7 +1497,7 @@ test.describe('English UI (T-M2.14 AC10)', () => {
     const conflict = page.getByRole('alertdialog', { name: 'This was changed elsewhere' })
     await expect(conflict.getByRole('button', { name: 'Copy my note' })).toBeVisible()
     acceptStatus(consoleGuard, 409, url.replace('/tutor', '/api/v1/tutor'))
-    await expectAccessible(page)
+    await expectSettledAccessible(page)
     await shot(page, testInfo, 'conflict-dialog-en')
     await conflict.getByRole('button', { name: 'Reload' }).click()
     await expect(page.getByRole('form')).toHaveCount(0)
@@ -1489,7 +1507,7 @@ test.describe('English UI (T-M2.14 AC10)', () => {
     await account.getByRole('button', { name: 'Archive' }).click()
     await expect(toastRegion(page)).toContainText('archived. They can no longer sign in.')
     await expect(toastRegion(page).getByRole('button', { name: 'Undo' })).toBeVisible()
-    await expectAccessible(page)
+    await expectSettledAccessible(page)
     await shot(page, testInfo, 'archive-toast-en')
     await toastRegion(page).getByRole('button', { name: 'Undo' }).click()
     await expect(account.getByRole('button', { name: 'Resume' })).toBeVisible()
@@ -1497,11 +1515,11 @@ test.describe('English UI (T-M2.14 AC10)', () => {
     await account.getByRole('button', { name: 'Reset password' }).click()
     const dialog = page.getByRole('alertdialog', { name: `Reset the password for ${created.student.fullName}?` })
     await expect(dialog).toBeVisible()
-    await expectAccessible(page)
+    await expectSettledAccessible(page)
     await shot(page, testInfo, 'reset-dialog-en')
     await dialog.getByRole('button', { name: 'Reset password' }).click()
     await expect(page.getByRole('heading', { level: 2, name: 'New temporary password' })).toBeFocused()
-    await expectAccessible(page)
+    await expectSettledAccessible(page)
     await shot(page, testInfo, 'reset-card-en')
     await page.getByRole('button', { name: 'Done' }).click()
     await expect(account.getByRole('button', { name: 'Reset password' })).toBeFocused()
@@ -1571,7 +1589,7 @@ test.describe('Guardians (T-M2.15)', () => {
       'Phụ huynh',
       'Tài khoản',
     ])
-    await expectAccessible(page)
+    await expectSettledAccessible(page)
     await shot(page, testInfo, 'guardians-empty-vi')
 
     const steps = new StepCounter()
@@ -1580,6 +1598,7 @@ test.describe('Guardians (T-M2.15)', () => {
       await section.getByRole('button', { name: 'Thêm phụ huynh' }).click()
       await expect(form.getByRole('textbox', { name: 'Tên (bắt buộc)' })).toBeFocused()
     })
+    await expectFocusNotLost(page)
     await expectFieldsStacked(form)
     await expectActionRow(page, form.locator('[class*="stackedActions"]'))
     await shot(page, testInfo, 'guardian-add-form-vi')
@@ -1599,6 +1618,7 @@ test.describe('Guardians (T-M2.15)', () => {
       budget: 3,
     })
     await expect(toastRegion(page).getByRole('status').filter({ hasText: 'Đã thêm phụ huynh' })).toBeVisible()
+    await expectFocusNotLost(page)
     expect(writes).toEqual([{ method: 'POST', body: { name: 'Lê Thị Hư Cấu' } }])
 
     await section.getByRole('button', { name: 'Thêm phụ huynh' }).click()
@@ -1632,7 +1652,7 @@ test.describe('Guardians (T-M2.15)', () => {
     expect(borders).toEqual(['0px', '1px'])
     await expectActionRow(page, second.locator('[class*="stackedActions"]'))
     await expect(toastRegion(page)).toBeHidden({ timeout: 15_000 })
-    await expectAccessible(page)
+    await expectSettledAccessible(page)
     await shot(page, testInfo, 'guardians-two-vi')
     // The list stays after a reload (insertion order).
     await page.reload()
@@ -1669,7 +1689,7 @@ test.describe('Guardians (T-M2.15)', () => {
       const b = await box(part)
       expect(b.x + b.width, 'inside the column').toBeLessThanOrEqual(sectionBox.x + sectionBox.width + 1)
     }
-    await expectAccessible(page)
+    await expectSettledAccessible(page)
     await shot(page, testInfo, 'guardians-ten-vi')
   })
 
@@ -1687,6 +1707,7 @@ test.describe('Guardians (T-M2.15)', () => {
     })
     const name = form.getByRole('textbox', { name: 'Tên (bắt buộc)' })
     await expect(name).toBeFocused()
+    await expectFocusNotLost(page)
     await expect(form.getByRole('textbox', { name: 'Điện thoại' })).toHaveValue('+1 555 0110')
     await expect(form.getByRole('textbox', { name: 'Email' })).toHaveValue('guardian.11@example.com')
     await expectFieldsStacked(form)
@@ -1700,7 +1721,7 @@ test.describe('Guardians (T-M2.15)', () => {
       'Hãy nhập tên phụ huynh.',
       'Hãy nhập địa chỉ email dạng ten@vidu.com.',
     ])
-    await expectAccessible(page)
+    await expectSettledAccessible(page)
     await shot(page, testInfo, 'guardian-edit-errors-vi')
     expect(writes).toEqual([])
     await name.fill('Đỗ Thị Hư Cấu')
@@ -1718,11 +1739,17 @@ test.describe('Guardians (T-M2.15)', () => {
     const item = guardiansRegion(page).getByRole('listitem').first()
     await expect(item.getByRole('link', { name: /^Gọi \+1 555 0177$/ })).toBeVisible()
     await expect(toastRegion(page).getByRole('status').filter({ hasText: 'Đã lưu thông tin phụ huynh' })).toBeVisible()
+    await expectFocusNotLost(page)
     // Unchanged: no request.
     await edit.click()
     await form.getByRole('button', { name: 'Lưu', exact: true }).click()
     await expect(edit).toBeFocused()
     expect(writes).toHaveLength(1)
+    // T-M2.19 AC4: a clean Cancel closes the form.
+    await edit.click()
+    await form.getByRole('button', { name: 'Huỷ' }).click()
+    await expect(page.getByRole('form')).toHaveCount(0)
+    await expectFocusNotLost(page)
   })
 
   test('AC4: two pages: a stale save opens the conflict dialog (Copy my notes, Cancel, Reload); a removed guardian shows the alert', async ({
@@ -1750,16 +1777,19 @@ test.describe('Guardians (T-M2.15)', () => {
       name: 'Đã có thay đổi ở nơi khác',
     })
     await expect(dialog).toBeVisible()
-    await expectAccessible(page)
+    await expectSettledAccessible(page)
     await shot(page, testInfo, 'guardian-conflict-vi')
     await dialog.getByRole('button', { name: 'Sao chép ghi chú phụ huynh của tôi' }).click()
     expect(await page.evaluate(() => navigator.clipboard.readText())).toBe('Ghi chú của tab này')
     await dialog.getByRole('button', { name: 'Huỷ' }).click()
     await expect(page.getByRole('textbox', { name: 'Ghi chú' })).toHaveValue('Ghi chú của tab này')
+    await expect(dialog).toHaveCount(0)
+    await expectFocusNotLost(page)
     await page.getByRole('button', { name: 'Lưu', exact: true }).click()
     await dialog.getByRole('button', { name: 'Tải lại' }).click()
     await expect(page.getByRole('form')).toHaveCount(0)
     await expect(guardiansRegion(page).getByRole('link', { name: /^Gọi \+1 555 0199$/ })).toBeVisible()
+    await expectFocusNotLost(page)
 
     // The other page removes the second guardian; this page saves it: 404 → refetched, the alert has focus.
     await page.getByRole('button', { name: 'Sửa Vũ Văn Giả' }).click()
@@ -1772,7 +1802,7 @@ test.describe('Guardians (T-M2.15)', () => {
     await expect(removed).toBeVisible()
     await expect(page.locator('#guardians-removed')).toBeFocused()
     expect(await guardianNames(page)).toEqual(['Vũ Thị Hư Cấu'])
-    await expectAccessible(page)
+    await expectSettledAccessible(page)
     await shot(page, testInfo, 'guardian-removed-elsewhere-vi')
     await page.getByRole('button', { name: 'Thêm phụ huynh' }).click()
     await expect(removed).toHaveCount(0)
@@ -1803,7 +1833,7 @@ test.describe('Guardians (T-M2.15)', () => {
     await expect(alert.locator('..')).toBeFocused()
     await expect(guardiansRegion(page).getByRole('heading', { level: 3 })).toHaveCount(10)
     await expect(page.getByRole('textbox', { name: 'Tên (bắt buộc)' })).toHaveValue('Người Thứ Mười Một')
-    await expectAccessible(page)
+    await expectSettledAccessible(page)
     acceptStatus(consoleGuard, 422, new RegExp(`^/api/v1/tutor/students/${created.student.id}/guardians$`))
   })
 
@@ -1826,10 +1856,11 @@ test.describe('Guardians (T-M2.15)', () => {
     })
     await expect(dialog).toContainText('Không thể hoàn tác.')
     await expect(dialog.getByRole('button', { name: 'Huỷ' })).toBeFocused()
-    await expectAccessible(page)
+    await expectSettledAccessible(page)
     await shot(page, testInfo, 'guardian-remove-dialog-vi')
     await dialog.getByRole('button', { name: 'Huỷ' }).click()
     await expect(remove).toBeFocused()
+    await expectFocusNotLost(page)
     expect(writes).toEqual([])
     // A server failure (once): the dialog stays with its alert.
     await page.route('**/api/v1/tutor/guardians/*', (route) =>
@@ -1849,13 +1880,14 @@ test.describe('Guardians (T-M2.15)', () => {
     await remove.click()
     await dialog.getByRole('button', { name: 'Xoá phụ huynh' }).click()
     await expect(dialog.getByRole('alert')).toHaveText('Không xoá được phụ huynh. Hãy thử lại.')
-    await expectAccessible(page)
+    await expectSettledAccessible(page)
     await shot(page, testInfo, 'guardian-remove-error-vi')
     await page.unroute('**/api/v1/tutor/guardians/*')
     await dialog.getByRole('button', { name: 'Xoá phụ huynh' }).click()
     await expect(dialog).toHaveCount(0)
     await expect(page.getByRole('heading', { level: 2, name: 'Phụ huynh', exact: true })).toBeFocused()
     await expect(toastRegion(page).getByRole('status').filter({ hasText: 'Đã xoá Phan Thị Hư Cấu' })).toBeVisible()
+    await expectFocusNotLost(page)
     expect(await guardianNames(page)).toEqual(['Phan Văn Giả'])
     await page.reload()
     await expect(guardiansRegion(page).getByRole('heading', { level: 3 })).toHaveText(['Phan Văn Giả'])
@@ -1873,6 +1905,8 @@ test.describe('Guardians (T-M2.15)', () => {
     for (const name of ['Sửa Hồ Thị Hư Cấu', 'Xoá Hồ Thị Hư Cấu', 'Thêm phụ huynh'])
       await expect(section.getByRole('button', { name })).toBeDisabled()
     await page.getByRole('button', { name: 'Huỷ', exact: true }).click()
+    await expect(page.getByRole('form')).toHaveCount(0)
+    await expectFocusNotLost(page)
     await section.getByRole('button', { name: 'Thêm phụ huynh' }).click()
     await expect(page.getByRole('button', { name: 'Sửa hồ sơ' })).toBeDisabled()
     await expect(section.getByRole('button', { name: 'Sửa Hồ Thị Hư Cấu' })).toBeDisabled()
@@ -1887,10 +1921,12 @@ test.describe('Guardians (T-M2.15)', () => {
     await expect(discard).toHaveCount(0)
     await expect(page).toHaveURL(new RegExp(`/tutor/students/${created.student.id}$`))
     await expect(page.locator('[data-exiting]')).toHaveCount(0)
+    await expectFocusNotLost(page)
     await page.getByRole('form', { name: 'Phụ huynh mới' }).getByRole('button', { name: 'Huỷ' }).click()
     await discard.getByRole('button', { name: 'Bỏ thay đổi' }).click()
     await expect(section.getByRole('button', { name: 'Thêm phụ huynh' })).toBeFocused()
     await expect(page.getByRole('form')).toHaveCount(0)
+    await expectFocusNotLost(page)
   })
 
   test('AC7/AC9: Add student with guardian rows: the name error opens the section; the filled rows are sent and listed', async ({
@@ -1913,6 +1949,7 @@ test.describe('Guardians (T-M2.15)', () => {
     for (let i = 0; i < 3; i++) await addRow.click()
     const row = (n: number) => page.getByRole('group', { name: `Phụ huynh ${n}` })
     await expect(row(3).getByRole('textbox', { name: 'Tên (bắt buộc)' })).toBeFocused()
+    await expectFocusNotLost(page)
     await row(1).getByRole('textbox', { name: 'Tên (bắt buộc)' }).fill('Lý Thị Hư Cấu')
     await row(1).getByRole('textbox', { name: 'Điện thoại' }).fill('+1 555 0160')
     await row(2).getByRole('textbox', { name: 'Quan hệ' }).fill('   ')
@@ -1929,7 +1966,7 @@ test.describe('Guardians (T-M2.15)', () => {
     const nameBox = await box(row(1).getByRole('textbox', { name: 'Tên (bắt buộc)' }))
     expect(Math.abs(removeBox.x - nameBox.x), 'Remove start-aligned').toBeLessThanOrEqual(1)
     expect(removeBox.y, 'Remove last').toBeGreaterThan(nameBox.y)
-    await expectAccessible(page)
+    await expectSettledAccessible(page)
     await shot(page, testInfo, 'add-guardian-rows-error-vi')
     expect(bodies).toEqual([])
     await row(3).getByRole('textbox', { name: 'Tên (bắt buộc)' }).fill('Lý Văn Giả')
@@ -1957,6 +1994,10 @@ test.describe('Guardians (T-M2.15)', () => {
     await expect(page.getByRole('heading', { level: 2, name: 'Đã tạo học viên' })).toBeFocused()
     expect(bodies).toHaveLength(1)
     expect(bodies[0]).not.toHaveProperty('guardians')
+    // T-M2.19 AC4: Add another replaces the card with an empty form.
+    await page.getByRole('button', { name: 'Thêm học viên khác' }).click()
+    await expect(fullNameField(page)).toHaveValue('')
+    await expectFocusNotLost(page)
   })
 
   test('AC9: keyboard-only add, edit and remove (Tab, typing, Enter)', async ({ page }, testInfo) => {
@@ -2024,7 +2065,7 @@ test.describe('English UI (T-M2.15 AC9)', () => {
     const none = await profileStudent(page, 'English No Guardians')
     await page.goto(`/tutor/students/${none.student.id}`)
     await expect(guardiansRegion(page).getByText('No guardians added.')).toBeVisible()
-    await expectAccessible(page)
+    await expectSettledAccessible(page)
     await shot(page, testInfo, 'guardians-empty-en')
 
     const ten = await profileStudent(page, 'English Ten Guardians', {
@@ -2035,7 +2076,7 @@ test.describe('English UI (T-M2.15 AC9)', () => {
     await page.goto(`/tutor/students/${ten.student.id}`)
     await expect(guardiansRegion(page).getByRole('heading', { level: 3 })).toHaveCount(10)
     await expect(guardiansRegion(page).getByText('Up to 10 guardians. Remove one to add another.')).toBeVisible()
-    await expectAccessible(page)
+    await expectSettledAccessible(page)
     await shot(page, testInfo, 'guardians-ten-en')
 
     const two = await profileStudent(page, 'English Two Guardians', {
@@ -2051,7 +2092,7 @@ test.describe('English UI (T-M2.15 AC9)', () => {
     await page.goto(`/tutor/students/${two.student.id}`)
     await expect(guardiansRegion(page).getByRole('heading', { level: 3 })).toHaveText(['Jane Invented', 'John Madeup'])
     await expect(guardiansRegion(page).getByText('Not added')).toHaveCount(4)
-    await expectAccessible(page)
+    await expectSettledAccessible(page)
     await shot(page, testInfo, 'guardians-two-en')
     await page.getByRole('button', { name: 'Edit Jane Invented' }).click()
     const form = page.getByRole('form', {
@@ -2063,7 +2104,7 @@ test.describe('English UI (T-M2.15 AC9)', () => {
     await expect(page.getByRole('alert').filter({ hasText: "The guardian wasn't saved" })).toBeFocused()
     // The summary's link and the field's own message.
     await expect(form.getByText("Enter the guardian's name.")).toHaveCount(2)
-    await expectAccessible(page)
+    await expectSettledAccessible(page)
     await shot(page, testInfo, 'guardian-edit-errors-en')
     await form.getByRole('button', { name: 'Cancel' }).click()
     await page.getByRole('alertdialog').getByRole('button', { name: 'Discard' }).click()
@@ -2072,7 +2113,7 @@ test.describe('English UI (T-M2.15 AC9)', () => {
       name: 'Remove John Madeup from the guardians?',
     })
     await expect(dialog).toContainText("Their contact details will be deleted. This can't be undone.")
-    await expectAccessible(page)
+    await expectSettledAccessible(page)
     await shot(page, testInfo, 'guardian-remove-dialog-en')
     await dialog.getByRole('button', { name: 'Cancel' }).click()
 
@@ -2088,7 +2129,7 @@ test.describe('English UI (T-M2.15 AC9)', () => {
     await page.getByRole('button', { name: 'Create', exact: true }).click()
     await expect(page.getByRole('alert').filter({ hasText: "The student wasn't created" })).toBeFocused()
     await expect(page.getByRole('group', { name: 'Guardian 2' }).getByText("Enter the guardian's name.")).toBeVisible()
-    await expectAccessible(page)
+    await expectSettledAccessible(page)
     await shot(page, testInfo, 'add-guardian-rows-error-en')
   })
 
@@ -2126,7 +2167,7 @@ test.describe('English UI (T-M2.15 AC9)', () => {
       name: 'This was changed elsewhere',
     })
     await expect(conflict.getByRole('button', { name: 'Copy my notes' })).toBeVisible()
-    await expectAccessible(page)
+    await expectSettledAccessible(page)
     await shot(page, testInfo, 'guardian-conflict-en')
     await conflict.getByRole('button', { name: 'Reload' }).click()
     await expect(page.getByRole('form')).toHaveCount(0)
@@ -2136,9 +2177,372 @@ test.describe('English UI (T-M2.15 AC9)', () => {
     await page.getByRole('textbox', { name: 'Relationship' }).fill('Uncle')
     await page.getByRole('button', { name: 'Save', exact: true }).click()
     await expect(guardiansRegion(page).getByText('This guardian was removed in another tab or window.')).toBeVisible()
-    await expectAccessible(page)
+    await expectSettledAccessible(page)
     await shot(page, testInfo, 'guardian-removed-elsewhere-en')
     acceptStatus(consoleGuard, 409, /^\/api\/v1\/tutor\/guardians\//)
     acceptStatus(consoleGuard, 404, /^\/api\/v1\/tutor\/guardians\//)
   })
+})
+
+// ---------------------------------------------------------------------------------------------------------------------
+// T-M2.19 (automated UI checks): AC4 (focus after the actions that remove or disable their own control, those no other
+// test performs), AC5 (the motion tokens as rendered) and AC3 (the long-data walk) at the mandatory viewports.
+
+/** Answers 503 to the requests `matches` selects (the rest pass through) until `stop` is called. */
+async function failRequests(page: Page, url: string, matches: (requestUrl: URL) => boolean = () => true) {
+  let failing = true
+  await page.route(url, (route) =>
+    failing && matches(new URL(route.request().url()))
+      ? route.fulfill({
+          status: 503,
+          contentType: 'application/problem+json',
+          body: '{"status":503,"code":"INTERNAL_ERROR"}',
+        })
+      : route.fallback(),
+  )
+  return () => {
+    failing = false
+  }
+}
+
+test.describe('Focus after an action removes or disables its own control (T-M2.19 AC4)', () => {
+  // AC8 (DEC-135, OQ T-M2.19-1): these controls unmount with their alert or empty state; focus goes to `main h1`, or for
+  // Include archived to the toolbar's Include archived.
+  const listAlert = (page: Page) => page.getByRole('alert').filter({ hasText: 'Không tải được danh sách học viên' })
+  const listShown = (page: Page) => page.getByRole('table').or(page.getByRole('list', { name: 'Học viên' }))
+  const anyCheck = (url: URL) => url.searchParams.get('size') === '1'
+  /** No active or paused student, only archived ones (simulated): the default view is empty; the rest passes through. */
+  const onlyArchived = (page: Page) =>
+    page.route('**/api/v1/tutor/students?**', (route) => {
+      const url = new URL(route.request().url())
+      return anyCheck(url) || url.searchParams.getAll('status').includes('ARCHIVED')
+        ? route.fallback()
+        : route.fulfill({ json: { items: [], page: 0, size: 25, totalItems: 0, totalPages: 0 } })
+    })
+  const noActive = (page: Page) =>
+    page.getByRole('heading', { level: 2, name: 'Không có học viên đang học hoặc tạm nghỉ' })
+
+  test('the list error: Try again: focus to the h1', async ({ page, consoleGuard }) => {
+    const recover = await failRequests(page, '**/api/v1/tutor/students?**')
+    await page.goto('/tutor/students')
+    await expect(listAlert(page)).toBeVisible({ timeout: 15_000 })
+    recover()
+    acceptStatus(consoleGuard, 503, '/api/v1/tutor/students')
+    await listAlert(page).getByRole('button', { name: 'Thử lại' }).click()
+    await expect(listAlert(page)).toHaveCount(0)
+    await expect(listShown(page)).toBeVisible()
+    await expectFocusNotLost(page)
+    await expect(h1(page, 'Học viên')).toBeFocused()
+  })
+
+  test('the any-student check error: Try again: focus to the h1', async ({ page, consoleGuard }) => {
+    const recover = await failRequests(page, '**/api/v1/tutor/students?**', anyCheck)
+    await onlyArchived(page)
+    await page.goto('/tutor/students')
+    await expect(listAlert(page)).toBeVisible({ timeout: 15_000 })
+    recover()
+    acceptStatus(consoleGuard, 503, '/api/v1/tutor/students')
+    await listAlert(page).getByRole('button', { name: 'Thử lại' }).click()
+    await expect(noActive(page)).toBeVisible()
+    await expectFocusNotLost(page)
+    await expect(h1(page, 'Học viên')).toBeFocused()
+  })
+
+  test('only archived students: Include archived: focus to the toolbar control', async ({ page }) => {
+    await onlyArchived(page)
+    await page.goto('/tutor/students')
+    await page.getByRole('main').getByRole('button', { name: 'Gồm cả học viên đã lưu trữ' }).click()
+    await expect(noActive(page)).toHaveCount(0)
+    await expect(page.getByText('Đã lưu trữ', { exact: true }).first()).toBeVisible()
+    await expectFocusNotLost(page)
+    await expect(page.getByRole('checkbox', { name: 'Gồm cả học viên đã lưu trữ' })).toBeFocused()
+  })
+
+  test('a search that finds nothing: Clear filters', async ({ page }) => {
+    await page.goto(`/tutor/students?q=${encodeURIComponent(`khong co ai ${token()}`)}`)
+    await page.getByRole('button', { name: 'Xoá bộ lọc' }).click()
+    await expect(listShown(page)).toBeVisible()
+    await expectFocusNotLost(page)
+  })
+
+  // AC8: the workspace's Try again unmounts with the error view; focus goes to the student's h1.
+  test('the workspace error: Try again: focus to the h1', async ({ page, consoleGuard }) => {
+    const created = await profileStudent(page, 'Thử Lại')
+    const url = `/api/v1/tutor/students/${created.student.id}`
+    const recover = await failRequests(page, `**${url}`)
+    await page.goto(`/tutor/students/${created.student.id}`)
+    const alert = page.getByRole('alert').filter({ hasText: 'Không tải được thông tin học viên' })
+    await expect(alert).toBeVisible({ timeout: 15_000 })
+    recover()
+    acceptStatus(consoleGuard, 503, url)
+    await alert.getByRole('button', { name: 'Thử lại' }).click()
+    await expect(h1(page, created.student.fullName)).toBeVisible()
+    await expectFocusNotLost(page)
+    await expect(h1(page, created.student.fullName)).toBeFocused()
+  })
+
+  test('the workspace error: a Try again that fails again keeps focus on the h1; the next one shows the student (AC9 (a))', async ({
+    page,
+    consoleGuard,
+  }) => {
+    const created = await profileStudent(page, 'Thử Lại Hai Lần')
+    const url = `/api/v1/tutor/students/${created.student.id}`
+    const recover = await failRequests(page, `**${url}`)
+    await page.goto(`/tutor/students/${created.student.id}`)
+    const alert = page.getByRole('alert').filter({ hasText: 'Không tải được thông tin học viên' })
+    await expect(alert).toBeVisible({ timeout: 15_000 })
+    // Still failing: the error view comes back with focus on its h1.
+    await alert.getByRole('button', { name: 'Thử lại' }).click()
+    await expect(alert).toHaveCount(0)
+    await expect(alert).toBeVisible({ timeout: 15_000 })
+    await expectFocusNotLost(page)
+    await expect(h1(page, 'Học viên')).toBeFocused()
+    recover()
+    acceptStatus(consoleGuard, 503, url)
+    await alert.getByRole('button', { name: 'Thử lại' }).click()
+    await expect(h1(page, created.student.fullName)).toBeVisible()
+    await expectFocusNotLost(page)
+    await expect(h1(page, created.student.fullName)).toBeFocused()
+  })
+
+  test('D-4: the guardians error: Try again (503 until the alert, then passed through) focuses the section heading', async ({
+    page,
+    consoleGuard,
+  }) => {
+    const created = await profileStudent(page, 'Thử Lại Phụ Huynh')
+    const recover = await failRequests(page, '**/api/v1/tutor/students/*/guardians')
+    await page.goto(`/tutor/students/${created.student.id}`)
+    const alert = guardiansRegion(page).getByRole('alert')
+    await expect(alert).toContainText('Không tải được danh sách phụ huynh.', { timeout: 15_000 })
+    recover()
+    acceptStatus(consoleGuard, 503, `/api/v1/tutor/students/${created.student.id}/guardians`)
+    await alert.getByRole('button', { name: 'Thử lại' }).click()
+    await expect(guardiansRegion(page).getByText('Chưa thêm phụ huynh nào.')).toBeVisible()
+    await expectFocusNotLost(page)
+    await expect(page.getByRole('heading', { level: 2, name: 'Phụ huynh', exact: true })).toBeFocused()
+  })
+
+  test('Add student: guardian-row Remove of the last, a middle and the first row; the 10th Add guardian; contact handles', async ({
+    page,
+  }) => {
+    await page.goto('/tutor/students/new')
+    await page.getByRole('button', { name: 'Phụ huynh (không bắt buộc)' }).click()
+    const addRow = page.getByRole('button', { name: 'Thêm phụ huynh' })
+    const row = (n: number) => page.getByRole('group', { name: `Phụ huynh ${n}` })
+    const names = () =>
+      page.getByRole('group', { name: /^Phụ huynh \d+$/ }).getByRole('textbox', { name: 'Tên (bắt buộc)' })
+    for (const [n, name] of ['Lý Thị Một', 'Lý Văn Hai', 'Lý Thị Ba'].entries()) {
+      await addRow.click()
+      await row(n + 1)
+        .getByRole('textbox', { name: 'Tên (bắt buộc)' })
+        .fill(name)
+    }
+    const remove = async (n: number, left: string[]) => {
+      await row(n)
+        .getByRole('button', { name: `Xoá phụ huynh ${n}` })
+        .click()
+      await expect(names()).toHaveCount(left.length)
+      for (const [i, name] of left.entries()) await expect(names().nth(i)).toHaveValue(name)
+      await expectFocusNotLost(page)
+    }
+    await remove(3, ['Lý Thị Một', 'Lý Văn Hai']) // the last
+    await addRow.click()
+    await row(3).getByRole('textbox', { name: 'Tên (bắt buộc)' }).fill('Lý Văn Bốn')
+    await remove(2, ['Lý Thị Một', 'Lý Văn Bốn']) // a middle one
+    await remove(1, ['Lý Văn Bốn']) // the first
+    await remove(1, []) // the only one: focus on Add guardian
+    await expect(addRow).toBeFocused()
+    // The 10th Add guardian removes the button (the limit text instead).
+    for (let i = 0; i < 10; i++) await addRow.click()
+    await expect(addRow).toHaveCount(0)
+    await expect(page.getByText('Tối đa 10 phụ huynh. Hãy xoá bớt một người để thêm người khác.')).toBeVisible()
+    await expectFocusNotLost(page)
+
+    // Contact handles: Remove, and the 30th Add contact (the button is disabled at the limit).
+    await page.getByRole('button', { name: 'Liên hệ (không bắt buộc)' }).click()
+    const addHandle = page.getByRole('button', { name: 'Thêm liên hệ' })
+    await addHandle.click()
+    await addHandle.click()
+    await page.getByRole('button', { name: 'Xoá liên hệ 2' }).click()
+    await expect(page.getByRole('button', { name: /^Xoá liên hệ \d+$/ })).toHaveCount(1)
+    await expectFocusNotLost(page)
+    for (let i = 1; i < 30; i++) await addHandle.click()
+    await expect(addHandle).toBeDisabled()
+    await expect(page.getByText('Bạn có thể thêm tối đa 30 liên hệ.')).toBeVisible()
+    await expectFocusNotLost(page)
+  })
+})
+
+test.describe('Motion tokens as rendered (T-M2.19 AC5)', () => {
+  /** The computed animation of an element: its duration and whether one runs at all. */
+  const animation = (target: Locator) =>
+    target.evaluate((el) => {
+      const style = getComputedStyle(el)
+      return { duration: style.animationDuration, running: style.animationName !== 'none' }
+    })
+
+  for (const reduced of [false, true]) {
+    test(`the Skeleton pulses in 1.4 s and the Spinner turns in 800 ms${reduced ? '; with reduced motion neither moves' : ''}`, async ({
+      page,
+    }) => {
+      if (reduced) await page.emulateMedia({ reducedMotion: 'reduce' })
+      // The list request is held past the 150 ms skeleton delay.
+      let releaseList!: () => void
+      const listHeld = new Promise<void>((resolve) => (releaseList = resolve))
+      await page.route('**/api/v1/tutor/students?**', async (route) => {
+        await listHeld
+        await route.fallback()
+      })
+      await page.goto('/tutor/students')
+      const skeleton = page.locator('[class*="_skeleton_"]').first()
+      await expect(skeleton).toBeVisible()
+      await expect
+        .poll(() => animation(skeleton))
+        .toEqual(reduced ? { duration: '0s', running: false } : { duration: '1.4s', running: true })
+      releaseList()
+      await page.unrouteAll({ behavior: 'wait' })
+
+      // A guardian Save held: the pending Button shows the Spinner.
+      const created = await profileStudent(page, reduced ? 'Chuyển Động Giảm' : 'Chuyển Động')
+      let releaseSave!: () => void
+      const saveHeld = new Promise<void>((resolve) => (releaseSave = resolve))
+      await page.route('**/api/v1/tutor/students/*/guardians', async (route) => {
+        if (route.request().method() === 'POST') await saveHeld
+        await route.fallback()
+      })
+      await page.goto(`/tutor/students/${created.student.id}`)
+      await guardiansRegion(page).getByRole('button', { name: 'Thêm phụ huynh' }).click()
+      const form = page.getByRole('form', { name: 'Phụ huynh mới' })
+      await form.getByRole('textbox', { name: 'Tên (bắt buộc)' }).fill('Lê Thị Chờ Lưu')
+      await form.getByRole('button', { name: 'Lưu', exact: true }).click()
+      const spinner = form.locator('[class*="_spinner_"]')
+      await expect(spinner).toBeAttached()
+      await expect
+        .poll(() => animation(spinner))
+        .toEqual(reduced ? { duration: '0s', running: false } : { duration: '0.8s', running: true })
+      if (reduced) expect(await spinner.evaluate((el) => getComputedStyle(el).opacity)).toBe('0.6')
+      releaseSave()
+      await expect(page.getByRole('button', { name: 'Sửa Lê Thị Chờ Lưu' })).toBeFocused()
+    })
+  }
+})
+
+test.describe('Long data (T-M2.19)', () => {
+  for (const lang of ['vi', 'en'] as const) {
+    test(`[${lang}] the list, the Profile view with a guardian, Edit profile, the guardian form and Add student: settled, accessible, no word broken`, async ({
+      page,
+    }, testInfo) => {
+      const copy = {
+        vi: {
+          students: 'Học viên',
+          editProfile: 'Sửa hồ sơ',
+          cancel: 'Huỷ',
+          contact: 'Liên hệ (không bắt buộc)',
+          guardiansOptional: 'Phụ huynh (không bắt buộc)',
+          addGuardian: 'Thêm phụ huynh',
+          fullName: 'Họ tên (bắt buộc)',
+          username: 'Tên đăng nhập (bắt buộc)',
+          guardianName: 'Tên (bắt buộc)',
+          relationship: 'Quan hệ',
+          editGuardian: 'Sửa',
+          guardianRow: 'Phụ huynh 1',
+        },
+        en: {
+          students: 'Students',
+          editProfile: 'Edit profile',
+          cancel: 'Cancel',
+          contact: 'Contact (optional)',
+          guardiansOptional: 'Guardians (optional)',
+          addGuardian: 'Add guardian',
+          fullName: 'Full name (required)',
+          username: 'Username (required)',
+          guardianName: 'Name (required)',
+          relationship: 'Relationship',
+          editGuardian: 'Edit',
+          guardianRow: 'Guardian 1',
+        },
+      }[lang]
+      const data = longData(token())
+      await page.addInitScript((l) => localStorage.setItem('englms.locale', l), lang)
+      await profileStudent(page, 'x', {
+        fullName: data.fullName,
+        username: data.username,
+        email: data.email,
+        guardians: [{ name: data.guardianName, relationship: data.guardianRelationship }],
+      })
+      const main = page.getByRole('main')
+      /** Every visible button with text in `scope` (icon-only copy buttons carry no text to break). */
+      const textButtons = async (scope: Locator) => {
+        const found: Locator[] = []
+        for (const button of await scope.getByRole('button').all())
+          if ((await button.isVisible()) && (await button.innerText()).trim()) found.push(button)
+        return found
+      }
+      const noBreaks = async (targets: Locator[]) => {
+        for (const target of targets) await expectNoMidWordBreak(target)
+      }
+
+      // The Students list, filtered to the new student.
+      await page.goto(`/tutor/students?q=${encodeURIComponent(data.username)}`)
+      const row = main.getByRole('link', { name: data.fullName })
+      await expect(row).toBeVisible()
+      await expectSettledAccessible(page)
+      await noBreaks([row, h1(page, copy.students)])
+      await shot(page, testInfo, `long-list-${lang}`)
+
+      // The Profile view with one guardian.
+      await row.click()
+      await expect(h1(page, data.fullName)).toBeVisible()
+      const guardian = guardiansRegion(page).getByRole('heading', { level: 3, name: data.guardianName })
+      await expect(guardian).toBeVisible()
+      await expectSettledAccessible(page)
+      await noBreaks([h1(page, data.fullName), guardian, ...(await main.getByRole('heading', { level: 2 }).all())])
+      await noBreaks(await textButtons(main))
+      await shot(page, testInfo, `long-profile-${lang}`)
+
+      // Edit profile.
+      await main.getByRole('button', { name: copy.editProfile }).click()
+      const form = page.getByRole('form', { name: copy.editProfile })
+      await expect(form).toBeVisible()
+      await expectSettledAccessible(page)
+      await noBreaks([h1(page, data.fullName), ...(await main.getByRole('heading', { level: 2 }).all())])
+      await noBreaks(await textButtons(form))
+      await shot(page, testInfo, `long-edit-profile-${lang}`)
+      await form.getByRole('button', { name: copy.cancel, exact: true }).click()
+      await expect(form).toHaveCount(0)
+
+      // The guardian form.
+      await guardiansRegion(page)
+        .getByRole('button', { name: `${copy.editGuardian} ${data.guardianName}` })
+        .click()
+      const guardianForm = guardiansRegion(page).getByRole('form')
+      await expect(guardianForm.getByRole('textbox', { name: copy.guardianName })).toHaveValue(data.guardianName)
+      await expectSettledAccessible(page)
+      await noBreaks(await main.getByRole('heading', { level: 2 }).all())
+      await noBreaks(await textButtons(guardianForm))
+      await shot(page, testInfo, `long-guardian-form-${lang}`)
+      await guardianForm.getByRole('button', { name: copy.cancel, exact: true }).click()
+      await expect(guardianForm).toHaveCount(0)
+
+      // Add student with the long values typed (another run's token: the username stays free).
+      const typed = longData(token())
+      await page.goto('/tutor/students/new')
+      await page.getByRole('textbox', { name: copy.fullName, exact: true }).fill(typed.fullName)
+      await page.getByRole('textbox', { name: copy.username }).fill(typed.username)
+      await page.getByRole('button', { name: copy.contact }).click()
+      await main.getByRole('textbox', { name: 'Email' }).fill(typed.email)
+      await page.getByRole('button', { name: copy.guardiansOptional }).click()
+      await main.getByRole('button', { name: copy.addGuardian }).click()
+      const guardianRow = main.getByRole('group', { name: copy.guardianRow })
+      await guardianRow.getByRole('textbox', { name: copy.guardianName }).fill(typed.guardianName)
+      await guardianRow.getByRole('textbox', { name: copy.relationship }).fill(typed.guardianRelationship)
+      await expectSettledAccessible(page)
+      await noBreaks([
+        page.getByRole('heading', { level: 1 }),
+        ...(await main.getByRole('heading', { level: 2 }).all()),
+      ])
+      await noBreaks(await textButtons(main))
+      await shot(page, testInfo, `long-add-student-${lang}`)
+    })
+  }
 })

@@ -1,0 +1,11 @@
+{
+  "viewport": {
+    "width": 768,
+    "height": 1024
+  },
+  "actions": [
+    "Enter on Edit profile",
+    "type a note",
+    "Enter on Save"
+  ]
+}

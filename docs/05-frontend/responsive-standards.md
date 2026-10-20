@@ -39,7 +39,7 @@ E2E on all six (nightly) and on the three mandatory ones per PR.
 
 ## 3. Rules
 
-1. No horizontal page scroll at any reference viewport, or at 320 px with 400% zoom (reflow). An E2E helper asserts `document.scrollingElement.scrollWidth <= innerWidth`.
+1. No horizontal page scroll at any reference viewport, or at 320 px with 400% zoom (reflow). An E2E helper (`expectNoHorizontalScroll`, also run by `expectSettledAccessible`) asserts `document.scrollingElement.scrollWidth <= document.documentElement.clientWidth`: the layout viewport, not `innerWidth`, which mobile emulation widens to the content (T-M1.6 QA F1, T-M2.19).
 2. Fluid containers (`max-width` + `%`/`min()`). No fixed pixel widths for content. Images and media use `max-width: 100%`.
 3. **Tables:** below the 768 px viewport (§1; a 640 px container is the target for narrower placements), `DataList` renders each row as a list
    item: the primary field is the title (with any `inTitle` value such as a status badge beside it), 2–3 secondary fields sit on a meta line,

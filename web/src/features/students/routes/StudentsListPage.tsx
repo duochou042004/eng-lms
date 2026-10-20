@@ -29,6 +29,8 @@ import { emailParts, phoneGroups } from '../model/lineBreaks'
 import { cleanQuery, parseListView, toSearchParams, type ListSort, type ListView } from '../model/listParams'
 
 const SEARCH_DEBOUNCE_MS = 300
+/** A pressed control that unmounts with its state leaves focus to the page heading, never to body (T-M2.19 AC8). */
+const focusHeading = () => document.querySelector<HTMLElement>('main h1')?.focus()
 const SEARCH_ID = 'students-search'
 type Column = 'name' | 'status' | 'email' | 'phone'
 
@@ -62,6 +64,15 @@ export function StudentsListPage() {
   }, [lastPageSearch, setParams])
 
   const search = useSearch(view.q, (q) => change({ q }, true))
+
+  const controls = useRef<HTMLDivElement>(null)
+  const includeArchived = () => {
+    change({ archived: true })
+    // The empty state's button unmounts: focus goes to the toolbar's Include archived (T-M2.19 AC8).
+    const toolbarCheckbox = controls.current?.querySelector<HTMLElement>('input[type="checkbox"]')
+    if (toolbarCheckbox) toolbarCheckbox.focus()
+    else focusHeading()
+  }
 
   const clearFilters = () => {
     search.reset()
@@ -98,7 +109,7 @@ export function StudentsListPage() {
         />
       ) : (
         <>
-          <div className={styles.controls}>
+          <div ref={controls} className={styles.controls}>
             <div className={styles.search}>
               <SearchField
                 id={SEARCH_ID}
@@ -126,7 +137,13 @@ export function StudentsListPage() {
               tone="danger"
               title={t('list.errorTitle')}
               action={
-                <Button variant="secondary" onPress={() => void list.refetch()}>
+                <Button
+                  variant="secondary"
+                  onPress={() => {
+                    focusHeading()
+                    void list.refetch()
+                  }}
+                >
                   {t('list.retry')}
                 </Button>
               }
@@ -139,7 +156,13 @@ export function StudentsListPage() {
               tone="danger"
               title={t('list.errorTitle')}
               action={
-                <Button variant="secondary" onPress={() => void any.refetch()}>
+                <Button
+                  variant="secondary"
+                  onPress={() => {
+                    focusHeading()
+                    void any.refetch()
+                  }}
+                >
                   {t('list.retry')}
                 </Button>
               }
@@ -154,7 +177,7 @@ export function StudentsListPage() {
             onlyArchived={any.data === true}
             busy={list.isFetching}
             listSearch={location.search}
-            onIncludeArchived={() => change({ archived: true })}
+            onIncludeArchived={includeArchived}
             onClearFilters={clearFilters}
             onPage={(page) => show({ ...view, page })}
           />
