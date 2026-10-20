@@ -43,6 +43,8 @@ Remote: https://github.com/duochou042004/eng-lms (mirror: gitlab.com/duochou0420
 - Dev database: **kept** (LC call, DEC-139: ≈ 15,000 test students, 56 MB, gates green); recreate a fresh volume at the M2 G5 regression.
 
 ## Gotchas
+- **Branch names carry a task ID** (merge-gate: `<kind>/T-Mx.y-<slug>`): LC docs work without its own task goes on the latest task's ID
+  (`docs/T-M1.16-m1-g5`, `docs/T-M2.19-retrospective`); `docs/M2-retrospective` was refused (PR #120 closed).
 - **Invoke the skills, don't recall them:** `evidence-and-handoff` part C at every merge (backlog row and packet Status `done`, handoff
   archive, numbers copied from their source); the T-M2.19 records slipped on all three (L-09).
 - **Resumed subagents report cumulative `subagent_tokens`:** the round's cost is the delta from the previous result (T-M2.19 summary).
