@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Milestone | M2 |
-| Status | ready |
+| Status | done (`d165a4e`, DEC-138) |
 | Owner role | FE (frontend-implementer) |
 | Branch | `feature/T-M2.19-ui-checks` (from `develop`) |
 | Depends on | T-M2.18 (`5dab35e`), T-M2.15 (`9b9e133`): merged |
