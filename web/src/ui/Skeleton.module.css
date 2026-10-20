@@ -1,7 +1,7 @@
 .skeleton {
   display: block;
   background: var(--color-skeleton);
-  animation: pulse 1.4s var(--motion-easing) infinite;
+  animation: pulse var(--motion-duration-pulse) var(--motion-easing) infinite;
 }
 
 .text {

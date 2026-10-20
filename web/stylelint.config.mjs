@@ -12,6 +12,9 @@ export default {
       '/^border(-.*)?-radius$/': ['px', 'rem', 'em'],
       'font-size': ['px', 'rem', 'em'],
       'box-shadow': ['px'],
+      // Durations come from the motion tokens only (design-system §2), in modules and in module custom properties.
+      '/^(transition|animation)/': ['ms', 's'],
+      '/^--/': ['ms', 's'],
     },
     'selector-class-pattern': '^[a-z][a-zA-Z0-9]*$',
     'property-disallowed-list': ['margin-left', 'margin-right', 'padding-left', 'padding-right', 'left', 'right'],
