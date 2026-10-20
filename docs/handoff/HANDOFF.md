@@ -1,4 +1,4 @@
-# Handoff — 2026-10-20 (T-M2.19 merged; next: the T-M2.17 packet)
+# Handoff — 2026-10-20 (T-M2.19 merged; retrospective done, DEC-139; next: the T-M2.17 packet)
 
 Phase/Milestone: P1 / M2 (in progress) · Current task: **T-M2.17 learning profile (FE, draft, tier H): packet to write** · Next: **T-M2.20
 M2 polish** · Last merges on develop: `d165a4e` (T-M2.19, PR #117), the T-M2.19 packet (PR #116), `9b9e133` (T-M2.15), `5dab35e` (T-M2.18) ·
@@ -26,20 +26,27 @@ Remote: https://github.com/duochou042004/eng-lms (mirror: gitlab.com/duochou0420
   `./scripts/install-hooks.sh`, `git remote add gitlab …`.
 
 ## Next steps
-1. If PR #118 (`qa/T-M2.19`) or the T-M2.19 records PR is still open: merge it via merge-gate (`--dry-run` first), then gitlab-sync.
-2. **T-M2.17 packet** (task-packet skill; split from T-M2.15, DEC-128): tier H (student personal data: SEC + combined QA+UX); a UI rules block
+1. If PR #121 (`docs/T-M2.19-retrospective`) is still open: merge it via merge-gate (`--dry-run` first), then gitlab-sync.
+2. Read **`docs/09-harness/lessons-learned.md`** (L-01..L-13), then the **T-M2.17 packet** (invoke the task-packet skill: contradiction scan, Domain rules block, shortcut ledger; split from T-M2.15, DEC-128): tier H (student personal data: SEC + combined QA+UX); a UI rules block
    (DEC-131 (2)); the T-M2.19 helpers in its test plan; G0 docs review (tier L, delta rounds); then the PO start signal.
-3. Then T-M2.20 polish, T-M2.13, T-M2.16; then T-M2.6, T-M2.7 (M2 regression, G5).
+3. Then T-M2.20 polish, T-M2.21 (records checks), T-M2.13, T-M2.16; then T-M2.6, T-M2.7 (M2 regression, G5).
 
 ## Pending PO decisions / actions
-- **Dependabot PRs #95–#104**: untouched; say whether to review and merge them.
+- **PR #100** (react-aria-components 1.21.1 → 1.22.1) is **held** (PO, DEC-139): it needs a full local verification with a manual check of
+  the toast and dialog screens (`shortcut:` in `ui/Toast.tsx`, `ui/toastQueue.ts`, `ui/Button.tsx`); no action until the PO says so.
+  The other Dependabot PRs were handled by the PO.
 - This device: `(cd qa && pnpm exec playwright install-deps firefox webkit)` (needs `sudo`) so G3 can cover all three browsers.
-- Dev database: reviewer and E2E runs added several hundred test students (about 60 more in T-M2.14; no purge). Say if you want it cleaned.
-- Open points: the `ui/index.ts` barrel ships tutor-only components in the student first visit (under budget: student 186.6 KB gz);
-  dates use the browser's time zone (`shortcut:` in `lib/time`; T-M2.6); production needs `SERVER_FORWARDHEADERSSTRATEGY=native` (M8);
-  the common-password list barely filters at 10 characters (T-M2.3 SEC S4-9); `glab` deny rules (DEC-061); OQ-03..OQ-14 (defaults documented).
+- Open points: the `ui/index.ts` barrel ships tutor-only components in the student first visit (under budget: student 186.7 KB gz);
+  dates use the browser's time zone (`shortcut:` in `lib/time`; resolved in T-M3.1/T-M3.3, L-12); production needs
+  `SERVER_FORWARDHEADERSSTRATEGY=native` (M8); the common-password list barely filters at 10 characters (T-M2.3 SEC S4-9); `glab` deny
+  rules (DEC-061); OQ-03..OQ-14 (defaults documented).
+- Dev database: **kept** (LC call, DEC-139: ≈ 15,000 test students, 56 MB, gates green); recreate a fresh volume at the M2 G5 regression.
 
 ## Gotchas
+- **Branch names carry a task ID** (merge-gate: `<kind>/T-Mx.y-<slug>`): LC docs work without its own task goes on the latest task's ID
+  (`docs/T-M1.16-m1-g5`, `docs/T-M2.19-retrospective`); `docs/M2-retrospective` was refused (PR #120 closed).
+- **Invoke the skills, don't recall them:** `evidence-and-handoff` part C at every merge (backlog row and packet Status `done`, handoff
+  archive, numbers copied from their source); the T-M2.19 records slipped on all three (L-09).
 - **Resumed subagents report cumulative `subagent_tokens`:** the round's cost is the delta from the previous result (T-M2.19 summary).
 - An implementer may leave known failures as `test.fail` when a packet forbids the fix: the LC rules (an AC + DEC, as DEC-135) before G3,
   so the reviewer sees the final product.
@@ -72,5 +79,5 @@ Remote: https://github.com/duochou042004/eng-lms (mirror: gitlab.com/duochou0420
 - Wall-clock bounds in tests flake on the 2-core CI runner (DEC-093). `git merge` is denied: `gh pr update-branch` (DEC-090).
 
 ## Files to read first
-`CLAUDE.md` → `progress.json` → this file → DEC-128, DEC-131, DEC-138 → `docs/tasks/backlog.md` (T-M2.17, T-M2.20) → the task-packet
+`CLAUDE.md` → `progress.json` → this file → `docs/09-harness/lessons-learned.md` → DEC-128, DEC-131, DEC-138, DEC-139 → `docs/tasks/backlog.md` (T-M2.17, T-M2.20) → the task-packet
 skill → `docs/tasks/T-M2.15-guardians.md` and `T-M2.19-ui-checks.md` (packet shape, UI rules block) → `quality-gates.md` G0 → `e2e/support/checks.ts`.

@@ -8,7 +8,7 @@
 | Role | Mission | Owns (writes) | Must not |
 |---|---|---|---|
 | **Product Owner (PO)**, human | Product decisions, approvals, external actions | Answers to OQs; approvals | — |
-| **Lead Coordinator (LC)** | Plan, slice and gate; keep state; approve and merge | `docs/**` (except `qa/`), `progress.json`, task packets, decision log, risk register, `.claude/**`, `.github/**` | Write product code in the same task it approves (no self-approval); merge without the G1–G3 evidence |
+| **Lead Coordinator (LC)** | Plan, slice and gate; keep state; approve and merge | `docs/**` (except `qa/`), `progress.json`, `evidence/<task>/summary.md` (recorded from the implementer's text, L-07), task packets, decision log, risk register, `.claude/**`, `.github/**` | Write product code in the same task it approves (no self-approval); merge without the G1–G3 evidence |
 | **Backend Implementer (BE)** | Implement backend packets with tests | `backend/**`, `api/openapi.json` (generated), backend docs sections named in the packet, `evidence/<task>/impl/**` | Touch `web/`, `qa/`, `master`/`develop`; add dependencies without packet approval; edit applied migrations |
 | **Frontend Implementer (FE)** | Implement UI packets to design standards | `web/**`, `e2e/**`, frontend docs sections named in the packet, `evidence/<task>/impl/**` | Touch `backend/` (except when regenerating the contract is required), `qa/`; import RAC outside `ui/`; raw styles |
 | **QA Evaluator (QA)** | Independent black-box verification; for tiers M and H also the UX checklist in the same pass (combined QA+UX reviewer, qa-protocol §2a, DEC-131) | `qa/**`, `evidence/<task>/qa/**` (text; the LC posts the verdicts) | Read the implementation before the verdict; edit product code or implementer tests; approve merges |
@@ -25,7 +25,7 @@ reports and posts the verdict lines after CI is green on the final head.
 | Capability | LC | BE | FE | QA | SEC | UX |
 |---|---|---|---|---|---|---|
 | Read the whole repo | ✓ | ✓ | ✓ | ✓ (implementation only **after** the verdict draft) | ✓ | ✓ |
-| Write paths | docs, progress, .claude, .github | backend, api, impl evidence | web, e2e, impl evidence | qa, qa evidence | review evidence | review evidence |
+| Write paths | docs, progress, summary, .claude, .github | backend, api, impl evidence | web, e2e, impl evidence | qa, qa evidence | review evidence | review evidence |
 | Run build, tests, E2E locally | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
 | Run the app (dev/e2e profile) | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
 | Browser automation (built-in browser / Playwright) | ✓ | – | ✓ | ✓ | ✓ | ✓ |

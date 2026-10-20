@@ -19,9 +19,10 @@
       `contract-drift` when nothing under `backend/` or `api/` changed (CI still runs them).
 - [ ] New and changed behaviour is covered by tests at the right level. No test was deleted or disabled without a DEC entry.
 - [ ] UI changes: screenshots at `phone-small`, `tablet` and `laptop` for each changed screen in its main states, plus the axe results → `evidence/<task>/impl/`
-      (PNGs are git-ignored and stay local, evidence-protocol §3); the packet's **UI rules** block is met and the `frontend-standards` self-check list is ticked in summary.md.
-- [ ] Docs updated in the same branch (api-catalog, data-model, module-boundaries, tech-stack, …) and `progress.json` updated.
-- [ ] `evidence/<task>/summary.md` has an implementation section (commands, results, known limitations).
+      (PNGs are git-ignored and stay local, evidence-protocol §3); the packet's **UI rules** block is met and the `frontend-standards` self-check list is ticked (in the returned summary text).
+- [ ] Docs updated in the same branch (api-catalog, data-model, module-boundaries, tech-stack, …).
+- [ ] The implementer returns the implementation summary (AC → proof, commands, results, self-check, known limitations); the LC records it in
+      `evidence/<task>/summary.md` and updates `progress.json` before G2 (the harness blocks subagent summary writes, lessons-learned L-07).
 
 ## G2 Pull request gate. Owner: CI + Implementer
 
@@ -65,7 +66,8 @@ Review effort follows the packet's **risk tier** (set by the LC at G0, DEC-131 (
 
 - [ ] Every packet in the milestone is merged, and the milestone exit criteria in roadmap.md are met.
 - [ ] Milestone regression (the only full regression; per task G3 runs targeted specs, DEC-131 (7)): full E2E on all 6 viewports × Chromium, plus smoke on Firefox and WebKit. The QA milestone report is in `evidence/<milestone>/`.
-- [ ] Risk register, decision log and roadmap reviewed (retrospective notes in `evidence/<milestone>/retro.md`).
+- [ ] Risk register, decision log and roadmap reviewed (retrospective notes in `evidence/<milestone>/retro.md`); `docs/09-harness/lessons-learned.md`
+  updated; the `shortcut:` ledger reviewed (`grep -rnE '(shortcut|ponytail):'`, or `/ponytail-debt` where installed: any trigger the next milestone fires becomes a backlog item); the README roadmap row updated.
 - [ ] For user-facing milestones (M2, M3, M5, M7): the PO demo (a recorded walkthrough or a live session) is accepted, and the feedback is logged as tasks or DEC entries.
 
 ## G6 Release gate (`develop` → `master`). Owners: LC + PO

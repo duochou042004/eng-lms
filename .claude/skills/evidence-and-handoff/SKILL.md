@@ -12,6 +12,15 @@ description: Record task evidence, update progress.json, and write the session h
 3a. The **G3 cost** table: one row per review round (reviewer, head, verdict, findings, full/delta, agent tokens and minutes from the Agent result, gate runs and minutes).
 4. No secrets or real personal data. Use synthetic fixtures only.
 
+## C. Records at every merge (LC; lessons-learned L-09)
+0. Each reviewer or implementer report is copied to `.claude/scratch/lc-records/<task>-<round>.md` as soon as it returns (L-06).
+1. The backlog row → `**done** (`<merge sha>`, DEC-<n>, packet link)`; the packet's Status → `done (<sha>, DEC-<n>)`.
+2. `progress.json`: the task into `completed[]`, `currentTask`/`nextTask` moved, `gates`, `tests`, `history`.
+3. The merge DEC and the review records (`evidence/<task>/review/*`) on a docs branch; the QA report on `qa/<task>`.
+4. Every number in a DEC, summary or handoff is copied from its source in the same step (gate log, Agent result, query), never restated.
+5. At a milestone close: the README roadmap row, `docs/09-harness/lessons-learned.md`, the `shortcut:` ledger (quality-gates G5).
+6. Then part B (the handoff archive included).
+
 ## B. Handoff, per `docs/09-harness/session-handoff-protocol.md`
 1. If context is near the threshold: stop starting new steps. Finish the safe step or revert to the last green commit. Commit WIP on the **feature branch** only.
 2. Update `progress.json`: `currentTask.status`, `lastCommit`, `nextSteps[]`, `blockers[]`, `tests`, `gates`, `approvals`; append to `history[]`; set `updatedAt`/`updatedBy`.

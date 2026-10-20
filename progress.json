@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-10-20T08:44:32Z",
-  "updatedBy": "lead-coordinator (T-M2.19 merged; next: T-M2.17 packet)",
+  "updatedAt": "2026-10-20T10:01:44Z",
+  "updatedBy": "lead-coordinator (retrospective, DEC-139; next: T-M2.17 packet)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -43,7 +43,7 @@
       "T-M2.15 merged — met (9b9e133)"
     ],
     "nextSteps": [
-      "LC writes the T-M2.17 packet (tier H: SEC + combined QA+UX); G0 docs review; PO start signal"
+      "Read docs/09-harness/lessons-learned.md; LC writes the T-M2.17 packet with the task-packet skill (contradiction scan, Domain rules block; tier H: SEC + combined QA+UX); G0 docs review; PO start signal"
     ],
     "trace": [
       "DEC-128"
@@ -394,11 +394,6 @@
   "decisions": {
     "log": "docs/10-governance/decision-log.md",
     "recent": [
-      "DEC-121",
-      "DEC-122",
-      "DEC-123",
-      "DEC-124",
-      "DEC-125",
       "DEC-126",
       "DEC-127",
       "DEC-128",
@@ -407,7 +402,12 @@
       "DEC-131",
       "DEC-132",
       "DEC-133",
-      "DEC-134"
+      "DEC-134",
+      "DEC-135",
+      "DEC-136",
+      "DEC-137",
+      "DEC-138",
+      "DEC-139"
     ],
     "pendingPO": [
       "OQ-03",
@@ -675,6 +675,13 @@
       "status": "approved",
       "at": "2026-10-19T08:59:35Z",
       "ref": "DEC-133"
+    },
+    {
+      "what": "PO decisions: PR #100 held for local verification; dev DB clean-up left to the LC (kept); README roadmap; retrospective and process changes",
+      "by": "PO",
+      "status": "approved",
+      "at": "2026-10-20T10:01:44Z",
+      "ref": "DEC-139"
     }
   ],
   "environment": {
@@ -1187,6 +1194,11 @@
       "at": "2026-10-20T08:44:32Z",
       "actor": "lead-coordinator",
       "event": "T-M2.19 merged (PR #117, d165a4e): 1 implementer (3 rounds: G1, AC8, AC9; 265,704 tokens), 1 combined QA+UX reviewer (round 1 + delta; 132,392 tokens), 4 gate runs (one failed fast). Next: the T-M2.17 packet."
+    },
+    {
+      "at": "2026-10-20T10:01:44Z",
+      "actor": "lead-coordinator",
+      "event": "M0-M2 retrospective (lessons-learned.md L-01..L-13) and its rules placed in skills, agents, template, coding-agent-rules and G5; README roadmap at M2; PR #100 held (PO); dev DB kept (LC); T-M2.21 added (DEC-139)."
     }
   ]
 }

@@ -37,8 +37,8 @@ One calm workspace, **without a forced curriculum**.
 ---
 
 > [!IMPORTANT]
-> **Status:** the planning baseline (M0) was approved by the Product Owner on 2026-09-25. The project is now in **M1: walking skeleton and delivery
-> pipeline**. There is no product code yet, by design: every increment goes through gated plan → build → independent review loops.
+> **Status:** M0 (planning baseline, approved 2026-09-25) and M1 (walking skeleton and delivery pipeline, signed off 2026-10-04) are done.
+> The project is in **M2: identity and student management**. Every increment goes through gated plan → build → independent review loops.
 > The live state is in [`progress.json`](progress.json); the narrative handoff is in [`docs/handoff/HANDOFF.md`](docs/handoff/HANDOFF.md).
 
 ## Contents
@@ -133,8 +133,8 @@ All ADRs: [`docs/03-architecture/adr/`](docs/03-architecture/adr/README.md).
 | | Milestone | Outcome |
 |:---:|---|---|
 | ✅ | **M0** Planning baseline | Documentation system, ADRs, harness, `progress.json` |
-| 🔄 | **M1** Walking skeleton | Repo governance, backend and web skeletons, Podman stack, CI, E2E harness |
-| ⏳ | **M2** Identity and students | Login, add-student flow with a credentials card, student workspace shell |
+| ✅ | **M1** Walking skeleton | Repo governance, backend and web skeletons, Podman stack, CI, E2E harness |
+| 🔄 | **M2** Identity and students | Login, add-student flow with a credentials card, student workspace shell |
 | ⏳ | **M3** Schedule and lessons | Lessons, Today view, private notes |
 | ⏳ | **M4** Library and files | Folders, materials, lesson templates, sharing |
 | ⏳ | **M5** Assignments and **wrap-up** | One-screen after-lesson flow, homework, grading and feedback |
@@ -167,8 +167,8 @@ flowchart LR
 ## Getting started
 
 > [!NOTE]
-> Only the documentation and governance tooling exist today. The application commands arrive with M1 (see
-> [`docs/07-operations/development-setup.md`](docs/07-operations/development-setup.md)).
+> New machine: follow [`docs/07-operations/development-setup.md`](docs/07-operations/development-setup.md) §0 first (toolchain, `.env`,
+> container engine). `./scripts/dev-up.sh` starts the dev database and `./scripts/gate.sh` runs every local check (§4).
 
 ```bash
 git clone https://github.com/duochou042004/eng-lms.git && cd eng-lms
@@ -183,7 +183,7 @@ git clone https://github.com/duochou042004/eng-lms.git && cd eng-lms
 | Tool | Version | Notes |
 |---|---|---|
 | JDK | Temurin 25.0.4 | via SDKMAN (`.sdkmanrc`) |
-| Spring Boot CLI | 4.1.0 | the backend will be generated with `spring init` (T-M1.2) |
+| Spring Boot CLI | 4.1.0 | the backend was generated with `spring init` (T-M1.2) |
 | Node.js | 24.21.0 | via nvm (`.nvmrc`); pnpm through corepack |
 | Docker or Podman | Podman 5.8.6 rootless on the first machines | dev database and Testcontainers with either engine (Linux, macOS, Windows via WSL2); Podman Quadlet in production |
 | bash | ≥ 4.4 | macOS: Homebrew bash |

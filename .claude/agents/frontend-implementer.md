@@ -23,4 +23,6 @@ Rules:
 - Respect the step budgets of the affected critical flows (ux-flows.md) and prove them with the E2E step counter.
 
 Before the PR: run `./scripts/gate.sh` **once** on the final head (it skips the backend steps for a web-only diff and repeats changed specs ×3) and tick the
-`frontend-standards` self-check list in the summary. Finish with the evidence summary, `progress.json` → `in_review`, and the PR (no screenshots in git). Report back the PR URL, AC → proof, screenshots list and any deviations.
+`frontend-standards` self-check list. Finish with the PR (no screenshots in git). Near the context limit: commit WIP on the feature branch and report back. Do not write `summary.md` or `progress.json`: the harness blocks
+subagent summary writes and the LC owns state (lessons-learned L-07). Report back the summary text for the LC to record: the PR URL, AC → proof,
+the ticked self-check, screenshots list, deviations and open questions (a real defect found outside the packet's allowed change is an OQ, L-10).

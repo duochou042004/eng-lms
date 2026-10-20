@@ -13,12 +13,12 @@ SPEC §… · FR-… · NFR-… · DEC-… · ADR-…
 
 ## Checklist
 - [ ] Only the packet's acceptance criteria are implemented (scope guardrail answered in the packet)
-- [ ] `./scripts/gate.sh` green once on the final head; log in `evidence/<task-id>/`; UI: the self-check list ticked in the summary
+- [ ] `./scripts/gate.sh` green once on the final head; log in `evidence/<task-id>/`; UI: the self-check list ticked in the summary (recorded by the LC)
 - [ ] Tests added or updated at the right levels; none removed or weakened
 - [ ] New endpoints: `@Audience` + authz-matrix + isolation cases
 - [ ] UI: design-system components and tokens only; all states; vi + en; axe clean; keyboard pass; 3 viewports
 - [ ] Docs updated (api-catalog, data-model, module-boundaries, tech-stack, … as applicable)
-- [ ] `progress.json` updated; `evidence/<task-id>/summary.md` complete
+- [ ] `evidence/<task-id>/summary.md` complete and `progress.json` updated (by the LC, from the implementer's returned summary)
 - [ ] New dependency? Justified in the packet + tech-stack.md (+ ADR if architectural)
 
 ## Evidence

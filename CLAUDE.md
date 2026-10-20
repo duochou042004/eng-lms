@@ -20,7 +20,7 @@ and the PO-approved planning baseline** (quality gate G0).
 - **Quality:** `./scripts/gate.sh` green; tests with every change; never weaken tests; evidence in `evidence/<task-id>/`; independent QA before merge.
 - **Frontend:** `web/src/ui/` components and tokens only; all states; vi + en strings; verify at 360 / 768 / 1280; WCAG 2.2 AA.
 - **Stack:** Java 25 + Spring Boot 4.1 (Modulith, JPA, Flyway, PostgreSQL 18), React + TS + Vite; development on Docker or Podman (Linux, macOS, Windows via WSL2), production Podman (ADR-0012, DEC-106). No new infrastructure without an ADR.
-- **Memory:** the repo is the memory. Update `progress.json` + the handoff before stopping. Near ~500k tokens of context, follow `docs/09-harness/session-handoff-protocol.md`.
+- **Memory:** the repo is the memory. The LC updates `progress.json` + the handoff before stopping (subagents report back to it). Near ~500k tokens of context, follow `docs/09-harness/session-handoff-protocol.md`.
 - **Outward-facing actions** (creating repos, pushing to new remotes, deploying, host settings, paid services) need explicit PO approval.
 
 ## Shell notes
@@ -29,4 +29,4 @@ Every Bash call is a fresh shell: when SDKMAN/nvm are installed, `source ~/.sdkm
 Podman for Testcontainers (development-setup §3). Use fully qualified image names (`docker.io/library/postgres:18`).
 
 ## Map
-Docs index: `docs/README.md` · Roles: `docs/09-harness/agent-roles.md` · Gates: `docs/06-quality/quality-gates.md` · Subagents: `.claude/agents/` · Skills: `.claude/skills/`.
+Docs index: `docs/README.md` · Lessons (read before a packet): `docs/09-harness/lessons-learned.md` · Roles: `docs/09-harness/agent-roles.md` · Gates: `docs/06-quality/quality-gates.md` · Subagents: `.claude/agents/` · Skills: `.claude/skills/`.

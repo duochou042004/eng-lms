@@ -37,6 +37,9 @@
 2. MUST NOT delete, skip or weaken tests (or relax assertions) to make a build pass. A needed exception gets a DEC entry.
 3. MUST keep `./scripts/gate.sh` green before opening a PR, and attach its log to the evidence.
 4. MUST inject `Clock` for anything time-based and never call `Instant.now()` or `LocalDate.now()` directly (an ArchUnit rule enforces this).
+5. MUST prove every new check, guard, validation or gate rule failing on a violating input in the same PR (a fixture, a negative case or a
+   mutation); gate tooling fails closed. A check never seen red is not done (lessons-learned L-01).
+6. MUST read asynchronous state through a polling assertion (`expect.poll`, `toHave*`, `waitFor`), never a single read; no wall-clock bounds (L-05).
 
 ## 5. Backend rules
 
@@ -55,7 +58,7 @@
 1. Use `ui/` components only. No raw colour or spacing values (stylelint). No direct RAC imports outside `ui/`.
 2. Every data view has the states in interaction-states.md. Every form follows its form rules.
 3. Every new string is an i18n key in **both** `vi` and `en`.
-4. Responsive: verify the mandatory viewports and keep the screenshots locally (git-ignored, evidence-protocol §3). No horizontal scroll. Meet the packet's UI rules block and tick the `frontend-standards` self-check list in summary.md.
+4. Responsive: verify the mandatory viewports and keep the screenshots locally (git-ignored, evidence-protocol §3). No horizontal scroll. Meet the packet's UI rules block and tick the `frontend-standards` self-check list in the returned summary (the LC records it, L-07).
 5. Accessibility checklist (accessibility.md §2) for every UI PR.
 6. Server state only via TanStack Query hooks in `features/*/api`. No ad-hoc `fetch`.
 7. Before building a new component, check the `ui/` inventory (design-system.md §3). If it is missing, propose adding it to `ui/` (UX review), not inline in a feature.
@@ -74,6 +77,8 @@
 
 A new dependency MUST be listed in the packet with its justification, added to tech-stack.md (§2/§3 + §7 pinned version), and be license-compatible
 (permissive: MIT, Apache-2.0, BSD, EPL for JVM, MPL acceptable). Prefer the platform or existing dependencies. A dependency that adds architecture → ADR.
+A version bump (Dependabot included) of a package named in a `shortcut:` comment (`grep -rnE '(shortcut|ponytail):.*<package>'`) needs a local
+verification of the screens or paths that comment names, not only green CI; the LC holds the PR until then (lessons-learned L-11, DEC-139).
 
 ## 9. Spring Boot 4 / Java 25 pitfalls (verify against the official docs; do not code from Boot 2/3 memory)
 
