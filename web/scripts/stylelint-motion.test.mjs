@@ -1,5 +1,6 @@
 // Durations only from the motion tokens (T-M2.19 AC5): the project's stylelint config rejects a raw `ms`/`s` in
-// transitions, animations and module custom properties, and accepts a token. jsdom is not needed (and not wanted).
+// transitions, animations and module custom properties, and accepts a token. Runs in the default jsdom environment (the
+// shared setup needs `window`); stylelint's Node API works there.
 import { join } from 'node:path'
 import stylelint from 'stylelint'
 import { describe, expect, it } from 'vitest'

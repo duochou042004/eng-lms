@@ -66,7 +66,7 @@ export async function expectNoMidWordBreak(target: Locator, { timeout }: { timeo
   expect(broken, `words broken across lines in "${text}"`).toEqual([])
 }
 
-/** Focus did not end on `body`, `html`, nothing or inside an `inert` region after an action (a transient `body` while a dialog closes is fine). */
+/** Focus did not end on `body`, `html`, nothing, a disabled or unrendered control, or inside an `inert` region after an action (a transient `body` while a dialog closes is fine). */
 export async function expectFocusNotLost(page: Page, { timeout = 5_000 }: { timeout?: number } = {}) {
   await expect
     .poll(
@@ -74,9 +74,11 @@ export async function expectFocusNotLost(page: Page, { timeout = 5_000 }: { time
         page.evaluate(() => {
           const active = document.activeElement
           if (!active || active === document.body || active === document.documentElement) return 'lost'
+          // Chromium keeps activeElement on a control that became disabled or display: none (G3 QA-2).
+          if (active.matches(':disabled') || !active.checkVisibility()) return 'lost'
           return active.closest('[inert]') ? 'lost' : 'kept'
         }),
-      { message: 'focus lost to body (or inside an inert region)', timeout },
+      { message: 'focus lost to body (or on a disabled or hidden control, or inside an inert region)', timeout },
     )
     .toBe('kept')
 }

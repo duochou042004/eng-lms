@@ -2281,6 +2281,30 @@ test.describe('Focus after an action removes or disables its own control (T-M2.1
     await expect(h1(page, created.student.fullName)).toBeFocused()
   })
 
+  test('the workspace error: a Try again that fails again keeps focus on the h1; the next one shows the student (AC9 (a))', async ({
+    page,
+    consoleGuard,
+  }) => {
+    const created = await profileStudent(page, 'Thử Lại Hai Lần')
+    const url = `/api/v1/tutor/students/${created.student.id}`
+    const recover = await failRequests(page, `**${url}`)
+    await page.goto(`/tutor/students/${created.student.id}`)
+    const alert = page.getByRole('alert').filter({ hasText: 'Không tải được thông tin học viên' })
+    await expect(alert).toBeVisible({ timeout: 15_000 })
+    // Still failing: the error view comes back with focus on its h1.
+    await alert.getByRole('button', { name: 'Thử lại' }).click()
+    await expect(alert).toHaveCount(0)
+    await expect(alert).toBeVisible({ timeout: 15_000 })
+    await expectFocusNotLost(page)
+    await expect(h1(page, 'Học viên')).toBeFocused()
+    recover()
+    acceptStatus(consoleGuard, 503, url)
+    await alert.getByRole('button', { name: 'Thử lại' }).click()
+    await expect(h1(page, created.student.fullName)).toBeVisible()
+    await expectFocusNotLost(page)
+    await expect(h1(page, created.student.fullName)).toBeFocused()
+  })
+
   test('D-4: the guardians error: Try again (503 until the alert, then passed through) focuses the section heading', async ({
     page,
     consoleGuard,
@@ -2372,9 +2396,9 @@ test.describe('Motion tokens as rendered (T-M2.19 AC5)', () => {
       await page.goto('/tutor/students')
       const skeleton = page.locator('[class*="_skeleton_"]').first()
       await expect(skeleton).toBeVisible()
-      expect(await animation(skeleton)).toEqual(
-        reduced ? { duration: '0s', running: false } : { duration: '1.4s', running: true },
-      )
+      await expect
+        .poll(() => animation(skeleton))
+        .toEqual(reduced ? { duration: '0s', running: false } : { duration: '1.4s', running: true })
       releaseList()
       await page.unrouteAll({ behavior: 'wait' })
 
@@ -2393,9 +2417,9 @@ test.describe('Motion tokens as rendered (T-M2.19 AC5)', () => {
       await form.getByRole('button', { name: 'Lưu', exact: true }).click()
       const spinner = form.locator('[class*="_spinner_"]')
       await expect(spinner).toBeAttached()
-      expect(await animation(spinner)).toEqual(
-        reduced ? { duration: '0s', running: false } : { duration: '0.8s', running: true },
-      )
+      await expect
+        .poll(() => animation(spinner))
+        .toEqual(reduced ? { duration: '0s', running: false } : { duration: '0.8s', running: true })
       if (reduced) expect(await spinner.evaluate((el) => getComputedStyle(el).opacity)).toBe('0.6')
       releaseSave()
       await expect(page.getByRole('button', { name: 'Sửa Lê Thị Chờ Lưu' })).toBeFocused()

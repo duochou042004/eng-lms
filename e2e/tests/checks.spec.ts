@@ -32,6 +32,7 @@ test.describe('expectNoMidWordBreak', () => {
 
   test('fails on a hidden element', async ({ page }) => {
     await fixture(page, '<p id="t" hidden>Nguyễn Văn An</p>')
+    await expect(page.locator('#t')).toHaveCount(1)
     await expect(expectNoMidWordBreak(page.locator('#t'), SHORT)).rejects.toThrow(/visible/)
   })
 
@@ -55,12 +56,26 @@ test.describe('expectFocusNotLost', () => {
     await expect(expectFocusNotLost(page, SHORT)).rejects.toThrow(/focus lost/)
   })
 
-  test('fails when focus stays inside an inert region', async ({ page }) => {
+  test('fails when focus is lost to body after an inert freeze (Chromium blurs it)', async ({ page }) => {
     await fixture(
       page,
       '<h1 tabindex="-1">Title</h1><div id="r"><button onclick="document.getElementById(\'r\').inert = true">Freeze</button></div>',
     )
     await page.getByRole('button', { name: 'Freeze' }).click()
+    await expect(expectFocusNotLost(page, SHORT)).rejects.toThrow(/focus lost/)
+  })
+
+  test('fails after a button that disables itself', async ({ page }) => {
+    await fixture(page, '<h1 tabindex="-1">Title</h1><button onclick="this.disabled = true">Disable me</button>')
+    await page.getByRole('button', { name: 'Disable me' }).click()
+    await expect(page.getByRole('button', { name: 'Disable me' })).toBeDisabled()
+    await expect(expectFocusNotLost(page, SHORT)).rejects.toThrow(/focus lost/)
+  })
+
+  test('fails after a button that hides itself (display: none)', async ({ page }) => {
+    await fixture(page, '<h1 tabindex="-1">Title</h1><button onclick="this.style.display = \'none\'">Hide me</button>')
+    await page.getByRole('button', { name: 'Hide me' }).click()
+    await expect(page.locator('button')).toBeHidden()
     await expect(expectFocusNotLost(page, SHORT)).rejects.toThrow(/focus lost/)
   })
 
