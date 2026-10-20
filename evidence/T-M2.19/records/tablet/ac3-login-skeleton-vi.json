@@ -1,0 +1,48 @@
+{
+  "viewport": {
+    "width": 768,
+    "height": 1024
+  },
+  "skeleton": {
+    "titleLine": {
+      "x": 184,
+      "y": 92,
+      "width": 224,
+      "height": 30
+    },
+    "toolbarRow": {
+      "x": 16,
+      "y": 24,
+      "width": 736,
+      "height": 44
+    },
+    "switcher": {
+      "x": 514,
+      "y": 24,
+      "width": 238,
+      "height": 44
+    }
+  },
+  "page": {
+    "heading": {
+      "x": 184,
+      "y": 94,
+      "width": 342,
+      "height": 30
+    },
+    "switcher": {
+      "x": 514,
+      "y": 24,
+      "width": 238,
+      "height": 46
+    }
+  },
+  "headingBlockStartDeltaPx": 2,
+  "headingLimitPx": 8,
+  "switcherBlockStartDeltaPx": 0,
+  "layoutShift": {
+    "total": 0,
+    "entries": 0
+  },
+  "clsLimit": 0.05
+}

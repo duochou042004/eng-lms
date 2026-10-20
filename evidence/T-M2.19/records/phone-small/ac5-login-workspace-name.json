@@ -1,0 +1,44 @@
+{
+  "events": [
+    "start /api/v1/auth/session",
+    "end /api/v1/auth/session",
+    "start /api/v1/meta",
+    "end /api/v1/meta",
+    "start /api/v1/meta",
+    "end /api/v1/meta"
+  ],
+  "viewport": {
+    "width": 360,
+    "height": 740
+  },
+  "vi": {
+    "name": {
+      "top": 24,
+      "bottom": 73.59375,
+      "width": 328
+    },
+    "switcher": {
+      "top": 85.59375,
+      "right": 344
+    },
+    "row": {
+      "width": 328,
+      "right": 344
+    }
+  },
+  "en": {
+    "name": {
+      "top": 24,
+      "bottom": 73.59375,
+      "width": 328
+    },
+    "switcher": {
+      "top": 85.59375,
+      "right": 344
+    },
+    "row": {
+      "width": 328,
+      "right": 344
+    }
+  }
+}
