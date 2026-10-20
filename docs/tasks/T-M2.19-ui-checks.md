@@ -92,6 +92,12 @@ gate. 5. Hard-coded semantics? None.
   in the all-archived empty state (`StudentsListPage`) and the workspace error Try again (`StudentWorkspacePage`): once the new state is
   visible, focus moves to `main h1`, except Include archived, which moves it to the list toolbar's Include archived control when that renders
   (else `main h1`); their four `test.fail` marks are removed and the `expectFocusNotLost` tests pass; no other behaviour, copy or layout change.
+- AC9 (DEC-136, G3 round 1 findings): (a) QA-1: the workspace error Try again also leaves focus on `main h1` when the retry fails again (the
+  error view renders again), with an E2E case for the retry-fails path; (b) QA-2: `expectFocusNotLost` also fails when the active element is
+  `:disabled` or not visible (`checkVisibility()`), with a disabled and a `display:none` failing case in `checks.spec.ts`; (c) QA-3: the
+  Motion tokens test reads the computed `animation-duration` through `expect.poll`; (d) QA-4: the inert test's name says focus is lost to
+  `body` after an inert freeze; (e) QA-7: the hidden-element case first asserts its locator matches one element; (f) QA-6: the stylelint
+  test's comment matches its jsdom environment (the deviation stays: `src/test/setup.ts` needs `window`). QA-5 goes to T-M2.20.
 - AC7: `./scripts/gate.sh` green once on the final head and CI green; every existing assertion kept (DEC-131 (6)); the gate's changed-spec ×3
   run passes for `students.spec.ts` and `checks.spec.ts`; the bundle budget unchanged.
 
