@@ -26,7 +26,7 @@ Remote: https://github.com/duochou042004/eng-lms (mirror: gitlab.com/duochou0420
   `./scripts/install-hooks.sh`, `git remote add gitlab …`.
 
 ## Next steps
-1. If the `docs/M2-retrospective` PR is still open: merge it via merge-gate (`--dry-run` first), then gitlab-sync.
+1. If PR #121 (`docs/T-M2.19-retrospective`) is still open: merge it via merge-gate (`--dry-run` first), then gitlab-sync.
 2. Read **`docs/09-harness/lessons-learned.md`** (L-01..L-13), then the **T-M2.17 packet** (invoke the task-packet skill: contradiction scan, Domain rules block, shortcut ledger; split from T-M2.15, DEC-128): tier H (student personal data: SEC + combined QA+UX); a UI rules block
    (DEC-131 (2)); the T-M2.19 helpers in its test plan; G0 docs review (tier L, delta rounds); then the PO start signal.
 3. Then T-M2.20 polish, T-M2.21 (records checks), T-M2.13, T-M2.16; then T-M2.6, T-M2.7 (M2 regression, G5).
