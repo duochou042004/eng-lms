@@ -53,7 +53,8 @@ function StudentWorkspace({ studentId }: { studentId: string }) {
     if (!retried.current || !shown) return
     retried.current = false
     document.querySelector<HTMLElement>('main h1')?.focus()
-  }, [shown])
+    // The results too: a fast answer can batch the fetch and its result into one render, so `shown` never turns false.
+  }, [shown, student.data, student.errorUpdatedAt])
 
   if (notFound) return <StudentNotFound />
   return (
