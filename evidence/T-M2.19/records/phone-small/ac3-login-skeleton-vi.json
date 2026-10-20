@@ -41,8 +41,8 @@
   "headingLimitPx": 8,
   "switcherBlockStartDeltaPx": 0,
   "layoutShift": {
-    "total": 0,
-    "entries": 0
+    "total": 0.0050157074304033765,
+    "entries": 1
   },
   "clsLimit": 0.05
 }
