@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-10-21T05:03:35Z",
-  "updatedBy": "lead-coordinator (T-M2.17 packet G0 PASS, DEC-140; awaiting PO start signal)",
+  "updatedAt": "2026-10-21T06:12:12Z",
+  "updatedBy": "lead-coordinator (T-M2.17 started on the PO signal)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -32,19 +32,19 @@
   "currentTask": {
     "id": "T-M2.17",
     "title": "Learning profile (split from T-M2.15, DEC-128)",
-    "status": "ready",
+    "status": "in_progress",
     "ownerRole": "FE",
     "branch": "feature/T-M2.17-learning-profile",
     "packet": "docs/tasks/T-M2.17-learning-profile.md",
-    "pr": "122",
+    "pr": null,
     "lastCommit": null,
-    "startedAt": null,
+    "startedAt": "2026-10-21T06:12:12Z",
     "entryGate": [
       "T-M2.15 merged — met (9b9e133)"
     ],
     "nextSteps": [
-      "Packet merged via PR #122 (docs branch docs/T-M2.17-learning-profile); G0 DOCS-REVIEW PASS in 2 rounds (evidence/T-M2.17/review/docs.md)",
-      "Wait for the PO start signal; then frontend-implementer on feature/T-M2.17-learning-profile from develop; G3 tier H: SEC + one combined QA+UX reviewer"
+      "frontend-implementer implements the packet on feature/T-M2.17-learning-profile (G1: gate.sh once on the final head)",
+      "LC records evidence/T-M2.17/summary.md, opens the PR; G3 tier H: SEC + one combined QA+UX reviewer"
     ],
     "trace": [
       "DEC-128",
@@ -1207,6 +1207,11 @@
       "at": "2026-10-21T05:03:35Z",
       "actor": "lead-coordinator",
       "event": "T-M2.17 packet written (task-packet skill, DEC-140) and at G0 (DEC-141): DOCS-REVIEW PASS in 2 rounds (round 1 full 132,067 tokens; round 2 delta 12,410). PR #122. Next: the PO start signal."
+    },
+    {
+      "at": "2026-10-21T06:12:12Z",
+      "actor": "PO",
+      "event": "Start signal for T-M2.17 in chat (\"Start T-M2.17: implement the learning profile packet under DEC-131 (tier H).\"); packet merged as 7e39a46 (PR #122)."
     }
   ]
 }
