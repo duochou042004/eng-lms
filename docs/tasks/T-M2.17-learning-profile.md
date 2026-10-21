@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Milestone | M2 |
-| Status | ready (G0 PASS, DEC-140; implementation after the PO start signal) |
+| Status | in_review (G1 PASS on `f72c5ae`; PO start signal 2026-10-21) |
 | Owner role | FE (frontend-implementer) |
 | Branch | `feature/T-M2.17-learning-profile` (from `develop`) |
 | Depends on | T-M2.9 (`37e8ce0`, the learning-profile endpoints), T-M2.15 (`9b9e133`, the one-form lock and the Profile view sections), T-M2.19 (`d165a4e`, the E2E checks): merged |
@@ -172,7 +172,7 @@ custom fields are free text; hints give generic examples (no exam name); `Forbid
 
   | Profile state | `PUT` with | Server answer | UI |
   |---|---|---|---|
-  | none | `version: null` | 200, created (`version` 0) | scope 4 success |
+  | none | `version: null` | 200, created (`version` 1 when it holds a value: the server inserts the empty row at 0, then applies; 0 when every value is empty; G1 OQ 1) | scope 4 success |
   | none | a number | 409 `STALE_VERSION` | scope 5 |
   | exists (version n) | `version: null` | 409 `STALE_VERSION` | scope 5 |
   | exists (version n) | n | 200, replaced (`version` n + 1; n when the values equal the stored ones, `LearningProfile.apply`) | scope 4 success |

@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-10-21T06:12:12Z",
-  "updatedBy": "lead-coordinator (T-M2.17 started on the PO signal)",
+  "updatedAt": "2026-10-21T06:55:40Z",
+  "updatedBy": "lead-coordinator (T-M2.17 G1 PASS; G3 next)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -32,19 +32,19 @@
   "currentTask": {
     "id": "T-M2.17",
     "title": "Learning profile (split from T-M2.15, DEC-128)",
-    "status": "in_progress",
+    "status": "in_review",
     "ownerRole": "FE",
     "branch": "feature/T-M2.17-learning-profile",
     "packet": "docs/tasks/T-M2.17-learning-profile.md",
     "pr": null,
-    "lastCommit": null,
+    "lastCommit": "9e2f08c",
     "startedAt": "2026-10-21T06:12:12Z",
     "entryGate": [
       "T-M2.15 merged — met (9b9e133)"
     ],
     "nextSteps": [
-      "frontend-implementer implements the packet on feature/T-M2.17-learning-profile (G1: gate.sh once on the final head)",
-      "LC records evidence/T-M2.17/summary.md, opens the PR; G3 tier H: SEC + one combined QA+UX reviewer"
+      "G3 tier H on the PR: SEC (fresh) + one combined QA+UX reviewer (fresh, qa-protocol §2a), one at a time",
+      "S1/S2 and cheap S3 via an LC-added AC + DEC, delta re-checks; S4 to T-M2.20; then merge-gate"
     ],
     "trace": [
       "DEC-128",
@@ -1212,6 +1212,11 @@
       "at": "2026-10-21T06:12:12Z",
       "actor": "PO",
       "event": "Start signal for T-M2.17 in chat (\"Start T-M2.17: implement the learning profile packet under DEC-131 (tier H).\"); packet merged as 7e39a46 (PR #122)."
+    },
+    {
+      "at": "2026-10-21T06:55:40Z",
+      "actor": "lead-coordinator",
+      "event": "T-M2.17 G1: gate PASS on f72c5ae (772 s, 13 steps); implementer 360,688 tokens, 42.3 min; OQ 1 (first-save version 1) ruled by a packet correction, OQ 2 accepted, OQ 3 in T-M2.20."
     }
   ]
 }
