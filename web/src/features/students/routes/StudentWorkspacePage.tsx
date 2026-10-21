@@ -13,6 +13,7 @@ import { AccountSection } from '../components/AccountSection'
 import { ContactValue } from '../components/ContactValue'
 import type { CardCredentials } from '../components/CredentialsCard'
 import { GuardiansSection, type OpenForm } from '../components/GuardiansSection'
+import { LearningProfileSection } from '../components/LearningProfileSection'
 import { ProfileForm } from '../components/ProfileForm'
 import { StudentNotFound } from '../components/StudentNotFound'
 import { StudentStatusBadge } from '../components/StudentStatusBadge'
@@ -25,8 +26,9 @@ const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 
 /**
  * `/tutor/students/:studentId` (FR-STU-03, 05, 06, 07; T-M2.5 scopes 6–7, T-M2.14): the workspace header (name, status,
- * username, contact quick links) and the Profile view, with Edit profile, the Guardians section (T-M2.15) and the Account
- * section; one form at a time among the profile form and the guardian forms. No tab bar while
+ * username, contact quick links) and the Profile view, with Edit profile, the Guardians section (T-M2.15), the
+ * Learning profile section (T-M2.17) and the Account section; one form at a time among the profile form, the
+ * guardian forms and the learning-profile form. No tab bar while
  * Profile is the only content (DEC-120 (3), (8)). A 404 or a `:studentId` that is not a UUID (no request) shows the
  * feature's not-found view inside the shell. Each student gets a fresh page state (keyed), so nothing of one student's
  * form, toast or reset card reaches another's.
@@ -113,7 +115,8 @@ interface WorkspaceProps {
 
 function Workspace({ student, onRefetch, onNotFound }: WorkspaceProps) {
   const { t, i18n } = useTranslation('students')
-  // One form at a time (T-M2.15 scope 6): the profile form, the add-guardian form or one guardian's edit form.
+  // One form at a time (T-M2.15 scope 6, T-M2.17 scope 6): the profile form, the add-guardian form, one guardian's edit
+  // form or the learning-profile form.
   const [openForm, setOpenForm] = useState<OpenForm>(null)
   const editing = openForm === 'profile'
   const [accountBusy, setAccountBusy] = useState(false)
@@ -200,6 +203,12 @@ function Workspace({ student, onRefetch, onNotFound }: WorkspaceProps) {
       </section>
       {editing ? null : <ProfileDetails student={student} />}
       <GuardiansSection
+        studentId={student.id}
+        openForm={openForm}
+        onOpenFormChange={setOpenForm}
+        onNotFound={onNotFound}
+      />
+      <LearningProfileSection
         studentId={student.id}
         openForm={openForm}
         onOpenFormChange={setOpenForm}

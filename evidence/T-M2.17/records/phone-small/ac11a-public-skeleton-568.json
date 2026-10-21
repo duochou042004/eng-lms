@@ -1,0 +1,23 @@
+{
+  "rows": {
+    "name": {
+      "top": 24,
+      "bottom": 73.59375,
+      "width": 536
+    },
+    "switcher": {
+      "top": 85.59375,
+      "right": 552
+    },
+    "row": {
+      "width": 536,
+      "right": 552
+    }
+  },
+  "titleLine": 153.59375,
+  "h1Top": 155.59375,
+  "cls": {
+    "total": 0,
+    "entries": 0
+  }
+}

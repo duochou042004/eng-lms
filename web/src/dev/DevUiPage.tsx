@@ -29,6 +29,8 @@ import {
   Stack,
   StatusBadge,
   STUDENT_STATUS,
+  TagInput,
+  TagList,
   TextArea,
   TextField,
   toast,
@@ -394,6 +396,48 @@ function Section({ title, children }: { title: string; children: ReactNode }) {
   )
 }
 
+/** The T-M2.17 TagInput (empty input, chips, remove, the entry errors), its invalid and disabled states, and TagList. */
+function TagSamples() {
+  const { t } = useTranslation('dev')
+  const [tags, setTags] = useState([t('sample.tagFirst'), t('sample.tagSecond'), t('sample.tagLong')])
+  const [text, setText] = useState('')
+  const messages = {
+    remove: (tag: string) => t('sample.tagRemove', { tag }),
+    control: t('sample.tagControl'),
+    tooLong: t('sample.tagTooLong'),
+    duplicate: t('sample.tagDuplicate'),
+    tooMany: t('sample.tagTooMany'),
+  }
+  const fixed = { onChange: () => {}, inputValue: '', onInputChange: () => {}, maxTags: 30, maxLength: 40, messages }
+  return (
+    <Stack gap={5}>
+      <TagInput
+        id="dev-tag-input"
+        label={t('sample.tagLabel')}
+        hint={t('sample.tagHint')}
+        value={tags}
+        onChange={setTags}
+        inputValue={text}
+        onInputChange={setText}
+        maxTags={30}
+        maxLength={40}
+        messages={messages}
+      />
+      <TagInput
+        {...fixed}
+        label={t('sample.tagInvalidLabel')}
+        value={[t('sample.tagFirst')]}
+        errorMessage={t('sample.tagError')}
+      />
+      <TagInput {...fixed} label={t('sample.tagDisabledLabel')} value={[t('sample.tagSecond')]} isDisabled />
+      <div>
+        <p>{t('sample.tagListLabel')}</p>
+        <TagList tags={[t('sample.tagFirst'), t('sample.tagSecond'), t('sample.tagLong')]} />
+      </div>
+    </Stack>
+  )
+}
+
 /** Component gallery (`/dev/ui`, development builds only): every ui/ primitive in each of its states. */
 export function DevUiPage() {
   const { t } = useTranslation('dev')
@@ -503,6 +547,9 @@ export function DevUiPage() {
         </Section>
         <Section title={t('sections.profile')}>
           <ProfileSamples />
+        </Section>
+        <Section title={t('sections.tagInput')}>
+          <TagSamples />
         </Section>
         <Section title={t('sections.empty')}>
           <EmptyState

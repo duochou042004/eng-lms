@@ -18,7 +18,7 @@
 | UI (en) | UI (vi) | Code | Definition |
 |---|---|---|---|
 | Student workspace | Không gian học viên | *(UI composition)* | The tutor's view of one student: Overview, Plan, Lessons, Work, Materials, Progress, Notes, Profile. |
-| Learning profile | Hồ sơ học tập | `LearningProfile` | Level, strengths, weaknesses, learning notes and custom label/value fields. Tutor-only (A-008). |
+| Learning profile | Hồ sơ học tập | `LearningProfile` | Level, strengths, weaknesses, learning notes and custom label/value fields. Tutor-only (A-008). UI terms (T-M2.17): Current level · Trình độ hiện tại; Strengths · Điểm mạnh; Weaknesses · Điểm yếu; Learning notes · Ghi chú học tập; Custom fields · Mục tuỳ chỉnh (a row: Label · Nhãn, Value · Giá trị). |
 | Metric | Chỉ số | `MetricDefinition` | A tutor-defined measurable quantity, e.g. "TOEIC score" (0–990) or "Speaking fluency" (0–10). |
 | Observation | Lần ghi nhận | `MetricObservation` | One measured value of a metric for a student at a point in time (manual, or from an assessment result). |
 | Goal | Mục tiêu | `LearningGoal` | What a student is aiming for. Can have a metric with baseline and target, or be qualitative. |

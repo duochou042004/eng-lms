@@ -368,3 +368,30 @@
   outline: var(--focus-ring-width) solid var(--color-focus);
   outline-offset: var(--focus-ring-offset);
 }
+
+/* The Learning profile section (T-M2.17 UI rules): the Profile view's own column, uncapped like Guardians, so its
+   term/value columns line up with the other sections. */
+.learningProfile {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.learningProfile > .headingRow {
+  margin-block-end: 0;
+}
+
+/* A fieldset grouping rows (Custom fields): no frame of its own; the legend alone on its line, then the hint and rows. */
+.fieldGroup {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  min-inline-size: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.fieldGroup > .legend {
+  padding: 0;
+}

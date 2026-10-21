@@ -169,7 +169,9 @@
     "reload": "Reload",
     "cancel": "Cancel",
     "copyNote": "Copy my note",
-    "copyNotes": "Copy my notes"
+    "copyNotes": "Copy my notes",
+    "learningProfileDescription": "Someone changed this learning profile in another tab or window. Reload to see the latest version; your unsaved changes will be lost.",
+    "copyLearningNotes": "Copy my learning notes"
   },
   "guardians": {
     "title": "Guardians",
@@ -218,6 +220,41 @@
     "discardDescription": "The changes you made to this guardian will be lost.",
     "discard": "Discard",
     "keepEditing": "Keep editing"
+  },
+  "learningProfile": {
+    "title": "Learning profile",
+    "loading": "Loading the learning profile",
+    "errorTitle": "Couldn't load the learning profile.",
+    "retry": "Try again",
+    "edit": "Edit learning profile",
+    "formLabel": "Edit learning profile",
+    "currentLevel": "Current level",
+    "currentLevelHint": "Free text, for example B1 or your own scale",
+    "strengths": "Strengths",
+    "weaknesses": "Weaknesses",
+    "tagsHint": "Press Enter or type a comma to add",
+    "removeTag": "Remove {{tag}}",
+    "learningNotes": "Learning notes",
+    "customFields": "Custom fields",
+    "customFieldsHint": "Anything else you track, for example: Target · 650, or Learning style · Visual",
+    "fieldLegend": "Field {{number}}",
+    "fieldLabel": "Label",
+    "fieldValue": "Value",
+    "addField": "Add field",
+    "removeField": "Remove field {{number}}",
+    "fieldsFull": "Up to {{max}} fields.",
+    "summaryTitle": "The learning profile wasn't saved",
+    "serverError": "The learning profile couldn't be saved. Your input is kept: try again.",
+    "saved": "Learning profile saved",
+    "discardDescription": "The changes you made to this learning profile will be lost.",
+    "tagError": "“{{tag}}”: {{message}}",
+    "errors": {
+      "tagControl": "Tags can't contain control characters.",
+      "tagDuplicate": "Already added.",
+      "tagsTooMany": "Up to {{max}} tags.",
+      "labelRequired": "Enter a label.",
+      "fieldsTooMany": "Up to {{max}} fields."
+    }
   },
   "account": {
     "title": "Account",

@@ -10,8 +10,8 @@ import { ContactValue } from './ContactValue'
 import { GuardianForm, type GuardianFormResult } from './GuardianForm'
 import styles from './Students.module.css'
 
-/** Which form of the Profile view is open (T-M2.15 scope 6): at most one. */
-export type OpenForm = 'profile' | 'add-guardian' | { guardian: string } | null
+/** Which form of the Profile view is open (T-M2.15 scope 6, T-M2.17 scope 6): at most one. */
+export type OpenForm = 'profile' | 'add-guardian' | { guardian: string } | 'learning-profile' | null
 
 const TITLE_ID = 'workspace-guardians'
 const ADD_ID = 'guardians-add'
@@ -103,7 +103,10 @@ export function GuardiansSection({ studentId, openForm, onOpenFormChange, onNotF
       ) : null}
       {list ? (
         <>
-          {openForm === 'profile' ? <p className={styles.mutedText}>{t('account.editingHint')}</p> : null}
+          {/* A form outside this section is open (T-M2.17 scope 6). */}
+          {openForm === 'profile' || openForm === 'learning-profile' ? (
+            <p className={styles.mutedText}>{t('account.editingHint')}</p>
+          ) : null}
           {list.length > 0 ? (
             <ul className={styles.guardianList}>
               {list.map((guardian) => (

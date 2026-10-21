@@ -1,0 +1,65 @@
+{
+  "loading": {
+    "h1Top": 155.59375,
+    "rows": {
+      "name": {
+        "top": 24,
+        "bottom": 73.59375,
+        "width": 328
+      },
+      "switcher": {
+        "top": 85.59375,
+        "right": 344
+      },
+      "row": {
+        "width": 328,
+        "right": 344
+      }
+    }
+  },
+  "loaded": {
+    "h1Top": 155.59375,
+    "visibleCharacters": 59,
+    "rows": {
+      "name": {
+        "top": 24,
+        "bottom": 73.59375,
+        "width": 328
+      },
+      "switcher": {
+        "top": 85.59375,
+        "right": 344
+      },
+      "row": {
+        "width": 328,
+        "right": 344
+      }
+    }
+  },
+  "loadedCls": {
+    "total": 0,
+    "entries": 0
+  },
+  "error": {
+    "h1Top": 155.59375,
+    "rows": {
+      "name": {
+        "top": 24,
+        "bottom": 73.59375,
+        "width": 328
+      },
+      "switcher": {
+        "top": 85.59375,
+        "right": 344
+      },
+      "row": {
+        "width": 328,
+        "right": 344
+      }
+    }
+  },
+  "errorCls": {
+    "total": 0,
+    "entries": 0
+  }
+}

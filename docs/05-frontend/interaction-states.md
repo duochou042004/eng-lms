@@ -51,6 +51,10 @@ for Today and Home.
    keeps it as typed; when the guardian's notes were changed the copy button reads **Copy my notes** (the copy label is a prop of
    `ConflictDialog`). A save of a guardian another tab removed (404) refetches the guardians, closes the form and shows a warning
    `InlineAlert` "This guardian was removed in another tab or window." at the top of the section (focused; cleared by the next guardian action).
+   **T-M2.17:** a stale learning-profile save (another tab saved first, or created the profile while this tab still had `version` `null`)
+   opens the same dialog ("Someone changed this learning profile…"); **Reload** refetches the profile, closes the form and focuses **Edit
+   learning profile**; **Cancel** keeps the form as typed (focus back to Save); when the learning notes were changed the dialog holds
+   **Copy my learning notes**.
 9. Destructive actions: a `ConfirmDialog` that names the object ("Delete folder 'Listening'?"). The consequence is stated ("3 materials will move to
    'Library'"). The danger button repeats the verb ("Delete folder"). Archive needs no confirmation (it is reversible) and shows a toast with **Undo**.
    **As built (T-M2.15, Remove guardian):** "Remove {name} from the guardians?" · "Their contact details will be deleted. This can't be

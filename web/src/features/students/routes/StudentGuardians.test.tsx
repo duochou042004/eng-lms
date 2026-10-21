@@ -62,6 +62,8 @@ describe('Guardians: the section (AC1)', { timeout: 20_000 }, () => {
       'Liên hệ',
       'Ghi chú',
       'Phụ huynh',
+      // T-M2.17 (DEC-140 (1)): the Learning profile section sits between Guardians and Account.
+      'Hồ sơ học tập',
       'Tài khoản',
     ])
     expect(names()).toEqual(['Nguyễn Thị Lan', 'Trần Văn Ba'])

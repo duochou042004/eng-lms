@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { mapGuardianErrors, mapServerErrors } from './serverErrors'
+import { mapGuardianErrors, mapLearningProfileErrors, mapServerErrors } from './serverErrors'
 
 describe('mapServerErrors (interaction-states §2.2)', () => {
   it('maps top-level fields and contact rows by index; the rest goes to the summary', () => {
@@ -71,6 +71,47 @@ describe('guardian errors (T-M2.15 scopes 3 and 7)', () => {
       ],
       unknown: ['form.errors.server'],
       tooMany: true,
+    })
+  })
+})
+
+describe('mapLearningProfileErrors (T-M2.17 scope 4)', () => {
+  it('maps the texts by name, a tag by its sent index (naming it), a custom field to its form row; the rest to the summary', () => {
+    expect(
+      mapLearningProfileErrors(
+        [
+          { field: 'currentLevel', code: 'TOO_LONG' },
+          { field: 'learningNotes', code: 'INVALID_FORMAT' },
+          { field: 'strengths[2]', code: 'INVALID_FORMAT' },
+          { field: 'weaknesses[0]', code: 'TOO_LONG' },
+          { field: 'weaknesses[9]', code: 'TOO_LONG' },
+          { field: 'strengths', code: 'TOO_MANY' },
+          // Form rows 0 and 2 were sent (row 1 was empty): request index 1 is form row 2.
+          { field: 'customFields[1].label', code: 'REQUIRED' },
+          { field: 'customFields[0].value', code: 'TOO_LONG' },
+          { field: 'customFields[4].label', code: 'TOO_LONG' },
+          { field: 'customFields', code: 'TOO_MANY' },
+          { field: 'version', code: 'INVALID_VALUE' },
+        ],
+        { strengths: ['Nghe', 'Nói', 'Đọc'], weaknesses: ['Viết'] },
+        [0, 2],
+      ),
+    ).toEqual({
+      fields: [
+        { path: 'currentLevel', message: 'form.errors.TOO_LONG' },
+        { path: 'learningNotes', message: 'form.errors.INVALID_FORMAT' },
+        { path: 'strengths', message: 'form.errors.INVALID_FORMAT', tag: 'Đọc' },
+        { path: 'weaknesses', message: 'form.errors.TOO_LONG', tag: 'Viết' },
+        { path: 'strengths', message: 'learningProfile.errors.tagsTooMany' },
+        { path: 'customFields.2.label', message: 'form.errors.REQUIRED' },
+        { path: 'customFields.0.value', message: 'form.errors.TOO_LONG' },
+      ],
+      unknown: [
+        'form.errors.server',
+        'form.errors.server',
+        'learningProfile.errors.fieldsTooMany',
+        'form.errors.server',
+      ],
     })
   })
 })

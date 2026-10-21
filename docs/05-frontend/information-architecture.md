@@ -71,6 +71,16 @@ section. Add and Edit open one guardian form in place (Name, Relationship, Phone
 a time on the page: the profile form, the add-guardian form or one guardian's edit form; the others' triggers and the Account actions are
 disabled meanwhile. Add student has an optional, collapsed **Guardians** section (0–10 rows). The learning profile: T-M2.17.
 
+**Implemented (T-M2.17, DEC-140):** a section **Learning profile** (`h2`, "Hồ sơ học tập") between Guardians and Account, tutor-only
+(A-008). Read view: Current level, Strengths and Weaknesses (read-only tag chips in order), Learning notes (line breaks kept) and one row
+per custom field (label · value), "Not added" for empty values; values are plain text (never links or markup). Loading and error (**Try
+again**, focus to the `h2`) stay inside the section; **Edit learning profile** shows once the profile has loaded. The form in place: Current
+level, Strengths and Weaknesses (`TagInput`), Learning notes (counter), Custom fields (0–30 rows "Field {n}": Label, Value, Remove field
+{n}; **Add field**, hidden at 30), Save / Cancel; Save sends the whole profile with its `version` (`null` before the first save) and
+nothing when unchanged; a stale save opens the conflict dialog. One form at a time extends to it: while it is open every other trigger and
+the Account actions are disabled (Guardians and Account hints); while another form is open, Edit learning profile is disabled with the
+same hint in its section. Status and reset requests do not lock it.
+
 ## 3. Student navigation (mobile-first)
 
 | Item | Route | Content |

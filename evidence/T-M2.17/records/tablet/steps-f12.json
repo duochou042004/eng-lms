@@ -1,0 +1,14 @@
+{
+  "flow": "F12 Update a learning profile (ux-flows, budget ≤ 3 steps)",
+  "viewport": {
+    "width": 768,
+    "height": 1024
+  },
+  "steps": 3,
+  "named": [
+    "Edit learning profile",
+    "type a weakness and press Enter",
+    "Save"
+  ],
+  "budget": 3
+}

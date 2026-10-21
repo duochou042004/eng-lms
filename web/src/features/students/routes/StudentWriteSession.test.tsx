@@ -4,14 +4,14 @@ import { http, HttpResponse } from 'msw'
 import { describe, expect, it, vi } from 'vitest'
 import { toast } from '../../../ui'
 import { renderRoute } from '../../../test/render'
-import { server, sessionBody } from '../../../test/server'
-import { guardian, SID, student, workspaceApi } from '../../../test/students'
+import { problem, server, sessionBody } from '../../../test/server'
+import { guardian, learningProfile, SID, student, workspaceApi } from '../../../test/students'
 
 // T-M2.15 AC8 (scope 8, DEC-127): a students write answered after a sign-out and the next sign-in as a student, or while
 // no tutor session is cached, stores nothing in the query cache, invalidates nothing and toasts nothing.
 
 const LAN = guardian(1, { name: 'Nguyễn Thị Lan' })
-type Method = 'post' | 'patch' | 'delete'
+type Method = 'post' | 'patch' | 'put' | 'delete'
 
 /** Holds the next `method path` request until `release()`; resolves `reached` when it arrives. */
 function hold(method: Method, path: string, answer: () => Response) {
@@ -85,6 +85,35 @@ const WRITES: Array<{
       await userEvent.click(within(dialog).getByRole('button', { name: 'Xoá phụ huynh' }))
     },
   },
+  {
+    // T-M2.17 AC7 (scope 7): the learning profile's save.
+    name: 'learning profile save',
+    hold: () =>
+      hold('put', '*/api/v1/tutor/students/:sid/learning-profile', () =>
+        HttpResponse.json(learningProfile({ currentLevel: 'SECRET-LEVEL', version: 0 })),
+      ),
+    start: async () => {
+      await userEvent.click(await screen.findByRole('button', { name: 'Sửa hồ sơ học tập' }))
+      await userEvent.type(await screen.findByRole('textbox', { name: 'Trình độ hiện tại' }), 'SECRET-LEVEL')
+      await userEvent.click(screen.getByRole('button', { name: 'Lưu' }))
+    },
+  },
+  {
+    // T-M2.17 AC10 (b), SEC S-1: a failed save (409) answered after the session ended opens no dialog.
+    name: 'learning profile save answered 409',
+    hold: () =>
+      hold('put', '*/api/v1/tutor/students/:sid/learning-profile', () =>
+        HttpResponse.json(
+          { type: 'about:blank', title: 'Conflict', status: 409, code: 'STALE_VERSION', requestId: 'req-409' },
+          { status: 409, headers: { 'Content-Type': 'application/problem+json' } },
+        ),
+      ),
+    start: async () => {
+      await userEvent.click(await screen.findByRole('button', { name: 'Sửa hồ sơ học tập' }))
+      await userEvent.type(await screen.findByRole('textbox', { name: 'Trình độ hiện tại' }), 'SECRET-LEVEL')
+      await userEvent.click(screen.getByRole('button', { name: 'Lưu' }))
+    },
+  },
 ]
 
 describe('A write answered after the tutor session ended (AC8)', { timeout: 20_000 }, () => {
@@ -130,3 +159,32 @@ describe('A write answered after the tutor session ended (AC8)', { timeout: 20_0
     expect(api.calls.guardianPost).toHaveLength(1)
   })
 })
+
+describe(
+  'A failed learning-profile save answered while no tutor session is cached (T-M2.17 AC10 (b))',
+  { timeout: 20_000 },
+  () => {
+    it.each([
+      ['409', () => problem(409, 'STALE_VERSION')],
+      ['404', () => problem(404, 'NOT_FOUND')],
+      ['500', () => problem(500, 'INTERNAL_ERROR')],
+    ])('a %s opens no dialog, alert or not-found view on the still-mounted page', async (_, answer) => {
+      workspaceApi({}, { guardians: [LAN] })
+      const { queryClient } = renderRoute(`/tutor/students/${SID}`)
+      await screen.findByRole('heading', { level: 3, name: 'Nguyễn Thị Lan' })
+      const held = hold('put', '*/api/v1/tutor/students/:sid/learning-profile', answer)
+      await userEvent.click(await screen.findByRole('button', { name: 'Sửa hồ sơ học tập' }))
+      await userEvent.type(await screen.findByRole('textbox', { name: 'Trình độ hiện tại' }), 'x')
+      await userEvent.click(screen.getByRole('button', { name: 'Lưu' }))
+      await held.arrived
+      // The session entry is gone (a sign-out in progress) while the page is still mounted.
+      queryClient.getQueryCache().remove(queryClient.getQueryCache().find({ queryKey: ['auth', 'session'] })!)
+      held.release()
+      await new Promise((resolve) => setTimeout(resolve, 100))
+      expect(screen.queryByRole('alertdialog')).not.toBeInTheDocument()
+      expect(screen.queryByText(/Không lưu được hồ sơ học tập/)).not.toBeInTheDocument()
+      expect(screen.queryByRole('heading', { level: 1, name: 'Không tìm thấy học viên' })).not.toBeInTheDocument()
+      expect(screen.getByRole('form', { name: 'Sửa hồ sơ học tập' })).toBeInTheDocument()
+    })
+  },
+)

@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Milestone | M2 |
-| Status | ready (G0 PASS, DEC-140; implementation after the PO start signal) |
+| Status | awaiting_approval (G3 passed: SEC APPROVED, QA PASS WITH MINOR, UX APPROVED; DEC-142) |
 | Owner role | FE (frontend-implementer) |
 | Branch | `feature/T-M2.17-learning-profile` (from `develop`) |
 | Depends on | T-M2.9 (`37e8ce0`, the learning-profile endpoints), T-M2.15 (`9b9e133`, the one-form lock and the Profile view sections), T-M2.19 (`d165a4e`, the E2E checks): merged |
@@ -159,7 +159,8 @@ custom fields are free text; hints give generic examples (no exam name); `Forbid
 - **Validation per field** (validation-rules rows; lengths in code points; free text refuses C0 controls other than tab, LF, CR; the
   existing `form.errors` texts): Current level 0–40; Learning notes 0–2,000 (counter); each tag 1–40, no control
   characters (comma, tab and line break are separators), ≤ 30 per list, case-insensitively unique; custom field Label 1–60 (required in a
-  kept row), Value 0–500, ≤ 30 rows. Client checks on blur and on submit, server 422 mapped as scope 4.
+  kept row), Value 0–500, ≤ 30 rows. Client checks on submit, then on change once a submit failed (React Hook Form `mode: 'onSubmit'`, the
+  house student forms; never on blur: a blur error moves Save under the pointer, G3 QA-1, DEC-142); server 422 mapped as scope 4.
 - **Copy** (en / vi verb): Edit learning profile / Sửa hồ sơ học tập; Save / Lưu; Cancel / Huỷ (the existing key); Add field / Thêm mục;
   Remove field {n} / Xoá mục {n}; Remove {tag} / Xoá {tag}; counters with non-breaking spaces as the existing `TextArea`.
 
@@ -172,7 +173,7 @@ custom fields are free text; hints give generic examples (no exam name); `Forbid
 
   | Profile state | `PUT` with | Server answer | UI |
   |---|---|---|---|
-  | none | `version: null` | 200, created (`version` 0) | scope 4 success |
+  | none | `version: null` | 200, created (`version` 1 when it holds a value: the server inserts the empty row at 0, then applies; 0 when every value is empty; G1 OQ 1) | scope 4 success |
   | none | a number | 409 `STALE_VERSION` | scope 5 |
   | exists (version n) | `version: null` | 409 `STALE_VERSION` | scope 5 |
   | exists (version n) | n | 200, replaced (`version` n + 1; n when the values equal the stored ones, `LearningProfile.apply`) | scope 4 success |
@@ -233,6 +234,12 @@ custom fields are free text; hints give generic examples (no exam name); `Forbid
 - AC9: `./scripts/gate.sh` green once on the final head and CI green (DEC-131 (6)); all existing unit and E2E assertions kept except the
   two `h2` lists of DEC-140 (1); F2 ≤ 6, F10 ≤ 3, F11 ≤ 3 kept; the bundle budget green with no students code in either first-visit closure;
   `api/openapi.json` unchanged; `ForbiddenIdentifiersTest` green and no exam or curriculum name in `web/src` strings or code.
+- AC10 (G3 round 1, DEC-142; S2 and cheap S4 fixed in-task, DEC-131 (5)): (a) **QA-1/UX-1, QA-3** the form validates on submit and
+  then on change (`mode: 'onSubmit'`), so an error appears or clears without moving Save under a pointer: an E2E clicks **Save** with the
+  mouse while focus is still in a cleared Label of a row with a value (360 and 1280) → the `ErrorSummary` shows and is focused; after
+  typing the fix the inline error clears while typing, and the first mouse press on Save at 360 sends the PUT; (b) **SEC S-1** a failed
+  save whose answer arrives while no tutor session is cached opens no dialog, alert or not-found view (an early return in the `catch`;
+  the held-promise test gains a 409 row). QA-2 (S4: one reason shown for a paste refused for two reasons) goes to T-M2.20.
 
 ## Test plan
 - Implementation: unit (`toLearningProfilePut` and `isUnchanged` tables incl. `null` clears, whitespace-only edits, dropped rows; the

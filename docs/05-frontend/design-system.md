@@ -172,6 +172,18 @@ Decorative: `aria-hidden="true"`, never focusable; its owner announces the state
 - Bundle note: every `ui/` module is reached through the `ui/index.ts` barrel, so the components used only by tutor pages ship in the shared
   chunk too (the student first visit grew from 174.7 to 180.5 KB gz of its 200 KB budget with these eight).
 
+**`TagInput` and `TagList`** (T-M2.17, DEC-140 (4); tests, axe and a `/dev/ui` entry): a labelled field in a `fieldset` named by its
+label (so a page with two tag fields can scope to each): the current tags as a plain list (`ul`, no bullets) of chips, each its text and a
+quiet `IconButton` (X) whose accessible name is the caller's "Remove {tag}" (in the tab order; no React Aria `TagGroup`, so no grid keys and
+no English-only description), then one text input with the hint and the error. **Enter** or a typed **comma** adds the input's text; a
+pasted text with commas, tabs or line breaks adds each part. Each entry is trimmed; an empty one is ignored; a control character, more than
+`maxLength` code points, a tag already present ignoring case or one past `maxTags` is refused with its message (the caller's strings) and its
+text kept in the input (a pasted list adds its valid parts and keeps the refused ones, comma-joined). The rules are the pure `addTags`
+(`ui/tagEntry.ts`), so a form can commit the input's text on Save. The input is controlled (`inputValue`), stays enabled at `maxTags`, and
+Enter never submits the form. Removing a chip focuses the next chip's button, else the previous one's, else the input. Chips wrap as whole
+chips (`gap: var(--space-2)`); a long tag wraps inside its chip (`overflow-wrap: anywhere`). `TagList` shows the same chips read-only.
+States: default, hover, focus-visible, invalid, disabled.
+
 ## 4. Status vocabulary (one mapping, used everywhere)
 
 | Domain status | Label (en / vi) | Tone | Icon |

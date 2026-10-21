@@ -121,6 +121,13 @@ From the student's Profile view, Guardians section: **Add guardian** (the form o
 **Save** (the guardian is appended, "Guardian added" toasts, focus on its **Edit**). Relationship, phone, email and notes are optional and not
 counted. E2E: `e2e/tests/students.spec.ts` (step log `evidence/T-M2.15/records/<project>/steps-f11.json`, 3 steps at 360, 768 and 1280).
 
+## F12 Update a learning profile (FR-STU-04, T-M2.17): budget ≤ 3 steps
+
+From the student's Profile view, Learning profile section: **Edit learning profile** (the form opens in place, focus on Current level) →
+type a weakness and press Enter (the chip is added, focus stays in the input) → **Save** ("Learning profile saved" toasts, focus on **Edit
+learning profile**). Text left in a tag input is committed by Save. E2E: `e2e/tests/students.spec.ts` (step log
+`evidence/T-M2.17/records/<project>/steps-f12.json`, 3 steps at 360, 768 and 1280).
+
 ## Flow review checklist (UX reviewer)
 
 - [ ] The budget is met at all 3 viewports (E2E counter evidence).

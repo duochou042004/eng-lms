@@ -63,6 +63,20 @@ export function guardian(index: number, overrides: Record<string, unknown> = {})
   }
 }
 
+/** A learning profile DTO (LearningProfileResponse, T-M2.17); the default is a never-saved one (`version` `null`). */
+export function learningProfile(overrides: Record<string, unknown> = {}) {
+  return {
+    currentLevel: null,
+    strengths: [],
+    weaknesses: [],
+    learningNotes: null,
+    customFields: [],
+    updatedAt: null,
+    version: null,
+    ...overrides,
+  }
+}
+
 export interface WorkspaceCalls {
   gets: number
   patch: Record<string, unknown>[]
@@ -73,6 +87,8 @@ export interface WorkspaceCalls {
   guardianPost: Record<string, unknown>[]
   guardianPatch: Array<{ gid: string; body: Record<string, unknown> }>
   guardianDelete: string[]
+  profileGets: number
+  profilePut: Record<string, unknown>[]
 }
 
 /**
@@ -80,18 +96,22 @@ export interface WorkspaceCalls {
  * bumps `version` (not for a username-only change, api-catalog); a status change sets the status and bumps it; a reset
  * answers `RESET_CREDENTIALS`. Stale versions answer 409 `STALE_VERSION`. `taken` usernames are unavailable. The
  * guardians (T-M2.15): GET lists them in order; POST appends (an 11th answers 422 `TOO_MANY`); PATCH applies the body
- * and bumps the guardian's `version` (409 when stale, 404 when gone); DELETE removes (404 when gone).
+ * and bumps the guardian's `version` (409 when stale, 404 when gone); DELETE removes (404 when gone). The learning
+ * profile (T-M2.17): GET answers it; PUT follows the server's transitions (`version` `null` creates it, 409 when it
+ * exists; a number must match; equal values keep the version; a first save with values answers version 1).
  */
 export function workspaceApi(
   initial: Record<string, unknown> = {},
   {
     taken = ['tranbinh'],
     guardians: initialGuardians = [],
-  }: { taken?: string[]; guardians?: Array<Record<string, unknown>> } = {},
+    profile: initialProfile = {},
+  }: { taken?: string[]; guardians?: Array<Record<string, unknown>>; profile?: Record<string, unknown> } = {},
 ) {
   let current: Record<string, unknown> = student(initial)
   let guardians = [...initialGuardians]
   let nextGuardian = 100
+  let profile: Record<string, unknown> = learningProfile(initialProfile)
   const calls: WorkspaceCalls = {
     gets: 0,
     patch: [],
@@ -102,6 +122,8 @@ export function workspaceApi(
     guardianPost: [],
     guardianPatch: [],
     guardianDelete: [],
+    profileGets: 0,
+    profilePut: [],
   }
   const notFound = () =>
     HttpResponse.json(
@@ -185,6 +207,26 @@ export function workspaceApi(
       guardians = guardians.map((g) => (g.id === gid ? updated : g))
       return HttpResponse.json(updated)
     }),
+    http.get('*/api/v1/tutor/students/:sid/learning-profile', () => {
+      calls.profileGets += 1
+      return HttpResponse.json(profile)
+    }),
+    http.put('*/api/v1/tutor/students/:sid/learning-profile', async ({ request }) => {
+      const { version, ...values } = (await request.json()) as Record<string, unknown>
+      calls.profilePut.push({ version, ...values })
+      // version null creates (409 when one exists); a number must match the stored one (409 otherwise).
+      const conflict = staleFor(version ?? null, profile.version)
+      if (conflict) return conflict
+      const next = { ...learningProfile(), ...values }
+      // As the server: a first save creates the empty row (version 0) and then applies the values (version 1 if any).
+      const base = profile.version === null ? learningProfile() : profile
+      const same = ['currentLevel', 'strengths', 'weaknesses', 'learningNotes', 'customFields'].every(
+        (k) => JSON.stringify(next[k as keyof typeof next]) === JSON.stringify(base[k as keyof typeof base]),
+      )
+      const stored = Number(profile.version ?? 0) + (same ? 0 : 1)
+      profile = { ...next, updatedAt: '2026-10-21T03:00:00Z', version: stored }
+      return HttpResponse.json(profile)
+    }),
     http.delete('*/api/v1/tutor/guardians/:gid', ({ params }) => {
       const gid = params.gid as string
       calls.guardianDelete.push(gid)
@@ -200,6 +242,13 @@ export function workspaceApi(
     },
     get guardians() {
       return guardians
+    },
+    get profile() {
+      return profile
+    },
+    /** Another tab's learning-profile save (or its first save, which creates the profile with version 0). */
+    saveProfileElsewhere(changes: Record<string, unknown>) {
+      profile = { ...profile, ...changes, version: profile.version === null ? 0 : Number(profile.version) + 1 }
     },
     /** Another tab's guardian change, removal or addition. */
     changeGuardianElsewhere(gid: string, changes: Record<string, unknown>) {
