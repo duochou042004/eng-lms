@@ -15,9 +15,12 @@ retrospective (PR #121), `d165a4e` (T-M2.19) · Remote: https://github.com/duoch
 - **The quality process is DEC-131** (risk tiers, delta re-checks, S4 → T-M2.20, one local gate per head + CI, reviewers return text only,
   G3 cost table). UI packets reuse the T-M2.19 helpers (`expectNoMidWordBreak` per element, never on a list).
 - T-M2.20 now also holds the PR #122 CI mid-fade axe flake (bare axe after a dialog opens) and T-M2.17 QA-2 (one reason shown for a
-  paste refused for two reasons). Open in the backlog: T-M2.13, T-M2.16, T-M2.20, T-M2.21. This device: Kali Linux rolling, rootless
+  paste refused for two reasons). Open in the backlog: T-M2.10, T-M2.13, T-M2.16, T-M2.20, T-M2.21. This device: Kali Linux rolling, rootless
   Podman 5.8.6, clone `/home/kali/App_projects/eng-lms`. GitLab CI paused (DEC-107); the mirror syncs. The dev DB holds ≈ 60 more
   fictitious `qa-lp-*` students from the T-M2.17 QA (kept, DEC-139).
+
+## In flight / uncommitted
+- PR #124 (`qa/T-M2.17`) and this records PR (`docs/T-M2.17-g3-records`) open; nothing uncommitted.
 
 ## Another device
 - Follow development-setup §0 for its platform; record OS, engine and versions in `progress.json` `environment` and the clone path in

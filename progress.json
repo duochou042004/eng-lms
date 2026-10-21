@@ -16,7 +16,7 @@
       }
     ]
   },
-  "updatedAt": "2026-10-21T08:06:33Z",
+  "updatedAt": "2026-10-21T08:09:27Z",
   "updatedBy": "lead-coordinator (T-M2.17 merged, DEC-143; next: T-M2.20 packet)",
   "phase": {
     "id": "P1",
@@ -49,7 +49,8 @@
       "DEC-131",
       "DEC-132",
       "DEC-136",
-      "DEC-137"
+      "DEC-137",
+      "DEC-142"
     ]
   },
   "nextTask": {
@@ -375,23 +376,23 @@
   "gates": {
     "G0": {
       "status": "n/a",
-      "note": "T-M2.17 packet not written yet (T-M2.19: DOCS-REVIEW PASS, PR #116)"
+      "note": "T-M2.20 packet not written yet (T-M2.17: DOCS-REVIEW PASS, DEC-141, PR #122)"
     },
     "G1": {
       "status": "pass",
-      "note": "T-M2.19: gate PASS on c2e300e (694 s)"
+      "note": "T-M2.17: gate PASS on f72c5ae (772 s) and on the AC10 fix 830d778 (770 s)"
     },
     "G2": {
       "status": "pass",
-      "note": "T-M2.19: CI 7/7 on 6bcaffa"
+      "note": "T-M2.17: CI 7/7 on f6bea77"
     },
     "G3": {
       "status": "pass",
-      "note": "T-M2.19: combined QA+UX PASS WITH MINOR/APPROVED, round 1 + delta re-check (DEC-136, DEC-137)"
+      "note": "T-M2.17 tier H: SEC APPROVED; combined QA+UX round 1 FAIL (S2 QA-1) → AC10 → delta re-check PASS WITH MINOR/APPROVED (DEC-142)"
     },
     "G4": {
       "status": "pass",
-      "note": "T-M2.19 merged via merge-gate (d165a4e)"
+      "note": "T-M2.17 merged via merge-gate (ff1d2ec)"
     },
     "G5": {
       "status": "n/a",
@@ -415,7 +416,11 @@
       "DEC-136",
       "DEC-137",
       "DEC-138",
-      "DEC-139"
+      "DEC-139",
+      "DEC-140",
+      "DEC-141",
+      "DEC-142",
+      "DEC-143"
     ],
     "pendingPO": [
       "OQ-03",
@@ -690,6 +695,20 @@
       "status": "approved",
       "at": "2026-10-20T10:01:44Z",
       "ref": "DEC-139"
+    },
+    {
+      "what": "PO start signal for T-M2.17 (chat: \"Start T-M2.17: implement the learning profile packet under DEC-131 (tier H).\")",
+      "by": "PO",
+      "status": "approved",
+      "at": "2026-10-21T06:12:12Z",
+      "ref": "DEC-142"
+    },
+    {
+      "what": "LC-APPROVED T-M2.17 (PR #123)",
+      "by": "LC",
+      "status": "approved",
+      "at": "2026-10-21T08:05:37Z",
+      "ref": "DEC-143"
     }
   ],
   "environment": {
