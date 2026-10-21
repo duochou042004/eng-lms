@@ -1,0 +1,14 @@
+{
+  "flow": "F10 Reset a student's password (ux-flows, budget ≤ 3 steps)",
+  "viewport": {
+    "width": 1280,
+    "height": 800
+  },
+  "steps": 3,
+  "named": [
+    "Reset password",
+    "Confirm Reset password",
+    "Copy message"
+  ],
+  "budget": 3
+}

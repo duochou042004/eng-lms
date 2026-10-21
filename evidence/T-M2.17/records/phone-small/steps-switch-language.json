@@ -1,0 +1,16 @@
+{
+  "viewport": {
+    "width": 360,
+    "height": 740
+  },
+  "budget": {
+    "publicPage": 1,
+    "shellPage": 2
+  },
+  "steps": {
+    "pointer /login": 1,
+    "pointer /tutor": 2,
+    "pointer /student": 2,
+    "keyboard /login": 1
+  }
+}

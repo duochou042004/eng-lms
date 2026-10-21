@@ -1,0 +1,65 @@
+{
+  "loading": {
+    "h1Top": 155.59375,
+    "rows": {
+      "name": {
+        "top": 24,
+        "bottom": 73.59375,
+        "width": 288
+      },
+      "switcher": {
+        "top": 85.59375,
+        "right": 304
+      },
+      "row": {
+        "width": 288,
+        "right": 304
+      }
+    }
+  },
+  "loaded": {
+    "h1Top": 155.59375,
+    "visibleCharacters": 59,
+    "rows": {
+      "name": {
+        "top": 24,
+        "bottom": 73.59375,
+        "width": 288
+      },
+      "switcher": {
+        "top": 85.59375,
+        "right": 304
+      },
+      "row": {
+        "width": 288,
+        "right": 304
+      }
+    }
+  },
+  "loadedCls": {
+    "total": 0,
+    "entries": 0
+  },
+  "error": {
+    "h1Top": 155.59375,
+    "rows": {
+      "name": {
+        "top": 24,
+        "bottom": 73.59375,
+        "width": 288
+      },
+      "switcher": {
+        "top": 85.59375,
+        "right": 304
+      },
+      "row": {
+        "width": 288,
+        "right": 304
+      }
+    }
+  },
+  "errorCls": {
+    "total": 0,
+    "entries": 0
+  }
+}

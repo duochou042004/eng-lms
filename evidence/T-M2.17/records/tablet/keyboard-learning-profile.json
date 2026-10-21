@@ -1,0 +1,17 @@
+{
+  "viewport": {
+    "width": 768,
+    "height": 1024
+  },
+  "actions": [
+    "Enter on Edit learning profile",
+    "type the level",
+    "type two strengths, Enter after each",
+    "Shift+Tab, Enter on Remove Nói",
+    "Enter on Add field",
+    "type the label, Tab, type the value",
+    "Enter on Add field",
+    "Enter on Remove field 2",
+    "Enter on Save"
+  ]
+}
