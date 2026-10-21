@@ -15,6 +15,8 @@ Next: **T-M2.20 M2 polish** · Last merges on develop: the T-M2.17 packet (PR #1
 - **The quality process is DEC-131** (risk tiers, delta re-checks, S4 → T-M2.20, one local gate per head + CI, reviewers return text only,
   G3 cost table). Later UI packets reuse the T-M2.19 helpers (`longData`, `expectFocusNotLost`, `expectSettledAccessible`,
   `expectNoMidWordBreak` per element, never on a list).
+- CI on PR #122 hit a mid-fade axe flake in the kept Add student AC6 test (bare `expectNoAxeViolations` after a dialog opens; docs-only
+  head, product code unchanged): recorded in the T-M2.20 row.
 - Open in the backlog: T-M2.13, T-M2.16, T-M2.20, T-M2.21. This device: Kali Linux rolling, rootless Podman 5.8.6, clone
   `/home/kali/App_projects/eng-lms`. GitLab CI paused (DEC-107); the mirror syncs.
 
