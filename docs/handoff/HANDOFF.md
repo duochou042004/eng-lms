@@ -1,24 +1,26 @@
-# Handoff — 2026-10-21 (T-M2.17 packet at G0, DEC-140, DEC-141; next: the PO start signal)
+# Handoff — 2026-10-21 (T-M2.17 merged, DEC-143; next: the T-M2.20 packet)
 
-Phase/Milestone: P1 / M2 (in progress) · Current task: **T-M2.17 learning profile (FE, ready, tier H): waiting for the PO start signal** ·
-Next: **T-M2.20 M2 polish** · Last merges on develop: the T-M2.17 packet (PR #122), the retrospective (PR #121, `502bf2f`), `d165a4e`
-(T-M2.19, PR #117), `9b9e133` (T-M2.15) · Remote: https://github.com/duochou042004/eng-lms (mirror: gitlab.com/duochou042004/eng-lms)
+Phase/Milestone: P1 / M2 (in progress) · Current task: **T-M2.20 M2 polish batch (FE, draft, tier M): packet to write** · Next:
+**T-M2.21 records checks** · Last merges on develop: `ff1d2ec` (T-M2.17, PR #123), the T-M2.17 packet (PR #122, `7e39a46`), the
+retrospective (PR #121), `d165a4e` (T-M2.19) · Remote: https://github.com/duochou042004/eng-lms (mirror: gitlab.com/duochou042004/eng-lms)
 
 ## Where we are
-- **T-M2.17 packet** `docs/tasks/T-M2.17-learning-profile.md` (status `ready`): the tutor-private learning profile section between
-  Guardians and Account (read view, one in-place form: level, strengths/weaknesses tags, learning notes, ≤ 30 custom fields; `PUT` with
-  `version` `null` before the first save; conflict dialog; one form per page) and a new `ui/` **`TagInput`** (a plain chip list with one
-  "Remove {tag}" button per chip, no React Aria `TagGroup`, DEC-140 (4)). No backend or OpenAPI change (the API is live since T-M2.9).
-  Kept-assertion exceptions (DEC-140 (1)): the two Profile `h2` lists, and `exact: true` on the non-exact "Sửa hồ sơ" E2E locators.
-- G0 (DEC-141): one docs-reviewer, round 1 full (132,067 tokens) CHANGES REQUESTED (1 S2, 6 S3), round 2 delta (12,410) PASS; record
-  `evidence/T-M2.17/review/docs.md`. G3 will be tier H: **SEC** as its own agent + **one combined QA+UX** reviewer.
+- **T-M2.17 merged** (PR #123, `ff1d2ec`, DEC-143): the Profile view's **Learning profile** section (level, strengths/weaknesses tags,
+  learning notes, ≤ 30 custom fields; one in-place form; conflict dialog; DEC-127 session check) and the new `ui/TagInput` (plain chip
+  list). Records: `evidence/T-M2.17/summary.md` (G3 cost table), `review/security.md`, `review/ux.md` (this docs PR); the QA report on
+  `qa/T-M2.17` (**PR #124**, needs only `LC-APPROVED T-M2.17` via merge-gate if not merged yet).
+- G3 (tier H) cost: SEC 48,049 tokens APPROVED; combined QA+UX round 1 112,406 FAIL (S2 QA-1: a blur validation error moved Save under
+  the pointer, so the first press was lost; the packet had asked for blur checks) → AC10 `mode: 'onSubmit'` (DEC-142) → delta re-check
+  19,014 PASS WITH MINOR / APPROVED. Lesson: **student forms validate on submit, then on change, never on blur** (packet rule corrected).
 - **The quality process is DEC-131** (risk tiers, delta re-checks, S4 → T-M2.20, one local gate per head + CI, reviewers return text only,
-  G3 cost table). Later UI packets reuse the T-M2.19 helpers (`longData`, `expectFocusNotLost`, `expectSettledAccessible`,
-  `expectNoMidWordBreak` per element, never on a list).
-- CI on PR #122 hit a mid-fade axe flake in the kept Add student AC6 test (bare `expectNoAxeViolations` after a dialog opens; docs-only
-  head, product code unchanged): recorded in the T-M2.20 row.
-- Open in the backlog: T-M2.13, T-M2.16, T-M2.20, T-M2.21. This device: Kali Linux rolling, rootless Podman 5.8.6, clone
-  `/home/kali/App_projects/eng-lms`. GitLab CI paused (DEC-107); the mirror syncs.
+  G3 cost table). UI packets reuse the T-M2.19 helpers (`expectNoMidWordBreak` per element, never on a list).
+- T-M2.20 now also holds the PR #122 CI mid-fade axe flake (bare axe after a dialog opens) and T-M2.17 QA-2 (one reason shown for a
+  paste refused for two reasons). Open in the backlog: T-M2.10, T-M2.13, T-M2.16, T-M2.20, T-M2.21. This device: Kali Linux rolling, rootless
+  Podman 5.8.6, clone `/home/kali/App_projects/eng-lms`. GitLab CI paused (DEC-107); the mirror syncs. The dev DB holds ≈ 60 more
+  fictitious `qa-lp-*` students from the T-M2.17 QA (kept, DEC-139).
+
+## In flight / uncommitted
+- PR #124 (`qa/T-M2.17`) and this records PR (`docs/T-M2.17-g3-records`) open; nothing uncommitted.
 
 ## Another device
 - Follow development-setup §0 for its platform; record OS, engine and versions in `progress.json` `environment` and the clone path in
@@ -27,13 +29,10 @@ Next: **T-M2.20 M2 polish** · Last merges on develop: the T-M2.17 packet (PR #1
   `./scripts/install-hooks.sh`, `git remote add gitlab …`.
 
 ## Next steps
-1. If PR #122 (`docs/T-M2.17-learning-profile`) is still open: merge it via merge-gate (`--dry-run` first), then gitlab-sync.
-2. On the PO start signal ("Start T-M2.17"): `feature/T-M2.17-learning-profile` from `origin/develop`; one frontend-implementer with the
-   packet; it returns the summary text (L-07), the LC records `evidence/T-M2.17/summary.md` (G3 cost table) and `progress.json`. A real
-   defect a new check finds → OQ at once, the LC rules before G3 (L-10).
-3. G3 tier H: SEC (fresh) + one combined QA+UX reviewer (fresh, qa-protocol §2a); S1/S2 and cheap S3 in-task with delta re-checks; S4 →
-   T-M2.20. Then merge-gate, evidence-and-handoff part C.
-4. Then T-M2.20 polish, T-M2.21 (records checks), T-M2.13, T-M2.16; then T-M2.6, T-M2.7 (M2 regression, G5).
+1. If PR #124 (`qa/T-M2.17`) or this records PR (`docs/T-M2.17-g3-records`) is still open: merge via merge-gate (`--dry-run` first;
+   `LC-APPROVED T-M2.17`, the docs PR also `DOCS-REVIEW T-M2.17: PASS` after an LC check of the records), then gitlab-sync.
+2. The **T-M2.20 packet** (task-packet skill; tier M: one combined QA+UX reviewer) from its backlog row; G0 docs review; PO start signal.
+3. Then T-M2.21 (records checks), T-M2.13, T-M2.16; then T-M2.6, T-M2.7 (M2 regression, G5).
 
 ## Pending PO decisions / actions
 - **PR #100** (react-aria-components 1.21.1 → 1.22.1) is **held** (PO, DEC-139): it needs a full local verification with a manual check of
@@ -80,8 +79,10 @@ Next: **T-M2.20 M2 polish** · Last merges on develop: the T-M2.17 packet (PR #1
 - Subagent stopped by an API limit: check containers/java (the VSCode Java language server is not ours), then resume it with SendMessage.
 - `gitlab-sync.sh` may fail authentication transiently: retry once. GitLab CI is **paused** (DEC-107; the sync pushes with `-o ci.skip`; to resume:
   the GitLab project variable `ENGLMS_GITLAB_CI=on` and `ENGLMS_GITLAB_CI=on ./scripts/gitlab-sync.sh`, ci-cd §1.1); the sync still runs after every merge.
-- Wall-clock bounds in tests flake on the 2-core CI runner (DEC-093). `git merge` is denied: `gh pr update-branch` (DEC-090).
+- Wall-clock bounds in tests flake on the 2-core CI runner (DEC-093); one remains: `AuthApiIntegrationTest.anUnrelatedLoginStaysFastDuringABurstOnOneUsername`
+  (failed at 3355 ms on PR #125's docs-only head, run 39567176119; rerun) — a candidate for T-M2.20 or T-M2.10.
+- `git merge` is denied: `gh pr update-branch` (DEC-090).
 
 ## Files to read first
-`CLAUDE.md` → `progress.json` → this file → `docs/09-harness/lessons-learned.md` → `docs/tasks/T-M2.17-learning-profile.md` → DEC-131,
-DEC-140, DEC-141 → `quality-gates.md` G1–G4, `qa-protocol.md` §2a/§2b → `.claude/agents/frontend-implementer.md` → `e2e/support/checks.ts`.
+`CLAUDE.md` → `progress.json` → this file → `docs/09-harness/lessons-learned.md` → `docs/tasks/backlog.md` (T-M2.20, T-M2.21) → DEC-131,
+DEC-136, DEC-137, DEC-142, DEC-143 → the task-packet skill → `docs/tasks/T-M2.17-learning-profile.md` (latest packet shape) → `quality-gates.md` G0.
