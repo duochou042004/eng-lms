@@ -1,23 +1,24 @@
-# Handoff — 2026-10-20 (T-M2.19 merged; retrospective done, DEC-139; next: the T-M2.17 packet)
+# Handoff — 2026-10-21 (T-M2.17 packet at G0, DEC-140, DEC-141; next: the PO start signal)
 
-Phase/Milestone: P1 / M2 (in progress) · Current task: **T-M2.17 learning profile (FE, draft, tier H): packet to write** · Next: **T-M2.20
-M2 polish** · Last merges on develop: `d165a4e` (T-M2.19, PR #117), the T-M2.19 packet (PR #116), `9b9e133` (T-M2.15), `5dab35e` (T-M2.18) ·
-Remote: https://github.com/duochou042004/eng-lms (mirror: gitlab.com/duochou042004/eng-lms)
+Phase/Milestone: P1 / M2 (in progress) · Current task: **T-M2.17 learning profile (FE, ready, tier H): waiting for the PO start signal** ·
+Next: **T-M2.20 M2 polish** · Last merges on develop: the T-M2.17 packet (PR #122), the retrospective (PR #121, `502bf2f`), `d165a4e`
+(T-M2.19, PR #117), `9b9e133` (T-M2.15) · Remote: https://github.com/duochou042004/eng-lms (mirror: gitlab.com/duochou042004/eng-lms)
 
 ## Where we are
-- **The quality process is DEC-131** (T-M2.18): risk tier per packet; tier H = SEC + one combined QA+UX reviewer; tier M = one combined
-  QA+UX reviewer; tier L = docs review; S1/S2 → AC + **delta** re-check; S3 cheap in-task, LC-verified from test + diff (a delta re-check
-  when the fix changes behaviour); S4 → **T-M2.20** unless one line; one local gate per head + CI; reviewers return text only and the LC
-  records and posts; PNGs git-ignored; a **G3 cost** table in every summary.
-- **T-M2.19 merged** (PR #117, `d165a4e`, DEC-138): `e2e/support/checks.ts` has `expectNoMidWordBreak`, `expectFocusNotLost` (also fails on
-  a disabled/unrendered or inert active element), `expectSettledAccessible`; `e2e/support/longData.ts`; proofs in `e2e/tests/checks.spec.ts`;
-  stylelint rejects raw `ms`/`s` outside `src/ui/tokens.css` (`--motion-duration-spin`, `--motion-duration-pulse`). **Later UI packets reuse
-  these helpers** (call `expectFocusNotLost` after each removing/disabling control; `expectSettledAccessible` instead of a bare axe call).
-  The new focus check found 4 real defects before review (AC8, DEC-135); G3: one reviewer, round 1 + one delta re-check (DEC-136, DEC-137).
-- Records: `evidence/T-M2.19/summary.md`, `review/ux.md`, `review/docs.md`; the QA report on `qa/T-M2.19` (PR #118, needs only
-  `LC-APPROVED T-M2.19` via merge-gate if not merged yet).
-- Open in the backlog: T-M2.13, T-M2.16, T-M2.17, T-M2.20 (now also T-M2.19 QA-5, QA-8). This device: Kali Linux rolling, rootless Podman
-  5.8.6, clone `/home/kali/App_projects/eng-lms`. GitLab CI paused (DEC-107); the mirror syncs.
+- **T-M2.17 packet** `docs/tasks/T-M2.17-learning-profile.md` (status `ready`): the tutor-private learning profile section between
+  Guardians and Account (read view, one in-place form: level, strengths/weaknesses tags, learning notes, ≤ 30 custom fields; `PUT` with
+  `version` `null` before the first save; conflict dialog; one form per page) and a new `ui/` **`TagInput`** (a plain chip list with one
+  "Remove {tag}" button per chip, no React Aria `TagGroup`, DEC-140 (4)). No backend or OpenAPI change (the API is live since T-M2.9).
+  Kept-assertion exceptions (DEC-140 (1)): the two Profile `h2` lists, and `exact: true` on the non-exact "Sửa hồ sơ" E2E locators.
+- G0 (DEC-141): one docs-reviewer, round 1 full (132,067 tokens) CHANGES REQUESTED (1 S2, 6 S3), round 2 delta (12,410) PASS; record
+  `evidence/T-M2.17/review/docs.md`. G3 will be tier H: **SEC** as its own agent + **one combined QA+UX** reviewer.
+- **The quality process is DEC-131** (risk tiers, delta re-checks, S4 → T-M2.20, one local gate per head + CI, reviewers return text only,
+  G3 cost table). Later UI packets reuse the T-M2.19 helpers (`longData`, `expectFocusNotLost`, `expectSettledAccessible`,
+  `expectNoMidWordBreak` per element, never on a list).
+- CI on PR #122 hit a mid-fade axe flake in the kept Add student AC6 test (bare `expectNoAxeViolations` after a dialog opens; docs-only
+  head, product code unchanged): recorded in the T-M2.20 row.
+- Open in the backlog: T-M2.13, T-M2.16, T-M2.20, T-M2.21. This device: Kali Linux rolling, rootless Podman 5.8.6, clone
+  `/home/kali/App_projects/eng-lms`. GitLab CI paused (DEC-107); the mirror syncs.
 
 ## Another device
 - Follow development-setup §0 for its platform; record OS, engine and versions in `progress.json` `environment` and the clone path in
@@ -26,10 +27,13 @@ Remote: https://github.com/duochou042004/eng-lms (mirror: gitlab.com/duochou0420
   `./scripts/install-hooks.sh`, `git remote add gitlab …`.
 
 ## Next steps
-1. If PR #121 (`docs/T-M2.19-retrospective`) is still open: merge it via merge-gate (`--dry-run` first), then gitlab-sync.
-2. Read **`docs/09-harness/lessons-learned.md`** (L-01..L-13), then the **T-M2.17 packet** (invoke the task-packet skill: contradiction scan, Domain rules block, shortcut ledger; split from T-M2.15, DEC-128): tier H (student personal data: SEC + combined QA+UX); a UI rules block
-   (DEC-131 (2)); the T-M2.19 helpers in its test plan; G0 docs review (tier L, delta rounds); then the PO start signal.
-3. Then T-M2.20 polish, T-M2.21 (records checks), T-M2.13, T-M2.16; then T-M2.6, T-M2.7 (M2 regression, G5).
+1. If PR #122 (`docs/T-M2.17-learning-profile`) is still open: merge it via merge-gate (`--dry-run` first), then gitlab-sync.
+2. On the PO start signal ("Start T-M2.17"): `feature/T-M2.17-learning-profile` from `origin/develop`; one frontend-implementer with the
+   packet; it returns the summary text (L-07), the LC records `evidence/T-M2.17/summary.md` (G3 cost table) and `progress.json`. A real
+   defect a new check finds → OQ at once, the LC rules before G3 (L-10).
+3. G3 tier H: SEC (fresh) + one combined QA+UX reviewer (fresh, qa-protocol §2a); S1/S2 and cheap S3 in-task with delta re-checks; S4 →
+   T-M2.20. Then merge-gate, evidence-and-handoff part C.
+4. Then T-M2.20 polish, T-M2.21 (records checks), T-M2.13, T-M2.16; then T-M2.6, T-M2.7 (M2 regression, G5).
 
 ## Pending PO decisions / actions
 - **PR #100** (react-aria-components 1.21.1 → 1.22.1) is **held** (PO, DEC-139): it needs a full local verification with a manual check of
@@ -79,5 +83,5 @@ Remote: https://github.com/duochou042004/eng-lms (mirror: gitlab.com/duochou0420
 - Wall-clock bounds in tests flake on the 2-core CI runner (DEC-093). `git merge` is denied: `gh pr update-branch` (DEC-090).
 
 ## Files to read first
-`CLAUDE.md` → `progress.json` → this file → `docs/09-harness/lessons-learned.md` → DEC-128, DEC-131, DEC-138, DEC-139 → `docs/tasks/backlog.md` (T-M2.17, T-M2.20) → the task-packet
-skill → `docs/tasks/T-M2.15-guardians.md` and `T-M2.19-ui-checks.md` (packet shape, UI rules block) → `quality-gates.md` G0 → `e2e/support/checks.ts`.
+`CLAUDE.md` → `progress.json` → this file → `docs/09-harness/lessons-learned.md` → `docs/tasks/T-M2.17-learning-profile.md` → DEC-131,
+DEC-140, DEC-141 → `quality-gates.md` G1–G4, `qa-protocol.md` §2a/§2b → `.claude/agents/frontend-implementer.md` → `e2e/support/checks.ts`.

@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-10-20T10:01:44Z",
-  "updatedBy": "lead-coordinator (retrospective, DEC-139; next: T-M2.17 packet)",
+  "updatedAt": "2026-10-21T05:03:35Z",
+  "updatedBy": "lead-coordinator (T-M2.17 packet G0 PASS, DEC-140; awaiting PO start signal)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -32,21 +32,24 @@
   "currentTask": {
     "id": "T-M2.17",
     "title": "Learning profile (split from T-M2.15, DEC-128)",
-    "status": "draft",
+    "status": "ready",
     "ownerRole": "FE",
-    "branch": null,
-    "packet": null,
-    "pr": null,
+    "branch": "feature/T-M2.17-learning-profile",
+    "packet": "docs/tasks/T-M2.17-learning-profile.md",
+    "pr": "122",
     "lastCommit": null,
     "startedAt": null,
     "entryGate": [
       "T-M2.15 merged — met (9b9e133)"
     ],
     "nextSteps": [
-      "Read docs/09-harness/lessons-learned.md; LC writes the T-M2.17 packet with the task-packet skill (contradiction scan, Domain rules block; tier H: SEC + combined QA+UX); G0 docs review; PO start signal"
+      "Packet merged via PR #122 (docs branch docs/T-M2.17-learning-profile); G0 DOCS-REVIEW PASS in 2 rounds (evidence/T-M2.17/review/docs.md)",
+      "Wait for the PO start signal; then frontend-implementer on feature/T-M2.17-learning-profile from develop; G3 tier H: SEC + one combined QA+UX reviewer"
     ],
     "trace": [
-      "DEC-128"
+      "DEC-128",
+      "DEC-140",
+      "DEC-141"
     ]
   },
   "nextTask": {
@@ -1199,6 +1202,11 @@
       "at": "2026-10-20T10:01:44Z",
       "actor": "lead-coordinator",
       "event": "M0-M2 retrospective (lessons-learned.md L-01..L-13) and its rules placed in skills, agents, template, coding-agent-rules and G5; README roadmap at M2; PR #100 held (PO); dev DB kept (LC); T-M2.21 added (DEC-139)."
+    },
+    {
+      "at": "2026-10-21T05:03:35Z",
+      "actor": "lead-coordinator",
+      "event": "T-M2.17 packet written (task-packet skill, DEC-140) and at G0 (DEC-141): DOCS-REVIEW PASS in 2 rounds (round 1 full 132,067 tokens; round 2 delta 12,410). PR #122. Next: the PO start signal."
     }
   ]
 }
