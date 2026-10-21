@@ -169,7 +169,9 @@
     "reload": "Tải lại",
     "cancel": "Huỷ",
     "copyNote": "Sao chép ghi chú của tôi",
-    "copyNotes": "Sao chép ghi chú phụ huynh của tôi"
+    "copyNotes": "Sao chép ghi chú phụ huynh của tôi",
+    "learningProfileDescription": "Hồ sơ học tập này vừa được thay đổi ở một tab hoặc cửa sổ khác. Tải lại để xem bản mới nhất; những thay đổi chưa lưu của bạn sẽ mất.",
+    "copyLearningNotes": "Sao chép ghi chú học tập của tôi"
   },
   "guardians": {
     "title": "Phụ huynh",
@@ -218,6 +220,41 @@
     "discardDescription": "Những thay đổi bạn vừa nhập cho phụ huynh này sẽ mất.",
     "discard": "Bỏ thay đổi",
     "keepEditing": "Tiếp tục sửa"
+  },
+  "learningProfile": {
+    "title": "Hồ sơ học tập",
+    "loading": "Đang tải hồ sơ học tập",
+    "errorTitle": "Không tải được hồ sơ học tập.",
+    "retry": "Thử lại",
+    "edit": "Sửa hồ sơ học tập",
+    "formLabel": "Sửa hồ sơ học tập",
+    "currentLevel": "Trình độ hiện tại",
+    "currentLevelHint": "Nhập tự do, ví dụ B1 hoặc thang đo của riêng bạn",
+    "strengths": "Điểm mạnh",
+    "weaknesses": "Điểm yếu",
+    "tagsHint": "Nhấn Enter hoặc gõ dấu phẩy để thêm",
+    "removeTag": "Xoá {{tag}}",
+    "learningNotes": "Ghi chú học tập",
+    "customFields": "Mục tuỳ chỉnh",
+    "customFieldsHint": "Những điều khác bạn muốn theo dõi, ví dụ: Mục tiêu · 650, hoặc Phong cách học · Hình ảnh",
+    "fieldLegend": "Mục {{number}}",
+    "fieldLabel": "Nhãn",
+    "fieldValue": "Giá trị",
+    "addField": "Thêm mục",
+    "removeField": "Xoá mục {{number}}",
+    "fieldsFull": "Tối đa {{max}} mục.",
+    "summaryTitle": "Chưa lưu được hồ sơ học tập",
+    "serverError": "Không lưu được hồ sơ học tập. Thông tin bạn nhập vẫn còn: hãy thử lại.",
+    "saved": "Đã lưu hồ sơ học tập",
+    "discardDescription": "Những thay đổi bạn vừa nhập cho hồ sơ học tập này sẽ mất.",
+    "tagError": "“{{tag}}”: {{message}}",
+    "errors": {
+      "tagControl": "Thẻ không được chứa ký tự điều khiển.",
+      "tagDuplicate": "Đã thêm rồi.",
+      "tagsTooMany": "Tối đa {{max}} thẻ.",
+      "labelRequired": "Hãy nhập nhãn.",
+      "fieldsTooMany": "Tối đa {{max}} mục."
+    }
   },
   "account": {
     "title": "Tài khoản",

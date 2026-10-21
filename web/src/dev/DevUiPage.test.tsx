@@ -152,4 +152,18 @@ describe('/dev/ui (development builds only)', { timeout: 20_000 }, () => {
     )
     expect(router.state.location.pathname).toBe('/dev/ui')
   })
+
+  it('shows the T-M2.17 TagInput (add, remove, its states) and TagList', async () => {
+    const { container } = renderRoute('/dev/ui')
+    await screen.findByRole('heading', { level: 1, name: 'Thư viện thành phần' })
+    const tags = screen.getByRole('group', { name: 'Điểm mạnh' })
+    const input = within(tags).getByRole('textbox', { name: 'Điểm mạnh' })
+    await userEvent.type(input, 'Nói{Enter}')
+    expect(within(tags).getByRole('button', { name: 'Xoá Nói' })).toBeInTheDocument()
+    await userEvent.click(within(tags).getByRole('button', { name: 'Xoá Nghe' }))
+    expect(within(tags).getByRole('button', { name: 'Xoá Phát âm' })).toHaveFocus()
+    expect(screen.getByRole('textbox', { name: 'Điểm yếu' })).toHaveAttribute('aria-invalid', 'true')
+    expect(screen.getByRole('textbox', { name: 'Thẻ (không khả dụng)' })).toBeDisabled()
+    await expectNoAxeViolations(container)
+  })
 })

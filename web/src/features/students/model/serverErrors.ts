@@ -95,3 +95,52 @@ export function mapGuardianErrors(errors: readonly FieldError[]): MappedGuardian
   }
   return mapped
 }
+
+export type LearningProfileFieldPath =
+  | 'currentLevel'
+  | 'learningNotes'
+  | 'strengths'
+  | 'weaknesses'
+  | `customFields.${number}.label`
+  | `customFields.${number}.value`
+
+export interface MappedLearningProfileErrors {
+  /** Field errors: the message key, and for a tag the tag it names (`strengths[i]` → the `i`-th sent tag). */
+  fields: Array<{ path: LearningProfileFieldPath; message: string; tag?: string }>
+  unknown: string[]
+}
+
+/**
+ * Maps a learning-profile save's 422 `errors[]` (T-M2.17 scope 4): the level and the notes by name; `strengths[i]` /
+ * `weaknesses[i]` to that list's field naming the sent tag, their `TOO_MANY` to the list; `customFields[i].label|value`
+ * to the form row `sentRows[i]` (empty rows are not sent); `customFields` `TOO_MANY` and the rest to the summary.
+ */
+export function mapLearningProfileErrors(
+  errors: readonly FieldError[],
+  sent: { strengths: readonly string[]; weaknesses: readonly string[] },
+  sentRows: readonly number[],
+): MappedLearningProfileErrors {
+  const mapped: MappedLearningProfileErrors = { fields: [], unknown: [] }
+  for (const { field, code } of errors) {
+    const tag = /^(strengths|weaknesses)\[(\d+)\]$/.exec(field)
+    const row = /^customFields\[(\d+)\]\.(label|value)$/.exec(field)
+    const formRow = row ? sentRows[Number(row[1])] : undefined
+    if (field === 'currentLevel' || field === 'learningNotes')
+      mapped.fields.push({ path: field, message: messageFor(code) })
+    else if ((field === 'strengths' || field === 'weaknesses') && code === 'TOO_MANY')
+      mapped.fields.push({ path: field, message: 'learningProfile.errors.tagsTooMany' })
+    else if (tag && sent[tag[1] as 'strengths' | 'weaknesses'][Number(tag[2])] !== undefined)
+      mapped.fields.push({
+        path: tag[1] as 'strengths' | 'weaknesses',
+        message: messageFor(code),
+        tag: sent[tag[1] as 'strengths' | 'weaknesses'][Number(tag[2])],
+      })
+    else if (row && formRow !== undefined)
+      mapped.fields.push({ path: `customFields.${formRow}.${row[2] as 'label' | 'value'}`, message: messageFor(code) })
+    else
+      mapped.unknown.push(
+        code === 'TOO_MANY' && field === 'customFields' ? 'learningProfile.errors.fieldsTooMany' : messageFor('server'),
+      )
+  }
+  return mapped
+}

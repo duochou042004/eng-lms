@@ -32,7 +32,7 @@ const ACTIONS: Record<StudentStatusValue, Action[]> = {
 
 export interface AccountSectionProps {
   student: Student
-  /** A form of the page (profile or guardian) is open: every action is disabled with a hint. */
+  /** A form of the page (profile, guardian or learning profile) is open: every action is disabled with a hint. */
   isEditing: boolean
   /** A status or reset request is pending (here): the page disables Edit profile meanwhile. */
   isBusy: boolean

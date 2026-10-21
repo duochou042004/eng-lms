@@ -15,7 +15,8 @@
     "overlays": "Sheets and popover",
     "buttonLink": "Button-styled link",
     "students": "Students components (T-M2.5)",
-    "profile": "Profile and account components (T-M2.14)"
+    "profile": "Profile and account components (T-M2.14)",
+    "tagInput": "TagInput (T-M2.17)"
   },
   "sample": {
     "primary": "Save",
@@ -141,6 +142,20 @@
     "resetConfirm": "Reset password",
     "resetPending": "Resetting…",
     "resetCancel": "Cancel",
-    "resetFailed": "Couldn't reset the password. Try again."
+    "resetFailed": "Couldn't reset the password. Try again.",
+    "tagLabel": "Strengths",
+    "tagHint": "Press Enter or type a comma to add",
+    "tagRemove": "Remove {{tag}}",
+    "tagControl": "Tags can't contain control characters.",
+    "tagTooLong": "Use at most 40 characters.",
+    "tagDuplicate": "Already added.",
+    "tagTooMany": "Up to 30 tags.",
+    "tagInvalidLabel": "Weaknesses",
+    "tagError": "Up to 30 tags.",
+    "tagDisabledLabel": "Tags (unavailable)",
+    "tagListLabel": "Read-only tags",
+    "tagFirst": "Listening",
+    "tagSecond": "Pronunciation",
+    "tagLong": "Vocabulary for describing everyday routines"
   }
 }

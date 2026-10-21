@@ -15,7 +15,8 @@
     "overlays": "Sheet và popover",
     "buttonLink": "Liên kết dạng nút",
     "students": "Thành phần cho Học viên (T-M2.5)",
-    "profile": "Thành phần hồ sơ và tài khoản (T-M2.14)"
+    "profile": "Thành phần hồ sơ và tài khoản (T-M2.14)",
+    "tagInput": "TagInput (T-M2.17)"
   },
   "sample": {
     "primary": "Lưu",
@@ -141,6 +142,20 @@
     "resetConfirm": "Đặt lại mật khẩu",
     "resetPending": "Đang đặt lại…",
     "resetCancel": "Huỷ",
-    "resetFailed": "Không đặt lại được mật khẩu. Hãy thử lại."
+    "resetFailed": "Không đặt lại được mật khẩu. Hãy thử lại.",
+    "tagLabel": "Điểm mạnh",
+    "tagHint": "Nhấn Enter hoặc gõ dấu phẩy để thêm",
+    "tagRemove": "Xoá {{tag}}",
+    "tagControl": "Thẻ không được chứa ký tự điều khiển.",
+    "tagTooLong": "Tối đa 40 ký tự.",
+    "tagDuplicate": "Đã thêm rồi.",
+    "tagTooMany": "Tối đa 30 thẻ.",
+    "tagInvalidLabel": "Điểm yếu",
+    "tagError": "Tối đa 30 thẻ.",
+    "tagDisabledLabel": "Thẻ (không khả dụng)",
+    "tagListLabel": "Thẻ chỉ đọc",
+    "tagFirst": "Nghe",
+    "tagSecond": "Phát âm",
+    "tagLong": "Từ vựng mô tả các hoạt động thường ngày"
   }
 }

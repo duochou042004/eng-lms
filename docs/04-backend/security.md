@@ -21,7 +21,7 @@ Actors: anonymous internet users, an authenticated student (curious or malicious
 | # | Threat | Control | Verified by |
 |---|---|---|---|
 | T1 | Student reads another student's data by changing IDs (IDOR) | ADR-0016: student namespace without studentId; `findByIdAndStudentId`; 404 | Isolation suite |
-| T2 | Student reads tutor-private fields through an over-broad DTO | Audience-specific DTOs; `@TutorPrivate`; ArchUnit; response secret scan | NFR-SEC-02 tests |
+| T2 | Student reads tutor-private fields through an over-broad DTO | Audience-specific DTOs; `@TutorPrivate`; ArchUnit; response secret scan. **Learning profile on screen (T-M2.17):** tutor pages only (no student route, DTO or cache key); its query lives under `['students','learningProfile',sid]` (cleared or reset to no data on every sign-out path); a save answered after the tutor session ended stores and shows nothing (DEC-127); values render as text only (no links, no markup), never in URLs, storage or logs | NFR-SEC-02 tests |
 | T3 | Student obtains answer keys before or without release | Handler `toStudentView` redaction; release gate I-07 | Handler tests + scan for key fields |
 | T4 | Student submits after the deadline or tampers with the timer | Server `deadlineAt` + grace; client timer is display only | Attempt tests |
 | T5 | Credential stuffing or brute force | Lockout + per-IP throttle; generic errors; bcrypt cost ≥ 12 | Auth tests |

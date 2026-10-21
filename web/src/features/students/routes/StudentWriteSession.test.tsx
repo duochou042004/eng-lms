@@ -5,13 +5,13 @@ import { describe, expect, it, vi } from 'vitest'
 import { toast } from '../../../ui'
 import { renderRoute } from '../../../test/render'
 import { server, sessionBody } from '../../../test/server'
-import { guardian, SID, student, workspaceApi } from '../../../test/students'
+import { guardian, learningProfile, SID, student, workspaceApi } from '../../../test/students'
 
 // T-M2.15 AC8 (scope 8, DEC-127): a students write answered after a sign-out and the next sign-in as a student, or while
 // no tutor session is cached, stores nothing in the query cache, invalidates nothing and toasts nothing.
 
 const LAN = guardian(1, { name: 'Nguyễn Thị Lan' })
-type Method = 'post' | 'patch' | 'delete'
+type Method = 'post' | 'patch' | 'put' | 'delete'
 
 /** Holds the next `method path` request until `release()`; resolves `reached` when it arrives. */
 function hold(method: Method, path: string, answer: () => Response) {
@@ -83,6 +83,19 @@ const WRITES: Array<{
       await userEvent.click(screen.getByRole('button', { name: 'Xoá Nguyễn Thị Lan' }))
       const dialog = await screen.findByRole('alertdialog', { name: /^Xoá Nguyễn Thị Lan/ })
       await userEvent.click(within(dialog).getByRole('button', { name: 'Xoá phụ huynh' }))
+    },
+  },
+  {
+    // T-M2.17 AC7 (scope 7): the learning profile's save.
+    name: 'learning profile save',
+    hold: () =>
+      hold('put', '*/api/v1/tutor/students/:sid/learning-profile', () =>
+        HttpResponse.json(learningProfile({ currentLevel: 'SECRET-LEVEL', version: 0 })),
+      ),
+    start: async () => {
+      await userEvent.click(await screen.findByRole('button', { name: 'Sửa hồ sơ học tập' }))
+      await userEvent.type(await screen.findByRole('textbox', { name: 'Trình độ hiện tại' }), 'SECRET-LEVEL')
+      await userEvent.click(screen.getByRole('button', { name: 'Lưu' }))
     },
   },
 ]
