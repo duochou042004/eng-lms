@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-10-21T06:55:40Z",
-  "updatedBy": "lead-coordinator (T-M2.17 G1 PASS; G3 next)",
+  "updatedAt": "2026-10-21T07:21:03Z",
+  "updatedBy": "lead-coordinator (T-M2.17 G3 round 1, DEC-142; AC10 fix round)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -36,20 +36,21 @@
     "ownerRole": "FE",
     "branch": "feature/T-M2.17-learning-profile",
     "packet": "docs/tasks/T-M2.17-learning-profile.md",
-    "pr": null,
+    "pr": "123",
     "lastCommit": "9e2f08c",
     "startedAt": "2026-10-21T06:12:12Z",
     "entryGate": [
       "T-M2.15 merged — met (9b9e133)"
     ],
     "nextSteps": [
-      "G3 tier H on the PR: SEC (fresh) + one combined QA+UX reviewer (fresh, qa-protocol §2a), one at a time",
-      "S1/S2 and cheap S3 via an LC-added AC + DEC, delta re-checks; S4 to T-M2.20; then merge-gate"
+      "Resumed implementer fixes AC10 (mode onSubmit + mouse-click E2E; SEC S-1 early return); one gate run on the new head",
+      "Delta re-check by the round-1 QA+UX reviewer (qa-protocol §2b); then CI green, records, merge-gate"
     ],
     "trace": [
       "DEC-128",
       "DEC-140",
-      "DEC-141"
+      "DEC-141",
+      "DEC-142"
     ]
   },
   "nextTask": {
