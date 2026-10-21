@@ -79,7 +79,9 @@ retrospective (PR #121), `d165a4e` (T-M2.19) · Remote: https://github.com/duoch
 - Subagent stopped by an API limit: check containers/java (the VSCode Java language server is not ours), then resume it with SendMessage.
 - `gitlab-sync.sh` may fail authentication transiently: retry once. GitLab CI is **paused** (DEC-107; the sync pushes with `-o ci.skip`; to resume:
   the GitLab project variable `ENGLMS_GITLAB_CI=on` and `ENGLMS_GITLAB_CI=on ./scripts/gitlab-sync.sh`, ci-cd §1.1); the sync still runs after every merge.
-- Wall-clock bounds in tests flake on the 2-core CI runner (DEC-093). `git merge` is denied: `gh pr update-branch` (DEC-090).
+- Wall-clock bounds in tests flake on the 2-core CI runner (DEC-093); one remains: `AuthApiIntegrationTest.anUnrelatedLoginStaysFastDuringABurstOnOneUsername`
+  (failed at 3355 ms on PR #125's docs-only head, run 39567176119; rerun) — a candidate for T-M2.20 or T-M2.10.
+- `git merge` is denied: `gh pr update-branch` (DEC-090).
 
 ## Files to read first
 `CLAUDE.md` → `progress.json` → this file → `docs/09-harness/lessons-learned.md` → `docs/tasks/backlog.md` (T-M2.20, T-M2.21) → DEC-131,
