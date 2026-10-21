@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Milestone | M2 |
-| Status | in_review (G1 PASS on `f72c5ae`; PO start signal 2026-10-21) |
+| Status | awaiting_approval (G3 passed: SEC APPROVED, QA PASS WITH MINOR, UX APPROVED; DEC-142) |
 | Owner role | FE (frontend-implementer) |
 | Branch | `feature/T-M2.17-learning-profile` (from `develop`) |
 | Depends on | T-M2.9 (`37e8ce0`, the learning-profile endpoints), T-M2.15 (`9b9e133`, the one-form lock and the Profile view sections), T-M2.19 (`d165a4e`, the E2E checks): merged |

@@ -72,5 +72,22 @@ I didn't look at the screenshots in the browser pane; I only spot-checked two 36
 | Round | Reviewer | Head | Verdict | S1/S2/S3/S4 | Scope | Agent tokens | Agent min | Gate runs | Gate min |
 |---|---|---|---|---|---|---|---|---|---|
 | G1 | frontend-implementer | f72c5ae | gate PASS | — | full | 360,688 | 42.3 | 1 | 12.9 |
+| 1 | SEC | 978f201 | APPROVED | 0/0/0/2 | full | 48,049 | 1.9 | 0 | 0 |
+| 1 | QA+UX combined | 978f201 | QA FAIL / UX CHANGES REQUESTED | 0/1/0/2 | full | 112,406 | 22.1 | 0 | 0 |
+| fix | frontend-implementer (AC10, resumed) | 830d778 | gate PASS | — | 3 findings | 16,376 | 18.1 | 1 | 12.8 |
+| 2 | QA+UX delta re-check | 646e670 | PASS WITH MINOR / APPROVED | 0/0/0/0 new | delta | 19,014 | 6.9 | 0 | 0 |
 
-Agent tokens and minutes are the Agent result's `subagent_tokens` and `duration_ms`.
+Agent tokens and minutes are the Agent result's `subagent_tokens` and `duration_ms` (resumed rounds: the delta of the agent's cumulative
+count). Total G3: 2 review agents (SEC; QA+UX round 1 + one delta re-check), 1 fix round (AC10, DEC-142), 1 gate run in it. QA-2 (S4)
+goes to T-M2.20; SEC S-2 closed by QA's marker scan. LC review records: `.claude/scratch/lc-records/T-M2.17-sec-r1.md`,
+`-qa-ux-r1.md`, `-qa-ux-r2-delta.md`.
+
+## AC10 fix round (DEC-142; implementer report, condensed)
+- `830d778`: `LearningProfileForm.tsx` validates on submit, then on change (`mode: 'onSubmit'`); the save `catch` returns early when no
+  tutor session is cached. Proof: E2E `students.spec.ts` › Learning profile (T-M2.17) › "AC10 (a): a mouse click on Save straight from a
+  cleared Label of a row with a value…" (fails under `onBlur` at 360 and 1280); component `StudentLearningProfile.test.tsx` › "AC10 (a):
+  no error on blur…"; `StudentWriteSession.test.tsx` 409 row and "A failed learning-profile save answered while no tutor session is
+  cached (T-M2.17 AC10 (b))" (fails without the early return).
+- Gate on `830d778`: **PASS** (13 steps, 770 s): `evidence/T-M2.17/gate-20261021T072607Z.log`; unit 66 files / 800 tests; E2E full 485
+  passed, 31 skipped (round 1: 482 / 31; +3 = the AC10 test at 3 viewports), `students.spec.ts` ×3 501 passed (round 1: 492); bundle
+  student 187.5 KB gz, tutor 187.6 KB gz.
