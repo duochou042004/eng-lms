@@ -16,7 +16,7 @@
       }
     ]
   },
-  "updatedAt": "2026-10-21T04:53:26Z",
+  "updatedAt": "2026-10-21T04:53:59Z",
   "updatedBy": "lead-coordinator (T-M2.17 packet, DEC-140; G0 docs review next)",
   "phase": {
     "id": "P1",
@@ -36,7 +36,7 @@
     "ownerRole": "FE",
     "branch": "docs/T-M2.17-learning-profile",
     "packet": "docs/tasks/T-M2.17-learning-profile.md",
-    "pr": null,
+    "pr": "122",
     "lastCommit": null,
     "startedAt": null,
     "entryGate": [

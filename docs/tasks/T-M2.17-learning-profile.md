@@ -33,14 +33,16 @@ cache ever holds it (A-008). A new shared `ui/` **`TagInput`** carries the tags.
      `DelayedSkeleton` of four rows; error → an `InlineAlert` (danger) in the section ("Couldn't load the learning profile.") with **Try
      again**; the rest of the page is unaffected; a 404 → the feature's not-found view.
   2. **`TagInput`** (new, `ui/TagInput.tsx` + CSS module + tests + a `/dev/ui` entry; design-system §3): a labelled field (`Field`: label,
-     hint, error) holding React Aria `TagGroup`/`TagList`/`Tag` for the current tags (each chip: its text and a remove `IconButton` named
-     "Remove {tag}"; Delete/Backspace on a focused chip removes it too) and one text input under the chips. Props: `label`, `hint`, `value:
+     hint, error) holding the current tags as a plain list (`ul`, no bullets; each `li` a chip: its text and a quiet `IconButton` (X icon)
+     whose accessible name is the prop string "Remove {tag}" (vi "Xoá {tag}"), in the tab order; no React Aria `TagGroup`, so no grid
+     navigation, no Delete/Backspace shortcut and no built-in English description, DEC-140 (4)) and one text input under the chips. Props: `label`, `hint`, `value:
      string[]`, `onChange`, `maxTags`, `maxLength`, `errorMessage`, `isDisabled`, the input `id` (the `ErrorSummary` link target) and the
      message strings (`ui/` holds no feature strings, like `CopyButton`). **Enter** or a typed **comma** commits the input's text as a tag;
      pasted text splits at commas, tabs and line breaks into several tags (read from the paste event's clipboard text: a
      single-line input drops line breaks). Each new tag is trimmed and checked before it is added: empty →
-     ignored; any other control character → "Tags can't contain control characters."; longer than `maxLength` → "At most {{max}}
-     characters."; equal to a present tag ignoring case → "Already added."; the tag that would exceed `maxTags` → "Up to {{max}} tags.". A
+     ignored; any other control character → "Tags can't contain control characters."; longer than `maxLength` code points (`[...s].length`,
+     validation-rules) → the existing `form.errors.TOO_LONG` text ("Use at most {{max}} characters."); equal to a present tag ignoring case →
+     "Already added."; the tag that would exceed `maxTags` → "Up to {{max}} tags.". A
      refused entry keeps its text in the input with the error shown and adds nothing (a pasted list adds its valid tags in order and keeps
      the refused ones, comma-joined, in the input). The input stays enabled at `maxTags` (focus never lands on a disabled control). Enter in
      the input never submits the surrounding form.
@@ -52,7 +54,9 @@ cache ever holds it (A-008). A new shared `ui/` **`TagInput`** carries the tags.
      {n}", **Label** (required in a row with a value, 1–60) and **Value** (`TextField`, 0–500), ending with **Remove field {n}** (a quiet
      `Button`, Trash icon and visible text, the contact-handle rows' pattern in `StudentFields.tsx`); under the rows **Add field** (secondary,
      Plus icon; adds an empty row and focuses its Label), hidden at 30 with the muted text "Up to 30 fields."), then **Save** / **Cancel**.
-     Opening the form focuses Current level. The form is labelled "Edit learning profile".
+     Opening the form focuses Current level; **Edit learning profile** is hidden while its form is open (as Edit profile). The form is
+     labelled "Edit learning profile". Free-text fields count code points and refuse C0 control characters other than tab, LF and CR (the
+     existing `length` and `noControl` helpers of `createSchema.ts`).
   4. **Save**: the request is `PUT …/learning-profile` with the cached `version` (`null` for a never-saved profile) and the whole profile:
      `currentLevel` and `learningNotes` trimmed (`null` when empty after trimming), `strengths` and `weaknesses` in their order, and
      `customFields` = the rows whose label or value is non-empty after trimming, trimmed, in order (a row with both empty is left out; a row
@@ -78,10 +82,11 @@ cache ever holds it (A-008). A new shared `ui/` **`TagInput`** carries the tags.
      dirty form asks the same (uncommitted `TagInput` text counts as a change); a clean Cancel closes it, focus to **Edit learning profile**.
   7. **SEC**: the profile's cache write and its toast and focus move follow the DEC-127 session check (`isTutorSession` in
      `api/tutorSession.ts`): an answer that arrives while no tutor session is cached stores nothing and shows nothing. No profile value goes
-     to the URL, `localStorage`/`sessionStorage`, the console or an error report; the query is dropped by every sign-out path (`useLogout`, a
-     401, the cross-tab `dropAllButSession`) like every `students` query.
-  8. **Strings** vi + en (`students` namespace; vi terms: Hồ sơ học tập, Trình độ hiện tại, Điểm mạnh, Điểm yếu, Ghi chú học tập, Mục tùy
-     chỉnh, Nhãn, Giá trị). **E2E** (`e2e/`): extend `students.spec.ts` (phone-small, tablet, laptop) with the learning profile, creating its
+     to the URL, `localStorage`/`sessionStorage`, the console or an error report; every sign-out path leaves no profile **data** in the
+     cache, like every `students` query (`useLogout` and a 401 clear the cache; the cross-tab `dropAllButSession` removes inactive queries
+     and resets mounted ones to no data, `app/guards.ts`; no auth change here).
+  8. **Strings** vi + en (`students` namespace; the house spelling "Huỷ", "Xoá"; reuse the existing Cancel key; vi terms: Hồ sơ học tập,
+     Trình độ hiện tại, Điểm mạnh, Điểm yếu, Ghi chú học tập, Mục tuỳ chỉnh, Nhãn, Giá trị). **E2E** (`e2e/`): extend `students.spec.ts` (phone-small, tablet, laptop) with the learning profile, creating its
      own students; extend `longData` with long learning-profile values (scope of the test plan).
 
 ## Out of scope (explicit)
@@ -103,14 +108,19 @@ custom fields are free text; hints give generic examples (no exam name); `Forbid
   `model/learningProfileSchema.ts` (`toLearningProfilePut(values, version)`, `isUnchanged(profile, values)`; the custom-field row filtering
   and index mapping), `api/learningProfile.ts` (`useLearningProfile`, `useSaveLearningProfile` on `['students','learningProfile',sid]`);
   `serverErrors.ts` gains the `strengths[i]`, `weaknesses[i]` and `customFields[i].label|value` paths; `ui/TagInput.tsx` (+ `index.ts`
-  export, `/dev/ui` entry). `StudentWorkspacePage.tsx` renders the section and passes `openForm`; `GuardiansSection.tsx` and
+  export, `/dev/ui` entry); the test fixture `web/src/test/students.ts` (`workspaceApi`) gains `GET`/`PUT` learning-profile handlers.
+  `StudentWorkspacePage.tsx` renders the section and passes `openForm`; `GuardiansSection.tsx` and
   `AccountSection.tsx` take the extended `OpenForm`. Import rules unchanged (feature code imports `ui/` only from its index).
 - **Version bookkeeping**: the profile has its own `version` (`null` until the first save); the answer of a PUT replaces the cache entry with
   its `version`. Profile writes never touch the student's detail entry or `version`.
 - **Contradiction scan (lessons L-03)**, each resolved here and in DEC-140:
   (a) kept assertions list the Profile view's `h2`s: `e2e/tests/students.spec.ts` ("AC1/AC2/AC9: none yet…", the `toEqual` list `Thông tin
   cá nhân` … `Tài khoản`) and `StudentGuardians.test.tsx` (the `getAllByRole('heading', { level: 2 })` list) gain **Learning profile**
-  between the guardians and the account heading; this is the packet's **only** changed kept assertion (DEC-140 (1)).
+  between the guardians and the account heading (DEC-140 (1)). Also, Playwright's `getByRole` name match is a case-insensitive
+  substring unless `exact: true`, so the new vi button "Sửa hồ sơ học tập" collides with every non-exact `getByRole('button', { name:
+  'Sửa hồ sơ' })` (strict-mode error): those locators in `students.spec.ts` (at 2026-10-21: lines 856, 959, 991, 994, 997, 1043, 1053,
+  1395, 1714, 1903, 1911, and `copy.editProfile` in the long-data walk at 2504) gain `exact: true`, which tightens them without changing
+  what they assert (DEC-140 (1)). Unit tests match names exactly and are unaffected. These are the packet's only changed kept assertions.
   (b) validation-rules has a general Tag row (≤ 20 tags per item) and a learning-profile row (≤ 30 each): the specific row and the server
   (`StudentFields.TAGS_MAX` = 30) win; the UI uses 30.
   (c) the server deduplicates tags case-insensitively without an error; the UI refuses a duplicate at entry ("Already added."), so what the
@@ -121,34 +131,37 @@ custom fields are free text; hints give generic examples (no exam name); `Forbid
   (g) security.md T2 / A-008: no student route or DTO exists for the profile (T-M2.9 isolation harness with `SECRET-*` markers in every
   profile field); this packet adds no endpoint, so the harness needs no new entry.
 - **Shortcut ledger** (lessons L-12): the touched area holds `ui/Toast.tsx`, `ui/toastQueue.ts`, `ui/Button.tsx` (trigger: a
-  react-aria bump). `TagInput` adds a dependency on the stable `TagGroup` API of the installed react-aria-components 1.21.1 (no
-  `UNSTABLE_`); no bump here. `lib/time` is not touched (no date shown).
+  react-aria bump). `TagInput` uses only `Field`, the text input and `IconButton` already in `ui/` (no `TagGroup`, no `UNSTABLE_`
+  API); no bump here. `lib/time` is not touched (no date shown).
 
 ## UI rules (fixed at G0, DEC-131 (2))
 - **Columns per breakpoint**: the read view is the `DescriptionList`'s own rule (one column below a 32rem container; term/value
   `minmax(var(--size-term), 1fr) 3fr` from 32rem), so its columns line up with Personal information, Contacts and Guardians at 768 and 1280
   (no `--size-reading-max` cap on the section). The heading row follows `.headingRow` (button under the `h2` below 768 px, at the row's end
-  from 768 px). The form: every field full width of the column, one per row at every width (no grid); custom field rows: each `fieldset`
-  full width, legend alone on its line, Label then Value stacked, **Remove field {n}** last, start-aligned; Save/Cancel as T-M2.14 `.actions`
+  from 768 px). The form uses the existing `.form` class (one column, capped at `--size-reading-max`, as the Edit profile and guardian
+  forms): every field full width of the form, one per row at every width (no grid); custom field rows: each `fieldset` full width of the
+  form, legend alone on its line, Label then Value stacked, **Remove field {n}** last, start-aligned; Save/Cancel in `.stackedActions`
   (stacked full width in source order below 768 px, inline start-aligned from 768 px, `gap: var(--space-3)`).
 - **Break rules**: labels, levels, tags, notes and values are human-language text: they break at spaces only
-  (`expectNoMidWordBreak` with the long-data fixture); a single unbroken token wider than its column (a 40-character tag with no space at
+  (`expectNoMidWordBreak` with the long-data fixture, called once per chip text, once per `dd` and once per label, legend and term, never
+  on a chip list, a whole `dl` or the section: the helper joins adjacent text nodes, checks.ts); a single unbroken token wider than its column (a 40-character tag with no space at
   360) may break anywhere (`overflow-wrap: anywhere`, the `DescriptionList` rule) and never scrolls the page. Tag chips wrap as whole chips
   (`flex-wrap: wrap`, `gap: var(--space-2)`); a chip's text and its remove button stay on one row; the chip's text wraps inside the chip
   when it is wider than the column. Learning notes keep their line breaks (`.note`: `white-space: pre-wrap`).
 - **Focus targets** after removing or disabling the focused element: committing a tag → the input stays focused (cleared); removing a tag
-  (button or Delete/Backspace) → the next chip, else the previous chip, else the input; **Remove field {n}** → **Add field** (shown again
-  when it was hidden at 30; the contact-row rule); Save success, a clean Cancel, a discarded dirty Cancel and the conflict Reload → **Edit
-  learning profile**; the conflict Cancel → back to the control that had focus before Save (React Aria dialog restore); **Try again** in
+  (its remove button) → the next chip's remove button, else the previous chip's, else the input; **Remove field {n}** → **Add field**
+  (shown again when it was hidden at 30; the contact-row rule); Save success, an unchanged Save (no request, no toast), a clean Cancel, a
+  discarded dirty Cancel and the conflict Reload → **Edit learning profile**; the conflict Cancel → back to the control that had focus before Save (React Aria dialog restore); **Try again** in
   the error state → the **Learning profile** `h2` (`tabIndex={-1}`) once the profile or the error shows again (T-M2.15 AC11 (a));
   Save's pending state keeps focus on Save (the `ui/Button` pending rule). Every one of these is followed by `expectFocusNotLost` in E2E.
 - **Layering**: the "Learning profile saved" toast follows interaction-states §4 (AC12): under the conflict dialog and the discard dialog
   it is hidden and inert; nothing in the section is reachable while a dialog is open.
-- **Validation per field** (validation-rules rows): Current level 0–40; Learning notes 0–2,000 (counter); each tag 1–40, no control
+- **Validation per field** (validation-rules rows; lengths in code points; free text refuses C0 controls other than tab, LF, CR; the
+  existing `form.errors` texts): Current level 0–40; Learning notes 0–2,000 (counter); each tag 1–40, no control
   characters (comma, tab and line break are separators), ≤ 30 per list, case-insensitively unique; custom field Label 1–60 (required in a
   kept row), Value 0–500, ≤ 30 rows. Client checks on blur and on submit, server 422 mapped as scope 4.
-- **Copy** (en / vi verb): Edit learning profile / Sửa hồ sơ học tập; Save / Lưu; Cancel / Hủy; Add field / Thêm mục; Remove field {n} /
-  Xóa mục {n}; Remove {tag} / Xóa {tag}; counters with non-breaking spaces as the existing `TextArea`.
+- **Copy** (en / vi verb): Edit learning profile / Sửa hồ sơ học tập; Save / Lưu; Cancel / Huỷ (the existing key); Add field / Thêm mục;
+  Remove field {n} / Xoá mục {n}; Remove {tag} / Xoá {tag}; counters with non-breaking spaces as the existing `TextArea`.
 
 ## Domain rules (L-04; the write path is the T-M2.9 server, unchanged)
 - **Invariants**: at most one profile per student (primary key `student_id`); tags 1–40, no comma or control character, unique ignoring
@@ -162,7 +175,7 @@ custom fields are free text; hints give generic examples (no exam name); `Forbid
   | none | `version: null` | 200, created (`version` 0) | scope 4 success |
   | none | a number | 409 `STALE_VERSION` | scope 5 |
   | exists (version n) | `version: null` | 409 `STALE_VERSION` | scope 5 |
-  | exists (version n) | n | 200, replaced (`version` n + 1) | scope 4 success |
+  | exists (version n) | n | 200, replaced (`version` n + 1; n when the values equal the stored ones, `LearningProfile.apply`) | scope 4 success |
   | exists (version n) | m ≠ n | 409 `STALE_VERSION` | scope 5 |
   | any | invalid values | 422 field codes | scope 4 errors |
   | student unknown | any | 404 | not-found view |
@@ -185,12 +198,13 @@ custom fields are free text; hints give generic examples (no exam name); `Forbid
   **Edit learning profile**, while the rest of the page works; after Try again focus is on the section `h2` (component tests with MSW + E2E).
 - AC2 (scope 2, design-system): `TagInput` adds a tag on Enter and on a typed comma, splits a pasted "a, b\nc" into three tags, ignores an
   empty entry, refuses (text kept, error shown, nothing added) a 41-character tag, a duplicate in other case, a tag with a control
-  character and the 31st tag; the input stays enabled at 30; Enter never submits the form; "Remove {tag}" and Delete/Backspace on a chip
-  remove it with focus on the next chip, else the previous, else the input; axe clean in `/dev/ui` (unit tests + `/dev/ui` entry).
+  character and the 31st tag; the input stays enabled at 30; Enter never submits the form; each chip's remove button has exactly the
+  accessible name "Remove {tag}" (vi "Xoá {tag}") and no English description in vi, and removes the tag with focus on the next chip's
+  remove button, else the previous, else the input; axe clean in `/dev/ui` (unit tests + `/dev/ui` entry).
 - AC3 (FR-STU-04, scope 3–4): **Edit learning profile** opens the form with the stored values and focus on Current level; Save of a
   never-saved profile sends `version: null`, of a saved one its `version`; the body holds every field, trimmed, `null` for emptied texts,
   without rows that are empty after trimming; text left in a `TagInput` is committed by Save; an unchanged form (also after whitespace-only
-  edits) sends nothing; after Save the read view shows the answer, "Learning profile saved" shows and focus is on **Edit learning
+  edits) sends nothing, closes the form and focuses **Edit learning profile** with no toast; after Save the read view shows the answer, "Learning profile saved" shows and focus is on **Edit learning
   profile**; double click sends one request; a 500 keeps the input with the `InlineAlert` (component tests + E2E).
 - AC4 (validation-rules, scope 4): client limits (level 40, notes 2,000, label 60 and required in a row with a value, value 500, 30 rows
   with Add hidden and the limit text) and a 422 on `currentLevel`, `strengths[2]`, `customFields[1].label` (after an empty first row was
@@ -207,7 +221,7 @@ custom fields are free text; hints give generic examples (no exam name); `Forbid
   focuses **Edit learning profile**.
 - AC7 (SEC, A-008, DEC-127): a profile save answered after a sign-out and the next sign-in as a student, or while no tutor session is
   cached, stores nothing, shows no toast and moves no focus (unit test with a held promise); after any sign-out path no
-  `['students','learningProfile',*]` query is left; no profile value appears in the URL, web storage or the console during the E2E run;
+  `['students','learningProfile',*]` query holds data; no profile value appears in the URL, web storage or the console during the E2E run;
   no student-session response holds a profile value (QA scan with `SECRET-*`-style markers; the backend harness stays green).
 - AC8 (NFR-A11Y-01, 02, responsive, UI rules): `expectSettledAccessible` passes on the section (empty, filled with 30 tags per list and 30
   custom fields), the form with errors, the conflict dialog and the discard dialog at 360×740, 768×1024 and 1280×800 in vi and en; the
@@ -250,12 +264,14 @@ custom fields are free text; hints give generic examples (no exam name); `Forbid
 ## Docs to update
 - `information-architecture.md` §2 (Implemented T-M2.17 note), `interaction-states.md` §2.8 (the conflict dialog for the learning profile),
   `ux-flows.md` (new **F12 Update a learning profile: ≤ 3 steps**), `design-system.md` §3 (`TagInput` as built), `security.md` T2 (the
-  learning profile on screen: tutor only, text only), backlog (T-M2.17 done note), `progress.json` (LC).
+  learning profile on screen: tutor only, text only), `glossary.md` (vi terms: Trình độ hiện tại, Điểm mạnh, Điểm yếu, Ghi chú học tập,
+  Mục tuỳ chỉnh), backlog (T-M2.17 done note), `progress.json` (LC).
 
 ## Risks & assumptions
 - **Size**: 9 ACs, about 1.5–2 agent-days; `TagInput` is the new part. **Split line**: if AC1–AC6 are not green by about 2 agent-days,
   custom-field rows (scope 3's Custom fields, their part of AC4) move to a follow-up by a DEC; AC7 (SEC) never moves.
-- React Aria's `TagGroup` may move focus itself after a removal; the UI rules' target is asserted and enforced in `TagInput`.
+- `TagInput` puts one remove button per tag in the tab order (up to 60 extra tab stops with both lists full): accepted for the simpler,
+  fully translated control (DEC-140 (4)); a grid with Delete/Backspace would need React Aria's English-only description in vi.
 - The PUT replaces the whole profile: a tab with a stale version can never overwrite silently (409), so no field-level merge is needed.
 - E2E signs in as `e2e-tutor` (`.data/e2e/`) and adds students with unique names; the dev database keeps them (never purge without asking the PO).
 
