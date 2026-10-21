@@ -325,6 +325,26 @@ describe('Learning profile: validation and 422 (AC4)', { timeout: 20_000 }, () =
     expect(api.calls.profilePut).toEqual([])
   })
 
+  it('AC10 (a): no error on blur; after a failed Save the inline error clears while typing (DEC-142)', async () => {
+    const { api } = await openForm(learningProfile())
+    await userEvent.click(within(group('Mục tuỳ chỉnh')).getByRole('button', { name: 'Thêm mục' }))
+    const label = within(group('Mục 1')).getByRole('textbox', { name: 'Nhãn (bắt buộc)' })
+    await userEvent.type(within(group('Mục 1')).getByRole('textbox', { name: 'Giá trị' }), '650')
+    await userEvent.type(label, 'M')
+    await userEvent.clear(label)
+    await userEvent.tab()
+    expect(label).not.toHaveAttribute('aria-invalid')
+    expect(screen.queryByText('Hãy nhập nhãn.')).not.toBeInTheDocument()
+    await userEvent.click(save())
+    await waitFor(() => expect(summary()).toHaveFocus())
+    expect(label).toHaveAttribute('aria-invalid', 'true')
+    await userEvent.type(label, 'Mục tiêu')
+    expect(label).not.toHaveAttribute('aria-invalid')
+    expect(within(group('Mục 1')).queryByText('Hãy nhập nhãn.')).not.toBeInTheDocument()
+    await userEvent.click(save())
+    await waitFor(() => expect(api.calls.profilePut).toHaveLength(1))
+  })
+
   it('a refused tag left in the input blocks Save with its error in the summary', async () => {
     const { api } = await openForm()
     await userEvent.type(textbox('Điểm mạnh'), 'NGHE')

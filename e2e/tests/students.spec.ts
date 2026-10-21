@@ -2882,6 +2882,37 @@ test.describe('Learning profile (T-M2.17)', () => {
     acceptStatus(consoleGuard, 500, `/api/v1/tutor/students/${created.student.id}/learning-profile`)
   })
 
+  test('AC10 (a): a mouse click on Save straight from a cleared Label of a row with a value: the summary; the fix clears while typing; one press saves', async ({
+    page,
+  }) => {
+    const created = await profileStudent(page, 'Bấm Chuột Hồ Sơ')
+    const writes = profileWrites(page)
+    await page.goto(`/tutor/students/${created.student.id}`)
+    await lpEdit(page).click()
+    const form = lpForm(page)
+    await form.getByRole('button', { name: 'Thêm mục' }).click()
+    const row = form.getByRole('group', { name: 'Mục 1' })
+    const label = row.getByRole('textbox', { name: 'Nhãn (bắt buộc)' })
+    await row.getByRole('textbox', { name: 'Giá trị' }).fill('650')
+    await label.fill('Mục tiêu')
+    await label.fill('')
+    await expect(label).toBeFocused()
+    // A real pointer press (mouse down and up) on Save while focus is still in the Label (DEC-142).
+    await lpSave(page).click()
+    const summary = form.getByRole('alert').filter({ hasText: 'Chưa lưu được hồ sơ học tập' })
+    await expect(summary).toBeVisible()
+    await expect(summary).toBeFocused()
+    await expect(label).toHaveAttribute('aria-invalid', 'true')
+    await label.pressSequentially('Mục tiêu')
+    await expect(label).not.toHaveAttribute('aria-invalid')
+    await expect(row.getByText('Hãy nhập nhãn.')).toHaveCount(0)
+    expect(writes).toEqual([])
+    await lpSave(page).click()
+    await expect(lpEdit(page)).toBeFocused()
+    expect(writes).toHaveLength(1)
+    expect(writes[0]).toMatchObject({ customFields: [{ label: 'Mục tiêu', value: '650' }] })
+  })
+
   test('AC5: two pages: a first save after the other page created the profile, then an older version: the conflict dialog', async ({
     page,
     context,

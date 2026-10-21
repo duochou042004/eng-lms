@@ -111,7 +111,8 @@ export function LearningProfileForm({ studentId, profile, onClose, onReload, onN
   } = useForm<LearningProfileValues>({
     resolver: zodResolver(learningProfileSchema),
     defaultValues: toLearningProfileValues(opened),
-    mode: 'onBlur',
+    // Validate on submit, then on change (DEC-142): a blur error would move Save under a pointer press.
+    mode: 'onSubmit',
     reValidateMode: 'onChange',
   })
   const rows = useFieldArray({ control, name: 'customFields' })
@@ -169,6 +170,8 @@ export function LearningProfileForm({ studentId, profile, onClose, onReload, onN
       // An answer that outlived the tutor's session closes nothing, toasts nothing (scope 7).
       if (isTutorSession(queryClient)) onClose(true)
     } catch (error) {
+      // An answer that outlived the tutor's session opens no dialog, alert or not-found view (AC10 (b)).
+      if (!isTutorSession(queryClient)) return
       if (!(error instanceof ApiError) || error.status === 0) {
         setFormError(t('profile.networkError'))
       } else if (error.status === 409 && error.code === 'STALE_VERSION') {
