@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Milestone | M2 |
-| Status | draft (G0 docs review) |
+| Status | ready (G0 PASS, DEC-140; implementation after the PO start signal) |
 | Owner role | FE (frontend-implementer) |
 | Branch | `feature/T-M2.17-learning-profile` (from `develop`) |
 | Depends on | T-M2.9 (`37e8ce0`, the learning-profile endpoints), T-M2.15 (`9b9e133`, the one-form lock and the Profile view sections), T-M2.19 (`d165a4e`, the E2E checks): merged |
@@ -200,7 +200,8 @@ custom fields are free text; hints give generic examples (no exam name); `Forbid
   empty entry, refuses (text kept, error shown, nothing added) a 41-character tag, a duplicate in other case, a tag with a control
   character and the 31st tag; the input stays enabled at 30; Enter never submits the form; each chip's remove button has exactly the
   accessible name "Remove {tag}" (vi "Xoá {tag}") and no English description in vi, and removes the tag with focus on the next chip's
-  remove button, else the previous, else the input; axe clean in `/dev/ui` (unit tests + `/dev/ui` entry).
+  remove button, else the previous, else the input; a tag may sit in both lists, so E2E scopes remove-button locators by the field's
+  group (G0 N-1); axe clean in `/dev/ui` (unit tests + `/dev/ui` entry).
 - AC3 (FR-STU-04, scope 3–4): **Edit learning profile** opens the form with the stored values and focus on Current level; Save of a
   never-saved profile sends `version: null`, of a saved one its `version`; the body holds every field, trimmed, `null` for emptied texts,
   without rows that are empty after trimming; text left in a `TagInput` is committed by Save; an unchanged form (also after whitespace-only
