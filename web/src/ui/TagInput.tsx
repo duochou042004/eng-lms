@@ -35,7 +35,7 @@ export interface TagInputProps extends TagLimits {
   inputValue: string
   onInputChange: (text: string) => void
   onBlur?: () => void
-  /** The caller's error (a form or server error); an entry refused here shows its own messages instead. */
+  /** The caller's error (a form or server error); an entry refused here shows its own messages until this changes. */
   errorMessage?: string
   isDisabled?: boolean
   /** The strings (`ui/` holds no feature strings). */
@@ -68,6 +68,13 @@ export function TagInput({
   messages,
 }: TagInputProps) {
   const [entryErrors, setEntryErrors] = useState<TagEntryError[]>([])
+  // A new caller error (a failed Save, a revalidation) wins over the last entry's reasons (T-M2.20 AC10, QA-1); the
+  // entry error of a later commit shows again.
+  const [callerError, setCallerError] = useState(errorMessage)
+  if (errorMessage !== callerError) {
+    setCallerError(errorMessage)
+    setEntryErrors([])
+  }
   const inputRef = useRef<HTMLInputElement>(null)
   const listRef = useRef<HTMLUListElement>(null)
   // After a removal: the chip index whose remove button takes focus, or the input.

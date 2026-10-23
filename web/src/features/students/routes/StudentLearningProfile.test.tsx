@@ -1,4 +1,4 @@
-import { act, screen, waitFor, within } from '@testing-library/react'
+import { act, fireEvent, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { delay, http, HttpResponse } from 'msw'
 import { describe, expect, it, vi } from 'vitest'
@@ -378,6 +378,45 @@ describe('Learning profile: validation and 422 (AC4)', { timeout: 20_000 }, () =
     expect(textbox('Điểm mạnh')).toHaveValue('NGHE, Bad\u0007x')
     expect(api.calls.profilePut).toEqual([])
   })
+
+  it.each([
+    [
+      'inserted in one input event with a comma (a drop, an IME insert, Playwright fill)',
+      async () => {
+        fireEvent.change(textbox('Điểm mạnh'), { target: { value: 'NGHE, Bad\u0007x' } })
+      },
+      'NGHE, Bad\u0007x',
+    ],
+    [
+      'edited after a paste',
+      async () => {
+        await userEvent.click(textbox('Điểm mạnh'))
+        await userEvent.paste('NGHE, Bad\u0007x')
+        await userEvent.type(textbox('Điểm mạnh'), 'y')
+      },
+      'NGHE, Bad\u0007xy',
+    ],
+  ])(
+    'T-M2.20 AC10: text %s: after a failed Save the field shows both reasons; a later commit shows its own',
+    async (_, enter, kept) => {
+      const { api } = await openForm()
+      await enter()
+      // The commit of the text before the last comma refused "NGHE" alone: only its reason shows before Save.
+      expect(textbox('Điểm mạnh')).toHaveAccessibleDescription(expect.not.stringContaining('Thẻ không được chứa'))
+      await userEvent.click(save())
+      await waitFor(() => expect(summary()).toHaveFocus())
+      const both = 'Đã thêm rồi. Thẻ không được chứa ký tự điều khiển.'
+      expect(within(summary()).getByRole('link').textContent).toBe(both)
+      expect(textbox('Điểm mạnh')).toHaveAccessibleDescription(expect.stringContaining(both))
+      expect(textbox('Điểm mạnh')).toHaveValue(kept)
+      // A later commit shows its own reason again.
+      await userEvent.clear(textbox('Điểm mạnh'))
+      await userEvent.type(textbox('Điểm mạnh'), 'Nghe{Enter}')
+      expect(textbox('Điểm mạnh')).toHaveAccessibleDescription(expect.stringContaining('Đã thêm rồi.'))
+      expect(textbox('Điểm mạnh')).toHaveAccessibleDescription(expect.not.stringContaining('Thẻ không được chứa'))
+      expect(api.calls.profilePut).toEqual([])
+    },
+  )
 
   it('30 rows: Add field is hidden with the limit text; removing one shows it again with focus', async () => {
     const thirty = Array.from({ length: 30 }, (_, i) => ({ label: `Nhãn ${i + 1}`, value: '' }))

@@ -3279,4 +3279,27 @@ test.describe('M2 polish (T-M2.20)', () => {
     await expectSettledAccessible(page)
     await shot(page, testInfo, 't-m2-20-tag-two-reasons-summary-vi')
   })
+
+  test('AC10: text filled in one input event (a comma inside), then Save: the field shows both reasons (vi)', async ({
+    page,
+  }, testInfo) => {
+    const created = await profileStudent(page, 'Thẻ Điền Một Lần')
+    await apiProfile(page, created.student.id, { strengths: ['Nghe'] })
+    await page.goto(`/tutor/students/${created.student.id}`)
+    await lpEdit(page).click()
+    const strengths = tagGroup(page, 'Điểm mạnh')
+    const input = strengths.getByRole('textbox')
+    await input.fill('NGHE, Bad\u0007x')
+    await expect(input).toHaveValue('NGHE, Bad\u0007x')
+    await lpSave(page).click()
+    const summary = lpForm(page).getByRole('alert', { name: 'Chưa lưu được hồ sơ học tập' })
+    await expect(summary).toBeFocused()
+    const both = 'Đã thêm rồi. Thẻ không được chứa ký tự điều khiển.'
+    await expect(summary.getByRole('link')).toHaveText([both])
+    const error = strengths.getByText(both, { exact: true })
+    await expect(error).toBeVisible()
+    await expectNoMidWordBreak(error)
+    await expectSettledAccessible(page)
+    await shot(page, testInfo, 't-m2-20-tag-fill-save-vi')
+  })
 })

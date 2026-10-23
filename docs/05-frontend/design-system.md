@@ -180,7 +180,7 @@ no English-only description), then one text input with the hint and the error. *
 pasted text with commas, tabs or line breaks adds each part. Each entry is trimmed; an empty one is ignored; a control character, more than
 `maxLength` code points, a tag already present ignoring case or one past `maxTags` is refused with its message (the caller's strings) and its
 text kept in the input (a pasted list adds its valid parts and keeps the refused ones, comma-joined). An entry refused for several reasons
-shows every reason's message, each once in the order of its first refusal, joined by a space (`addTags` returns `errors`, T-M2.20). The rules are the pure `addTags`
+shows every reason's message, each once in the order of its first refusal, joined by a space (`addTags` returns `errors`, T-M2.20); a new caller error (a failed Save) replaces them until the next commit (AC10). The rules are the pure `addTags`
 (`ui/tagEntry.ts`), so a form can commit the input's text on Save. The input is controlled (`inputValue`), stays enabled at `maxTags`, and
 Enter never submits the form. Removing a chip focuses the next chip's button, else the previous one's, else the input. Chips wrap as whole
 chips (`gap: var(--space-2)`); a long tag wraps inside its chip (`overflow-wrap: anywhere`). `TagList` shows the same chips read-only.
