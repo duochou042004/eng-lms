@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-10-23T03:25:18Z",
-  "updatedBy": "lead-coordinator (T-M2.20 G1 PASS, DEC-146; G3 next)",
+  "updatedAt": "2026-10-23T04:17:58Z",
+  "updatedBy": "lead-coordinator (T-M2.20 G3 passed, DEC-148; merge next)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -32,19 +32,19 @@
   "currentTask": {
     "id": "T-M2.20",
     "title": "M2 polish batch (S4 findings, DEC-131 (5))",
-    "status": "in_review",
+    "status": "awaiting_approval",
     "ownerRole": "FE",
     "branch": "feature/T-M2.20-m2-polish",
     "packet": "docs/tasks/T-M2.20-m2-polish.md",
     "pr": "136",
-    "lastCommit": "831fe65",
+    "lastCommit": "3af1658",
     "startedAt": "2026-10-23T02:49:49Z",
     "entryGate": [
       "T-M2.17 merged — met (ff1d2ec)"
     ],
     "nextSteps": [
-      "CI green on PR #136",
-      "G3 tier M: one combined fresh QA+UX reviewer (qa-protocol §2a), incl. S-1/S-2 from code and unit tests"
+      "CI green on the final head; post QA-VERDICT, UX-REVIEW, LC-APPROVED; merge-gate; gitlab-sync",
+      "Records: review/ux.md + merge DEC on a docs branch, the QA report on qa/T-M2.20 (evidence-and-handoff part C)"
     ],
     "trace": [
       "DEC-131",
@@ -54,7 +54,9 @@
       "DEC-142",
       "DEC-144",
       "DEC-145",
-      "DEC-146"
+      "DEC-146",
+      "DEC-147",
+      "DEC-148"
     ]
   },
   "nextTask": {
@@ -427,7 +429,9 @@
       "DEC-143",
       "DEC-144",
       "DEC-145",
-      "DEC-146"
+      "DEC-146",
+      "DEC-147",
+      "DEC-148"
     ],
     "pendingPO": [
       "OQ-03",
@@ -1278,6 +1282,11 @@
       "at": "2026-10-23T03:25:18Z",
       "actor": "lead-coordinator",
       "event": "T-M2.20 G1: gate PASS on 2adcc1a (912 s, 13 steps); implementer 193,922 tokens, 34.0 min; PR #136; OQ-1 (AC6 engine fact) ruled by DEC-146."
+    },
+    {
+      "at": "2026-10-23T04:17:58Z",
+      "actor": "lead-coordinator",
+      "event": "T-M2.20 G3: combined QA+UX round 1 PASS WITH MINOR / APPROVED (S3 QA-1 → AC10, DEC-147; 128,312 tokens) → AC10 fix (14,192 tokens, gate PASS 950 s) → delta re-check PASS WITH MINOR / APPROVED (15,244 tokens); S4 QA-2 to the M2 G5 list (DEC-148)."
     }
   ]
 }

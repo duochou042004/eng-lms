@@ -21,6 +21,46 @@
 |---|---|---|---|---|---|---|---|---|
 | G1 | frontend-implementer | `2adcc1a` | gate PASS | OQ-1 | — | 193,922 | 34.0 | 1 (912 s) |
 | G3 round 1 | combined QA+UX (fresh) | `ae1f950` (code `2adcc1a`) | QA PASS WITH MINOR / UX APPROVED | S3 QA-1 → AC10 (DEC-147) | full | 128,312 | 19.7 | 0 |
+| AC10 fix | frontend-implementer (resumed) | `9095577` | gate PASS | — | — | 14,192 | 20.8 | 1 (950 s) |
+| G3 round 2 | combined QA+UX (resumed) | `3af1658` (code `9095577`) | QA PASS WITH MINOR / UX APPROVED | QA-1 closed; new S4 QA-2 → M2 G5 (DEC-148) | delta | 15,244 | 9.9 | 0 |
+| **Total** | 2 agents | | | | | 351,670 | 84.4 | 2 (1,862 s) |
+
+## AC10 fix report (verbatim, round 2)
+
+## T-M2.20 AC10: report
+
+AC10 is fixed: after a failed Save, the Strengths field now shows both reasons, just as the summary does. The gate passed once on the code commit, and the branch is pushed. I posted no PR comments.
+
+- **New head:** `3af1658`, which only adds the gate log and the E2E records.
+- **Code commit:** `9095577`, `fix(ui): TagInput: a new caller error wins over the last entry's reasons (AC10)`.
+
+**Fix** (`web/src/ui/TagInput.tsx`, a few lines): `TagInput` remembers the last `errorMessage` it was given. When that changes (a failed Save, or a revalidation), it clears its own `entryErrors` during render. The form's message then shows, and the entry error of a later commit shows again. No other kept assertion was changed. I also added one clause to the `TagInput` entry in design-system §3 so the doc says the same.
+
+### AC10 proof
+Each test below fails without the fix and passes with it; I checked this by reverting `TagInput.tsx`.
+- **Component tests**, `StudentLearningProfile.test.tsx`, "T-M2.20 AC10: text %s: after a failed Save the field shows both reasons; a later commit shows its own", run for both paths:
+  - **one-event insert with a comma:** `fireEvent.change` with "NGHE, Bad\u0007x", the same kind of event as `fill`, a drop or an IME insert;
+  - **edited after a paste:** paste, then type "y".
+  - Each asserts that before Save only "Đã thêm rồi." shows. After Save the summary link and the field description both read "Đã thêm rồi. Thẻ không được chứa ký tự điều khiển.". The text stays in the input. A later "Nghe" + Enter shows its own reason again.
+- **Unit test**, `ui/TagInput.test.tsx`, "a new caller error wins over the last entry's reasons; a later refused commit shows its own again (T-M2.20 AC10)".
+- **E2E**, `students.spec.ts` "M2 polish (T-M2.20) › AC10: text filled in one input event (a comma inside), then Save: the field shows both reasons (vi)":
+  - It saves Strengths ["Nghe"] through the API, `fill`s "NGHE, Bad\u0007x", then Saves.
+  - It checks the h3 summary takes focus, the link text, and that the field error is visible.
+  - It runs `expectNoMidWordBreak` on the error and `expectSettledAccessible`.
+  - It passes at 360, 768 and 1280. At 360 (phone-small) it fails on a rebuild without the fix.
+  - Screenshot, local only: `evidence/T-M2.20/impl/<viewport>/t-m2-20-tag-fill-save-vi.png`.
+
+### Gate
+- `ENGLMS_TASK=T-M2.20 ./scripts/gate.sh` run once on `9095577`: **PASS, 13 steps, 950 s**.
+- E2E: 960 passed. The ×3 repeat ran the checks, shells and students specs. The only failure line is the designed `test.fail` in `guards.spec.ts:100`.
+- Log: `evidence/T-M2.20/gate-20261023T035043Z.log`, trimmed to 296 lines; the full log is in `raw/`, which is git-ignored.
+- Unit tests: 818 passed. `check-docs` and `check-path-ownership` pass.
+- CI not checked yet.
+
+### Limitation (not fixed)
+If two Saves in a row give exactly the same form message, and the user commits a refused entry between them, the second Save does not clear that entry error. The field then shows the entry's reason rather than the joined message. This only happens with an edit between two identical failed Saves.
+
+**subagent_tokens (cumulative):** about 207k.
 
 ## Implementer report (verbatim)
 
