@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-10-21T08:09:27Z",
-  "updatedBy": "lead-coordinator (T-M2.17 merged, DEC-143; next: T-M2.20 packet)",
+  "updatedAt": "2026-10-23T02:21:27Z",
+  "updatedBy": "lead-coordinator (T-M2.20 packet written, DEC-144; G0 next)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -34,8 +34,8 @@
     "title": "M2 polish batch (S4 findings, DEC-131 (5))",
     "status": "draft",
     "ownerRole": "FE",
-    "branch": null,
-    "packet": null,
+    "branch": "docs/T-M2.20-m2-polish",
+    "packet": "docs/tasks/T-M2.20-m2-polish.md",
     "pr": null,
     "lastCommit": null,
     "startedAt": null,
@@ -43,14 +43,16 @@
       "T-M2.17 merged — met (ff1d2ec)"
     ],
     "nextSteps": [
-      "LC writes the T-M2.20 packet (task-packet skill; tier M: one combined QA+UX reviewer) from the backlog row (S4 items incl. the PR #122 CI axe flake and T-M2.17 QA-2); G0 docs review; PO start signal"
+      "G0: one fresh docs-reviewer on the packet (PR on docs/T-M2.20-m2-polish); fix S1-S3, delta rounds; DOCS-REVIEW + LC-APPROVED; merge-gate; gitlab-sync",
+      "PO start signal; then the implementation branch feature/T-M2.20-m2-polish (tier M: one combined QA+UX reviewer at G3)"
     ],
     "trace": [
       "DEC-131",
       "DEC-132",
       "DEC-136",
       "DEC-137",
-      "DEC-142"
+      "DEC-142",
+      "DEC-144"
     ]
   },
   "nextTask": {
@@ -420,7 +422,8 @@
       "DEC-140",
       "DEC-141",
       "DEC-142",
-      "DEC-143"
+      "DEC-143",
+      "DEC-144"
     ],
     "pendingPO": [
       "OQ-03",
@@ -1251,6 +1254,11 @@
       "at": "2026-10-21T08:06:33Z",
       "actor": "lead-coordinator",
       "event": "T-M2.17 merged (PR #123, ff1d2ec): 2 review agents (SEC 48,049; QA+UX 112,406 + delta 19,014 tokens), 1 implementer over 2 rounds (377,064 tokens), 2 gate runs. Next: the T-M2.20 packet."
+    },
+    {
+      "at": "2026-10-23T02:21:27Z",
+      "actor": "lead-coordinator",
+      "event": "T-M2.20 packet written (task-packet skill; DEC-144: tier M, S-1 mutation-cache clear at the session boundaries, the backend wall-clock flake to T-M2.10). Next: G0 docs review."
     }
   ]
 }
