@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-10-23T02:21:27Z",
-  "updatedBy": "lead-coordinator (T-M2.20 packet written, DEC-144; G0 next)",
+  "updatedAt": "2026-10-23T02:32:12Z",
+  "updatedBy": "lead-coordinator (T-M2.20 packet at G0, DEC-145; PO start signal next)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -32,19 +32,19 @@
   "currentTask": {
     "id": "T-M2.20",
     "title": "M2 polish batch (S4 findings, DEC-131 (5))",
-    "status": "draft",
+    "status": "ready",
     "ownerRole": "FE",
     "branch": "docs/T-M2.20-m2-polish",
     "packet": "docs/tasks/T-M2.20-m2-polish.md",
-    "pr": null,
+    "pr": "126",
     "lastCommit": null,
     "startedAt": null,
     "entryGate": [
       "T-M2.17 merged — met (ff1d2ec)"
     ],
     "nextSteps": [
-      "G0: one fresh docs-reviewer on the packet (PR on docs/T-M2.20-m2-polish); fix S1-S3, delta rounds; DOCS-REVIEW + LC-APPROVED; merge-gate; gitlab-sync",
-      "PO start signal; then the implementation branch feature/T-M2.20-m2-polish (tier M: one combined QA+UX reviewer at G3)"
+      "PO start signal in chat (not given yet)",
+      "Then: branch feature/T-M2.20-m2-polish from develop; one frontend-implementer; one gate on the final head + CI; G3 tier M: one combined fresh QA+UX reviewer (also checks S-1/S-2 from code and unit tests)"
     ],
     "trace": [
       "DEC-131",
@@ -52,7 +52,8 @@
       "DEC-136",
       "DEC-137",
       "DEC-142",
-      "DEC-144"
+      "DEC-144",
+      "DEC-145"
     ]
   },
   "nextTask": {
@@ -423,7 +424,8 @@
       "DEC-141",
       "DEC-142",
       "DEC-143",
-      "DEC-144"
+      "DEC-144",
+      "DEC-145"
     ],
     "pendingPO": [
       "OQ-03",
@@ -1259,6 +1261,11 @@
       "at": "2026-10-23T02:21:27Z",
       "actor": "lead-coordinator",
       "event": "T-M2.20 packet written (task-packet skill; DEC-144: tier M, S-1 mutation-cache clear at the session boundaries, the backend wall-clock flake to T-M2.10). Next: G0 docs review."
+    },
+    {
+      "at": "2026-10-23T02:32:12Z",
+      "actor": "lead-coordinator",
+      "event": "T-M2.20 packet at G0 (DEC-145): DOCS-REVIEW PASS in 2 rounds (round 1 full 108,658 tokens, 324 s; round 2 delta 7,714, 25 s). PR #126. Next: the PO start signal."
     }
   ]
 }

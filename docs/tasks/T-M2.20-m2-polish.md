@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Milestone | M2 |
-| Status | draft |
+| Status | ready (G0 PASS, DEC-145; implementation after the PO start signal) |
 | Owner role | FE (frontend-implementer) |
 | Branch | `feature/T-M2.20-m2-polish` (from `develop`) |
 | Depends on | T-M2.15 (`9b9e133`), T-M2.19 (`d165a4e`, the E2E checks), T-M2.17 (`ff1d2ec`, `TagInput`): merged |
