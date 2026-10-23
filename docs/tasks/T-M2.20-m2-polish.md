@@ -154,6 +154,10 @@ and the web grep stay green.
   too long + too many); QA's paste case shows both messages in the `TagInput` error and keeps the refused text; Save with uncommitted text
   refused for two reasons shows both in the field error and in that field's one `ErrorSummary` item; a single reason reads exactly as
   today (unit tests + one E2E at 360 in vi with `expectNoMidWordBreak` on the error and `expectSettledAccessible`).
+- AC10 (G3 round 1, DEC-147; S3 fixed in-task, DEC-131 (5)): **QA-1** after a failed Save the form's error wins in `TagInput`: a
+  Save whose uncommitted text is refused for two reasons shows both in the field error as well as in the summary item, also when the text
+  reached the input in one input event with a comma (a drop, an IME insert, Playwright `fill`) or was edited after a paste; the entry
+  error of a later commit shows again as today (a unit test for both paths + the E2E with `fill` at 360 in vi).
 - AC9: `./scripts/gate.sh` green once on the final head and CI green (DEC-131 (6)); all existing unit and E2E assertions kept except the
   changed kept assertions of contradiction (a) and (c); F2 ≤ 6, F10–F12 ≤ 3 kept; the bundle budget green; `api/openapi.json` and
   `backend/` unchanged; `ForbiddenIdentifiersTest` green and no exam or curriculum name in `web/src`.

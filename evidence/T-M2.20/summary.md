@@ -14,12 +14,13 @@
    so the old helper fails the new fixture too): accepted (DEC-146); the rule change and the fixture stay, AC6's "passes on `develop`"
    clause is dropped from the packet.
 2. **Deviation 2** (`TagInput` shows its own entry reasons in place of the form message after Save; identical text in that flow):
-   accepted (DEC-146).
+   accepted (DEC-146), then superseded by G3 QA-1 → AC10 (DEC-147).
 
 ## G3 cost
 | Round | Reviewer | Head | Verdict | Findings | Full/delta | Tokens | Minutes | Gate runs |
 |---|---|---|---|---|---|---|---|---|
 | G1 | frontend-implementer | `2adcc1a` | gate PASS | OQ-1 | — | 193,922 | 34.0 | 1 (912 s) |
+| G3 round 1 | combined QA+UX (fresh) | `ae1f950` (code `2adcc1a`) | QA PASS WITH MINOR / UX APPROVED | S3 QA-1 → AC10 (DEC-147) | full | 128,312 | 19.7 | 0 |
 
 ## Implementer report (verbatim)
 
