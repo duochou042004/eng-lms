@@ -45,7 +45,7 @@ that ran mid-fade wait for the fade, and a pasted tag list shows every reason it
      that still fails.
   6. **`expectFocusNotLost` sees `visibility: hidden`** (T-M2.19 QA-8): the visibility test becomes
      `active.checkVisibility({ visibilityProperty: true })`, so focus left on a control that turned `visibility: hidden` counts as lost;
-     proven by a new `checks.spec.ts` fixture (a button that hides itself with `visibility: hidden`) that passes today and fails now.
+     proven by a new `checks.spec.ts` fixture (a button that hides itself with `visibility: hidden`) that fails (on this Chromium the old helper fails it too, G1 OQ-1, DEC-146).
   7. **Axe after an overlay opens waits for the fade** (the PR #122 CI flake, run 39547482154, tablet: `students.spec.ts` "AC6: leaving a
      dirty form asks…" ran a bare `expectNoAxeViolations` right after the discard dialog opened and caught a mid-fade `color-contrast` on its
      label): that call becomes `expectSettledAccessible`. The LC's grep of every other bare call (at 2026-10-23, `grep -n
@@ -143,8 +143,10 @@ and the web grep stay green.
   none` child with text, and on "one<br>two" laid out on two lines (both fail on `develop` at `6217a67`); it still fails on a forced
   mid-word break beside a `display: none` child and on "one<br>" followed by a word forced across two lines, measures the text of a
   `display: contents` child, and every existing proof is kept.
-- AC6 (scope 6, QA-8): in `checks.spec.ts`, `expectFocusNotLost` fails after a button that sets `visibility: hidden` on itself (it passes
-  on `develop` at `6217a67`); every existing proof is kept.
+- AC6 (scope 6, QA-8): in `checks.spec.ts`, `expectFocusNotLost` fails after a button that sets `visibility: hidden` on itself; every
+  existing proof is kept. (G1 OQ-1, DEC-146: the Chromium 156 of Playwright 1.64 already moves focus to `body` when the focused control
+  turns `visibility: hidden`, so the old helper fails this fixture too; the clause "it passes on `develop`" is dropped and the fixture
+  stays as the proof that the rule rejects.)
 - AC7 (scope 7, CI flake): `students.spec.ts` "AC6: leaving a dirty form asks…" uses `expectSettledAccessible` after the discard dialog
   opens; the `expectAccessible` helper of `shells.spec.ts` calls `expectSettledAccessible`; the summary lists every
   bare `expectNoAxeViolations` call left in `e2e/tests` with its reason (each with the reason of scope 7).

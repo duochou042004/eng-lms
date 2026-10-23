@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-10-23T02:49:49Z",
-  "updatedBy": "lead-coordinator (T-M2.20 started on the PO signal)",
+  "updatedAt": "2026-10-23T03:25:18Z",
+  "updatedBy": "lead-coordinator (T-M2.20 G1 PASS, DEC-146; G3 next)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -32,19 +32,19 @@
   "currentTask": {
     "id": "T-M2.20",
     "title": "M2 polish batch (S4 findings, DEC-131 (5))",
-    "status": "in_progress",
+    "status": "in_review",
     "ownerRole": "FE",
     "branch": "feature/T-M2.20-m2-polish",
     "packet": "docs/tasks/T-M2.20-m2-polish.md",
-    "pr": null,
-    "lastCommit": null,
+    "pr": "136",
+    "lastCommit": "831fe65",
     "startedAt": "2026-10-23T02:49:49Z",
     "entryGate": [
       "T-M2.17 merged — met (ff1d2ec)"
     ],
     "nextSteps": [
-      "frontend-implementer implements AC1-AC9 (returns its summary text); one gate on the final head; PR + CI green",
-      "G3 tier M: one combined fresh QA+UX reviewer"
+      "CI green on PR #136",
+      "G3 tier M: one combined fresh QA+UX reviewer (qa-protocol §2a), incl. S-1/S-2 from code and unit tests"
     ],
     "trace": [
       "DEC-131",
@@ -53,7 +53,8 @@
       "DEC-137",
       "DEC-142",
       "DEC-144",
-      "DEC-145"
+      "DEC-145",
+      "DEC-146"
     ]
   },
   "nextTask": {
@@ -425,7 +426,8 @@
       "DEC-142",
       "DEC-143",
       "DEC-144",
-      "DEC-145"
+      "DEC-145",
+      "DEC-146"
     ],
     "pendingPO": [
       "OQ-03",
@@ -1271,6 +1273,11 @@
       "at": "2026-10-23T02:49:49Z",
       "actor": "PO",
       "event": "Start signal for T-M2.20 in chat (\"Start T-M2.20: implement the M2 polish packet under DEC-131 (tier M).\"); packet merged as c53f2ec (PR #126)."
+    },
+    {
+      "at": "2026-10-23T03:25:18Z",
+      "actor": "lead-coordinator",
+      "event": "T-M2.20 G1: gate PASS on 2adcc1a (912 s, 13 steps); implementer 193,922 tokens, 34.0 min; PR #136; OQ-1 (AC6 engine fact) ruled by DEC-146."
     }
   ]
 }
