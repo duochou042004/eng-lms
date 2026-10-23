@@ -147,6 +147,7 @@ def git(*args: str) -> str:
 
 def unfenced(text: str):
     """(line number, line) for each line outside a ``` fenced block."""
+    # shortcut: backtick fences only, any length closes; no ~~~ fences or indented code blocks; extend when a doc uses them.
     fenced = False
     for n, line in enumerate(text.splitlines(), 1):
         if line.lstrip().startswith("```"):
@@ -162,8 +163,8 @@ def check_done_records(progress: dict) -> None:
         row = next((l for _, l in unfenced(backlog) if re.match(rf"^\| \**{re.escape(tid)}\**[ |]", l)), None)
         if row is None:
             fail(f"records: {tid} is completed in progress.json but has no row in docs/tasks/backlog.md")
-        elif "**done**" not in row:
-            fail(f"records: {tid} is completed in progress.json but its row in docs/tasks/backlog.md has no **done**")
+        elif not re.search(r"\|\s*\*\*done\*\*", row):
+            fail(f"records: {tid} is completed in progress.json but its row in docs/tasks/backlog.md has no cell starting with **done**")
         for packet in sorted((ROOT / "docs/tasks").glob(f"{tid}-*.md")):
             rel = packet.relative_to(ROOT)
             status = next((m.group(1) for _, l in unfenced(packet.read_text(encoding="utf-8"))
@@ -181,20 +182,21 @@ def check_handoff_archived() -> None:
     var, base = next(((v, os.environ[v]) for v in ("ENGLMS_DOCS_BASE", "ENGLMS_GATE_BASE") if os.environ.get(v)),
                      ("default", "origin/develop"))
     try:
-        git("rev-parse", "--verify", "-q", f"{base}^{{commit}}")
-        committed = git("diff", "--no-renames", "--name-status", f"{base}...HEAD")
-        worktree = git("diff", "--no-renames", "--name-status", "HEAD")
-        untracked = git("ls-files", "--others", "--exclude-standard")
+        merge_base = git("merge-base", base, "HEAD").strip()
+        changed = git("diff", "--no-renames", "--name-only", merge_base, "HEAD") + git("diff", "--no-renames", "--name-only", "HEAD") \
+            + git("ls-files", "--others", "--exclude-standard")
+        archived_before = set(git("ls-tree", "-r", "--name-only", merge_base, "--", "docs/handoff/archive/").splitlines())
     except (OSError, subprocess.CalledProcessError):
         fail(f"handoff: cannot diff against base ref '{base}' ({var}); set ENGLMS_DOCS_BASE to a resolvable ref")
         return
-    changes = [l.split("\t", 1) for l in (committed + worktree).splitlines() if "\t" in l]
-    changes += [["?", path] for path in untracked.splitlines()]
-    if any(path == HANDOFF for _, path in changes) and not any(
-            status in ("A", "?") and path.startswith("docs/handoff/archive/") for status, path in changes):
+    # A new archive file is judged by the end state on disk, so one added and then deleted does not count.
+    archive_now = {p.relative_to(ROOT).as_posix() for p in (ROOT / "docs/handoff/archive").glob("*") if p.is_file()}
+    if HANDOFF in changed.splitlines() and not archive_now - archived_before:
         fail(f"handoff: {HANDOFF} changed since {base} without a new file under docs/handoff/archive/ (archive the old one)")
 
 
+# shortcut: spans are matched over the whole line, not per cell, so stray single backticks in two cells read as one span (a false
+# failure, never a false pass); parse cells first if that ever bites.
 SPAN_RE = re.compile(r"(?<!`)(`+)(?!`)(.+?)(?<!`)\1(?!`)")
 
 

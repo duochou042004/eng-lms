@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Tests for the records and code-span checks of scripts/check_docs.py (T-M2.21, lessons-learned L-01, L-09).
 # Each fixture is a clone of a git repository built from the committed tree (git archive HEAD); the working-tree check_docs.py
-# runs against it with ENGLMS_DOCS_ROOT and ENGLMS_DOCS_BASE set to the fixture's base commit.
+# runs against it with ENGLMS_DOCS_ROOT and ENGLMS_DOCS_BASE set to the fixture's base commit (`diff.renames copies` in one case).
 set -uo pipefail
 source "$(dirname "$0")/lib.sh"
 echo "check-docs.sh (records, handoff archive, table code spans)"
@@ -25,9 +25,14 @@ expect_exit 0 "clean tree passes (HEAD = base, as on develop; '**done**: …' an
 # Scope 1: the backlog row of a completed task
 fixture; edit docs/tasks/backlog.md 't.replace("| T-M2.20 | **done** (", "| T-M2.20 | (", 1)'
 expect_exit 1 "completed task whose backlog row has no **done** fails" -- check
-expect_output_contains "T-M2.20 is completed in progress.json but its row in docs/tasks/backlog.md has no **done**" "names the task and the backlog"; one_problem "row without done"
+expect_output_contains "T-M2.20 is completed in progress.json but its row in docs/tasks/backlog.md has no cell starting with **done**" "names the task and the backlog"; one_problem "row without done"
 fixture; edit docs/tasks/backlog.md 't.replace("| T-M2.20 | **done** (", "| T-M2.20 | **Done** (", 1)'
 expect_exit 1 "**Done** (capital) does not count as **done**" -- check
+fixture; edit docs/tasks/backlog.md 't.replace("| T-M2.20 | **done** (", "| T-M2.20 | (after T-M2.19, **done**) (", 1)'
+expect_exit 1 "**done** inside the row's prose (not starting a cell) does not count" -- check
+fixture; edit docs/tasks/backlog.md '"\n".join(l for l in t.split("\n") if not l.startswith("| **T-M1.1** "))'
+expect_exit 1 "T-M1.1 with no row fails: the T-M1.1x rows do not match it" -- check
+expect_output_contains "T-M1.1 is completed in progress.json but has no row" "names T-M1.1"; one_problem "ID prefix"
 fixture; edit docs/tasks/backlog.md '"\n".join(l for l in t.split("\n") if not l.startswith("| T-M2.20 |"))'
 expect_exit 1 "completed task with no backlog row fails" -- check
 expect_output_contains "T-M2.20 is completed in progress.json but has no row in docs/tasks/backlog.md" "names the missing row"; one_problem "missing row"
@@ -53,7 +58,13 @@ echo "old" >"$FX/docs/handoff/archive/29991231T0000Z-T-X.md"
 expect_exit 0 "with an untracked new archive file it passes" -- check
 g "$FX" add -A && g "$FX" commit -qm archive
 expect_exit 0 "with a committed new archive file it passes" -- check
-fixture; g "$FX" mv docs/handoff/HANDOFF.md docs/handoff/archive/29991231T0000Z-T-X.md && echo "# new" >"$FX/docs/handoff/HANDOFF.md"
+rm "$FX/docs/handoff/archive/29991231T0000Z-T-X.md"
+expect_exit 1 "an archive file committed, then deleted in the working tree, does not count" -- check
+fixture; old=$(git -C "$FX" ls-files docs/handoff/archive | head -n 1); g "$FX" rm -q "$old"; echo "x" >>"$FX/docs/handoff/HANDOFF.md"
+g "$FX" commit -qam "an old archive file removed"
+expect_exit 1 "deleting an old archive file is not archiving" -- check
+fixture; g "$FX" config diff.renames copies
+g "$FX" mv docs/handoff/HANDOFF.md docs/handoff/archive/29991231T0000Z-T-X.md && echo "# new" >"$FX/docs/handoff/HANDOFF.md"
 g "$FX" add -A && g "$FX" commit -qm "git mv archive"
 expect_exit 0 "git mv to the archive plus a new HANDOFF.md passes" -- check
 fixture; BASE=origin/does-not-exist expect_exit 1 "an unknown ENGLMS_DOCS_BASE fails closed" -- check
