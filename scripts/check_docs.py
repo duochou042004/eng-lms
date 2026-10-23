@@ -186,11 +186,12 @@ def check_handoff_archived() -> None:
         changed = git("diff", "--no-renames", "--name-only", merge_base, "HEAD") + git("diff", "--no-renames", "--name-only", "HEAD") \
             + git("ls-files", "--others", "--exclude-standard")
         archived_before = set(git("ls-tree", "-r", "--name-only", merge_base, "--", "docs/handoff/archive/").splitlines())
+        listed = git("ls-files", "--cached", "--others", "--exclude-standard", "--", "docs/handoff/archive/")
     except (OSError, subprocess.CalledProcessError):
         fail(f"handoff: cannot diff against base ref '{base}' ({var}); set ENGLMS_DOCS_BASE to a resolvable ref")
         return
-    # A new archive file is judged by the end state on disk, so one added and then deleted does not count.
-    archive_now = {p.relative_to(ROOT).as_posix() for p in (ROOT / "docs/handoff/archive").glob("*") if p.is_file()}
+    # A new archive file is judged by the end state on disk (not ignored by git), so one added and then deleted does not count.
+    archive_now = {p for p in listed.splitlines() if (ROOT / p).is_file()}
     if HANDOFF in changed.splitlines() and not archive_now - archived_before:
         fail(f"handoff: {HANDOFF} changed since {base} without a new file under docs/handoff/archive/ (archive the old one)")
 

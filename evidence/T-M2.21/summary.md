@@ -7,7 +7,7 @@
 - `scripts/check_docs.py`: three checks after the existing five. `check_done_records` (scope 1, 2), `check_handoff_archived` (scope 3),
   `check_table_code_spans` (scope 4). `ENGLMS_DOCS_ROOT` and `ENGLMS_DOCS_BASE` (then `ENGLMS_GATE_BASE`, then `origin/develop`);
   a shared `unfenced()` line reader skips fenced blocks. The PASS line names the new checks.
-- `scripts/tests/check-docs.test.sh` (new, picked up by `run-all.sh`): 38 results over 18 fixtures (after the G3 round 1 fixes), about 20 s.
+- `scripts/tests/check-docs.test.sh` (new, picked up by `run-all.sh`): 39 results over 18 fixture clones plus the base repository (after the G3 fixes), about 20 s.
 - `.github/workflows/docs-check.yml`: `ENGLMS_DOCS_BASE=origin/<base_ref>` on pull requests only (empty on pushes, so the default applies).
 - Stale records fixed (scope 6), exactly the 15 failures the new checks reported on `ae24b4d`'s parent: eight packet Status lines
   (T-M1.2, T-M1.3, T-M1.17, T-M1.18, T-M1.19, T-M2.4, T-M2.15, T-M2.18 → `done (<mergeCommit>, PR #n)`, SHAs asserted against

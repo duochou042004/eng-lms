@@ -63,6 +63,8 @@ expect_exit 1 "an archive file committed, then deleted in the working tree, does
 fixture; old=$(git -C "$FX" ls-files docs/handoff/archive | head -n 1); g "$FX" rm -q "$old"; echo "x" >>"$FX/docs/handoff/HANDOFF.md"
 g "$FX" commit -qam "an old archive file removed"
 expect_exit 1 "deleting an old archive file is not archiving" -- check
+fixture; echo "x" >>"$FX/docs/handoff/HANDOFF.md"; touch "$FX/docs/handoff/archive/.DS_Store"
+expect_exit 1 "a git-ignored file in the archive folder (.DS_Store) is not an archive file" -- check
 fixture; g "$FX" config diff.renames copies
 g "$FX" mv docs/handoff/HANDOFF.md docs/handoff/archive/29991231T0000Z-T-X.md && echo "# new" >"$FX/docs/handoff/HANDOFF.md"
 g "$FX" add -A && g "$FX" commit -qm "git mv archive"

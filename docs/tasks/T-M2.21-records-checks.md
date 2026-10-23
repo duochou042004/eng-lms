@@ -20,7 +20,7 @@ every stale record that the checks find today, so `develop` stays green.
 ## Scope
 - In:
   1. **Completed tasks are done in the backlog.** For each `id` in `progress.json` `completed[]`, the first row of
-     `docs/tasks/backlog.md` whose ID cell is that ID (`| T-M2.20 |`, `| **T-M1.1** ✅ |`) holds the marker `**done**` in lower case, so `**Done**` fails (part C step 1:
+     `docs/tasks/backlog.md` whose ID cell is that ID (`| T-M2.20 |`, `| **T-M1.1** ✅ |`) has a cell that starts with `**done**` in lower case (G3 G-3), so `**Done**` or a `**done**` inside the prose fails (part C step 1:
      `**done** (`<sha>`, DEC-<n>, packet link)`). The check fails when there is no such row or the row has no `**done**`.
   2. **Completed tasks are done in their packet.** For each such `id` that has a packet file `docs/tasks/<id>-*.md`, the value of its first
      `| Status |` row outside a fenced block starts with `done` once `*` and spaces are stripped (`done (…)`, `**done**: …`). The check fails when the packet
