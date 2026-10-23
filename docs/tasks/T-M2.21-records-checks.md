@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Milestone | M2 |
-| Status | in_progress (PO start signal 2026-10-23; G0 DEC-151) |
+| Status | in_review (PO start signal 2026-10-23; G0 DEC-151; G1 gate PASS on `e5a59b9`) |
 | Owner role | LC (implements the scripts and the record fixes; G3 by a fresh docs-reviewer) |
 | Branch | `chore/T-M2.21-records-checks` (from `develop`); this packet on `docs/T-M2.21-records-checks` |
 | Depends on | T-M2.20 (`f3a77fa`) and its records (PRs #137, #138, `995d047`): merged |
