@@ -14,6 +14,6 @@
     "Open workspace"
   ],
   "budget": 6,
-  "wallSeconds": 3,
+  "wallSeconds": 3.6,
   "note": "Wall time includes Playwright waits for the suggestion, availability and focus assertions; not asserted (DEC-093)."
 }

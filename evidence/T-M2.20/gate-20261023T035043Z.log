@@ -1,0 +1,296 @@
+# Trimmed (evidence-protocol §1): passing lines ('✓', '  ok   -') removed; full log (2423 lines) in evidence/T-M2.20/raw/gate-20261023T035043Z.log (git-ignored).
+gate: logging to evidence/T-M2.20/gate-20261023T035043Z.log
+engine: podman (DOCKER_HOST=unix:///run/user/1000/podman/podman.sock)
+env.sh: DOCKER_HOST=unix:///run/user/1000/podman/podman.sock TESTCONTAINERS_RYUK_DISABLED=true
+gate: 9095577 2026-10-23T03:50:43Z, steps: docs scripts backend web-install web-lint web-typecheck web-test web-build web-budget web-contrast contract-drift qa-typecheck e2e
+gate: ==> docs
+docs-check: PASS (335 markdown files, progress.json valid, sources intact, prompt within limit)
+gate: <== docs OK (1s)
+gate: ==> scripts
+coverage-summary.sh
+  -> 9 passed, 0 failed
+dev scripts
+ engine.sh (AC1)
+ env.sh (AC2, AC6)
+ dev-up.sh / dev-down.sh (AC3, T-M1.8 AC5)
+  -> 164 passed, 0 failed
+e2e-run.sh
+  -> 19 passed, 0 failed
+gate.sh
+  -> 55 passed, 0 failed
+gitlab-sync.sh
+  -> 11 passed, 0 failed
+merge-gate.sh
+  -> 325 passed, 0 failed
+check-path-ownership.sh
+  -> 15 passed, 0 failed
+pre-push hook
+  -> 15 passed, 0 failed
+require-bash.sh
+  skip - no bash 3.2 here (/bin/bash is 5.3.15(1)-release); set ENGLMS_BASH32=<path> or run on macOS
+  -> 11 passed, 0 failed
+workflow upload warnings
+  -> 10 passed, 0 failed
+script tests: PASS
+gate: <== scripts OK (49s)
+gate: ==> backend
+gate: backend skipped: no backend/ or api/ change (CI runs it; ENGLMS_GATE_FULL=1 forces it)
+gate: <== backend OK (0s)
+gate: ==> web-install
+Lockfile is up to date, resolution step is skipped
+Done in 25ms using pnpm v12.6.0
+gate: <== web-install OK (0s)
+gate: ==> web-lint
+$ oxlint --deny-warnings && sh scripts/no-lint-directives.sh && stylelint "src/**/*.css" && prettier --check .
+Checking formatting...
+All matched files use Prettier code style!
+gate: <== web-lint OK (4s)
+gate: ==> web-typecheck
+$ tsc -b
+gate: <== web-typecheck OK (6s)
+gate: ==> web-test
+$ vitest --run
+ RUN  v5.0.4 /home/kali/App_projects/eng-lms/web
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+ Test Files  68 passed (68)
+      Tests  818 passed (818)
+   Start at  10:51:44
+   Duration  56.76s (tests 63%, setup 20%, environment 15%, import 2%, transform 1%)
+    Isolate  68 workers spawned · ~1.41s startup each (spawn + environment, per file)
+             at least ~5.00s faster with isolate: false — reuses workers across files instead of one per file
+gate: <== web-test OK (58s)
+gate: ==> web-build
+$ tsc -b && vite build
+vite v8.3.4 building client environment for production...
+transforming...
+rendering chunks...
+computing gzip size...
+dist/index.html                                                    0.97 kB │ gzip:   0.49 kB
+dist/assets/be-vietnam-pro-vietnamese-400-normal-BuGn0gnm.woff     6.56 kB
+dist/assets/be-vietnam-pro-vietnamese-600-normal-DkpCIyan.woff     6.88 kB
+dist/assets/be-vietnam-pro-vietnamese-500-normal-CfdwVo8-.woff     6.88 kB
+dist/assets/be-vietnam-pro-vietnamese-400-normal-CRcqvyg1.woff2   11.53 kB
+dist/assets/be-vietnam-pro-vietnamese-500-normal-DREgrEoJ.woff2   12.17 kB
+dist/assets/be-vietnam-pro-vietnamese-600-normal-nyU-ZL2p.woff2   12.17 kB
+dist/.vite/manifest.json                                          12.40 kB │ gzip:   1.42 kB
+dist/assets/be-vietnam-pro-latin-400-normal-bXgqVju9.woff         16.43 kB
+dist/assets/be-vietnam-pro-latin-500-normal-BJkVuMHw.woff         16.99 kB
+dist/assets/be-vietnam-pro-latin-600-normal-5IO4e7bK.woff         17.01 kB
+dist/assets/be-vietnam-pro-latin-400-normal-PpnXBOrz.woff2        21.16 kB
+dist/assets/be-vietnam-pro-latin-500-normal-B6LVzGNe.woff2        21.89 kB
+dist/assets/be-vietnam-pro-latin-600-normal-BZDkUTrt.woff2        22.03 kB
+dist/assets/WorkspaceName-BYy_IPX8.css                             1.00 kB │ gzip:   0.45 kB
+dist/assets/i18n-C6atUuP-.css                                      5.69 kB │ gzip:   1.44 kB
+dist/assets/index-CZzyBx0U.css                                     9.19 kB │ gzip:   2.52 kB
+dist/assets/pageTitle-CBNo5zA-.css                                27.93 kB │ gzip:   4.75 kB
+dist/assets/search-x-DxK_Uwzt.js                                   0.29 kB │ gzip:   0.22 kB
+dist/assets/PublicPage-DxtzbUaL.js                                 0.47 kB │ gzip:   0.26 kB
+dist/assets/schemas-BPiu4Awl.js                                    0.54 kB │ gzip:   0.30 kB
+dist/assets/NotFound-BiCHI-Mz.js                                   0.65 kB │ gzip:   0.38 kB
+dist/assets/rolldown-runtime-hePW80VL.js                           0.71 kB │ gzip:   0.42 kB
+dist/assets/StudentStatusBadge-CBgOPs7z.js                         0.87 kB │ gzip:   0.50 kB
+dist/assets/Forbidden-C0jUxGvl.js                                  0.97 kB │ gzip:   0.58 kB
+dist/assets/WorkspaceName-Dz8qao4x.js                              1.64 kB │ gzip:   0.83 kB
+dist/assets/StudentShell-CKa8krbT.js                               2.32 kB │ gzip:   1.12 kB
+dist/assets/TutorShell-DAoqlLHB.js                                 2.92 kB │ gzip:   1.31 kB
+dist/assets/useFrameFocus-BQHZq8YW.js                              3.16 kB │ gzip:   1.45 kB
+dist/assets/LoginPage-hHc8BhP1.js                                  3.69 kB │ gzip:   1.53 kB
+dist/assets/ChangePasswordPage-DAju2oAl.js                         4.07 kB │ gzip:   1.79 kB
+dist/assets/AddStudentPage-Bsq-6VS0.js                             5.10 kB │ gzip:   2.17 kB
+dist/assets/StudentsListPage-BCW7wFWj.js                           6.89 kB │ gzip:   2.72 kB
+dist/assets/CredentialsCard-CqFdZtWq.js                           20.76 kB │ gzip:   6.74 kB
+dist/assets/i18n-DShCl3pG.js                                      29.23 kB │ gzip:   8.54 kB
+dist/assets/StudentWorkspacePage-FwTfFapN.js                      31.96 kB │ gzip:   9.35 kB
+dist/assets/api-fP97zZ9J.js                                       48.77 kB │ gzip:  16.16 kB
+dist/assets/schemas-CdGcGxD4.js                                  122.57 kB │ gzip:  37.20 kB
+dist/assets/index-NsELjx-s.js                                    228.88 kB │ gzip:  71.68 kB
+dist/assets/pageTitle-BaKLPOxy.js                                323.94 kB │ gzip: 101.58 kB
+gate: <== web-build OK (6s)
+gate: ==> web-budget
+$ node scripts/bundle-budget.mjs
+ok    student   187.5 KB gz ≤ 200 KB  (9 chunks)
+ok    tutor     187.7 KB gz ≤ 300 KB  (9 chunks)
+budget: PASS
+gate: <== web-budget OK (0s)
+gate: ==> web-contrast
+$ node scripts/contrast-check.mjs
+ok    15.98:1 ≥ 4.5  --color-text (#1f1d1a) on --color-bg (#faf9f7)  body text
+ok    16.81:1 ≥ 4.5  --color-text (#1f1d1a) on --color-surface (#fff)  body text
+ok    14.91:1 ≥ 4.5  --color-text (#1f1d1a) on --color-surface-sunken (#f3f1ed)  body text
+ok     7.36:1 ≥ 4.5  --color-text-muted (#57524a) on --color-bg (#faf9f7)  body text
+ok     7.75:1 ≥ 4.5  --color-text-muted (#57524a) on --color-surface (#fff)  body text
+ok     6.87:1 ≥ 4.5  --color-text-muted (#57524a) on --color-surface-sunken (#f3f1ed)  body text
+ok     5.49:1 ≥ 4.5  --color-text-subtle (#6b655b) on --color-bg (#faf9f7)  body text
+ok     5.77:1 ≥ 4.5  --color-text-subtle (#6b655b) on --color-surface (#fff)  body text
+ok     5.12:1 ≥ 4.5  --color-text-subtle (#6b655b) on --color-surface-sunken (#f3f1ed)  body text
+ok     6.51:1 ≥ 4.5  --color-accent (#2f5d8c) on --color-bg (#faf9f7)  links
+ok     6.85:1 ≥ 4.5  --color-accent (#2f5d8c) on --color-surface (#fff)  links, secondary button label
+ok     7.84:1 ≥ 4.5  --color-accent-strong (#234a70) on --color-accent-subtle (#e6eef6)  quiet button hover label
+ok     6.85:1 ≥ 4.5  --color-on-accent (#fff) on --color-accent (#2f5d8c)  primary button label
+ok     9.19:1 ≥ 4.5  --color-on-accent (#fff) on --color-accent-strong (#234a70)  primary button hover label
+ok     6.54:1 ≥ 4.5  --color-on-accent (#fff) on --color-danger (#b3261e)  danger button label
+ok     9.11:1 ≥ 4.5  --color-on-accent (#fff) on --color-danger-strong (#8c1d18)  danger button hover label
+ok     6.96:1 ≥ 4.5  --color-success-text (#1f5c39) on --color-success-subtle (#e7f3ec)  success alert
+ok     7.33:1 ≥ 4.5  --color-warning-text (#6b4800) on --color-warning-subtle (#fbf1dc)  warning alert
+ok     7.77:1 ≥ 4.5  --color-danger-text (#8c1d18) on --color-danger-subtle (#fbe9e7)  danger alert
+ok     7.84:1 ≥ 4.5  --color-info-text (#234a70) on --color-info-subtle (#e6eef6)  info alert
+ok     6.54:1 ≥ 4.5  --color-danger (#b3261e) on --color-surface (#fff)  field error text
+ok     6.21:1 ≥ 4.5  --color-danger (#b3261e) on --color-bg (#faf9f7)  field error text on the page background
+ok     6.54:1 ≥ 3  --color-danger (#b3261e) on --color-surface (#fff)  field error icon (T-M1.9 AC5)
+ok     6.21:1 ≥ 3  --color-danger (#b3261e) on --color-bg (#faf9f7)  field error icon on the page background (T-M1.9 AC5)
+ok     7.84:1 ≥ 4.5  --color-accent-strong (#234a70) on --color-accent-subtle (#e6eef6)  segmented control: selected label
+ok     7.84:1 ≥ 3  --color-accent-strong (#234a70) on --color-accent-subtle (#e6eef6)  segmented control: selected check icon
+ok    14.91:1 ≥ 4.5  --color-text (#1f1d1a) on --color-surface-sunken (#f3f1ed)  segmented control: hovered label
+ok     5.85:1 ≥ 3  --color-focus (#2f5d8c) on --color-accent-subtle (#e6eef6)  segmented control: focus ring inside a selected segment
+ok     3.51:1 ≥ 3  --color-border-strong (#8f887c) on --color-surface (#fff)  input boundary
+ok     3.34:1 ≥ 3  --color-border-strong (#8f887c) on --color-bg (#faf9f7)  input boundary
+ok     6.51:1 ≥ 3  --color-focus (#2f5d8c) on --color-bg (#faf9f7)  focus ring
+ok     6.85:1 ≥ 3  --color-focus (#2f5d8c) on --color-surface (#fff)  focus ring
+contrast: PASS (32 pairs)
+gate: <== web-contrast OK (0s)
+gate: ==> contract-drift
+gate: contract-drift skipped: no backend/ or api/ change (CI runs it)
+gate: <== contract-drift OK (0s)
+gate: ==> qa-typecheck
+Lockfile is up to date, resolution step is skipped
+Done in 15ms using pnpm v12.6.0
+$ tsc --noEmit
+gate: <== qa-typecheck OK (1s)
+gate: ==> e2e
+engine: podman (DOCKER_HOST=unix:///run/user/1000/podman/podman.sock)
+662db3da228c2ea2649b3ae04db4b4479e85fea5979f6a917a7f6d5cb1e7ec39
+englms-dev-db
+dev-up: englms-dev-db is healthy on 127.0.0.1:5432
+e2e-run: building web/dist and the jar with the SPA
+Lockfile is up to date, resolution step is skipped
+Done in 24ms using pnpm v12.6.0
+$ tsc -b && vite build
+vite v8.3.4 building client environment for production...
+transforming...
+rendering chunks...
+computing gzip size...
+dist/index.html                                                    0.97 kB │ gzip:   0.49 kB
+dist/assets/be-vietnam-pro-vietnamese-400-normal-BuGn0gnm.woff     6.56 kB
+dist/assets/be-vietnam-pro-vietnamese-600-normal-DkpCIyan.woff     6.88 kB
+dist/assets/be-vietnam-pro-vietnamese-500-normal-CfdwVo8-.woff     6.88 kB
+dist/assets/be-vietnam-pro-vietnamese-400-normal-CRcqvyg1.woff2   11.53 kB
+dist/assets/be-vietnam-pro-vietnamese-500-normal-DREgrEoJ.woff2   12.17 kB
+dist/assets/be-vietnam-pro-vietnamese-600-normal-nyU-ZL2p.woff2   12.17 kB
+dist/.vite/manifest.json                                          12.40 kB │ gzip:   1.42 kB
+dist/assets/be-vietnam-pro-latin-400-normal-bXgqVju9.woff         16.43 kB
+dist/assets/be-vietnam-pro-latin-500-normal-BJkVuMHw.woff         16.99 kB
+dist/assets/be-vietnam-pro-latin-600-normal-5IO4e7bK.woff         17.01 kB
+dist/assets/be-vietnam-pro-latin-400-normal-PpnXBOrz.woff2        21.16 kB
+dist/assets/be-vietnam-pro-latin-500-normal-B6LVzGNe.woff2        21.89 kB
+dist/assets/be-vietnam-pro-latin-600-normal-BZDkUTrt.woff2        22.03 kB
+dist/assets/WorkspaceName-BYy_IPX8.css                             1.00 kB │ gzip:   0.45 kB
+dist/assets/i18n-C6atUuP-.css                                      5.69 kB │ gzip:   1.44 kB
+dist/assets/index-CZzyBx0U.css                                     9.19 kB │ gzip:   2.52 kB
+dist/assets/pageTitle-CBNo5zA-.css                                27.93 kB │ gzip:   4.75 kB
+dist/assets/search-x-DxK_Uwzt.js                                   0.29 kB │ gzip:   0.22 kB
+dist/assets/PublicPage-DxtzbUaL.js                                 0.47 kB │ gzip:   0.26 kB
+dist/assets/schemas-BPiu4Awl.js                                    0.54 kB │ gzip:   0.30 kB
+dist/assets/NotFound-BiCHI-Mz.js                                   0.65 kB │ gzip:   0.38 kB
+dist/assets/rolldown-runtime-hePW80VL.js                           0.71 kB │ gzip:   0.42 kB
+dist/assets/StudentStatusBadge-CBgOPs7z.js                         0.87 kB │ gzip:   0.50 kB
+dist/assets/Forbidden-C0jUxGvl.js                                  0.97 kB │ gzip:   0.58 kB
+dist/assets/WorkspaceName-Dz8qao4x.js                              1.64 kB │ gzip:   0.83 kB
+dist/assets/StudentShell-CKa8krbT.js                               2.32 kB │ gzip:   1.12 kB
+dist/assets/TutorShell-DAoqlLHB.js                                 2.92 kB │ gzip:   1.31 kB
+dist/assets/useFrameFocus-BQHZq8YW.js                              3.16 kB │ gzip:   1.45 kB
+dist/assets/LoginPage-hHc8BhP1.js                                  3.69 kB │ gzip:   1.53 kB
+dist/assets/ChangePasswordPage-DAju2oAl.js                         4.07 kB │ gzip:   1.79 kB
+dist/assets/AddStudentPage-Bsq-6VS0.js                             5.10 kB │ gzip:   2.17 kB
+dist/assets/StudentsListPage-BCW7wFWj.js                           6.89 kB │ gzip:   2.72 kB
+dist/assets/CredentialsCard-CqFdZtWq.js                           20.76 kB │ gzip:   6.74 kB
+dist/assets/i18n-DShCl3pG.js                                      29.23 kB │ gzip:   8.54 kB
+dist/assets/StudentWorkspacePage-FwTfFapN.js                      31.96 kB │ gzip:   9.35 kB
+dist/assets/api-fP97zZ9J.js                                       48.77 kB │ gzip:  16.16 kB
+dist/assets/schemas-CdGcGxD4.js                                  122.57 kB │ gzip:  37.20 kB
+dist/assets/index-NsELjx-s.js                                    228.88 kB │ gzip:  71.68 kB
+dist/assets/pageTitle-BaKLPOxy.js                                323.94 kB │ gzip: 101.58 kB
+e2e-run: started englms-0.0.1-SNAPSHOT.jar (pid 418019, log backend/target/e2e-app.log)
+e2e-run: app ready; running Playwright --project=phone-small --project=tablet --project=laptop
+Running 546 tests using 8 workers
+  -   43 [phone-small] › tests/guards.spec.ts:29:1 › the axe check fails on an image without alt text
+  -   46 [phone-small] › tests/guards.spec.ts:52:1 › the console guard fails on a CSP violation (an inline <style> under style-src self)
+  -   47 [phone-small] › tests/guards.spec.ts:62:1 › the console guard fails on a console error
+  -   49 [phone-small] › tests/guards.spec.ts:85:1 › the console guard fails on a 401 from any request other than the session bootstrap
+  -   48 [phone-small] › tests/guards.spec.ts:72:3 › anonymous › the console guard also watches a second page of the same context
+  -   50 [phone-small] › tests/guards.spec.ts:100:1 › the console guard fails on an error raised 300 ms after the test body ends (expected failure)
+  -   68 [phone-small] › tests/navigation.spec.ts:467:1 › /dev/ui (dev build): the ProgressLine entry, accessible
+  -   71 [phone-small] › tests/polish.spec.ts:162:3 › AC2 (/dev/ui, dev build) [vi]: the 3-option example keeps its segment boundaries
+  -   72 [phone-small] › tests/polish.spec.ts:162:3 › AC2 (/dev/ui, dev build) [en]: the 3-option example keeps its segment boundaries
+  -   73 [phone-small] › tests/polish.spec.ts:199:1 › T-M1.16 AC2 (/dev/ui, dev build): a UI language change keeps the LanguageSwitcher example's segments
+  -  116 [phone-small] › tests/shells.spec.ts:771:1 › /dev/ui (dev build): the Sheet, Popover, NavList, BottomTabs and ButtonLink entries, accessible
+  -  131 [phone-small] › tests/students.spec.ts:544:3 › Students table with realistic data (AC12 (t)) › fixed column shares at 768, 1024 and 1280 in vi and en: no horizontal scroll, every value whole
+  -  225 [tablet] › tests/guards.spec.ts:29:1 › the axe check fails on an image without alt text
+  -  228 [tablet] › tests/guards.spec.ts:52:1 › the console guard fails on a CSP violation (an inline <style> under style-src self)
+  -  229 [tablet] › tests/guards.spec.ts:62:1 › the console guard fails on a console error
+  -  230 [tablet] › tests/guards.spec.ts:72:3 › anonymous › the console guard also watches a second page of the same context
+  -  231 [tablet] › tests/guards.spec.ts:85:1 › the console guard fails on a 401 from any request other than the session bootstrap
+  -  232 [tablet] › tests/guards.spec.ts:100:1 › the console guard fails on an error raised 300 ms after the test body ends (expected failure)
+  -  248 [tablet] › tests/navigation.spec.ts:419:7 › AC8: the narrow top bar meta error keeps Retry beside its icon (UX-9, DEC-115) › tutor: Retry within 8 px of the icon, the icon titled with the message
+  -  250 [tablet] › tests/navigation.spec.ts:467:1 › /dev/ui (dev build): the ProgressLine entry, accessible
+  -  253 [tablet] › tests/polish.spec.ts:162:3 › AC2 (/dev/ui, dev build) [vi]: the 3-option example keeps its segment boundaries
+  -  254 [tablet] › tests/polish.spec.ts:162:3 › AC2 (/dev/ui, dev build) [en]: the 3-option example keeps its segment boundaries
+  -  255 [tablet] › tests/polish.spec.ts:199:1 › T-M1.16 AC2 (/dev/ui, dev build): a UI language change keeps the LanguageSwitcher example's segments
+  -  298 [tablet] › tests/shells.spec.ts:771:1 › /dev/ui (dev build): the Sheet, Popover, NavList, BottomTabs and ButtonLink entries, accessible
+  ✘  414 [laptop] › tests/guards.spec.ts:100:1 › the console guard fails on an error raised 300 ms after the test body ends (expected failure) (1.0s)
+  -  430 [laptop] › tests/navigation.spec.ts:419:7 › AC8: the narrow top bar meta error keeps Retry beside its icon (UX-9, DEC-115) › tutor: Retry within 8 px of the icon, the icon titled with the message
+  -  431 [laptop] › tests/navigation.spec.ts:419:7 › AC8: the narrow top bar meta error keeps Retry beside its icon (UX-9, DEC-115) › student: Retry within 8 px of the icon, the icon titled with the message
+  -  432 [laptop] › tests/navigation.spec.ts:467:1 › /dev/ui (dev build): the ProgressLine entry, accessible
+  -  435 [laptop] › tests/polish.spec.ts:162:3 › AC2 (/dev/ui, dev build) [vi]: the 3-option example keeps its segment boundaries
+  -  436 [laptop] › tests/polish.spec.ts:162:3 › AC2 (/dev/ui, dev build) [en]: the 3-option example keeps its segment boundaries
+  -  437 [laptop] › tests/polish.spec.ts:199:1 › T-M1.16 AC2 (/dev/ui, dev build): a UI language change keeps the LanguageSwitcher example's segments
+  -  480 [laptop] › tests/shells.spec.ts:771:1 › /dev/ui (dev build): the Sheet, Popover, NavList, BottomTabs and ButtonLink entries, accessible
+  31 skipped
+  515 passed (4.4m)
+e2e-run: playwright exit 0
+e2e-run: app stopped (pid 418019)
+gate: e2e repeat x3: tests/checks.spec.ts tests/shells.spec.ts tests/students.spec.ts
+engine: podman (DOCKER_HOST=unix:///run/user/1000/podman/podman.sock)
+662db3da228c2ea2649b3ae04db4b4479e85fea5979f6a917a7f6d5cb1e7ec39
+englms-dev-db
+dev-up: englms-dev-db is healthy on 127.0.0.1:5432
+e2e-run: started englms-0.0.1-SNAPSHOT.jar (pid 448512, log backend/target/e2e-app.log)
+e2e-run: app ready; running Playwright --project=phone-small --project=tablet --project=laptop --repeat-each=3 --retries=0 tests/checks.spec.ts tests/shells.spec.ts tests/students.spec.ts
+Running 972 tests using 8 workers
+  -   48 [phone-small] › tests/shells.spec.ts:771:1 › /dev/ui (dev build): the Sheet, Popover, NavList, BottomTabs and ButtonLink entries, accessible
+  -   57 [phone-small] › tests/students.spec.ts:544:3 › Students table with realistic data (AC12 (t)) › fixed column shares at 768, 1024 and 1280 in vi and en: no horizontal scroll, every value whole
+  -  156 [phone-small] › tests/shells.spec.ts:771:1 › /dev/ui (dev build): the Sheet, Popover, NavList, BottomTabs and ButtonLink entries, accessible
+  -  165 [phone-small] › tests/students.spec.ts:544:3 › Students table with realistic data (AC12 (t)) › fixed column shares at 768, 1024 and 1280 in vi and en: no horizontal scroll, every value whole
+  -  264 [phone-small] › tests/shells.spec.ts:771:1 › /dev/ui (dev build): the Sheet, Popover, NavList, BottomTabs and ButtonLink entries, accessible
+  -  273 [phone-small] › tests/students.spec.ts:544:3 › Students table with realistic data (AC12 (t)) › fixed column shares at 768, 1024 and 1280 in vi and en: no horizontal scroll, every value whole
+  -  372 [tablet] › tests/shells.spec.ts:771:1 › /dev/ui (dev build): the Sheet, Popover, NavList, BottomTabs and ButtonLink entries, accessible
+  -  480 [tablet] › tests/shells.spec.ts:771:1 › /dev/ui (dev build): the Sheet, Popover, NavList, BottomTabs and ButtonLink entries, accessible
+  -  588 [tablet] › tests/shells.spec.ts:771:1 › /dev/ui (dev build): the Sheet, Popover, NavList, BottomTabs and ButtonLink entries, accessible
+  -  696 [laptop] › tests/shells.spec.ts:771:1 › /dev/ui (dev build): the Sheet, Popover, NavList, BottomTabs and ButtonLink entries, accessible
+  -  804 [laptop] › tests/shells.spec.ts:771:1 › /dev/ui (dev build): the Sheet, Popover, NavList, BottomTabs and ButtonLink entries, accessible
+  -  912 [laptop] › tests/shells.spec.ts:771:1 › /dev/ui (dev build): the Sheet, Popover, NavList, BottomTabs and ButtonLink entries, accessible
+  12 skipped
+  960 passed (8.6m)
+e2e-run: playwright exit 0
+e2e-run: app stopped (pid 448512)
+gate: <== e2e OK (825s)
+gate: PASS (13 steps, 950s)
