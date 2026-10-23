@@ -24,9 +24,9 @@ rule, which beats a checklist, which beats a reviewer. **Read this file before w
 | L-13 | The process itself was the largest cost: 6–12 review rounds and 21–87 gate minutes per UI task before DEC-131 (T-M2.5 / T-M2.12 / T-M2.14, the T-M2.18 table); after it, T-M2.15 took 2 review agents and T-M2.19 one reviewer plus one delta re-check | every S3/S4 started a full round | risk tiers, delta re-checks, S4 batching, the G3 cost table · DEC-131; keep measuring |
 
 ## The `shortcut:` ledger at 2026-10-20 (`grep -rnE '(shortcut|ponytail):'`, or `/ponytail-debt` where installed)
-7 markers, each with a trigger (the three backend ones use the older `ponytail:` form): `LoginThrottle` (in-memory, one instance), `UsernameSuggestions` (one query per candidate),
+8 markers, each with a trigger (the three backend ones use the older `ponytail:` form; `ui/Sheet.module.css` added by the T-M2.20 G0 review, D-7): `LoginThrottle` (in-memory, one instance), `UsernameSuggestions` (one query per candidate),
 `AccountStatusFilter` (one read per request), `ui/Toast.tsx` + `ui/toastQueue.ts` (`UNSTABLE_` toast API; trigger: a react-aria bump,
-PR #100), `ui/Button.tsx` (announcer DOM; same trigger), `lib/time` (browser time zone; trigger: M3 scheduling).
+PR #100), `ui/Button.tsx` (announcer DOM; same trigger), `lib/time` (browser time zone; trigger: M3 scheduling), `ui/Sheet.module.css` (LTR-only drawer slide; trigger: the first RTL locale).
 
 ## Working habits (LC)
 - Use the project skills as procedures, not as background reading: `task-packet` for every packet, `evidence-and-handoff` at every merge and
