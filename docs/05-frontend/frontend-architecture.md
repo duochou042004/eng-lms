@@ -53,19 +53,22 @@ Cross-feature needs go through `lib` or via route composition. `react-aria-compo
 - **Client state:** React state and context for UI state. URL search params for filters, tabs and views. No global store library.
 - **Forms:** React Hook Form + Zod resolver. Schemas in `model/`, aligned with backend validation (validation-rules.md). The server remains authoritative.
 - **API client:** `openapi-fetch` with `credentials: 'same-origin'`. A middleware adds `X-XSRF-TOKEN` from the cookie and `Idempotency-Key` for flagged
-  commands, and maps Problem Details → `ApiError {status, code, fieldErrors}`. On 401 it clears the query cache → `/login?next=`. On 403
+  commands, and maps Problem Details → `ApiError {status, code, fieldErrors}`. On 401 it clears the query and mutation caches → `/login?next=`. On 403
   `PASSWORD_CHANGE_REQUIRED` it redirects to `/change-password`.
   **Implemented (T-M2.4)** in `lib/api/client.ts`: the XSRF middleware sends `X-XSRF-TOKEN` = the `XSRF-TOKEN` cookie on every non-GET request;
   when the cookie is missing it first calls `GET /auth/session` (which primes it, also on 401; a GET, so no recursion). `ApiError` carries
   `fieldErrors` (`errors[]`) and `retryAfterSeconds` (`Retry-After`). A 401 from any call except `GET /auth/session` and `POST /auth/login`, or a
   403 `PASSWORD_CHANGE_REQUIRED`, is reported to one listener (`onAuthProblem`); `app/guards.ts` `connectAuthProblems` reacts through the router:
-  401 → clear the query cache, `/login?next=<path+search>` (only when `isSafeAppPath` accepts it, else `/login`); 403 → read the session again,
+  401 → clear the query cache and the mutation cache (T-M2.20), `/login?next=<path+search>` (only when `isSafeAppPath` accepts it, else `/login`); 403 → read the session again,
   `/change-password`. (`Idempotency-Key` is not built yet.)
   **T-M2.12:** a 403 `FORBIDDEN_ROLE` is reported too (a third `AuthProblem`; the caller still gets its `ApiError`). `connectAuthProblems`
   reads the session again (`refreshSession`; concurrent 403s share one read); only when the user, role or sign-in changed (`userId`, `role`, or
   anonymous now) does it drop every cached query except the session and follow it (below); else nothing happens. **Dropping** (AC11 (e),
   DEC-118): queries of mounted pages are reset (`resetQueries`: their observers are notified and refetch for the new session), the unused
   ones removed, so a same-role user switch never leaves the previous user's data on a mounted page.
+  Dropping also clears the mutation cache (T-M2.20, T-M2.15 SEC S-1), as do sign-in success (`useLogin`, its own mutation and password
+  included) and sign-out (`useLogout`, also when the call fails): no write of an earlier session (its variables and answer) stays in the
+  client. A write still pending keeps its own observers; its late answer is handled by the DEC-127 session check.
 - **Cross-tab sign-in/out (T-M2.12, security.md T19):** the session is no longer changed only by this tab. `features/auth/api/authChannel.ts`
   wraps one `BroadcastChannel` named `englms-auth` (post and listen share the instance, so a tab never hears itself; nothing happens where
   `BroadcastChannel` does not exist). `useLogin` posts `{ type: 'signed-in' }` after a successful sign-in; `useLogout` (also when the call
