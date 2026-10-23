@@ -7,17 +7,24 @@ Checks:
   3. Relative Markdown links resolve (files and directories), excluding docs/00-sources
   4. Every referenced ID exists: OQ-nn, DEC-nnn, ADR-nnnn, R-nn, A-nnn, FR-*, NFR-*
   5. docs/handoff/next-session-prompt.md is <= 4000 characters
+  6. Records (T-M2.21, lessons-learned L-09): a task in progress.json completed[] has `**done**` in its backlog row and a packet
+     Status starting with `done`; a changed docs/handoff/HANDOFF.md comes with a new file under docs/handoff/archive/
+  7. No table-row code span holds an unescaped pipe (it splits the row on GitHub)
+Env: ENGLMS_DOCS_ROOT (default: this repository), ENGLMS_DOCS_BASE (the handoff check's base ref; default ENGLMS_GATE_BASE,
+then origin/develop; an unknown base fails).
 Exit code 0 = pass, 1 = failures (listed).
 """
 from __future__ import annotations
 
 import hashlib
 import json
+import os
 import re
+import subprocess
 import sys
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parent.parent
+ROOT = Path(os.environ.get("ENGLMS_DOCS_ROOT") or Path(__file__).resolve().parent.parent).resolve()
 failures: list[str] = []
 
 
@@ -133,6 +140,82 @@ def check_prompt() -> None:
         fail(f"next-session prompt is {n} chars (> 4000)")
 
 
+def git(*args: str) -> str:
+    return subprocess.run(["git", "-C", str(ROOT), "-c", "core.quotePath=false", *args],
+                          capture_output=True, text=True, check=True).stdout
+
+
+def unfenced(text: str):
+    """(line number, line) for each line outside a ``` fenced block."""
+    fenced = False
+    for n, line in enumerate(text.splitlines(), 1):
+        if line.lstrip().startswith("```"):
+            fenced = not fenced
+        elif not fenced:
+            yield n, line
+
+
+def check_done_records(progress: dict) -> None:
+    backlog = (ROOT / "docs/tasks/backlog.md").read_text(encoding="utf-8")
+    for task in progress.get("completed", []):
+        tid = task["id"]
+        row = next((l for _, l in unfenced(backlog) if re.match(rf"^\| \**{re.escape(tid)}\**[ |]", l)), None)
+        if row is None:
+            fail(f"records: {tid} is completed in progress.json but has no row in docs/tasks/backlog.md")
+        elif "**done**" not in row:
+            fail(f"records: {tid} is completed in progress.json but its row in docs/tasks/backlog.md has no **done**")
+        for packet in sorted((ROOT / "docs/tasks").glob(f"{tid}-*.md")):
+            rel = packet.relative_to(ROOT)
+            status = next((m.group(1) for _, l in unfenced(packet.read_text(encoding="utf-8"))
+                           if (m := re.match(r"^\| Status \|(.*)\|\s*$", l))), None)
+            if status is None:
+                fail(f"records: {tid} is completed but {rel} has no Status row")
+            elif not status.strip(" *").startswith("done"):
+                fail(f"records: {tid} is completed but {rel} Status reads: {status.strip()}")
+
+
+HANDOFF = "docs/handoff/HANDOFF.md"
+
+
+def check_handoff_archived() -> None:
+    var, base = next(((v, os.environ[v]) for v in ("ENGLMS_DOCS_BASE", "ENGLMS_GATE_BASE") if os.environ.get(v)),
+                     ("default", "origin/develop"))
+    try:
+        git("rev-parse", "--verify", "-q", f"{base}^{{commit}}")
+        committed = git("diff", "--no-renames", "--name-status", f"{base}...HEAD")
+        worktree = git("diff", "--no-renames", "--name-status", "HEAD")
+        untracked = git("ls-files", "--others", "--exclude-standard")
+    except (OSError, subprocess.CalledProcessError):
+        fail(f"handoff: cannot diff against base ref '{base}' ({var}); set ENGLMS_DOCS_BASE to a resolvable ref")
+        return
+    changes = [l.split("\t", 1) for l in (committed + worktree).splitlines() if "\t" in l]
+    changes += [["?", path] for path in untracked.splitlines()]
+    if any(path == HANDOFF for _, path in changes) and not any(
+            status in ("A", "?") and path.startswith("docs/handoff/archive/") for status, path in changes):
+        fail(f"handoff: {HANDOFF} changed since {base} without a new file under docs/handoff/archive/ (archive the old one)")
+
+
+SPAN_RE = re.compile(r"(?<!`)(`+)(?!`)(.+?)(?<!`)\1(?!`)")
+
+
+def check_table_code_spans() -> None:
+    try:
+        listed = git("ls-files", "--cached", "--others", "--exclude-standard", "--", "*.md")
+    except (OSError, subprocess.CalledProcessError) as exc:
+        fail(f"code spans: cannot list Markdown files with git: {exc}")
+        return
+    for rel in sorted(set(listed.splitlines())):
+        path = ROOT / rel
+        if rel.startswith("docs/00-sources/") or not path.is_file():
+            continue
+        for n, line in unfenced(path.read_text(encoding="utf-8")):
+            if not line.lstrip().startswith("|"):
+                continue
+            for m in SPAN_RE.finditer(line):
+                if re.search(r"(?<!\\)\|", m.group(2)):
+                    fail(f"code span in a table row holds an unescaped pipe (write \\|): {rel}:{n}: {m.group(0)}")
+
+
 def main() -> int:
     files = md_files()
     progress = check_progress()
@@ -141,12 +224,17 @@ def main() -> int:
     check_links(files)
     check_refs(files, defined_ids())
     check_prompt()
+    if progress:
+        check_done_records(progress)
+    check_handoff_archived()
+    check_table_code_spans()
     if failures:
         print(f"docs-check: FAIL ({len(failures)} problem(s))")
         for f in failures:
             print(f"  - {f}")
         return 1
-    print(f"docs-check: PASS ({len(files)} markdown files, progress.json valid, sources intact, prompt within limit)")
+    print(f"docs-check: PASS ({len(files)} markdown files, progress.json valid, sources intact, prompt within limit, records consistent, "
+          "handoff archived, table code spans escaped)")
     return 0
 
 

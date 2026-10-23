@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Milestone | carried past M1 (not an M1 exit criterion, DEC-087) |
-| Status | in_review |
+| Status | done (`20625d9`, PR #51) |
 | Owner role | LC (harness scripts, CI) |
 | Branch | `chore/T-M1.18-qa-typecheck` (from `develop`) |
 | Depends on | T-M1.17 merged (DEC-086 order) |

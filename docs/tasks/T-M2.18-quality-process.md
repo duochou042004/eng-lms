@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Milestone | M2 |
-| Status | in_review |
+| Status | done (`5dab35e`, PR #113) |
 | Owner role | LC |
 | Branch | `docs/T-M2.18-quality-process` (from `develop`) |
 | Depends on | T-M2.15 at G1 (PR #112, `7128127`): met |

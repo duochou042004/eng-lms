@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-10-23T11:58:55Z",
-  "updatedBy": "lead-coordinator (T-M2.21 packet at G0, DEC-151; PO start signal next)",
+  "updatedAt": "2026-10-23T12:19:39Z",
+  "updatedBy": "lead-coordinator (T-M2.21 in progress)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -32,19 +32,19 @@
   "currentTask": {
     "id": "T-M2.21",
     "title": "Records consistency in check-docs (lessons-learned L-09, DEC-139)",
-    "status": "ready",
+    "status": "in_progress",
     "ownerRole": "LC",
-    "branch": "docs/T-M2.21-records-checks",
+    "branch": "chore/T-M2.21-records-checks",
     "packet": "docs/tasks/T-M2.21-records-checks.md",
-    "pr": "139",
+    "pr": null,
     "lastCommit": null,
-    "startedAt": null,
+    "startedAt": "2026-10-23T12:19:39Z",
     "entryGate": [
       "T-M2.20 merged — met (f3a77fa)"
     ],
     "nextSteps": [
-      "If PR #139 (the packet) is still open: merge via merge-gate (DOCS-REVIEW T-M2.21: PASS + LC-APPROVED T-M2.21 after CI green); gitlab-sync",
-      "PO start signal; then the LC implements on chore/T-M2.21-records-checks from develop (packet scope 1-7, AC1-AC8); G3 = a fresh docs-reviewer that runs the fixtures and mutates each check"
+      "LC implements packet scope 1-7 (AC1-AC8); gate once on the final head; summary; PR",
+      "G3: one fresh docs-reviewer (runs the fixtures, mutates each check); merge-gate; records PR (part C)"
     ],
     "trace": [
       "DEC-139",
@@ -386,8 +386,8 @@
       "note": "T-M2.21: DOCS-REVIEW PASS in 2 rounds (round 1 full 78,905 tokens PASS WITH MINOR, D-1..D-8 fixed; round 2 delta 12,275 PASS, N-1/N-2 fixed), DEC-151, PR #139"
     },
     "G1": {
-      "status": "pass",
-      "note": "T-M2.20: gate PASS on 2adcc1a (912 s) and on the AC10 fix 9095577 (950 s)"
+      "status": "pending",
+      "note": "T-M2.21 in progress"
     },
     "G2": {
       "status": "pass",
@@ -724,6 +724,13 @@
       "status": "approved",
       "at": "2026-10-21T08:05:14Z",
       "ref": "DEC-143"
+    },
+    {
+      "what": "PO start signal for T-M2.21 (chat: \"Start T-M2.21: implement the records-checks packet under DEC-131 (tier L).\") (at = the task start time)",
+      "by": "PO",
+      "status": "approved",
+      "at": "2026-10-23T12:19:39Z",
+      "ref": "DEC-151"
     }
   ],
   "environment": {
@@ -1306,6 +1313,11 @@
       "at": "2026-10-23T11:58:55Z",
       "actor": "lead-coordinator",
       "event": "T-M2.21 packet at G0 (DEC-151): DOCS-REVIEW PASS in 2 rounds (round 1 full 78,905 tokens, 287 s, PASS WITH MINOR; round 2 delta 12,275, 25 s, PASS). PR #139. Next: merge, then the PO start signal."
+    },
+    {
+      "at": "2026-10-23T12:19:39Z",
+      "actor": "PO",
+      "event": "Start signal for T-M2.21 in chat (\"Start T-M2.21: implement the records-checks packet under DEC-131 (tier L).\"); the LC implements it on chore/T-M2.21-records-checks."
     }
   ]
 }

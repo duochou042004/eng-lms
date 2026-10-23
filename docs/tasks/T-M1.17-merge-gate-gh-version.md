@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Milestone | carried past M1 (not an M1 exit criterion, DEC-085) |
-| Status | in_progress |
+| Status | done (`077f4e4`, PR #50) |
 | Owner role | LC (harness script) |
 | Branch | `chore/T-M1.17-merge-gate-gh-version` (from `develop`) |
 | Depends on | T-M1.16 merged (`1dbd7e3`) |

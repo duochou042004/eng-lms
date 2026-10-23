@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Milestone | M1 |
-| Status | **ready** (G0-complete; dependency T-M1.2 merged at `ae9ac5d`; the PO gives the start signal) |
+| Status | done (`8b9d938`, PR #4) |
 | Owner role | FE (frontend-implementer) |
 | Branch | `feature/T-M1.3-web-skeleton` (from `develop`) |
 | Depends on | T-M1.2 merged (the `api/openapi.json` contract and `GET /api/v1/meta`) |

@@ -24,7 +24,7 @@ public interface QuestionTypeHandler {             // registered as an extension
 | ID | Content (abridged) | Answer | Auto-grade | Validation highlights |
 |---|---|---|---|---|
 | `core.single-choice` | `{options:[{key,textHtml,mediaFileId?}], correctKey, shuffle?}` | `{selectedKey}` | full points if equal, else 0 | 2–10 options; exactly one correct; unique keys |
-| `core.multiple-choice` | `{options:[…], correctKeys:[…], scoring:ALL_OR_NOTHING\|PROPORTIONAL}` | `{selectedKeys:[…]}` | ALL_OR_NOTHING: exact set. PROPORTIONAL: `max × max(0, (correctSelected − wrongSelected) / |correct|)` | ≥ 1 correct; 2–15 options |
+| `core.multiple-choice` | `{options:[…], correctKeys:[…], scoring:ALL_OR_NOTHING\|PROPORTIONAL}` | `{selectedKeys:[…]}` | ALL_OR_NOTHING: exact set. PROPORTIONAL: `max × max(0, (correctSelected − wrongSelected) / \|correct\|)` | ≥ 1 correct; 2–15 options |
 | `core.true-false` | `{correct: true\|false}` | `{value}` | equality | — |
 | `core.fill-blank` | `{textWithBlanks: "The manager {{1}} the report", blanks:[{id, accepted:[…], match: CASE_INSENSITIVE\|EXACT\|ACCENT_INSENSITIVE}]}` | `{blanks:{id: text}}` | per blank `max/n`, trimmed and whitespace-collapsed | each blank has ≥ 1 accepted answer; placeholders match the blanks |
 | `core.short-answer` | `{accepted:[…], match, unmatchedPolicy: MANUAL\|ZERO, maxLength}` | `{text}` | `accepted` empty → **manual**. Answer matches an accepted value → full points. No match → `MANUAL` (default: goes to review) or `ZERO` | maxLength 1–1000 |

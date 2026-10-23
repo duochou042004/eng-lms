@@ -28,7 +28,7 @@ Hierarchy comes from **typography and spacing**, not from boxes, shadows or colo
 | `--color-border` / `--color-border-strong` | Hairlines / inputs | `#E4E0D8` / `#8F887C` (was `#C9C3B8`: 1.75:1, below the 3:1 needed for input boundaries) |
 | `--color-text` / `--color-text-muted` / `--color-text-subtle` | Text | `#1F1D1A` / `#57524A` / `#6B655B` (was `#7A7469`: 4.41:1 on bg; all ≥ 4.5:1 on bg, surface and sunken) |
 | `--color-accent` / `--color-accent-strong` / `--color-accent-subtle` | Ink blue: primary actions, links, focus | `#2F5D8C` / `#234A70` / `#E6EEF6` |
-| `--color-success|warning|danger|info` (+ `-subtle`, `-text`) | Status only, always paired with icon and text | success `#2E7D4F` / `#E7F3EC` / `#1F5C39` · warning `#9A6700` / `#FBF1DC` / `#6B4800` · danger `#B3261E` / `#FBE9E7` / `#8C1D18` (+ `--color-danger-strong` `#8C1D18`) · info `#2F5D8C` / `#E6EEF6` / `#234A70` |
+| `--color-success\|warning\|danger\|info` (+ `-subtle`, `-text`) | Status only, always paired with icon and text | success `#2E7D4F` / `#E7F3EC` / `#1F5C39` · warning `#9A6700` / `#FBF1DC` / `#6B4800` · danger `#B3261E` / `#FBE9E7` / `#8C1D18` (+ `--color-danger-strong` `#8C1D18`) · info `#2F5D8C` / `#E6EEF6` / `#234A70` |
 | `--color-on-accent` · `--color-skeleton` | Label on accent/danger fills · loading placeholder | `#FFFFFF` · `#E9E5DE` |
 | `--color-focus` | Focus ring | `#2F5D8C` (2 px ring + 2 px offset) |
 

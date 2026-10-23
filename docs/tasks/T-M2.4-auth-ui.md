@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Milestone | M2 |
-| Status | ready (G0) |
+| Status | done (`9fcc992`, PR #82) |
 | Owner role | FE (frontend-implementer; E2E harness script changes included) |
 | Branch | `feature/T-M2.4-auth-ui` (from `develop`) |
 | Depends on | T-M2.1 merged (`a93bcc1`), T-M1.19 merged (`8be6d9f`) |
