@@ -1,0 +1,24 @@
+{
+  "viewport": {
+    "width": 768,
+    "height": 1024
+  },
+  "budget": 2,
+  "steps": {
+    "pointer /tutor/today": 2,
+    "pointer /tutor/nope": 2
+  },
+  "keyboard": {
+    "toAccountOpener": [
+      "button:Mở điều hướng"
+    ],
+    "insideSection": [
+      "button:Đóng",
+      "a:Hôm nay",
+      "a:Học viên",
+      "button:Tiếng ViệtTiếng Việt",
+      "a:Đổi mật khẩu",
+      "button:Đăng xuất"
+    ]
+  }
+}

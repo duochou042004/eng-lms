@@ -59,7 +59,7 @@
     "handleValue": "Đường dẫn hoặc ID",
     "addHandle": "Thêm liên hệ",
     "removeHandle": "Xoá liên hệ {{number}}",
-    "handlesFull": "Bạn có thể thêm tối đa {{max}} liên hệ.",
+    "handlesFull": "Bạn có thể thêm tối đa {{max, number}} liên hệ.",
     "noteSection": "Ghi chú (không bắt buộc)",
     "note": "Ghi chú",
     "noteHint": "Điều bạn muốn ghi nhớ về học viên này.",
@@ -77,7 +77,7 @@
     "guardianLegend": "Phụ huynh {{number}}",
     "removeGuardian": "Xoá phụ huynh {{number}}",
     "addGuardian": "Thêm phụ huynh",
-    "guardiansFull": "Tối đa {{max}} phụ huynh. Hãy xoá bớt một người để thêm người khác.",
+    "guardiansFull": "Tối đa {{max, number}} phụ huynh. Hãy xoá bớt một người để thêm người khác.",
     "errors": {
       "fullNameRequired": "Hãy nhập họ tên học viên.",
       "usernameRequired": "Hãy nhập tên đăng nhập.",
@@ -86,7 +86,7 @@
       "phoneFormat": "Hãy nhập 6 đến 20 ký tự: chữ số, dấu cách, +, (, ), . hoặc -.",
       "handlesTooMany": "Có hơn 30 liên hệ. Hãy xoá bớt rồi thử lại.",
       "REQUIRED": "Trường này là bắt buộc.",
-      "TOO_LONG": "Tối đa {{max}} ký tự.",
+      "TOO_LONG": "Tối đa {{max, number}} ký tự.",
       "TOO_MANY": "Có quá nhiều mục.",
       "INVALID_FORMAT": "Giá trị này có ký tự hoặc định dạng không được phép.",
       "INVALID_VALUE": "Giá trị này không được phép.",
@@ -179,7 +179,7 @@
     "errorTitle": "Không tải được danh sách phụ huynh.",
     "retry": "Thử lại",
     "empty": "Chưa thêm phụ huynh nào.",
-    "limit": "Tối đa {{max}} phụ huynh. Hãy xoá bớt một người để thêm người khác.",
+    "limit": "Tối đa {{max, number}} phụ huynh. Hãy xoá bớt một người để thêm người khác.",
     "add": "Thêm phụ huynh",
     "relationship": "Quan hệ",
     "phone": "Điện thoại",
@@ -213,7 +213,7 @@
     "saving": "Đang lưu…",
     "cancel": "Huỷ",
     "summaryTitle": "Chưa lưu được phụ huynh",
-    "tooMany": "Học viên này đã có {{max}} phụ huynh.",
+    "tooMany": "Học viên này đã có {{max, number}} phụ huynh.",
     "serverError": "Không lưu được phụ huynh. Thông tin bạn nhập vẫn còn: hãy thử lại.",
     "networkError": "Không kết nối được máy chủ. Thông tin bạn nhập vẫn còn: kiểm tra kết nối rồi thử lại.",
     "discardTitle": "Bỏ các thay đổi?",
@@ -242,7 +242,7 @@
     "fieldValue": "Giá trị",
     "addField": "Thêm mục",
     "removeField": "Xoá mục {{number}}",
-    "fieldsFull": "Tối đa {{max}} mục.",
+    "fieldsFull": "Tối đa {{max, number}} mục.",
     "summaryTitle": "Chưa lưu được hồ sơ học tập",
     "serverError": "Không lưu được hồ sơ học tập. Thông tin bạn nhập vẫn còn: hãy thử lại.",
     "saved": "Đã lưu hồ sơ học tập",
@@ -251,9 +251,9 @@
     "errors": {
       "tagControl": "Thẻ không được chứa ký tự điều khiển.",
       "tagDuplicate": "Đã thêm rồi.",
-      "tagsTooMany": "Tối đa {{max}} thẻ.",
+      "tagsTooMany": "Tối đa {{max, number}} thẻ.",
       "labelRequired": "Hãy nhập nhãn.",
-      "fieldsTooMany": "Tối đa {{max}} mục."
+      "fieldsTooMany": "Tối đa {{max, number}} mục."
     }
   },
   "account": {

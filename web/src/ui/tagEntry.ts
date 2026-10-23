@@ -12,8 +12,8 @@ export interface TagEntry {
   value: string[]
   /** The refused entries, comma-joined (the text left in the input); `''` when all were accepted. */
   rest: string
-  /** The first refusal's reason. */
-  error: TagEntryError | null
+  /** Each distinct refusal reason once, in the order of its first refusal; `[]` when all were accepted. */
+  errors: TagEntryError[]
 }
 
 export const SEPARATORS = /[,\t\r\n]/
@@ -31,7 +31,7 @@ const isControl = (char: string) => {
 export function addTags(value: readonly string[], text: string, { maxTags, maxLength }: TagLimits): TagEntry {
   const tags = [...value]
   const refused: string[] = []
-  let error: TagEntryError | null = null
+  const errors: TagEntryError[] = []
   for (const part of text.split(SEPARATORS)) {
     const tag = part.trim()
     if (tag === '') continue
@@ -46,8 +46,8 @@ export function addTags(value: readonly string[], text: string, { maxTags, maxLe
             : null
     if (reason) {
       refused.push(tag)
-      error ??= reason
+      if (!errors.includes(reason)) errors.push(reason)
     } else tags.push(tag)
   }
-  return { value: tags, rest: refused.join(', '), error }
+  return { value: tags, rest: refused.join(', '), errors }
 }

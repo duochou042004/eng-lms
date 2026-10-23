@@ -11,6 +11,8 @@ export interface ErrorSummaryItem {
 export interface ErrorSummaryProps {
   title: string
   errors: readonly ErrorSummaryItem[]
+  /** The title's level: `2` under the page `h1` (default), `3` inside a section `h2` (design-system §3, T-M2.15 UX-4). */
+  headingLevel?: 2 | 3
   /** The form moves focus here after a failed submit (interaction-states §2.3). */
   ref?: Ref<HTMLDivElement>
 }
@@ -20,9 +22,10 @@ export interface ErrorSummaryProps {
  * programmatic focus target (`tabIndex={-1}`, not a Tab stop); each field error is a link that moves focus to its input.
  * Renders nothing without errors.
  */
-export function ErrorSummary({ title, errors, ref }: ErrorSummaryProps) {
+export function ErrorSummary({ title, errors, headingLevel = 2, ref }: ErrorSummaryProps) {
   const titleId = useId()
   if (errors.length === 0) return null
+  const Heading = headingLevel === 3 ? 'h3' : 'h2'
   const focusField = (fieldId: string) => (event: MouseEvent<HTMLAnchorElement>) => {
     const field = document.getElementById(fieldId)
     if (!field) return
@@ -33,9 +36,9 @@ export function ErrorSummary({ title, errors, ref }: ErrorSummaryProps) {
     <div ref={ref} role="alert" aria-labelledby={titleId} tabIndex={-1} className={styles.summary}>
       <CircleAlert aria-hidden="true" className={styles.icon} />
       <div className={styles.body}>
-        <h2 id={titleId} className={styles.title}>
+        <Heading id={titleId} className={styles.title}>
           {title}
-        </h2>
+        </Heading>
         <ul className={styles.list}>
           {errors.map((error) => (
             <li key={`${error.fieldId ?? ''}:${error.message}`}>

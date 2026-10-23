@@ -10,7 +10,7 @@ import {
   tutorPassword,
   type Credentials,
 } from '../support/auth'
-import { expectNoAxeViolations, expectNoHorizontalScroll } from '../support/checks'
+import { expectNoAxeViolations, expectNoHorizontalScroll, expectSettledAccessible } from '../support/checks'
 import { evidenceRecord, evidenceShot } from '../support/evidence'
 import { expect, test } from '../support/fixtures'
 import { accountOpener, accountPlace, openAccountSection, workspaceName, type ShellRole } from '../support/shell'
@@ -46,9 +46,9 @@ const LONG_NAME = 'Lớp tiếng Anh giao tiếp của cô Nguyễn Thị Phươ
 /** Evidence screenshot of a changed screen and state: evidence/T-M2.11/impl/<project>/. */
 const shot = (page: Page, testInfo: TestInfo, name: string) => evidenceShot(page, testInfo, name, 'impl')
 
+// Waits for any overlay's fade first (T-M2.20 AC7: axe right after a Sheet or Popover opens caught it mid-fade).
 async function expectAccessible(page: Page) {
-  await expectNoAxeViolations(page)
-  await expectNoHorizontalScroll(page)
+  await expectSettledAccessible(page)
 }
 
 /** Removes the console entries of a response a test provokes on purpose (only that status from that API path). */

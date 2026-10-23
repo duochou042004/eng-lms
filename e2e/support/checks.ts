@@ -40,11 +40,22 @@ export async function expectNoMidWordBreak(target: Locator, { timeout }: { timeo
   await expect(target, 'the element to measure is visible').toBeVisible({ timeout })
   const { text, broken } = await target.evaluate(async (el) => {
     await document.fonts.ready
-    // The element's text nodes with their offsets in the joined text, so a word split across inline elements is one word.
+    // The element's rendered text nodes with their offsets in the joined text, so a word split across inline elements
+    // is one word. A node with no box (a Range over it has no client rects: `display: none` on it or an ancestor) is
+    // skipped, white space of it staying a boundary; text in a `display: contents` element renders and is measured
+    // (T-M2.20 AC5, so no checkVisibility() on the parent). A <br> is a word boundary.
     const nodes: Array<{ node: Text; start: number }> = []
     let joined = ''
-    const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT)
-    for (let node = walker.nextNode() as Text | null; node; node = walker.nextNode() as Text | null) {
+    const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT | NodeFilter.SHOW_ELEMENT)
+    for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+      if (node instanceof HTMLBRElement) joined += '\n'
+      if (!(node instanceof Text)) continue
+      const range = document.createRange()
+      range.selectNodeContents(node)
+      if (range.getClientRects().length === 0) {
+        if (/^\s*$/.test(node.data)) joined += ' '
+        continue
+      }
       nodes.push({ node, start: joined.length })
       joined += node.data
     }
@@ -66,7 +77,7 @@ export async function expectNoMidWordBreak(target: Locator, { timeout }: { timeo
   expect(broken, `words broken across lines in "${text}"`).toEqual([])
 }
 
-/** Focus did not end on `body`, `html`, nothing, a disabled or unrendered control, or inside an `inert` region after an action (a transient `body` while a dialog closes is fine). */
+/** Focus did not end on `body`, `html`, nothing, a disabled, unrendered or `visibility: hidden` control, or inside an `inert` region after an action (a transient `body` while a dialog closes is fine). */
 export async function expectFocusNotLost(page: Page, { timeout = 5_000 }: { timeout?: number } = {}) {
   await expect
     .poll(
@@ -74,8 +85,9 @@ export async function expectFocusNotLost(page: Page, { timeout = 5_000 }: { time
         page.evaluate(() => {
           const active = document.activeElement
           if (!active || active === document.body || active === document.documentElement) return 'lost'
-          // Chromium keeps activeElement on a control that became disabled or display: none (G3 QA-2).
-          if (active.matches(':disabled') || !active.checkVisibility()) return 'lost'
+          // Chromium keeps activeElement on a control that became disabled or display: none (G3 QA-2); visibility:
+          // hidden counts as unrendered too (T-M2.19 QA-8).
+          if (active.matches(':disabled') || !active.checkVisibility({ visibilityProperty: true })) return 'lost'
           return active.closest('[inert]') ? 'lost' : 'kept'
         }),
       { message: 'focus lost to body (or on a disabled or hidden control, or inside an inert region)', timeout },

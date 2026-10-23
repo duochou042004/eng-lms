@@ -86,10 +86,10 @@ async function followSession(router: DataRouter, session: Session | null) {
 
 /**
  * The API client's auth-problem reactions (frontend-architecture §2) and the cross-tab sign-in/out messages. A lost
- * session (401) clears the query cache and goes to `/login?next=<current path>` (when the path is a safe app path); a
+ * session (401) clears the query and mutation caches and goes to `/login?next=<current path>` (when the path is a safe app path); a
  * forced change goes to `/change-password` with the session read again. A 403 `FORBIDDEN_ROLE` reads the session once
  * (concurrent 403s share the read); only when the user, role or sign-in changed does it drop every cached query but the
- * session and follow it. A message from another tab drops every cached query but the session, reads the session and
+ * session (and every cached mutation) and follow it. A message from another tab drops every cached query but the session, reads the session and
  * follows it; so does a page restored from the back/forward cache (`pageshow` with `persisted`). Queries of mounted
  * pages are reset (they refetch for the new session), the others removed. These reactions run one after another; none
  * of them posts a message. Navigation goes through the router
@@ -103,6 +103,8 @@ export function connectAuthProblems(router: DataRouter, queryClient: QueryClient
   const dropAllButSession = () => {
     void queryClient.resetQueries(notSession).catch(() => undefined)
     queryClient.removeQueries({ ...notSession, type: 'inactive' })
+    // No write of the earlier session stays cached (T-M2.15 SEC S-1, DEC-144 (2)); a pending one keeps its observers.
+    queryClient.getMutationCache().clear()
   }
   let roleCheck: Promise<unknown> | null = null
 
@@ -111,6 +113,7 @@ export function connectAuthProblems(router: DataRouter, queryClient: QueryClient
     if (problem === 'UNAUTHENTICATED') {
       if (pathname === '/login') return
       queryClient.getQueryCache().clear()
+      queryClient.getMutationCache().clear()
       void router.navigate(loginPath(pathname + search))
     } else if (problem === 'FORBIDDEN_ROLE') {
       roleCheck ??= serially(async () => {

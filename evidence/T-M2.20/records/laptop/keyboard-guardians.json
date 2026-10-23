@@ -1,0 +1,16 @@
+{
+  "viewport": {
+    "width": 1280,
+    "height": 800
+  },
+  "actions": [
+    "Enter on Add guardian",
+    "type the name",
+    "Enter on Save",
+    "Enter on Edit (focused after Save)",
+    "type a relationship",
+    "Enter on Save",
+    "Tab, Enter on Remove",
+    "Shift+Tab, Enter on Remove guardian"
+  ]
+}

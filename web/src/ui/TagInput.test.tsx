@@ -19,7 +19,7 @@ const MESSAGES = {
   tooMany: 'Tối đa 30 thẻ.',
 }
 
-function Tags({ initial = [] as string[], onSubmit = () => {} }) {
+function Tags({ initial = [] as string[], onSubmit = () => {}, errorMessage = undefined as string | undefined }) {
   const [value, setValue] = useState(initial)
   const [text, setText] = useState('')
   return (
@@ -40,6 +40,7 @@ function Tags({ initial = [] as string[], onSubmit = () => {} }) {
           inputValue={text}
           onInputChange={setText}
           {...LIMITS}
+          errorMessage={errorMessage}
           messages={MESSAGES}
         />
         <button type="submit">Lưu</button>
@@ -57,24 +58,33 @@ const chips = () =>
 
 describe('addTags', () => {
   it.each([
-    ['a, b\nc', [], ['a', 'b', 'c'], '', null],
-    ['  ,\t, ', ['x'], ['x'], '', null],
-    ['A', ['a'], ['a'], 'A', 'duplicate'],
-    ['b, B', [], ['b'], 'B', 'duplicate'],
-    ['x'.repeat(41), [], [], 'x'.repeat(41), 'tooLong'],
-    ['😀'.repeat(40), [], ['😀'.repeat(40)], '', null],
-    ['a\u0007b', [], [], 'a\u0007b', 'control'],
-    ['a\u0085b', [], [], 'a\u0085b', 'control'],
+    ['a, b\nc', [], ['a', 'b', 'c'], '', []],
+    ['  ,\t, ', ['x'], ['x'], '', []],
+    ['A', ['a'], ['a'], 'A', ['duplicate']],
+    ['b, B', [], ['b'], 'B', ['duplicate']],
+    ['x'.repeat(41), [], [], 'x'.repeat(41), ['tooLong']],
+    ['😀'.repeat(40), [], ['😀'.repeat(40)], '', []],
+    ['a\u0007b', [], [], 'a\u0007b', ['control']],
+    ['a\u0085b', [], [], 'a\u0085b', ['control']],
     [
       'new, more',
       Array.from({ length: 29 }, (_, i) => `t${i}`),
       [...Array.from({ length: 29 }, (_, i) => `t${i}`), 'new'],
       'more',
-      'tooMany',
+      ['tooMany'],
     ],
-    ['ok, x\u0001, dup, also', ['dup'], ['dup', 'ok', 'also'], 'x\u0001, dup', 'control'],
-  ])('%j onto %j → %j, rest %j, error %s', (text, value, tags, rest, error) => {
-    expect(addTags(value, text, LIMITS)).toEqual({ value: tags, rest, error })
+    ['ok, x\u0001, dup, also', ['dup'], ['dup', 'ok', 'also'], 'x\u0001, dup', ['control', 'duplicate']],
+    // T-M2.20 AC8: every distinct reason once, in the order of its first refusal.
+    [
+      `${'x'.repeat(41)}, new, more, ${'y'.repeat(41)}`,
+      Array.from({ length: 29 }, (_, i) => `t${i}`),
+      [...Array.from({ length: 29 }, (_, i) => `t${i}`), 'new'],
+      `${'x'.repeat(41)}, more, ${'y'.repeat(41)}`,
+      ['tooLong', 'tooMany'],
+    ],
+    ['Nghe, Đọc\nViết\tNGHE,  ,Bad\u0007x', [], ['Nghe', 'Đọc', 'Viết'], 'NGHE, Bad\u0007x', ['duplicate', 'control']],
+  ])('%j onto %j → %j, rest %j, errors %j', (text, value, tags, rest, errors) => {
+    expect(addTags(value, text, LIMITS)).toEqual({ value: tags, rest, errors })
   })
 })
 
@@ -119,6 +129,30 @@ describe('TagInput', () => {
     expect(chips()).toEqual(['a', 'b', 'c', 'd', 'e', 'f'])
     expect(input()).toHaveValue('A')
     expect(input()).toHaveAccessibleDescription(/Đã có\./)
+  })
+
+  it('a paste refused for two reasons shows both messages in its one error, joined by a space (T-M2.20 AC8)', async () => {
+    render(<Tags />)
+    await userEvent.click(input())
+    await userEvent.paste('Nghe, Đọc\nViết\tNGHE,  ,Bad\u0007x')
+    expect(chips()).toEqual(['Nghe', 'Đọc', 'Viết'])
+    expect(input()).toHaveValue('NGHE, Bad\u0007x')
+    expect(input()).toHaveAttribute('aria-invalid', 'true')
+    expect(input()).toHaveAccessibleDescription(
+      `Nhấn Enter hoặc gõ dấu phẩy để thêm ${MESSAGES.duplicate} ${MESSAGES.control}`,
+    )
+    expect(screen.getByText(`${MESSAGES.duplicate} ${MESSAGES.control}`)).toBeInTheDocument()
+  })
+
+  it("a new caller error wins over the last entry's reasons; a later refused commit shows its own again (T-M2.20 AC10)", async () => {
+    const { rerender } = render(<Tags initial={['Nghe']} />)
+    await userEvent.type(input(), 'NGHE{Enter}')
+    expect(input()).toHaveAccessibleDescription(/Đã có\.$/)
+    rerender(<Tags initial={['Nghe']} errorMessage="Lỗi của biểu mẫu." />)
+    expect(input()).toHaveAccessibleDescription(/Lỗi của biểu mẫu\.$/)
+    expect(screen.queryByText(MESSAGES.duplicate)).not.toBeInTheDocument()
+    await userEvent.type(input(), '{Enter}')
+    expect(input()).toHaveAccessibleDescription(/Đã có\.$/)
   })
 
   it.each([

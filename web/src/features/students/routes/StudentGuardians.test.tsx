@@ -288,6 +288,7 @@ describe('Guardians: edit (AC3)', { timeout: 20_000 }, () => {
     await userEvent.click(save())
     const summary = screen.getByRole('alert', { name: 'Chưa lưu được phụ huynh' })
     await waitFor(() => expect(summary).toHaveFocus())
+    expect(within(summary).getByRole('heading', { level: 3, name: 'Chưa lưu được phụ huynh' })).toBeInTheDocument()
     expect(
       within(summary)
         .getAllByRole('link')
@@ -319,7 +320,7 @@ describe('Guardians: edit (AC3)', { timeout: 20_000 }, () => {
       within(summary)
         .getAllByRole('link')
         .map((l) => l.textContent),
-    ).toEqual(['Tối đa 120 ký tự.', 'Tối đa 2000 ký tự.'])
+    ).toEqual(['Tối đa 120 ký tự.', 'Tối đa 2.000 ký tự.'])
     await user.type(input('Tên (bắt buộc)'), '{Backspace}')
     await user.type(input('Ghi chú'), '{Backspace}')
     await user.click(save())

@@ -90,7 +90,8 @@ Decorative: `aria-hidden="true"`, never focusable; its owner announces the state
 - `Checkbox`: React Aria `CheckboxField` + `CheckboxButton`; the whole row (box and label) is the ≥ 44 px target; selected = a check icon in an
   accent box (not colour alone); an optional `hint` is the description; `errorMessage` when invalid. States: hover, pressed, focus-visible,
   selected, invalid, disabled.
-- `ErrorSummary`: the errors of a form above it (interaction-states §2.3): an `alert` with an `h2` title, a programmatic focus target
+- `ErrorSummary`: the errors of a form above it (interaction-states §2.3): an `alert` with an `h2` title by default, `h3` inside a section
+  (`headingLevel={3}`: the Profile view's profile, guardian and learning-profile forms, T-M2.20; same look either way), a programmatic focus target
   (`tabIndex={-1}`, `ref` prop); a field error is a ≥ 44 px link (`#<input id>`) that moves focus to its input; an error without a field is
   plain text. Renders nothing without errors.
 - `Button` (T-M2.4 addition): React Aria announces a focused button's pending state with a live-announcer entry that points at the button's id
@@ -178,7 +179,8 @@ quiet `IconButton` (X) whose accessible name is the caller's "Remove {tag}" (in 
 no English-only description), then one text input with the hint and the error. **Enter** or a typed **comma** adds the input's text; a
 pasted text with commas, tabs or line breaks adds each part. Each entry is trimmed; an empty one is ignored; a control character, more than
 `maxLength` code points, a tag already present ignoring case or one past `maxTags` is refused with its message (the caller's strings) and its
-text kept in the input (a pasted list adds its valid parts and keeps the refused ones, comma-joined). The rules are the pure `addTags`
+text kept in the input (a pasted list adds its valid parts and keeps the refused ones, comma-joined). An entry refused for several reasons
+shows every reason's message, each once in the order of its first refusal, joined by a space (`addTags` returns `errors`, T-M2.20); a new caller error (a failed Save) replaces them until the next commit (AC10). The rules are the pure `addTags`
 (`ui/tagEntry.ts`), so a form can commit the input's text on Save. The input is controlled (`inputValue`), stays enabled at `maxTags`, and
 Enter never submits the form. Removing a chip focuses the next chip's button, else the previous one's, else the input. Chips wrap as whole
 chips (`gap: var(--space-2)`); a long tag wraps inside its chip (`overflow-wrap: anywhere`). `TagList` shows the same chips read-only.

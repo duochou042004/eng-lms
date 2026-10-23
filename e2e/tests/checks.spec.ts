@@ -46,6 +46,42 @@ test.describe('expectNoMidWordBreak', () => {
     expect(await lineCount(page.locator('#t')), 'the text wraps').toBeGreaterThan(1)
     await expectNoMidWordBreak(page.locator('#t'), SHORT)
   })
+
+  // T-M2.20 AC5 (T-M2.19 QA-5): only rendered text is measured, and a <br> is a word boundary.
+  test('passes on a box whose visible words fit and that holds a display: none child with text', async ({ page }) => {
+    await fixture(
+      page,
+      '<p id="t" style="inline-size: 16ch">Nguyễn Văn An <span style="display: none">Chữ ẩn</span></p>',
+    )
+    await expectNoMidWordBreak(page.locator('#t'), SHORT)
+  })
+
+  test('still fails on a forced mid-word break beside a display: none child', async ({ page }) => {
+    await fixture(
+      page,
+      '<p id="t" style="inline-size: 4ch; overflow-wrap: anywhere">Nguyễnthịphương <span style="display: none">Chữ ẩn</span></p>',
+    )
+    await expect(expectNoMidWordBreak(page.locator('#t'), SHORT)).rejects.toThrow(/words broken/)
+  })
+
+  test('passes on "one<br>two" laid out on two lines', async ({ page }) => {
+    await fixture(page, '<p id="t">one<br>two</p>')
+    expect(await lineCount(page.locator('#t')), 'two lines').toBe(2)
+    await expectNoMidWordBreak(page.locator('#t'), SHORT)
+  })
+
+  test('still fails on "one<br>" followed by a word forced across two lines', async ({ page }) => {
+    await fixture(page, '<p id="t" style="inline-size: 4ch; overflow-wrap: anywhere">one<br>Nguyễnthịphương</p>')
+    await expect(expectNoMidWordBreak(page.locator('#t'), SHORT)).rejects.toThrow(/words broken/)
+  })
+
+  test('measures the text of a display: contents child (it renders: a forced break there fails)', async ({ page }) => {
+    await fixture(
+      page,
+      '<p id="t" style="inline-size: 4ch; overflow-wrap: anywhere"><span style="display: contents">Nguyễnthịphương</span></p>',
+    )
+    await expect(expectNoMidWordBreak(page.locator('#t'), SHORT)).rejects.toThrow(/words broken/)
+  })
 })
 
 test.describe('expectFocusNotLost', () => {
@@ -74,6 +110,19 @@ test.describe('expectFocusNotLost', () => {
 
   test('fails after a button that hides itself (display: none)', async ({ page }) => {
     await fixture(page, '<h1 tabindex="-1">Title</h1><button onclick="this.style.display = \'none\'">Hide me</button>')
+    await page.getByRole('button', { name: 'Hide me' }).click()
+    await expect(page.locator('button')).toBeHidden()
+    await expect(expectFocusNotLost(page, SHORT)).rejects.toThrow(/focus lost/)
+  })
+
+  // T-M2.20 AC6 (T-M2.19 QA-8): a control that turned visibility: hidden holds no visible focus. The Chromium of
+  // Playwright 1.64 already moves focus to body here (so the old helper failed too); the visibilityProperty test covers
+  // an engine that keeps activeElement on the hidden control.
+  test('fails after a button that hides itself (visibility: hidden)', async ({ page }) => {
+    await fixture(
+      page,
+      '<h1 tabindex="-1">Title</h1><button onclick="this.style.visibility = \'hidden\'">Hide me</button>',
+    )
     await page.getByRole('button', { name: 'Hide me' }).click()
     await expect(page.locator('button')).toBeHidden()
     await expect(expectFocusNotLost(page, SHORT)).rejects.toThrow(/focus lost/)

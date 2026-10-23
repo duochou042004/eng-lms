@@ -1,4 +1,4 @@
-import { act, screen, waitFor, within } from '@testing-library/react'
+import { act, fireEvent, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { delay, http, HttpResponse } from 'msw'
 import { describe, expect, it, vi } from 'vitest'
@@ -312,12 +312,15 @@ describe('Learning profile: validation and 422 (AC4)', { timeout: 20_000 }, () =
     await userEvent.click(save())
     await waitFor(() => expect(summary()).toHaveFocus())
     expect(
+      within(summary()).getByRole('heading', { level: 3, name: 'Chưa lưu được hồ sơ học tập' }),
+    ).toBeInTheDocument()
+    expect(
       within(summary())
         .getAllByRole('link')
         .map((a) => [a.textContent, a.getAttribute('href')]),
     ).toEqual([
       ['Tối đa 40 ký tự.', '#learning-profile-currentLevel'],
-      ['Tối đa 2000 ký tự.', '#learning-profile-learningNotes'],
+      ['Tối đa 2.000 ký tự.', '#learning-profile-learningNotes'],
       ['Tối đa 60 ký tự.', '#learning-profile-field-0-label'],
       ['Hãy nhập nhãn.', '#learning-profile-field-1-label'],
       ['Tối đa 500 ký tự.', '#learning-profile-field-1-value'],
@@ -357,6 +360,63 @@ describe('Learning profile: validation and 422 (AC4)', { timeout: 20_000 }, () =
     expect(textbox('Điểm mạnh')).toHaveValue('NGHE')
     expect(api.calls.profilePut).toEqual([])
   })
+
+  it('T-M2.20 AC8: uncommitted text refused for two reasons shows both in the field error and its one summary item', async () => {
+    const { api } = await openForm()
+    await userEvent.click(textbox('Điểm mạnh'))
+    await userEvent.paste('NGHE, Bad\u0007x')
+    await userEvent.click(save())
+    await waitFor(() => expect(summary()).toHaveFocus())
+    // The summary item is the form's message (the schema's joined keys, each translated); the field shows the same.
+    const both = 'Đã thêm rồi. Thẻ không được chứa ký tự điều khiển.'
+    expect(
+      within(summary())
+        .getAllByRole('link')
+        .map((a) => [a.textContent, a.getAttribute('href')]),
+    ).toEqual([[both, '#learning-profile-strengths']])
+    expect(textbox('Điểm mạnh')).toHaveAccessibleDescription(expect.stringContaining(both))
+    expect(textbox('Điểm mạnh')).toHaveValue('NGHE, Bad\u0007x')
+    expect(api.calls.profilePut).toEqual([])
+  })
+
+  it.each([
+    [
+      'inserted in one input event with a comma (a drop, an IME insert, Playwright fill)',
+      async () => {
+        fireEvent.change(textbox('Điểm mạnh'), { target: { value: 'NGHE, Bad\u0007x' } })
+      },
+      'NGHE, Bad\u0007x',
+    ],
+    [
+      'edited after a paste',
+      async () => {
+        await userEvent.click(textbox('Điểm mạnh'))
+        await userEvent.paste('NGHE, Bad\u0007x')
+        await userEvent.type(textbox('Điểm mạnh'), 'y')
+      },
+      'NGHE, Bad\u0007xy',
+    ],
+  ])(
+    'T-M2.20 AC10: text %s: after a failed Save the field shows both reasons; a later commit shows its own',
+    async (_, enter, kept) => {
+      const { api } = await openForm()
+      await enter()
+      // The commit of the text before the last comma refused "NGHE" alone: only its reason shows before Save.
+      expect(textbox('Điểm mạnh')).toHaveAccessibleDescription(expect.not.stringContaining('Thẻ không được chứa'))
+      await userEvent.click(save())
+      await waitFor(() => expect(summary()).toHaveFocus())
+      const both = 'Đã thêm rồi. Thẻ không được chứa ký tự điều khiển.'
+      expect(within(summary()).getByRole('link').textContent).toBe(both)
+      expect(textbox('Điểm mạnh')).toHaveAccessibleDescription(expect.stringContaining(both))
+      expect(textbox('Điểm mạnh')).toHaveValue(kept)
+      // A later commit shows its own reason again.
+      await userEvent.clear(textbox('Điểm mạnh'))
+      await userEvent.type(textbox('Điểm mạnh'), 'Nghe{Enter}')
+      expect(textbox('Điểm mạnh')).toHaveAccessibleDescription(expect.stringContaining('Đã thêm rồi.'))
+      expect(textbox('Điểm mạnh')).toHaveAccessibleDescription(expect.not.stringContaining('Thẻ không được chứa'))
+      expect(api.calls.profilePut).toEqual([])
+    },
+  )
 
   it('30 rows: Add field is hidden with the limit text; removing one shows it again with focus', async () => {
     const thirty = Array.from({ length: 30 }, (_, i) => ({ label: `Nhãn ${i + 1}`, value: '' }))

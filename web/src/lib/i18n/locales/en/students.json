@@ -59,7 +59,7 @@
     "handleValue": "Link or ID",
     "addHandle": "Add a contact",
     "removeHandle": "Remove contact {{number}}",
-    "handlesFull": "You can add up to {{max}} contacts.",
+    "handlesFull": "You can add up to {{max, number}} contacts.",
     "noteSection": "Note (optional)",
     "note": "Note",
     "noteHint": "Anything you want to remember about this student.",
@@ -77,7 +77,7 @@
     "guardianLegend": "Guardian {{number}}",
     "removeGuardian": "Remove guardian {{number}}",
     "addGuardian": "Add guardian",
-    "guardiansFull": "Up to {{max}} guardians. Remove one to add another.",
+    "guardiansFull": "Up to {{max, number}} guardians. Remove one to add another.",
     "errors": {
       "fullNameRequired": "Enter the student's full name.",
       "usernameRequired": "Enter a username.",
@@ -86,7 +86,7 @@
       "phoneFormat": "Enter 6 to 20 characters: digits, spaces, +, (, ), . or -.",
       "handlesTooMany": "There are more than 30 contacts. Remove some and try again.",
       "REQUIRED": "This field is required.",
-      "TOO_LONG": "Use at most {{max}} characters.",
+      "TOO_LONG": "Use at most {{max, number}} characters.",
       "TOO_MANY": "There are too many entries.",
       "INVALID_FORMAT": "This value has a character or a format that isn't allowed.",
       "INVALID_VALUE": "This value isn't allowed.",
@@ -179,7 +179,7 @@
     "errorTitle": "Couldn't load the guardians.",
     "retry": "Try again",
     "empty": "No guardians added.",
-    "limit": "Up to {{max}} guardians. Remove one to add another.",
+    "limit": "Up to {{max, number}} guardians. Remove one to add another.",
     "add": "Add guardian",
     "relationship": "Relationship",
     "phone": "Phone",
@@ -213,7 +213,7 @@
     "saving": "Saving…",
     "cancel": "Cancel",
     "summaryTitle": "The guardian wasn't saved",
-    "tooMany": "This student already has {{max}} guardians.",
+    "tooMany": "This student already has {{max, number}} guardians.",
     "serverError": "The guardian couldn't be saved. Your input is kept: try again.",
     "networkError": "The server can't be reached. Your input is kept: check your connection and try again.",
     "discardTitle": "Discard your changes?",
@@ -242,7 +242,7 @@
     "fieldValue": "Value",
     "addField": "Add field",
     "removeField": "Remove field {{number}}",
-    "fieldsFull": "Up to {{max}} fields.",
+    "fieldsFull": "Up to {{max, number}} fields.",
     "summaryTitle": "The learning profile wasn't saved",
     "serverError": "The learning profile couldn't be saved. Your input is kept: try again.",
     "saved": "Learning profile saved",
@@ -251,9 +251,9 @@
     "errors": {
       "tagControl": "Tags can't contain control characters.",
       "tagDuplicate": "Already added.",
-      "tagsTooMany": "Up to {{max}} tags.",
+      "tagsTooMany": "Up to {{max, number}} tags.",
       "labelRequired": "Enter a label.",
-      "fieldsTooMany": "Up to {{max}} fields."
+      "fieldsTooMany": "Up to {{max, number}} fields."
     }
   },
   "account": {

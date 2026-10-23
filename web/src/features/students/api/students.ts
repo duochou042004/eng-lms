@@ -81,7 +81,7 @@ export function useUsernameAvailability(username: string, enabled: boolean) {
 /**
  * `POST /tutor/students`. The answer holds the one-time temporary password (security.md T12): the caller moves it into
  * its component state and resets the mutation, and `gcTime: 0` drops the finished mutation (its variables and data)
- * from the cache at once; nothing is seeded into a query. The list is invalidated.
+ * from the cache at once; nothing is seeded into a query. The list is invalidated, only while the tutor's session is cached.
  */
 export function useCreateStudent() {
   const queryClient = useQueryClient()
@@ -89,7 +89,9 @@ export function useCreateStudent() {
     mutationFn: async (body: CreateStudentRequest): Promise<CreatedStudent> =>
       (await api.POST('/api/v1/tutor/students', { body })).data!,
     gcTime: 0,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: studentKeys.list }),
+    // Only for the tutor's session, as every other students write (DEC-127, T-M2.15 SEC S-2).
+    onSuccess: () =>
+      isTutorSession(queryClient) ? queryClient.invalidateQueries({ queryKey: studentKeys.list }) : undefined,
   })
 }
 

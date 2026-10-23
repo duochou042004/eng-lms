@@ -1,0 +1,18 @@
+{
+  "viewport": {
+    "width": 360,
+    "height": 740
+  },
+  "budgets": {
+    "freshShell": 1,
+    "freshOther": 0,
+    "afterNavigation": 0
+  },
+  "steps": {
+    "fresh /tutor": 1,
+    "fresh /student": 1,
+    "fresh /login": 0,
+    "fresh /does-not-exist": 0,
+    "after client-side navigation": 0
+  }
+}

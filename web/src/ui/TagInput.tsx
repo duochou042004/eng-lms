@@ -35,7 +35,7 @@ export interface TagInputProps extends TagLimits {
   inputValue: string
   onInputChange: (text: string) => void
   onBlur?: () => void
-  /** The caller's error (a form or server error); an entry refused here shows its own message first. */
+  /** The caller's error (a form or server error); an entry refused here shows its own messages until this changes. */
   errorMessage?: string
   isDisabled?: boolean
   /** The strings (`ui/` holds no feature strings). */
@@ -48,7 +48,7 @@ export interface TagInputProps extends TagLimits {
 /**
  * A labelled list of tags with one text input under the chips (design-system §3, T-M2.17 scope 2, DEC-140 (4)). Enter or
  * a typed comma adds the input's text; a pasted text with commas, tabs or line breaks adds each part. A refused entry
- * keeps its text in the input with its error and adds nothing. Each chip has its own remove button (in the tab order);
+ * keeps its text in the input with its error (every reason of the entry, joined by a space) and adds nothing. Each chip has its own remove button (in the tab order);
  * removing moves focus to the next chip's, else the previous one's, else the input. Enter never submits the form; the
  * input stays enabled at `maxTags`. The whole field is a group (`fieldset`) named by the label.
  */
@@ -67,7 +67,14 @@ export function TagInput({
   isDisabled,
   messages,
 }: TagInputProps) {
-  const [entryError, setEntryError] = useState<TagEntryError | null>(null)
+  const [entryErrors, setEntryErrors] = useState<TagEntryError[]>([])
+  // A new caller error (a failed Save, a revalidation) wins over the last entry's reasons (T-M2.20 AC10, QA-1); the
+  // entry error of a later commit shows again.
+  const [callerError, setCallerError] = useState(errorMessage)
+  if (errorMessage !== callerError) {
+    setCallerError(errorMessage)
+    setEntryErrors([])
+  }
   const inputRef = useRef<HTMLInputElement>(null)
   const listRef = useRef<HTMLUListElement>(null)
   // After a removal: the chip index whose remove button takes focus, or the input.
@@ -84,7 +91,7 @@ export function TagInput({
     const entry = addTags(value, text, { maxTags, maxLength })
     if (entry.value.length !== value.length) onChange(entry.value)
     onInputChange([entry.rest, keep].filter((s) => s !== '').join(', '))
-    setEntryError(entry.error)
+    setEntryErrors(entry.errors)
   }
 
   const onPaste = (event: ClipboardEvent<HTMLInputElement>) => {
@@ -97,14 +104,15 @@ export function TagInput({
     enter(inputValue.slice(0, start) + pasted + inputValue.slice(end))
   }
 
-  const error = entryError ? messages[entryError] : errorMessage
+  // Every reason of the last entry, each a sentence (T-M2.17 QA-2).
+  const error = entryErrors.length > 0 ? entryErrors.map((reason) => messages[reason]).join(' ') : errorMessage
   return (
     <fieldset aria-label={label} className={styles.group}>
       <AriaTextField
         id={id}
         value={inputValue}
         onChange={(text) => {
-          setEntryError(null)
+          setEntryErrors([])
           // A typed comma adds what is before it; the text after the last comma stays in the input.
           if (!text.includes(',')) return onInputChange(text)
           const cut = text.lastIndexOf(',')

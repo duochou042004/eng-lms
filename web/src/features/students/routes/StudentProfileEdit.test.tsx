@@ -123,6 +123,7 @@ describe('Edit profile: errors (AC2)', { timeout: 20_000 }, () => {
     await userEvent.click(saveButton())
     const summary = screen.getByRole('alert', { name: 'Chưa lưu được hồ sơ' })
     await waitFor(() => expect(summary).toHaveFocus())
+    expect(within(summary).getByRole('heading', { level: 3, name: 'Chưa lưu được hồ sơ' })).toBeInTheDocument()
     expect(
       within(summary)
         .getAllByRole('link')
