@@ -126,6 +126,9 @@ package (`jsonschema` stays the only one). 4. **Weekly use?** Yes: `check-docs` 
   passes on the final head, and the summary lists any other record the new checks found with its fix.
 - AC7 (scope 7): the docstring and PASS message, `ci-cd.md`, `session-handoff-protocol.md`, `README.md`, `docs-reviewer.md`,
   `docs-check.yml`, lessons-learned L-09 and the evidence-and-handoff skill say what the new checks enforce.
+- AC9 (G1, DEC-153): the kept test `RouteError.test.tsx` "the copy follows the connection while shown (AC11 (a))" reads the heading
+  and text after the `online` and `offline` events through `await findByRole` / `findByText` (same names and texts; no assertion
+  removed); the web suite passes in the gate.
 - AC8: `ENGLMS_TASK=T-M2.21 ./scripts/gate.sh` green once on the final head and CI green (7/7). The gate's `docs` and `scripts` steps
   cover the change; `backend` and `contract-drift` are skipped for this diff. Every existing script test and assertion is kept.
 

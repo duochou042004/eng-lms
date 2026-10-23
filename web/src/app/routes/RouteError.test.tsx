@@ -313,13 +313,14 @@ describe('RouteError: a page whose code could not load (T-M2.12 AC2, AC3, DEC-08
     await screen.findByRole('heading', { level: 1, name: CHUNK.vi.offlineTitle })
     online = true
     act(() => void window.dispatchEvent(new Event('online')))
-    expect(screen.getByRole('heading', { level: 1, name: CHUNK.vi.chunkTitle })).toBeInTheDocument()
-    expect(screen.getByText(CHUNK.vi.chunk)).toBeInTheDocument()
+    // Polling reads: the re-render after a connection event can land late under the full suite's load (DEC-153, L-05).
+    expect(await screen.findByRole('heading', { level: 1, name: CHUNK.vi.chunkTitle })).toBeInTheDocument()
+    expect(await screen.findByText(CHUNK.vi.chunk)).toBeInTheDocument()
     await waitFor(() => expect(document.title).toBe(`${CHUNK.vi.chunkTitle} · Eng-LMS`))
     online = false
     act(() => void window.dispatchEvent(new Event('offline')))
-    expect(screen.getByRole('heading', { level: 1, name: CHUNK.vi.offlineTitle })).toBeInTheDocument()
-    expect(screen.getByText(CHUNK.vi.offline)).toBeInTheDocument()
+    expect(await screen.findByRole('heading', { level: 1, name: CHUNK.vi.offlineTitle })).toBeInTheDocument()
+    expect(await screen.findByText(CHUNK.vi.offline)).toBeInTheDocument()
     await userEvent.click(screen.getByRole('button', { name: 'Thử lại' }))
     expect(location.reload).not.toHaveBeenCalled()
     expect(location.assign).not.toHaveBeenCalled()
