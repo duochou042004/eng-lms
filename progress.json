@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-10-23T12:37:41Z",
-  "updatedBy": "lead-coordinator (T-M2.21 G1 pass; PR and G3 next)",
+  "updatedAt": "2026-10-23T13:02:25Z",
+  "updatedBy": "lead-coordinator (T-M2.21 G3 round 1 fixed; delta next)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -37,20 +37,21 @@
     "branch": "chore/T-M2.21-records-checks",
     "packet": "docs/tasks/T-M2.21-records-checks.md",
     "pr": "140",
-    "lastCommit": "e5a59b9",
+    "lastCommit": "f866c09",
     "startedAt": "2026-10-23T12:19:39Z",
     "entryGate": [
       "T-M2.20 merged — met (f3a77fa)"
     ],
     "nextSteps": [
-      "CI on the PR; G3: one fresh docs-reviewer (runs the fixtures, mutates each check); fix S1-S3 with delta rounds",
-      "DOCS-REVIEW + LC-APPROVED after CI green; merge-gate; gitlab-sync; records PR (part C)"
+      "G3 round 2 (delta) by the same docs-reviewer on the fixes; DOCS-REVIEW + LC-APPROVED after CI green; merge-gate; gitlab-sync",
+      "Records PR (part C): backlog row and packet Status done, completed[], merge DEC, G3 record, handoff"
     ],
     "trace": [
       "DEC-139",
       "DEC-150",
       "DEC-151",
-      "DEC-152"
+      "DEC-152",
+      "DEC-153"
     ]
   },
   "nextTask": {
@@ -356,8 +357,8 @@
     }
   ],
   "tests": {
-    "lastRun": "2026-10-23T12:29:21Z",
-    "summary": "T-M2.21 AC8: gate PASS on e5a59b9 (420 s, 13 steps; scripts incl. check-docs fixtures 32/32; web 818 tests in 68 files; e2e 515 passed / 31 skipped; backend and contract-drift skipped).",
+    "lastRun": "2026-10-23T12:54:31Z",
+    "summary": "T-M2.21 AC8: gate PASS on f866c09 (426 s, 13 steps; check-docs fixtures 38/38; web 818 tests in 68 files; e2e 515 passed / 31 skipped; backend and contract-drift skipped).",
     "suites": [
       {
         "name": "backend (./mvnw -B verify)",
@@ -372,12 +373,12 @@
       {
         "name": "governance scripts (scripts/tests/run-all.sh)",
         "result": "pass",
-        "details": "At T-M2.21 (e5a59b9): check-docs 32, merge-gate 325, path-ownership 15, pre-push 15, require-bash 11, workflow warnings 10, and the other suites (run-all PASS)"
+        "details": "At T-M2.21 (f866c09): check-docs 38, merge-gate 325, path-ownership 15, pre-push 15, require-bash 11, workflow warnings 10, and the other suites (run-all PASS)"
       },
       {
         "name": "gate.sh",
         "result": "pass",
-        "details": "evidence/T-M2.21/gate-20261023T122921Z.log (e5a59b9) PASS"
+        "details": "evidence/T-M2.21/gate-20261023T125431Z.log (f866c09) PASS"
       }
     ]
   },
@@ -388,15 +389,15 @@
     },
     "G1": {
       "status": "pass",
-      "note": "T-M2.21: gate PASS on e5a59b9 (13 steps, 420 s) after a first run failed on the kept flaky RouteError.test.tsx:316 (DEC-152, to T-M2.13)"
+      "note": "T-M2.21: gate PASS on f866c09 (13 steps, 426 s); 4 runs in all, 2 failed on the kept flaky RouteError test, ruled in as AC9 (DEC-153)"
     },
     "G2": {
       "status": "pass",
       "note": "T-M2.20: CI 7/7 on c03763b"
     },
     "G3": {
-      "status": "pass",
-      "note": "T-M2.20 tier M: combined QA+UX round 1 PASS WITH MINOR/APPROVED (S3 QA-1 → AC10, DEC-147) → delta re-check PASS WITH MINOR/APPROVED (DEC-148)"
+      "status": "pending",
+      "note": "T-M2.21 tier L: docs-review round 1 PASS WITH MINOR (S4 G-1..G-10, fixed); delta next"
     },
     "G4": {
       "status": "pass",
@@ -437,7 +438,8 @@
       "DEC-149",
       "DEC-150",
       "DEC-151",
-      "DEC-152"
+      "DEC-152",
+      "DEC-153"
     ],
     "pendingPO": [
       "OQ-03",
@@ -1325,6 +1327,11 @@
       "at": "2026-10-23T12:37:41Z",
       "actor": "lead-coordinator",
       "event": "T-M2.21 G1: gate PASS on e5a59b9 (420 s); the first run failed on the kept flaky RouteError.test.tsx:316 (DEC-152, fix to T-M2.13). Fixtures 32/32; each check's mutation fails its cases. Next: PR, G3 docs review."
+    },
+    {
+      "at": "2026-10-23T13:02:25Z",
+      "actor": "lead-coordinator",
+      "event": "T-M2.21 G3 round 1 (fresh docs-reviewer, 72,125 tokens, 9.1 min): PASS WITH MINOR, S4 G-1..G-10; fixed (cell-start done rule, archive by end state, 6 new fixtures); the RouteError flake failed the gate again and was ruled in as AC9 (DEC-153); gate PASS on f866c09 (426 s)."
     }
   ]
 }

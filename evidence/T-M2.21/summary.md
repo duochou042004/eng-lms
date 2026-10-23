@@ -7,7 +7,7 @@
 - `scripts/check_docs.py`: three checks after the existing five. `check_done_records` (scope 1, 2), `check_handoff_archived` (scope 3),
   `check_table_code_spans` (scope 4). `ENGLMS_DOCS_ROOT` and `ENGLMS_DOCS_BASE` (then `ENGLMS_GATE_BASE`, then `origin/develop`);
   a shared `unfenced()` line reader skips fenced blocks. The PASS line names the new checks.
-- `scripts/tests/check-docs.test.sh` (new, picked up by `run-all.sh`): 32 assertions over 19 fixtures, about 19 s.
+- `scripts/tests/check-docs.test.sh` (new, picked up by `run-all.sh`): 38 results over 18 fixtures (after the G3 round 1 fixes), about 20 s.
 - `.github/workflows/docs-check.yml`: `ENGLMS_DOCS_BASE=origin/<base_ref>` on pull requests only (empty on pushes, so the default applies).
 - Stale records fixed (scope 6), exactly the 15 failures the new checks reported on `ae24b4d`'s parent: eight packet Status lines
   (T-M1.2, T-M1.3, T-M1.17, T-M1.18, T-M1.19, T-M2.4, T-M2.15, T-M2.18 → `done (<mergeCommit>, PR #n)`, SHAs asserted against
@@ -19,14 +19,15 @@
 ## AC → proof
 | AC | Proof |
 |---|---|
-| AC1 | fixtures: row without `**done**`, `**Done**`, no row → exit 1, message names the task and `docs/tasks/backlog.md`, one problem |
+| AC1 | fixtures: row without `**done**`, `**Done**`, `**done**` only in the row's prose (G-3: a cell must start with it), no T-M1.1 row while the T-M1.1x rows exist (G-1) → exit 1, message names the task and `docs/tasks/backlog.md`, one problem |
 | AC2 | fixtures: Status `ready (G0)`, no Status row, a `done` row in a fenced block before a `ready` one → exit 1; the clean tree holds both `**done**: …` (T-M1.1) and `done (…)` forms and passes |
-| AC3 | fixtures: HANDOFF.md changed uncommitted and committed → exit 1; plus an untracked or committed new archive file → 0; `git mv` to the archive + new HANDOFF.md → 0; unknown `ENGLMS_DOCS_BASE` / `ENGLMS_GATE_BASE` → exit 1 naming the ref and the variable |
+| AC3 | fixtures: HANDOFF.md changed uncommitted and committed → exit 1; plus an untracked or committed new archive file → 0; `git mv` to the archive + new HANDOFF.md (with `diff.renames copies`) → 0; an archive file committed then deleted in the working tree, and a deleted old archive file → exit 1 (G-2, G-5: new archive files are judged by the end state on disk against the merge base); unknown `ENGLMS_DOCS_BASE` / `ENGLMS_GATE_BASE` → exit 1 naming the ref and the variable |
 | AC4 | fixtures: ``a\|b`` and a double-backtick span in a table row → exit 1 with file:line; escaped, paragraph, fenced → 0; git-ignored `.claude/scratch/x.md` → 0 |
 | AC5 | mutation runs below: each check (and the fence handling) disabled in turn makes its cases fail |
-| AC6 | `./scripts/check-docs.sh` on the final head: PASS (343 markdown files … records consistent, handoff archived, table code spans escaped) |
+| AC6 | `./scripts/check-docs.sh` bare on the final head: PASS (… progress.json valid, sources intact, prompt within limit, records consistent, handoff archived, table code spans escaped; the file count includes git-ignored local files, so it varies by machine) |
 | AC7 | the files listed under Docs |
-| AC8 | `ENGLMS_TASK=T-M2.21 ./scripts/gate.sh` on `e5a59b9`: PASS (13 steps, 420 s; scripts 68 s incl. check-docs 32/32; web 818 tests in 68 files; e2e 515 passed / 31 skipped; backend and contract-drift skipped: no backend/api change; no changed spec) — `evidence/T-M2.21/gate-20261023T122921Z.log`. CI below. Every existing script test kept (run-all PASS) |
+| AC9 | `RouteError.test.tsx` AC11 (a): the four reads after `online`/`offline` are `await findBy*` (DEC-153); 3/3 alone, and the web suite passes in the final gate |
+| AC8 | `ENGLMS_TASK=T-M2.21 ./scripts/gate.sh` on the final code head `f866c09`: PASS (13 steps, 426 s; check-docs fixtures 38/38; web 818 tests in 68 files; e2e 515 passed / 31 skipped; backend and contract-drift skipped: no backend/api change; no changed spec) — `evidence/T-M2.21/gate-20261023T125431Z.log`. CI below. Every existing script test kept (run-all PASS) |
 
 ## AC5 mutation runs (`bash scripts/tests/check-docs.test.sh` with one change to `check_docs.py`, restored after each)
 ```text
@@ -72,12 +73,31 @@
   -> 30 passed, 2 failed
 ```
 
+## AC5 mutation runs after the G3 round 1 fixes (the survivors the reviewer found)
+```text
+== mutation: ID boundary [ |] removed
+  FAIL - T-M1.1 with no row fails: the T-M1.1x rows do not match it (expected exit 1, got 0)
+  -> 35 passed, 3 failed
+== mutation: any archive file on disk counts (no comparison with the merge base)
+  FAIL - uncommitted HANDOFF.md change without an archive file fails (expected exit 1, got 0)
+  FAIL - committed HANDOFF.md change without an archive file fails (expected exit 1, got 0)
+  FAIL - an archive file committed, then deleted in the working tree, does not count (expected exit 1, got 0)
+  FAIL - deleting an old archive file is not archiving (expected exit 1, got 0)
+  -> 32 passed, 6 failed
+== mutation: **done** anywhere in the row counts
+  FAIL - **done** inside the row's prose (not starting a cell) does not count (expected exit 1, got 0)
+  -> 37 passed, 1 failed
+```
+
 ## Gate notes
-- The first gate on `e5a59b9` failed at `web-test` on the kept T-M2.12 test `RouteError.test.tsx:316` (one `getByRole` after an
-  `online` event, L-05). This diff changes no web code; the file passed 8/8 alone and the re-run passed. Ruled by DEC-152: the fix joins
-  the T-M2.13 row. The failed log is kept in the LC's local records only.
+- Four gate runs, logs in `evidence/T-M2.21/`: `122611Z` on `e5a59b9` FAIL at `web-test` (the kept T-M2.12 test
+  `RouteError.test.tsx:316`, one `getByRole` after an `online` event, L-05; DEC-152 first sent it to T-M2.13); `122921Z` on `e5a59b9`
+  PASS (420 s); `125112Z` on `9715628` (after the G3 round 1 fixes) FAIL on the same test, so DEC-153 ruled it in as AC9; `125431Z` on
+  `f866c09` PASS (426 s).
 
 ## G3 cost
 | Round | Reviewer | Head | Verdict | Findings | Full/delta | Tokens | Minutes | Gate runs |
 |---|---|---|---|---|---|---|---|---|
-| G1 | LC (implementer) | `e5a59b9` | gate PASS (2nd run) | flake → DEC-152 | — | — | — | 2 (1st FAIL at web-test after 55 s; 2nd PASS 420 s) |
+| G1 | LC (implementer) | `e5a59b9` | gate PASS (2nd run) | flake → DEC-152 | — | — | — | 2 (FAIL at web-test after 55 s; PASS 420 s) |
+| G3 round 1 | docs-reviewer (fresh) | `b536b20` | PASS WITH MINOR | S4 G-1..G-10 (G-1..G-8, G-10 fixed; G-9 by the final gate) | full | 72,125 | 9.1 | 0 |
+| Fixes | LC | `f866c09` | gate PASS | flake ruled in (AC9, DEC-153) | — | — | — | 2 (FAIL at web-test after 57 s; PASS 426 s) |
