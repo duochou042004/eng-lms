@@ -27,7 +27,7 @@
 | AC6 | `./scripts/check-docs.sh` bare on the final head: PASS (… progress.json valid, sources intact, prompt within limit, records consistent, handoff archived, table code spans escaped; the file count includes git-ignored local files, so it varies by machine) |
 | AC7 | the files listed under Docs |
 | AC9 | `RouteError.test.tsx` AC11 (a): the four reads after `online`/`offline` are `await findBy*` (DEC-153); 3/3 alone, and the web suite passes in the final gate |
-| AC8 | `ENGLMS_TASK=T-M2.21 ./scripts/gate.sh` on the final code head `f866c09`: PASS (13 steps, 426 s; check-docs fixtures 38/38; web 818 tests in 68 files; e2e 515 passed / 31 skipped; backend and contract-drift skipped: no backend/api change; no changed spec) — `evidence/T-M2.21/gate-20261023T125431Z.log`. CI below. Every existing script test kept (run-all PASS) |
+| AC8 | `ENGLMS_TASK=T-M2.21 ./scripts/gate.sh` on the final code head `d08454c`: PASS (13 steps, 428 s; check-docs fixtures 39/39; web 818 tests in 68 files; e2e 515 passed / 31 skipped; backend and contract-drift skipped: no backend/api change; no changed spec) — `evidence/T-M2.21/gate-20261023T130920Z.log`. CI below. Every existing script test kept (run-all PASS) |
 
 ## AC5 mutation runs (`bash scripts/tests/check-docs.test.sh` with one change to `check_docs.py`, restored after each)
 ```text
@@ -87,13 +87,16 @@
 == mutation: **done** anywhere in the row counts
   FAIL - **done** inside the row's prose (not starting a cell) does not count (expected exit 1, got 0)
   -> 37 passed, 1 failed
+== mutation: archive files from glob (ignored files count)
+  FAIL - a git-ignored file in the archive folder (.DS_Store) is not an archive file (expected exit 1, got 0)
+  -> 38 passed, 1 failed
 ```
 
 ## Gate notes
 - Four gate runs, logs in `evidence/T-M2.21/`: `122611Z` on `e5a59b9` FAIL at `web-test` (the kept T-M2.12 test
   `RouteError.test.tsx:316`, one `getByRole` after an `online` event, L-05; DEC-152 first sent it to T-M2.13); `122921Z` on `e5a59b9`
   PASS (420 s); `125112Z` on `9715628` (after the G3 round 1 fixes) FAIL on the same test, so DEC-153 ruled it in as AC9; `125431Z` on
-  `f866c09` PASS (426 s).
+  `f866c09` PASS (426 s); `130920Z` on `d08454c` (after the G3 round 2 fixes) PASS (428 s).
 
 ## G3 cost
 | Round | Reviewer | Head | Verdict | Findings | Full/delta | Tokens | Minutes | Gate runs |
@@ -101,3 +104,6 @@
 | G1 | LC (implementer) | `e5a59b9` | gate PASS (2nd run) | flake → DEC-152 | — | — | — | 2 (FAIL at web-test after 55 s; PASS 420 s) |
 | G3 round 1 | docs-reviewer (fresh) | `b536b20` | PASS WITH MINOR | S4 G-1..G-10 (G-1..G-8, G-10 fixed; G-9 by the final gate) | full | 72,125 | 9.1 | 0 |
 | Fixes | LC | `f866c09` | gate PASS | flake ruled in (AC9, DEC-153) | — | — | — | 2 (FAIL at web-test after 57 s; PASS 426 s) |
+| G3 round 2 | docs-reviewer (resumed) | `21aa682` | PASS WITH MINOR | G-1..G-10 closed; S4 N-1 (ignored files counted as archive files), N-2, N-3, all fixed in `d08454c` | delta | 21,875 | 5.3 | 0 |
+| Fixes | LC | `d08454c` | gate PASS | — | — | — | — | 1 (PASS 428 s) |
+| **Total** | 1 review agent | | | | | 94,000 | 14.4 | 5 (2 FAIL on the flake, 3 PASS) |

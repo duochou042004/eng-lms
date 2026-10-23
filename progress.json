@@ -37,7 +37,7 @@
     "branch": "chore/T-M2.21-records-checks",
     "packet": "docs/tasks/T-M2.21-records-checks.md",
     "pr": "140",
-    "lastCommit": "f866c09",
+    "lastCommit": "d08454c",
     "startedAt": "2026-10-23T12:19:39Z",
     "entryGate": [
       "T-M2.20 merged — met (f3a77fa)"
@@ -357,8 +357,8 @@
     }
   ],
   "tests": {
-    "lastRun": "2026-10-23T12:54:31Z",
-    "summary": "T-M2.21 AC8: gate PASS on f866c09 (426 s, 13 steps; check-docs fixtures 38/38; web 818 tests in 68 files; e2e 515 passed / 31 skipped; backend and contract-drift skipped).",
+    "lastRun": "2026-10-23T13:09:20Z",
+    "summary": "T-M2.21 AC8: gate PASS on d08454c (428 s, 13 steps; check-docs fixtures 39/39; web 818 tests in 68 files; e2e 515 passed / 31 skipped; backend and contract-drift skipped).",
     "suites": [
       {
         "name": "backend (./mvnw -B verify)",
@@ -373,12 +373,12 @@
       {
         "name": "governance scripts (scripts/tests/run-all.sh)",
         "result": "pass",
-        "details": "At T-M2.21 (f866c09): check-docs 38, merge-gate 325, path-ownership 15, pre-push 15, require-bash 11, workflow warnings 10, and the other suites (run-all PASS)"
+        "details": "At T-M2.21 (d08454c): check-docs 39, merge-gate 325, path-ownership 15, pre-push 15, require-bash 11, workflow warnings 10, and the other suites (run-all PASS)"
       },
       {
         "name": "gate.sh",
         "result": "pass",
-        "details": "evidence/T-M2.21/gate-20261023T125431Z.log (f866c09) PASS"
+        "details": "evidence/T-M2.21/gate-20261023T130920Z.log (d08454c) PASS"
       }
     ]
   },
@@ -389,15 +389,15 @@
     },
     "G1": {
       "status": "pass",
-      "note": "T-M2.21: gate PASS on f866c09 (13 steps, 426 s); 4 runs in all, 2 failed on the kept flaky RouteError test, ruled in as AC9 (DEC-153)"
+      "note": "T-M2.21: gate PASS on d08454c (13 steps, 428 s); 5 runs in all, 2 failed on the kept flaky RouteError test, ruled in as AC9 (DEC-153)"
     },
     "G2": {
       "status": "pass",
       "note": "T-M2.20: CI 7/7 on c03763b"
     },
     "G3": {
-      "status": "pending",
-      "note": "T-M2.21 tier L: docs-review round 1 PASS WITH MINOR (S4 G-1..G-10, fixed); delta next"
+      "status": "pass",
+      "note": "T-M2.21 tier L: one docs-reviewer, round 1 full 72,125 tokens PASS WITH MINOR (S4 G-1..G-10) and round 2 delta 21,875 PASS WITH MINOR (S4 N-1..N-3), all fixed"
     },
     "G4": {
       "status": "pass",
