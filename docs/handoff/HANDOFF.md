@@ -1,29 +1,27 @@
-# Handoff — 2026-10-23 (T-M2.21 packet at G0, DEC-151; next: the PO start signal, then the LC implements it)
+# Handoff — 2026-10-23 (T-M2.21 merged, DEC-154; next: the T-M2.13 packet, on a new device)
 
-Phase/Milestone: P1 / M2 (in progress) · Current task: **T-M2.21 records checks (LC, ready, tier L)**: packet merged at G0 (PR #139), waits
-for the PO start signal · Next: **T-M2.13 auth and shell feedback** · Last merges on develop: the T-M2.21 packet (PR #139), the T-M2.20
-records (PRs #137, #138, `995d047`), T-M2.20 (`f3a77fa`, PR #136) · Remote: https://github.com/duochou042004/eng-lms (mirror:
-gitlab.com/duochou042004/eng-lms)
+Phase/Milestone: P1 / M2 (in progress) · Current task: **T-M2.13 auth and shell feedback follow-ups (FE, draft)**: packet to write ·
+Next: **T-M2.16** username-only PATCH (BE) · Last merges on develop: T-M2.21 (`d890aae`, PR #140), its packet (PR #139, `b34c0a6`), the
+T-M2.20 records (PRs #137, #138) · Remote: https://github.com/duochou042004/eng-lms (mirror: gitlab.com/duochou042004/eng-lms)
 
 ## Where we are
-- **T-M2.21 packet** `docs/tasks/T-M2.21-records-checks.md` (DEC-150 decisions, DEC-151 G0): three new `check-docs` checks: (1) a task in
-  `progress.json` `completed[]` has `**done**` in its backlog row and a packet Status starting with `done`; (2) `HANDOFF.md` changed against
-  the merge base of `${ENGLMS_DOCS_BASE:-${ENGLMS_GATE_BASE:-origin/develop}}` needs a new `docs/handoff/archive/` file (fails closed on an
-  unknown base); (3) no bare `|` in a table-row code span (git-ignored Markdown skipped). Each is proven failing in a new
-  `scripts/tests/check-docs.test.sh` (fixtures from `git archive HEAD`, `ENGLMS_DOCS_ROOT`). The same PR fixes the stale records listed in
-  scope 6 (8 packet Status lines, 3 backlog rows, 4 code spans). **Until it lands, keep the T-M2.21 records by hand (part C).**
-- G0 cost: one docs-reviewer, round 1 full 78,905 tokens (287 s) PASS WITH MINOR, round 2 delta 12,275 (25 s) PASS.
-- PRs #137 (QA report) and #138 (T-M2.20 records) were already merged at session start (`b89ee92`, `995d047`); mirror synced.
+- **T-M2.21 merged** (PR #140, `d890aae`, DEC-154): `check-docs` enforces the merge records (done rows and packet Status for
+  `completed[]`, the handoff archive, escaped pipes in table code spans), proven by `scripts/tests/check-docs.test.sh` (18 fixture
+  clones, 39 results; each check mutated off fails its cases); 15 stale records fixed; the flaky `RouteError` test fixed (AC9, DEC-153).
+  Records: `evidence/T-M2.21/summary.md` (G3 cost table, mutation runs), `review/docs.md` (G0 and G3), this records PR.
+- G3 (tier L) cost: one docs-reviewer, round 1 72,125 tokens PASS WITH MINOR (S4 G-1..G-10) and delta 21,875 PASS WITH MINOR (S4
+  N-1..N-3), all fixed; implementer the LC; 5 gate runs (2 FAIL on the flake, 3 PASS, last 428 s).
 - Left over (unchanged): S4 QA-2 in the **T-M2.7** row (M2 G5, DEC-148); the backend wall-clock flake in **T-M2.10** (DEC-144 (3)); AC6's
-  purpose unverified off Chromium (G5, DEC-146). **The quality process is DEC-131.** Open in the backlog: T-M2.21 (ready), T-M2.13,
-  T-M2.16, T-M2.10; then T-M2.6, T-M2.7 (G5).
+  purpose unverified off Chromium (G5, DEC-146). **The quality process is DEC-131.** Open in the backlog: T-M2.13, T-M2.16, T-M2.10; then
+  T-M2.6, T-M2.7 (G5).
 
 ## In flight / uncommitted
-- Nothing uncommitted. If PR #139 is still open: merge it via merge-gate (`DOCS-REVIEW T-M2.21: PASS`, `LC-APPROVED T-M2.21`).
+- Nothing uncommitted. If this records PR (`docs/T-M2.21-g3-records`) is still open: merge it via merge-gate (`DOCS-REVIEW T-M2.21:
+  PASS` after an LC records check, `LC-APPROVED T-M2.21`), then gitlab-sync.
 
 ## Moving to a new device (PO, 2026-10-23: the next session runs on a new, near-identical device)
 - Follow development-setup §0 for its platform. Then record the OS, engine and versions in `progress.json` `environment` and the clone
-  path in `project.repoLocal` (DEC-083), in a small docs commit on the next task branch, and say so in its history entry.
+  path in `project.repoLocal` (DEC-083), in a small docs commit on the first task branch there (the T-M2.13 packet branch), and say so in its history entry.
 - Not in git, so set up again: `.env` (`cp .env.example .env`), `.data/**` (E2E creates `.data/e2e/` on first run), the dev DB volume
   (a fresh one is fine: the old one only held fictitious test students, DEC-139), `.claude/settings.local.json`, Playwright browsers
   (`cd e2e && pnpm browsers`; for G3 on all engines `(cd qa && pnpm exec playwright install-deps firefox webkit)` needs `sudo`, PO).
@@ -34,23 +32,27 @@ gitlab.com/duochou042004/eng-lms)
   first task.
 
 ## Next steps
-1. If PR #139 is open: merge-gate (`--dry-run` first), gitlab-sync.
-2. Ask the PO for the T-M2.21 start signal (if not given yet). Then the LC implements it on `chore/T-M2.21-records-checks` from
-   `develop`: packet scope 1-7, AC1-AC8; `ENGLMS_TASK=T-M2.21 ./scripts/gate.sh` once on the final head; summary with the AC5 mutation
-   output; G3 = one fresh docs-reviewer that runs the fixtures and mutates each check; merge-gate; records (part C, now checked).
-3. Then T-M2.13, T-M2.16, T-M2.10; then T-M2.6, T-M2.7 (M2 regression, G5, with the DEC-148 S4 and Firefox/WebKit).
+1. New device: the section above; then `./scripts/check-docs.sh` and `./scripts/tests/run-all.sh`.
+2. If the records PR is open: merge-gate, gitlab-sync.
+3. The **T-M2.13 packet** (task-packet skill; FE, tier M: one combined QA+UX reviewer) from its backlog row (UX-3 compact meta error
+   on touch, UX-4 the cross-tab sign-out, …); G0 docs review; PO start signal.
+4. Then T-M2.16, T-M2.10; then T-M2.6, T-M2.7 (M2 regression, G5, with the DEC-148 S4 and Firefox/WebKit).
 
 ## Pending PO decisions / actions
-- **T-M2.21 start signal.**
-- **PR #100** (react-aria-components 1.21.1 → 1.22.1) is **held** (PO, DEC-139): it needs a full local verification with a manual check of
-  the toast and dialog screens (`shortcut:` in `ui/Toast.tsx`, `ui/toastQueue.ts`, `ui/Button.tsx`); no action until the PO says so.
-  Dependabot PRs #127–#135 (opened 2026-10-23) are the PO's to handle, as before.
-- Open points: the `ui/index.ts` barrel ships tutor-only components in the student first visit (under budget: student 186.7 KB gz);
-  dates use the browser's time zone (`shortcut:` in `lib/time`; resolved in T-M3.1/T-M3.3, L-12); production needs
-  `SERVER_FORWARDHEADERSSTRATEGY=native` (M8); the common-password list barely filters at 10 characters (T-M2.3 SEC S4-9); `glab` deny
-  rules (DEC-061); OQ-03..OQ-14 (defaults documented).
+- **PR #100** (react-aria-components 1.21.1 → 1.22.1) is **held** (PO, DEC-139): full local verification with a manual check of the toast
+  and dialog screens (`shortcut:` in `ui/Toast.tsx`, `ui/toastQueue.ts`, `ui/Button.tsx`) before any action. Dependabot PRs #127–#135
+  are the PO's.
+- Open points: the `ui/index.ts` barrel ships tutor-only components in the student first visit (under budget); dates use the browser's
+  time zone (`shortcut:` in `lib/time`; T-M3.1/T-M3.3, L-12); production needs `SERVER_FORWARDHEADERSSTRATEGY=native` (M8); the
+  common-password list barely filters at 10 characters (T-M2.3 SEC S4-9); `glab` deny rules (DEC-061); OQ-03..OQ-14 (defaults documented).
 
 ## Gotchas
+- **`check-docs` now guards the merge records (T-M2.21, DEC-154):** a task in `completed[]` needs a backlog cell starting with
+  `**done**` and a packet Status starting with `done`; a changed `HANDOFF.md` needs a new archive file (`mv` it first); a table-row
+  code span needs `\|` for a pipe (reviewer tables often hold bare pipes: escape them when recording). It fails closed when
+  `origin/develop` (or `ENGLMS_DOCS_BASE`) does not resolve: `git fetch` first on a fresh clone.
+- The flaky `RouteError.test.tsx` AC11 (a) test (2 of 3 full local gates) is fixed with polling reads (DEC-153); another single
+  `getBy*` read right after an event is the same trap (L-05).
 - **Engine facts can void a "fails on develop" clause** (T-M2.20 AC6, DEC-146): Chromium 156 already blurs a control that turns
   `visibility: hidden`; write a proof AC as "the new rule rejects X" unless the old helper's pass was observed first.
 - **A component's own error state can hide the form's error** (T-M2.20 QA-1, DEC-147): when a `ui/` field keeps a local error, say in the
@@ -93,6 +95,6 @@ gitlab.com/duochou042004/eng-lms)
 - `git merge` is denied: `gh pr update-branch` (DEC-090).
 
 ## Files to read first
-`CLAUDE.md` → `progress.json` → this file → `docs/tasks/T-M2.21-records-checks.md` → DEC-150, DEC-151 → `docs/09-harness/lessons-learned.md`
-(L-01, L-09) → `scripts/check_docs.py`, `scripts/tests/lib.sh`, `scripts/tests/gate.test.sh` (fixture and git identity pattern) →
-`.claude/skills/evidence-and-handoff/SKILL.md` → `docs/07-operations/development-setup.md` §0 (new device).
+`CLAUDE.md` → `progress.json` → this file → `docs/09-harness/lessons-learned.md` → `docs/tasks/backlog.md` (T-M2.13) → DEC-118, DEC-119,
+DEC-131, DEC-154 → the task-packet skill → `docs/tasks/T-M2.20-m2-polish.md` (latest FE packet shape) → `quality-gates.md` G0 →
+`docs/07-operations/development-setup.md` §0 (new device).

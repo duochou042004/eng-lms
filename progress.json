@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-10-23T13:02:25Z",
-  "updatedBy": "lead-coordinator (T-M2.21 G3 round 1 fixed; delta next)",
+  "updatedAt": "2026-10-23T13:31:46Z",
+  "updatedBy": "lead-coordinator (T-M2.21 merged, DEC-154; next: T-M2.13 packet)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -30,31 +30,6 @@
     "exitCriteria": "FR-AUTH-01..10 and FR-STU-01..07 accepted; authorization-matrix and student-isolation harnesses fail on any unregistered endpoint; add-student flow E2E at 360/768/1280 within its step budget; security review of authentication passed (docs/01-product/roadmap.md)."
   },
   "currentTask": {
-    "id": "T-M2.21",
-    "title": "Records consistency in check-docs (lessons-learned L-09, DEC-139)",
-    "status": "in_review",
-    "ownerRole": "LC",
-    "branch": "chore/T-M2.21-records-checks",
-    "packet": "docs/tasks/T-M2.21-records-checks.md",
-    "pr": "140",
-    "lastCommit": "d08454c",
-    "startedAt": "2026-10-23T12:19:39Z",
-    "entryGate": [
-      "T-M2.20 merged — met (f3a77fa)"
-    ],
-    "nextSteps": [
-      "G3 round 2 (delta) by the same docs-reviewer on the fixes; DOCS-REVIEW + LC-APPROVED after CI green; merge-gate; gitlab-sync",
-      "Records PR (part C): backlog row and packet Status done, completed[], merge DEC, G3 record, handoff"
-    ],
-    "trace": [
-      "DEC-139",
-      "DEC-150",
-      "DEC-151",
-      "DEC-152",
-      "DEC-153"
-    ]
-  },
-  "nextTask": {
     "id": "T-M2.13",
     "title": "Auth and shell feedback follow-ups (T-M2.12 G3, DEC-118)",
     "status": "draft",
@@ -65,13 +40,33 @@
     "lastCommit": null,
     "startedAt": null,
     "entryGate": [
-      "After T-M2.21 (handoff order)"
+      "T-M2.21 merged — met (d890aae)"
+    ],
+    "nextSteps": [
+      "LC writes the T-M2.13 packet (task-packet skill; tier M: one combined QA+UX reviewer) from the backlog row; G0 docs review; PO start signal"
+    ],
+    "trace": [
+      "DEC-118"
+    ]
+  },
+  "nextTask": {
+    "id": "T-M2.16",
+    "title": "Username-only student PATCH and concurrent edits (T-M2.14 docs review D-6, DEC-124)",
+    "status": "draft",
+    "ownerRole": "BE",
+    "branch": null,
+    "packet": null,
+    "pr": null,
+    "lastCommit": null,
+    "startedAt": null,
+    "entryGate": [
+      "After T-M2.13 (handoff order)"
     ],
     "nextSteps": [
       "Packet from the backlog row"
     ],
     "trace": [
-      "DEC-118"
+      "DEC-124"
     ]
   },
   "completed": [
@@ -354,6 +349,14 @@
       "mergeCommit": "f3a77fa",
       "evidence": "evidence/T-M2.20/summary.md",
       "note": "PR #136 via merge-gate (head c03763b, CI 7/7); packet G0 DEC-144/145 (PR #126); G3 tier M: combined QA+UX round 1 PASS WITH MINOR/APPROVED (S3 QA-1 → AC10, DEC-147) → delta re-check PASS WITH MINOR/APPROVED; S4 QA-2 to the T-M2.7 row (DEC-148); QA report PR #137; DEC-149"
+    },
+    {
+      "id": "T-M2.21",
+      "title": "Records consistency in check-docs (lessons-learned L-09, DEC-139)",
+      "completedAt": "2026-10-23T13:31:39Z",
+      "mergeCommit": "d890aae",
+      "evidence": "evidence/T-M2.21/summary.md",
+      "note": "PR #140 via merge-gate (head 03ddf72, CI 7/7); packet G0 DEC-150/151 (PR #139); G3 tier L: docs-reviewer round 1 PASS WITH MINOR (S4 G-1..G-10) and delta PASS WITH MINOR (S4 N-1..N-3), all fixed; the flaky RouteError test ruled in (AC9, DEC-153); DEC-154"
     }
   ],
   "tests": {
@@ -384,24 +387,24 @@
   },
   "gates": {
     "G0": {
-      "status": "pass",
-      "note": "T-M2.21: DOCS-REVIEW PASS in 2 rounds (round 1 full 78,905 tokens PASS WITH MINOR, D-1..D-8 fixed; round 2 delta 12,275 PASS, N-1/N-2 fixed), DEC-151, PR #139"
+      "status": "n/a",
+      "note": "T-M2.13 packet not written yet (T-M2.21: DOCS-REVIEW PASS, DEC-151, PR #139)"
     },
     "G1": {
       "status": "pass",
-      "note": "T-M2.21: gate PASS on d08454c (13 steps, 428 s); 5 runs in all, 2 failed on the kept flaky RouteError test, ruled in as AC9 (DEC-153)"
+      "note": "T-M2.21: gate PASS on d08454c (428 s)"
     },
     "G2": {
       "status": "pass",
-      "note": "T-M2.20: CI 7/7 on c03763b"
+      "note": "T-M2.21: CI 7/7 on 03ddf72"
     },
     "G3": {
       "status": "pass",
-      "note": "T-M2.21 tier L: one docs-reviewer, round 1 full 72,125 tokens PASS WITH MINOR (S4 G-1..G-10) and round 2 delta 21,875 PASS WITH MINOR (S4 N-1..N-3), all fixed"
+      "note": "T-M2.21 tier L: docs-reviewer round 1 PASS WITH MINOR (72,125 tokens) and delta PASS WITH MINOR (21,875), all S4 fixed"
     },
     "G4": {
       "status": "pass",
-      "note": "T-M2.20 merged via merge-gate (f3a77fa)"
+      "note": "T-M2.21 merged via merge-gate (d890aae)"
     },
     "G5": {
       "status": "n/a",
@@ -439,7 +442,8 @@
       "DEC-150",
       "DEC-151",
       "DEC-152",
-      "DEC-153"
+      "DEC-153",
+      "DEC-154"
     ],
     "pendingPO": [
       "OQ-03",
@@ -735,6 +739,13 @@
       "status": "approved",
       "at": "2026-10-23T12:19:39Z",
       "ref": "DEC-151"
+    },
+    {
+      "what": "LC-APPROVED T-M2.21 (PR #140)",
+      "by": "LC",
+      "status": "approved",
+      "at": "2026-10-23T13:31:19Z",
+      "ref": "DEC-154"
     }
   ],
   "environment": {
@@ -1332,6 +1343,11 @@
       "at": "2026-10-23T13:02:25Z",
       "actor": "lead-coordinator",
       "event": "T-M2.21 G3 round 1 (fresh docs-reviewer, 72,125 tokens, 9.1 min): PASS WITH MINOR, S4 G-1..G-10; fixed (cell-start done rule, archive by end state, 6 new fixtures); the RouteError flake failed the gate again and was ruled in as AC9 (DEC-153); gate PASS on f866c09 (426 s)."
+    },
+    {
+      "at": "2026-10-23T13:31:46Z",
+      "actor": "lead-coordinator",
+      "event": "T-M2.21 merged (PR #140, d890aae): 1 review agent (docs-reviewer 72,125 + delta 21,875 tokens), implemented by the LC, 5 gate runs (2 FAIL on the RouteError flake, ruled in as AC9, DEC-153). check-docs now enforces the merge records. Next: the T-M2.13 packet."
     }
   ]
 }
