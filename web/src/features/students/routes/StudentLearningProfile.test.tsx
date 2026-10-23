@@ -312,12 +312,15 @@ describe('Learning profile: validation and 422 (AC4)', { timeout: 20_000 }, () =
     await userEvent.click(save())
     await waitFor(() => expect(summary()).toHaveFocus())
     expect(
+      within(summary()).getByRole('heading', { level: 3, name: 'Chưa lưu được hồ sơ học tập' }),
+    ).toBeInTheDocument()
+    expect(
       within(summary())
         .getAllByRole('link')
         .map((a) => [a.textContent, a.getAttribute('href')]),
     ).toEqual([
       ['Tối đa 40 ký tự.', '#learning-profile-currentLevel'],
-      ['Tối đa 2000 ký tự.', '#learning-profile-learningNotes'],
+      ['Tối đa 2.000 ký tự.', '#learning-profile-learningNotes'],
       ['Tối đa 60 ký tự.', '#learning-profile-field-0-label'],
       ['Hãy nhập nhãn.', '#learning-profile-field-1-label'],
       ['Tối đa 500 ký tự.', '#learning-profile-field-1-value'],
@@ -355,6 +358,24 @@ describe('Learning profile: validation and 422 (AC4)', { timeout: 20_000 }, () =
       '#learning-profile-strengths',
     )
     expect(textbox('Điểm mạnh')).toHaveValue('NGHE')
+    expect(api.calls.profilePut).toEqual([])
+  })
+
+  it('T-M2.20 AC8: uncommitted text refused for two reasons shows both in the field error and its one summary item', async () => {
+    const { api } = await openForm()
+    await userEvent.click(textbox('Điểm mạnh'))
+    await userEvent.paste('NGHE, Bad\u0007x')
+    await userEvent.click(save())
+    await waitFor(() => expect(summary()).toHaveFocus())
+    // The summary item is the form's message (the schema's joined keys, each translated); the field shows the same.
+    const both = 'Đã thêm rồi. Thẻ không được chứa ký tự điều khiển.'
+    expect(
+      within(summary())
+        .getAllByRole('link')
+        .map((a) => [a.textContent, a.getAttribute('href')]),
+    ).toEqual([[both, '#learning-profile-strengths']])
+    expect(textbox('Điểm mạnh')).toHaveAccessibleDescription(expect.stringContaining(both))
+    expect(textbox('Điểm mạnh')).toHaveValue('NGHE, Bad\u0007x')
     expect(api.calls.profilePut).toEqual([])
   })
 

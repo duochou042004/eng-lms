@@ -23,8 +23,9 @@ export const TAG_ERROR: Record<TagEntryError, string> = {
 
 /** A `TagInput`'s value in the form: its tags and the text still in its input (Save commits it; it counts as a change). */
 const tagsSchema = z.object({ tags: z.array(z.string()), draft: z.string() }).superRefine((value, ctx) => {
-  const { error } = addTags(value.tags, value.draft, TAG_LIMITS)
-  if (error) ctx.addIssue({ code: 'custom', message: TAG_ERROR[error] })
+  // One issue (zodResolver keeps one per path): every reason's key, joined by a space (keys hold none; T-M2.20 AC8).
+  const { errors } = addTags(value.tags, value.draft, TAG_LIMITS)
+  if (errors.length > 0) ctx.addIssue({ code: 'custom', message: errors.map((reason) => TAG_ERROR[reason]).join(' ') })
 })
 
 const isEmptyRow = (row: { label: string; value: string }) => row.label.trim() === '' && row.value.trim() === ''

@@ -57,6 +57,7 @@ describe('/change-password, voluntary mode (FR-AUTH-05, AC5)', () => {
     await fill('', 'ngan', 'khac')
     const summary = await screen.findByRole('alert', { name: 'Mật khẩu chưa được đổi' })
     await waitFor(() => expect(summary).toHaveFocus())
+    expect(within(summary).getByRole('heading', { level: 2, name: 'Mật khẩu chưa được đổi' })).toBeInTheDocument()
     const links = within(summary).getAllByRole('link')
     expect(links.map((l) => [l.textContent, l.getAttribute('href')])).toEqual([
       ['Hãy nhập mật khẩu hiện tại.', '#password-current'],

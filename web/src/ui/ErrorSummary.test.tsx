@@ -31,6 +31,20 @@ describe('ErrorSummary', () => {
     await expectNoAxeViolations(container)
   })
 
+  it('renders its title as an h3 with headingLevel 3, with the same class as the default h2', () => {
+    render(
+      <>
+        <ErrorSummary title="Mặc định" errors={[{ message: 'Lỗi.' }]} />
+        <ErrorSummary headingLevel={3} title="Trong mục" errors={[{ message: 'Lỗi.' }]} />
+      </>,
+    )
+    const h2 = screen.getByRole('heading', { level: 2, name: 'Mặc định' })
+    const h3 = screen.getByRole('heading', { level: 3, name: 'Trong mục' })
+    expect(h3.className).toBe(h2.className)
+    expect(screen.getByRole('alert', { name: 'Trong mục' })).toContainElement(h3)
+    expect(screen.queryByRole('heading', { level: 2, name: 'Trong mục' })).toBeNull()
+  })
+
   it('takes focus through its ref, and a link moves focus to the field', async () => {
     const ref = createRef<HTMLDivElement>()
     render(

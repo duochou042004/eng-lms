@@ -124,6 +124,22 @@ describe('learningProfileSchema (validation-rules)', () => {
       ['strengths: learningProfile.errors.tagDuplicate'],
     ],
     ['a 41-character tag in the input', { weaknesses: tags([], 'x'.repeat(41)) }, ['weaknesses: form.errors.TOO_LONG']],
+    // T-M2.20 AC8: one issue per field, every reason's key in first-refusal order, joined by a single space.
+    [
+      'a duplicate and a control character left in a tag input',
+      { strengths: tags(['Nghe'], 'NGHE, Bad\u0007x') },
+      ['strengths: learningProfile.errors.tagDuplicate learningProfile.errors.tagControl'],
+    ],
+    [
+      'a 41-character tag and a 31st tag in the input',
+      {
+        weaknesses: tags(
+          Array.from({ length: 29 }, (_, i) => `t${i}`),
+          `${'x'.repeat(41)}, new, more`,
+        ),
+      },
+      ['weaknesses: form.errors.TOO_LONG learningProfile.errors.tagsTooMany'],
+    ],
     [
       'a value without a label',
       { customFields: [{ label: ' ', value: 'x' }] },

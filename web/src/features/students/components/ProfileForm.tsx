@@ -132,7 +132,7 @@ export function ProfileForm({ student, onClose, onReload, onNotFound }: ProfileF
           send()
         }}
       >
-        <ErrorSummary ref={summaryRef} title={t('profile.summaryTitle')} errors={summaryItems} />
+        <ErrorSummary ref={summaryRef} headingLevel={3} title={t('profile.summaryTitle')} errors={summaryItems} />
         <DescriptionList
           emptyLabel={t('workspace.notAdded')}
           items={[

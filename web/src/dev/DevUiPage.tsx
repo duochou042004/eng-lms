@@ -509,6 +509,7 @@ export function DevUiPage() {
         <Section title={t('sections.errorSummary')}>
           <Stack gap={3}>
             <ErrorSummary
+              headingLevel={3}
               title={t('sample.summaryTitle')}
               errors={[
                 { fieldId: 'dev-summary-field', message: t('sample.summaryFieldError') },

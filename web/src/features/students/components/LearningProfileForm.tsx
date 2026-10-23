@@ -122,7 +122,11 @@ export function LearningProfileForm({ studentId, profile, onClose, onReload, onN
   const message = (path: string, key: string | undefined) => (key ? t(key, { max: maxOf(path, key) }) : undefined)
   const tagMessage = (name: TagsName) => {
     const error = errors[name]
-    const text = message(name, error?.message)
+    // The schema joins every refusal reason's key with a space: each is translated with its own max (T-M2.20 AC8).
+    const text = error?.message
+      ?.split(' ')
+      .map((key) => message(name, key))
+      .join(' ')
     const tag = serverTag[name]
     return text && error?.type === 'server' && tag ? t('learningProfile.tagError', { tag, message: text }) : text
   }
@@ -248,7 +252,12 @@ export function LearningProfileForm({ studentId, profile, onClose, onReload, onN
           send()
         }}
       >
-        <ErrorSummary ref={summaryRef} title={t('learningProfile.summaryTitle')} errors={summaryItems} />
+        <ErrorSummary
+          ref={summaryRef}
+          headingLevel={3}
+          title={t('learningProfile.summaryTitle')}
+          errors={summaryItems}
+        />
         <Controller
           name="currentLevel"
           control={control}

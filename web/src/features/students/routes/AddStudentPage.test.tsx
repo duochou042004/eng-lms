@@ -653,6 +653,7 @@ describe('Add student: guardians (T-M2.15 AC7)', { timeout: 30_000 }, () => {
     await userEvent.click(createButton())
     const summary = screen.getByRole('alert', { name: 'Chưa tạo được học viên' })
     await waitFor(() => expect(summary).toHaveFocus())
+    expect(within(summary).getByRole('heading', { level: 2, name: 'Chưa tạo được học viên' })).toBeInTheDocument()
     expect(section()).toHaveAttribute('aria-expanded', 'true')
     expect(
       within(summary)

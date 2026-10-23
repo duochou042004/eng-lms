@@ -50,7 +50,7 @@ export async function logout() {
 }
 
 /**
- * `POST /auth/login`. On success every other query is removed and the session is cached, and the other tabs are told
+ * `POST /auth/login`. On success every other query and every mutation are removed and the session is cached, and the other tabs are told
  * (`signed-in`, no data); a failure leaves the cached (anonymous) session alone.
  */
 export function useLogin() {
@@ -63,6 +63,8 @@ export function useLogin() {
     onSuccess: (session) => {
       // Nothing of an earlier session survives into this one, e.g. a write answered after its sign-out (AC12 (j)).
       queryClient.removeQueries({ predicate: (query) => query.queryHash !== SESSION_HASH })
+      // Nor a write's variables and answer, this sign-in's own password included (T-M2.15 SEC S-1, DEC-144 (2)).
+      queryClient.getMutationCache().clear()
       queryClient.setQueryData(SESSION_KEY, session)
       postAuthMessage('signed-in')
     },
@@ -79,7 +81,7 @@ export function useChangePassword() {
 }
 
 /**
- * Log out (FR-AUTH-04), then, also when the call failed, forget all server state, tell the other tabs (`signed-out`) and
+ * Log out (FR-AUTH-04), then, also when the call failed, forget all server state (queries and mutations), tell the other tabs (`signed-out`) and
  * go to `/login`, whose loader reads the session again (and so re-primes the `XSRF-TOKEN` cookie).
  */
 export function useLogout() {
@@ -89,6 +91,7 @@ export function useLogout() {
     mutationFn: logout,
     onSettled: async () => {
       queryClient.getQueryCache().clear()
+      queryClient.getMutationCache().clear()
       postAuthMessage('signed-out')
       await navigate('/login')
     },

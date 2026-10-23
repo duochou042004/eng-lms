@@ -316,7 +316,7 @@ export function GuardianForm({
           send()
         }}
       >
-        <ErrorSummary ref={summaryRef} title={t('guardianForm.summaryTitle')} errors={summaryItems} />
+        <ErrorSummary ref={summaryRef} headingLevel={3} title={t('guardianForm.summaryTitle')} errors={summaryItems} />
         {tooMany > 0 ? (
           <div ref={tooManyRef} tabIndex={-1} className={styles.focusTarget}>
             <InlineAlert tone="danger" title={t('guardianForm.tooMany', { max: GUARDIANS_MAX })} />
