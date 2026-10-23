@@ -14,7 +14,7 @@ description: Record task evidence, update progress.json, and write the session h
 
 ## C. Records at every merge (LC; lessons-learned L-09)
 0. Each reviewer or implementer report is copied to `.claude/scratch/lc-records/<task>-<round>.md` as soon as it returns (L-06).
-1. The backlog row → `**done** (`<merge sha>`, DEC-<n>, packet link)`; the packet's Status → `done (<sha>, DEC-<n>)`.
+1. The backlog row → `**done** (`<merge sha>`, DEC-<n>, packet link)`; the packet's Status → `done (<sha>, DEC-<n>)`. `check-docs` fails when a task in `completed[]` lacks either (T-M2.21).
 2. `progress.json`: the task into `completed[]`, `currentTask`/`nextTask` moved, `gates`, `tests`, `history`.
 3. The merge DEC and the review records (`evidence/<task>/review/*`) on a docs branch; the QA report on `qa/<task>`.
 4. Every number in a DEC, summary or handoff is copied from its source in the same step (gate log, Agent result, query), never restated.
@@ -24,7 +24,7 @@ description: Record task evidence, update progress.json, and write the session h
 ## B. Handoff, per `docs/09-harness/session-handoff-protocol.md`
 1. If context is near the threshold: stop starting new steps. Finish the safe step or revert to the last green commit. Commit WIP on the **feature branch** only.
 2. Update `progress.json`: `currentTask.status`, `lastCommit`, `nextSteps[]`, `blockers[]`, `tests`, `gates`, `approvals`; append to `history[]`; set `updatedAt`/`updatedBy`.
-3. Archive the old handoff: `mv docs/handoff/HANDOFF.md docs/handoff/archive/<UTC>-<task>.md`. Write the new `HANDOFF.md` (protocol §4 template).
+3. Archive the old handoff: `mv docs/handoff/HANDOFF.md docs/handoff/archive/<UTC>-<task>.md`. Write the new `HANDOFF.md` (protocol §4 template). `check-docs` fails when `HANDOFF.md` changed without a new archive file (T-M2.21).
 4. Write `docs/handoff/next-session-prompt.md` from the protocol §5 template. It **must be ≤ 4000 characters** (`wc -c`).
 5. `./scripts/check-docs.sh` must pass.
 6. Commit: `docs(handoff): <task> <state>`. Push if a remote exists.

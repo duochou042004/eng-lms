@@ -26,7 +26,10 @@ jobs:
           python-version: "3.13"
       - name: Install docs-check dependencies
         run: python -m pip install --disable-pip-version-check jsonschema==4.26.0
-      - name: Docs gate (schema, links, ID references, source integrity, handoff prompt)
+      - name: Docs gate (schema, links, ID references, source integrity, handoff prompt, records)
+        env:
+          # The handoff-archive check diffs against the PR's base; pushes (base_ref empty) keep the default, origin/develop.
+          ENGLMS_DOCS_BASE: ${{ github.event_name == 'pull_request' && format('origin/{0}', github.base_ref) || '' }}
         run: ./scripts/check-docs.sh
       - name: Governance script tests (merge gate, path ownership, pre-push hook)
         run: ./scripts/tests/run-all.sh

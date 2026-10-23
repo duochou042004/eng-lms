@@ -39,8 +39,9 @@ expect_output_contains "docs/tasks/T-M2.20-m2-polish.md Status reads: ready (G0)
 fixture; edit docs/tasks/T-M2.20-m2-polish.md 're.sub(r"(?m)^\| Status \|.*\|\n", "", t, count=1)'
 expect_exit 1 "completed task whose packet has no Status row fails" -- check
 expect_output_contains "docs/tasks/T-M2.20-m2-polish.md has no Status row" "names the packet"; one_problem "no Status row"
-fixture; edit docs/tasks/T-M2.20-m2-polish.md 're.sub(r"(?m)^\| Status \|.*\|$", "| Status | ready |", t, count=1).replace("## Goal", "```\n| Status | done |\n```\n\n## Goal", 1)'
-expect_exit 1 "a done Status row inside a fenced block does not count" -- check
+fixture; edit docs/tasks/T-M2.20-m2-polish.md 're.sub(r"(?m)^\| Status \|.*\|$", "| Status | ready |", t, count=1)'
+edit docs/tasks/T-M2.20-m2-polish.md '"```\n| Status | done |\n```\n" + t'
+expect_exit 1 "a done Status row in a fenced block before the real one does not count" -- check
 
 # Scope 3: HANDOFF.md changed without a new archive file
 fixture; echo "x" >>"$FX/docs/handoff/HANDOFF.md"
