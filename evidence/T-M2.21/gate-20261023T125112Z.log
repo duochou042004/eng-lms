@@ -1,0 +1,250 @@
+# Trimmed (evidence-protocol §1): passing lines ('✓', '  ok   -') removed; full log (922 lines) in evidence/T-M2.21/raw/ (git-ignored). The FAILED run on 9715628 (DEC-153).
+gate: logging to evidence/T-M2.21/gate-20261023T125112Z.log
+engine: podman (DOCKER_HOST=unix:///run/user/1000/podman/podman.sock)
+env.sh: DOCKER_HOST=unix:///run/user/1000/podman/podman.sock TESTCONTAINERS_RYUK_DISABLED=true
+gate: 9715628 2026-10-23T12:51:12Z, steps: docs scripts backend web-install web-lint web-typecheck web-test web-build web-budget web-contrast contract-drift qa-typecheck e2e
+gate: ==> docs
+docs-check: PASS (347 markdown files, progress.json valid, sources intact, prompt within limit, records consistent, handoff archived, table code spans escaped)
+gate: <== docs OK (1s)
+gate: ==> scripts
+check-docs.sh (records, handoff archive, table code spans)
+  -> 38 passed, 0 failed
+coverage-summary.sh
+  -> 9 passed, 0 failed
+dev scripts
+ engine.sh (AC1)
+ env.sh (AC2, AC6)
+ dev-up.sh / dev-down.sh (AC3, T-M1.8 AC5)
+  -> 164 passed, 0 failed
+e2e-run.sh
+  -> 19 passed, 0 failed
+gate.sh
+  -> 55 passed, 0 failed
+gitlab-sync.sh
+  -> 11 passed, 0 failed
+merge-gate.sh
+  -> 325 passed, 0 failed
+check-path-ownership.sh
+  -> 15 passed, 0 failed
+pre-push hook
+  -> 15 passed, 0 failed
+require-bash.sh
+  skip - no bash 3.2 here (/bin/bash is 5.3.15(1)-release); set ENGLMS_BASH32=<path> or run on macOS
+  -> 11 passed, 0 failed
+workflow upload warnings
+  -> 10 passed, 0 failed
+script tests: PASS
+gate: <== scripts OK (74s)
+gate: ==> backend
+gate: backend skipped: no backend/ or api/ change (CI runs it; ENGLMS_GATE_FULL=1 forces it)
+gate: <== backend OK (0s)
+gate: ==> web-install
+Lockfile is up to date, resolution step is skipped
+Done in 23ms using pnpm v12.6.0
+gate: <== web-install OK (0s)
+gate: ==> web-lint
+$ oxlint --deny-warnings && sh scripts/no-lint-directives.sh && stylelint "src/**/*.css" && prettier --check .
+Checking formatting...
+All matched files use Prettier code style!
+gate: <== web-lint OK (4s)
+gate: ==> web-typecheck
+$ tsc -b
+gate: <== web-typecheck OK (5s)
+gate: ==> web-test
+$ vitest --run
+
+ RUN  v5.0.4 /home/kali/App_projects/eng-lms/web
+
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+ ❯ src/app/routes/RouteError.test.tsx (22 tests | 1 failed) 2314ms
+   ❯ RouteError: a page whose code could not load (T-M2.12 AC2, AC3, DEC-087 F-3) (11)
+     × the copy follows the connection while shown (AC11 (a)); Retry still decides by the state at the press 70ms
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/app/routes/RouteError.test.tsx > RouteError: a page whose code could not load (T-M2.12 AC2, AC3, DEC-087 F-3) > the copy follows the connection while shown (AC11 (a)); Retry still decides by the state at the press
+TestingLibraryElementError: Unable to find an accessible element with the role "heading" and name "Không tải được trang này"
+
+Here are the accessible roles:
+
+  status:
+
+  Name "":
+  [36m<output[39m
+    [33mclass[39m=[32m"visuallyHidden"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<output[39m
+    [33mclass[39m=[32m"visuallyHidden"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  main:
+
+  Name "":
+  [36m<main[39m
+    [33mclass[39m=[32m"page"[39m
+    [33mid[39m=[32m"main"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  banner:
+
+  Name "":
+  [36m<header[39m
+    [33mclass[39m=[32m"header"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  heading:
+
+  Name "Bạn đang ngoại tuyến":
+  [36m<h1[39m
+    [33mclass[39m=[32m"title"[39m
+    [33mtabindex[39m=[32m"-1"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"description"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  button:
+
+  Name "Thử lại":
+  [36m<button[39m
+    [33mclass[39m=[32m"button primary md"[39m
+    [33mdata-rac[39m=[32m""[39m
+    [33mdata-react-aria-pressable[39m=[32m"true"[39m
+    [33mid[39m=[32m"_r_1p_"[39m
+    [33mtabindex[39m=[32m"0"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  link:
+
+  Name "Về trang đầu":
+  [36m<a[39m
+    [33mclass[39m=[32m"homeLink"[39m
+    [33mdata-discover[39m=[32m"true"[39m
+    [33mhref[39m=[32m"/"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<output[39m
+      [33mclass[39m=[32m"visuallyHidden"[39m
+    [36m/>[39m
+    [36m<main[39m
+      [33mclass[39m=[32m"page"[39m
+      [33mid[39m=[32m"main"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"stack"[39m
+        [33mstyle[39m=[32m"gap: var(--space-4);"[39m
+      [36m>[39m
+        [36m<header[39m
+          [33mclass[39m=[32m"header"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"text"[39m
+          [36m>[39m
+            [36m<h1[39m
+              [33mclass[39m=[32m"title"[39m
+              [33mtabindex[39m=[32m"-1"[39m
+            [36m>[39m
+              [0mBạn đang ngoại tuyến[0m
+            [36m</h1>[39m
+            [36m<p[39m
+              [33mclass[39m=[32m"description"[39m
+            [36m>[39m
+              [0mBạn đang ngoại tuyến. Trang này cần kết nối mạng để tải.[0m
+            [36m</p>[39m
+          [36m</div>[39m
+        [36m</header>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"actions"[39m
+        [36m>[39m
+          [36m<button[39m
+            [33mclass[39m=[32m"button primary md"[39m
+            [33mdata-rac[39m=[32m""[39m
+            [33mdata-react-aria-pressable[39m=[32m"true"[39m
+            [33mid[39m=[32m"_r_1p_"[39m
+            [33mtabindex[39m=[32m"0"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"label"[39m
+            [36m>[39m
+              [0mThử lại[0m
+            [36m</span>[39m
+          [36m</button>[39m
+          [36m<a[39m
+            [33mclass[39m=[32m"homeLink"[39m
+            [33mdata-discover[39m=[32m"true"[39m
+            [33mhref[39m=[32m"/"[39m
+          [36m>[39m
+            [0mVề trang đầu[0m
+          [36m</a>[39m
+        [36m</div>[39m
+        [36m<output[39m
+          [33mclass[39m=[32m"visuallyHidden"[39m
+        [36m/>[39m
+      [36m</div>[39m
+    [36m</main>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/.pnpm/@testing-library+dom@10.4.2/node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/.pnpm/@testing-library+dom@10.4.2/node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/.pnpm/@testing-library+dom@10.4.2/node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/.pnpm/@testing-library+dom@10.4.2/node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ src/app/routes/RouteError.test.tsx:316:19
+    314|     online = true
+    315|     act(() => void window.dispatchEvent(new Event('online')))
+    316|     expect(screen.getByRole('heading', { level: 1, name: CHUNK.vi.chun…
+       |                   ^
+    317|     expect(screen.getByText(CHUNK.vi.chunk)).toBeInTheDocument()
+    318|     await waitFor(() => expect(document.title).toBe(`${CHUNK.vi.chunkT…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 67 passed (68)
+      Tests  1 failed | 817 passed (818)
+   Start at  19:52:37
+   Duration  56.33s (tests 62%, setup 20%, environment 15%, import 2%, transform 1%)
+
+    Isolate  68 workers spawned · ~1.49s startup each (spawn + environment, per file)
+             at least ~5.25s faster with isolate: false — reuses workers across files instead of one per file
+
+[ELIFECYCLE] Test failed. See above for more details.
+gate: FAIL at step 'web-test' (exit 1) after 57s; later steps were not run. Resume with: ./scripts/gate.sh --from web-test

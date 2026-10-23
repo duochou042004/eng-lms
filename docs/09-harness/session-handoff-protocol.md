@@ -29,8 +29,10 @@ missing from the repo.
 ## 3. Handoff procedure (skill `evidence-and-handoff`)
 
 1. Update `progress.json`: `currentTask.status`, `currentTask.lastCommit`, `currentTask.nextSteps[]`, `blockers[]`, `tests.lastRun`, `history[]`
-   (append `{at, actor, event}`), `updatedAt`, `updatedBy`. Validate with `./scripts/check-docs.sh`: schema, links, ID references, source integrity, prompt length.
+   (append `{at, actor, event}`), `updatedAt`, `updatedBy`. Validate with `./scripts/check-docs.sh`: schema, links, ID references, source integrity, prompt length, records (a completed task is
+   `**done**` in its backlog row and packet Status), the handoff archive (step 2) and table code spans.
 2. Move the current `docs/handoff/HANDOFF.md` to `docs/handoff/archive/<UTC-ts>-<task>.md`, then write a new one (template §4).
+   `check-docs` fails when `HANDOFF.md` changed on the branch without a new archive file (T-M2.21).
 3. Write `docs/handoff/next-session-prompt.md` (template §5). Check `wc -c` ≤ 4,000.
 4. Commit on the active branch: `docs(handoff): <task> <short state>`. Push if a remote exists.
 5. Tell the user: the state is saved, and here is the next-session prompt (paste it verbatim).

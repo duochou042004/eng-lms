@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Milestone | M1 (tooling follow-up; runs before T-M2.4) |
-| Status | ready (G0; PO start signal DEC-106) |
+| Status | done (`8be6d9f`, PR #78) |
 | Owner role | BE (backend-implementer; tooling) |
 | Branch | `feature/T-M1.19-portable-dev-env` (from `develop`) |
 | Depends on | T-M2.9 merged (`37e8ce0`) |

@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Milestone | M2 |
-| Status | ready (G0: DOCS-REVIEW PASS, DEC-151; waits for the PO start signal) |
+| Status | in_review (PO start signal 2026-10-23; G0 DEC-151; G1 gate PASS on `d08454c`; G3 PASS) |
 | Owner role | LC (implements the scripts and the record fixes; G3 by a fresh docs-reviewer) |
 | Branch | `chore/T-M2.21-records-checks` (from `develop`); this packet on `docs/T-M2.21-records-checks` |
 | Depends on | T-M2.20 (`f3a77fa`) and its records (PRs #137, #138, `995d047`): merged |
@@ -20,7 +20,7 @@ every stale record that the checks find today, so `develop` stays green.
 ## Scope
 - In:
   1. **Completed tasks are done in the backlog.** For each `id` in `progress.json` `completed[]`, the first row of
-     `docs/tasks/backlog.md` whose ID cell is that ID (`| T-M2.20 |`, `| **T-M1.1** ✅ |`) holds the marker `**done**` in lower case, so `**Done**` fails (part C step 1:
+     `docs/tasks/backlog.md` whose ID cell is that ID (`| T-M2.20 |`, `| **T-M1.1** ✅ |`) has a cell that starts with `**done**` in lower case (G3 G-3), so `**Done**` or a `**done**` inside the prose fails (part C step 1:
      `**done** (`<sha>`, DEC-<n>, packet link)`). The check fails when there is no such row or the row has no `**done**`.
   2. **Completed tasks are done in their packet.** For each such `id` that has a packet file `docs/tasks/<id>-*.md`, the value of its first
      `| Status |` row outside a fenced block starts with `done` once `*` and spaces are stripped (`done (…)`, `**done**: …`). The check fails when the packet
@@ -126,6 +126,9 @@ package (`jsonschema` stays the only one). 4. **Weekly use?** Yes: `check-docs` 
   passes on the final head, and the summary lists any other record the new checks found with its fix.
 - AC7 (scope 7): the docstring and PASS message, `ci-cd.md`, `session-handoff-protocol.md`, `README.md`, `docs-reviewer.md`,
   `docs-check.yml`, lessons-learned L-09 and the evidence-and-handoff skill say what the new checks enforce.
+- AC9 (G1, DEC-153): the kept test `RouteError.test.tsx` "the copy follows the connection while shown (AC11 (a))" reads the heading
+  and text after the `online` and `offline` events through `await findByRole` / `findByText` (same names and texts; no assertion
+  removed); the web suite passes in the gate.
 - AC8: `ENGLMS_TASK=T-M2.21 ./scripts/gate.sh` green once on the final head and CI green (7/7). The gate's `docs` and `scripts` steps
   cover the change; `backend` and `contract-drift` are skipped for this diff. Every existing script test and assertion is kept.
 

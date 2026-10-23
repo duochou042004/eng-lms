@@ -14,7 +14,7 @@ Trace DEC-084/085/086; scope limited to step 3.
 | F1 | S3 | The summary claims a handoff note about `.claude/worktrees/` that does not exist | Line added to HANDOFF.md "Gotchas" |
 | F2 | S4 | With empty stderr the message ends with a dangling colon | Shows `output: <start of stdout>` or `output: (empty)`; AC2 test asserts it |
 | F3 | S4 | Missing assertions: API error not "missing"; exit 0 with empty output | Both added |
-| F4 | S4 | Several JSON documents pass the type guard (cosmetic; still refused) | `jq -se 'length == 1 and (.[0] | type == "array")'` + test |
+| F4 | S4 | Several JSON documents pass the type guard (cosmetic; still refused) | `jq -se 'length == 1 and (.[0] \| type == "array")'` + test |
 | F5 | S4 | `progress.json` PR fields stale | `pr: "#50"`, status `in_review` |
 
 Verdict line: `DOCS-REVIEW T-M1.17: PASS`

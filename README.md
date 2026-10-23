@@ -173,7 +173,7 @@ flowchart LR
 ```bash
 git clone https://github.com/duochou042004/eng-lms.git && cd eng-lms
 ./scripts/install-hooks.sh        # blocks direct/force pushes to master and develop
-./scripts/check-docs.sh           # docs gate: progress.json schema, links, ID references, source integrity
+./scripts/check-docs.sh           # docs gate: progress.json schema, links, ID references, source integrity, records, handoff archive
 ./scripts/tests/run-all.sh        # tests for the merge gate, path ownership and pre-push hook
 ```
 

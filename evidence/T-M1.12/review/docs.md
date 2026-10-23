@@ -30,7 +30,7 @@ F2–F5 fixed and verified. 118 negative probes vs develop / round 1 / round 2; 
 | ID | Sev | Finding | Disposition |
 |---|---|---|---|
 | R2-1 | S3 | The F1 separator needed a colon or a space *before* the dashes, so `<id>- FAIL`, `<id>-  FAILED`, `**<id>- CHANGES REQUESTED**` and `<id>-: FAIL` (blocked by develop / round 1) were ignored | Fixed in `d901291`: the loose separator is any run of `:`, `-` and spaces containing a colon or a space; glued list adds `URES?`/`INGS?`; tests |
-| R2-2 | S4 note | Forms ignored by every version (e.g. `a.` markers, HTML tags, `=`/`,`/`|` separators, invisible characters between type and id) | Out of scope; the LC reads every verdict before `LC-APPROVED` |
+| R2-2 | S4 note | Forms ignored by every version (e.g. `a.` markers, HTML tags, `=`/`,`/`\|` separators, invisible characters between type and id) | Out of scope; the LC reads every verdict before `LC-APPROVED` |
 
 ## Round 3 (`d901291`)
 merge-gate 295/295. 138 negative lines against develop and rounds 1–3: only 6 lines blocked by develop are ignored now, all a word glued to the id (`<id>-FAILOVER…`,
