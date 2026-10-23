@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Milestone | M2 |
-| Status | draft |
+| Status | ready (G0: DOCS-REVIEW PASS, DEC-151; waits for the PO start signal) |
 | Owner role | LC (implements the scripts and the record fixes; G3 by a fresh docs-reviewer) |
 | Branch | `chore/T-M2.21-records-checks` (from `develop`); this packet on `docs/T-M2.21-records-checks` |
 | Depends on | T-M2.20 (`f3a77fa`) and its records (PRs #137, #138, `995d047`): merged |
@@ -30,8 +30,8 @@ every stale record that the checks find today, so `develop` stays green.
      and no new file was added under `docs/handoff/archive/`. Changed means committed since the merge base, staged, unstaged or untracked:
      the `changed_files` pattern of `scripts/gate.sh` (`git diff --name-status <base>...HEAD`, `git diff --name-status HEAD`,
      `git ls-files --others --exclude-standard`), all with `--no-renames`, so an archive made with `git mv` and a fresh `HANDOFF.md` still
-     counts as an added archive file. The base ref is `${ENGLMS_DOCS_BASE:-${ENGLMS_GATE_BASE:-origin/develop}}` (so the gate's `docs` step follows `ENGLMS_GATE_BASE`); the CI `docs-check` job sets `ENGLMS_DOCS_BASE=origin/$BASE_REF` on pull requests, as its path-ownership step does. Pushes to `develop` or `master` use `origin/develop` (accepted: on `master` the check fails only if a release edits the handoff without an archive). When the base does not resolve, the
-     check **fails** and names `ENGLMS_DOCS_BASE` (it fails closed, L-01). On `develop` itself the diff is empty and the check passes.
+     counts as an added archive file. The base ref is `${ENGLMS_DOCS_BASE:-${ENGLMS_GATE_BASE:-origin/develop}}` (so the gate's `docs` step follows `ENGLMS_GATE_BASE`); the CI `docs-check` job sets `ENGLMS_DOCS_BASE=origin/${{ github.base_ref }}` only when `github.event_name == 'pull_request'` (unset on pushes, where `base_ref` is empty, so the default applies). Pushes to `develop` or `master` use `origin/develop` (accepted: on `master` the check fails only if a release edits the handoff without an archive). When the base does not resolve, the
+     check **fails** and names the unresolved ref and the variable it came from (it fails closed, L-01). On `develop` itself the diff is empty and the check passes.
   4. **No bare `|` in a table-row code span.** In every Markdown file the other checks read, minus the files git ignores (the LC's
      `.claude/scratch/` copies, `evidence/*/raw/`), a line outside a fenced block that starts with `|` (after leading spaces) fails when a
      code span on it (one or more backticks, the same number closing it) holds a `|` not preceded by `\`. The message names the file,
@@ -87,7 +87,7 @@ package (`jsonschema` stays the only one). 4. **Weekly use?** Yes: `check-docs` 
   `.github/workflows/docs-check.yml` (the step name and `ENGLMS_DOCS_BASE` on pull requests), the record fixes of scope 6, and the docs of scope 7.
 - **Where the checks run**: `check-docs.sh` runs bare by the LC, in the `docs` step of `gate.sh` and in the CI `docs-check` job
   (`fetch-depth: 0`, so `origin/develop` is there for the merge base on PRs and pushes). On a pull request CI checks out the merge commit,
-  whose merge base with `origin/develop` is the `develop` tip, so the diff is the PR's own changes.
+  whose merge base with `origin/$BASE_REF` (the `develop` tip for PRs into `develop`) is the base tip, so the diff is the PR's own changes.
 - **Contradiction scan (lessons L-03)**, each resolved here and in DEC-150:
   (a) The backlog row says "fail when a task … still reads `ready`/`in progress` in its backlog row". The scan found T-M2.14's row,
   which reads neither and carries `**Done**` at its end. The check is therefore the positive rule (the row holds `**done**`, part C's
