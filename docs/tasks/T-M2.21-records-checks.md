@@ -9,7 +9,7 @@
 | Depends on | T-M2.20 (`f3a77fa`) and its records (PRs #137, #138, `995d047`): merged |
 | Estimate | 0.5 agent-day |
 | Risk tier | **L**: scripts, tests and docs only (`scripts/check_docs.py`, a new `scripts/tests/` file, record fixes in Markdown). No product code, endpoint, UI or data change. G3 = one fresh docs-reviewer that also runs the new fixtures and mutates each check (DEC-150 (1)) |
-| Trace | lessons-learned L-09 (LC record slips) and L-01 (a check is proven failing); DEC-139 (4) (backlog T-M2.21) and its review D-8 (a code span with `\|` in a table row); evidence-and-handoff part C step 1 and part B step 3; session-handoff-protocol §4; coding-agent-rules §4.5; DEC-150 (this packet's decisions) |
+| Trace | lessons-learned L-09 (LC record slips) and L-01 (a check is proven failing); DEC-139 (4) (backlog T-M2.21, whose row names the code-span `\|` case); evidence-and-handoff part C step 1 and part B step 3; session-handoff-protocol §3 step 2 (the archive); coding-agent-rules §4.5; DEC-150 (this packet's decisions) |
 
 ## Goal
 Make `./scripts/check-docs.sh` catch the record slips that the LC made by hand at merges (L-09). Three slips become automated failures:
@@ -20,17 +20,17 @@ every stale record that the checks find today, so `develop` stays green.
 ## Scope
 - In:
   1. **Completed tasks are done in the backlog.** For each `id` in `progress.json` `completed[]`, the first row of
-     `docs/tasks/backlog.md` whose ID cell is that ID (`| T-M2.20 |`, `| **T-M1.1** ✅ |`) holds the marker `**done**` (part C step 1:
+     `docs/tasks/backlog.md` whose ID cell is that ID (`| T-M2.20 |`, `| **T-M1.1** ✅ |`) holds the marker `**done**` in lower case, so `**Done**` fails (part C step 1:
      `**done** (`<sha>`, DEC-<n>, packet link)`). The check fails when there is no such row or the row has no `**done**`.
-  2. **Completed tasks are done in their packet.** For each such `id` that has a packet file `docs/tasks/<id>-*.md`, the value of its
-     `| Status |` row starts with `done` once `*` and spaces are stripped (`done (…)`, `**done**: …`). The check fails when the packet
+  2. **Completed tasks are done in their packet.** For each such `id` that has a packet file `docs/tasks/<id>-*.md`, the value of its first
+     `| Status |` row outside a fenced block starts with `done` once `*` and spaces are stripped (`done (…)`, `**done**: …`). The check fails when the packet
      has no Status row or the value starts with anything else (`ready`, `in_progress`, `in_review`, `blocked`, …). A completed task with
-     no packet file (T-M0.1, T-M2.8) is checked in the backlog only.
+     no packet file (T-M0.1, T-M1.20, T-M2.8) is checked in the backlog only.
   3. **A rewritten handoff is archived.** The check fails when `docs/handoff/HANDOFF.md` changed against the merge base of the base ref
      and no new file was added under `docs/handoff/archive/`. Changed means committed since the merge base, staged, unstaged or untracked:
      the `changed_files` pattern of `scripts/gate.sh` (`git diff --name-status <base>...HEAD`, `git diff --name-status HEAD`,
      `git ls-files --others --exclude-standard`), all with `--no-renames`, so an archive made with `git mv` and a fresh `HANDOFF.md` still
-     counts as an added archive file. The base ref is `ENGLMS_DOCS_BASE` (default `origin/develop`). When the base does not resolve, the
+     counts as an added archive file. The base ref is `${ENGLMS_DOCS_BASE:-${ENGLMS_GATE_BASE:-origin/develop}}` (so the gate's `docs` step follows `ENGLMS_GATE_BASE`); the CI `docs-check` job sets `ENGLMS_DOCS_BASE=origin/$BASE_REF` on pull requests, as its path-ownership step does. Pushes to `develop` or `master` use `origin/develop` (accepted: on `master` the check fails only if a release edits the handoff without an archive). When the base does not resolve, the
      check **fails** and names `ENGLMS_DOCS_BASE` (it fails closed, L-01). On `develop` itself the diff is empty and the check passes.
   4. **No bare `|` in a table-row code span.** In every Markdown file the other checks read, minus the files git ignores (the LC's
      `.claude/scratch/` copies, `evidence/*/raw/`), a line outside a fenced block that starts with `|` (after leading spaces) fails when a
@@ -38,17 +38,22 @@ every stale record that the checks find today, so `develop` stays green.
      the line and the span.
   5. **Fixtures** (L-01, coding-agent-rules §4.5): `scripts/check_docs.py` reads its root from `ENGLMS_DOCS_ROOT` (default: the
      repository). A new `scripts/tests/check-docs.test.sh`, which `scripts/tests/run-all.sh` picks up, builds each fixture as a temporary
-     git repository from the committed tree (`git archive HEAD`, committed once as the base) and adds one violation. For each check, the
+     git repository from the committed tree (`git archive HEAD`, committed once as the base with the `git -c user.name=… -c user.email=…`
+     pattern of `scripts/tests/gate.test.sh`, as the CI runner has no identity) and adds one violation. Every run sets
+     `ENGLMS_DOCS_ROOT` to the fixture and `ENGLMS_DOCS_BASE` to the fixture's base commit (a fixture has no `origin/develop`), and runs the
+     **working-tree** `scripts/check_docs.py`, not the fixture's archived copy, so the AC5 mutation run tests the edited script. All git
+     calls of the checks run in the root (`git -C <root>`). For each check, the
      clean fixture passes (exit 0), and each violating fixture fails (exit 1) with that check's message and no other failure. Cases:
      scope 1, a completed row without `**done**` and a completed ID with no row; scope 2, a packet Status `ready (G0)` and a packet with
      no Status row; scope 3, `HANDOFF.md` changed and committed without an archive file (fails), the same change uncommitted (fails), with
      a committed new archive file (passes), with an untracked new archive file (passes), and an unknown `ENGLMS_DOCS_BASE` (fails); scope 4,
      `` `a|b` `` in a table row (fails), `` `a\|b` `` in a table row, `` `a|b` `` in a paragraph and inside a fenced block (all three
-     pass), and a double-backtick span ``` `` a|b `` ``` in a table row (fails).
+     pass), a double-backtick span ``` `` a|b `` ``` in a table row (fails), and `` `a|b` `` in a table row of a git-ignored
+     `.claude/scratch/x.md` (passes).
   6. **Stale records fixed** (found by the LC's scan at 2026-10-23 on `995d047`; the implementer re-runs the new checks and fixes
      whatever else they find, listing it in the summary):
-     - Packet Status of eight completed tasks → `done (`<mergeCommit>`, PR #<n>)`, with `mergeCommit` copied from `progress.json`
-       `completed[]`: T-M1.2 (`ae9ac5d`, PR #2), T-M1.3 (`8b9d938`, PR #4), T-M1.17 (`077f4e4`, PR #50), T-M1.18 (`20625d9`, PR #51),
+     - Packet Status of eight completed tasks → `done (`<mergeCommit>`, PR #<n>)`, with the SHA copied from `progress.json` `completed[]`
+       `mergeCommit` and the PR from its `note` or the git merge subject: T-M1.2 (`ae9ac5d`, PR #2), T-M1.3 (`8b9d938`, PR #4), T-M1.17 (`077f4e4`, PR #50), T-M1.18 (`20625d9`, PR #51),
        T-M1.19 (`8be6d9f`, PR #78), T-M2.4 (`9fcc992`, PR #82), T-M2.15 (`9b9e133`, PR #112), T-M2.18 (`5dab35e`, PR #113).
      - Backlog rows without `**done**`: T-M0.1 (its Status cell becomes `**done** (PO-APPROVED, merge a14caae)`), T-M1.1 (`(done, …)`
        becomes `**done** (…)`), T-M2.14 (its trailing `**Done** (`6073e71`, DEC-127; …)` moves to the start of the title cell as
@@ -56,8 +61,10 @@ every stale record that the checks find today, so `develop` stays green.
      - Four table-row code spans with a bare `|`, each escaped as `\|` (the rendered text is unchanged):
        `docs/05-frontend/design-system.md:31`, `docs/04-backend/engines.md:27`, `evidence/T-M1.17/review/docs.md:17`,
        `evidence/T-M1.12/review/docs.md:33`.
-  7. **Docs**: the `check_docs.py` docstring lists the three new checks and the two variables; `ci-cd.md` §1 (`docs-check` row) and
-     `session-handoff-protocol.md` step 2 (what `check-docs.sh` validates) name them; the `docs-check.yml` step name gains "records";
+  7. **Docs**: the `check_docs.py` docstring and its PASS message list the three new checks (the docstring also the two variables);
+     `ci-cd.md` §1 (`docs-check` row), `session-handoff-protocol.md` §3 step 1 (what `check-docs.sh` validates; step 2 notes that
+     `check-docs` fails without the archive), `README.md` (the `check-docs.sh` comment in the clone block) and
+     `.claude/agents/docs-reviewer.md` step 1 name them; the `docs-check.yml` step name gains "records";
      lessons-learned L-09 "automation: backlog T-M2.21" becomes "enforced by `check-docs` (T-M2.21)"; evidence-and-handoff part C step 1
      and part B step 3 each say that `check-docs` fails when they are skipped.
 
@@ -77,7 +84,7 @@ package (`jsonschema` stays the only one). 4. **Weekly use?** Yes: `check-docs` 
 
 ## Design notes
 - **Files**: `scripts/check_docs.py` (three check functions, the two variables), `scripts/tests/check-docs.test.sh` (new),
-  `.github/workflows/docs-check.yml` (the step name only), the record fixes of scope 6, and the docs of scope 7.
+  `.github/workflows/docs-check.yml` (the step name and `ENGLMS_DOCS_BASE` on pull requests), the record fixes of scope 6, and the docs of scope 7.
 - **Where the checks run**: `check-docs.sh` runs bare by the LC, in the `docs` step of `gate.sh` and in the CI `docs-check` job
   (`fetch-depth: 0`, so `origin/develop` is there for the merge base on PRs and pushes). On a pull request CI checks out the merge commit,
   whose merge base with `origin/develop` is the `develop` tip, so the diff is the PR's own changes.
@@ -87,7 +94,7 @@ package (`jsonschema` stays the only one). 4. **Weekly use?** Yes: `check-docs` 
   format), which catches that row too. For packets the positive rule is the same: the Status starts with `done`.
   (b) The backlog header says "Status lives in `progress.json`". Part C step 1 already mirrors the done state into the row and the packet,
   and the check enforces that mirror. It does not make the backlog the source.
-  (c) Session-handoff protocol §4 and part B step 3 already require the archive at every handoff, so the check adds no new duty. A second
+  (c) Session-handoff protocol §3 step 2 and part B step 3 already require the archive at every handoff, so the check adds no new duty. A second
   edit of `HANDOFF.md` on the same branch (a records fix after a docs review) passes, because the branch's diff still holds its archive file.
   (d) Two of the escaped pipes are in reviewer records (`evidence/T-M1.12/review/`, `evidence/T-M1.17/review/`). Escaping changes no rendered
   text, and path ownership allows `chore/` branches to change `evidence/*/review/**` (`check-path-ownership.sh`: only `qa/` paths are refused).
@@ -117,8 +124,8 @@ package (`jsonschema` stays the only one). 4. **Weekly use?** Yes: `check-docs` 
   three new check functions made to return early, at least one of its cases fails. The summary shows that run's output for each check.
 - AC6 (scope 6): the eight packet Status lines, the three backlog rows and the four code spans are fixed as listed. `./scripts/check-docs.sh`
   passes on the final head, and the summary lists any other record the new checks found with its fix.
-- AC7 (scope 7): the docstring, `ci-cd.md`, `session-handoff-protocol.md`, `docs-check.yml`, lessons-learned L-09 and the
-  evidence-and-handoff skill say what the new checks enforce.
+- AC7 (scope 7): the docstring and PASS message, `ci-cd.md`, `session-handoff-protocol.md`, `README.md`, `docs-reviewer.md`,
+  `docs-check.yml`, lessons-learned L-09 and the evidence-and-handoff skill say what the new checks enforce.
 - AC8: `ENGLMS_TASK=T-M2.21 ./scripts/gate.sh` green once on the final head and CI green (7/7). The gate's `docs` and `scripts` steps
   cover the change; `backend` and `contract-drift` are skipped for this diff. Every existing script test and assertion is kept.
 
@@ -131,7 +138,7 @@ package (`jsonschema` stays the only one). 4. **Weekly use?** Yes: `check-docs` 
 - Independent review focus (docs-reviewer, tier L): run `scripts/tests/check-docs.test.sh` and mutate each check (comment out its call) to
   see its cases fail. Try to fool each check: a `**done**` that sits in another task's row, a Status row in a code block, an archive file
   deleted rather than added, a pipe in a span that crosses a cell boundary, CRLF line ends. Confirm `develop`-style runs (`HEAD` equal to
-  the base) pass, and that every scope 6 fix copies its SHA and PR from `progress.json`.
+  the base) pass, and that every scope 6 fix copies its SHA from `progress.json` `mergeCommit` and its PR from the `note` or merge subject.
 - **Isolation**: not applicable (no endpoint).
 
 ## Evidence required
@@ -139,7 +146,8 @@ package (`jsonschema` stays the only one). 4. **Weekly use?** Yes: `check-docs` 
   the final head + green CI. G3: `evidence/T-M2.21/review/docs.md`, recorded by the LC from the reviewer's returned text.
 
 ## Docs to update
-- Scope 7, plus the backlog (T-M2.21 done note) and `progress.json` (LC) at merge.
+- Scope 7, plus at the records merge the backlog row (`**done**`), this packet's Status (`done (…)`, which the new check requires) and
+  `progress.json` (LC).
 
 ## Risks & assumptions
 - **Size**: 8 ACs, about half a day. **Split line**: none expected.
