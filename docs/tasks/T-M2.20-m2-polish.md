@@ -37,10 +37,12 @@ that ran mid-fade wait for the fade, and a pasted tag list shows every reason it
   4. **Add student refreshes only for the tutor's session** (T-M2.15 SEC S-2): `useCreateStudent`'s `onSuccess` invalidates
      `studentKeys.list` only while `isTutorSession(queryClient)` (the rule every other students write follows, DEC-127). The credentials
      hand-over to the page (`AddStudentForm`) is unchanged.
-  5. **`expectNoMidWordBreak` measures rendered text only** (T-M2.19 QA-5, `e2e/support/checks.ts`): text nodes inside an element that is
-     not rendered (`display: none` on it or an ancestor inside the target, i.e. `!parent.checkVisibility()`) are skipped; a `<br>` is a word
+  5. **`expectNoMidWordBreak` measures rendered text only** (T-M2.19 QA-5, `e2e/support/checks.ts`): a text node that renders no box (a `Range` over
+     the node has no client rects: `display: none` on its parent or an ancestor) is skipped; text inside a `display: contents` element
+     (e.g. `ui/DelayedSkeleton`) renders and is still measured (so not `checkVisibility()` on the parent, G0 D-3); a `<br>` is a word
      boundary (the joined text gains a line break there, so "one<br>two" is two words). Each change is proven in `e2e/tests/checks.spec.ts`
-     (coding-agent-rules §4.5): a fixture that fails today and passes now, and a violating fixture next to it that still fails.
+     (coding-agent-rules §4.5): for each of the two changes, a fixture that fails today and passes now, and a violating fixture next to it
+     that still fails.
   6. **`expectFocusNotLost` sees `visibility: hidden`** (T-M2.19 QA-8): the visibility test becomes
      `active.checkVisibility({ visibilityProperty: true })`, so focus left on a control that turned `visibility: hidden` counts as lost;
      proven by a new `checks.spec.ts` fixture (a button that hides itself with `visibility: hidden`) that passes today and fails now.
@@ -48,16 +50,21 @@ that ran mid-fade wait for the fade, and a pasted tag list shows every reason it
      dirty form asks…" ran a bare `expectNoAxeViolations` right after the discard dialog opened and caught a mid-fade `color-contrast` on its
      label): that call becomes `expectSettledAccessible`. The LC's grep of every other bare call (at 2026-10-23, `grep -n
      "expectNoAxeViolations(" e2e/tests/*.ts`) found one more path that runs axe right after an overlay opens: the local
-     `expectAccessible` helper of `shells.spec.ts` (axe + no horizontal scroll), called after each `/dev/ui` popover opens (the
-     `devui-popover-open-*` loop, about line 788); its body becomes `expectSettledAccessible(page)`. The remaining bare calls are kept: none
-     follows an action that opens a dialog, sheet, popover or toast (`auth.spec.ts`'s `expectAccessible`, whose "Forgot your password?" is a
-     `<details>` disclosure with no fade; `navigation.spec.ts` ×5, `polish.spec.ts` ×2, `smoke.spec.ts` ×2, `shells.spec.ts:701`), and
-     `guards.spec.ts:36` is the helper's own failing proof. The implementer re-runs the grep and lists any new bare call with its reason in
+     `expectAccessible` helper of `shells.spec.ts` (axe + no horizontal scroll), called right after each of two Sheets and one Popover opens in
+     `/dev/ui` (the `devui-sheet-*-open-*` / `devui-popover-open-*` loop, about line 785); its body becomes `expectSettledAccessible(page)`. The remaining bare calls are kept: either
+     no overlay opened before them (`navigation.spec.ts` ×5, `polish.spec.ts` ×2, `smoke.spec.ts:58`, `shells.spec.ts:701`; the login's
+     "Forgot your password?" in `auth.spec.ts` is a `<details>` disclosure with no fade), or the overlay was opened by `openAccountSection`
+     (`e2e/support/shell.ts`), which already waits for `[data-entering]` to be gone (`auth.spec.ts` ≈ line 504 through its `expectAccessible`,
+     `smoke.spec.ts:91` after `revealSwitcher`); `guards.spec.ts:36` and `checks.spec.ts` ≈ line 117 are the helpers' own failing proofs. The implementer re-runs the grep and lists any new bare call with its reason in
      the summary.
   8. **A pasted tag list shows every reason** (T-M2.17 QA-2, `ui/tagEntry.ts`, `ui/TagInput.tsx`): `addTags` returns `errors:
      TagEntryError[]` (each distinct reason once, in the order of its first refusal; `[]` when all were accepted) instead of the first
-     reason only; `TagInput` shows the messages of all of them in its one error text, joined by a space (each message is a sentence); the
-     learning-profile schema's Save check and its `ErrorSummary` item carry the same joined text (one item per field). QA's case: pasting
+     reason only; `TagInput` shows the messages of all of them in its one error text, joined by a space (each message is a sentence); on Save
+     the learning-profile schema adds **one** issue per field whose message is the reasons' message keys (`TAG_ERROR`) in that order,
+     joined by a single space (one reason → exactly today's single key, so `learningProfileSchema.test.ts`'s rows stay as they are; keys
+     hold no spaces); `LearningProfileForm`'s tag message splits it, translates each key with its own `max` (the existing `maxOf`: 40 for
+     `TOO_LONG`, 30 for too many) and joins the texts with a space, for the field error and the field's one `ErrorSummary` item (G0 D-1:
+     `zodResolver` keeps only the first issue per path). QA's case: pasting
      "Nghe, Đọc\nViết\tNGHE,  ,Bad\u0007x" into an empty Strengths adds Nghe, Đọc, Viết, keeps "NGHE, Bad\u0007x" in the input and shows
      "Đã thêm rồi." and the control-character message.
 
@@ -77,7 +84,7 @@ the sign-in/out paths are used in every session. 5. **Hard-coded semantics?** No
 and the web grep stay green.
 
 ## Design notes
-- **Files**: `web/src/lib/i18n/locales/{vi,en}/students.json`; `ui/ErrorSummary.tsx` (+ test, `/dev/ui` shows an `h3` use);
+- **Files**: `web/src/lib/i18n/locales/{vi,en}/students.json`; `ui/ErrorSummary.tsx` (+ test; the existing `/dev/ui` sample, already inside a section `h2`, passes `headingLevel={3}`: no new dev string);
   `features/students/components/{ProfileForm,GuardianForm,LearningProfileForm}.tsx`; `features/auth/api/session.ts` (`useLogin`,
   `useLogout`), `app/guards.ts` (the 401 branch, `dropAllButSession`); `features/students/api/students.ts` (`useCreateStudent`);
   `ui/tagEntry.ts`, `ui/TagInput.tsx`, `features/students/model/learningProfileSchema.ts`, `features/students/components/LearningProfileForm.tsx`
@@ -101,7 +108,7 @@ and the web grep stay green.
   security.md T19 (stale session data on a shared device) gains the mutation cache in its mitigation.
   (e) `expectSettledAccessible` also checks no horizontal scroll: the `shells.spec.ts` `expectAccessible` helper already did (axe +
   reflow), so the swap adds only the wait.
-- **Shortcut ledger** (lessons L-12; `grep -rnE '(shortcut|ponytail):'` at 2026-10-23: 7 markers): none fires. `ui/Toast.tsx`,
+- **Shortcut ledger** (lessons L-12; `grep -rnE '(shortcut|ponytail):'` at 2026-10-23: 8 markers; the lessons-learned ledger of 2026-10-20 listed 7 and missed `ui/Sheet.module.css` (LTR-only drawer), corrected there): none fires. `ui/Toast.tsx`,
   `ui/toastQueue.ts`, `ui/Button.tsx` are not touched and no package is bumped; `lib/time` is not touched.
 
 ## UI rules (fixed at G0, DEC-131 (2))
@@ -127,19 +134,20 @@ and the web grep stay green.
   Change password an `h2` (unit tests per level + component tests per form).
 - AC3 (scope 3, S-1): after each of the four boundaries (sign-in success, sign-out also with a failed call, a 401, `dropAllButSession` for a
   cross-tab message) the mutation cache holds no mutation of the earlier session (unit tests seed a finished students write with variables
-  and data, run the boundary and assert `getMutationCache().getAll()` holds none of it; for sign-in, nothing but the sign-in itself); a
+  and data, run the boundary and assert `getMutationCache().getAll()` holds none of it; for sign-in too, `getAll()` is `[]` (the sign-in's own variables hold the password), and the redirect still works); a
   write pending across the boundary still stores nothing and shows nothing when it answers (the DEC-127 held-promise tests stay green);
   sign-in, sign-out and the cross-tab follow behave as before (kept `auth.spec.ts`, `guards.spec.ts` and unit tests).
 - AC4 (scope 4, S-2): a create answered while the tutor session is cached invalidates the students list (kept); one answered after the
   cached session ended or became a student's invalidates nothing (a held-promise unit test).
 - AC5 (scope 5, QA-5): in `checks.spec.ts`, `expectNoMidWordBreak` passes on a box whose visible words fit and that holds a `display:
   none` child with text, and on "one<br>two" laid out on two lines (both fail on `develop` at `6217a67`); it still fails on a forced
-  mid-word break beside a `display: none` child, and every existing proof is kept.
+  mid-word break beside a `display: none` child and on "one<br>" followed by a word forced across two lines, measures the text of a
+  `display: contents` child, and every existing proof is kept.
 - AC6 (scope 6, QA-8): in `checks.spec.ts`, `expectFocusNotLost` fails after a button that sets `visibility: hidden` on itself (it passes
   on `develop` at `6217a67`); every existing proof is kept.
 - AC7 (scope 7, CI flake): `students.spec.ts` "AC6: leaving a dirty form asks…" uses `expectSettledAccessible` after the discard dialog
   opens; the `expectAccessible` helper of `shells.spec.ts` calls `expectSettledAccessible`; the summary lists every
-  bare `expectNoAxeViolations` call left in `e2e/tests` with its reason (none follows an action that opens an overlay).
+  bare `expectNoAxeViolations` call left in `e2e/tests` with its reason (each with the reason of scope 7).
 - AC8 (scope 8, QA-2): `addTags` returns every distinct reason in first-refusal order (table test incl. control + duplicate, and
   too long + too many); QA's paste case shows both messages in the `TagInput` error and keeps the refused text; Save with uncommitted text
   refused for two reasons shows both in the field error and in that field's one `ErrorSummary` item; a single reason reads exactly as
