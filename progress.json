@@ -36,7 +36,7 @@
     "ownerRole": "LC",
     "branch": "chore/T-M2.21-records-checks",
     "packet": "docs/tasks/T-M2.21-records-checks.md",
-    "pr": null,
+    "pr": "140",
     "lastCommit": "e5a59b9",
     "startedAt": "2026-10-23T12:19:39Z",
     "entryGate": [
