@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>4.1.1</version>
+		<version>4.1.2</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.englms</groupId>
@@ -28,7 +28,7 @@
 	</scm>
 	<properties>
 		<java.version>25</java.version>
-		<spring-modulith.version>2.1.1</spring-modulith.version>
+		<spring-modulith.version>2.1.2</spring-modulith.version>
 		<!-- Non-Initializr dependencies (T-M1.2; tech-stack.md §7). -->
 		<springdoc-openapi.version>3.1.1</springdoc-openapi.version>
 		<archunit.version>1.5.1</archunit.version>
