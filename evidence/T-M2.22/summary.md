@@ -24,7 +24,7 @@ See baseline.md. No test, gate or build ran: the PR changes text only.
 - Billing, the 31 skips, per-viewport behaviour and the late-error share are not measured (baseline.md §9).
 
 ## Reviews
-- DOCS-REVIEW: see `review/docs.md` (G0, DEC-157).
+- DOCS-REVIEW: see `review/docs.md` (G0, DEC-157). Merged as PR #155 (`c93d128`, CI 7/7 on `ccfebbf`); the PO accepted PO-1..PO-10 (DEC-158).
 
 ## G3 cost (one row per round; DEC-131 (9))
 | Round | Reviewer | Head | Verdict | Findings | Full/delta | Tokens | Minutes | Gate runs |

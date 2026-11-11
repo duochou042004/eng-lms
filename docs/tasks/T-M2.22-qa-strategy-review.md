@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Milestone | M2 |
-| Status | awaiting_approval (PO decisions PO-1..PO-10 below; G0 review DEC-157) |
+| Status | done (`c93d128`, PR #155; DEC-157; the PO accepted PO-1..PO-10 as recommended, DEC-158) |
 | Owner role | LC |
 | Branch | `docs/T-M2.22-qa-strategy-review` (from `develop`) |
 | Depends on | — |
@@ -228,6 +228,8 @@ ahead of U2 with no other change (PO-8).
 - Open the records PR after the `qa/` PR has merged, so it is not forced through an update and a second run.
 
 ## PO decisions requested
+
+**Decided 2026-11-11 (DEC-158): the PO accepted every recommendation in the last column.** U2 is T-M2.23, U3 is T-M2.24, U4 is T-M2.25; U1 is AC8 of T-M2.13 (DEC-159).
 
 | ID | Decision | LC recommendation |
 |---|---|---|
