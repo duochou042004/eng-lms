@@ -90,10 +90,11 @@ In one sentence: **keep the checks, stop running them where they cannot find a p
 
 Order: first make a green result trustworthy (U1), then remove the largest measured waste (U2, U3), then the rest. "DEC" marks an item
 that changes merge assurance or a governance rule and so needs the PO. **This order departs from the external review**, which puts
-change-based selection last (its §8, step 7) and enforcement of floors before throughput. The reason is the measurement: 41 % of the
+change-based selection last (its §8, step 7), after coverage floors (step 4), and states the principle "fix untrustworthy assurance
+before optimising its throughput" (its §4A). The reason is the measurement: 41 % of the
 suite's minutes go to runs that cannot find a product defect, and the selection proposed here is the narrowest kind (text-only by
 allow-list, full run on any doubt). U4's enforcement costs little and can run beside U2; if the PO prefers the review's order, U4 moves
-ahead of U2 with no other change.
+ahead of U2 with no other change (PO-8).
 
 ### U1. Fix the two open flaky tests on the required path
 - **Weakness:** `students.spec.ts` "Guardians AC4: two pages…" reads the list once after an alert (L-05); `AuthApiIntegrationTest.anUnrelatedLoginStaysFastDuringABurstOnOneUsername` has a wall-clock bound.
@@ -112,9 +113,11 @@ ahead of U2 with no other change.
     the job ends green without its heavy steps. `docs-check` and `secrets-scan` always run in full. `.claude/**` is **not** on the list:
     `.claude/settings.json` holds the deny rules that protect the merge path.
   - **(b) Post-merge runs:** on a push to `develop`, the heavy steps are skipped only when the pushed commit has exactly two parents,
-    its tree equals its second parent's tree, **and the API shows a successful full (not fast-path) run of the same workflow on that
-    second-parent SHA**. Anything else runs in full: a branch merged while behind, a merge made in the GitHub UI on a red or pending
-    head, a squash, a revert, a direct push.
+    its tree equals its second parent's tree, **and** either the API shows a successful full (not fast-path) run of the same workflow
+    on that second-parent SHA, or the second parent is text-only against the first parent and the first parent is green (constraint 6).
+    Anything else runs in full: a branch merged while behind, a merge made in the GitHub UI on a red or pending head, a squash, a
+    revert, a direct push. Why equality is enough when it holds: a head that is 0 commits behind contains its base, so the PR run
+    tested exactly the tree that the merge commit has.
 - **What "green" means afterwards:** a required check can pass in two ways, "ran in full" or "classified text-only". The two must be
   distinguishable by a machine, not only in the job summary.
 - **Design constraints from this review and its G0 (each needs a failing fixture, L-01):**
@@ -128,11 +131,15 @@ ahead of U2 with no other change.
   3. The classifier always diffs against `origin/develop`, never the PR's own base; a PR whose base is not `develop` runs in full.
   4. Fail closed, with the polarity fixed: the heavy steps run **unless** the classifier's output is exactly the text-only value. An
      empty output, a failed or skipped classify step, an unknown base, a truncated file list, a rename or deletion touching a path off
-     the list, a symlink, a submodule or a mode change all mean the full job. No `continue-on-error` on the classify step.
-  5. A fast-path run never cancels a full run: `cancel-in-progress` is off for pushes to `develop` (today a later merge cancels the
-     running post-merge run; run 39961950852 was cancelled that way).
-  6. Switch (b) also requires the previous `develop` commit's run to be green, so a text-only merge cannot paint green over a red
-     `develop`; the LC triages a red `develop` before the next merge.
+     the list, a symlink, a submodule or a mode change all mean the full job. No `continue-on-error` on the classify step. The
+     allow-list is **one file** under `scripts/` with tests in `scripts/tests/`, read by the classifier and by merge-gate (from the
+     `develop` checkout), so the two cannot drift. PRs to `master` (release, hotfix) always run in full.
+  5. A fast-path run never cancels or replaces a full run: for pushes to `develop` the concurrency group includes the commit SHA
+     (today a later merge cancels the running post-merge run; run 39961950852 was cancelled that way, and with cancelling merely
+     switched off GitHub would still drop a queued run).
+  6. "Green" for switch (b) is defined: the latest attempt of the same workflow's `push` run on the merge commit's **first parent**
+     concluded `success`, whether in full or by a valid fast path. Missing, queued, in progress, cancelled or failed all mean the full
+     job. So a text-only merge cannot paint green over a red or untested `develop`; the LC triages a red `develop` before the next merge.
   7. A standing check in `docs-check` (it always runs in full): no tracked symlink or submodule, and nothing under `backend/`, `web/`,
      `e2e/`, `qa/`, `deploy/` or the workflows reads an allow-listed path. Today nothing does, apart from `check_docs.py` and
      `scripts/tests/`, which run in `docs-check`.
@@ -225,13 +232,13 @@ ahead of U2 with no other change.
 | ID | Decision | LC recommendation |
 |---|---|---|
 | PO-1 | U2 (a): text-only PRs skip the heavy steps of the heavy jobs, with the merge-gate re-check, after the fixtures, the offline replay, the adversarial review and shadow mode | Yes |
-| PO-2 | U2 (b): skip the post-merge heavy steps when the merged tree equals a PR head with a successful full run; same conditions as PO-1 | Yes |
+| PO-2 | U2 (b): skip the post-merge heavy steps when the merged tree equals the PR head and that head had a successful full run, or is text-only on top of a green `develop`; same conditions as PO-1 | Yes |
 | PO-3 | The docs promise only what exists: nightly struck in favour of a manually started `regression` workflow; PIT no longer "nightly"; `seed-e2e` and the `e2e` profile struck; and the G5 matrix: 6 viewports × Chromium + Firefox and WebKit smoke (narrows DEC-131 (7)) or 6 viewports × 3 engines | Yes; the narrower matrix |
 | PO-4 | `qa/` retention: option (a) or (b) | (a) |
 | PO-5 | U6: one records PR after the merge | Decide after U2's measurement |
 | PO-6 | U8 (a): at G0 a delta re-check only for S1/S2 | Yes |
 | PO-7 | A target for the wait on an implementation PR (for U7 and U9), and whether more runner minutes may be spent | Target 10 minutes; no extra minutes before U2, U3, U7 are measured |
-| PO-8 | Order: U1 into T-M2.13; the U2 packet next (shadow mode during T-M2.13); then U3 and U4 (or U4 before U2, the external review's order); Dependabot hygiene (U5) | As written |
+| PO-8 | Order: U1 into T-M2.13; the U2 packet next (shadow mode during T-M2.13); then U3 and U4 (or U4 before U2); Dependabot hygiene (U5) | As written |
 | PO-9 | U3: the gate repeats the importing specs when a file under `e2e/support/` changes | Yes |
 | PO-10 | U4: local E2E runs on its own database, recreated per run (supersedes DEC-139 (3)) | Yes |
 

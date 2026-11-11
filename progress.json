@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-11-11T14:52:55Z",
-  "updatedBy": "lead-coordinator (T-M2.22 G0 round 1 fixes)",
+  "updatedAt": "2026-11-11T16:45:42Z",
+  "updatedBy": "lead-coordinator (T-M2.22 awaiting PO decisions PO-1..PO-10, DEC-157)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -32,7 +32,7 @@
   "currentTask": {
     "id": "T-M2.22",
     "title": "QA and delivery strategy review (PO, DEC-156)",
-    "status": "in_review",
+    "status": "awaiting_approval",
     "ownerRole": "LC",
     "branch": "docs/T-M2.22-qa-strategy-review",
     "packet": "docs/tasks/T-M2.22-qa-strategy-review.md",
@@ -43,7 +43,7 @@
       "PO request 2026-11-11 (DEC-156) — met"
     ],
     "nextSteps": [
-      "G0 delta re-check after the round 1 fixes (S2 D-1..D-4), merge-gate, then the PO decides PO-1..PO-10 (packet); no pilot starts before that"
+      "PO: decide PO-1..PO-10 (docs/tasks/T-M2.22-qa-strategy-review.md); the LC records them as a DEC and sets T-M2.22 done; adopted items become their own packets (U1 into T-M2.13, U2 next if PO-8 as written)"
     ],
     "trace": [
       "DEC-156",
@@ -391,8 +391,8 @@
   },
   "gates": {
     "G0": {
-      "status": "pending",
-      "note": "T-M2.22: G0 round 1 CHANGES REQUESTED (S2 D-1..D-4), fixed; delta re-check pending (DEC-157)"
+      "status": "pass",
+      "note": "T-M2.22: DOCS-REVIEW round 1 CHANGES REQUESTED (S2 D-1..D-4; 141,204 tokens), round 2 delta PASS WITH MINOR (39,511 tokens), all fixed (DEC-157)"
     },
     "G1": {
       "status": "pass",
@@ -751,6 +751,13 @@
       "status": "approved",
       "at": "2026-10-23T13:31:19Z",
       "ref": "DEC-154"
+    },
+    {
+      "what": "T-M2.22 decisions PO-1..PO-10 (QA and delivery strategy plan)",
+      "by": "PO",
+      "status": "pending",
+      "at": null,
+      "ref": "DEC-157"
     }
   ],
   "environment": {
@@ -1383,6 +1390,11 @@
       "at": "2026-11-11T14:52:55Z",
       "actor": "docs-reviewer (independent)",
       "event": "T-M2.22 G0 round 1: CHANGES REQUESTED (S2 D-1..D-4, S3 D-5..D-14, S4 D-15..D-16; 141,204 tokens); all fixed by the LC, U2 hardened, PO-9 and PO-10 added."
+    },
+    {
+      "at": "2026-11-11T16:45:42Z",
+      "actor": "lead-coordinator",
+      "event": "T-M2.22 G0 round 2 (delta) PASS WITH MINOR, N-1..N-6 fixed; packet awaiting the PO's decisions PO-1..PO-10 (DEC-157); handoff written."
     }
   ]
 }

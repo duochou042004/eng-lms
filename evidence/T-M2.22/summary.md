@@ -30,3 +30,5 @@ See baseline.md. No test, gate or build ran: the PR changes text only.
 | Round | Reviewer | Head | Verdict | Findings | Full/delta | Tokens | Minutes | Gate runs |
 |---|---|---|---|---|---|---|---|---|
 | G0 round 1 | docs-reviewer (fresh, adversarial brief) | `ae91d7b` | CHANGES REQUESTED | S2 D-1..D-4; S3 D-5..D-14; S4 D-15, D-16; attacks A-1..A-12 (all fixed) | full | 141,204 | 7.9 | 0 |
+| G0 round 2 | docs-reviewer (resumed) | `d106600` | PASS WITH MINOR | D-1..D-16 closed; S3 N-1..N-3, S4 N-4..N-6 (all fixed) | delta | 39,511 | 2.5 | 0 |
+| **Total** | 1 review agent | | | | | 180,715 | 10.4 | 0 |

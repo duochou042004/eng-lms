@@ -83,7 +83,7 @@ script files (Dependabot heads change dependencies). The 33 `docs/*` and `qa/*` 
 only, except the 2 runs of PR #121, which also changed `.github/pull_request_template.md`. 16 of the 32 docs-head runs in the run list
 were cancelled by a later push to the same PR.
 
-**Job duration by head kind** (successful runs with job data; the test step is about 93 % of the job in every kind):
+**Job duration by head kind** (successful runs with job data; the `e2e-run.sh` step, which includes packaging and start-up, is about 93 % of the job in every kind; Playwright alone is about 90 %):
 
 | Head | Successes | Job p50 / p90 (min) | Queue p50 / p90 / max (s) |
 |---|---|---|---|

@@ -106,3 +106,74 @@ D-4 (the matrix row and PO-3 say the recommendation narrows DEC-131 (7)); D-5 (U
 the `seed-e2e` strike and PIT in PO-3); D-8, D-9, D-10 (claims softened, sample sizes stated, the external review §4A and §4.3 audits
 listed as not done); D-11 (36); D-12 (duration by head kind added); D-13 (PR #121 noted); D-14 (handoff and PR number in this PR);
 D-15, D-16 (IDs, wording). The ranking note now states the departure from the external review §8 order and why.
+
+## Round 2 (delta, the same reviewer resumed) at `d106600` — 39,511 tokens (180,715 cumulative − 141,204), 149.7 s
+
+DOCS-REVIEW T-M2.22: PASS
+PASS WITH MINOR: all four S2 are closed; three S3 and three S4 are new in the round 2 text (N-1 to N-6).
+
+## Check results
+- `./scripts/check-docs.sh`: PASS (284 markdown files, exit 0).
+- **AC7 is not met yet:** `e2e-smoke` failed on `d106600` (run 43042804940) in the Playwright browser install step ("Installation process exited with code: 100"), before any test ran. The other six checks pass; it needs a re-run.
+- `evidence/T-M2.22/review/docs.md` is a faithful record of round 1; the LC response matches what the commit changed.
+
+## D-1 to D-16
+
+| ID | State | Where |
+|---|---|---|
+| D-1 (S2) | closed | packet `:34-35`, `:52-53`, `:72`, `:177-179`; baseline §2 post-merge paragraph; DEC-157 ("all 17 task merges…; 23 of the last 40… 18 behind") |
+| D-2 (S2) | closed | packet `:114-117` (two parents, tree equality, API evidence of a successful full run), `:132-133` (no cancelling), `:155` and `:228` (PO-2 on PO-1's conditions); see N-1 |
+| D-3 (S2) | closed | packet `:123-128` (merge-gate recomputes, heavy step `success` not `skipped`, diff against `origin/develop`, §6.3 adopted), `:118-119`, `:227` |
+| D-4 (S2) | closed | packet `:84` (narrows DEC-131 (7); what is lost), `:229` |
+| D-5 | closed | packet `:161-164`, `:235` (PO-9) |
+| D-6 | closed | packet `:85`, `:169-170` |
+| D-7 | closed | packet `:87`, `:229`, `:236` (PO-10) |
+| D-8 | closed | packet `:25-26`, `:55`, `:142-144`, `:245-246`; baseline §9 |
+| D-9 | closed | baseline §3; packet `:278-279` |
+| D-10 | closed | packet `:45-47`; baseline §5 |
+| D-11 | closed | packet `:49`; baseline §7 |
+| D-12 | closed | baseline "Job duration by head kind"; packet `:253-254`, `:278-279` |
+| D-13 | closed | packet `:32-33`, `:71`; baseline §2 |
+| D-14 | accepted-pending | PR number set (`progress.json`, `summary.md:2`); the handoff follows in the records commit |
+| D-15 | closed | baseline §9 (U7) |
+| D-16 | closed | packet `:103`, `:112-113`, `:11` |
+
+## Attack coverage
+
+| # | Covered by | State |
+|---|---|---|
+| A-1 | switch (b) `:114-117` | covered |
+| A-2 | constraint 5 | covered only together with constraint 6; see N-2 |
+| A-3 | constraint 6 | covered in intent; not yet well defined, see N-2 |
+| A-4 | constraints 2 and 3 | covered |
+| A-5 | constraint 4 | covered |
+| A-6 | `:118-119`, constraints 2 and 9 | covered. merge-gate can see a step conclusion: `gh run view <id> --json jobs` returns `steps[].conclusion`, which is `skipped` for a skipped step |
+| A-7 | constraint 7 | covered |
+| A-8 | constraint 4 | mostly covered; `-z`/quoting, exact case and root-anchoring of `*.md` are left to the U2 packet |
+| A-9 | `:114`, `:116-117` | covered |
+| A-10 | not written down | open, S4 (N-6) |
+| A-11 | constraint 8 | covered |
+| A-12 | Validation `:148-152` | covered |
+
+## New findings
+
+| ID | Sev | File:line | Finding | Suggested fix |
+|---|---|---|---|---|
+| N-1 | S3 | packet `:114-117`, `:142`, `:153-154`, `:228`; baseline §2 ("54 of 118 runs") | (b) as written contradicts the stated effect. A text-only PR head has only fast-path runs, so "a successful full (not fast-path) run on the second-parent SHA" is never true for it, and its post-merge run goes full. By my replay that is 12 of the 17 task merges; only about 9 of the 21 identical-tree runs would skip. The 46 % and "runs per task fall to those on the implementation branch" then overstate. The error is in the safe direction, but if the LC means the wider rule, PO-2 does not approve it as worded. | Choose one and write it in (b) and PO-2. Either keep the rule and lower the expected effect, or add: "or the second parent is text-only against the first parent and the first parent's run is green (constraint 6)". |
+| N-2 | S3 | packet `:132-135` | Constraint 6 is not well defined: which commit (first parent?), which run (push event, same workflow, latest attempt?), and whether a fast-path green counts. It should also say that missing, in-progress, pending, cancelled and failed all mean full. Constraint 5 alone is not enough: with `cancel-in-progress` off, GitHub still replaces a *pending* run in the group when a newer one queues, so a queued full run can be dropped. Constraint 6 rescues this only if "cancelled" counts as not green. | Define it in one sentence as above. For constraint 5, put the SHA in the concurrency group for pushes to `develop`, or state the reliance on constraint 6. |
+| N-3 | S3 | packet `:120-140` | The round 1 sentence "the allow-list is a file under `scripts/` with tests in `scripts/tests/`" was dropped. The classifier and merge-gate now both compute "text-only"; two copies of the list can drift. | Restore it: one list file, read by both; merge-gate reads it from the `develop` checkout. Say that release and hotfix PRs to `master` always require the full run. |
+| N-4 | S4 | packet `:92-96`, `:234` | "The external review puts … enforcement of floors before throughput" is not its §8 order: sharding (throughput) is step 2 and floors are step 4. The "untrustworthy assurance first" line is a principle in its §4A. "U4 before U2, the external review's order" is therefore not the review's order either. | "Puts selection last (step 7), after floors (step 4), and states the principle in §4A"; in PO-8 say "U4 before U2". |
+| N-5 | S4 | baseline "Job duration by head kind" and §2 split paragraph | "The test step is about 93 % of the job" sits next to "browser test execution is about 90 % of the job"; the two measure different things (the `e2e-run.sh` step against Playwright alone). The table itself is consistent with my run-level figures (83 successes: 6 / 2 / 14 / 3 / 23 / 35; job p50 plus queue matches run p50 and p90 per kind). | Name what each percentage measures. |
+| N-6 | S4 | packet U2 | The argument that makes (b) sound is still unwritten: a 0-behind head contains the base, so the PR run's merge ref has the head's tree. | One sentence under (b). |
+
+Nothing added this round weakens merge assurance without a PO row: the gate change in U3 is PO-9, the local database is PO-10, the merge-gate change is in PO-1, and the matrix is PO-3.
+
+Not checked: the job-level numbers in the new head-kind table (I compared against run-level durations only), and the 141,204-token / 7.9-minute cost row. Risk to know: N-1 decides how much PO-2 actually saves, so fix it before the PO reads the row.
+
+## LC response to round 2
+
+N-1: switch (b) and PO-2 now state the wider rule (a text-only second parent on a green first parent also skips). N-2: constraint 6
+defines green (first parent, same workflow, `push` run, latest attempt, `success`; anything else means full) and constraint 5 puts the
+SHA in the concurrency group. N-3: one allow-list file read by the classifier and merge-gate; PRs to `master` always run in full.
+N-4, N-5, N-6: wording. The failed `e2e-smoke` run 43042804940 was a browser-install failure before any test; the next head re-ran it.
+No further re-check: S3 and S4 only (DEC-131 (5)).
