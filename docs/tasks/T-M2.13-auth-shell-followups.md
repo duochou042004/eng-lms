@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Milestone | M2 |
-| Status | draft |
+| Status | ready |
 | Owner role | FE (frontend-implementer) |
 | Branch | `feature/T-M2.13-auth-shell-followups` (from `develop`) |
 | Depends on | T-M2.12 (`b5596d3`), T-M2.20 (`f3a77fa`, the mutation-cache boundaries), T-M2.21 (`d890aae`): merged |
@@ -45,8 +45,9 @@ description. No new feature, no endpoint change.
      `null`, and navigate to `loginPath(pathname + search)` (the same `?next=` the guard builds today) with
      `state: { signedOutElsewhere: true }` and no user data;
      (iii) otherwise run today's steps (`dropAllButSession`, then `followSession`).
-     A 401 that arrives while step (ii) runs (a request already in flight) does not navigate again: the `UNAUTHENTICATED` handler stands
-     down while that follow is in flight, as it already does on `/login`. The `signed-in` message and `pageshow` keep today's order. The
+     A 401 meanwhile (a request already in flight, or a mounted query that refetches after the clear while `/login`'s loader runs) does
+     not navigate: the `UNAUTHENTICATED` handler stands down **from the start of a `signed-out` resync until its navigation has settled**,
+     as it already does on `/login`. This is harmless, because the resync itself navigates when the session is anonymous (G0 N-1). The `signed-in` message and `pageshow` keep today's order. The
      kept `sessionSync.test.tsx` "signed-out: the tab goes to /login?next=, with only the anonymous session cached (AC5)" still holds with
      this sequence (the cache holds only `SESSION_KEY` → `null`).
      `/login` always passes the unsaved-changes guard (`ui/blocksNavigation.ts`), as today. `/login` shows an `InlineAlert` (tone `info`,

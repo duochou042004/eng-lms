@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-11-11T11:55:32Z",
-  "updatedBy": "lead-coordinator (new device recorded; T-M2.13 packet written, DEC-155; G0 next)",
+  "updatedAt": "2026-11-11T12:07:01Z",
+  "updatedBy": "lead-coordinator (T-M2.13 G0 PASS WITH MINOR, DEC-155; packet PR #153 to merge; PO start signal next)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -32,19 +32,19 @@
   "currentTask": {
     "id": "T-M2.13",
     "title": "Auth and shell feedback follow-ups (T-M2.12 G3, DEC-118)",
-    "status": "draft",
+    "status": "ready",
     "ownerRole": "FE",
     "branch": "docs/T-M2.13-auth-shell-followups",
     "packet": "docs/tasks/T-M2.13-auth-shell-followups.md",
-    "pr": null,
+    "pr": "153",
     "lastCommit": null,
     "startedAt": null,
     "entryGate": [
       "T-M2.21 merged — met (d890aae)"
     ],
     "nextSteps": [
-      "G0: one fresh docs-reviewer on the packet (PR on docs/T-M2.13-auth-shell-followups); fix S1-S3, delta rounds; DOCS-REVIEW + LC-APPROVED; merge-gate; gitlab-sync",
-      "PO start signal; then the frontend-implementer on feature/T-M2.13-auth-shell-followups (tier M: one combined QA+UX reviewer at G3)"
+      "Merge the packet PR #153 via merge-gate (DOCS-REVIEW T-M2.13: PASS + LC-APPROVED T-M2.13 after CI green); gitlab-sync",
+      "PO start signal; then the frontend-implementer on feature/T-M2.13-auth-shell-followups from develop (export CONTAINER_HOST on this device); one gate on the final head; G3 tier M: one combined fresh QA+UX reviewer"
     ],
     "trace": [
       "DEC-118",
@@ -390,8 +390,8 @@
   },
   "gates": {
     "G0": {
-      "status": "pending",
-      "note": "T-M2.13 packet written (DEC-155); docs review next"
+      "status": "pass",
+      "note": "T-M2.13: one fresh docs-reviewer, round 1 CHANGES REQUESTED (S2 D-1, S4 D-2..D-10; 104,400 tokens), delta PASS WITH MINOR (S4 N-1, N-2; 11,890), all fixed (evidence/T-M2.13/review/docs.md)"
     },
     "G1": {
       "status": "pass",
@@ -1356,6 +1356,16 @@
       "at": "2026-11-11T11:55:32Z",
       "actor": "lead-coordinator",
       "event": "New device (Ubuntu 26.10, rootless Podman 5.8.6 via the user socket; agent shells need CONTAINER_HOST because of NoNewPrivs): development-setup §0 done (JDK 25.0.4 + Boot CLI 4.1.0 from .sdkmanrc, Node 24.21.0, pnpm 12.6.0, hooks, gitlab remote, .env, Chromium 156); check-docs PASS, run-all PASS. Recorded in environment and project.repoLocal (DEC-083). T-M2.21 records PR #141 was already merged (d763086, mirror in sync). T-M2.13 packet written on docs/T-M2.13-auth-shell-followups (DEC-155, tier M); G0 next."
+    },
+    {
+      "at": "2026-11-11T12:07:01Z",
+      "actor": "docs-reviewer (independent)",
+      "event": "DOCS-REVIEW T-M2.13 G0: round 1 CHANGES REQUESTED on 7738687 (S2 D-1: the cross-tab notice raced the 401 handler; S4 D-2..D-10), fixed in 435a723; round 2 delta PASS WITH MINOR (S4 N-1 stand-down window, N-2 DEC wording), fixed by the LC. 104,400 + 11,890 tokens, 6.0 + 0.8 min."
+    },
+    {
+      "at": "2026-11-11T12:07:01Z",
+      "actor": "lead-coordinator",
+      "event": "T-M2.13 packet ready (Status ready, DEC-155); G0 record evidence/T-M2.13/review/docs.md; handoff archived and rewritten; packet PR #153 to merge via merge-gate, then the PO start signal."
     }
   ]
 }
