@@ -1,43 +1,37 @@
-# Handoff — 2026-11-11 (PO: T-M2.13 held; next: T-M2.22 QA and delivery strategy review, DEC-156)
+# Handoff — 2026-11-11 (T-M2.22 answered: the PO decides PO-1..PO-10; T-M2.13 still held)
 
-Phase/Milestone: P1 / M2 (in progress) · Current task: **T-M2.22 QA and delivery strategy review (LC, draft)** · Next: **T-M2.13**
-(packet ready, DEC-155; **held by the PO** until after T-M2.22 and a start signal) · Last merges on develop: the T-M2.13 packet (PR #153,
-`b1a542f`), this records PR · Remote: https://github.com/duochou042004/eng-lms (mirror: gitlab.com/duochou042004/eng-lms)
+Phase/Milestone: P1 / M2 (in progress) · Current task: **T-M2.22 QA and delivery strategy review (LC, awaiting the PO's decisions)** ·
+Next: **T-M2.13** (packet ready, DEC-155; **held by the PO**, DEC-156) · Last merge on develop: the T-M2.22 packet (PR #155) ·
+Remote: https://github.com/duochou042004/eng-lms (mirror: gitlab.com/duochou042004/eng-lms)
 
 ## Where we are
-- The new device is recorded (Ubuntu 26.10, rootless Podman through the user socket; `progress.json` `environment`). The gate has not run here yet.
-- **T-M2.13 packet merged at G0** (PR #153, `b1a542f`, DEC-155). The PO answered the start-signal question "Not yet" and asked the next
-  session to **examine the testing and QA process first** (DEC-156): delivery has slowed, and the tests grow more costly with every feature.
-  The PO's question is whether the process is over-built, over-meticulous or simply wrong in places.
-- **Input:** the external review `/home/linux/Projects/Eng-LMS-QA-Strategy-Review-2026-10-29.md` (a PO file outside the repo, **not in git**;
-  if it is missing, ask the PO). Its paths name `/home/kali/Projects/eng-lms-develop`: map them to this clone.
-- **Already checked by the LC on `b1a542f` (DEC-156):** no nightly/scheduled workflow; `e2e-smoke` runs the full suite on every PR (docs-only
-  too) and again on each push to `develop`; JaCoCo has no `check` goal and web has no Vitest coverage; `students.spec.ts` is 3,305 of 6,379 spec
-  lines; `qa/` holds M1 specs only; `scripts/seed-e2e` does not exist; e2e is Chromium only. Measured over the last 40 `e2e-smoke` runs:
-  28 success / 10 failure, success p50 16.0 min, p90 17.4, max 19.5. PR #153 (docs only) took two full e2e runs (a flake, then green).
-- Left over (unchanged): S4 QA-2 in the **T-M2.7** row (DEC-148); the backend wall-clock flake in **T-M2.10** (DEC-144 (3)); AC6's purpose
-  unverified off Chromium (G5, DEC-146).
+- **T-M2.22 is written, reviewed and waits for the PO** (DEC-157): packet `docs/tasks/T-M2.22-qa-strategy-review.md` (the answer, plan
+  U1..U10, decisions PO-1..PO-10), baseline `evidence/T-M2.22/baseline.md` (every figure with its command), G0 record
+  `evidence/T-M2.22/review/docs.md` (round 1 CHANGES REQUESTED with four S2, fixed; round 2 delta PASS WITH MINOR, fixed).
+- **The answer in short:** the kinds of check are right and stay; they run far too often where they cannot find a product defect
+  (`e2e-smoke` p50 16.0 min, 41 % of its minutes on text-only heads and identical post-merge trees; text-only PRs open for 33 to 38 % of
+  a task's wall-clock); five documented promises have no implementation; 23 of the last 40 merges (Dependabot) went in outside merge-gate.
+- **Nothing was changed** in workflows, scripts, tests or quality docs. No pilot is started. T-M2.13 is not started.
 
 ## In flight / uncommitted
-- Nothing, once this records PR (`docs/T-M2.22-qa-strategy-plan`) is merged.
+- Nothing.
 
 ## Next steps
-1. **T-M2.22** (backlog row): read the external review in full and audit it against the live repo (it describes a 2026-10-23 snapshot).
-   Build the baseline from data, not impressions: per-run CI wait split into queue, setup, packaging, test body and uploads (`gh run view
-   --json jobs`); first-attempt failures classified (product, test, infra); local gate step times (`evidence/*/gate-*.log`); review rounds,
-   tokens and minutes per tier (the G3 cost tables, DEC-131 measurement); where repeats and duplicate runs come from.
-2. Answer the PO directly: what is sound and must stay (independent QA, authz/isolation harness, negative proofs), what is over-built or
-   duplicated, what is promised but missing. Then a ranked upgrade plan: per item the weakness, evidence, risk, alternatives, validation and
-   rollback. Smallest discriminating experiments where the evidence cannot choose. Every change to merge assurance needs a PO decision (DEC).
-3. Write it as the T-M2.22 packet/plan on `docs/T-M2.22-<slug>`; G0 by a fresh docs-reviewer plus an adversarial angle for gate/CI changes;
-   PO approval; then the chosen pilots as their own packets. T-M2.13 resumes only after that and a PO start signal.
+1. **The PO decides PO-1..PO-10** (packet table). The LC records the answers as a DEC and sets T-M2.22 `done` (backlog row, packet
+   Status, `completed[]`; evidence-and-handoff part C).
+2. If PO-8 is accepted as written: add the U1 flaky-test fix to T-M2.13 as an AC with a DEC (the DEC-153 precedent); write the U2 packet
+   (tier L, adversarial G0; its nine design constraints are in the packet and attacks A-1..A-12 in the review record); T-M2.13 then runs
+   with U2 in shadow mode as the measurement. U3 and U4 follow as their own packets.
+3. T-M2.13 starts only on a PO start signal.
 
 ## Pending PO decisions / actions
-- **T-M2.22 outcome:** the policy trade-offs (e.g. full e2e on docs-only PRs, the post-merge run, the runner-minute budget for sharding,
-  coverage floors now or later, the G5 browser matrix).
+- **PO-1..PO-10** (T-M2.22 packet): text-only PRs and identical post-merge trees skip the heavy CI steps; the docs promise only what
+  exists (nightly, PIT, `seed-e2e`, the G5 matrix: narrowing DEC-131 (7) or not); `qa/` retention; one records PR; G0 delta only for
+  S1/S2; the wait target and runner minutes; the order; the `e2e/support/` repeat rule; a separate local E2E database (supersedes DEC-139 (3)).
+- **GitHub Actions billing** (Settings → Billing): the LC cannot read it; 2,844 wall minutes of CI ran in 22 days.
+- **Dependabot (U5):** PR #135 is open and red (13 failed runs); Dependabot merges go in outside merge-gate, 18 of 23 while behind. PR #100 is closed.
 - **T-M2.13 start signal** (held, DEC-156).
-- **PR #100** (react-aria-components bump) is **held** (DEC-139). Dependabot PRs (#135 open) are the PO's.
-- For G5 on this device: Firefox/WebKit browsers and host libraries (`sudo`, PO).
+- For G5 on this device: Firefox/WebKit browsers and host libraries (`sudo`, PO), unless PO-3's manual `regression` workflow replaces the need.
 - Open points (unchanged): the `ui/index.ts` barrel in the student first visit; `lib/time` uses the browser's time zone (T-M3.1/T-M3.3, L-12);
   `SERVER_FORWARDHEADERSSTRATEGY=native` (M8); the common-password list (T-M2.3 SEC S4-9); `glab` deny rules (DEC-061); OQ-03..OQ-14.
 
@@ -100,8 +94,11 @@ Phase/Milestone: P1 / M2 (in progress) · Current task: **T-M2.22 QA and deliver
 - Wall-clock bounds in tests flake on the 2-core CI runner (DEC-093); one remains: `AuthApiIntegrationTest.anUnrelatedLoginStaysFastDuringABurstOnOneUsername`
   (failed at 3355 ms on PR #125's docs-only head, run 39567176119; rerun) — now in the BE row T-M2.10 (DEC-144 (3)).
 - `git merge` is denied: `gh pr update-branch` (DEC-090).
+- **LC habits from T-M2.22 (free, from now):** batch fixes before pushing to a text-only PR (16 of 32 docs-head runs were cancelled by a
+  later push); open the records PR after the `qa/` PR has merged.
+- **CI infra flake (2026-11-11, run 43042804940):** `playwright install --with-deps` exited 100 before any test; re-run.
+- The CI timing analysis used throwaway scripts in the session scratchpad; the commands in the T-M2.22 packet reproduce the data.
 
 ## Files to read first
-`CLAUDE.md` → `progress.json` → this file → `/home/linux/Projects/Eng-LMS-QA-Strategy-Review-2026-10-29.md` → DEC-131, DEC-156 →
-`docs/06-quality/{quality-gates,test-strategy,qa-protocol}.md` → `docs/tasks/T-M2.18-quality-process.md` (the DEC-131 measurement) →
-`docs/09-harness/lessons-learned.md` → `scripts/gate.sh`, `scripts/e2e-run.sh`, `.github/workflows/`, `e2e/playwright.config.ts`.
+`CLAUDE.md` → `progress.json` → this file → `docs/tasks/T-M2.22-qa-strategy-review.md` → `evidence/T-M2.22/baseline.md` →
+`evidence/T-M2.22/review/docs.md` (attacks A-1..A-12 for the U2 packet) → DEC-131, DEC-156, DEC-157 → `docs/tasks/T-M2.13-auth-shell-followups.md`.
