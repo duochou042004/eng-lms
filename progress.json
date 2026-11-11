@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-11-11T13:29:56Z",
-  "updatedBy": "lead-coordinator (PO: T-M2.13 held; next T-M2.22 QA strategy review, DEC-156)",
+  "updatedAt": "2026-11-11T14:41:09Z",
+  "updatedBy": "lead-coordinator (T-M2.22 packet written, G0 pending)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -32,22 +32,23 @@
   "currentTask": {
     "id": "T-M2.22",
     "title": "QA and delivery strategy review (PO, DEC-156)",
-    "status": "draft",
+    "status": "in_review",
     "ownerRole": "LC",
-    "branch": null,
-    "packet": null,
+    "branch": "docs/T-M2.22-qa-strategy-review",
+    "packet": "docs/tasks/T-M2.22-qa-strategy-review.md",
     "pr": null,
     "lastCommit": null,
-    "startedAt": null,
+    "startedAt": "2026-11-11T14:41:09Z",
     "entryGate": [
       "PO request 2026-11-11 (DEC-156) — met"
     ],
     "nextSteps": [
-      "LC: read the external review (/home/linux/Projects/Eng-LMS-QA-Strategy-Review-2026-10-29.md), measure the baseline, answer the PO, write the T-M2.22 plan/packet; PO decision on each change to merge assurance"
+      "G0 docs review (fresh docs-reviewer, adversarial brief for U2), merge-gate, then the PO decides PO-1..PO-8 (packet); no pilot starts before that"
     ],
     "trace": [
       "DEC-156",
-      "DEC-131"
+      "DEC-131",
+      "DEC-157"
     ]
   },
   "nextTask": {
@@ -390,8 +391,8 @@
   },
   "gates": {
     "G0": {
-      "status": "n/a",
-      "note": "T-M2.22 not written yet (T-M2.13: G0 PASS, DEC-155, PR #153)"
+      "status": "pending",
+      "note": "T-M2.22 packet written (DEC-157); docs review pending"
     },
     "G1": {
       "status": "pass",
@@ -446,7 +447,8 @@
       "DEC-153",
       "DEC-154",
       "DEC-155",
-      "DEC-156"
+      "DEC-156",
+      "DEC-157"
     ],
     "pendingPO": [
       "OQ-03",
@@ -1371,6 +1373,11 @@
       "at": "2026-11-11T13:29:56Z",
       "actor": "PO",
       "event": "T-M2.13 start signal: \"Not yet\". The next session reviews the testing/QA process first (external review of 2026-10-29); new LC task T-M2.22 (DEC-156)."
+    },
+    {
+      "at": "2026-11-11T14:41:09Z",
+      "actor": "lead-coordinator",
+      "event": "T-M2.22: baseline measured on d5908fa (evidence/T-M2.22/baseline.md), packet with the answer and plan U1..U10 written (DEC-157); G0 review next."
     }
   ]
 }

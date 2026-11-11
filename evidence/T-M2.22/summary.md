@@ -1,0 +1,32 @@
+# Evidence — T-M2.22 QA and delivery strategy review
+- Branch: `docs/T-M2.22-qa-strategy-review` · PR: see `progress.json` · Date (UTC): 2026-11-11
+
+## Acceptance criteria → proof
+| AC | Proof | Status |
+|---|---|---|
+| AC1 | [baseline.md](baseline.md) §2 (CI split, 120 runs per workflow), §3 (failures), §4 (gate steps), §5 (reviews), §2 and §6 (duplicates, per task), §9 (not measured) | done |
+| AC2 | baseline.md §1 (10 claims, all hold on `d5908fa`) | done |
+| AC3 | packet "The answer" and "What is sound and must stay" | done |
+| AC4 | packet "What is promised but missing" (5 rows) | done |
+| AC5 | packet U1..U10 and "PO decisions requested" (PO-1..PO-8); U7 is an experiment | done |
+| AC6 | `git diff --stat origin/develop...HEAD` | see the PR |
+| AC7 | `./scripts/check-docs.sh`, `./scripts/check-path-ownership.sh`, CI, `review/docs.md` | see the PR |
+
+## Commands run (copy-pasteable, in order)
+The packet's Commands block. The analysis grouped `gh run view --json jobs` output by head branch kind and step name with a throwaway
+script in the session scratchpad (not committed); every table in baseline.md names its source command.
+
+## Results
+See baseline.md. No test, gate or build ran: the PR changes text only.
+
+## Deviations & known limitations
+- 840 `gh run view` calls were planned (7 workflows × 120 runs); job and step data were read for `e2e-smoke`, `backend` and `web`; the
+  other four workflows use run-level durations from `gh run list`.
+- Billing, the 31 skips, per-viewport behaviour and the late-error share are not measured (baseline.md §9).
+
+## Reviews
+- DOCS-REVIEW: see `review/docs.md` (G0, DEC-157).
+
+## G3 cost (one row per round; DEC-131 (9))
+| Round | Reviewer | Head | Verdict | Findings | Full/delta | Tokens | Minutes | Gate runs |
+|---|---|---|---|---|---|---|---|---|
