@@ -20,7 +20,7 @@ and records (`git log --since=2026-10-23T13:40 --no-merges origin/develop`). The
 | `scripts/seed-e2e` and the `e2e` profile do not exist | `ls scripts/`; `grep -rn 'Profile("e2e")'` finds docs only | holds |
 | E2E projects are Chromium only | `e2e/playwright.config.ts` (`devices['Desktop Chrome']` for all six) | holds |
 | merge-gate also refuses on any non-required check that fails, is pending or is cancelled | `scripts/merge-gate.sh` step 3 | holds |
-| `students.spec.ts` dominates | 3,305 of 6,379 spec lines; 58 of 146 `test(` declarations | holds |
+| `students.spec.ts` dominates | 3,305 of 6,379 spec lines; 58 of 146 test declarations (lines matching `test(`, `test.fail(`, `test.skip(` or `test.fixme(` at the start; loops declare more instances) | holds |
 
 New facts the review did not have: sections 2 to 6.
 
@@ -78,15 +78,33 @@ From T-M2.4 (10-11) to T-M2.20 (10-23), nine UI tasks added about 13 minutes: ro
 | `qa/*` PR branches | 3 | 47 | 3 % |
 | `chore/*` PR branches | 3 | 45 | 3 % |
 
-Only 13 of 118 runs (11 % of the minutes) were on a `feature/` or `chore/` head, the only heads that changed product, test or script
-files. The 33 `docs/*` and `qa/*` runs carried Markdown, `progress.json` and evidence text only.
+Only 13 of 118 runs (11 % of the minutes) were on a `feature/` or `chore/` head, the only heads of ours that changed product, test or
+script files (Dependabot heads change dependencies). The 33 `docs/*` and `qa/*` runs carried Markdown, `progress.json` and evidence text
+only, except the 2 runs of PR #121, which also changed `.github/pull_request_template.md`. 16 of the 32 docs-head runs in the run list
+were cancelled by a later push to the same PR.
+
+**Job duration by head kind** (successful runs with job data; the test step is about 93 % of the job in every kind):
+
+| Head | Successes | Job p50 / p90 (min) | Queue p50 / p90 / max (s) |
+|---|---|---|---|
+| `feature/*` | 6 | 15.8 / 16.0 | 16 / 78 / 83 |
+| `chore/*` | 2 | 14.7 / 16.1 | 26 / 44 / 48 |
+| `docs/*` | 14 | 15.1 / 16.5 | 4 / 82 / 88 |
+| `qa/*` | 3 | 16.1 / 16.2 | 3 / 3 / 3 |
+| Dependabot | 23 | 15.8 / 17.4 | 24 / 172 / 283 |
+| Push to `develop` | 35 | 15.5 / 16.4 | 4 / 4 / 42 |
+
+The duration does not depend on what changed: every head runs the same suite.
 
 **Post-merge duplicate.** For the last 40 merge commits on `develop` (`git log --merges --first-parent -40`), the merge commit's tree
-equals the PR head's tree in **22 of 22** merges made through `merge-gate.sh` (it requires the branch 0 commits behind). The post-merge
-`push` run therefore tests byte-identical content that the PR run just passed. The other **18 of 18** are Dependabot PRs merged while 2 to
-131 commits behind `develop`, which `merge-gate.sh` refuses, so they did not go through it; for those the post-merge run is the only run
-on the merged content. Of the 36 post-merge `e2e-smoke` runs in the window, 21 (319 job minutes) were on a tree identical to the
-PR head and 15 (227 minutes) were not. Text-only heads plus identical post-merge trees are 660 of 1,626 job minutes (41 %).
+equals the PR head's tree in 22. Of those, **17 are task PRs merged through `merge-gate.sh`** (it requires the branch 0 commits behind
+and every check green on that head), so for them the post-merge `push` run tests byte-identical content that had just passed. The other
+5 are Dependabot PRs (#104, #132, #148, #149, #150) merged while up to date but with no `LC-APPROVED` comment, so outside merge-gate:
+identical content, but nothing required their head to be green. The remaining **18** are Dependabot PRs merged 2 to 131 commits behind
+`develop`; for those the post-merge run is the only run on the merged content. In all, 23 of the 40 merges are Dependabot PRs and none
+went through merge-gate. Tree equality shows what was merged; only merge-gate (or the run history) shows that it had passed. Of the 36
+post-merge `e2e-smoke` runs in the window, 21 (319 job minutes) were on a tree identical to the PR head and 15 (227 minutes) were not.
+Text-only heads plus identical post-merge trees are 54 of 118 runs and 660 of 1,626 job minutes (41 %).
 
 **Per task** (`e2e-smoke` PR runs grouped by the task ID in the branch name, cancelled and failed runs included):
 
@@ -116,7 +134,9 @@ Source: `gh run view <id> --log-failed` for each failed run in the window.
   a docs-only head; **still open**).
 - The `backend` failure is `AuthApiIntegrationTest.anUnrelatedLoginStaysFastDuringABurstOnOneUsername` (run 40818762069), the wall-clock
   bound already recorded for T-M2.10 (DEC-144 (3)); **still open**.
-- In this window the CI suite caught **no product defect on a branch we wrote**: the local gate had already run the same suite. It did
+- In this window the CI suite caught **no product defect on a branch we wrote**. The sample is small (13 runs on `feature/` and `chore/`
+  heads, 8 green, four tasks, 22 days), and CI differs from the local gate (an empty database, 2 workers against 8), so this is an
+  observation, not a rate. A likely reason is that the local gate runs the same suite first. It did
   catch a real incompatibility on the Dependabot react bump, 13 times, because each rebase of that open PR re-ran everything (about 208
   minutes of `e2e-smoke`).
 - Only one `e2e-smoke` run has `attempt > 1`; failures were usually cleared by the next push, not a re-run.
@@ -135,7 +155,7 @@ Command: the `<== <step> OK (<n>s)` lines of every kept gate log.
 | **Gate total** | 150 s | 364 s | 572 s | 677 s | 428 s | 950 s |
 
 - The main E2E pass grew from 26 s to 280 s (8 local workers); it is 65 % of a gate with no backend change.
-- The changed-spec ×3 repeat adds 240 to 545 s whenever `students.spec.ts` changes (T-M2.15 518 s, T-M2.19 580 to 593 s, T-M2.17 649 to
+- The changed-spec ×3 repeat adds 240 to 545 s whenever `students.spec.ts` changes (T-M2.15 518 s, T-M2.19 579 to 593 s, T-M2.17 649 to
   653 s, T-M2.20 785 to 825 s for the `e2e` step): the file holds 58 of the suite's 146 test declarations, so one new test replays all 58
   on three viewports three times.
 - Failed gates among the kept logs: 5 (the T-M1.5 fail-fast demonstration; one `e2e` in T-M2.12; three `web-test`: one in T-M2.19 and two in
@@ -158,7 +178,8 @@ Before DEC-131 the same work took 6 to 12 review rounds and 21 to 87 gate minute
 T-M2.21 91,180 tokens in two rounds (3 S3, 7 S4), T-M2.13 116,290 tokens in two rounds (1 S2, 11 S4), T-M2.19 three rounds.
 
 Per round: a combined QA+UX pass costs 112,000 to 128,000 tokens and 15 to 24 minutes; a delta re-check 12,000 to 19,000 tokens; SEC
-43,000 to 48,000 tokens and 2 minutes. Review is now smaller than implementation in tokens on every UI task.
+43,000 to 48,000 tokens and 2 minutes. On the three UI tasks with full data (T-M2.17, T-M2.19, T-M2.20) the G3 review cost fewer tokens
+than the implementation; T-M2.15's summary records only its fix round, and the G0 packet reviews above are extra.
 
 ## 6. Wall-clock per task and the PR count
 
@@ -179,7 +200,7 @@ which runs while CI runs.
 
 `wc -c`: `progress.json` 68,700 bytes (1,377 lines, 121 `history` entries; the Read tool counts about 34,000 tokens),
 `docs/10-governance/decision-log.md` 158,192 bytes for 156 entries (recent entries are 2,000 to 3,500 characters each),
-`docs/tasks/backlog.md` 33,683, `docs/handoff/HANDOFF.md` 12,801. Of the 37 completed tasks, 13 changed only the harness or the process
+`docs/tasks/backlog.md` 33,683, `docs/handoff/HANDOFF.md` 12,801. Of the 36 completed tasks, 13 changed only the harness or the process
 (T-M1.1, T-M1.7, T-M1.11, T-M1.12, T-M1.14, T-M1.15, T-M1.17, T-M1.18, T-M1.20, T-M2.8, T-M2.18, T-M2.19, T-M2.21); `scripts/tests/`
 holds 325 merge-gate cases and the gate's `scripts` step grew from 4 s to 74 s.
 
@@ -193,6 +214,8 @@ branch on domain and application packages) is not enforced, and is met. Web cove
 
 - GitHub Actions billing and the plan's included minutes (`gh api /users/…/settings/billing/actions` needs the `user` scope; the PO can read it under Settings → Billing).
 - The reasons for each of the 31 skipped E2E instances (the review inspected them; not re-audited here).
-- How many E2E tests behave differently per viewport (needed for plan item U6; its experiment measures it).
+- How many E2E tests behave differently per viewport (needed for plan item U7; its experiment measures it).
 - The share of the 500 ms late-error window in a run: an estimate only (515 executed instances × 0.5 s ÷ 2 workers ≈ 129 s of the 880 s test step).
+- The external review's assurance audit (its §4A: each risk and invariant mapped to a named assertion, assertion quality, a mutation
+  sample) and its shared-state audit of the E2E fixtures (§4.3). "The checks are the right kinds" rests on what they found, not on that audit.
 - The first full gate on the new device (it runs with T-M2.13 G1).

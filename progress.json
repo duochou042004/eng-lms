@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-11-11T14:41:09Z",
-  "updatedBy": "lead-coordinator (T-M2.22 packet written, G0 pending)",
+  "updatedAt": "2026-11-11T14:52:55Z",
+  "updatedBy": "lead-coordinator (T-M2.22 G0 round 1 fixes)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -36,14 +36,14 @@
     "ownerRole": "LC",
     "branch": "docs/T-M2.22-qa-strategy-review",
     "packet": "docs/tasks/T-M2.22-qa-strategy-review.md",
-    "pr": null,
+    "pr": "155",
     "lastCommit": null,
     "startedAt": "2026-11-11T14:41:09Z",
     "entryGate": [
       "PO request 2026-11-11 (DEC-156) — met"
     ],
     "nextSteps": [
-      "G0 docs review (fresh docs-reviewer, adversarial brief for U2), merge-gate, then the PO decides PO-1..PO-8 (packet); no pilot starts before that"
+      "G0 delta re-check after the round 1 fixes (S2 D-1..D-4), merge-gate, then the PO decides PO-1..PO-10 (packet); no pilot starts before that"
     ],
     "trace": [
       "DEC-156",
@@ -392,7 +392,7 @@
   "gates": {
     "G0": {
       "status": "pending",
-      "note": "T-M2.22 packet written (DEC-157); docs review pending"
+      "note": "T-M2.22: G0 round 1 CHANGES REQUESTED (S2 D-1..D-4), fixed; delta re-check pending (DEC-157)"
     },
     "G1": {
       "status": "pass",
@@ -1378,6 +1378,11 @@
       "at": "2026-11-11T14:41:09Z",
       "actor": "lead-coordinator",
       "event": "T-M2.22: baseline measured on d5908fa (evidence/T-M2.22/baseline.md), packet with the answer and plan U1..U10 written (DEC-157); G0 review next."
+    },
+    {
+      "at": "2026-11-11T14:52:55Z",
+      "actor": "docs-reviewer (independent)",
+      "event": "T-M2.22 G0 round 1: CHANGES REQUESTED (S2 D-1..D-4, S3 D-5..D-14, S4 D-15..D-16; 141,204 tokens); all fixed by the LC, U2 hardened, PO-9 and PO-10 added."
     }
   ]
 }
