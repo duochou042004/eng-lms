@@ -29,15 +29,30 @@ description. No new feature, no endpoint change.
      beside the trigger (≤ 8 px between the trigger's box and Retry, UX-9) and stays described by the message. The visually hidden message
      stays inside the `role="alert"`, so screen readers hear it as today. At ≥ 22rem nothing changes: the message is shown and the trigger is
      not rendered as a box (`display: none`, so it is not a Tab stop). The toggletip closes on a navigation and when its trigger stops
-     rendering a box (the container widens, e.g. on rotation); focus then goes to Retry. Both shells use it wherever the container rule
+     rendering a box (the container widens, e.g. on rotation). A container query cannot be read with `matchMedia`, so `Toggletip` watches
+     its trigger with a `ResizeObserver`: a 0 × 0 box while open closes it and moves focus **explicitly** to Retry. React Aria's own focus
+     return would land on the now `display: none` trigger, and focus would be lost (G0 D-4). Both shells use it wherever the container rule
      applies (T-M2.12 UX saw it at tutor 320/360 and student 320/360/768).
   2. **`/login` explains a cross-tab sign-out** (UX-4). When a tab gets the `signed-out` channel message, `connectAuthProblems` must know the
      message type: the listener receives `{ type }` (today `resync` ignores it). The tab shows the notice when all of these hold: it had a
      signed-in session cached before the read, the read returns anonymous, and it is on a page that needs a session (`/tutor/**`,
-     `/student/**`, `/change-password`). It then navigates to `loginPath(pathname + search)` (the same `?next=` the guard builds today)
-     with `state: { signedOutElsewhere: true }` and no user data. `/login` always passes the unsaved-changes guard
-     (`ui/blocksNavigation.ts`), as today. `/login` shows an `InlineAlert` (tone `info`, so `role="status"`, polite) with the title
-     `login.signedOutElsewhere` between the `PageHeader` and the form, while the location state carries the flag. It hides when a sign-in
+     `/student/**`, `/change-password`). **The order matters** (G0 D-1). Today `resync` drops first, and `resetQueries` refetches every
+     mounted query in parallel with the session read. On a data page (e.g. `/tutor/students`) such a refetch answers 401, and the
+     `UNAUTHENTICATED` handler then navigates to `/login?next=` without the flag. So, for a `signed-out` message only, inside the existing
+     serial queue:
+     (i) capture `before` (the cached session) and read the session (`refreshSession`) **before** dropping anything;
+     (ii) if the notice conditions hold: clear the query and mutation caches with **no reset** (so nothing refetches), set the session to
+     `null`, and navigate to `loginPath(pathname + search)` (the same `?next=` the guard builds today) with
+     `state: { signedOutElsewhere: true }` and no user data;
+     (iii) otherwise run today's steps (`dropAllButSession`, then `followSession`).
+     A 401 that arrives while step (ii) runs (a request already in flight) does not navigate again: the `UNAUTHENTICATED` handler stands
+     down while that follow is in flight, as it already does on `/login`. The `signed-in` message and `pageshow` keep today's order. The
+     kept `sessionSync.test.tsx` "signed-out: the tab goes to /login?next=, with only the anonymous session cached (AC5)" still holds with
+     this sequence (the cache holds only `SESSION_KEY` → `null`).
+     `/login` always passes the unsaved-changes guard (`ui/blocksNavigation.ts`), as today. `/login` shows an `InlineAlert` (tone `info`,
+     `role="status"`) with the title `login.signedOutElsewhere` between the `PageHeader` and the form, while the location state carries the
+     flag. It is rendered at mount, so screen readers read it in order after the `h1` (where the route focus lands) rather than announce it
+     as a live update. That is the intended result (G0 D-8), and the reviewer confirms it in the screen-reader walk. It hides when a sign-in
      submit starts. These show no notice: a `signed-in` message, a back/forward-cache restore (`pageshow`: the cause is unknown, it may be
      this tab's own logout), a 401, this tab's own logout, a tab already on `/login`, a direct visit to `/login`, and a read that still
      returns a session. Every other case keeps today's path (revalidate and the guards).
@@ -47,12 +62,17 @@ description. No new feature, no endpoint change.
      (b) **On success** (204), the same steps as today: clear the query and mutation caches, post `signed-out`, navigate to `/login`.
      (c) **On failure** (any thrown error: a network error, a 5xx, a 4xx), nothing is cleared, nothing is posted and nothing navigates. The
      user is still signed in on the server, so the page, the caches and the open account overlay stay. The hook exposes the error. This
-     supersedes the "also when the call fails" clause of T-M2.4, T-M2.12 and DEC-144 (2) for the failure path only (DEC-155).
+     supersedes the "also when the call fails" clause of T-M2.4, T-M2.12 and DEC-144 (2) for the failure path only (DEC-155). This is
+     about `useLogout`'s own handlers. The API client's global auth-problem reactions (`lib/api` `onAuthProblem`: a 401, or a 403
+     `FORBIDDEN_ROLE` / `PASSWORD_CHANGE_REQUIRED`) still apply to the logout call as to any call (G0 D-6). That is unlikely, since FR-AUTH-04
+     answers 204 also for an absent session.
      (d) Both places that call `useLogout` show the failure: the `AccountSection` (popover, tutor drawer footer, student More sheet), below
      its actions, and the forced change-password page's Log out (`ChangePasswordPage`), below its form actions. Each shows an
      `InlineAlert` (tone `danger`, so `role="alert"`) with the title `logout.failedTitle` and the text `logout.offline` when `isOffline()`
      (`app/routes/chunkError.ts`) at the moment of failure, else `logout.failed`. Log out stays where it is and is the retry, so there is no
-     second button. The alert goes away when Log out is pressed again or the section unmounts (the overlay closes).
+     second button. The alert goes away when Log out is pressed again or the section unmounts (the overlay closes). The two callers use the
+     `shell` and `auth` namespaces and i18next has no fallback namespace, so both render **one shared component**,
+     `features/auth/components/LogoutFailedAlert.tsx`, which reads the `common` keys (`useTranslation('common')`; G0 D-2).
   4. **The chunk pages stop repeating their `h1`** (UX-6, DEC-119). `error.offlineDescription` and `error.chunkDescription` lose their first
      sentence: vi "Trang này cần kết nối mạng để tải." and "Hãy kiểm tra kết nối mạng rồi thử lại.", en "This page needs a connection to
      load." and "Check your connection and try again.". The offline Retry announcement (`RouteError`'s `output`) still says the user is
@@ -77,7 +97,7 @@ text; `ForbiddenIdentifiersTest` and the web grep stay green.
   `app/components/WorkspaceName.tsx` and `.module.css`; `features/auth/api/authChannel.ts` (unchanged API: the listener already gets the
   message), `app/guards.ts` (`connectAuthProblems`: `resync` takes the message type; `followSession` takes the notice decision);
   `app/routes/LoginPage.tsx`; `features/auth/api/session.ts` (`useLogout`); `app/shells/ShellParts.tsx` (`AccountSection`);
-  `app/routes/ChangePasswordPage.tsx`; `app/routes/RouteError.tsx`; `lib/i18n/locales/{vi,en}/{common,auth}.json`; tests next to each;
+  `app/routes/ChangePasswordPage.tsx`; `features/auth/components/LogoutFailedAlert.tsx` (shared, D-2); `app/routes/RouteError.tsx`; `lib/i18n/locales/{vi,en}/{common,auth}.json`; tests next to each;
   `e2e/tests/{navigation,shells,auth}.spec.ts` as needed.
 - **Why a toggletip and not a visible label** (UX-3 offered both): at 320–360 px the identity container holds "Eng-LMS" and leaves less
   than 22rem. A short visible label next to Retry would truncate there and say less than the message. A tap target shows the full text
@@ -104,7 +124,7 @@ text; `ForbiddenIdentifiersTest` and the web grep stay green.
   Kept and unchanged: the AC5 cross-tab E2E (`navigation.spec.ts` "log out in tab B: tab A … goes to /login?next=%2Ftutor%2Ftoday",
   including its Back step), the `steps-logout-*` step budget (`shells.spec.ts`), and the `sessionSync` cases for unknown messages,
   no ping-pong, `/login` unchanged, and `pageshow`. Docs that change: FR-AUTH-04's AC gains the failure rule; frontend-architecture §2
-  (lines ≈ 70 and 74) drops "also when the call fails" for sign-out; security.md T19 gains the failed-logout note; design-system §3 gains
+  (lines ≈ 70 and 74) drops "also when the call fails" for sign-out; security.md T19 drops "(also a failed call)" and gains the failed-logout rule; design-system §3 gains
   `Toggletip` (Feedback row, with a bullet); interaction-states §1's "Implemented" note gains the logout failure. `ui/blocksNavigation.ts`
   already lets `/login` through, so there is no conflict.
 - **Shortcut ledger** (lessons L-12; `grep -rnE '(shortcut|ponytail):'` on 2026-11-11 found 8 markers): none fires. `ui/Toast.tsx`,
@@ -124,7 +144,7 @@ text; `ForbiddenIdentifiersTest` and the web grep stay green.
   scope). The logout alert renders inside the open overlay, never as a toast (errors are never toasts, interaction-states §4).
 - **Validation per field**: none (no form changes).
 - **Copy** (new keys; vi verbs: "Xem", and the existing "Đăng xuất" and "Thử lại"): `common` `meta.errorDetails` vi "Xem lỗi", en "Show
-  the error"; `auth` `login.signedOutElsewhere` vi "Bạn đã đăng xuất ở một thẻ khác.", en "You signed out in another tab."; `common`
+  the error"; `auth` `login.signedOutElsewhere` vi "Bạn đã đăng xuất ở một thẻ khác.", en "You were signed out in another tab." (it also covers the `/login` guard's must-change logout, where the user did nothing; G0 D-7); `common`
   `logout.failedTitle` vi "Chưa đăng xuất được", en "Couldn't log out"; `logout.failed` vi "Bạn vẫn đang đăng nhập. Hãy thử lại.", en
   "You're still signed in. Try again."; `logout.offline` vi "Bạn đang ngoại tuyến và vẫn đang đăng nhập. Hãy đăng xuất lại khi có mạng.",
   en "You're offline and still signed in. Log out again when you're back online."; `common` `error.offlineAnnouncement` (scope 4). The
@@ -143,15 +163,18 @@ text; `ForbiddenIdentifiersTest` and the web grep stay green.
   changed kept tests (e), and an E2E at phone-small (tutor, student) and tablet (student) using `tap` on the touch projects, with
   `expectSettledAccessible` while open.
 - AC2 (scope 2, UX-4): log out in tab B; tab A on `/tutor/today` lands on `/login?next=%2Ftutor%2Ftoday`, as the kept AC5 test expects,
-  and shows "Bạn đã đăng xuất ở một thẻ khác." as a polite status above the form. Starting a sign-in hides it. No notice for a direct
+  and shows "Bạn đã đăng xuất ở một thẻ khác." as a status above the form. The same holds from `/tutor/students` (a page with an
+  authenticated query that answers 401 while the follow runs): tab A lands on `/login?next=%2Ftutor%2Fstudents` **with** the notice, and
+  navigates once (G0 D-1). Starting a sign-in hides it. No notice for a direct
   `/login` visit, a 401, this tab's own logout, a `signed-in` message, a `pageshow` restore, or a read that still returns a session.
-  Tested by unit tests per case in `sessionSync.test.tsx` and `LoginPage` tests, and by the kept AC5 E2E extended with the notice
-  assertion, in vi and en.
+  Tested by unit tests per case in `sessionSync.test.tsx` (including a mounted query that answers 401, like its `Probe`) and `LoginPage`
+  tests, by the kept AC5 E2E extended with the notice assertion, in vi and en, and by an E2E from `/tutor/students` at laptop in vi.
 - AC3 (scope 3, O-1): offline (`context.setOffline(true)`), Log out stops being busy within 1 s and shows "Chưa đăng xuất được" with the
   offline text inside the open account section. The user is still on the same page and signed in, the cache is kept, and nothing is
   posted on the channel. Back online, Log out signs out as today. Tested by a unit test (offline: the mutation is not paused, and the
   offline copy shows) and by an E2E on a fresh tutor sign-in (the stored sessions are never logged out, T-M2.4 scope 10) at phone-small
-  (More sheet: the student's, or the tutor's drawer) and laptop (popover).
+  (the tutor's drawer footer) and laptop (the account popover). The student's More sheet renders the same `AccountSection`, and it is
+  covered by a component test (G0 D-3).
 - AC4 (scope 3, O-2): a logout answered with a 500 (and, in unit tests, with a network error while online) shows the `logout.failed`
   alert, keeps the page, the caches and the session, posts nothing and navigates nowhere. Focus stays on Log out
   (`expectFocusNotLost`). Pressing Log out again with a 204 answer clears the alert and signs out as today. The forced change-password
@@ -159,7 +182,8 @@ text; `ForbiddenIdentifiersTest` and the web grep stay green.
   an E2E with `page.route` returning 500 at laptop in vi.
 - AC5 (scope 4, UX-6): the offline and couldn't-load pages show their unchanged `h1` and the one-sentence descriptions of scope 4 (vi and
   en). An offline Retry announces `error.offlineAnnouncement` (today's full sentence). Tested by the changed kept tests (d) and the kept
-  E2E AC2/AC3 specs with the new copy.
+  E2E specs in `navigation.spec.ts` "[vi/en] offline: the offline page with Retry …" and "[vi/en] online, the chunk request fails: the
+  couldn't-load page …" (T-M2.12's AC2/AC3) with the new copy (G0 D-9).
 - AC6 (all): the step budgets hold (Log out ≤ 2 steps, `steps-logout-*`; sign-in unchanged). axe runs clean after each new state:
   toggletip open, logout alert, `/login` notice (`expectSettledAccessible`). `expectNoMidWordBreak` runs on each new text at 360 in vi.
   Every new string exists in vi and en.
@@ -176,7 +200,8 @@ text; `ForbiddenIdentifiersTest` and the web grep stay green.
   OQ to the LC, `test.fail` only until the LC rules (an AC + a DEC), and the LC rules before G3.
 - Independent QA focus (combined QA+UX, qa-protocol §2a): the compact error on a touch phone (tap, Esc, outside tap, rotation) in both
   shells; the toggletip with a screen-reader heading/landmark walk (no double announcement beyond today's alert). For the cross-tab
-  notice: a two-tab sign-out from each page that needs a session (tutor, student, forced change-password) and every no-notice case.
+  notice: a two-tab sign-out from each page that needs a session (tutor, student, forced change-password), including data pages
+  whose queries answer 401 during the follow (`/tutor/students`, a student workspace: one navigation, notice shown), and every no-notice case.
   For logout: offline, 500, a slow answer (pending state, then the result), and then a real sign-out. On a shared device after a failed
   logout, the page must say "still signed in" and never land on `/login` while the session is alive. Then the chunk-page copy in vi and
   en and the offline Retry announcement. Exploratory charter: find a path where Log out spins without end, fails silently, or shows the
@@ -192,8 +217,9 @@ text; `ForbiddenIdentifiersTest` and the web grep stay green.
 
 ## Docs to update
 - FR-AUTH-04 AC (functional-requirements.md: a failed logout keeps the page and says the user is still signed in), frontend-architecture §2
-  (sign-out on failure; the channel message type reaches the receiver), security.md T19 (failed logout), design-system §3 (`Toggletip`),
-  interaction-states §1 "Implemented" note (logout failure and offline), backlog (T-M2.13 done note), `progress.json` (LC).
+  (sign-out on failure; the channel message type reaches the receiver), security.md T19 (drop "(also a failed call)" from its T-M2.20
+  sentence and add the failed-logout rule; G0 D-5), design-system §3 (`Toggletip`), interaction-states §1 "Implemented" note (logout
+  failure and offline), ux-flows Log out (a failed call keeps the page and says so), backlog (T-M2.13 done note), `progress.json` (LC).
 
 ## Risks & assumptions
 - **Size**: 7 ACs, about 1–1.5 agent-days. **Split line**: if `ui/Toggletip` grows (for example positioning problems at 320 px), scope 1
@@ -210,6 +236,8 @@ text; `ForbiddenIdentifiersTest` and the web grep stay green.
 ## Commands (reproducible)
 ```bash
 source ~/.sdkman/bin/sdkman-init.sh; source ~/.nvm/nvm.sh; source scripts/env.sh
+# On this device agent shells run with NoNewPrivs: Podman goes through the user socket (progress.json environment; G0 D-10)
+export CONTAINER_HOST=unix:///run/user/1000/podman/podman.sock
 (cd web && pnpm install --frozen-lockfile && pnpm lint && pnpm typecheck && pnpm test --run && pnpm build && pnpm budget)
 ./scripts/e2e-run.sh --project=phone-small --project=tablet --project=laptop
 ENGLMS_TASK=T-M2.13 ./scripts/gate.sh
