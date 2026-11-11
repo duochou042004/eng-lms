@@ -1,37 +1,33 @@
-# Handoff — 2026-11-11 (T-M2.22 answered: the PO decides PO-1..PO-10; T-M2.13 still held)
+# Handoff — 2026-11-11 (the PO accepted the T-M2.22 plan, DEC-158; next: the T-M2.23 packet; T-M2.13 still held)
 
-Phase/Milestone: P1 / M2 (in progress) · Current task: **T-M2.22 QA and delivery strategy review (LC, awaiting the PO's decisions)** ·
-Next: **T-M2.13** (packet ready, DEC-155; **held by the PO**, DEC-156) · Last merge on develop: the T-M2.22 packet (PR #155) ·
-Remote: https://github.com/duochou042004/eng-lms (mirror: gitlab.com/duochou042004/eng-lms)
+Phase/Milestone: P1 / M2 (in progress) · Current task: **T-M2.23 CI scope by diff (LC, draft, packet not written)** · Next: **T-M2.13**
+(packet ready with AC8, DEC-155, DEC-159; **held by the PO** until a start signal) · Last merges on develop: the T-M2.22 packet (PR #155,
+`c93d128`), this records PR · Remote: https://github.com/duochou042004/eng-lms (mirror: gitlab.com/duochou042004/eng-lms)
 
 ## Where we are
-- **T-M2.22 is written, reviewed and waits for the PO** (DEC-157): packet `docs/tasks/T-M2.22-qa-strategy-review.md` (the answer, plan
-  U1..U10, decisions PO-1..PO-10), baseline `evidence/T-M2.22/baseline.md` (every figure with its command), G0 record
-  `evidence/T-M2.22/review/docs.md` (round 1 CHANGES REQUESTED with four S2, fixed; round 2 delta PASS WITH MINOR, fixed).
-- **The answer in short:** the kinds of check are right and stay; they run far too often where they cannot find a product defect
-  (`e2e-smoke` p50 16.0 min, 41 % of its minutes on text-only heads and identical post-merge trees; text-only PRs open for 33 to 38 % of
-  a task's wall-clock); five documented promises have no implementation; 23 of the last 40 merges (Dependabot) went in outside merge-gate.
-- **Nothing was changed** in workflows, scripts, tests or quality docs. No pilot is started. T-M2.13 is not started.
+- **T-M2.22 is done.** The PO accepted PO-1..PO-10 as recommended (DEC-158). Packet `docs/tasks/T-M2.22-qa-strategy-review.md`, baseline
+  `evidence/T-M2.22/baseline.md`, G0 record `evidence/T-M2.22/review/docs.md`.
+- **No rule has changed yet.** Each accepted item takes effect when its packet merges: **T-M2.23** (U2: text-only PRs and identical
+  post-merge trees skip the heavy CI steps), **T-M2.24** (U3: split `students.spec.ts`, the `e2e/support/` repeat rule), **T-M2.25** (U4:
+  JaCoCo check, web coverage measurement, local E2E database, the doc corrections incl. the narrower G5 matrix and G0 delta rule).
+- **T-M2.13 gained AC8** (DEC-159): the flaky Guardians AC4 test reads the list by polling. It is still held.
 
 ## In flight / uncommitted
-- Nothing.
+- Nothing, once this records PR (`docs/T-M2.22-po-decisions`) is merged.
 
 ## Next steps
-1. **The PO decides PO-1..PO-10** (packet table). The LC records the answers as a DEC and sets T-M2.22 `done` (backlog row, packet
-   Status, `completed[]`; evidence-and-handoff part C).
-2. If PO-8 is accepted as written: add the U1 flaky-test fix to T-M2.13 as an AC with a DEC (the DEC-153 precedent); write the U2 packet
-   (tier L, adversarial G0; its nine design constraints are in the packet and attacks A-1..A-12 in the review record); T-M2.13 then runs
-   with U2 in shadow mode as the measurement. U3 and U4 follow as their own packets.
-3. T-M2.13 starts only on a PO start signal.
+1. **T-M2.23 packet** (task-packet skill, tier L): the nine U2 design constraints from the T-M2.22 packet, each with a failing fixture
+   (L-01); read attacks A-1..A-12 and N-1..N-3 in `evidence/T-M2.22/review/docs.md` first. G0 by one fresh docs-reviewer with an
+   adversarial brief. Validation order: fixtures, offline replay over the merged PRs, adversarial review, then shadow mode for at least 10 PRs.
+2. **T-M2.13** on the PO's start signal; it runs with T-M2.23 in shadow mode and is the measurement against baseline §2 and §6.
+3. Then T-M2.24 and T-M2.25. The backend wall-clock flake (T-M2.10 row) runs before the next backend task.
+4. PO-5 (one records PR) is decided after the U2 measurement (T-M2.13 under T-M2.23). U7 (viewport experiment) and U8 (b)–(d) are not scheduled.
 
 ## Pending PO decisions / actions
-- **PO-1..PO-10** (T-M2.22 packet): text-only PRs and identical post-merge trees skip the heavy CI steps; the docs promise only what
-  exists (nightly, PIT, `seed-e2e`, the G5 matrix: narrowing DEC-131 (7) or not); `qa/` retention; one records PR; G0 delta only for
-  S1/S2; the wait target and runner minutes; the order; the `e2e/support/` repeat rule; a separate local E2E database (supersedes DEC-139 (3)).
-- **GitHub Actions billing** (Settings → Billing): the LC cannot read it; 2,844 wall minutes of CI ran in 22 days.
-- **Dependabot (U5):** PR #135 is open and red (13 failed runs); Dependabot merges go in outside merge-gate, 18 of 23 while behind. PR #100 is closed.
 - **T-M2.13 start signal** (held, DEC-156).
-- For G5 on this device: Firefox/WebKit browsers and host libraries (`sudo`, PO), unless PO-3's manual `regression` workflow replaces the need.
+- **GitHub Actions billing** (Settings → Billing): the LC cannot read it; 2,844 wall minutes of CI ran in 22 days.
+- **Dependabot (U5, the PO's):** PR #135 is open and red (13 failed runs); Dependabot merges go in outside merge-gate, 18 of 23 while behind. PR #100 is closed.
+- For G5 on this device: Firefox/WebKit browsers and host libraries (`sudo`, PO), unless T-M2.25's manual `regression` workflow covers it.
 - Open points (unchanged): the `ui/index.ts` barrel in the student first visit; `lib/time` uses the browser's time zone (T-M3.1/T-M3.3, L-12);
   `SERVER_FORWARDHEADERSSTRATEGY=native` (M8); the common-password list (T-M2.3 SEC S4-9); `glab` deny rules (DEC-061); OQ-03..OQ-14.
 
@@ -100,5 +96,6 @@ Remote: https://github.com/duochou042004/eng-lms (mirror: gitlab.com/duochou0420
 - The CI timing analysis used throwaway scripts in the session scratchpad; the commands in the T-M2.22 packet reproduce the data.
 
 ## Files to read first
-`CLAUDE.md` → `progress.json` → this file → `docs/tasks/T-M2.22-qa-strategy-review.md` → `evidence/T-M2.22/baseline.md` →
-`evidence/T-M2.22/review/docs.md` (attacks A-1..A-12 for the U2 packet) → DEC-131, DEC-156, DEC-157 → `docs/tasks/T-M2.13-auth-shell-followups.md`.
+`CLAUDE.md` → `progress.json` → this file → `docs/tasks/T-M2.22-qa-strategy-review.md` (U2 and its constraints) →
+`evidence/T-M2.22/review/docs.md` → `evidence/T-M2.22/baseline.md` → DEC-157, DEC-158, DEC-159 → `scripts/merge-gate.sh`,
+`.github/workflows/`, `scripts/required-checks.txt` → `docs/tasks/T-M2.13-auth-shell-followups.md`.

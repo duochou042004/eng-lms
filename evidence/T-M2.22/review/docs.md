@@ -177,3 +177,41 @@ defines green (first parent, same workflow, `push` run, latest attempt, `success
 SHA in the concurrency group. N-3: one allow-list file read by the classifier and merge-gate; PRs to `master` always run in full.
 N-4, N-5, N-6: wording. The failed `e2e-smoke` run 43042804940 was a browser-install failure before any test; the next head re-ran it.
 No further re-check: S3 and S4 only (DEC-131 (5)).
+
+## Records PR #156 (PO decisions, DEC-158, DEC-159) at `25aa114` — a fresh docs-reviewer, 46,180 tokens, 94.7 s
+
+DOCS-REVIEW T-M2.22: PASS
+PASS WITH MINOR
+
+**check-docs:** `./scripts/check-docs.sh` (bare) on `25aa114` gives `docs-check: PASS (287 markdown files, progress.json valid, sources intact, prompt within limit, records consistent, handoff archived, table code spans escaped)`, exit 0.
+
+**Verified, no finding:**
+- **DEC-158** records PO-1..PO-10 as the recommended option, none wider. PO-5 is deferred, not approved. PO-7 is the 10-minute target with no extra minutes before U2, U3 and U7 are measured. PO-3 names the narrowing of DEC-131 (7). PO-10 names the supersession of DEC-139 (3). It says "No rule changes until its packet merges".
+- **Merge facts** match GitHub: PR #155 merged at 2026-11-11T17:10:33Z as `c93d128`, head `ccfebbf`.
+- **Quoted test line** exists at `e2e/tests/students.spec.ts:1805` exactly as quoted, inside `describe('Guardians (T-M2.15)')`, and the "AC4: two pages" title is unique. The `expect.poll(...).toEqual([...])` form keeps the same expected value.
+- **No new G0 round for AC8** is defensible. U1 of the G0-reviewed T-M2.22 packet already proposed exactly this ("ruled into T-M2.13 as an AC (the DEC-153 precedent)"), the PO accepted it through PO-8, and it is test-only with no assertion weakened.
+- **Records** are consistent: packet Status, the backlog `**done**` cell, `completed[]`, `currentTask` T-M2.23 draft, `nextTask` T-M2.13 ready and held, the approval entry, gates G0 n/a and G4 `c93d128`, the evidence summary, and the handoff archive `20261111T1719Z-T-M2.22-decided.md`.
+- **Next-session prompt** is 3722 chars. Its nine constraints match the packet's U2 list.
+
+**Findings (none S1/S2):**
+
+| ID | Sev | File:line | Finding | Suggested fix |
+|---|---|---|---|---|
+| G-1 | S3 | `docs/tasks/T-M2.13-auth-shell-followups.md:84`, `:191`, `:199`, `:216` | AC8 was added, but the rest of the packet was not aligned. Out of scope still says "Any other S3/S4 finding, new feature…". AC7 says all existing E2E assertions are kept except (a)–(e), and AC8 rewrites one assertion statement. Scope, Design notes (files), Test plan and Evidence required do not mention `students.spec.ts` or the ×20 run. An implementer with no chat history meets an AC outside the stated scope. | Add a scope item "AC8: the Guardians AC4 polling read (DEC-159)". In AC7 add "and the AC8 read (same expected value, polling form)". Add the ×20 run to Test plan and its log to Evidence required. |
+| G-2 | S3 | `docs/tasks/backlog.md:67` | The T-M2.13 row does not mention AC8 or DEC-159 in its text or Trace cell, while the packet Trace and `progress.json` do. | Append "; (T-M2.22 U1, DEC-159) AC8: the Guardians AC4 polling read" and add DEC-159 to the Trace cell. |
+| G-3 | S3 | `docs/10-governance/decision-log.md` (DEC-159 row), `docs/tasks/backlog.md:48` | DEC-159 says the T-M2.10 row "now runs before the next backend task", but the T-M2.10 row is unchanged. The ordering exists only in the handoff, which gets archived. | Add "(runs before the next backend task, DEC-158 PO-8 / U1)" to the T-M2.10 row, or reword DEC-159 to say where the ordering is recorded. |
+| G-4 | S3 | `docs/handoff/next-session-prompt.md:6` (DO step 2) | "delta re-check only after S1/S2 (DEC-158 PO-6 takes effect with T-M2.25; until then follow the current rule)" contradicts itself. The first half applies PO-6 now and the bracket says not yet. | Reword to "delta re-check per the current rule (PO-6, S1/S2 only, takes effect with T-M2.25)". |
+| G-5 | S3 | `docs/tasks/backlog.md:61` (T-M2.23), `docs/handoff/next-session-prompt.md:5`, `docs/handoff/HANDOFF.md` (next steps 1–2) | Shadow mode is given only as "during T-M2.13". The packet's U2 validation (4) requires "at least 10 PRs", and T-M2.13 alone will not produce 10. The minimum is dropped everywhere outside the packet. | Write "shadow mode for at least 10 PRs, starting during T-M2.13" in the row and the prompt. |
+| G-6 | S4 | `docs/tasks/backlog.md:63` (T-M2.25) | The row is labelled "T-M2.22 U4" but also carries U8 (a) (PO-6, the G0 delta rule) and builds the manual `regression` workflow. The workflow comes from the packet's "promised but missing" table (line 83), not from the U4 text. Both are covered by DEC-158, so this is a label issue, not added scope. The row also drops U4's mitigation "the G5 regression keeps one run against a large seeded set". | Label it "U4, U8 (a)", add "(packet 'promised but missing' table)" for the workflow, and add the seeded-set run. |
+| G-7 | S4 | `docs/tasks/backlog.md:61`, DEC-158 (PO-2 clause) | "a tree identical to a tested PR head" omits PO-2's second branch (a text-only head on a green first parent). This is narrower, not wider, and the prompt and packet carry it. | Add "(or a text-only head on a green first parent)". |
+| G-8 | S4 | `docs/tasks/backlog.md:62` (T-M2.24) | Depends lists only T-M2.13, while PO-8 puts U3 after the U2 packet. The row also drops U3's "full suite ×3 green" validation. | Set Depends to "T-M2.13, T-M2.23" and add the ×3 validation, or leave both to the packet. |
+| G-9 | S4 | `docs/handoff/next-session-prompt.md:8` (RULES) | The standing rule "No change to merge assurance without a PO decision (DEC)" was removed, and the next task is the one that changes merge assurance. | Restore it as "nothing beyond DEC-158 PO-1/PO-2". |
+| G-10 | S4 | DEC-158 (PO-5 clause), `docs/handoff/HANDOFF.md` (next step 4) | "after T-M2.23's measurement": the packet says "after U2's measurement", which is T-M2.13 measured under U2 (validation 5). | Write "after the U2 measurement (T-M2.13 under T-M2.23)". |
+
+Not checked: the "CI 7/7 on `ccfebbf`" claim, the `phone-small`/`tablet`/`laptop` project names in AC8, and the unchanged body of `/home/linux/Projects/eng-lms/docs/handoff/HANDOFF.md` (added lines only). The product SPEC was not read, as instructed.
+
+## LC response
+
+G-1..G-10 fixed in the same PR: the T-M2.13 packet aligned with AC8 (scope note, AC7, test plan, evidence); the T-M2.13 and T-M2.10
+backlog rows; the next-session prompt (PO-6 wording, the merge-assurance rule restored); shadow mode "at least 10 PRs"; the T-M2.24
+and T-M2.25 rows; the PO-2 and PO-5 wording in DEC-158. No re-check: S3 and S4 only.

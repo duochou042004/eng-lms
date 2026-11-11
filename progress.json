@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-11-11T16:45:42Z",
-  "updatedBy": "lead-coordinator (T-M2.22 awaiting PO decisions PO-1..PO-10, DEC-157)",
+  "updatedAt": "2026-11-11T17:21:50Z",
+  "updatedBy": "lead-coordinator (PO accepted the T-M2.22 plan, DEC-158; next T-M2.23 packet)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -30,25 +30,24 @@
     "exitCriteria": "FR-AUTH-01..10 and FR-STU-01..07 accepted; authorization-matrix and student-isolation harnesses fail on any unregistered endpoint; add-student flow E2E at 360/768/1280 within its step budget; security review of authentication passed (docs/01-product/roadmap.md)."
   },
   "currentTask": {
-    "id": "T-M2.22",
-    "title": "QA and delivery strategy review (PO, DEC-156)",
-    "status": "awaiting_approval",
+    "id": "T-M2.23",
+    "title": "CI runs the heavy jobs only where the diff can affect them (T-M2.22 U2)",
+    "status": "draft",
     "ownerRole": "LC",
-    "branch": "docs/T-M2.22-qa-strategy-review",
-    "packet": "docs/tasks/T-M2.22-qa-strategy-review.md",
-    "pr": "155",
+    "branch": null,
+    "packet": null,
+    "pr": null,
     "lastCommit": null,
-    "startedAt": "2026-11-11T14:41:09Z",
+    "startedAt": null,
     "entryGate": [
-      "PO request 2026-11-11 (DEC-156) — met"
+      "PO decision DEC-158 (PO-1, PO-2) — met"
     ],
     "nextSteps": [
-      "PO: decide PO-1..PO-10 (docs/tasks/T-M2.22-qa-strategy-review.md); the LC records them as a DEC and sets T-M2.22 done; adopted items become their own packets (U1 into T-M2.13, U2 next if PO-8 as written)"
+      "LC: write the T-M2.23 packet (task-packet skill; the nine U2 design constraints and attacks A-1..A-12 in evidence/T-M2.22/review/docs.md), adversarial G0; shadow mode runs during T-M2.13"
     ],
     "trace": [
-      "DEC-156",
-      "DEC-131",
-      "DEC-157"
+      "DEC-157",
+      "DEC-158"
     ]
   },
   "nextTask": {
@@ -65,12 +64,13 @@
       "T-M2.21 merged — met (d890aae)"
     ],
     "nextSteps": [
-      "HELD by the PO (DEC-156): start only after T-M2.22 and a PO start signal; packet ready (DEC-155, PR #153 b1a542f)"
+      "HELD by the PO (DEC-156): starts only on a PO start signal; packet ready (DEC-155) with AC8 added (flaky Guardians AC4 test, DEC-159)"
     ],
     "trace": [
       "DEC-118",
       "DEC-119",
-      "DEC-155"
+      "DEC-155",
+      "DEC-159"
     ]
   },
   "completed": [
@@ -361,6 +361,14 @@
       "mergeCommit": "d890aae",
       "evidence": "evidence/T-M2.21/summary.md",
       "note": "PR #140 via merge-gate (head 03ddf72, CI 7/7); packet G0 DEC-150/151 (PR #139); G3 tier L: docs-reviewer round 1 PASS WITH MINOR (S4 G-1..G-10) and delta PASS WITH MINOR (S4 N-1..N-3), all fixed; the flaky RouteError test ruled in (AC9, DEC-153); DEC-154"
+    },
+    {
+      "id": "T-M2.22",
+      "title": "QA and delivery strategy review (PO, DEC-156)",
+      "completedAt": "2026-11-11T17:10:33Z",
+      "mergeCommit": "c93d128",
+      "evidence": "evidence/T-M2.22/summary.md",
+      "note": "PR #155 via merge-gate (head ccfebbf, CI 7/7); measured baseline, answer, plan U1..U10; G0 docs-reviewer with an adversarial brief: round 1 CHANGES REQUESTED (S2 D-1..D-4), delta PASS WITH MINOR, all fixed (DEC-157); the PO accepted PO-1..PO-10 (DEC-158)"
     }
   ],
   "tests": {
@@ -391,8 +399,8 @@
   },
   "gates": {
     "G0": {
-      "status": "pass",
-      "note": "T-M2.22: DOCS-REVIEW round 1 CHANGES REQUESTED (S2 D-1..D-4; 141,204 tokens), round 2 delta PASS WITH MINOR (39,511 tokens), all fixed (DEC-157)"
+      "status": "n/a",
+      "note": "T-M2.23 not written yet (T-M2.22: G0 PASS, DEC-157; T-M2.13: G0 PASS, DEC-155)"
     },
     "G1": {
       "status": "pass",
@@ -408,7 +416,7 @@
     },
     "G4": {
       "status": "pass",
-      "note": "T-M2.21 merged via merge-gate (d890aae)"
+      "note": "T-M2.22 merged via merge-gate (c93d128)"
     },
     "G5": {
       "status": "n/a",
@@ -448,7 +456,9 @@
       "DEC-154",
       "DEC-155",
       "DEC-156",
-      "DEC-157"
+      "DEC-157",
+      "DEC-158",
+      "DEC-159"
     ],
     "pendingPO": [
       "OQ-03",
@@ -753,11 +763,11 @@
       "ref": "DEC-154"
     },
     {
-      "what": "T-M2.22 decisions PO-1..PO-10 (QA and delivery strategy plan)",
+      "what": "T-M2.22 decisions PO-1..PO-10 accepted as recommended (chat: \"Accept all\")",
       "by": "PO",
-      "status": "pending",
-      "at": null,
-      "ref": "DEC-157"
+      "status": "approved",
+      "at": "2026-11-11T17:19:13Z",
+      "ref": "DEC-158"
     }
   ],
   "environment": {
@@ -1395,6 +1405,21 @@
       "at": "2026-11-11T16:45:42Z",
       "actor": "lead-coordinator",
       "event": "T-M2.22 G0 round 2 (delta) PASS WITH MINOR, N-1..N-6 fixed; packet awaiting the PO's decisions PO-1..PO-10 (DEC-157); handoff written."
+    },
+    {
+      "at": "2026-11-11T17:10:33Z",
+      "actor": "lead-coordinator",
+      "event": "T-M2.22 packet merged via merge-gate (PR #155, c93d128); GitLab mirror synced."
+    },
+    {
+      "at": "2026-11-11T17:19:13Z",
+      "actor": "PO",
+      "event": "PO accepted PO-1..PO-10 as recommended (DEC-158). T-M2.22 done; T-M2.23, T-M2.24, T-M2.25 added; AC8 added to T-M2.13 (DEC-159). T-M2.13 still held."
+    },
+    {
+      "at": "2026-11-11T17:21:50Z",
+      "actor": "docs-reviewer (independent)",
+      "event": "Records PR #156 (DEC-158, DEC-159): PASS WITH MINOR (S3 G-1..G-5, S4 G-6..G-10; 46,180 tokens), all fixed."
     }
   ]
 }
