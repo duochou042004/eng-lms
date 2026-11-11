@@ -18,10 +18,10 @@ Phase/Milestone: P1 / M2 (in progress) · Current task: **T-M2.23 CI scope by di
 ## Next steps
 1. **T-M2.23 packet** (task-packet skill, tier L): the nine U2 design constraints from the T-M2.22 packet, each with a failing fixture
    (L-01); read attacks A-1..A-12 and N-1..N-3 in `evidence/T-M2.22/review/docs.md` first. G0 by one fresh docs-reviewer with an
-   adversarial brief. Validation order: fixtures, offline replay over the merged PRs, adversarial review, then shadow mode.
+   adversarial brief. Validation order: fixtures, offline replay over the merged PRs, adversarial review, then shadow mode for at least 10 PRs.
 2. **T-M2.13** on the PO's start signal; it runs with T-M2.23 in shadow mode and is the measurement against baseline §2 and §6.
 3. Then T-M2.24 and T-M2.25. The backend wall-clock flake (T-M2.10 row) runs before the next backend task.
-4. PO-5 (one records PR) is decided after T-M2.23's measurement. U7 (viewport experiment) and U8 (b)–(d) are not scheduled.
+4. PO-5 (one records PR) is decided after the U2 measurement (T-M2.13 under T-M2.23). U7 (viewport experiment) and U8 (b)–(d) are not scheduled.
 
 ## Pending PO decisions / actions
 - **T-M2.13 start signal** (held, DEC-156).

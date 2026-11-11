@@ -16,7 +16,7 @@
       }
     ]
   },
-  "updatedAt": "2026-11-11T17:19:13Z",
+  "updatedAt": "2026-11-11T17:21:50Z",
   "updatedBy": "lead-coordinator (PO accepted the T-M2.22 plan, DEC-158; next T-M2.23 packet)",
   "phase": {
     "id": "P1",
@@ -1415,6 +1415,11 @@
       "at": "2026-11-11T17:19:13Z",
       "actor": "PO",
       "event": "PO accepted PO-1..PO-10 as recommended (DEC-158). T-M2.22 done; T-M2.23, T-M2.24, T-M2.25 added; AC8 added to T-M2.13 (DEC-159). T-M2.13 still held."
+    },
+    {
+      "at": "2026-11-11T17:21:50Z",
+      "actor": "docs-reviewer (independent)",
+      "event": "Records PR #156 (DEC-158, DEC-159): PASS WITH MINOR (S3 G-1..G-5, S4 G-6..G-10; 46,180 tokens), all fixed."
     }
   ]
 }
