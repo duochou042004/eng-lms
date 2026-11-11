@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-11-11T12:07:01Z",
-  "updatedBy": "lead-coordinator (T-M2.13 G0 PASS WITH MINOR, DEC-155; packet PR #153 to merge; PO start signal next)",
+  "updatedAt": "2026-11-11T13:29:56Z",
+  "updatedBy": "lead-coordinator (PO: T-M2.13 held; next T-M2.22 QA strategy review, DEC-156)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -30,6 +30,27 @@
     "exitCriteria": "FR-AUTH-01..10 and FR-STU-01..07 accepted; authorization-matrix and student-isolation harnesses fail on any unregistered endpoint; add-student flow E2E at 360/768/1280 within its step budget; security review of authentication passed (docs/01-product/roadmap.md)."
   },
   "currentTask": {
+    "id": "T-M2.22",
+    "title": "QA and delivery strategy review (PO, DEC-156)",
+    "status": "draft",
+    "ownerRole": "LC",
+    "branch": null,
+    "packet": null,
+    "pr": null,
+    "lastCommit": null,
+    "startedAt": null,
+    "entryGate": [
+      "PO request 2026-11-11 (DEC-156) — met"
+    ],
+    "nextSteps": [
+      "LC: read the external review (/home/linux/Projects/Eng-LMS-QA-Strategy-Review-2026-10-29.md), measure the baseline, answer the PO, write the T-M2.22 plan/packet; PO decision on each change to merge assurance"
+    ],
+    "trace": [
+      "DEC-156",
+      "DEC-131"
+    ]
+  },
+  "nextTask": {
     "id": "T-M2.13",
     "title": "Auth and shell feedback follow-ups (T-M2.12 G3, DEC-118)",
     "status": "ready",
@@ -43,33 +64,12 @@
       "T-M2.21 merged — met (d890aae)"
     ],
     "nextSteps": [
-      "Merge the packet PR #153 via merge-gate (DOCS-REVIEW T-M2.13: PASS + LC-APPROVED T-M2.13 after CI green); gitlab-sync",
-      "PO start signal; then the frontend-implementer on feature/T-M2.13-auth-shell-followups from develop (export CONTAINER_HOST on this device); one gate on the final head; G3 tier M: one combined fresh QA+UX reviewer"
+      "HELD by the PO (DEC-156): start only after T-M2.22 and a PO start signal; packet ready (DEC-155, PR #153 b1a542f)"
     ],
     "trace": [
       "DEC-118",
       "DEC-119",
       "DEC-155"
-    ]
-  },
-  "nextTask": {
-    "id": "T-M2.16",
-    "title": "Username-only student PATCH and concurrent edits (T-M2.14 docs review D-6, DEC-124)",
-    "status": "draft",
-    "ownerRole": "BE",
-    "branch": null,
-    "packet": null,
-    "pr": null,
-    "lastCommit": null,
-    "startedAt": null,
-    "entryGate": [
-      "After T-M2.13 (handoff order)"
-    ],
-    "nextSteps": [
-      "Packet from the backlog row"
-    ],
-    "trace": [
-      "DEC-124"
     ]
   },
   "completed": [
@@ -390,8 +390,8 @@
   },
   "gates": {
     "G0": {
-      "status": "pass",
-      "note": "T-M2.13: one fresh docs-reviewer, round 1 CHANGES REQUESTED (S2 D-1, S4 D-2..D-10; 104,400 tokens), delta PASS WITH MINOR (S4 N-1, N-2; 11,890), all fixed (evidence/T-M2.13/review/docs.md)"
+      "status": "n/a",
+      "note": "T-M2.22 not written yet (T-M2.13: G0 PASS, DEC-155, PR #153)"
     },
     "G1": {
       "status": "pass",
@@ -418,7 +418,6 @@
   "decisions": {
     "log": "docs/10-governance/decision-log.md",
     "recent": [
-      "DEC-127",
       "DEC-128",
       "DEC-129",
       "DEC-130",
@@ -446,7 +445,8 @@
       "DEC-152",
       "DEC-153",
       "DEC-154",
-      "DEC-155"
+      "DEC-155",
+      "DEC-156"
     ],
     "pendingPO": [
       "OQ-03",
@@ -1366,6 +1366,11 @@
       "at": "2026-11-11T12:07:01Z",
       "actor": "lead-coordinator",
       "event": "T-M2.13 packet ready (Status ready, DEC-155); G0 record evidence/T-M2.13/review/docs.md; handoff archived and rewritten; packet PR #153 to merge via merge-gate, then the PO start signal."
+    },
+    {
+      "at": "2026-11-11T13:29:56Z",
+      "actor": "PO",
+      "event": "T-M2.13 start signal: \"Not yet\". The next session reviews the testing/QA process first (external review of 2026-10-29); new LC task T-M2.22 (DEC-156)."
     }
   ]
 }
