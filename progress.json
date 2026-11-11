@@ -3,7 +3,7 @@
   "project": {
     "name": "Eng-LMS",
     "description": "Private 1:1 teaching workspace for a single English tutor and their students (flexible LMS; not a school/centre LMS, SaaS, marketplace, booking, payment, chat, conferencing, Drive clone or AI tutor).",
-    "repoLocal": "/home/kali/App_projects/eng-lms",
+    "repoLocal": "/home/linux/Projects/eng-lms",
     "repoRemote": "https://github.com/duochou042004/eng-lms",
     "sources": [
       {
@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-10-23T13:31:46Z",
-  "updatedBy": "lead-coordinator (T-M2.21 merged, DEC-154; next: T-M2.13 packet)",
+  "updatedAt": "2026-11-11T12:07:01Z",
+  "updatedBy": "lead-coordinator (T-M2.13 G0 PASS WITH MINOR, DEC-155; packet PR #153 to merge; PO start signal next)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -32,21 +32,24 @@
   "currentTask": {
     "id": "T-M2.13",
     "title": "Auth and shell feedback follow-ups (T-M2.12 G3, DEC-118)",
-    "status": "draft",
+    "status": "ready",
     "ownerRole": "FE",
-    "branch": null,
-    "packet": null,
-    "pr": null,
+    "branch": "docs/T-M2.13-auth-shell-followups",
+    "packet": "docs/tasks/T-M2.13-auth-shell-followups.md",
+    "pr": "153",
     "lastCommit": null,
     "startedAt": null,
     "entryGate": [
       "T-M2.21 merged — met (d890aae)"
     ],
     "nextSteps": [
-      "LC writes the T-M2.13 packet (task-packet skill; tier M: one combined QA+UX reviewer) from the backlog row; G0 docs review; PO start signal"
+      "Merge the packet PR #153 via merge-gate (DOCS-REVIEW T-M2.13: PASS + LC-APPROVED T-M2.13 after CI green); gitlab-sync",
+      "PO start signal; then the frontend-implementer on feature/T-M2.13-auth-shell-followups from develop (export CONTAINER_HOST on this device); one gate on the final head; G3 tier M: one combined fresh QA+UX reviewer"
     ],
     "trace": [
-      "DEC-118"
+      "DEC-118",
+      "DEC-119",
+      "DEC-155"
     ]
   },
   "nextTask": {
@@ -387,8 +390,8 @@
   },
   "gates": {
     "G0": {
-      "status": "n/a",
-      "note": "T-M2.13 packet not written yet (T-M2.21: DOCS-REVIEW PASS, DEC-151, PR #139)"
+      "status": "pass",
+      "note": "T-M2.13: one fresh docs-reviewer, round 1 CHANGES REQUESTED (S2 D-1, S4 D-2..D-10; 104,400 tokens), delta PASS WITH MINOR (S4 N-1, N-2; 11,890), all fixed (evidence/T-M2.13/review/docs.md)"
     },
     "G1": {
       "status": "pass",
@@ -415,7 +418,6 @@
   "decisions": {
     "log": "docs/10-governance/decision-log.md",
     "recent": [
-      "DEC-126",
       "DEC-127",
       "DEC-128",
       "DEC-129",
@@ -443,7 +445,8 @@
       "DEC-151",
       "DEC-152",
       "DEC-153",
-      "DEC-154"
+      "DEC-154",
+      "DEC-155"
     ],
     "pendingPO": [
       "OQ-03",
@@ -749,19 +752,19 @@
     }
   ],
   "environment": {
-    "jdk": "Temurin 25.0.4 (SDKMAN; source ~/.sdkman/bin/sdkman-init.sh; sdk default set)",
+    "jdk": "Temurin 25.0.4 (SDKMAN; sdk env install from .sdkmanrc, sdk default set; 25.0.5-tem also installed); source ~/.sdkman/bin/sdkman-init.sh",
     "springBootCli": "4.1.0 (sdk default set)",
     "buildTool": "Maven Wrapper (Maven 3.10.0; no global mvn/gradle installed)",
-    "node": "24.21.0 via nvm (source ~/.nvm/nvm.sh; not on non-interactive PATH)",
-    "pnpm": "12.6.0 in the projects via packageManager (corepack 0.36.0; corepack's global default is 12.10.1)",
-    "containerEngine": "Container engine (T-M1.19 detection: scripts/lib/engine.sh): rootless Podman 5.8.6 + podman-compose 1.6.0, the user podman.socket ENABLED (DEC-044); no docker CLI installed. scripts/env.sh -> engine: podman (socket /run/user/1000/podman/podman.sock), DOCKER_HOST=unix:///run/user/1000/podman/podman.sock, TESTCONTAINERS_RYUK_DISABLED=true. bash 5.3.15 (scripts need >= 4.4), zsh 5.9.2",
-    "gh": "2.102.0, authenticated as duochou042004; git credential helper !/usr/bin/gh auth git-credential for github.com",
-    "host": "Kali GNU/Linux Rolling 2026.3 (kernel 7.1.5+kali-amd64, x86_64), 16 cores, 22 GB RAM, 103 GB free; clone /home/kali/App_projects/eng-lms; git 2.53.0; shellcheck not installed",
-    "python": "3.14.7 with jsonschema 4.26.0 (used by scripts/check_docs.py); jq 1.8.2",
-    "playwright": "Chromium headless shell 153 (build 1243) for e2e/; firefox 155 (1543) and webkit 26.6 (2359) downloaded for qa/, but their host libraries are missing (PO: sudo pnpm exec playwright install-deps)",
+    "node": "24.21.0 via nvm (.nvmrc, nvm alias default 24.21.0; source ~/.nvm/nvm.sh, then nvm use); the app-inherited PATH starts on 24.22.2, corepack enabled on both",
+    "pnpm": "12.6.0 in the projects via packageManager (corepack 0.36.0)",
+    "containerEngine": "Rootless Podman 5.8.6 + podman-compose 1.6.0; the user podman.socket enabled 2026-11-11 (DEC-044, development-setup §0 step 4); no docker CLI. Agent shells run with NoNewPrivs=1 (inherited from the desktop app), so the setuid newuidmap fails and direct podman calls error (\"newuidmap: write to uid_map failed\"): export CONTAINER_HOST=unix:///run/user/1000/podman/podman.sock (podman remote mode through the systemd socket) in every agent shell before dev-up/gate/e2e. scripts/env.sh -> engine: podman (socket /run/user/1000/podman/podman.sock), DOCKER_HOST set, TESTCONTAINERS_RYUK_DISABLED=true. bash 5.3.9, zsh 5.9",
+    "gh": "2.103.3, authenticated as duochou042004 (keyring); git credential helper !/usr/bin/gh auth git-credential for github.com",
+    "host": "Ubuntu 26.10 (kernel 7.3.0-10-generic, x86_64; Dell G15 5515), 16 cores, 22 GB RAM, 102 GB free; clone /home/linux/Projects/eng-lms; git 2.55.0; shellcheck not installed",
+    "python": "3.14.8 with jsonschema 4.19.2 (scripts/check_docs.py); jq 1.8.2",
+    "playwright": "Chromium headless shell 156 (build 1248) for e2e/ (pnpm browsers); Firefox and WebKit not downloaded, host libraries not installed (PO: sudo, for G5)",
     "githubActionsStorage": "PO freed the account artifact storage on 2026-09-26; artifacts are kept 5 days (DEC-056).",
-    "gitlab": "Private mirror gitlab.com/duochou042004/eng-lms (project 86941168), remote gitlab, glab 1.118.0 (/usr/bin/glab) authenticated as duochou042004; git credential helper !/usr/bin/glab auth git-credential; GitLab CI paused (DEC-107). Sync: ./scripts/gitlab-sync.sh",
-    "note": "T-M1.19 device (2026-10-11): development-setup §0 (Linux + rootless Podman); gate result in evidence/T-M1.19/summary.md."
+    "gitlab": "Private mirror gitlab.com/duochou042004/eng-lms (project 86941168), remote gitlab added 2026-11-11, glab 1.130.0 (/usr/bin/glab) authenticated as duochou042004 (keyring); git credential helper !/usr/bin/glab auth git-credential; GitLab CI paused (DEC-107). Sync: ./scripts/gitlab-sync.sh",
+    "note": "Device moved 2026-11-11 (PO, handoff of 2026-10-23): development-setup §0 on Ubuntu 26.10 + rootless Podman; hooks installed (core.hooksPath scripts/hooks), .env from .env.example; check-docs PASS and scripts/tests/run-all.sh PASS; the first gate runs with T-M2.13 G1."
   },
   "history": [
     {
@@ -1348,6 +1351,21 @@
       "at": "2026-10-23T13:31:46Z",
       "actor": "lead-coordinator",
       "event": "T-M2.21 merged (PR #140, d890aae): 1 review agent (docs-reviewer 72,125 + delta 21,875 tokens), implemented by the LC, 5 gate runs (2 FAIL on the RouteError flake, ruled in as AC9, DEC-153). check-docs now enforces the merge records. Next: the T-M2.13 packet."
+    },
+    {
+      "at": "2026-11-11T11:55:32Z",
+      "actor": "lead-coordinator",
+      "event": "New device (Ubuntu 26.10, rootless Podman 5.8.6 via the user socket; agent shells need CONTAINER_HOST because of NoNewPrivs): development-setup §0 done (JDK 25.0.4 + Boot CLI 4.1.0 from .sdkmanrc, Node 24.21.0, pnpm 12.6.0, hooks, gitlab remote, .env, Chromium 156); check-docs PASS, run-all PASS. Recorded in environment and project.repoLocal (DEC-083). T-M2.21 records PR #141 was already merged (d763086, mirror in sync). T-M2.13 packet written on docs/T-M2.13-auth-shell-followups (DEC-155, tier M); G0 next."
+    },
+    {
+      "at": "2026-11-11T12:07:01Z",
+      "actor": "docs-reviewer (independent)",
+      "event": "DOCS-REVIEW T-M2.13 G0: round 1 CHANGES REQUESTED on 7738687 (S2 D-1: the cross-tab notice raced the 401 handler; S4 D-2..D-10), fixed in 435a723; round 2 delta PASS WITH MINOR (S4 N-1 stand-down window, N-2 DEC wording), fixed by the LC. 104,400 + 11,890 tokens, 6.0 + 0.8 min."
+    },
+    {
+      "at": "2026-11-11T12:07:01Z",
+      "actor": "lead-coordinator",
+      "event": "T-M2.13 packet ready (Status ready, DEC-155); G0 record evidence/T-M2.13/review/docs.md; handoff archived and rewritten; packet PR #153 to merge via merge-gate, then the PO start signal."
     }
   ]
 }
