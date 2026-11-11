@@ -44,6 +44,10 @@ the T-M2.21 records (PR #141, `d763086`) · Remote: https://github.com/duochou04
   "newuidmap: write to uid_map failed". `export CONTAINER_HOST=unix:///run/user/1000/podman/podman.sock` in every agent shell (podman remote
   mode through the systemd user socket, enabled 2026-11-11) before `dev-up`, `gate.sh`, `e2e-run.sh`; Testcontainers uses `DOCKER_HOST` from
   `scripts/env.sh`. Brief every implementer and reviewer subagent with this. The first full gate on this device has not run yet (T-M2.13 G1).
+- **New CI flake (2026-11-11, PR #153 run 43017673796, tablet):** the kept `students.spec.ts:1805` "Guardians (T-M2.15) AC4: two pages: a
+  stale save opens the conflict dialog …" read `guardianNames(page)` once right after the removed-guardian alert (the L-05 single-read
+  trap) and also hit a console error; 514 passed, 1 failed on a docs-only head. Not ruled yet: the LC decides at T-M2.13 G1 (an L-10 OQ)
+  or routes it to the M2 polish/T-M2.7 with a DEC. Rerun with `gh run rerun <id> --failed`.
 - **Node on this device:** the app-inherited PATH starts on Node 24.22.2; `nvm use` in the repo picks 24.21.0 (`.nvmrc`). corepack is
   enabled on both, so `pnpm` 12.6.0 works either way.
 - **T-M2.13 D-1 (G0):** the cross-tab `signed-out` follow must read the session **before** dropping caches, then clear without a reset; a
