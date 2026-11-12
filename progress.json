@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-11-12T17:09:46Z",
-  "updatedBy": "lead-coordinator (T-M2.23 in G3: delta re-check and final gate pending; handoff)",
+  "updatedAt": "2026-11-12T18:43:18Z",
+  "updatedBy": "lead-coordinator (T-M2.23: G3 PASS WITH MINOR after 3 rounds; final gate e2e fails on dev-DB data; PO ruling asked)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -37,7 +37,7 @@
     "branch": "chore/T-M2.23-ci-scope",
     "packet": "docs/tasks/T-M2.23-ci-scope.md",
     "pr": "158",
-    "lastCommit": "f0671ca",
+    "lastCommit": "50bb229",
     "startedAt": "2026-11-12T12:06:51Z",
     "entryGate": [
       "PO decision DEC-158 (PO-1, PO-2) — met",
@@ -45,10 +45,9 @@
       "PO start signal — met (DEC-161)"
     ],
     "nextSteps": [
-      "G3 delta re-check by ONE fresh docs-reviewer (brief: .claude/scratch/lc-records/T-M2.23-g3-delta-brief.md, or HANDOFF next step 1); the first attempt died on an API limit with no result",
-      "Fix what it finds (S1/S2 need a further delta); record the round and the G3 cost table in evidence/T-M2.23/",
-      "ENGLMS_TASK=T-M2.23 ./scripts/gate.sh once on the final head (the last gate was on 2e855e0, before the G3 fixes)",
-      "After CI is green on the final head: post DOCS-REVIEW and LC-APPROVED, merge-gate from develop, gitlab-sync, check the first push run on develop (switch (b) verdict in shadow mode), records PR",
+      "PO ruling needed: the final gate on 299f508 passed 12 steps but e2e failed on students.spec.ts:2252 in all three viewports because the PO's dev DB holds 468 active students (no archived row on the first page); (a) dev-DB clean-up then gate --from e2e, or (b) CI's fresh-DB e2e accepted as proof; record as a DEC and in AC10",
+      "G3 is done: round 3 DOCS-REVIEW T-M2.23: PASS (PASS WITH MINOR), records in evidence/T-M2.23/review/docs.md and the summary's G3 cost table",
+      "After the ruling and CI green on the final head: post DOCS-REVIEW and LC-APPROVED, merge-gate from an up-to-date develop checkout, gitlab-sync, check the first push run on develop (switch (b) verdict in shadow mode), records PR",
       "It merges in shadow mode; T-M2.26 switches it on after at least 10 shadow PRs and its two entry probes (DEC-160, DEC-161)"
     ],
     "trace": [
