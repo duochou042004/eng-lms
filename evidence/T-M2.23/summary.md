@@ -18,7 +18,7 @@ Decisions: DEC-158 (PO-1, PO-2), DEC-160 (packet), DEC-161 (start signal and rul
 | AC7 shadow mode | `ci-scope.test.sh` section "AC7": 9 mode-file contents and a missing file; only `enforce` (with or without one final newline) passes a `fast-path` verdict through; the committed file holds `shadow` |
 | AC8 offline replay | the table below |
 | AC9 docs | ci-cd.md §1 (`docs-check` row), new §1.2, §2; git-governance §4; quality-gates G2, G4; the five workflow headers; `.claude/skills/evidence-and-handoff/SKILL.md` part C |
-| AC10 gate and CI | filled at G1/G2 below |
+| AC10 gate and CI | `evidence/T-M2.23/gate-20261112T123056Z.log`: gate PASS on `2e855e0` (13 steps, 598 s; `scripts` 188 s, `web-test` 53 s, `e2e` 336 s with 31 skipped; `backend` and `contract-drift` skipped for this diff). The first full gate on this device. CI: see "G2 and the GitHub assumptions" |
 
 ## Constraint → fixture (each seen failing; T-M2.22 U2 constraints 1 to 9)
 

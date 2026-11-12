@@ -1,0 +1,169 @@
+gate: logging to evidence/T-M2.23/gate-20261112T123056Z.log
+engine: podman (DOCKER_HOST=unix:///run/user/1000/podman/podman.sock)
+env.sh: DOCKER_HOST=unix:///run/user/1000/podman/podman.sock TESTCONTAINERS_RYUK_DISABLED=true
+gate: 2e855e0 2026-11-12T12:30:56Z, steps: docs scripts backend web-install web-lint web-typecheck web-test web-build web-budget web-contrast contract-drift qa-typecheck e2e
+gate: ==> docs
+[trimmed by the LC: step lines, suite totals and failures only; head 2e855e0]
+gate: logging to evidence/T-M2.23/gate-20261112T123056Z.log
+gate: 2e855e0 2026-11-12T12:30:56Z, steps: docs scripts backend web-install web-lint web-typecheck web-test web-build web-budget web-contrast contract-drift qa-typecheck e2e
+gate: ==> docs
+gate: <== docs OK (1s)
+gate: ==> scripts
+  -> 74 passed, 0 failed
+  ok   - (b1) the marker was skipped (a fast-path run): exit 0
+  ok   - (b1) the marker was skipped (a fast-path run): verdict full
+  ok   - (b1) the marker was skipped (a fast-path run): says why
+  ok   - (b2) the first parent's run was skipped: exit 0
+  ok   - (b2) the first parent's run was skipped: verdict full
+  ok   - (b2) the first parent's run was skipped: says why
+  -> 218 passed, 0 failed
+  -> 47 passed, 0 failed
+  -> 9 passed, 0 failed
+  -> 164 passed, 0 failed
+  -> 19 passed, 0 failed
+  ok   - DEC-131: says why backend is skipped
+  -> 55 passed, 0 failed
+  -> 11 passed, 0 failed
+  ok   - (c) F1: 'FAIL (AC1: PASS …)' is not a pass
+  ok   - (c) the latest QA verdict wins (FAIL after PASS)
+  ok   - AC2: QA-VERDICT FAIL blocks a chore PR even though DOCS-REVIEW passed
+  ok   - AC2: DOCS-REVIEW CHANGES REQUESTED blocks a feature PR even though QA passed
+  ok   - AC2: UX-REVIEW CHANGES REQUESTED blocks although QA and SEC passed
+  ok   - AC2: within a type the latest wins (QA FAIL then PASS on re-test) — positive path passes
+  ok   - S3-1: a non-exact negative verdict blocks: 'QA-VERDICT  T-M9.9: FAIL'
+  ok   - S3-1: a non-exact negative verdict blocks: 'qa-verdict T-M9.9: FAIL'
+  ok   - S3-1: a non-exact negative verdict blocks: 'QA-VERDICT T-M9.9 : FAIL'
+  ok   - S3-1: a non-exact negative verdict blocks: '**QA-VERDICT T-M9.9: FAIL**'
+  ok   - S3-1: a non-exact negative verdict blocks: '`QA-VERDICT T-M9.9: FAIL`'
+  ok   - S3-1: a non-exact negative verdict blocks: '> QA-VERDICT T-M9.9: FAIL'
+  ok   - S3-1: an exact PASS after a non-exact FAIL wins (latest within the type)
+  ok   - R2 S4-B: a non-exact negative verdict blocks: '## QA-VERDICT T-M9.9: FAIL'
+  ok   - R2 S4-B: a non-exact negative verdict blocks: '- QA-VERDICT T-M9.9: FAIL'
+  ok   - R2 S4-B: a non-exact negative verdict blocks: '❌ QA-VERDICT T-M9.9: FAIL'
+  ok   - R2 S4-B: a non-exact negative verdict blocks: 'QA-VERDICT T-M9.9 - FAIL'
+  ok   - R2 S4-B: a non-exact negative verdict blocks: 'QA VERDICT T-M9.9: FAIL'
+  ok   - T-M1.12 AC1: 'QA-VERDICT <id>-FAILOVER: PASS' is not a negative
+  ok   - T-M1.12 AC1: 'QA-VERDICT T-M9.9: FAIL' blocks
+  ok   - T-M1.12 AC1: 'QA-VERDICT T-M9.9: FAIL.' blocks
+  ok   - T-M1.12 AC1: 'QA-VERDICT T-M9.9: FAIL (see F1)' blocks
+  ok   - T-M1.12 AC1: '**QA-VERDICT T-M9.9: FAILED**' blocks
+  ok   - T-M1.12 AC1: 'QA-VERDICT T-M9.9 - FAILS AC3' blocks
+  ok   - T-M1.12 AC1: 'QA-VERDICT T-M9.9: FAILED' blocks
+  ok   - T-M1.12 AC1: 'QA-VERDICT T-M9.9: FAILURE' blocks
+  ok   - T-M1.12 AC1: 'QA-VERDICT T-M9.9 - FAILING' blocks
+  ok   - T-M1.12 AC1: 'DOCS-REVIEW T-M9.9: FAIL' blocks
+  ok   - T-M1.12 AC1: 'DOCS-REVIEW T-M9.9: FAIL.' blocks
+  ok   - T-M1.12 AC1: 'DOCS-REVIEW T-M9.9: FAIL (see F1)' blocks
+  ok   - T-M1.12 AC1: '**DOCS-REVIEW T-M9.9: FAILED**' blocks
+  ok   - T-M1.12 AC1: 'DOCS-REVIEW T-M9.9 - FAILS AC3' blocks
+  ok   - T-M1.12 AC1: 'DOCS-REVIEW T-M9.9: FAILED' blocks
+  ok   - T-M1.12 AC1: 'DOCS-REVIEW T-M9.9: FAILURE' blocks
+  ok   - T-M1.12 AC1: 'DOCS-REVIEW T-M9.9 - FAILING' blocks
+  ok   - T-M1.12 AC1: 'SEC-REVIEW T-M9.9: FAIL' blocks
+  ok   - T-M1.12 AC1: 'SEC-REVIEW T-M9.9: FAIL.' blocks
+  ok   - T-M1.12 AC1: 'SEC-REVIEW T-M9.9: FAIL (see F1)' blocks
+  ok   - T-M1.12 AC1: '**SEC-REVIEW T-M9.9: FAILED**' blocks
+  ok   - T-M1.12 AC1: 'SEC-REVIEW T-M9.9 - FAILS AC3' blocks
+  ok   - T-M1.12 AC1: 'SEC-REVIEW T-M9.9: FAILED' blocks
+  ok   - T-M1.12 AC1: 'SEC-REVIEW T-M9.9: FAILURE' blocks
+  ok   - T-M1.12 AC1: 'SEC-REVIEW T-M9.9 - FAILING' blocks
+  ok   - T-M1.12 AC1: 'UX-REVIEW T-M9.9: FAIL' blocks
+  ok   - T-M1.12 AC1: 'UX-REVIEW T-M9.9: FAIL.' blocks
+  ok   - T-M1.12 AC1: 'UX-REVIEW T-M9.9: FAIL (see F1)' blocks
+  ok   - T-M1.12 AC1: '**UX-REVIEW T-M9.9: FAILED**' blocks
+  ok   - T-M1.12 AC1: 'UX-REVIEW T-M9.9 - FAILS AC3' blocks
+  ok   - T-M1.12 AC1: 'UX-REVIEW T-M9.9: FAILED' blocks
+  ok   - T-M1.12 AC1: 'UX-REVIEW T-M9.9: FAILURE' blocks
+  ok   - T-M1.12 AC1: 'UX-REVIEW T-M9.9 - FAILING' blocks
+  ok   - T-M1.12 AC1: an exact line with an unknown token (FAILED-OVER) still blocks
+  ok   - T-M1.12 AC2: '1. QA-VERDICT T-M9.9: FAIL' blocks
+  ok   - T-M1.12 AC2: '1) QA-VERDICT T-M9.9: FAIL' blocks
+  ok   - T-M1.12 AC2: '12. QA-VERDICT T-M9.9: FAIL' blocks
+  ok   - T-M1.12 AC2: '- - QA-VERDICT T-M9.9: FAIL' blocks
+  ok   - T-M1.12 AC2: '* QA-VERDICT T-M9.9: FAIL' blocks
+  ok   - T-M1.12 AC2: '- * QA-VERDICT T-M9.9: FAIL' blocks
+  ok   - T-M1.12 AC2: 'QA-VERDICT T-M9.9 — FAIL' blocks
+  ok   - T-M1.12 AC2: 'QA-VERDICT T-M9.9 – FAIL' blocks
+  ok   - T-M1.12 AC2: 'QA-VERDICT T-M9.9—FAIL' blocks
+  ok   - T-M1.12 AC2: 'QA-VERDICT: T-M9.9: FAIL' blocks
+  ok   - T-M1.12 AC2: '1.  QA-VERDICT:  T-M9.9 —  FAIL' blocks
+  ok   - T-M1.12 review F1/F2: '**QA-VERDICT T-M9.9: FAILURES**' blocks
+  ok   - T-M1.12 review F1/F2: 'QA-VERDICT T-M9.9 - FAILINGS' blocks
+  ok   - T-M1.12 review F1/F2: 'QA-VERDICT T-M9.9: FAIL2' blocks
+  ok   - T-M1.12 review F1/F2: 'QA-VERDICT T-M9.9 -FAILSAFE' blocks
+  ok   - T-M1.12 review F1/F2: 'QA-VERDICT T-M9.9-FAILED' blocks
+  ok   - T-M1.12 review F1/F2: 'QA-VERDICT T-M9.9—FAIL' blocks
+  ok   - T-M1.12 review F1/F2: 'QA-VERDICT T-M9.9: FAIL' blocks
+  ok   - T-M1.12 review F1/F2: 'QA-VERDICT T-M9.9： FAIL' blocks
+  ok   - T-M1.12 review F1/F2: 'QA-VERDICT T-M9.9 － FAIL' blocks
+  ok   - T-M1.12 review F1/F2: 'QA-VERDICT　T-M9.9: FAIL' blocks
+  ok   - T-M1.12 review F1/F2: '+ QA-VERDICT T-M9.9: FAIL' blocks
+  ok   - T-M1.12 review F1/F2: '- [x] QA-VERDICT T-M9.9: FAIL' blocks
+  ok   - T-M1.12 review F1/F2: '(1) QA-VERDICT T-M9.9: FAIL' blocks
+  ok   - T-M1.12 review F1/F2: 'QA-VERDICT T-M9.9- FAIL' blocks
+  ok   - T-M1.12 review F1/F2: 'QA-VERDICT T-M9.9-: FAIL' blocks
+  ok   - T-M1.12 review F1/F2: 'QA-VERDICT T-M9.9-  FAILED' blocks
+  ok   - T-M1.12 review F1/F2: 'QA-VERDICT T-M9.9 : - FAIL' blocks
+  ok   - T-M1.12 review F1/F2: 'QA-VERDICT T-M9.9 - - FAIL' blocks
+  ok   - T-M1.12 review F1/F2: 'QA-VERDICT T-M9.9-FAILURES' blocks
+  ok   - T-M1.12 review F1/F2: 'QA-VERDICT T-M9.9--FAILINGS' blocks
+  ok   - T-M1.12 review F1: a word glued to the id by a dash (FAILOVER, FAILSAFE) is not a negative
+  ok   - T-M2.23: a product PR with skipped markers
+  ok   - T-M2.23: a product PR with skipped markers: says why
+  ok   - T-M2.23: one skipped marker among full runs
+  ok   - T-M2.23: one skipped marker among full runs: says why
+  ok   - T-M2.23: a Dependabot PR with skipped markers
+  ok   - T-M2.23: a Dependabot PR with skipped markers: says why
+  ok   - T-M2.23: a text-only PR with skipped markers passes
+  -> 402 passed, 0 failed
+  -> 15 passed, 0 failed
+  -> 15 passed, 0 failed
+  -> 11 passed, 0 failed
+  ok   - a warning step without always() (skipped after a failure) does not count
+  -> 10 passed, 0 failed
+script tests: PASS
+gate: <== scripts OK (188s)
+gate: ==> backend
+gate: backend skipped: no backend/ or api/ change (CI runs it; ENGLMS_GATE_FULL=1 forces it)
+gate: <== backend OK (0s)
+gate: ==> web-install
+Lockfile is up to date, resolution step is skipped
+gate: <== web-install OK (0s)
+gate: ==> web-lint
+gate: <== web-lint OK (5s)
+gate: ==> web-typecheck
+gate: <== web-typecheck OK (6s)
+gate: ==> web-test
+ Test Files  68 passed (68)
+      Tests  818 passed (818)
+gate: <== web-test OK (53s)
+gate: ==> web-build
+gate: <== web-build OK (7s)
+gate: ==> web-budget
+gate: <== web-budget OK (0s)
+gate: ==> web-contrast
+gate: <== web-contrast OK (0s)
+gate: ==> contract-drift
+gate: contract-drift skipped: no backend/ or api/ change (CI runs it)
+gate: <== contract-drift OK (0s)
+gate: ==> qa-typecheck
+Lockfile is up to date, resolution step is skipped
+gate: <== qa-typecheck OK (2s)
+gate: ==> e2e
+e2e-run: building web/dist and the jar with the SPA
+Lockfile is up to date, resolution step is skipped
+e2e-run: started englms-0.0.1-SNAPSHOT.jar (pid 644847, log backend/target/e2e-app.log)
+e2e-run: app ready; running Playwright --project=phone-small --project=tablet --project=laptop
+  ✓    9 [phone-small] › tests/auth.spec.ts:220:3 › anonymous › AC4: the forced change cannot be bypassed; /login logs out first; the change lands on /student/home (9.8s)
+  ✓  164 [phone-small] › tests/students.spec.ts:2309:3 › Focus after an action removes or disables its own control (T-M2.19 AC4) › D-4: the guardians error: Try again (503 until the alert, then passed through) focuses th
+  ✓  190 [tablet] › tests/auth.spec.ts:220:3 › anonymous › AC4: the forced change cannot be bypassed; /login logs out first; the change lands on /student/home (8.3s)
+  ✓  346 [tablet] › tests/students.spec.ts:2309:3 › Focus after an action removes or disables its own control (T-M2.19 AC4) › D-4: the guardians error: Try again (503 until the alert, then passed through) focuses the sec
+  ✓  373 [laptop] › tests/auth.spec.ts:220:3 › anonymous › AC4: the forced change cannot be bypassed; /login logs out first; the change lands on /student/home (8.3s)
+  ✓  528 [laptop] › tests/students.spec.ts:2309:3 › Focus after an action removes or disables its own control (T-M2.19 AC4) › D-4: the guardians error: Try again (503 until the alert, then passed through) focuses the sec
+  31 skipped
+  515 passed (4.4m)
+e2e-run: playwright exit 0
+e2e-run: app stopped (pid 644847)
+gate: e2e repeat: no new or changed spec
+gate: <== e2e OK (336s)
+gate: PASS (13 steps, 598s)
