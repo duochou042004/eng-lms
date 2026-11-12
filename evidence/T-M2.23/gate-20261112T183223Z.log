@@ -1,0 +1,70 @@
+gate: logging to evidence/T-M2.23/gate-20261112T183223Z.log
+engine: podman (DOCKER_HOST=unix:///run/user/1000/podman/podman.sock)
+env.sh: DOCKER_HOST=unix:///run/user/1000/podman/podman.sock TESTCONTAINERS_RYUK_DISABLED=true
+gate: 299f508 2026-11-12T18:32:23Z, steps: docs scripts backend web-install web-lint web-typecheck web-test web-build web-budget web-contrast contract-drift qa-typecheck e2e
+gate: ==> docs
+[trimmed by the LC: step lines, suite totals, the first failure and the e2e summary; head 299f508]
+gate: <== docs OK (1s)
+gate: ==> scripts
+  -> 86 passed, 0 failed
+  -> 243 passed, 0 failed
+  -> 85 passed, 0 failed
+  -> 9 passed, 0 failed
+  -> 164 passed, 0 failed
+  -> 19 passed, 0 failed
+  -> 55 passed, 0 failed
+  -> 11 passed, 0 failed
+  -> 418 passed, 0 failed
+  -> 15 passed, 0 failed
+  -> 15 passed, 0 failed
+  -> 11 passed, 0 failed
+  -> 10 passed, 0 failed
+gate: <== scripts OK (202s)
+gate: ==> backend
+gate: backend skipped: no backend/ or api/ change (CI runs it; ENGLMS_GATE_FULL=1 forces it)
+gate: <== backend OK (0s)
+gate: ==> web-install
+gate: <== web-install OK (0s)
+gate: ==> web-lint
+gate: <== web-lint OK (4s)
+gate: ==> web-typecheck
+gate: <== web-typecheck OK (5s)
+gate: ==> web-test
+gate: <== web-test OK (49s)
+gate: ==> web-build
+gate: <== web-build OK (6s)
+gate: ==> web-budget
+gate: <== web-budget OK (1s)
+gate: ==> web-contrast
+gate: <== web-contrast OK (0s)
+gate: ==> contract-drift
+gate: contract-drift skipped: no backend/ or api/ change (CI runs it)
+gate: <== contract-drift OK (0s)
+gate: ==> qa-typecheck
+gate: <== qa-typecheck OK (1s)
+gate: ==> e2e
+e2e-run: building web/dist and the jar with the SPA
+e2e-run: started englms-0.0.1-SNAPSHOT.jar (pid 2400312, log backend/target/e2e-app.log)
+e2e-run: app ready; running Playwright --project=phone-small --project=tablet --project=laptop
+  3 failed
+    [phone-small] › tests/students.spec.ts:2252:3 › Focus after an action removes or disables its own control (T-M2.19 AC4) › only archived students: Include archived: focus to the toolbar control 
+    [tablet] › tests/students.spec.ts:2252:3 › Focus after an action removes or disables its own control (T-M2.19 AC4) › only archived students: Include archived: focus to the toolbar control 
+    [laptop] › tests/students.spec.ts:2252:3 › Focus after an action removes or disables its own control (T-M2.19 AC4) › only archived students: Include archived: focus to the toolbar control 
+  31 skipped
+  512 passed (4.1m)
+e2e-run: playwright exit 1
+e2e-run: app stopped (pid 2400312)
+gate: FAIL at step 'e2e' (exit 1) after 281s; later steps were not run. Resume with: ./scripts/gate.sh --from e2e
+[first failure, verbatim:]
+  1) [phone-small] › tests/students.spec.ts:2252:3 › Focus after an action removes or disables its own control (T-M2.19 AC4) › only archived students: Include archived: focus to the toolbar control 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByText('Đã lưu trữ', { exact: true }).first()
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" getByText('Đã lưu trữ', { exact: true }).first() with timeout 5000ms
+      - waiting for getByText('Đã lưu trữ', { exact: true }).first()
