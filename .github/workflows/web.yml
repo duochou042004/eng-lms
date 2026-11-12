@@ -1,5 +1,7 @@
 name: web
 
+# CI scope (T-M2.23, ci-cd.md §1.2): the job always runs and reports; scripts/ci-scope.sh decides whether its heavy steps run
+# (shadow mode until T-M2.26: they always run). scripts/tests/ci-scope-workflows.test.sh pins this wiring.
 # Runs on every PR (no paths: filter): `web` is a required check (scripts/required-checks.txt), and a path-filtered
 # required check would never report on backend or docs PRs, so merge-gate would refuse them (as for backend, T-M1.2).
 on:

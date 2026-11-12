@@ -1,5 +1,7 @@
 name: contract-drift
 
+# CI scope (T-M2.23, ci-cd.md §1.2): the job always runs and reports; scripts/ci-scope.sh decides whether its heavy steps run
+# (shadow mode until T-M2.26: they always run). scripts/tests/ci-scope-workflows.test.sh pins this wiring.
 # Runs on every PR (no paths: filter): `contract-drift` is a required check (scripts/required-checks.txt). It regenerates
 # api/openapi.json and the web types from the code and fails on any difference (ADR-0014, T-M1.5).
 on:

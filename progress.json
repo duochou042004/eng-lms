@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-11-12T05:42:43Z",
-  "updatedBy": "lead-coordinator (T-M2.23 packet ready at G0, DEC-160; PO start signal asked)",
+  "updatedAt": "2026-11-12T12:06:51Z",
+  "updatedBy": "lead-coordinator (T-M2.23 implementation, DEC-161)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -32,27 +32,27 @@
   "currentTask": {
     "id": "T-M2.23",
     "title": "CI runs the heavy jobs only where the diff can affect them (T-M2.22 U2)",
-    "status": "ready",
+    "status": "in_review",
     "ownerRole": "LC",
-    "branch": "docs/T-M2.23-ci-scope",
+    "branch": "chore/T-M2.23-ci-scope",
     "packet": "docs/tasks/T-M2.23-ci-scope.md",
-    "pr": "157",
+    "pr": null,
     "lastCommit": null,
-    "startedAt": null,
+    "startedAt": "2026-11-12T12:06:51Z",
     "entryGate": [
       "PO decision DEC-158 (PO-1, PO-2) — met",
-      "G0 PASS WITH MINOR (DEC-160) — met",
-      "PO start signal — pending"
+      "G0 PASS WITH MINOR (DEC-160, packet merged c090d40) — met",
+      "PO start signal — met (DEC-161)"
     ],
     "nextSteps": [
-      "PO: start signal for T-M2.23 (asked 2026-11-12)",
-      "LC implements on chore/T-M2.23-ci-scope; it merges in shadow mode; G3 by one fresh docs-reviewer with an adversarial brief",
-      "T-M2.26 switches it on after at least 10 shadow PRs (DEC-160)"
+      "LC: gate once on the final head, PR, verify the GitHub assumptions on the PR runs, G3 by one fresh docs-reviewer with an adversarial brief",
+      "It merges in shadow mode; T-M2.26 switches it on after at least 10 shadow PRs (DEC-160)"
     ],
     "trace": [
       "DEC-157",
       "DEC-158",
-      "DEC-160"
+      "DEC-160",
+      "DEC-161"
     ]
   },
   "nextTask": {
@@ -421,7 +421,7 @@
     },
     "G4": {
       "status": "pass",
-      "note": "T-M2.22 merged via merge-gate (c93d128)"
+      "note": "T-M2.23 packet merged via merge-gate (c090d40, PR #157)"
     },
     "G5": {
       "status": "n/a",
@@ -464,7 +464,8 @@
       "DEC-157",
       "DEC-158",
       "DEC-159",
-      "DEC-160"
+      "DEC-160",
+      "DEC-161"
     ],
     "pendingPO": [
       "OQ-03",
@@ -774,6 +775,13 @@
       "status": "approved",
       "at": "2026-11-11T17:19:13Z",
       "ref": "DEC-158"
+    },
+    {
+      "what": "Start T-M2.23 (CI scope, built and merged in shadow mode)",
+      "by": "PO",
+      "status": "approved",
+      "at": "2026-11-12T12:06:51Z",
+      "ref": "DEC-161"
     }
   ],
   "environment": {
@@ -1436,6 +1444,11 @@
       "at": "2026-11-12T05:42:43Z",
       "actor": "lead-coordinator",
       "event": "T-M2.23 packet G0: one fresh docs-reviewer with an adversarial brief, PASS WITH MINOR (141,820 tokens, 556.3 s; 14 S3, 6 S4, all fixed; record evidence/T-M2.23/review/docs.md). Packet ready (PR #157); the PO is asked for the start signal. T-M2.13 still held."
+    },
+    {
+      "at": "2026-11-12T12:06:51Z",
+      "actor": "PO",
+      "event": "Start signal for T-M2.23 (DEC-161). The packet PR #157 merged as c090d40; implementation on chore/T-M2.23-ci-scope."
     }
   ]
 }

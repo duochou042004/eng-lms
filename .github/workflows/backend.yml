@@ -1,5 +1,7 @@
 name: backend
 
+# CI scope (T-M2.23, ci-cd.md §1.2): the job always runs and reports; scripts/ci-scope.sh decides whether its heavy steps run
+# (shadow mode until T-M2.26: they always run). scripts/tests/ci-scope-workflows.test.sh pins this wiring.
 # Runs on every PR (no paths: filter): `backend` is a required check (scripts/required-checks.txt), and a path-filtered
 # required check would never report on docs or web PRs, so merge-gate would refuse them (T-M1.2, docs review F7).
 on:

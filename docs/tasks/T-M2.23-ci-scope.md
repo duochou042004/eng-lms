@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Milestone | M2 |
-| Status | ready (G0 PASS WITH MINOR, DEC-160; PR #157). Starts only on the PO's start signal |
+| Status | in_review (started on the PO's signal, DEC-161; packet G0 PASS WITH MINOR, DEC-160, PR #157, `c090d40`) |
 | Owner role | LC (implements the scripts, workflows and docs; G3 by a fresh docs-reviewer with an adversarial brief) |
 | Branch | `chore/T-M2.23-ci-scope` (from `develop`); this packet on `docs/T-M2.23-ci-scope` |
 | Depends on | T-M2.22 (`c93d128`) and the PO's decision DEC-158 (PO-1, PO-2): done |

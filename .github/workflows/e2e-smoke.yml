@@ -1,5 +1,7 @@
 name: e2e-smoke
 
+# CI scope (T-M2.23, ci-cd.md §1.2): the job always runs and reports; scripts/ci-scope.sh decides whether its heavy steps run
+# (shadow mode until T-M2.26: they always run). scripts/tests/ci-scope-workflows.test.sh pins this wiring.
 # Runs on every PR (no paths: filter): `e2e-smoke` is a required check (scripts/required-checks.txt). The Playwright
 # smoke + guard self-tests on the mandatory viewports against the packaged app (the jar with the SPA), T-M1.6.
 on:
