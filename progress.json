@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-11-11T17:21:50Z",
-  "updatedBy": "lead-coordinator (PO accepted the T-M2.22 plan, DEC-158; next T-M2.23 packet)",
+  "updatedAt": "2026-11-12T05:30:39Z",
+  "updatedBy": "lead-coordinator (T-M2.23 packet written, DEC-160; G0 pending)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -34,8 +34,8 @@
     "title": "CI runs the heavy jobs only where the diff can affect them (T-M2.22 U2)",
     "status": "draft",
     "ownerRole": "LC",
-    "branch": null,
-    "packet": null,
+    "branch": "docs/T-M2.23-ci-scope",
+    "packet": "docs/tasks/T-M2.23-ci-scope.md",
     "pr": null,
     "lastCommit": null,
     "startedAt": null,
@@ -43,11 +43,13 @@
       "PO decision DEC-158 (PO-1, PO-2) — met"
     ],
     "nextSteps": [
-      "LC: write the T-M2.23 packet (task-packet skill; the nine U2 design constraints and attacks A-1..A-12 in evidence/T-M2.22/review/docs.md), adversarial G0; shadow mode runs during T-M2.13"
+      "LC: G0 of the packet (one fresh docs-reviewer, adversarial brief), merge the packet PR, then ask the PO for the T-M2.23 start signal",
+      "Implementation on chore/T-M2.23-ci-scope only after the start signal; it merges in shadow mode; T-M2.26 switches it on after at least 10 shadow PRs (DEC-160)"
     ],
     "trace": [
       "DEC-157",
-      "DEC-158"
+      "DEC-158",
+      "DEC-160"
     ]
   },
   "nextTask": {
@@ -399,8 +401,8 @@
   },
   "gates": {
     "G0": {
-      "status": "n/a",
-      "note": "T-M2.23 not written yet (T-M2.22: G0 PASS, DEC-157; T-M2.13: G0 PASS, DEC-155)"
+      "status": "pending",
+      "note": "T-M2.23 packet written (DEC-160); docs review running"
     },
     "G1": {
       "status": "pass",
@@ -458,7 +460,8 @@
       "DEC-156",
       "DEC-157",
       "DEC-158",
-      "DEC-159"
+      "DEC-159",
+      "DEC-160"
     ],
     "pendingPO": [
       "OQ-03",
@@ -1420,6 +1423,11 @@
       "at": "2026-11-11T17:21:50Z",
       "actor": "docs-reviewer (independent)",
       "event": "Records PR #156 (DEC-158, DEC-159): PASS WITH MINOR (S3 G-1..G-5, S4 G-6..G-10; 46,180 tokens), all fixed."
+    },
+    {
+      "at": "2026-11-12T05:30:39Z",
+      "actor": "lead-coordinator",
+      "event": "T-M2.23 packet written on docs/T-M2.23-ci-scope (DEC-160): both switches built under the nine U2 constraints and merged in shadow mode; the switch-on split into the new row T-M2.26. G0 review next."
     }
   ]
 }
