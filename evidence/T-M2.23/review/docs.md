@@ -295,3 +295,39 @@ A second mutation set of 11 (C18 to D10) covers every rule the reviewer found un
 The red `develop` run 43165176510 (`loading.spec.ts` "the loading region in English", phone-small, on the docs-only merge `c090d40`)
 was a flaky test: the failed job was re-run; it is reported to the PO, not ruled in this task.
 
+## G3 round 2 (delta) at `82c2553` — 108,504 tokens, 754.0 s
+
+A fresh reviewer (the first attempt was cut off by an API limit with no result). Scope `git diff 162fc02..82c2553`.
+
+`DOCS-REVIEW T-M2.23: CHANGES REQUESTED`: no S1; one new step-6 test passes on PR runs for another reason than the one it names and
+would fail on `develop`'s first push run (S2), and the reworked workflow scanner has five more bypasses (S3).
+
+**G-1..G-11:** G-1, G-2, G-4 to G-7, G-9 to G-11 closed; G-3 partly (N-2, N-4); G-8 partly (N-1, N-3). The replay was re-run and all
+60 SHA→verdict pairs match. **Checks:** suites 238 / 65 / 413 / 86 pass; `check-docs` and `check-path-ownership` pass; PR #158 7/7.
+**Round 1's surviving mutations re-applied in a private clone:** R2, R10, R15, H4, K1, K2 and the workflow edits (a) to (e) are all
+caught; three new ones survived (`GH=gh` dropped from the runner guard, `--no-relative` alone dropped, step 6's default ref).
+
+| ID | Sev | File:line | Finding | Suggested fix |
+|---|---|---|---|---|
+| N-1 | S2 | `scripts/tests/merge-gate.test.sh:587-588` | `git commit-tree` needs an identity; a runner has none ("Author identity unknown" in run 43266658125), so `OTHER_COMMIT` was empty and the case fell back to `origin/develop`. On a PR run it still exits 1 (HEAD is the merge ref), but on a `develop` push run HEAD is `origin/develop` and the case fails (reproduced: 412 passed, 1 failed). | Give `commit-tree` an identity, check the result is non-empty, assert the step-6 message |
+| N-2 | S3 | `scripts/tests/ci-scope-workflows.test.sh` | Five edits pass: a heavy command chained after a `::warning` echo behind `if: failure()`; a flow-style `defaults` with `shell:`; an escaped quoted key (`"continue-on-erro\u0072"`); a `?` complex key; `uses: evil/actions/checkout@…`. Each needs a reviewed, full workflow PR, so not S1. | Tighten each rule, one mutated copy each; say in ci-cd §1.2 that the scanner is a heuristic |
+| N-3 | S3 | `scripts/merge-gate.sh:395-398`, ci-cd §2, git-governance §4 | Step 6 compares HEAD with a local, unfetched `origin/develop` and cannot see local edits; the docs claim more. The suite sets `MERGE_GATE_DEVELOP_REF=HEAD` globally, so the default ref is never exercised. | Soften the docs or fetch and check the tree; add a case with the variable unset |
+| N-4 | S4 | `scripts/ci-scope.sh:24` | The runner guard's `GH=gh` has no case. | One runner case with a mock that must not be used |
+| N-5 | S4 | `scripts/ci-scope.sh:51` | `--no-relative` has no fixture. | A `diff.relative=true` fixture from a subdirectory |
+
+**Not checked:** whether the runner refuses `env: GITHUB_ACTIONS: ""`; duplicate-key and anchor tricks against GitHub's own parser;
+`gate.sh`, containers, Maven, pnpm; no live `develop` push run (N-1 rests on a local simulation and the PR run log).
+
+## LC response to G3 round 2
+
+All five accepted and fixed. N-1: `commit-tree` gets its own identity and a fixed date, a separate assertion checks the commit
+exists, and the case asserts the step-6 message. The suite was re-run in a private clone with `origin/develop` = HEAD and no git
+identity (as on a `develop` push run): 418 passed. N-3: the docs now say "`origin/develop` as last fetched (`git pull --ff-only`
+first, with no local edits under `scripts/`)" and that the script neither fetches nor reads the working tree; the code is unchanged
+(fetching or comparing with the PR's live base would add a network step to the gate, beyond the mandate's need). A new case runs a
+copy of the gate in a throwaway repository with the variable unset, refused and then accepted (mutation E3 caught). N-2: the scanner
+refuses `shell` anywhere, quoted keys with an escape, `?` keys and flow mappings, needs the checkout to start with
+`actions/checkout@`, and accepts a failure-only `if:` only on a lone `echo "::warning…"` (no `"`, `$`, backtick or backslash inside);
+six mutated copies. ci-cd §1.2 calls the scanner a heuristic backed by the full run and review of every workflow PR. N-4: a runner
+case whose `gh` on `PATH` fails, so the mock's `fast-path` must not be used (E2 caught). N-5: a fixture run from `docs/` with
+`diff.relative=true` (E1 caught). Suites: 243 / 77 / 418 / 86. As an S2 was found, a further delta re-check follows.

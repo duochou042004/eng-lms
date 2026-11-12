@@ -35,7 +35,11 @@ for path in sorted(Path(sys.argv[1]).glob("*.y*ml")):
     wf = next((l.split(":", 1)[1].strip() for l in lines if l.startswith("name:")), "?")
     if re.search(r"""^\s*["']?paths(-ignore)?["']?\s*:""", text, re.M): bad("a paths filter (a required check must always report)")
     if re.search(r"CI_SCOPE_ALLOW_FILE|CI_SCOPE_MODE_FILE|GH_BIN", text): bad("a test override of ci-scope.sh (CI_SCOPE_ALLOW_FILE, CI_SCOPE_MODE_FILE, GH_BIN) must not be set in a workflow")
-    if re.search(r"""^\s*["']?shell["']?\s*:""", text, re.M): bad("a shell: override is not allowed (it can turn a run step into a no-op)")
+    if re.search(r"""\bshell["']?\s*:""", text): bad("a shell: override is not allowed (it can turn a run step into a no-op)")
+    # G3 N-2: YAML spellings a line scanner cannot read reliably are refused outright
+    if re.search(r""""[^"\n]*\\[^"\n]*"\s*:""", text): bad("a quoted key with an escape is not allowed")
+    if re.search(r"^\s*(- )?\?(\s|$)", text, re.M): bad("a complex key (? ) is not allowed")
+    if re.search(r"(?<![${])\{(?!\{)", "\n".join(l for l in lines if not l.lstrip().startswith("#"))): bad("a flow mapping ({ ... }) is not allowed")
     if not re.search(r"^permissions:\n(  .*\n)*?  actions: read\b", text, re.M): bad("permissions lacks 'actions: read'")
     group = f"  group: {wf}-${{{{ github.event_name == 'push' && github.sha || github.ref }}}}"
     if group not in lines: bad("the concurrency group must hold github.sha for pushes: " + group.strip())
@@ -56,7 +60,7 @@ for path in sorted(Path(sys.argv[1]).glob("*.y*ml")):
     if cur is not None: steps.append(cur)
     if len(steps) < 4: bad("too few steps"); continue
     first, scope, last, middle = steps[0], steps[1], steps[-1], steps[2:-1]
-    if not any("actions/checkout@" in v for v in key(first, "uses")) or key(first, "if"): bad("the first step must be an unconditional checkout")
+    if not any(re.match(r"""^["']?actions/checkout@""", v) for v in key(first, "uses")) or key(first, "if"): bad("the first step must be an unconditional checkout")
     if not any(re.match(r"^          fetch-depth: 2\b", l) for l in first): bad("checkout needs fetch-depth: 2")
     if key(scope, "id") != ["scope"]: bad("the step after checkout must be the scope step (id: scope)")
     if key(scope, "if"): bad("the scope step must not have an if:")
@@ -69,7 +73,7 @@ for path in sorted(Path(sys.argv[1]).glob("*.y*ml")):
         if key(s, "id") == ["scope"]: bad("a second step with id: scope")
         if label.startswith("Full run on"): bad(f"step '{label}': only the last step may be named like the marker")
         if len(ifs) != 1: bad(f"step '{label}': exactly one if: expected, found {len(ifs)}"); continue
-        diagnostic = any("actions/upload-artifact@" in v for v in key(s, "uses")) or any(v.startswith('echo "::warning') for v in key(s, "run"))
+        diagnostic = any("actions/upload-artifact@" in v for v in key(s, "uses")) or any(re.fullmatch(r'echo "::warning[^"$`\\]*"', v) for v in key(s, "run"))
         if EXEMPT_IF.match(ifs[0]) and not diagnostic:
             bad(f"step '{label}': a failure-only if: is allowed only on an upload-artifact step or an echo \"::warning step")
         elif ifs[0] not in ALLOWED_IF and not EXEMPT_IF.match(ifs[0]):
@@ -127,6 +131,13 @@ mutate web.yml 't.replace("          GH_TOKEN: ", "          CI_SCOPE_ALLOW_FILE
 mutate web.yml 't.replace("permissions:\n", "env:\n  GH_BIN: /bin/true\npermissions:\n")' "a test override of ci-scope.sh" "GH_BIN set at workflow level"
 mutate web.yml 't.replace("        working-directory: web\n", "        working-directory: web\n        shell: \"true {0}\"\n")' "a shell: override is not allowed" "a job default shell that runs nothing"
 mutate web.yml 't.replace("    runs-on: ubuntu-24.04\n", "    runs-on: ubuntu-24.04\n    \"if\": false\n")' "job-level 'if' is not allowed" "a quoted job-level if"
+# G3 round 2 (N-2): five edits the reworked scanner still let through
+mutate backend.yml 't.replace("        if: '"$C"'\n        run: ./mvnw -B -ntp verify", "        if: failure()\n        run: echo \"::warning::v\" \u0026\u0026 ./mvnw -B -ntp verify")' "a failure-only if: is allowed only on an upload-artifact step" "a heavy command chained after a ::warning echo behind if: failure()"
+mutate web.yml 't.replace("permissions:\n", "defaults: {run: {shell: \"true {0}\"}}\npermissions:\n")' "a shell: override is not allowed" "a flow-style default shell"
+mutate web.yml 't.replace("permissions:\n", "defaults: {run: {working-directory: web}}\npermissions:\n")' "a flow mapping ({ ... }) is not allowed" "a flow mapping"
+mutate backend.yml 't.replace("        if: '"$C"'\n        run: ./mvnw", "        if: '"$C"'\n        \"continue-on-erro\\u0072\": true\n        run: ./mvnw")' "a quoted key with an escape is not allowed" "an escaped quoted continue-on-error key"
+mutate backend.yml 't.replace("        if: '"$C"'\n        run: ./mvnw", "        if: '"$C"'\n        ? continue-on-error\n        : true\n        run: ./mvnw")' "a complex key (? ) is not allowed" "a complex continue-on-error key"
+mutate web.yml 't.replace("uses: actions/checkout@", "uses: evil/actions/checkout@", 1)' "the first step must be an unconditional checkout" "a checkout look-alike from another owner"
 rm -rf "$work/wf"; mkdir "$work/wf"; cp "$ROOT"/.github/workflows/*.yml "$work/wf/"; cp "$work/wf/web.yml" "$work/wf/new.yml"
 expect_exit 1 "a new workflow that is in neither list fails" -- check "$work/wf"
 expect_output_contains "neither heavy nor always-full" "a new workflow: names the problem"

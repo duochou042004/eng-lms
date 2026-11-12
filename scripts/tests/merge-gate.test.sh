@@ -584,8 +584,21 @@ text
 expect_exit 1 "T-M2.23: a real merge is refused when the checkout is not develop's commit" -- env MERGE_GATE_DEVELOP_REF=refs/heads/no-such-branch "$ROOT/scripts/merge-gate.sh" 7
 expect_output_contains "run the merge from an up-to-date develop checkout" "T-M2.23: says to switch to develop"
 [[ ! -f "$MOCK_DIR/merged.txt" ]] && { PASS_COUNT=$((PASS_COUNT+1)); echo "  ok   - T-M2.23: nothing was merged from the wrong checkout"; } || { FAIL_COUNT=$((FAIL_COUNT+1)); echo "  FAIL - T-M2.23: merged from the wrong checkout"; }
-OTHER_COMMIT=$(git -C "$ROOT" commit-tree 'HEAD^{tree}' -m other </dev/null)
-expect_exit 1 "T-M2.23: a real merge is refused when HEAD is another commit than develop's" -- env MERGE_GATE_DEVELOP_REF="$OTHER_COMMIT" "$ROOT/scripts/merge-gate.sh" 7
+# G3 N-1: a CI runner has no git identity, so commit-tree gets its own (and fixed dates); an empty result must fail, not fall back to HEAD
+OTHER_COMMIT=$(GIT_AUTHOR_DATE=2026-01-01T00:00:00Z GIT_COMMITTER_DATE=2026-01-01T00:00:00Z git -C "$ROOT" -c user.name=t -c user.email=t@example.invalid commit-tree 'HEAD^{tree}' -m other </dev/null)
+[[ -n "$OTHER_COMMIT" ]] && { PASS_COUNT=$((PASS_COUNT+1)); echo "  ok   - T-M2.23: the other commit exists"; } || { FAIL_COUNT=$((FAIL_COUNT+1)); echo "  FAIL - T-M2.23: commit-tree made no commit"; }
+expect_exit 1 "T-M2.23: a real merge is refused when HEAD is another commit than develop's" -- env MERGE_GATE_DEVELOP_REF="${OTHER_COMMIT:-none}" "$ROOT/scripts/merge-gate.sh" 7
+expect_output_contains "run the merge from an up-to-date develop checkout" "T-M2.23: refused by step 6, not by another rule"
+# G3 N-3: the default ref (origin/develop, variable unset), on a copy of the gate in a throwaway repo
+DEV_REPO="$MOCK_DIR/devrepo"; mkdir -p "$DEV_REPO/scripts"
+cp -r "$ROOT/scripts/merge-gate.sh" "$ROOT/scripts/required-checks.txt" "$ROOT/scripts/ci-text-only.paths" "$ROOT/scripts/lib" "$DEV_REPO/scripts/"
+dgit() { GIT_AUTHOR_DATE=2026-01-01T00:00:00Z GIT_COMMITTER_DATE=2026-01-01T00:00:00Z git -C "$DEV_REPO" -c user.name=t -c user.email=t@example.invalid "$@" >/dev/null 2>&1; }
+dgit init -q && dgit add -A && dgit commit -q -m one && dgit commit -q --allow-empty -m two
+dgit update-ref refs/remotes/origin/develop HEAD~1
+expect_exit 1 "T-M2.23: by default a real merge is refused when HEAD is not origin/develop" -- env -u MERGE_GATE_DEVELOP_REF "$DEV_REPO/scripts/merge-gate.sh" 7
+expect_output_contains "is not origin/develop" "T-M2.23: the default ref is origin/develop"
+dgit update-ref refs/remotes/origin/develop HEAD
+expect_exit 0 "T-M2.23: by default a real merge passes when HEAD is origin/develop" -- env -u MERGE_GATE_DEVELOP_REF "$DEV_REPO/scripts/merge-gate.sh" 7
 expect_exit 0 "T-M2.23: a dry run may be made from any checkout" -- env MERGE_GATE_DEVELOP_REF=refs/heads/no-such-branch "$ROOT/scripts/merge-gate.sh" --dry-run 7
 text
 expect_exit 0 "T-M2.23: a real merge passes from develop's commit" -- gate 7

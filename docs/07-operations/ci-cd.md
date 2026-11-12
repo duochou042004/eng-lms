@@ -76,7 +76,9 @@ still runs. T-M2.26 changes the file to `enforce` after at least 10 PRs without 
 - **Concurrency:** the group is `<workflow>-<sha>` for pushes and `<workflow>-<ref>` for PRs, so a post-merge run is never cancelled
   or replaced by the next merge.
 - **Enforced by tests** (`scripts/tests/ci-scope.test.sh`, `ci-scope-workflows.test.sh`, `merge-gate.test.sh`, `check-docs.test.sh`):
-  each rule has a violating fixture. `scripts/ci-scope.sh replay <n>` classifies the last merges offline.
+  each rule has a violating fixture. `scripts/ci-scope.sh replay <n>` classifies the last merges offline. The workflow test is a line
+  scanner, not a YAML parser (a heuristic): it refuses the spellings it cannot read (escaped quoted keys, `?` keys, flow mappings), and a
+  workflow change is never text-only, so it always gets a full run and a review.
 - **Standing check** (`check-docs`, always full): no tracked symlink or submodule; a file under `backend/`, `web/`, `e2e/`, `qa/`,
   `deploy/`, `api/`, `scripts/` or `.github/` that mentions an allow-listed path must be listed in
   `scripts/ci-text-only.known-mentions` with its exact count of mentioning lines and a reason (`*`, any count, only under
@@ -84,7 +86,7 @@ still runs. T-M2.26 changes the file to `enforce` after at least 10 PRs without 
   No build input may read those paths. It is a text search: it cannot see a path built at run time from other parts.
 - **No overrides on a runner:** `ci-scope.sh` ignores its test variables (`CI_SCOPE_ALLOW_FILE`, `CI_SCOPE_MODE_FILE`, `GH_BIN`) when
   `GITHUB_ACTIONS` is set, and the workflow test refuses them, a `shell:` override and a failure-only `if:` on anything but an upload
-  or warning step.
+  step or a lone `echo "::warning…"` step, and a first step that is not `actions/checkout@`.
 
 ## 2. Branch protection (target configuration)
 
@@ -99,7 +101,7 @@ is not applied, and the enforcement lives in the harness:
   that is **not text-only** (recomputed by the gate from the PR's file list and `develop`'s allow-list; always the case for a base other than `develop`) has a
   **full run** of every check except `docs-check` and `secrets-scan`, i.e. the check's job is for this head and its marker step `Full run on <base>` concluded
   `success` (§1.2, T-M2.23; a run from before a retarget names the old base and does not count: push again); a real merge (not `--dry-run`) runs only
-  when this checkout's `HEAD` is `origin/develop`, so the gate and the allow-list are `develop`'s copies, never the PR's; `LC-APPROVED <task>`
+  when this checkout's `HEAD` is `origin/develop` as last fetched (so `git pull --ff-only` first, with no local edits under `scripts/`): the gate and the allow-list are then `develop`'s committed copies, never the PR's; `LC-APPROVED <task>`
   is present; the latest `QA-VERDICT` (feature/fix/release) or `DOCS-REVIEW` (docs/chore) says PASS; **no review type's latest verdict is negative** (FAIL, CHANGES REQUESTED or
   any other non-positive token blocks on every path); the branch is 0 commits behind its base and has no conflicts; and `progress.json` changed. Every verdict must be posted
   **after the head commit arrived on the PR** (push time from the repository activity, the PR's `pull_request` workflow runs and force-push events; fails closed without them).

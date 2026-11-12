@@ -83,6 +83,10 @@ pr_fixture 'echo b >>docs/a.md; mkdir docs/sub; git -C docs/sub init -q; git -C 
 is full "a submodule under docs/ that .gitmodules marks ignore=all (hidden from a plain diff)"
 expect_output_contains "mode 160000" "names the hidden gitlink"
 BASE=$BASE1
+# G3 N-5: with diff.relative=true and the job in docs/, a plain diff would list only "a.md" (allowed by ^[^/]+\.md$) and hide web/src/a.ts
+pr_fixture 'echo b >>docs/a.md; echo b >>web/src/a.ts'
+is full "a product change hidden by diff.relative from a subdirectory" GIT_CONFIG_COUNT=1 GIT_CONFIG_KEY_0=diff.relative GIT_CONFIG_VALUE_0=true env -C "$repo/docs"
+expect_output_contains "path off the allow-list: web/src/a.ts" "the diff is from the top level whatever the job's directory"
 pr_fixture 'echo b >>docs/a.md'
 
 echo " AC2: switch (a), pull requests"
@@ -156,6 +160,9 @@ push_fixture 'echo b >>web/src/a.ts'
 pis fast-path "(b1) a product merge whose head had a successful full run"
 expect_output_contains "successful full run (run 11)" "(b1) names the run"
 pis full "a push to master" GITHUB_REF=refs/heads/master
+# G3 N-4: on a runner GH_BIN is ignored: the real gh is used (here a failing stand-in on PATH), not the mock that says "fast-path"
+mkdir -p "$tmp/bin"; printf '#!/bin/sh\nexit 1\n' >"$tmp/bin/gh"; chmod +x "$tmp/bin/gh"
+pis full "on a runner the GH_BIN override is ignored" GITHUB_ACTIONS=true PATH="$tmp/bin:$PATH"
 pis full "a pull_request event in push mode" GITHUB_EVENT_NAME=pull_request
 pis full "before is not HEAD^1 (a multi-commit push)" CI_SCOPE_BEFORE="$HEADSHA"
 pis full "an empty before" CI_SCOPE_BEFORE=
