@@ -1,4 +1,4 @@
-# Handoff — 2026-11-12 (T-M2.23: G3 passed after three rounds; the final gate failed only on a dev-DB-dependent E2E test; PO ruling asked; not merged)
+# Handoff — 2026-11-12 (T-M2.23: G3 passed; gate green after the PO-approved dev-DB purge; CI 7/7; merge next)
 
 Phase/Milestone: P1 / M2 (in progress) · Current task: **T-M2.23 CI scope by diff (LC, `qa`: G3 PASS WITH MINOR; gate e2e ruling pending)** ·
 Next: **T-M2.13** (packet ready with AC8; **held by the PO** until a start signal) · Last merge on develop: the T-M2.23 packet (PR #157,
@@ -32,9 +32,8 @@ Next: **T-M2.13** (packet ready with AC8; **held by the PO** until a start signa
 - Nothing uncommitted. PR #158 is open and unmerged; no verdict or approval comment is posted on it.
 
 ## Next steps (in this order)
-1. **Wait for the PO's ruling on the local e2e failure** (Pending, first item). Then: if the PO allows a purge or clean-up of the dev
-   DB, run `ENGLMS_TASK=T-M2.23 ./scripts/gate.sh --from e2e` and record it in AC10; if the PO accepts CI as the e2e proof for this
-   task, record the ruling as a DEC and in AC10. Never purge or edit the dev DB without that ruling.
+1. **Done:** the PO ruled "Clean the dev DB" (chat, 2026-11-12). It held only test data, so `dev-down.sh --purge`, then
+   `gate.sh --from e2e` on `29bc181`: e2e PASS (515 passed); AC10 updated. CI 7/7 on `29bc181`.
 2. CI green on the final head: post `DOCS-REVIEW T-M2.23: PASS` and `LC-APPROVED T-M2.23`, then
    `git switch develop && git pull --ff-only && ./scripts/merge-gate.sh --dry-run 158`, then the merge, then `./scripts/gitlab-sync.sh`.
 3. **Right after the merge:** look at the push runs on `develop`. Expected in shadow mode: each heavy job prints
@@ -47,11 +46,8 @@ Next: **T-M2.13** (packet ready with AC8; **held by the PO** until a start signa
    its two entry probes (a re-run keeps the event; the merge ref after a retarget and a push), DEC-160, DEC-161.
 
 ## Pending PO decisions / actions
-- **Ruling needed (blocks the T-M2.23 merge): the local gate's e2e fails on dev-DB data.** `students.spec.ts:2252` assumes an archived
-  student on the first page; the PO's dev DB has 468 active students that sort first. Options: (a) the PO allows purging (or cleaning
-  the e2e students out of) the dev DB, then the gate's e2e is re-run; (b) the PO accepts CI's fresh-DB e2e as the proof for this
-  docs/scripts-only task; in either case the test's data dependence becomes a fix AC (T-M2.13 or the polish packet), since every
-  local gate will now hit it.
+- **Ruled (2026-11-12): dev DB purged** for the T-M2.23 gate. `students.spec.ts:2252` still assumes an archived student on the
+  first page, so the dev DB fills up again with each local run: a fix AC belongs in T-M2.13 or the polish packet (PO to place it).
 - **T-M2.13 start signal** (held, DEC-156).
 - **To tell the PO (not ruled):** a third flaky kept E2E test: `e2e/tests/loading.spec.ts:173` "the loading region in English" failed
   once on phone-small (`toHaveCount(1)` got 0 within 5 s) on `develop`'s docs-only merge `c090d40` (run 43165176510); green on re-run.

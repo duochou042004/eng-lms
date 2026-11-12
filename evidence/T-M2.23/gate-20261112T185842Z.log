@@ -1,0 +1,16 @@
+gate: logging to evidence/T-M2.23/gate-20261112T185842Z.log
+engine: podman (DOCKER_HOST=unix:///run/user/1000/podman/podman.sock)
+env.sh: DOCKER_HOST=unix:///run/user/1000/podman/podman.sock TESTCONTAINERS_RYUK_DISABLED=true
+gate: 29bc181 2026-11-12T18:58:42Z, steps: e2e
+gate: ==> e2e
+[trimmed by the LC: step lines and the e2e summary; head 29bc181 (299f508 plus records only), after the PO-approved dev-DB purge]
+e2e-run: building web/dist and the jar with the SPA
+e2e-run: started englms-0.0.1-SNAPSHOT.jar (pid 2446768, log backend/target/e2e-app.log)
+e2e-run: app ready; running Playwright --project=phone-small --project=tablet --project=laptop
+  31 skipped
+  515 passed (4.3m)
+e2e-run: playwright exit 0
+e2e-run: app stopped (pid 2446768)
+gate: e2e repeat: no new or changed spec
+gate: <== e2e OK (291s)
+gate: PASS (1 steps, 291s)
