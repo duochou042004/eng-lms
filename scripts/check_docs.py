@@ -11,8 +11,8 @@ Checks:
      Status starting with `done`; a changed docs/handoff/HANDOFF.md comes with a new file under docs/handoff/archive/
   7. No table-row code span holds an unescaped pipe (it splits the row on GitHub)
   8. Text-only CI inputs (T-M2.23, ci-cd.md §1): no tracked symlink or submodule; a tracked file under backend/, web/, e2e/, qa/,
-     deploy/, api/, scripts/ or .github/workflows/ that mentions an allow-listed path (scripts/ci-text-only.paths) is listed in
-     scripts/ci-text-only.known-mentions with its count of mentioning lines (`*` for scripts/ tooling) and a reason
+     deploy/, api/, scripts/ or .github/ that mentions an allow-listed path (scripts/ci-text-only.paths) is listed in
+     scripts/ci-text-only.known-mentions with its count of mentioning lines (`*` only under scripts/tests/) and a reason
 Env: ENGLMS_DOCS_ROOT (default: this repository), ENGLMS_DOCS_BASE (the handoff check's base ref; default ENGLMS_GATE_BASE,
 then origin/develop; an unknown base fails).
 Exit code 0 = pass, 1 = failures (listed).
@@ -223,7 +223,7 @@ def check_table_code_spans() -> None:
 
 
 # T-M2.23 (DEC-160; T-M2.22 U2 constraint 7): the text-only CI fast path is sound only while no build input reads an allow-listed path.
-SCAN_DIRS = ("backend/", "web/", "e2e/", "qa/", "deploy/", "api/", "scripts/", ".github/workflows/")
+SCAN_DIRS = ("backend/", "web/", "e2e/", "qa/", "deploy/", "api/", "scripts/", ".github/")
 ALLOW_FILE, KNOWN_FILE = "scripts/ci-text-only.paths", "scripts/ci-text-only.known-mentions"
 _NOT_IN_WORD = r"(?<![A-Za-z0-9_.\-])"
 # One token set per allow-list line: how a file would mention a path that the line allows. A new allow-list line needs a set here.
@@ -283,8 +283,8 @@ def check_text_only_inputs() -> None:
         if len(parts) != 3 or not re.fullmatch(r"[0-9]+|\*", parts[1]):
             fail(f"text-only CI: {KNOWN_FILE}:{i}: expected '<path> <count|*> <reason>'")
             continue
-        if parts[1] == "*" and not parts[0].startswith("scripts/"):
-            fail(f"text-only CI: {KNOWN_FILE}:{i}: '*' is allowed only for scripts/ (tooling that runs in docs-check or locally); "
+        if parts[1] == "*" and not parts[0].startswith("scripts/tests/"):
+            fail(f"text-only CI: {KNOWN_FILE}:{i}: '*' is allowed only for scripts/tests/ (script tests run in docs-check, never in a heavy job); "
                  f"'{parts[0]}' needs its exact count")
         known[parts[0]] = parts[1]
     for path, n in sorted(found.items()):

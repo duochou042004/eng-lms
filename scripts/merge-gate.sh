@@ -7,6 +7,7 @@
 # Env:   GH_BIN (default: gh)  — override for tests
 #        REQUIRED_CHECKS_FILE (default: scripts/required-checks.txt)
 #        CI_TEXT_ONLY_FILE (default: scripts/ci-text-only.paths) — the text-only allow-list; override for tests
+#        MERGE_GATE_DEVELOP_REF (default: origin/develop) — a real merge needs HEAD of this checkout to be that commit; override for tests
 #
 # Merge paths (git-governance.md §4):
 #   feature|fix/<task>-*   → develop : QA-VERDICT <task>: PASS[ WITH MINOR] + LC-APPROVED <task> + progress.json changed
@@ -298,6 +299,8 @@ scope_line=""
 if ((checks_ok)); then
   n_full=0; n_fast=0; n_unknown=0
   marker="Full run on $base"
+  new_run_hint="push a new commit or update the branch"
+  [[ "${kind:-}" != "dependabot" ]] || new_run_hint="ask Dependabot for a new run with '@dependabot rebase' (a human update disqualifies the PR)"
   while IFS=$'\t' read -r cname clink; do
     [[ -z "$cname" || "$cname" == "docs-check" || "$cname" == "secrets-scan" ]] && continue
     concl=""
@@ -310,7 +313,7 @@ if ((checks_ok)); then
       success) n_full=$((n_full + 1));;
       skipped) n_fast=$((n_fast + 1)); ((text_only)) || fail "check '$cname' took the fast path (marker '$marker' skipped), but this PR is not text-only: it needs a full run";;
       *)       n_unknown=$((n_unknown + 1))
-               ((text_only)) || fail "check '$cname' has no full run for head ${head_oid:0:7}: no successful '$marker' step in its job (a run against another base, an older head, not an Actions job, or an API error); push a new commit or update the branch";;
+               ((text_only)) || fail "check '$cname' has no full run for head ${head_oid:0:7}: no successful '$marker' step in its job (a run against another base, an older head, not an Actions job, or an API error); $new_run_hint";;
     esac
   done < <(jq -r '.[] | [.name, (.link // "")] | @tsv' <<<"$checks_json")
   if ((text_only)); then scope_line="scope text-only"; else scope_line="scope full"; fi
@@ -385,6 +388,16 @@ case "$kind" in
         || fail "progress.json not updated in this PR"
     fi;;
 esac
+
+# 6. A real merge runs from develop's own checkout (T-M2.23, G3 G-8): this script and the allow-list beside it must be develop's copies, never
+# a PR's. A dry run may be made from anywhere (its result is advisory).
+if ! ((DRY_RUN)); then
+  dev_ref=${MERGE_GATE_DEVELOP_REF:-origin/develop}
+  here=$(git -C "$SCRIPT_DIR" rev-parse --verify -q 'HEAD^{commit}' 2>/dev/null) || here=""
+  want=$(git -C "$SCRIPT_DIR" rev-parse --verify -q "$dev_ref^{commit}" 2>/dev/null) || want=""
+  [[ -n "$here" && "$here" == "$want" ]] \
+    || fail "run the merge from an up-to-date develop checkout: HEAD (${here:0:7}) is not $dev_ref (${want:0:7}); the gate and its allow-list must be develop's (git switch develop && git pull --ff-only)"
+fi
 
 if ((${#problems[@]})); then
   echo "merge-gate: REFUSED PR #$PR ($head → $base)" >&2

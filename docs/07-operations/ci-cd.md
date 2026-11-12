@@ -78,8 +78,13 @@ still runs. T-M2.26 changes the file to `enforce` after at least 10 PRs without 
 - **Enforced by tests** (`scripts/tests/ci-scope.test.sh`, `ci-scope-workflows.test.sh`, `merge-gate.test.sh`, `check-docs.test.sh`):
   each rule has a violating fixture. `scripts/ci-scope.sh replay <n>` classifies the last merges offline.
 - **Standing check** (`check-docs`, always full): no tracked symlink or submodule; a file under `backend/`, `web/`, `e2e/`, `qa/`,
-  `deploy/`, `api/`, `scripts/` or `.github/workflows/` that mentions an allow-listed path must be listed in
-  `scripts/ci-text-only.known-mentions` with its count of mentioning lines and a reason. No build input may read those paths.
+  `deploy/`, `api/`, `scripts/` or `.github/` that mentions an allow-listed path must be listed in
+  `scripts/ci-text-only.known-mentions` with its exact count of mentioning lines and a reason (`*`, any count, only under
+  `scripts/tests/`, which run in `docs-check` alone). A new mention anywhere else fails until the count is updated on a reviewed PR.
+  No build input may read those paths. It is a text search: it cannot see a path built at run time from other parts.
+- **No overrides on a runner:** `ci-scope.sh` ignores its test variables (`CI_SCOPE_ALLOW_FILE`, `CI_SCOPE_MODE_FILE`, `GH_BIN`) when
+  `GITHUB_ACTIONS` is set, and the workflow test refuses them, a `shell:` override and a failure-only `if:` on anything but an upload
+  or warning step.
 
 ## 2. Branch protection (target configuration)
 
@@ -93,7 +98,8 @@ is not applied, and the enforcement lives in the harness:
 - `scripts/merge-gate.sh [--dry-run] <pr>`: refuses unless every required check in `scripts/required-checks.txt` passes and no other check fails; a PR
   that is **not text-only** (recomputed by the gate from the PR's file list and `develop`'s allow-list; always the case for a base other than `develop`) has a
   **full run** of every check except `docs-check` and `secrets-scan`, i.e. the check's job is for this head and its marker step `Full run on <base>` concluded
-  `success` (§1.2, T-M2.23; a run from before a retarget names the old base and does not count: push again); `LC-APPROVED <task>`
+  `success` (§1.2, T-M2.23; a run from before a retarget names the old base and does not count: push again); a real merge (not `--dry-run`) runs only
+  when this checkout's `HEAD` is `origin/develop`, so the gate and the allow-list are `develop`'s copies, never the PR's; `LC-APPROVED <task>`
   is present; the latest `QA-VERDICT` (feature/fix/release) or `DOCS-REVIEW` (docs/chore) says PASS; **no review type's latest verdict is negative** (FAIL, CHANGES REQUESTED or
   any other non-positive token blocks on every path); the branch is 0 commits behind its base and has no conflicts; and `progress.json` changed. Every verdict must be posted
   **after the head commit arrived on the PR** (push time from the repository activity, the PR's `pull_request` workflow runs and force-push events; fails closed without them).

@@ -108,8 +108,20 @@ to "backend/Notes.java mentions an allow-listed path" "root md name"
 fixture; echo "// see docs/x.md" >>"$FX/e2e/support/evidence.ts"
 expect_exit 1 "a listed file that gains one more mentioning line fails (G0 D-6)" -- check
 to "e2e/support/evidence.ts has 5 line(s) mentioning an allow-listed path, scripts/ci-text-only.known-mentions records 4" "count changed"
-fixture; echo "// see docs/x.md" >>"$FX/scripts/gate.sh"
-expect_exit 0 "a scripts/ tooling file listed with '*' may gain a mention" -- check
+fixture; echo "# see docs/x.md" >>"$FX/scripts/tests/gate.test.sh"
+expect_exit 0 "a script test listed with '*' may gain a mention" -- check
+fixture; echo "# see docs/x.md" >>"$FX/scripts/gate.sh"
+expect_exit 1 "a script outside scripts/tests/ has an exact count (G3 G-2)" -- check
+to "scripts/gate.sh has 4 line(s) mentioning an allow-listed path, scripts/ci-text-only.known-mentions records 3" "script count"
+fixture; edit scripts/ci-text-only.known-mentions 're.sub(r"(?m)^(e2e/support/evidence\.ts) 4 ", r"\1 5 ", t)'
+expect_exit 1 "a recorded count above the real one fails (G3 G-1: no room for an unreviewed line)" -- check
+to "e2e/support/evidence.ts has 4 line(s) mentioning an allow-listed path, scripts/ci-text-only.known-mentions records 5" "count too high"
+fixture; echo '{"x-doc": "docs/api.md"}' >"$FX/api/extra.json"; g "$FX" add -A
+expect_exit 1 "a new api/ file that mentions docs/ fails (G3 G-11)" -- check
+to "api/extra.json mentions an allow-listed path" "api mention"
+fixture; mkdir -p "$FX/.github/actions/x"; echo "run: cat README.md" >"$FX/.github/actions/x/action.yml"; g "$FX" add -A
+expect_exit 1 "a file under .github/ outside workflows/ that names a root *.md fails (G3 G-11)" -- check
+to ".github/actions/x/action.yml mentions an allow-listed path" "github mention"
 fixture; echo '^api/' >>"$FX/scripts/ci-text-only.paths"
 expect_exit 1 "an allow-list line without a token set fails (the two cannot drift, G0 D-8)" -- check
 expect_output_contains "allow-list line '^api/' has no mention tokens" "names the allow-list line"
@@ -119,9 +131,9 @@ to "scripts/ci-text-only.paths is missing or holds no pattern" "empty allow-list
 fixture; echo "web/src/none.ts 1 comments only" >>"$FX/scripts/ci-text-only.known-mentions"
 expect_exit 1 "a listed path that is not tracked fails (the list cannot rot)" -- check
 expect_output_contains "known-mentions lists web/src/none.ts, which is not tracked or no longer mentions" "names the rotten entry"; one_problem "rotten entry"
-fixture; edit scripts/ci-text-only.known-mentions 're.sub(r"(?m)^(e2e/support/evidence\.ts) 4 ", r"\1 * ", t)'
-expect_exit 1 "'*' outside scripts/ fails" -- check
-expect_output_contains "'*' is allowed only for scripts/" "names the star rule"; one_problem "star outside scripts"
+fixture; edit scripts/ci-text-only.known-mentions 're.sub(r"(?m)^(scripts/gate\.sh) 3 ", r"\1 * ", t)'
+expect_exit 1 "'*' outside scripts/tests/ fails, also for another script" -- check
+expect_output_contains "'*' is allowed only for scripts/tests/" "names the star rule"; one_problem "star outside scripts"
 fixture; echo "e2e/support/evidence.ts" >>"$FX/scripts/ci-text-only.known-mentions"
 expect_exit 1 "a known-mentions line without a count and a reason fails" -- check
 expect_output_contains "expected '<path> <count|*> <reason>'" "names the format"

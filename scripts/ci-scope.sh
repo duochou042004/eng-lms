@@ -7,7 +7,8 @@
 #   replay  offline: classify the last <n> first-parent merges of ${CI_SCOPE_REPLAY_REF:-origin/develop} with the same diff rule
 # Env (pr, push): GITHUB_EVENT_NAME, GITHUB_BASE_REF, GITHUB_REF, GITHUB_REPOSITORY, GITHUB_WORKFLOW_REF, GITHUB_OUTPUT,
 #   GITHUB_STEP_SUMMARY; CI_SCOPE_PR_HEAD_SHA (github.event.pull_request.head.sha), CI_SCOPE_BEFORE (github.event.before);
-#   GH_BIN (default gh; tests), CI_SCOPE_ALLOW_FILE / CI_SCOPE_MODE_FILE (tests; default beside this script).
+#   GH_BIN (default gh; tests), CI_SCOPE_ALLOW_FILE / CI_SCOPE_MODE_FILE (tests; default beside this script). All three are
+#   ignored when GITHUB_ACTIONS is set.
 # Outputs: verdict (fast-path|full), why, scope. `scope` is `fast-path` only when the verdict is and scripts/ci-scope.mode is
 # `enforce`; the heavy steps run unless scope is exactly `fast-path`, the marker step runs unless verdict is exactly `fast-path`.
 # Fail closed: every doubt, error or unexpected value gives verdict=full (exit 0). Only a usage error exits non-zero.
@@ -19,6 +20,8 @@ SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
 ALLOW_FILE=${CI_SCOPE_ALLOW_FILE:-$SCRIPT_DIR/ci-text-only.paths}
 MODE_FILE=${CI_SCOPE_MODE_FILE:-$SCRIPT_DIR/ci-scope.mode}
 GH=${GH_BIN:-gh}
+# On a runner the test overrides are ignored: a workflow cannot swap the allow-list, the mode file or gh through `env:` (G3 G-3).
+if [[ -n "${GITHUB_ACTIONS:-}" ]]; then ALLOW_FILE=$SCRIPT_DIR/ci-text-only.paths; MODE_FILE=$SCRIPT_DIR/ci-scope.mode; GH=gh; fi
 MARKER_DEVELOP="Full run on develop"
 usage() { printf 'usage: ci-scope.sh pr | push | replay <n>\n' >&2; exit 2; }
 
@@ -45,7 +48,7 @@ text_only() {
   local raw meta path old_mode new_mode n=0
   load_allow || { WHY="allow-list missing or empty"; return 1; }
   raw=$(mktemp)
-  if ! git -c core.quotePath=false diff --raw -z --no-renames --no-abbrev "$1" "$2" >"$raw" 2>/dev/null; then
+  if ! git -c core.quotePath=false diff --raw -z --no-renames --no-abbrev --ignore-submodules=none --no-relative --no-ext-diff "$1" "$2" >"$raw" 2>/dev/null; then
     rm -f "$raw"; WHY="cannot diff $1..$2"; return 1
   fi
   while IFS= read -r -d '' meta; do
@@ -92,12 +95,13 @@ mode_pr() {
 
 api() { "$GH" api "$@" 2>/dev/null; }
 # newest_run <runs-json> <sha> <event> → the newest run (by created_at) of this workflow file for that SHA and event, as JSON;
-# empty when the listing is incomplete or malformed, or there is none
+# empty when the listing is incomplete or malformed (a candidate without a time or an id included), or there is none; a tie on
+# created_at goes to the higher run id
 newest_run() {
   jq -c --arg path "$WF_PATH" --arg sha "$2" --arg ev "$3" '
     if (type == "object") and (.workflow_runs | type == "array") and (.total_count == (.workflow_runs | length))
-    then [.workflow_runs[] | select(.path == $path and .head_sha == $sha and .event == $ev and (.created_at | type == "string"))]
-         | sort_by(.created_at) | last // empty
+    then [.workflow_runs[] | select(.path == $path and .head_sha == $sha and .event == $ev)]
+         | if all(.[]; (.created_at | type == "string") and (.id | type == "number")) then sort_by(.created_at, .id) | last // empty else empty end
     else empty end' <<<"$1" 2>/dev/null
 }
 mode_push() {

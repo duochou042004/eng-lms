@@ -5,6 +5,7 @@ source "$(dirname "$0")/lib.sh"
 echo "merge-gate.sh"
 
 export GH_BIN="$ROOT/scripts/tests/mock-gh"
+export MERGE_GATE_DEVELOP_REF=HEAD   # T-M2.23 (G3 G-8): a real merge needs develop's checkout; the suite runs on any branch
 export MOCK_DIR; MOCK_DIR=$(mktemp -d)
 trap 'rm -rf "$MOCK_DIR"' EXIT
 
@@ -571,5 +572,22 @@ expect_exit 1 "T-M2.23: not text-only: an allow-list without a pattern" -- env C
 MARKER=skipped; PRFILES=$(jq -cn --argjson p "$P" '[$p] + [range(2998) | {filename:"docs/f\(.).md",status:"added"}]')
 write_fixture chore/T-M9.9-x develop CLEAN "$GOOD" "$(jq -cn '[range(2999) | {path:"x"}]')" "$ALL_CHECKS" 0
 expect_exit 0 "T-M2.23: 2,999 text files are text-only (the 3,000 limit is the cause above)" -- gate --dry-run 7
+
+# G3 G-7, G-8, G-10
+MARKER=skipped; PRFILES='[]'; write_fixture chore/T-M9.9-x develop CLEAN "$GOOD" '[]' "$ALL_CHECKS" 0
+refused "not text-only: a PR without files" "took the fast path"
+MARKER=skipped; write_fixture dependabot/github_actions/actions-abc develop CLEAN "$(cs "$(c 'LC-APPROVED PR-7')")" '[{"path":".github/workflows/docs-check.yml"}]' "$ALL_CHECKS" 0 app/dependabot
+write_job 105 "Typecheck" success
+refused "a Dependabot PR without a marker is told to ask for a rebase" "ask Dependabot for a new run with '@dependabot rebase'"
+expect_output_not_contains "push a new commit or update the branch" "T-M2.23: a Dependabot PR is not told to update the branch"
+text
+expect_exit 1 "T-M2.23: a real merge is refused when the checkout is not develop's commit" -- env MERGE_GATE_DEVELOP_REF=refs/heads/no-such-branch "$ROOT/scripts/merge-gate.sh" 7
+expect_output_contains "run the merge from an up-to-date develop checkout" "T-M2.23: says to switch to develop"
+[[ ! -f "$MOCK_DIR/merged.txt" ]] && { PASS_COUNT=$((PASS_COUNT+1)); echo "  ok   - T-M2.23: nothing was merged from the wrong checkout"; } || { FAIL_COUNT=$((FAIL_COUNT+1)); echo "  FAIL - T-M2.23: merged from the wrong checkout"; }
+OTHER_COMMIT=$(git -C "$ROOT" commit-tree 'HEAD^{tree}' -m other </dev/null)
+expect_exit 1 "T-M2.23: a real merge is refused when HEAD is another commit than develop's" -- env MERGE_GATE_DEVELOP_REF="$OTHER_COMMIT" "$ROOT/scripts/merge-gate.sh" 7
+expect_exit 0 "T-M2.23: a dry run may be made from any checkout" -- env MERGE_GATE_DEVELOP_REF=refs/heads/no-such-branch "$ROOT/scripts/merge-gate.sh" --dry-run 7
+text
+expect_exit 0 "T-M2.23: a real merge passes from develop's commit" -- gate 7
 
 finish

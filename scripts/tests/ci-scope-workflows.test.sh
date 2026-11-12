@@ -20,7 +20,7 @@ MARKER_NAME = "Full run on ${{ github.base_ref || github.ref_name }}"
 MARKER_IF = "steps.scope.outputs.verdict != 'fast-path'"
 problems = []
 def key(step, k):  # values of a step-level key (8 spaces, or on the "- " line)
-    return [m.group(1).strip() for l in step for m in [re.match(rf"^      (?:- |  ){k}:(.*)$", l)] if m]
+    return [m.group(1).strip() for l in step for m in [re.match(rf"""^      (?:- |  )["']?{k}["']?\s*:(.*)$""", l)] if m]
 for path in sorted(Path(sys.argv[1]).glob("*.y*ml")):
     name, text = path.name, path.read_text(encoding="utf-8")
     lines = text.splitlines()
@@ -33,7 +33,9 @@ for path in sorted(Path(sys.argv[1]).glob("*.y*ml")):
         bad("a workflow that is neither heavy nor always-full (add it to this test and wire it, or list it as always-full)")
         continue
     wf = next((l.split(":", 1)[1].strip() for l in lines if l.startswith("name:")), "?")
-    if re.search(r"^\s*paths(-ignore)?:", text, re.M): bad("a paths filter (a required check must always report)")
+    if re.search(r"""^\s*["']?paths(-ignore)?["']?\s*:""", text, re.M): bad("a paths filter (a required check must always report)")
+    if re.search(r"CI_SCOPE_ALLOW_FILE|CI_SCOPE_MODE_FILE|GH_BIN", text): bad("a test override of ci-scope.sh (CI_SCOPE_ALLOW_FILE, CI_SCOPE_MODE_FILE, GH_BIN) must not be set in a workflow")
+    if re.search(r"""^\s*["']?shell["']?\s*:""", text, re.M): bad("a shell: override is not allowed (it can turn a run step into a no-op)")
     if not re.search(r"^permissions:\n(  .*\n)*?  actions: read\b", text, re.M): bad("permissions lacks 'actions: read'")
     group = f"  group: {wf}-${{{{ github.event_name == 'push' && github.sha || github.ref }}}}"
     if group not in lines: bad("the concurrency group must hold github.sha for pushes: " + group.strip())
@@ -42,7 +44,8 @@ for path in sorted(Path(sys.argv[1]).glob("*.y*ml")):
     jobs = [l for l in body if re.match(r"^  [A-Za-z0-9_-]+:\s*$", l)]
     if len(jobs) != 1: bad(f"exactly one job expected, found {len(jobs)}")
     for l in body:
-        if re.match(r"^    (if|strategy|uses|continue-on-error):", l): bad("job-level '" + l.strip().split(":")[0] + "' is not allowed")
+        m = re.match(r"""^    ["']?(if|strategy|uses|continue-on-error)["']?\s*:""", l)
+        if m: bad("job-level '" + m.group(1) + "' is not allowed")
     steps, cur = [], None
     for l in body:
         if re.match(r"^      - ", l):
@@ -66,7 +69,10 @@ for path in sorted(Path(sys.argv[1]).glob("*.y*ml")):
         if key(s, "id") == ["scope"]: bad("a second step with id: scope")
         if label.startswith("Full run on"): bad(f"step '{label}': only the last step may be named like the marker")
         if len(ifs) != 1: bad(f"step '{label}': exactly one if: expected, found {len(ifs)}"); continue
-        if ifs[0] not in ALLOWED_IF and not EXEMPT_IF.match(ifs[0]):
+        diagnostic = any("actions/upload-artifact@" in v for v in key(s, "uses")) or any(v.startswith('echo "::warning') for v in key(s, "run"))
+        if EXEMPT_IF.match(ifs[0]) and not diagnostic:
+            bad(f"step '{label}': a failure-only if: is allowed only on an upload-artifact step or an echo \"::warning step")
+        elif ifs[0] not in ALLOWED_IF and not EXEMPT_IF.match(ifs[0]):
             bad(f"step '{label}': if: must be exactly \"{COND}\" (optionally after \"always() && \") or a failure-only form, found: {ifs[0]}")
         if key(s, "continue-on-error") and not any("actions/upload-artifact@" in v for v in key(s, "uses")):
             bad(f"step '{label}': continue-on-error is allowed only on an upload-artifact step")
@@ -111,6 +117,16 @@ mutate web.yml 't.replace("      - name: Full run on ${{ github.base_ref || gith
 mutate web.yml 't + "      - name: After the marker\n        if: '"$C"'\n        run: true\n"' "the last step must be the marker" "a step after the marker"
 mutate docs-check.yml 't.replace("      - name: Docs gate", "      - name: CI scope\n        id: scope\n        run: ./scripts/ci-scope.sh pr\n      - name: Docs gate")' "an always-full workflow must not use the CI scope" "docs-check with a scope step"
 mutate secrets-scan.yml 't.replace("      - name: Scan full git history\n", "      - name: Scan full git history\n        if: steps.scope.outputs.scope != '"'fast-path'"'\n")' "an always-full workflow must not use the CI scope" "secrets-scan with a scope condition"
+# G3 G-3: spellings and settings the first scanner did not see
+mutate backend.yml 't.replace("        if: '"$C"'\n        run: ./mvnw", "        if: '"$C"'\n        \"continue-on-error\": true\n        run: ./mvnw")' "continue-on-error is allowed only on an upload-artifact step" "a quoted continue-on-error key on a heavy step"
+mutate web.yml 't.replace("        id: scope\n", "        id: scope\n        \"if\": false\n")' "the scope step must not have an if:" "a quoted if key on the scope step"
+mutate web.yml 't.replace("        id: scope\n", "        id: scope\n        continue-on-error : true\n")' "the scope step must not have continue-on-error" "continue-on-error with a space before the colon on the scope step"
+mutate backend.yml 't.replace("        if: '"$C"'\n        run: ./mvnw", "        if: failure()\n        run: ./mvnw")' "a failure-only if: is allowed only on an upload-artifact step" "a heavy step hidden behind if: failure()"
+mutate web.yml 't.replace("          GH_TOKEN: ", "          CI_SCOPE_MODE_FILE: /dev/null\n          GH_TOKEN: ")' "a test override of ci-scope.sh" "CI_SCOPE_MODE_FILE set on the scope step"
+mutate web.yml 't.replace("          GH_TOKEN: ", "          CI_SCOPE_ALLOW_FILE: web/allow\n          GH_TOKEN: ")' "a test override of ci-scope.sh" "CI_SCOPE_ALLOW_FILE set on the scope step"
+mutate web.yml 't.replace("permissions:\n", "env:\n  GH_BIN: /bin/true\npermissions:\n")' "a test override of ci-scope.sh" "GH_BIN set at workflow level"
+mutate web.yml 't.replace("        working-directory: web\n", "        working-directory: web\n        shell: \"true {0}\"\n")' "a shell: override is not allowed" "a job default shell that runs nothing"
+mutate web.yml 't.replace("    runs-on: ubuntu-24.04\n", "    runs-on: ubuntu-24.04\n    \"if\": false\n")' "job-level 'if' is not allowed" "a quoted job-level if"
 rm -rf "$work/wf"; mkdir "$work/wf"; cp "$ROOT"/.github/workflows/*.yml "$work/wf/"; cp "$work/wf/web.yml" "$work/wf/new.yml"
 expect_exit 1 "a new workflow that is in neither list fails" -- check "$work/wf"
 expect_output_contains "neither heavy nor always-full" "a new workflow: names the problem"

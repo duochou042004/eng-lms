@@ -1,7 +1,8 @@
 # Files in the scanned directories that mention an allow-listed path (scripts/ci-text-only.paths), each accepted by a reviewer
 # (T-M2.23, DEC-160; check: scripts/check_docs.py check_text_only_inputs). Format: <path> <count of mentioning lines | *> <reason>.
 # A build input must never READ docs/, evidence/, progress.json or a root *.md: the text-only CI fast path relies on it.
-# `*` (any count) is allowed only under scripts/: tooling that runs in docs-check (always full) or locally, never in a heavy job.
+# `*` (any count) is allowed only under scripts/tests/: script tests run in docs-check (always full), never in a heavy job.
+.github/pull_request_template.md 4 the PR template: prose and links for people; nothing reads it in a job
 backend/src/main/resources/identity/THIRD-PARTY-NOTICES.txt 1 names a doc in prose; bundled as text, never opened as a path
 deploy/compose.dev.yaml 1 comments only
 e2e/support/evidence.ts 4 writes only (screenshots and records under evidence/); comments
@@ -10,11 +11,11 @@ e2e/tests/auth.spec.ts 1 comments only
 e2e/tests/guards.spec.ts 1 comments only
 e2e/tests/shells.spec.ts 1 comments only
 qa/README.md 1 prose only
-scripts/check-path-ownership.sh * runs in docs-check or locally only
-scripts/check_docs.py * runs in docs-check or locally only
-scripts/ci-text-only.paths * the allow-list itself
-scripts/gate.sh * runs in docs-check or locally only
-scripts/merge-gate.sh * runs in docs-check or locally only
+scripts/check-path-ownership.sh 6 runs in docs-check or locally only
+scripts/check_docs.py 32 the docs gate itself: runs in docs-check or locally only
+scripts/ci-text-only.paths 2 the allow-list itself
+scripts/gate.sh 3 runs in docs-check or locally only
+scripts/merge-gate.sh 5 runs in docs-check or locally only
 scripts/tests/check-docs.test.sh * runs in docs-check or locally only
 scripts/tests/ci-scope.test.sh * runs in docs-check or locally only
 scripts/tests/gate.test.sh * runs in docs-check or locally only

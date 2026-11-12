@@ -71,6 +71,20 @@ expect_output_contains "allow-list missing or empty" "names the allow-list"
 printf '# only a comment\n\n' >"$tmp/empty.paths"
 is full "an allow-list without a pattern" CI_SCOPE_ALLOW_FILE="$tmp/empty.paths"
 
+# G3 G-4, G-7: a base that already tracks a symlink, an executable file and a .gitmodules with ignore=all
+g checkout -q --detach "$BASE" 2>/dev/null; g reset -q --hard; g clean -qffdx
+(cd "$repo" && ln -s a.md docs/link && printf '#!/bin/sh\n' >docs/run.sh && chmod +x docs/run.sh \
+  && printf '[submodule "docs/sub"]\n\tpath = docs/sub\n\turl = ./sub\n\tignore = all\n' >.gitmodules)
+g add -A; g commit -qm base2; BASE1=$BASE; BASE=$(g rev-parse HEAD)
+pr_fixture 'git rm -q docs/link';                        is full "a symlink deleted under docs/ (old mode 120000)"
+expect_output_contains "mode 120000" "names the old mode"
+pr_fixture 'chmod -x docs/run.sh';                       is full "docs/run.sh losing the executable bit (old mode 100755)"
+pr_fixture 'echo b >>docs/a.md; mkdir docs/sub; git -C docs/sub init -q; git -C docs/sub -c user.name=f -c user.email=f@example.invalid commit -q --allow-empty -m sub'
+is full "a submodule under docs/ that .gitmodules marks ignore=all (hidden from a plain diff)"
+expect_output_contains "mode 160000" "names the hidden gitlink"
+BASE=$BASE1
+pr_fixture 'echo b >>docs/a.md'
+
 echo " AC2: switch (a), pull requests"
 is fast-path "a text-only PR to develop"
 is full "base master" GITHUB_BASE_REF=master
@@ -105,6 +119,12 @@ mode_case ' enforce\n' full "enforce after a space"
 mode_case 'enforce\n' fast-path "exactly enforce with a final newline"
 mode_case 'enforce' fast-path "exactly enforce without a newline"
 scope pr CI_SCOPE_MODE_FILE="$tmp/no-such-mode" >/dev/null; out_is "scope=full" "a missing mode file: scope=full"
+pr_fixture 'echo b >>docs/a.md'; printf 'enforce\n' >"$tmp/mode"
+scope pr CI_SCOPE_MODE_FILE="$tmp/mode" GITHUB_ACTIONS=true >/dev/null; out_is "scope=full" "on a runner the mode-file override is ignored (G3 G-3): scope=full"
+printf '^web/\n' >"$tmp/wide.paths"; pr_fixture 'echo b >>web/src/a.ts'
+scope pr CI_SCOPE_ALLOW_FILE="$tmp/wide.paths" GITHUB_ACTIONS=true >/dev/null; out_is "verdict=full" "on a runner the allow-list override is ignored: verdict=full"
+scope pr CI_SCOPE_ALLOW_FILE="$tmp/wide.paths" >/dev/null; out_is "verdict=fast-path" "(control) off a runner the override works, so the two cases above test the guard"
+pr_fixture 'echo b >>docs/a.md'
 pr_fixture 'echo b >>web/src/a.ts'; printf 'enforce\n' >"$tmp/mode"; scope pr CI_SCOPE_MODE_FILE="$tmp/mode" >/dev/null
 out_is "scope=full" "enforce mode with a full verdict: scope=full"; out_is "verdict=full" "enforce mode with a full verdict: verdict=full"
 LAST_OUTPUT=$(cat "$ROOT/scripts/ci-scope.mode"); expect_output_contains "shadow" "the committed mode file holds shadow (T-M2.26 switches it)"
@@ -155,6 +175,10 @@ runs "$(run 11 "$HEADSHA" push success)" >"$MOCK_DIR/runs.json";                
 runs "$(run 11 "$HEADSHA" pull_request success 2026-11-12T09:00:00Z)" "$(run 12 "$HEADSHA" pull_request failure 2026-11-12T10:00:00Z)" >"$MOCK_DIR/runs.json"
 b1 "an older run succeeded, the newest failed"
 runs "$(run 11 "$HEADSHA" pull_request success)" | jq -c '.total_count = 101' >"$MOCK_DIR/runs.json"; b1 "an incomplete run listing"
+runs "$(run 12 "$HEADSHA" pull_request failure)" "$(run 11 "$HEADSHA" pull_request success)" >"$MOCK_DIR/runs.json"
+b1 "a tie on created_at: the higher run id (the failure) is the newest (G3 G-5)"
+runs "$(run 11 "$HEADSHA" pull_request success)" "$(run 12 "$HEADSHA" pull_request failure | jq -c '.created_at = null')" >"$MOCK_DIR/runs.json"
+b1 "a candidate run without a created_at (an unexpected shape)"
 echo 'not json' >"$MOCK_DIR/runs.json";                                                         b1 "a non-JSON run listing"
 runs "$(run 11 "$HEADSHA" pull_request success)" >"$MOCK_DIR/runs.json"; touch "$MOCK_DIR/runs.json.fail"
 pis full "(b1) a runs API error (5xx)"; expect_output_contains "runs API error" "(b1) a runs API error: says why"; rm "$MOCK_DIR/runs.json.fail"
@@ -188,6 +212,7 @@ runs "$(run 21 "$BASE" push cancelled)" >"$MOCK_DIR/runs-push.json";            
 runs "$(run 21 "$BASE" push failure)" >"$MOCK_DIR/runs-push.json";              b2 "the first parent's run failed"
 runs "$(run 21 "$BASE" push skipped)" >"$MOCK_DIR/runs-push.json";              b2 "the first parent's run was skipped"
 runs "$(run 21 "$BASE" pull_request success)" >"$MOCK_DIR/runs-push.json";      b2 "the first parent has only a pull_request run"
+runs "$(run 21 "$BASE" push success | jq -c '.head_branch = "master"')" >"$MOCK_DIR/runs-push.json"; b2 "the first parent's green run is on another branch"
 runs "$(run 21 "$BASE" push success 2026-11-12T09:00:00Z)" "$(run 22 "$BASE" push failure 2026-11-12T10:00:00Z)" >"$MOCK_DIR/runs-push.json"
 b2 "the first parent's newest run failed after an older success"
 runs "$(run 21 "$BASE" push success "" .github/workflows/backend.yml)" >"$MOCK_DIR/runs-push.json"; b2 "only another workflow is green on the first parent"
