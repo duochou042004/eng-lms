@@ -12,7 +12,7 @@ Decisions: DEC-158 (PO-1, PO-2), DEC-160 (packet), DEC-161 (start signal and rul
 | AC1 allow-list and diff | `scripts/ci-text-only.paths` (four lines; a test pins them); `scripts/tests/ci-scope.test.sh` section "AC1": the text-only and not-text-only inputs of the packet's AC1 list |
 | AC2 switch (a) | the same suite, section "AC2": base `master`, `feature/T-y`, `develop2`, another event, one parent, wrong or empty head SHA, a depth-1 checkout, usage errors |
 | AC3 switch (b) | the same suite, section "AC3": (b1) and (b2) pass; the `full` cases (commit shape, `before`, tree, `behind_by`, run and marker states, listing completeness, API errors, each not-green state) |
-| AC4 workflows | `scripts/tests/ci-scope-workflows.test.sh`: the real workflows pass; 37 mutated copies fail, each for its rule (9 added after G3 G-3, 6 after round 2 N-2); a new unlisted workflow fails |
+| AC4 workflows | `scripts/tests/ci-scope-workflows.test.sh`: the real workflows pass; 37 mutated copies fail, each for its rule (9 added after G3 G-3, 6 after round 2 N-2, 4 after round 3 P-1/P-2); a new unlisted workflow fails |
 | AC5 merge-gate | `scripts/tests/merge-gate.test.sh`, block "T-M2.23 AC5": 325 earlier assertions kept and passing, 93 new (418 in all) |
 | AC6 standing check | `scripts/tests/check-docs.test.sh`, block "T-M2.23 AC6": 17 fixtures; `./scripts/check-docs.sh` passes on the real tree with `scripts/ci-text-only.known-mentions` (20 files) |
 | AC7 shadow mode | `ci-scope.test.sh` section "AC7": 9 mode-file contents and a missing file; only `enforce` (with or without one final newline) passes a `fast-path` verdict through; the committed file holds `shadow` |
@@ -36,7 +36,7 @@ Decisions: DEC-158 (PO-1, PO-2), DEC-160 (packet), DEC-161 (start signal and rul
 
 ## Mutation run (each rule switched off once; the count is the cases that then fail; none survived)
 
-Runner and raw output: LC scratch (`.claude/scratch/lc-records/T-M2.23-mutate.py` and `-mutate2.py`, git-ignored). 37 mutations before G3 and 11 after its round 1 (C18 to D10, the rules it found unprotected): 48 caught, none survived. The G3 reviewer made 30 script mutations of its own on `162fc02`; the 6 that survived and weakened a rule (R2, R10, R15, H4, K1, K2 in its table) are among those 11. Round 2 found three more unprotected rules (E1 to E3, below): 51 caught.
+Runner and raw output: LC scratch (`.claude/scratch/lc-records/T-M2.23-mutate.py` and `-mutate2.py`, git-ignored). 37 mutations before G3 and 11 after its round 1 (C18 to D10, the rules it found unprotected): 48 caught, none survived. The G3 reviewer made 30 script mutations of its own on `162fc02`; the 6 that survived and weakened a rule (R2, R10, R15, H4, K1, K2 in its table) are among those 11. Round 2 found three more unprotected rules (E1 to E3, below) and round 3 two (F1, F2): 53 caught.
 
 | Mutation | Failing cases | First failing case |
 |---|---|---|
@@ -84,13 +84,15 @@ Runner and raw output: LC scratch (`.claude/scratch/lc-records/T-M2.23-mutate.py
 | C23 runner overrides honoured | 2 | on a runner the mode-file override is ignored (G3 G-3): scope=full (outputs: scope=fast-path verdict=fast-path |
 | C24 (b2) branch not required | 2 | (b2) the first parent's green run is on another branch: verdict full (missing: verdict=full ) |
 | G13 a PR without files is text-only | 1 | T-M2.23: not text-only: a PR without files: says why (missing: took the fast path) |
-| G14 develop-checkout rule off | 4 | T-M2.23: a real merge is refused when the checkout is not develop's commit (expected exit 1, got 0) |
+| G14 develop-checkout rule off (measured before G3 round 2) | 4 | T-M2.23: a real merge is refused when the checkout is not develop's commit (expected exit 1, got 0) |
 | D8 a count above the real one accepted | 3 | a recorded count above the real one fails (G3 G-1: no room for an unreviewed line) (expected exit 1, got 0) |
 | D9 api/ not scanned | 3 | a new api/ file that mentions docs/ fails (G3 G-11) (expected exit 1, got 0) |
 | D10 .github/ outside workflows not scanned | 27 | clean tree passes (HEAD = base, as on develop; '**done**: …' and 'done (…)' Status forms) (expected exit 0, go |
 | E1 `--no-relative` dropped | 2 | a product change hidden by diff.relative from a subdirectory: verdict full |
 | E2 runner keeps `GH_BIN` | 1 | on a runner the GH_BIN override is ignored: verdict full |
 | E3 step 6 default `origin/develop` → `HEAD` | 2 | T-M2.23: by default a real merge is refused when HEAD is not origin/develop (expected exit 1, got 0) |
+| F1 continuation lines accepted | 2 | a heavy step folded into a no-op (expected exit 1, got 0) |
+| F2 tagged or anchored keys accepted | 4 | a tagged continue-on-error key (expected exit 1, got 0) |
 
 ## Offline replay (AC8): `./scripts/ci-scope.sh replay 60` on `origin/develop` at `c090d40`
 
@@ -182,7 +184,7 @@ CI on `162fc02` (PR #158): 7/7 green, every heavy job in full; each prints
 ## Commands
 ```bash
 bash scripts/tests/ci-scope.test.sh            # 243 passed
-bash scripts/tests/ci-scope-workflows.test.sh  # 77 passed
+bash scripts/tests/ci-scope-workflows.test.sh  # 85 passed
 bash scripts/tests/merge-gate.test.sh          # 418 passed
 bash scripts/tests/check-docs.test.sh          # 86 passed
 ./scripts/tests/run-all.sh                     # script tests: PASS
@@ -197,6 +199,7 @@ bash scripts/tests/check-docs.test.sh          # 86 passed
 - A workflow file that is neither heavy nor always-full fails the workflow test.
 - The marker must appear exactly once in a job.
 - After G3 round 2: the workflow test refuses escaped quoted keys, `?` keys, flow mappings, `shell` anywhere, a checkout from another owner and a chained command on a warning step; step 6 is documented as "`origin/develop` as last fetched" (it neither fetches nor reads the working tree).
+- After G3 round 3: plain values continued on the next line and tagged, anchored, aliased or merge keys are refused.
 
 ## G3 cost
 | Round | Scope | Tokens | Time | Verdict |
@@ -204,9 +207,11 @@ bash scripts/tests/check-docs.test.sh          # 86 passed
 | 1 (full) | `162fc02` | 191,738 | 1,644.0 s | CHANGES REQUESTED (S2 G-1; S3 G-2..G-8; S4 G-9..G-11) |
 | 2 (delta, first attempt) | `82c2553` | no figures | cut off by an API limit | none |
 | 2 (delta) | `162fc02..82c2553` | 108,504 | 754.0 s | CHANGES REQUESTED (S2 N-1; S3 N-2, N-3; S4 N-4, N-5) |
+| 3 (delta) | `82c2553..681a241` | 61,650 | 503.4 s | PASS WITH MINOR (S3 P-1, P-2; S4 P-3, P-4) |
+| **G3 total** | | **361,892** | **2,901.4 s** | |
 
 ## Self-check
-- [x] Every rule named in the packet, and every rule the G3 reviewer found unprotected, has a violating fixture and a mutation the suite catches (51 mutations). Rules outside those lists were not searched exhaustively.
+- [x] Every rule named in the packet, and every rule the G3 reviewer found unprotected, has a violating fixture and a mutation the suite catches (53 mutations). Rules outside those lists were not searched exhaustively.
 - [x] No existing script test or assertion removed or weakened (merge-gate: the 325 earlier assertions pass; their mock gained job markers).
 - [x] `scripts/ci-scope.mode` is `shadow`; the allow-list is the four lines of DEC-160.
 - [x] No product code, endpoint, UI or data change.

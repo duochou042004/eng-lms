@@ -77,8 +77,8 @@ still runs. T-M2.26 changes the file to `enforce` after at least 10 PRs without 
   or replaced by the next merge.
 - **Enforced by tests** (`scripts/tests/ci-scope.test.sh`, `ci-scope-workflows.test.sh`, `merge-gate.test.sh`, `check-docs.test.sh`):
   each rule has a violating fixture. `scripts/ci-scope.sh replay <n>` classifies the last merges offline. The workflow test is a line
-  scanner, not a YAML parser (a heuristic): it refuses the spellings it cannot read (escaped quoted keys, `?` keys, flow mappings), and a
-  workflow change is never text-only, so it always gets a full run and a review.
+  scanner, not a YAML parser (a heuristic): it refuses the spellings it cannot read (escaped quoted keys, `?` keys, tags, anchors, flow mappings and any `{`
+  outside `${{ }}`, plain values continued on the next line; put a command with braces in a script), and a workflow change is never text-only, so it always gets a full run and a review.
 - **Standing check** (`check-docs`, always full): no tracked symlink or submodule; a file under `backend/`, `web/`, `e2e/`, `qa/`,
   `deploy/`, `api/`, `scripts/` or `.github/` that mentions an allow-listed path must be listed in
   `scripts/ci-text-only.known-mentions` with its exact count of mentioning lines and a reason (`*`, any count, only under

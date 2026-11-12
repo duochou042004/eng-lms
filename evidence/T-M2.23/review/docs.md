@@ -331,3 +331,27 @@ refuses `shell` anywhere, quoted keys with an escape, `?` keys and flow mappings
 six mutated copies. ci-cd §1.2 calls the scanner a heuristic backed by the full run and review of every workflow PR. N-4: a runner
 case whose `gh` on `PATH` fails, so the mock's `fast-path` must not be used (E2 caught). N-5: a fixture run from `docs/` with
 `diff.relative=true` (E1 caught). Suites: 243 / 77 / 418 / 86. As an S2 was found, a further delta re-check follows.
+
+## G3 round 3 (delta) at `681a241` — 61,650 tokens, 503.4 s
+
+A fresh reviewer. Scope `git diff 82c2553..681a241`. `DOCS-REVIEW T-M2.23: PASS` (PASS WITH MINOR): N-1 to N-5 closed; round 2's three
+survivors caught; the five N-2 edits refused. Suites 243 / 77 / 418 / 86; `check-docs` and `check-path-ownership` pass; in a private
+clone with `origin/develop` = HEAD and no git identity, `merge-gate.test.sh` 418/0. Summary counts and the cost table match their sources.
+
+| ID | Sev | File:line | Finding | Suggested fix |
+|---|---|---|---|---|
+| P-1 | S3 | `scripts/tests/ci-scope-workflows.test.sh:22-23` | `key()` reads one line, but a plain scalar continues on more-indented lines: `run: echo "::warning::v"` with `&& ./mvnw …` on the next line, or a heavy step's `run:` followed by `&& false`, passes (marker succeeds without the work). Needs a reviewed workflow PR, so not S1. | Refuse a continuation unless the value is a block scalar; mutated copies |
+| P-2 | S3 | same | `!!str continue-on-error: true` and `&a continue-on-error: true` pass. | Refuse keys starting with `!` or `&` |
+| P-3 | S4 | same, flow-mapping rule | It also refuses braces in future `run:` commands (`awk '{print $1}'`, `{ …; }`); fails closed but will surprise an author. | Say so in ci-cd §1.2 |
+| P-4 | S4 | `scripts/tests/merge-gate.test.sh:588` | `commit-tree` writes a fixed dangling commit into the repository running the suite; cosmetic. | Write it elsewhere |
+
+**Not checked:** GitHub's own parser on tags and continuation lines (PyYAML only); a live `develop` push run; `gate.sh`.
+
+## LC response to G3 round 3
+
+P-1: the scanner refuses any plain value continued on a more-indented line in the job body (a `|` or `>` block is fine); two mutated
+copies (the reviewer's (a) and (c)); mutation F1 caught. P-2: keys starting with `!`, `&`, `*` or `<<` are refused; two copies; F2
+caught. P-3: ci-cd §1.2 now says braces outside `${{ }}` are refused and such a command belongs in a script. P-4 accepted as is: the
+commit must exist in the repository the gate reads (`git -C "$SCRIPT_DIR"`), so it cannot go elsewhere; it is one fixed, unreachable
+object that `git gc` removes. The G14 row is marked as measured before round 2. Suites: 243 / 85 / 418 / 86. Only S3/S4 were found,
+so no further review round; the gate runs on the final head.

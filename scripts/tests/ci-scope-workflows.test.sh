@@ -39,6 +39,7 @@ for path in sorted(Path(sys.argv[1]).glob("*.y*ml")):
     # G3 N-2: YAML spellings a line scanner cannot read reliably are refused outright
     if re.search(r""""[^"\n]*\\[^"\n]*"\s*:""", text): bad("a quoted key with an escape is not allowed")
     if re.search(r"^\s*(- )?\?(\s|$)", text, re.M): bad("a complex key (? ) is not allowed")
+    if re.search(r"^\s*(- )?(<<|[!&*])", text, re.M): bad("a tagged, anchored, aliased or merge key is not allowed")
     if re.search(r"(?<![${])\{(?!\{)", "\n".join(l for l in lines if not l.lstrip().startswith("#"))): bad("a flow mapping ({ ... }) is not allowed")
     if not re.search(r"^permissions:\n(  .*\n)*?  actions: read\b", text, re.M): bad("permissions lacks 'actions: read'")
     group = f"  group: {wf}-${{{{ github.event_name == 'push' && github.sha || github.ref }}}}"
@@ -58,6 +59,18 @@ for path in sorted(Path(sys.argv[1]).glob("*.y*ml")):
         elif cur is not None and not re.match(r"^      #", l):
             cur.append(l)
     if cur is not None: steps.append(cur)
+    # G3 P-1: key() reads one line, so a plain scalar continued on a more-indented line is refused (block scalars | and > are fine)
+    prev, block = None, None
+    for l in body:
+        if not l.strip() or l.lstrip().startswith("#"): continue
+        ind = len(l) - len(l.lstrip(" "))
+        if block is not None and ind > block: continue
+        block = None
+        if prev is not None and ind > prev: bad("a value continued on the next line is not allowed (use | or >): " + l.strip()); prev = None; continue
+        m = re.match(r"""^( *(?:- )?)[^\s#][^:]*:(?:\s+(.*))?$""", l)
+        v = re.sub(r"(^|\s)#.*$", "", (m.group(2) or "") if m else l).strip()
+        if m and re.fullmatch(r"[|>][-+0-9]*", v): block, prev = len(m.group(1)), None
+        else: prev = (len(m.group(1)) if m else ind) if v else None
     if len(steps) < 4: bad("too few steps"); continue
     first, scope, last, middle = steps[0], steps[1], steps[-1], steps[2:-1]
     if not any(re.match(r"""^["']?actions/checkout@""", v) for v in key(first, "uses")) or key(first, "if"): bad("the first step must be an unconditional checkout")
@@ -138,6 +151,11 @@ mutate web.yml 't.replace("permissions:\n", "defaults: {run: {working-directory:
 mutate backend.yml 't.replace("        if: '"$C"'\n        run: ./mvnw", "        if: '"$C"'\n        \"continue-on-erro\\u0072\": true\n        run: ./mvnw")' "a quoted key with an escape is not allowed" "an escaped quoted continue-on-error key"
 mutate backend.yml 't.replace("        if: '"$C"'\n        run: ./mvnw", "        if: '"$C"'\n        ? continue-on-error\n        : true\n        run: ./mvnw")' "a complex key (? ) is not allowed" "a complex continue-on-error key"
 mutate web.yml 't.replace("uses: actions/checkout@", "uses: evil/actions/checkout@", 1)' "the first step must be an unconditional checkout" "a checkout look-alike from another owner"
+# G3 round 3 (P-1, P-2): plain scalars continued on the next line, and tagged or anchored keys
+mutate backend.yml 't.replace("        if: '"$C"'\n        run: ./mvnw -B -ntp verify", "        if: failure()\n        run: echo \"::warning::v\"\n          \u0026\u0026 ./mvnw -B -ntp verify")' "a value continued on the next line is not allowed" "a heavy command folded onto a ::warning echo"
+mutate backend.yml 't.replace("        if: '"$C"'\n        run: ./mvnw -B -ntp verify", "        if: '"$C"'\n        run: ./mvnw -B -ntp verify\n          \u0026\u0026 false")' "a value continued on the next line is not allowed" "a heavy step folded into a no-op"
+mutate backend.yml 't.replace("        if: '"$C"'\n        run: ./mvnw", "        if: '"$C"'\n        !!str continue-on-error: true\n        run: ./mvnw")' "a tagged, anchored, aliased or merge key is not allowed" "a tagged continue-on-error key"
+mutate backend.yml 't.replace("        if: '"$C"'\n        run: ./mvnw", "        if: '"$C"'\n        \u0026a continue-on-error: true\n        run: ./mvnw")' "a tagged, anchored, aliased or merge key is not allowed" "an anchored continue-on-error key"
 rm -rf "$work/wf"; mkdir "$work/wf"; cp "$ROOT"/.github/workflows/*.yml "$work/wf/"; cp "$work/wf/web.yml" "$work/wf/new.yml"
 expect_exit 1 "a new workflow that is in neither list fails" -- check "$work/wf"
 expect_output_contains "neither heavy nor always-full" "a new workflow: names the problem"
