@@ -1,59 +1,43 @@
-# Handoff — 2026-11-12 (T-M2.23: G3 passed; gate green after the PO-approved dev-DB purge; CI 7/7; merge next)
+# Handoff — 2026-11-12 (T-M2.23 merged in shadow mode, DEC-162; T-M2.13 held by the PO)
 
-Phase/Milestone: P1 / M2 (in progress) · Current task: **T-M2.23 CI scope by diff (LC, `qa`: G3 PASS WITH MINOR; gate e2e ruling pending)** ·
-Next: **T-M2.13** (packet ready with AC8; **held by the PO** until a start signal) · Last merge on develop: the T-M2.23 packet (PR #157,
-`c090d40`) · Open PR: **#158** `chore/T-M2.23-ci-scope`, head `50bb229` plus this handoff commit · Remote: https://github.com/duochou042004/eng-lms (mirror: gitlab.com/duochou042004/eng-lms)
+Phase/Milestone: P1 / M2 (in progress) · Current task: **T-M2.13** (FE, packet ready with AC8; **held by the PO** until a start signal) ·
+Next: T-M2.24 (no packet yet) · Last merge on develop: **T-M2.23** (PR #158, `d2db003`) · Open PRs: this records PR (`docs/T-M2.23-records`),
+#153 (T-M2.13 packet branch), Dependabot #135 · Remote: https://github.com/duochou042004/eng-lms (mirror: gitlab.com/duochou042004/eng-lms)
 
 ## Where we are
-- **The PO started T-M2.23** (DEC-161). Everything in the packet is built on `chore/T-M2.23-ci-scope` and pushed; CI ran on `50bb229` (see the PR). **Nothing is merged and no rule has changed on `develop`.**
-- **What is built** (all in shadow mode, `scripts/ci-scope.mode` = `shadow`, so nothing is skipped): `scripts/ci-scope.sh` (`pr`, `push`,
-  `replay`), the allow-list `scripts/ci-text-only.paths`, the five heavy workflows (scope step, exact `if:` forms, marker step
-  `Full run on <base>`, per-SHA group on pushes, `actions: read`), `merge-gate.sh` step 3b (recomputes text-only; any other PR needs
-  the marker on every check except `docs-check` and `secrets-scan`; scope line) and step 6 (a real merge only when `HEAD` is
-  `origin/develop`), the standing check in `check_docs.py` with `scripts/ci-text-only.known-mentions`, and the docs (ci-cd §1.2, §2,
-  git-governance §4, quality-gates G2/G4, the handoff skill).
-- **Proof so far:** suites on `299f508`: ci-scope 243, ci-scope-workflows 85, merge-gate 418, check-docs 86; 53 mutations, all caught;
-  replay over 60 merges agrees with plain `git diff` on all 60; gate PASS on `2e855e0` (598 s). Live on PR #158: the marker appears
-  as `Full run on develop` with the PR head's SHA, and the new merge-gate reads it. Record: `evidence/T-M2.23/summary.md`.
-- **G3 round 1** (one fresh docs-reviewer, adversarial, at `162fc02`; 191,738 tokens, 27.4 min): CHANGES REQUESTED, **no S1** (no way
-  found for a product change to reach `develop` without a full run), S2 G-1 (a listed fixture was missing), S3 G-2..G-8, S4 G-9..G-11.
-  All fixed at `fa5a0a0` and `f0671ca`; the record and the LC response are in `evidence/T-M2.23/review/docs.md`; rulings in DEC-161.
-- **G3 round 2** (fresh reviewer, delta at `82c2553`; 108,504 tokens, 754.0 s): CHANGES REQUESTED, S2 N-1 (a step-6 test needed a git
-  identity a runner lacks, and would have gone red on `develop`'s first push run), S3 N-2/N-3, S4 N-4/N-5. Fixed at `681a241`.
-- **G3 round 3** (fresh reviewer, delta at `681a241`; 61,650 tokens, 503.4 s): **`DOCS-REVIEW T-M2.23: PASS`** (PASS WITH MINOR; S3 P-1
-  continuation lines, P-2 tagged keys, S4 P-3, P-4). Fixed or accepted at `299f508`; no further round (only S3/S4). G3 total 361,892 tokens.
-- **Final gate on `299f508`** (`evidence/T-M2.23/gate-20261112T183223Z.log`): 12 steps OK; **`e2e` FAIL**, 512 passed, 3 failed: one test,
-  `students.spec.ts:2252` "only archived students: Include archived: focus to the toolbar control", in all three viewports. Cause
-  (measured read-only): the local e2e uses the PO's dev DB (`.env` always wins in `e2e-run.sh`), which holds 468 active, 12 paused,
-  22 archived students; the test needs an archived row on the first page of 25 sorted by name, but leftover `Bấm Chuột Hồ Sơ …`
-  students fill it (the first archived is `Cảnh Báo …`). Not caused by this task; CI uses a fresh DB. **The PO must rule** (below).
+- **T-M2.23 is merged in shadow mode** (`scripts/ci-scope.mode` = `shadow`, nothing is skipped): the classifier `scripts/ci-scope.sh`,
+  the allow-list `scripts/ci-text-only.paths`, the five wired heavy workflows with the marker `Full run on <base>`, merge-gate step 3b
+  (text-only or full run of every heavy check) and step 6 (a real merge only when `HEAD` is `origin/develop`), the standing check in
+  `check_docs.py`. G3: three rounds, round 3 PASS WITH MINOR; gate green in two parts after the PO-approved dev-DB purge (DEC-162).
+- **First live switch (b)** on `d2db003`: the five heavy push jobs printed `ci-scope: mode=shadow verdict=fast-path why=merged tree had a
+  successful full run (run …)` with `scope=full`, ran every step and skipped only the marker; all seven push runs green
+  (`evidence/T-M2.23/summary.md`, "After the merge").
+- **Shadow count starts now:** T-M2.26 (`enforce`) needs at least 10 shadow PRs and its two entry probes (a re-run keeps the event; the
+  merge ref after a retarget and a push), DEC-160, DEC-161.
+- **The dev DB was purged** (only test data in it) on the PO's ruling; local E2E rebuilds it on the next run.
 
 ## In flight / uncommitted
-- Nothing uncommitted. PR #158 is open and unmerged; no verdict or approval comment is posted on it.
+- This records PR (`docs/T-M2.23-records`): backlog row and packet Status `done`, DEC-162, `progress.json`, the summary's post-merge
+  section, this handoff. Merge it with merge-gate from an up-to-date `develop` checkout after CI is green (as on PR #141: the LC's part-C
+  check, then `DOCS-REVIEW T-M2.23: PASS` and `LC-APPROVED T-M2.23` on this PR).
 
 ## Next steps (in this order)
-1. **Done:** the PO ruled "Clean the dev DB" (chat, 2026-11-12). It held only test data, so `dev-down.sh --purge`, then
-   `gate.sh --from e2e` on `29bc181`: e2e PASS (515 passed); AC10 updated. CI 7/7 on `29bc181`.
-2. CI green on the final head: post `DOCS-REVIEW T-M2.23: PASS` and `LC-APPROVED T-M2.23`, then
-   `git switch develop && git pull --ff-only && ./scripts/merge-gate.sh --dry-run 158`, then the merge, then `./scripts/gitlab-sync.sh`.
-3. **Right after the merge:** look at the push runs on `develop`. Expected in shadow mode: each heavy job prints
-   `ci-scope: mode=shadow verdict=fast-path why=merged tree had a successful full run …`, runs all its steps, and its marker is
-   `skipped`. Record it (the first live test of switch (b)). From then on `merge-gate.sh` refuses a real merge unless the checkout's
-   `HEAD` is `origin/develop`, and every open PR needs a new run (ours: `gh pr update-branch`; Dependabot #135: `@dependabot rebase`).
-4. **Records PR** (`docs/T-M2.23-records`, after the merge; evidence-and-handoff part C): backlog row `**done**`, packet Status `done`,
-   `completed[]`, the merge DEC with the scope line from merge-gate, `tests`, `gates`, the handoff.
-5. Then, on PO signals: T-M2.13 (shadow mode gives the projected saving), T-M2.24, T-M2.25; T-M2.26 after at least 10 shadow PRs **and**
-   its two entry probes (a re-run keeps the event; the merge ref after a retarget and a push), DEC-160, DEC-161.
+1. Merge this records PR: CI green, `DOCS-REVIEW T-M2.23: PASS` and `LC-APPROVED T-M2.23` on this PR, `git switch develop && git pull --ff-only && ./scripts/merge-gate.sh --dry-run <pr>`, merge,
+   `./scripts/gitlab-sync.sh`. merge-gate now prints `scope <text-only|full>; checks: <n> full, <m> fast-path`: copy it into the record.
+2. On the PO's start signal: T-M2.13 (`gh pr update-branch 153` first: every open PR needs a new run since T-M2.23). Its shadow-mode
+   lines give the projected saving.
+3. Then T-M2.24 and T-M2.25 packets (task-packet skill), on PO signals; T-M2.26 after 10 shadow PRs and its probes.
 
 ## Pending PO decisions / actions
-- **Ruled (2026-11-12): dev DB purged** for the T-M2.23 gate. `students.spec.ts:2252` still assumes an archived student on the
-  first page, so the dev DB fills up again with each local run: a fix AC belongs in T-M2.13 or the polish packet (PO to place it).
+- **Placement needed:** `students.spec.ts:2252` ("only archived students: Include archived") assumes an archived student on the
+  first page of 25, so the local dev DB fills up with each run until it fails again (it failed on 468 active; purged on the PO's ruling,
+  DEC-162). A fix AC in T-M2.13 (as AC8, DEC-159) or T-M2.25 (its own E2E database per run would also cure it).
 - **T-M2.13 start signal** (held, DEC-156).
 - **To tell the PO (not ruled):** a third flaky kept E2E test: `e2e/tests/loading.spec.ts:173` "the loading region in English" failed
   once on phone-small (`toHaveCount(1)` got 0 within 5 s) on `develop`'s docs-only merge `c090d40` (run 43165176510); green on re-run.
   Options: a fix AC in T-M2.13 (as AC8, DEC-159) or the polish packet.
 - **To note (DEC-160 (7)):** PO-5 is asked after the first task measured under `enforce` (after T-M2.26), not after T-M2.13.
-- **Dependabot (the PO's):** PR #135 is open and red. After T-M2.23 merges it needs `@dependabot rebase` before merge-gate can accept it.
+- **Dependabot (the PO's):** PR #135 is open and red. T-M2.23 has merged: it needs `@dependabot rebase` before merge-gate can accept it.
 - **GitHub Actions billing:** not readable by the LC. Shadow mode adds minutes (post-merge runs are no longer cancelled by the next merge).
 - For G5 on this device: Firefox/WebKit browsers and host libraries (`sudo`, PO), unless T-M2.25's `regression` workflow covers it.
 - Open points (unchanged): the `ui/index.ts` barrel in the student first visit; `lib/time` uses the browser's time zone (T-M3.1/T-M3.3, L-12);
@@ -63,7 +47,7 @@ Next: **T-M2.13** (packet ready with AC8; **held by the PO** until a start signa
 - **This device (2026-11-11): agent shells run with `NoNewPrivs=1`** (inherited from the desktop app), so rootless `podman` fails with
   "newuidmap: write to uid_map failed". `export CONTAINER_HOST=unix:///run/user/1000/podman/podman.sock` in every agent shell (podman remote
   mode through the systemd user socket, enabled 2026-11-11) before `dev-up`, `gate.sh`, `e2e-run.sh`; Testcontainers uses `DOCKER_HOST` from
-  `scripts/env.sh`. Brief every implementer and reviewer subagent with this. The first full gate on this device has not run yet (T-M2.13 G1).
+  `scripts/env.sh`. Brief every implementer and reviewer subagent with this. Full gates have run on this device (T-M2.23).
 - **New CI flake (2026-11-11, PR #153 run 43017673796, tablet):** the kept `students.spec.ts:1805` "Guardians (T-M2.15) AC4: two pages: a
   stale save opens the conflict dialog …" read `guardianNames(page)` once right after the removed-guardian alert (the L-05 single-read
   trap) and also hit a console error; 514 passed, 1 failed on a docs-only head. Not ruled yet: an input to T-M2.22 (flake history); else the LC
@@ -142,5 +126,5 @@ Next: **T-M2.13** (packet ready with AC8; **held by the PO** until a start signa
   - `gate.sh` leaves an untracked `evidence/<task>/records/` (delete it) and a full log of about 1,900 lines (trim it).
 
 ## Files to read first
-`CLAUDE.md` → `progress.json` → this file → `docs/tasks/T-M2.23-ci-scope.md` → `evidence/T-M2.23/review/docs.md` (G3 round 1 and the
-LC response) → `evidence/T-M2.23/summary.md` → DEC-160, DEC-161 → `git diff origin/develop...HEAD --stat` on `chore/T-M2.23-ci-scope`.
+`CLAUDE.md` → `progress.json` → this file → `docs/tasks/T-M2.13-auth-shell-followups.md` → DEC-155, DEC-156, DEC-159, DEC-162 →
+`docs/07-operations/ci-cd.md` §1.2 (CI scope in shadow mode).

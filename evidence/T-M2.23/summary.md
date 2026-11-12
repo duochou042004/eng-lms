@@ -181,6 +181,19 @@ CI on `162fc02` (PR #158): 7/7 green, every heavy job in full; each prints
 | After a retarget and a push the merge ref's first parent is the new base's tip | **not probed** | an entry condition of T-M2.26. In shadow mode nothing depends on it; under `enforce`, merge-gate's own file check and switch (b) still stop a wrong verdict |
 | Switch (b) on a real push | not yet observable | the first push run on `develop` after this PR merges; expected (b1) `fast-path` verdict, steps run, marker skipped |
 
+## After the merge: the first live switch (b) (DEC-162)
+Push runs on `develop` at the merge commit `d2db003`; all seven green.
+
+| Job (run) | Scope step line | Steps |
+|---|---|---|
+| web (43288957126) | `ci-scope: mode=shadow verdict=fast-path why=merged tree had a successful full run (run 43286337056)`, `scope=full` | all run; marker skipped |
+| backend (43288957186) | same, `(run 43286337034)` | all run; marker and the failure-only upload/warn steps skipped |
+| contract-drift (43288957261) | same, `(run 43286337101)` | all run; marker skipped |
+| container-build (43288957134) | same, `(run 43286337147)` | all run; marker skipped |
+| e2e-smoke (43288957171) | same, `(run 43286337096)` | all run; marker and the failure-only report steps skipped |
+
+As designed for shadow mode: the verdict would have skipped the heavy steps, the mode kept them, and the marker (a full run on `develop`) did not run.
+
 ## Commands
 ```bash
 bash scripts/tests/ci-scope.test.sh            # 243 passed
