@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Milestone | M2 |
-| Status | draft (G0 pending) |
+| Status | ready (G0 PASS WITH MINOR, DEC-160; PR #157). Starts only on the PO's start signal |
 | Owner role | LC (implements the scripts, workflows and docs; G3 by a fresh docs-reviewer with an adversarial brief) |
 | Branch | `chore/T-M2.23-ci-scope` (from `develop`); this packet on `docs/T-M2.23-ci-scope` |
 | Depends on | T-M2.22 (`c93d128`) and the PO's decision DEC-158 (PO-1, PO-2): done |
@@ -21,26 +21,35 @@ in shadow mode without a wrong decision.
 ## Terms (used by every section below)
 - **Heavy job:** `e2e-smoke`, `backend`, `web`, `contract-drift`, `container-build`. **Always-full job:** `docs-check`, `secrets-scan`.
 - **Allow-list:** `scripts/ci-text-only.paths`, one anchored extended regular expression per line (`#` comments and empty lines
-  ignored). Its four lines: `^docs/`, `^evidence/`, `^progress\.json$`, `^[^/]+\.md$`. Matching is byte-exact (`LC_ALL=C`), so
-  `Docs/x.md` and `.claude/x.md` are off the list.
+  ignored). Its four lines: `^docs/`, `^evidence/`, `^progress\.json$`, `^[^/]+\.md$`. Matching is case-sensitive (`LC_ALL=C`), so
+  `Docs/x.md` and `.claude/x.md` are off the list. Every reader first treats a path that holds a control character (a newline
+  included) as off the list, because bash and jq disagree on `$` before a final newline (G0 D-15).
 - **Text-only diff** between two trees: `git diff --raw -z --no-renames <old> <new>` (with `core.quotePath=false`) lists at least one
   entry, every path matches the allow-list, and every old and new mode is `100644` or `000000`. So a symlink (`120000`), a submodule
   (`160000`), an executable bit or any other mode change is not text-only, and a rename counts as a deletion plus an addition, each
   judged by its own path.
-- **Fast path:** a heavy job that ends green without its heavy steps. **Full run:** a heavy job whose marker step concluded `success`.
+- **Verdict:** what the classifier decided, `fast-path` or `full`, with a reason. **Mode:** `scripts/ci-scope.mode`: one line, read
+  with its final newline stripped. Only the content `enforce` lets a `fast-path` verdict skip anything; a missing or empty file, a
+  carriage return, a byte-order mark or any other content means `shadow`. This task commits `shadow`.
+- **Fast path:** a heavy job that ends green without its heavy steps (possible only in `enforce` mode).
 - **Marker step:** the last step of each heavy job, named `Full run on <base>`, where `<base>` is `github.base_ref` on a pull request
-  and `github.ref_name` on a push. It runs only on the full path and only when every earlier step passed. Its conclusion (`success` or
-  `skipped`) is how a machine tells a full run from a fast path (A-6).
-- **Verdict:** what the classifier decided, `fast-path` or `full`, with a reason. **Mode:** `scripts/ci-scope.mode`, one word. Only
-  the exact content `enforce` lets a `fast-path` verdict skip anything; this task commits `shadow`.
+  and `github.ref_name` on a push. It runs unless the **verdict** is `fast-path`, and only when every earlier step passed. So its
+  conclusion `success` means "the classifier asked for a full run and every step passed", and `skipped` means "the classifier called
+  this run fast-path" (or an earlier step failed). The conclusion is how a machine tells the two apart (A-6). Because the marker
+  follows the verdict and not the mode, merge-gate and switch (b) see in shadow mode exactly what they will see in `enforce` mode,
+  while the heavy steps still run (G0 D-11).
 
 ## Scope
 - In:
   1. **The allow-list file and the classifier** `scripts/ci-scope.sh` (bash, `git`, `jq`, `gh`; no new tool). It runs as the first
      step after checkout in every heavy job (step id `scope`) and writes three step outputs: `scope` (`fast-path` or `full`),
      `verdict` and `why`. It also prints one line, `ci-scope: mode=<mode> verdict=<verdict> why=<why>`, as a `::notice` and to the job
-     summary. In shadow mode `scope` is always `full`. The script exits non-zero only on a usage error; every other problem gives
-     `verdict=full` with the reason.
+     summary. In shadow mode `scope` is always `full`. **Call contract:** `ci-scope.sh pr`, `ci-scope.sh push`, `ci-scope.sh replay <n>`.
+     The `pr` and `push` modes read the standard Actions variables `GITHUB_EVENT_NAME`, `GITHUB_BASE_REF`, `GITHUB_REF`,
+     `GITHUB_WORKFLOW_REF`, `GITHUB_OUTPUT` and `GITHUB_STEP_SUMMARY`, plus `CI_SCOPE_PR_HEAD_SHA` (`github.event.pull_request.head.sha`)
+     and `CI_SCOPE_BEFORE` (`github.event.before`) set by the workflow step; `GH_BIN` overrides `gh` for tests, as in merge-gate. The
+     workflow step calls `pr` on `pull_request` events and `push` otherwise. A usage error (no or an unknown subcommand, a `replay`
+     count that is not a positive integer) exits 2; every other problem gives `verdict=full` with the reason and exit 0.
   2. **Switch (a), pull requests.** The verdict is `fast-path` only when all of these hold; anything else is `full`:
      - the event is `pull_request` and `github.base_ref` is exactly `develop` (PRs to `master` and to any other branch run in full);
      - `HEAD` (the PR merge ref) has exactly two parents and its second parent is the PR head SHA of the event;
@@ -53,15 +62,19 @@ in shadow mode without a wrong decision.
      - `HEAD^2` is 0 commits behind `HEAD^1` (compare API, `behind_by == 0`);
      - and one of:
        **(b1)** the latest `pull_request` run of the same workflow with head SHA `HEAD^2` concluded `success` (its latest attempt) and
-       that run's job has the step `Full run on develop` with conclusion `success`; or
+       **every** job of that run has the step `Full run on develop` with conclusion `success`; or
        **(b2)** the diff from `HEAD^1` to `HEAD` is text-only **and** `HEAD^1` is green: the latest attempt of the same workflow's
        `push` run on `develop` with head SHA `HEAD^1` concluded `success`, in full or by a fast path. A missing, queued, running,
        cancelled, skipped or failed run is not green.
-     An API error, an unexpected response shape or a listing that is not complete means `full`.
+     "The same workflow" is the run whose `path` is this workflow's file (from `GITHUB_WORKFLOW_REF`); "latest" is the newest
+     `created_at` among them; a listing is complete when the items read equal its `total_count`. An API error, an unexpected response
+     shape or a listing that is not complete means `full`.
   4. **The workflows** (`backend.yml`, `web.yml`, `contract-drift.yml`, `e2e-smoke.yml`, `container.yml`): checkout with
-     `fetch-depth: 2`; the `scope` step (no `if:`, no `continue-on-error`, `GH_TOKEN` from `github.token`); every later step carries
-     `steps.scope.outputs.scope != 'fast-path'` in its `if:` (joined with `&&` to a condition it already has, such as `always()`),
-     except the upload and warning steps that run only on a failure; the marker step last. `permissions:` gains `actions: read` beside
+     `fetch-depth: 2`; the `scope` step (no `if:`, no `continue-on-error`, `GH_TOKEN` from `github.token`); every later step has an
+     `if:` that is exactly `steps.scope.outputs.scope != 'fast-path'` or exactly `always() && steps.scope.outputs.scope != 'fast-path'`
+     (no other conjunct), except the **exempt** steps, whose `if:` is exactly `failure()` or `always() && steps.<id>.outcome == 'failure'`;
+     the marker step last, with `if: steps.scope.outputs.verdict != 'fast-path'`. In `backend.yml` "Coverage summary" and "Upload
+     coverage report" (both `if: always()` today) take the `always() && …` form. `permissions:` gains `actions: read` beside
      `contents: read`. The concurrency group becomes `<workflow>-${{ github.event_name == 'push' && github.sha || github.ref }}`, so
      two pushes to `develop` never share a group and no post-merge run is cancelled or dropped (constraint 5). `docs-check.yml` and
      `secrets-scan.yml` do not change, apart from the standing check below running inside `docs-check`.
@@ -69,18 +82,28 @@ in shadow mode without a wrong decision.
      - It recomputes text-only itself from the paginated PR files API: the base is `develop`; the listing has as many entries as the
        PR's `changedFiles`, at least 1 and fewer than 3,000; every `filename` and every `previous_filename` matches the allow-list; and
        every `status` is `added`, `modified`, `removed` or `renamed`. Anything else, or an API error, is "not text-only".
-     - For a PR that is **not** text-only, every check on the head other than `docs-check` and `secrets-scan` must be a full run: its
-       job (from the check's own run, with the job's head SHA equal to the PR head) has the step `Full run on <base>` with conclusion
-       `success`. A missing step, another conclusion, a marker for another base or an API error refuses the merge and names the check.
-       This holds on every merge path, including `release/`, `hotfix/` and `dependabot/`.
+     - For a PR that is **not** text-only (so always for a base other than `develop`), every check on the head other than
+       `docs-check` and `secrets-scan` must be a full run. Mapping: `gh pr checks --json name,bucket,link` gives each check's `link`,
+       which ends in `/actions/runs/<run>/job/<job>`; the Actions API for that job gives its `head_sha` and `steps`. The job's
+       `head_sha` must be the PR head and it must have the step `Full run on <base>` with conclusion `success`. `gh pr checks` reports
+       the newest run of each check, so an older run's marker never counts. A check whose link is not an Actions job, a missing step,
+       another conclusion, a marker for another base, another head SHA or an API error refuses the merge and names the check. This
+       holds on every merge path, including `release/`, `hotfix/` and `dependabot/`.
      - For a text-only PR the existing rules alone apply (every required check `pass`, nothing failing or pending).
-     - On success it prints one more line: `merge-gate: scope <text-only|full>; checks: <n> full, <m> fast-path`.
+     - On success it prints one more line: `merge-gate: scope <text-only|full>; checks: <n> full, <m> fast-path`, counting the checks
+       other than `docs-check` and `secrets-scan` by their marker (`success` is full, `skipped` is fast-path). For a text-only PR the
+       markers are read only for this count: if a read fails the line says `checks: unknown` and the merge is not refused.
   6. **The standing check in `check-docs`** (constraint 7; `docs-check` always runs in full): it fails when the tree tracks a symlink
      or a submodule (`git ls-files -s` mode `120000` or `160000`), and when a tracked file under `backend/`, `web/`, `e2e/`, `qa/`,
-     `deploy/`, `api/`, `scripts/` or `.github/workflows/` mentions an allow-listed path (`docs/`, `evidence/`, `progress.json` or a
-     root `*.md` name) and is not listed in `scripts/ci-text-only.known-mentions`. That file holds one path and one reason per line
-     ("comment only", "writes only", "runs in docs-check or locally only"); it starts with the files found today. A new mention
-     therefore fails until a reviewer accepts it, on a PR that is not text-only because the list is under `scripts/`.
+     `deploy/`, `api/`, `scripts/` or `.github/workflows/` has a line that **mentions** an allow-listed path and the file's number of
+     such lines is not the number recorded for it in `scripts/ci-text-only.known-mentions`. A mention is one of these tokens: `docs/`
+     or `evidence/` not preceded by a letter, digit, `_`, `.` or `-`; the quoted words `'docs'`, `"docs"`, `'evidence'`, `"evidence"`
+     (the house style builds paths with `join(REPO_ROOT, 'evidence', …)`, G0 D-7); `progress.json`; and the name of any tracked root
+     `*.md` file. The check keeps one token set per allow-list line and fails when the allow-list holds a line it has no token set
+     for, so the two cannot drift silently (G0 D-8). `known-mentions` holds one line per file: the path, the count of mentioning
+     lines and a reason ("comments only", "writes only", "runs in docs-check or locally only"); it starts with the 17 files found
+     today. A new file, or a new mention in a listed file, therefore fails until a reviewer accepts it, on a PR that is not text-only
+     because the list is under `scripts/`.
   7. **Offline replay:** `scripts/ci-scope.sh replay <n>` classifies the last `n` first-parent merge commits of `origin/develop` with
      the same diff function (text-only between `M^1` and `M^2`; tree of `M` equal to the tree of `M^2`) and prints one line per merge.
      The LC runs it over the last 60 merges and records the table in the summary, with every merge it calls text-only checked by
@@ -88,8 +111,8 @@ in shadow mode without a wrong decision.
   8. **Fixtures** for every rule above (L-01): see "Constraint to fixture map". Each rule is also mutated off once and seen failing.
   9. **Docs:** ci-cd.md §1 (the two switches, shadow mode, the marker, the concurrency group, the `actions: read` permission) and §2
      (the merge-gate rule); git-governance §4 (one sentence on the scope line and the marker rule); quality-gates G2 and G4 ("green"
-     means full or fast-path, and merge-gate says which); the header comments of the five workflows; evidence-and-handoff part C
-     (records write "CI 7/7 (m fast-path)" from the merge-gate line); lessons-learned (a row only if the work teaches one).
+     means full or fast-path, and merge-gate says which); the header comments of the five workflows;
+     `.claude/skills/evidence-and-handoff/SKILL.md` part C (records write "CI 7/7 (m fast-path)" from the merge-gate line); lessons-learned (a row only if the work teaches one).
 
 ## Out of scope (explicit)
 - **Switching it on.** `scripts/ci-scope.mode` stays `shadow`. T-M2.26 changes it to `enforce` after the shadow report.
@@ -107,7 +130,10 @@ every merge. 5. **Hard-coded semantics?** None.
 ## Design notes
 - **Why (a) is sound.** The PR run tests the merge ref `T`. If the diff from the `develop` commit `D` to `T` is text-only, then `T` is
   `D` plus text that no build input reads (standing check, scope 6). A stale `D` is covered by merge-gate, which wants the head 0
-  commits behind `develop`: an update makes a new head and a new run.
+  commits behind `develop`: an update makes a new head and a new run. **The PR verdict alone is not the proof.** It trusts that
+  GitHub built the merge ref against the current base (see the assumptions). If that ever fails (a stale merge ref after a retarget),
+  the verdict can be wrong, and two independent recomputations still stop the change: merge-gate judges the PR's own file list, and
+  switch (b) judges the merged commit. Both must stay (G0 D-2).
 - **Why (b1) is sound** (A-10, N-6): a head that contains `HEAD^1` contains every earlier `develop` tip, so each PR run on that head
   tested a merge ref whose tree is the head's tree, which is the tree of the merge commit. Tree equality alone is not enough: a head
   that was behind when it ran was tested merged with other content, hence the `behind_by == 0` condition.
@@ -135,10 +161,12 @@ every merge. 5. **Hard-coded semantics?** None.
   `continue-on-error` step with a warning step. The coverage summary gets the scope condition; the failure-only upload and warning
   steps keep their conditions, and the kept test stays green unchanged.
   (g) merge-gate step 0 needs a `pull_request` run for the head to date its arrival. A fast-path run is still a run: unchanged.
-  (h) Open PRs whose runs predate this change have no marker. After the merge each needs `gh pr update-branch` (a new run) before
-  merge-gate accepts it. Dependabot PRs that the PO merges in the GitHub UI are outside merge-gate as before (DEC-031); switch (b)
+  (h) Open PRs whose runs predate this change have no marker. After the merge each of ours needs `gh pr update-branch` (a new run)
+  before merge-gate accepts it; a Dependabot PR needs `@dependabot rebase` instead (a human update disqualifies it, git-governance §4). Dependabot PRs that the PO merges in the GitHub UI are outside merge-gate as before (DEC-031); switch (b)
   covers them: merged behind, or on a head without a successful full run, the post-merge run is full (A-1).
-- **Shortcut ledger** (L-12; `grep -rnE '(shortcut|ponytail):'`): no marker in `scripts/` or `.github/`; none fires.
+- **Shortcut ledger** (L-12; `grep -rnE '(shortcut|ponytail):'`): two markers in `scripts/check_docs.py`, a file this task edits:
+  line 150 (backtick fences only) and line 199 (code spans matched per line). Neither fires: the standing check reads git modes and
+  whole lines of non-Markdown files. None in `.github/`.
 - **Size and split (DEC-160):** the switch-on is its own small task, T-M2.26, because it waits for at least 10 PRs of other work.
   If the work passes 2 agent-days, the split line is switch (b) (scope 3 and its fixtures) into a follow-up; (a) and merge-gate stay together.
 
@@ -153,9 +181,9 @@ every merge. 5. **Hard-coded semantics?** None.
 | # | Constraint | Where it is met | Failing fixture (the violating input and what must happen) |
 |---|---|---|---|
 | 1 | The job still reports and passes | scope 4, AC4 | A workflow copy with a job-level `if:` or a `paths:` filter fails the workflow test |
-| 2 | merge-gate recomputes text-only and wants a full run otherwise | scope 5, AC5 | mock PR with one product file and marker `skipped` on `e2e-smoke`: refused. The same PR with the marker `Full run on feature/T-y`: refused (A-4) |
+| 2 | merge-gate recomputes text-only and wants a full run otherwise | scope 5, AC5 | mock PR with one product file and marker `skipped` on `e2e-smoke`: refused. The same PR with the marker `Full run on feature/T-y`: refused (A-4). A PR with only text files and base `master`: not text-only, refused on skipped markers |
 | 3 | Diff against `develop`; other bases in full | scope 2, AC2 | PR event with base `feature/T-y` and a text-only diff: `full`. Base `master`: `full` |
-| 4 | Fail closed, fixed polarity, one allow-list | scopes 1, 2, 4; AC1, AC2, AC4 | Each row of the AC1 table; a `scope` step with `continue-on-error`, or a heavy step whose `if:` reads `== 'full'`, fails the workflow test; an empty or missing `scope` output runs the heavy steps |
+| 4 | Fail closed, fixed polarity, one allow-list | scopes 1, 2, 4; AC1, AC2, AC4 | Each row of the AC1 table; a `scope` step with `continue-on-error`, or a heavy step whose `if:` reads `== 'full'`, fails the workflow test. That an empty or missing output runs the heavy steps follows from the exact `!= 'fast-path'` text the test pins (it cannot be run offline) |
 | 5 | A fast path never cancels or replaces a full run | scope 4, AC4 | A workflow copy whose group lacks `github.sha` for pushes fails the workflow test |
 | 6 | Green first parent is defined | scope 3, AC3 | (b2) with the first parent's run missing, queued, in progress, cancelled or failed, or only a `pull_request` run: `full` each time |
 | 7 | Standing check in `docs-check` | scope 6, AC6 | A fixture tree with a tracked symlink, one with a gitlink, and one with a new `web/` file that mentions `docs/`: `check-docs` exits 1 each time |
@@ -180,22 +208,28 @@ every merge. 5. **Hard-coded semantics?** None.
   progress, missing, a marker `skipped`, a marker for another base, or only an older attempt successful; (b2) with each not-green
   state of constraint 6; a diff that is not text-only with no full run on the head; an API error (403, 5xx, non-JSON, an empty page).
 - AC4 (workflows, constraints 1, 4, 5, 8): a new script test reads the five heavy workflows and fails unless each has: `fetch-depth: 2`;
-  the `scope` step right after checkout without `if:` or `continue-on-error`; the exact condition
-  `steps.scope.outputs.scope != 'fast-path'` on every later step except failure-only upload and warning steps; the marker step last,
-  named `Full run on ${{ github.base_ref || github.ref_name }}`, with the same condition and no `always()`; no job-level `if:` and no
-  `paths:` filter; `actions: read`; and the concurrency group of scope 4. Each of these has a mutated workflow copy that fails the test.
+  the `scope` step right after checkout without `if:` or `continue-on-error`; on every later step one of the two allowed `if:` forms
+  of scope 4, or an exempt form; the marker step last, named `Full run on ${{ github.base_ref || github.ref_name }}`, with exactly
+  `if: steps.scope.outputs.verdict != 'fast-path'`; no `continue-on-error` on a step that is not exempt; exactly one job, with no
+  job-level `if:`, no matrix and no `paths:` filter; `actions: read`; and the concurrency group of scope 4. Each of these has a mutated
+  workflow copy that fails the test, including a heavy step with an extra conjunct (`… && github.event_name == 'push'`).
   `docs-check.yml` and `secrets-scan.yml` hold no `scope` step (also tested).
 - AC5 (merge-gate, constraints 2, 9; A-4, A-6): with the mock `gh`, merge-gate refuses a not-text-only PR when any non-always-full
-  check has no marker, a marker `skipped` or `failure`, a marker for another base, a job for another head SHA, or when the jobs API
-  fails; it accepts the same PR when every marker is `success`. It accepts a text-only PR with skipped markers. It treats as not
-  text-only: a file off the list; a rename from or to a path off the list; a `changedFiles` count that differs from the listing; 3,000
-  files; status `copied`; a files API error. The scope line reads as in scope 5 with correct counts. All existing merge-gate cases pass
+  check has no marker, a marker `skipped` or `failure`, a marker for another base, a job for another head SHA, a link that is not an
+  Actions job, or when the jobs API fails; it accepts the same PR when every marker is `success`. It accepts a text-only PR with skipped
+  markers. It treats as not text-only: a base other than `develop` (only text files, base `master`: refused on skipped markers); a file
+  off the list; a file name with a control character; a rename from or to a path off the list; a `changedFiles` count that differs
+  from the listing; 3,000 files; status `copied`; a files API error. The scope line reads as in scope 5 with correct counts, and
+  `checks: unknown` without a refusal when the jobs API fails on a text-only PR. All existing merge-gate cases pass
   with their mock gaining markers; no existing assertion is removed or weakened.
 - AC6 (standing check, constraint 7; A-7): `check-docs` fails on a tracked symlink, on a gitlink, and on a file under a scanned
-  directory that mentions an allow-listed path and is not in `scripts/ci-text-only.known-mentions`; it passes on the real tree with
-  every listed file carrying a reason, and fails on a listed path that no longer exists or no longer has a mention (the list cannot rot).
-- AC7 (shadow mode): with `scripts/ci-scope.mode` holding `shadow`, an empty file, a missing file or any other content, the `scope`
-  output is `full` whatever the verdict; only the exact content `enforce` passes a `fast-path` verdict through (fixtures). The file
+  directory that mentions an allow-listed path and is not in `scripts/ci-text-only.known-mentions`, on a listed file that gains one
+  more mentioning line, on `join(ROOT, 'docs', name)` in a new `e2e/` file, and on an allow-list line without a token set; it passes
+  on the real tree with every listed file carrying its count and a reason, and fails on a listed path that no longer exists or whose
+  count is too high (the list cannot rot).
+- AC7 (shadow mode): with `scripts/ci-scope.mode` holding `shadow`, an empty file, a missing file, `enforce` followed by a carriage
+  return, `enforce` after a byte-order mark or any other content, the `scope` output is `full` whatever the verdict; only `enforce`
+  (with or without one final newline) passes a `fast-path` verdict through (fixtures). The file
   committed by this task holds `shadow`. On this task's own PR every heavy job runs in full and prints its notice line.
 - AC8 (offline replay; A-12): the summary holds the replay over the last 60 merges of `develop`: per merge the PR, the verdict for (a)
   and for the tree condition of (b), and the LC's check of every text-only verdict against `git diff --name-only`. No merge that
@@ -238,13 +272,20 @@ every merge. 5. **Hard-coded semantics?** None.
   the adversarial review carry the proof, and shadow mode is a regression check on real PRs, not proof (A-12).
 - **merge-gate becomes stricter at once**, also in shadow mode: every not-text-only PR needs its markers. A bug there refuses a
   legitimate merge (it cannot allow a wrong one). Rollback: revert the merge-gate commit.
-- **The standing check is a text search**, so a reader that builds a path at run time escapes it. Mitigation: the scanned
-  directories hold no such code today (G0 review of T-M2.22), the container build context excludes `docs` and `evidence`
+- **The standing check is a text search**, so a reader that builds a path from parts the tokens do not cover escapes it. Today
+  `e2e/support/evidence.ts` builds `evidence` paths at run time and only writes; the quoted-word tokens catch that style. Further
+  mitigation: the container build context excludes `docs` and `evidence`
   (`.containerignore`), and reviewers of non-text PRs see new readers.
+- **What shadow mode does and does not test.** On real PRs it exercises the classifier's verdicts, merge-gate's recomputation and
+  its reading of markers (skipped on would-be fast paths), and both branches of switch (b). It never exercises a job that really
+  skipped its heavy steps. A clean shadow report is a regression check, not proof of the chain (A-12).
+- **Shadow mode costs more minutes than today:** with one concurrency group per pushed commit, post-merge runs that a later merge
+  cancels today now finish.
 - **About 46 % of the suite's executions disappear after T-M2.26**, so a flaky test surfaces later, on an implementation head (T-M2.22 U2 risk).
 - Assumptions to verify during implementation, each with a fixture or a recorded API response: the Actions jobs API returns
   `steps[].name` with the expression already expanded; a `pull_request` run's `head_sha` is the PR head, not the merge ref; a re-run
-  keeps the original event. If one is false the LC stops and rules (L-10).
+  keeps the original event; and after a retarget followed by a push, the first parent of the new merge ref is the new base's tip
+  (probe on a throwaway PR: retarget, push, record the parents of `github.sha`). If one is false the LC stops and rules (L-10).
 - **Rollback:** revert the workflow and merge-gate commits; every job runs in full again and merge-gate reads checks as before.
 
 ## Commands (reproducible)
