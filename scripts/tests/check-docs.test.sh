@@ -87,9 +87,9 @@ fixture; mkdir -p "$FX/.claude/scratch" && printf '| a | `a|b` |\n' >"$FX/.claud
 expect_exit 0 "a git-ignored Markdown file is not read" -- check
 # T-M2.23 AC6 (T-M2.22 U2 constraint 7, attack A-7): the standing check behind the text-only CI fast path
 to() { expect_output_contains "text-only CI: $1" "$2"; one_problem "$2"; }
-fixture; ln -s a.md "$FX/docs/link.md"; g "$FX" add -A
+fixture; ln -s README.md "$FX/docs/link"; g "$FX" add -A
 expect_exit 1 "a tracked symlink fails" -- check
-to "tracked symlink 'docs/link.md'" "symlink"
+to "tracked symlink 'docs/link'" "symlink"
 fixture; g "$FX" update-index --add --cacheinfo "160000,$base_sha,docs/sub"
 expect_exit 1 "a tracked submodule (gitlink) fails" -- check
 to "tracked submodule 'docs/sub'" "gitlink"
@@ -118,10 +118,10 @@ expect_exit 1 "an empty allow-list fails" -- check
 to "scripts/ci-text-only.paths is missing or holds no pattern" "empty allow-list"
 fixture; echo "web/src/none.ts 1 comments only" >>"$FX/scripts/ci-text-only.known-mentions"
 expect_exit 1 "a listed path that is not tracked fails (the list cannot rot)" -- check
-to "lists web/src/none.ts, which is not tracked or no longer mentions" "rotten entry"
+expect_output_contains "known-mentions lists web/src/none.ts, which is not tracked or no longer mentions" "names the rotten entry"; one_problem "rotten entry"
 fixture; edit scripts/ci-text-only.known-mentions 're.sub(r"(?m)^(e2e/support/evidence\.ts) 4 ", r"\1 * ", t)'
 expect_exit 1 "'*' outside scripts/ fails" -- check
-to "'*' is allowed only for scripts/" "star outside scripts"
+expect_output_contains "'*' is allowed only for scripts/" "names the star rule"; one_problem "star outside scripts"
 fixture; echo "e2e/support/evidence.ts" >>"$FX/scripts/ci-text-only.known-mentions"
 expect_exit 1 "a known-mentions line without a count and a reason fails" -- check
 expect_output_contains "expected '<path> <count|*> <reason>'" "names the format"
