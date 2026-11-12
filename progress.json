@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-11-12T05:42:43Z",
-  "updatedBy": "lead-coordinator (T-M2.23 packet ready at G0, DEC-160; PO start signal asked)",
+  "updatedAt": "2026-11-12T19:05:00Z",
+  "updatedBy": "lead-coordinator (T-M2.23: dev DB purged on the PO ruling; gate e2e PASS; merging)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -32,27 +32,29 @@
   "currentTask": {
     "id": "T-M2.23",
     "title": "CI runs the heavy jobs only where the diff can affect them (T-M2.22 U2)",
-    "status": "ready",
+    "status": "qa",
     "ownerRole": "LC",
-    "branch": "docs/T-M2.23-ci-scope",
+    "branch": "chore/T-M2.23-ci-scope",
     "packet": "docs/tasks/T-M2.23-ci-scope.md",
-    "pr": "157",
-    "lastCommit": null,
-    "startedAt": null,
+    "pr": "158",
+    "lastCommit": "50bb229",
+    "startedAt": "2026-11-12T12:06:51Z",
     "entryGate": [
       "PO decision DEC-158 (PO-1, PO-2) — met",
-      "G0 PASS WITH MINOR (DEC-160) — met",
-      "PO start signal — pending"
+      "G0 PASS WITH MINOR (DEC-160, packet merged c090d40) — met",
+      "PO start signal — met (DEC-161)"
     ],
     "nextSteps": [
-      "PO: start signal for T-M2.23 (asked 2026-11-12)",
-      "LC implements on chore/T-M2.23-ci-scope; it merges in shadow mode; G3 by one fresh docs-reviewer with an adversarial brief",
-      "T-M2.26 switches it on after at least 10 shadow PRs (DEC-160)"
+      "Done: PO ruled 'Clean the dev DB'; dev-down.sh --purge, gate --from e2e on 29bc181 PASS (515 passed); AC10 updated",
+      "G3 is done: round 3 DOCS-REVIEW T-M2.23: PASS (PASS WITH MINOR), records in evidence/T-M2.23/review/docs.md and the summary's G3 cost table",
+      "After the ruling and CI green on the final head: post DOCS-REVIEW and LC-APPROVED, merge-gate from an up-to-date develop checkout, gitlab-sync, check the first push run on develop (switch (b) verdict in shadow mode), records PR",
+      "It merges in shadow mode; T-M2.26 switches it on after at least 10 shadow PRs and its two entry probes (DEC-160, DEC-161)"
     ],
     "trace": [
       "DEC-157",
       "DEC-158",
-      "DEC-160"
+      "DEC-160",
+      "DEC-161"
     ]
   },
   "nextTask": {
@@ -377,8 +379,8 @@
     }
   ],
   "tests": {
-    "lastRun": "2026-10-23T13:09:20Z",
-    "summary": "T-M2.21 AC8: gate PASS on d08454c (428 s, 13 steps; check-docs fixtures 39/39; web 818 tests in 68 files; e2e 515 passed / 31 skipped; backend and contract-drift skipped).",
+    "lastRun": "2026-11-12T12:30:56Z",
+    "summary": "T-M2.23: gate PASS on 2e855e0 (598 s, 13 steps; scripts 188 s; web-test 53 s; e2e 515 passed / 31 skipped in 336 s; backend and contract-drift skipped). Script suites on f0671ca: ci-scope 238, ci-scope-workflows 65, merge-gate 413, check-docs 86.",
     "suites": [
       {
         "name": "backend (./mvnw -B verify)",
@@ -393,35 +395,35 @@
       {
         "name": "governance scripts (scripts/tests/run-all.sh)",
         "result": "pass",
-        "details": "At T-M2.21 (d08454c): check-docs 39, merge-gate 325, path-ownership 15, pre-push 15, require-bash 11, workflow warnings 10, and the other suites (run-all PASS)"
+        "details": "At T-M2.23 (f0671ca): ci-scope 238, ci-scope-workflows 65, merge-gate 413, check-docs 86, and the other suites (run-all PASS on 162fc02; the four changed suites re-run after the G3 fixes)"
       },
       {
         "name": "gate.sh",
         "result": "pass",
-        "details": "evidence/T-M2.21/gate-20261023T130920Z.log (d08454c) PASS"
+        "details": "evidence/T-M2.23/gate-20261112T123056Z.log (2e855e0) PASS; not yet re-run on the final head"
       }
     ]
   },
   "gates": {
     "G0": {
       "status": "pass",
-      "note": "T-M2.23: docs-reviewer round 1 PASS WITH MINOR (141,820 tokens, 9.3 min), S3 D-1..D-14 and S4 D-15..D-20 fixed, no delta (DEC-160)"
+      "note": "T-M2.23 packet: docs-reviewer PASS WITH MINOR (141,820 tokens, 9.3 min), DEC-160; merged c090d40"
     },
     "G1": {
-      "status": "pass",
-      "note": "T-M2.21: gate PASS on d08454c (428 s)"
+      "status": "pending",
+      "note": "T-M2.23: gate PASS on 2e855e0 (598 s); the G3 fixes (fa5a0a0) came after it: run the gate once on the final head"
     },
     "G2": {
       "status": "pass",
-      "note": "T-M2.21: CI 7/7 on 03ddf72"
+      "note": "T-M2.23: CI 7/7 on f0671ca (PR #158), every heavy job in full (shadow mode)"
     },
     "G3": {
-      "status": "pass",
-      "note": "T-M2.21 tier L: docs-reviewer round 1 PASS WITH MINOR (72,125 tokens) and delta PASS WITH MINOR (21,875), all S4 fixed"
+      "status": "pending",
+      "note": "T-M2.23: round 1 CHANGES REQUESTED at 162fc02 (191,738 tokens, 27.4 min; S2 G-1, S3 G-2..G-8, S4 G-9..G-11; no S1), all fixed at fa5a0a0/f0671ca; the delta re-check was cut off by an API limit and must be redone"
     },
     "G4": {
-      "status": "pass",
-      "note": "T-M2.22 merged via merge-gate (c93d128)"
+      "status": "pending",
+      "note": "T-M2.23 implementation PR #158 not merged"
     },
     "G5": {
       "status": "n/a",
@@ -464,7 +466,8 @@
       "DEC-157",
       "DEC-158",
       "DEC-159",
-      "DEC-160"
+      "DEC-160",
+      "DEC-161"
     ],
     "pendingPO": [
       "OQ-03",
@@ -774,6 +777,13 @@
       "status": "approved",
       "at": "2026-11-11T17:19:13Z",
       "ref": "DEC-158"
+    },
+    {
+      "what": "Start T-M2.23 (CI scope, built and merged in shadow mode)",
+      "by": "PO",
+      "status": "approved",
+      "at": "2026-11-12T12:06:51Z",
+      "ref": "DEC-161"
     }
   ],
   "environment": {
@@ -1436,6 +1446,16 @@
       "at": "2026-11-12T05:42:43Z",
       "actor": "lead-coordinator",
       "event": "T-M2.23 packet G0: one fresh docs-reviewer with an adversarial brief, PASS WITH MINOR (141,820 tokens, 556.3 s; 14 S3, 6 S4, all fixed; record evidence/T-M2.23/review/docs.md). Packet ready (PR #157); the PO is asked for the start signal. T-M2.13 still held."
+    },
+    {
+      "at": "2026-11-12T12:06:51Z",
+      "actor": "PO",
+      "event": "Start signal for T-M2.23 (DEC-161). The packet PR #157 merged as c090d40; implementation on chore/T-M2.23-ci-scope."
+    },
+    {
+      "at": "2026-11-12T17:09:46Z",
+      "actor": "lead-coordinator",
+      "event": "T-M2.23 implemented on chore/T-M2.23-ci-scope (PR #158, head f0671ca, CI 7/7): classifier, five workflows, merge-gate step 3b and step 6, standing check, 48 mutations caught, replay over 60 merges. G3 round 1 CHANGES REQUESTED (S2 G-1; no S1), all fixed; the delta re-check was cut off by an API limit. Not merged. A third flaky kept E2E test seen on develop (loading.spec.ts \"the loading region in English\", run 43165176510; green on re-run). Handoff written."
     }
   ]
 }

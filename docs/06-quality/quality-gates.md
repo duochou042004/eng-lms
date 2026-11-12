@@ -28,6 +28,8 @@
 
 - [ ] PR opened against `develop` with the template fully filled in (trace, checklist, evidence links).
 - [ ] Required CI checks are green: `backend`, `web`, `e2e-smoke`, `contract-drift`, `docs-check`, `secrets-scan` (names fixed in ci-cd.md).
+      A heavy check can be green in two ways, a **full run** or a **fast path** (ci-cd.md §1.2, T-M2.23; fast paths start with T-M2.26). A PR that is
+      not text-only needs full runs; `merge-gate.sh` verifies it and says which it found.
 - [ ] The branch is up to date with `develop`. There are no merge conflicts.
 - [ ] Conventional commit messages with a `Task: <id>` trailer.
 
@@ -60,6 +62,7 @@ Review effort follows the packet's **risk tier** (set by the LC at G0, DEC-131 (
 - [ ] G1–G3 are satisfied. The LC reviews the diff for scope (untraced features → reject), architecture and docs.
 - [ ] LC approval recorded as a PR review or comment `LC-APPROVED <task-id>`, and in `progress.json` (`approvals`).
 - [ ] Merge with a merge commit (`gh pr merge --merge --delete-branch`), which is the `--no-ff` equivalent and keeps task history grouped.
+- [ ] The records quote merge-gate's scope line, e.g. "CI 7/7 (5 fast-path)" (T-M2.23).
 - [ ] After the merge: `progress.json` on develop reflects `done` (it arrived with the branch). The next task packet is set to `ready`. The handoff is updated.
 
 ## G5 Milestone gate. Owners: LC + PO

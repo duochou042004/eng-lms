@@ -18,6 +18,7 @@ description: Record task evidence, update progress.json, and write the session h
 2. `progress.json`: the task into `completed[]`, `currentTask`/`nextTask` moved, `gates`, `tests`, `history`.
 3. The merge DEC and the review records (`evidence/<task>/review/*`) on a docs branch; the QA report on `qa/<task>`.
 4. Every number in a DEC, summary or handoff is copied from its source in the same step (gate log, Agent result, query), never restated.
+   "CI 7/7" carries the fast-path count from merge-gate's line `scope …; checks: <n> full, <m> fast-path`, e.g. "CI 7/7 (5 fast-path)" (T-M2.23).
 5. At a milestone close: the README roadmap row, `docs/09-harness/lessons-learned.md`, the `shortcut:` ledger (quality-gates G5).
 6. Then part B (the handoff archive included).
 

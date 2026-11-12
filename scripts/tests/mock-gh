@@ -2,6 +2,7 @@
 # Fake `gh` for merge-gate tests. Reads fixtures from $MOCK_DIR:
 #   pr.json (pr view), checks.json (pr checks), behind.txt (compare behind_by); records merges in merged.txt and every call in calls.txt
 #   activity.json (repository activity), runs.json (actions/runs), forcepush.json (graphql timeline), pr-commits.json / pr-files.json (pulls/<n>/commits|files)
+#   jobs.json (actions/runs/<id>/jobs), job-<id>.json (actions/jobs/<id>), runs-push.json (actions/runs?…event=push) (T-M2.23)
 #   A fixture file named <name>.fail makes that call exit non-zero (API error → the gate must fail closed).
 source "$(dirname "$0")/../lib/require-bash.sh"
 set -euo pipefail
@@ -15,11 +16,14 @@ case "$1 $2" in
   "api "*)
     case "$*" in
       */activity\?*)     serve activity.json ;;
+      *actions/runs/*/jobs*) serve jobs.json ;;                                   # T-M2.23: the jobs of one run (ci-scope push mode)
+      *actions/jobs/*)   all="$*"; id=${all##*actions/jobs/}; serve "job-${id%%[!0-9]*}.json" ;;  # T-M2.23: one job by id (merge-gate marker rule)
+      *actions/runs\?*event=push*) serve runs-push.json ;;                        # T-M2.23: the first parent's push runs
       *actions/runs*)    serve runs.json ;;
       *" graphql "*)     serve forcepush.json ;;
       *pulls/*/commits*) serve pr-commits.json ;;
       *pulls/*/files*)   serve pr-files.json ;;
-      *compare/*)        cat "$MOCK_DIR/behind.txt" ;;
+      *compare/*)        serve behind.txt ;;
       *) echo "mock-gh: unsupported api call: $*" >&2; exit 2 ;;
     esac ;;
   *) echo "mock-gh: unsupported: $*" >&2; exit 2 ;;

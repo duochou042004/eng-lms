@@ -1,0 +1,7 @@
+# Text-only allow-list (T-M2.23, DEC-160): one anchored extended regular expression per line; read by scripts/ci-scope.sh,
+# scripts/merge-gate.sh and scripts/check_docs.py. A change set whose every path matches may skip the heavy CI steps.
+# Never widen it without a PO decision (DEC-158 PO-1). .claude/** is deliberately absent.
+^docs/
+^evidence/
+^progress\.json$
+^[^/]+\.md$

@@ -1,5 +1,7 @@
 name: e2e-smoke
 
+# CI scope (T-M2.23, ci-cd.md §1.2): the job always runs and reports; scripts/ci-scope.sh decides whether its heavy steps run
+# (shadow mode until T-M2.26: they always run). scripts/tests/ci-scope-workflows.test.sh pins this wiring.
 # Runs on every PR (no paths: filter): `e2e-smoke` is a required check (scripts/required-checks.txt). The Playwright
 # smoke + guard self-tests on the mandatory viewports against the packaged app (the jar with the SPA), T-M1.6.
 on:
@@ -9,9 +11,10 @@ on:
 
 permissions:
   contents: read
+  actions: read # ci-scope.sh reads run and job conclusions on pushes to develop (T-M2.23)
 
 concurrency:
-  group: e2e-smoke-${{ github.ref }}
+  group: e2e-smoke-${{ github.event_name == 'push' && github.sha || github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -39,34 +42,53 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          fetch-depth: 2 # the merge commit and both parents, for ci-scope.sh
           persist-credentials: false
+      # CI scope (T-M2.23, ci-cd.md §1): decides `full` or `fast-path` for this run and fails closed. Never give it an `if:` or
+      # `continue-on-error`: the steps below run unless its `scope` output is exactly `fast-path` (only possible in enforce mode).
+      - name: CI scope
+        id: scope
+        working-directory: .
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CI_SCOPE_PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          CI_SCOPE_BEFORE: ${{ github.event.before }}
+          CI_SCOPE_KIND: ${{ github.event_name == 'pull_request' && 'pr' || 'push' }}
+        run: ./scripts/ci-scope.sh "$CI_SCOPE_KIND"
       - uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
+        if: steps.scope.outputs.scope != 'fast-path'
         with:
           distribution: temurin
           java-version: "25"
           cache: maven
           cache-dependency-path: backend/pom.xml
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        if: steps.scope.outputs.scope != 'fast-path'
         with:
           node-version: "24"
       - name: Enable pnpm
+        if: steps.scope.outputs.scope != 'fast-path'
         run: corepack enable
       - name: Install e2e dependencies and Chromium
+        if: steps.scope.outputs.scope != 'fast-path'
         working-directory: e2e
         run: |
           pnpm install --frozen-lockfile
           pnpm exec playwright install --with-deps chromium
       - name: Typecheck the e2e suite
+        if: steps.scope.outputs.scope != 'fast-path'
         working-directory: e2e
         run: pnpm typecheck
       # The QA suite (qa/) is not run here, but its specs must keep compiling (T-M1.18, M1 G5 QA F-6).
       - name: Typecheck the QA suite
+        if: steps.scope.outputs.scope != 'fast-path'
         working-directory: qa
         run: |
           pnpm install --frozen-lockfile
           pnpm typecheck
       # Builds web/dist + the jar with the SPA, starts it on :8080/:8081, runs Playwright, always stops the app.
       - name: Smoke on the mandatory viewports (phone-small, tablet, laptop)
+        if: steps.scope.outputs.scope != 'fast-path'
         run: ./scripts/e2e-run.sh --project=phone-small --project=tablet --project=laptop
       - name: Upload the Playwright report
         id: upload-playwright-report
@@ -83,3 +105,8 @@ jobs:
       - name: Warn when the Playwright report upload failed
         if: always() && steps.upload-playwright-report.outcome == 'failure'
         run: echo "::warning title=Playwright report not uploaded::The e2e-playwright-report artifact upload failed (storage quota?); see the GitLab mirror pipeline (DEC-060; paused by DEC-107, so re-run the job)."
+      # The marker (T-M2.23): `success` means the classifier asked for a full run and every step above passed; `skipped` means a
+      # fast-path verdict (or a failed step). merge-gate.sh and ci-scope.sh read this step's name and conclusion. Keep it last.
+      - name: Full run on ${{ github.base_ref || github.ref_name }}
+        if: steps.scope.outputs.verdict != 'fast-path'
+        run: echo "full run completed"

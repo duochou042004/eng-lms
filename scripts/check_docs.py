@@ -10,6 +10,9 @@ Checks:
   6. Records (T-M2.21, lessons-learned L-09): a task in progress.json completed[] has `**done**` in its backlog row and a packet
      Status starting with `done`; a changed docs/handoff/HANDOFF.md comes with a new file under docs/handoff/archive/
   7. No table-row code span holds an unescaped pipe (it splits the row on GitHub)
+  8. Text-only CI inputs (T-M2.23, ci-cd.md §1): no tracked symlink or submodule; a tracked file under backend/, web/, e2e/, qa/,
+     deploy/, api/, scripts/ or .github/ that mentions an allow-listed path (scripts/ci-text-only.paths) is listed in
+     scripts/ci-text-only.known-mentions with its count of mentioning lines (`*` only under scripts/tests/) and a reason
 Env: ENGLMS_DOCS_ROOT (default: this repository), ENGLMS_DOCS_BASE (the handoff check's base ref; default ENGLMS_GATE_BASE,
 then origin/develop; an unknown base fails).
 Exit code 0 = pass, 1 = failures (listed).
@@ -219,6 +222,82 @@ def check_table_code_spans() -> None:
                     fail(f"code span in a table row holds an unescaped pipe (write \\|): {rel}:{n}: {m.group(0)}")
 
 
+# T-M2.23 (DEC-160; T-M2.22 U2 constraint 7): the text-only CI fast path is sound only while no build input reads an allow-listed path.
+SCAN_DIRS = ("backend/", "web/", "e2e/", "qa/", "deploy/", "api/", "scripts/", ".github/")
+ALLOW_FILE, KNOWN_FILE = "scripts/ci-text-only.paths", "scripts/ci-text-only.known-mentions"
+_NOT_IN_WORD = r"(?<![A-Za-z0-9_.\-])"
+# One token set per allow-list line: how a file would mention a path that the line allows. A new allow-list line needs a set here.
+MENTION_TOKENS = {
+    r"^docs/": [_NOT_IN_WORD + r"docs/", r"""['"]docs['"]"""],
+    r"^evidence/": [_NOT_IN_WORD + r"evidence/", r"""['"]evidence['"]"""],
+    r"^progress\.json$": [r"progress\.json"],
+    r"^[^/]+\.md$": None,  # the names of the tracked root *.md files, computed below
+}
+
+
+def check_text_only_inputs() -> None:
+    tracked = []
+    for entry in git("ls-files", "-s", "-z").split("\0"):
+        if not entry:
+            continue
+        meta, path = entry.split("\t", 1)
+        mode = meta.split()[0]
+        if mode == "120000":
+            fail(f"text-only CI: tracked symlink '{path}' (no symlink may be tracked: it can point a build input at an allow-listed path)")
+        elif mode == "160000":
+            fail(f"text-only CI: tracked submodule '{path}' (no submodule may be tracked)")
+        else:
+            tracked.append(path)
+    allow = ROOT / ALLOW_FILE
+    lines = [l for l in allow.read_text(encoding="utf-8").splitlines() if l and not l.startswith("#")] if allow.is_file() else []
+    if not lines:
+        fail(f"text-only CI: {ALLOW_FILE} is missing or holds no pattern")
+        return
+    tokens = []
+    for line in lines:
+        if line not in MENTION_TOKENS:
+            fail(f"text-only CI: allow-list line '{line}' has no mention tokens in scripts/check_docs.py (MENTION_TOKENS): add them in the same PR")
+        elif MENTION_TOKENS[line] is None:
+            tokens += [r"(?<![A-Za-z0-9_\-])" + re.escape(p) for p in tracked if "/" not in p and p.endswith(".md")]
+        else:
+            tokens += MENTION_TOKENS[line]
+    if not tokens:
+        return
+    mention = re.compile("|".join(tokens))
+    found = {}
+    for path in tracked:
+        if not path.startswith(SCAN_DIRS) or path == KNOWN_FILE:
+            continue
+        f = ROOT / path
+        if not f.is_file():
+            continue
+        n = sum(1 for l in f.read_text(encoding="utf-8", errors="replace").splitlines() if mention.search(l))
+        if n:
+            found[path] = n
+    known = {}
+    kf = ROOT / KNOWN_FILE
+    for i, line in enumerate(kf.read_text(encoding="utf-8").splitlines() if kf.is_file() else [], 1):
+        if not line or line.startswith("#"):
+            continue
+        parts = line.split(None, 2)
+        if len(parts) != 3 or not re.fullmatch(r"[0-9]+|\*", parts[1]):
+            fail(f"text-only CI: {KNOWN_FILE}:{i}: expected '<path> <count|*> <reason>'")
+            continue
+        if parts[1] == "*" and not parts[0].startswith("scripts/tests/"):
+            fail(f"text-only CI: {KNOWN_FILE}:{i}: '*' is allowed only for scripts/tests/ (script tests run in docs-check, never in a heavy job); "
+                 f"'{parts[0]}' needs its exact count")
+        known[parts[0]] = parts[1]
+    for path, n in sorted(found.items()):
+        if path not in known:
+            fail(f"text-only CI: {path} mentions an allow-listed path ({n} line(s)) and is not in {KNOWN_FILE}: "
+                 "a build input must not read docs/, evidence/, progress.json or a root *.md; if it does not, add it there with the count and a reason")
+        elif known[path] != "*" and int(known[path]) != n:
+            fail(f"text-only CI: {path} has {n} line(s) mentioning an allow-listed path, {KNOWN_FILE} records {known[path]}: "
+                 "check that the new or removed line is not a read, then update the count")
+    for path in sorted(set(known) - set(found)):
+        fail(f"text-only CI: {KNOWN_FILE} lists {path}, which is not tracked or no longer mentions an allow-listed path: remove the line")
+
+
 def main() -> int:
     files = md_files()
     progress = check_progress()
@@ -231,13 +310,14 @@ def main() -> int:
         check_done_records(progress)
     check_handoff_archived()
     check_table_code_spans()
+    check_text_only_inputs()
     if failures:
         print(f"docs-check: FAIL ({len(failures)} problem(s))")
         for f in failures:
             print(f"  - {f}")
         return 1
     print(f"docs-check: PASS ({len(files)} markdown files, progress.json valid, sources intact, prompt within limit, records consistent, "
-          "handoff archived, table code spans escaped)")
+          "handoff archived, table code spans escaped, text-only CI inputs clean)")
     return 0
 
 

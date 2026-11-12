@@ -144,3 +144,214 @@ D-12: the call contract. D-13: which checks are counted, and `checks: unknown` o
 PR and the PO is told about DEC-160 (7) with the start-signal question. D-15: a path with a control character is off the list for
 every reader. D-16: the mode file's reading rule. D-17: `progress.json` `pr`. D-18: `@dependabot rebase`. D-19: the minutes note.
 D-20: the skill's path.
+
+# G3 (implementation, PR #158)
+
+One fresh docs-reviewer with an adversarial brief; it ran the suites, mutated the scripts in a private copy and probed the real API
+read-only. The LC records the returned text (DEC-131); the reviewer wrote no file and posted nothing.
+
+## G3 round 1 (full) at `162fc02` — 191,738 tokens, 1,644.0 s
+
+DOCS-REVIEW T-M2.23: CHANGES REQUESTED
+No way found for a product, test, build, script or workflow change to reach `develop` without a full run once enforced (no S1), but one case listed in AC6 has no test (S2) and eight S3 gaps should be closed, most before T-M2.26.
+
+## Check results
+
+| Check | Result |
+|---|---|
+| `scripts/tests/run-all.sh` | PASS, exit 0 |
+| `ci-scope.test.sh` | 218 passed, 0 failed |
+| `ci-scope-workflows.test.sh` | 47 passed, 0 failed |
+| `merge-gate.test.sh` | 402 passed, 0 failed (325 earlier + 77 tagged T-M2.23, counted in the log) |
+| `check-docs.test.sh` | 74 passed, 0 failed |
+| `./scripts/check-docs.sh` | PASS (295 markdown files, "text-only CI inputs clean") |
+| `./scripts/check-path-ownership.sh chore/T-M2.23-ci-scope` | PASS (25 files) |
+| `./scripts/ci-scope.sh replay 60` (`origin/develop` = `c090d40`) | 60 lines: 23 text-only, 37 full (22 `tree=differs`, 15 `tree=same`) |
+| My own re-check of the replay (`git diff --name-only M^1 M^2` plus raw modes) | 60 of 60 agree; the 17-merge window gives 12 text-only and 5 full, as the summary says |
+| Gate log | `gate: PASS (13 steps, 598s)` on `2e855e0`; `162fc02` adds only the log and one summary line |
+| Live, PR #158 | all five heavy jobs print `ci-scope: mode=shadow verdict=full why=path off the allow-list: .claude/skills/evidence-and-handoff/SKILL.md`; the `web` job has step `Full run on develop` = success and `head_sha` = `162fc02a…` |
+| `merge-gate.sh --dry-run 158` (read-only, real API) | no step 3b problem; refused only for the missing verdict comments |
+| `merge-gate.sh --dry-run 135` (read-only) | each of the five heavy checks refused with "has no full run for head c30cfcb" (runs predate the marker) |
+| `git status --short` of the real repo at the end | empty; branch `chore/T-M2.23-ci-scope` at `162fc02`; private copies deleted |
+
+## AC table
+
+| AC | Verdict | Proof |
+|---|---|---|
+| AC1 | met | Four allow-list lines pinned by a test; every listed text-only and not-text-only input has a case in `ci-scope.test.sh`. The Terms rule "every old mode" has no case (G-7). |
+| AC2 | met | Every listed input has a case (base `master`, `feature/T-y`, `develop2`, other event, one parent, wrong or empty head SHA, depth 1). |
+| AC3 | met | Every listed input has a case. "Only an older attempt successful" is tested as an older run, which is the nearest thing a mock can show. |
+| AC4 | met as listed | Each listed rule has a mutated copy that fails (22 copies). The scanner can be bypassed in ways the list does not name (G-3). |
+| AC5 | met | Every listed case exists. No earlier assertion was removed. With step 3b's refusals disabled, 61 cases fail and all 61 are T-M2.23 cases, so no old case passes or refuses for a new reason. The mock's `serve behind.txt` only adds a `.fail` path that no old case uses. |
+| AC6 | **not fully met** | "A listed path … whose count is too high" has no test (G-1). "Every listed file carrying its count" holds only as amended by DEC-161 (2): 10 of 19 entries carry `*` (G-2). All other listed cases exist. |
+| AC7 | met | Nine mode-file contents plus a missing file; committed file is `shadow`; live notices seen on PR #158. |
+| AC8 | met in substance | Counts and the 17-merge claim verified independently. The table has 32 rows, not 60 (G-9). |
+| AC9 | met with gaps | ci-cd §1.2 matches the code sentence by sentence except the standing-check bullet, which omits `*` (G-2). Other scope 9 docs are present. |
+| AC10 | met | Gate PASS, CI 7/7 with full markers, run-all PASS, 37 mutations recorded. The log is on the parent of the final head (unavoidable, since the last commit adds the log). |
+
+## Findings
+
+| ID | Sev | File:line | Finding | Suggested fix |
+|---|---|---|---|---|
+| G-1 | S2 | `scripts/tests/check-docs.test.sh:109` (rule at `scripts/check_docs.py:294`) | AC6 lists "fails on a listed path … whose count is too high"; no fixture exists. Changing `!=` to `<` in the count comparison passes all 74 cases. A recorded count above the real one leaves room for an unreviewed mention line. | Add one fixture: set `e2e/support/evidence.ts 4` to `5` in the fixture's known-mentions, expect exit 1 and "has 4 line(s) … records 5". |
+| G-2 | S3 | `docs/10-governance/decision-log.md:169`; `scripts/check_docs.py:286`; `docs/07-operations/ci-cd.md:80` | DEC-161 says each ruling is "stricter than or equal to" the packet. Ruling (2) is looser: packet scope 6 and AC6 want a count for every listed file, and `*` drops that for 10 `scripts/` files. Its safety premise (no `*` file is called by a heavy job) is true today (I checked `e2e-run.sh`, `contract-drift.sh`, `coverage-summary.sh`, `ci-scope.sh`, `lib/`) but nothing enforces it. ci-cd §1.2 does not mention `*`. | Reword DEC-161 (2) as a relaxation with its reason. Make `check_text_only_inputs` fail when a `*` file's name appears in a heavy workflow or in a script one calls. Add the `*` rule to §1.2. |
+| G-3 | S3 | `scripts/tests/ci-scope-workflows.test.sh:18,23,69` | Edits that weaken the wiring and still pass "the real workflows are wired correctly" (each run in my copy): (a) `"continue-on-error": true` with a quoted key on `Verify`; (b) `"if": false` or `continue-on-error : true` on the scope step; (c) `if: failure()` on `Verify`, because exempt forms are accepted on any step; (d) `CI_SCOPE_ALLOW_FILE` / `CI_SCOPE_MODE_FILE` on the scope step, or `GH_BIN` at workflow level, which switches enforce on or swaps the allow-list without touching the pinned files; (e) job `defaults.run.shell: "true {0}"`. All need a workflow PR, which is full and reviewed, so not S1; but (d) bypasses the single allow-list and the mode file silently. | Let `key()` accept quoted keys and spaces before the colon. Allow exempt forms only on `upload-artifact` steps and `echo "::warning` steps. Fail on any `CI_SCOPE_ALLOW_FILE`, `CI_SCOPE_MODE_FILE`, `GH_BIN` or `shell:` in a heavy workflow, or have `ci-scope.sh` ignore the overrides when `GITHUB_ACTIONS` is set. |
+| G-4 | S3 | `scripts/ci-scope.sh:48` | `git diff --raw` honours `.gitmodules` `ignore = all`. With that file already on the base, a PR adding a gitlink under `docs/` plus a docs edit gets `verdict=fast-path` (reproduced; `git ls-tree` shows the 160000 entry). The Terms rule "a submodule is not text-only" is broken under that precondition. Impact is limited: the standing check in `docs-check` still fails on the gitlink. `diff.relative=true` with a sub-directory cwd also hides a `web/` change, but needs runner git config. | Add `--ignore-submodules=none --no-relative` (I confirmed the first flag shows the gitlink) and a fixture. |
+| G-5 | S3 | `scripts/ci-scope.sh:99-100` | "Latest" breaks on a `created_at` tie: with the API's newest-first order (failure id 12, success id 11, same second) the older success is chosen and the result is `fast-path` (reproduced). A newest run with a non-string `created_at` is dropped, not treated as `full`, although scope 3 says an unexpected shape means `full` (reproduced; removing the guard is not caught either). No product bypass: the chosen run is a real successful full run on the same tree. | `sort_by(.created_at, .id)`; return empty when any candidate lacks a string `created_at`; two fixtures. |
+| G-6 | S3 | `evidence/T-M2.23/summary.md:21` | The AC10 row points to a section "G2 and the GitHub assumptions" that does not exist. The packet's Risks require each of the four assumptions to be recorded with a fixture or an API response; none is. Two are not probed at all. | Add the section: the two observed (expanded marker name; job `head_sha` = PR head), plus runs `path` = `.github/workflows/<file>` and `/jobs` `total_count`, which I also saw live. State the two unprobed ones as entry conditions in the T-M2.26 backlog row. |
+| G-7 | S3 | `scripts/ci-scope.sh:55,136`; `scripts/merge-gate.sh:290` | Rules with no fixture (my mutations survive): the old-mode check (deleting a symlink or dropping an exec bit under `docs/`); `head_branch == develop` in (b2); "at least 1 file" in merge-gate. The summary's self-check "every rule has a violating fixture and a mutation" is overstated. | Three fixtures; correct the self-check line. |
+| G-8 | S3 | `scripts/merge-gate.sh:282`; `docs/07-operations/ci-cd.md` §2; `docs/09-harness/git-governance.md` §4 | The docs state merge-gate reads "`develop`'s copy" of the allow-list. Nothing enforces it: the script reads the file beside itself in whatever is checked out (this repo is on the PR branch now). The "allow-list edited in the PR" defence is therefore procedural, as it already was for `merge-gate.sh` itself. | Refuse unless `HEAD` equals `origin/develop` (with `--dry-run` exempt), or read the list with `git show origin/develop:scripts/ci-text-only.paths`; otherwise say "procedural" in the docs. |
+| G-9 | S4 | `evidence/T-M2.23/summary.md:91` | AC8 asks for the table per merge over 60; it holds 32 rows and the 28 Dependabot merges are one bullet. | Add the 28 rows or note the aggregation as a deviation. |
+| G-10 | S4 | `scripts/merge-gate.sh:313` | The refusal says "push a new commit or update the branch" on Dependabot PRs too (seen live on #135), where a human update disqualifies the PR (packet note (h)). | For `kind=dependabot` say `@dependabot rebase`. |
+| G-11 | S4 | `scripts/check_docs.py:226` | `SCAN_DIRS` omits `.github/actions/` (none exists yet) and root build files; dropping `api/` from the scan is not caught by any test. | Scan `.github/` whole; add an `api/` fixture. |
+
+## My mutations
+
+| # | What | File | Result |
+|---|---|---|---|
+| R1 | PR event check off | `ci-scope.sh` | caught: "an event other than pull_request" |
+| R2 | old-mode check off | `ci-scope.sh` | **SURVIVED** (G-7) |
+| R3 | `--no-renames` dropped | `ci-scope.sh` | caught: "a rename inside docs/" |
+| R4 | `scope` follows the mode only | `ci-scope.sh` | caught: "enforce mode with a full verdict" |
+| R5 | run `path` filter off | `ci-scope.sh` | caught, 4 cases |
+| R6 | run `head_sha` filter off | `ci-scope.sh` | caught: "only a run on another SHA" |
+| R7 | run `event` filter off | `ci-scope.sh` | caught: "only a push run on that SHA" |
+| R8 | jobs listing completeness off | `ci-scope.sh` | caught |
+| R9 | jobs non-empty off | `ci-scope.sh` | caught: "a run without jobs" |
+| R10 | (b2) `head_branch` not required | `ci-scope.sh` | **SURVIVED** (G-7; the query also filters `branch=develop`) |
+| R11 | marker conclusion ignored (b1) | `ci-scope.sh` | caught, 4 cases |
+| R12 | `enforcing` as a substring match | `ci-scope.sh` | caught, 4 cases |
+| R13 | allow-list patterns unanchored | `ci-scope.sh` | caught, 4 cases |
+| R14 | run status `completed` not required | `ci-scope.sh` | survived; equivalent (conclusion is null until completed) |
+| R15 | `created_at` type guard off | `ci-scope.sh` | **SURVIVED** (G-5) |
+| R16 | workflow-file sanity check off | `ci-scope.sh` | survived; equivalent (an empty path matches no run) |
+| H1 | link regex end anchor off | `merge-gate.sh` | caught: "a link with a trailing path" |
+| H2 | two markers accepted | `merge-gate.sh` | caught |
+| H3 | `container-build` exempted | `merge-gate.sh` | caught, 6 cases |
+| H4 | "at least 1 file" off | `merge-gate.sh` | **SURVIVED** (G-7) |
+| H5 | step 5 fail-closed off | `merge-gate.sh` | caught by 3 earlier cases, so the old behaviour is kept |
+| H6 | status `changed` allowed | `merge-gate.sh` | caught |
+| H7 | step 3b never refuses | `merge-gate.sh` | 61 fail, all T-M2.23; no old assertion depends on 3b |
+| H8 | `$pats` non-empty check off | `merge-gate.sh` | survived; equivalent (`-f` and grep's exit code already cover it) |
+| K1 | count too high accepted | `check_docs.py` | **SURVIVED** (G-1) |
+| K2 | `api/` not scanned | `check_docs.py` | **SURVIVED** (G-11) |
+| K3 | `progress.json` token off | `check_docs.py` | caught, 23 cases |
+| K4 | root `*.md` tokens off | `check_docs.py` | caught |
+| K5 | `evidence` tokens off | `check_docs.py` | caught, 24 cases |
+| K6 | `.github/workflows/` not scanned | `check_docs.py` | caught |
+| W1–W7, W9, W11, W12, W14, W15 | workflow edits (see G-3; also `run: true`, `types: [opened]`, `cancel-in-progress: false`, push branches without `develop`) | workflow YAML | **pass the scanner**; W1, W2, W3, W5, W6, W11 weaken the wiring; the rest fail closed at merge-gate or are harmless |
+| W8, W10, W13 | trailing comment on `if:`; second job with a comment after its id; `if: >-` | workflow YAML | caught |
+
+## Attacks tried
+
+| Attack | How tested | Result |
+|---|---|---|
+| Odd paths under `docs/` (leading `-`, backslash, non-UTF-8, 400 characters) | fixture repo | handled correctly; `fast-path` is right, they are under `docs/` |
+| Root name with DEL; newline in a path; injecting `scope=fast-path` into `GITHUB_OUTPUT` through a path | fixture repo | `full`; the output file holds exactly three lines, the path is `%q`-escaped |
+| `mktemp` failure, bogus `GIT_DIR`, unwritable `GITHUB_OUTPUT`, graft/replace ref, `GITHUB_BASE_REF="develop "`, empty repository, foreign workflow ref | fixture repo | `full`, exit 0 each time (an unwritable output leaves `scope` empty, so everything runs) |
+| Exit paths that skip `emit` | read line by line | only usage (exit 2) and a failed `require-bash`; both fail the job, which skips the marker |
+| `.gitmodules ignore=all`; `diff.relative` | fixture repo | **hidden gitlink gives `fast-path`** (G-4) |
+| (b1) ties, null `created_at`, offset timestamps, `steps: null`, two-line `behind_by` | mock gh | tie and null: G-5; the rest `full` |
+| Runs API shape: `path`, `head_sha` filter, `total_count`; jobs default attempt | real `gh api` on PR #158 | `path` is `.github/workflows/<file>` for all five; 7 of 7 listed; a short SHA returns 0 runs (the code uses full SHAs) |
+| Same head SHA in a second PR to another base | reasoning plus the "marker for another base" cases | newest run for another base gives `full`; both readers compare the full marker name exactly |
+| Forged marker through a branch name; expression injection | read the YAML | only `base_ref == develop` yields the develop marker; expressions appear in a step name and in `env:`, never in a `run:` body; `CI_SCOPE_KIND` is a fixed expression |
+| Push run's marker accepted for a PR | reasoning | impossible: a PR head that had a `develop` push run is already in `develop`; (b1) filters `event == pull_request` (R7 caught) |
+| merge-gate: job skipped (`skipping`), pending non-required heavy check on a text-only PR, duplicate check names, absent or string `changedFiles`, invalid regex, CRLF allow-list, zero files, `qa/` PR with a `qa/` file, null head OID, files API error | mock gh | all refused, except duplicates that are both full (accepted, 6 full) and a text-only `qa/` PR (accepted, correct) |
+| Link to a job in another repository | mock gh, reasoning | the mock accepts it; on GitHub a foreign job id under this repo returns 404, so it is refused. The regex could pin owner and repo. |
+| Does merge-gate now accept anything it refused before? | diff, H5, H7 | no |
+| Marker `success` while a heavy step did not run | YAML semantics | not possible without a workflow edit: heavy steps skip only on `scope == 'fast-path'`, which needs a `fast-path` verdict, which skips the marker; a failed or cancelled job skips it through the implicit `success()` |
+| Shadow mode skips something | traced `emit` | `scope=fast-path` only when the mode file is byte-for-byte `enforce`; no workflow sets `CI_SCOPE_MODE_FILE` (but see G-3 (d)) |
+| First push run after this PR merges | reasoning on live data | (b1): PR #158's runs carry successful markers, so the verdict is `fast-path`, the steps still run, the push run's marker is `skipped`. That is consistent: (b2) reads only the run conclusion. |
+| The 19 known-mentions entries | opened each non-script file | all 9 non-script entries are comments, prose or writes, as stated; `e2e/support/evidence.ts` only writes |
+| Readers the token search misses | grep for `Files.walk`, `Path.of("..")`, `readFileSync`, Vite and Playwright config, Containerfile `COPY` | none today. `ForbiddenIdentifiersTest` walks `src/main` only; the Containerfile copies `web/` and `backend/` only. An unquoted YAML `docs`, globs such as `*.md`, and repo-root walks would escape. Residual risk acceptable: such a PR is never text-only and gets a full run and review. |
+| `actions: read` on Dependabot PRs | reasoning | read-only token either way; it adds reading this repo's runs and logs, no secret involved |
+| Mandate | DEC-158, DEC-160, DEC-161 against the diff | allow-list not widened; no other quality rule changed; nothing in scope unbuilt; only DEC-161 (2) is looser than the packet (G-2) |
+
+## Not checked; risks for the LC
+
+- **Unprobed assumptions.** "A re-run keeps the original event" and "after a retarget plus a push the merge ref's first parent is the new base's tip" are not probed. Merging in shadow mode is acceptable: nothing is skipped and merge-gate is strictly stricter than today. T-M2.26 must probe both on a throwaway PR before `enforce`, and must see one re-run's attempt handling in the runs and jobs APIs. If the re-run assumption fails, merge-gate would accept a develop-named marker earned on a merge with the old base.
+- **Not runnable offline.** The Actions `if:` semantics for an empty output, a failed scope step and cancellation come from documented behaviour only. I also did not run `gate.sh`, Maven, pnpm or containers, did not read the product SPEC, and did not check the glossary.
+- **`develop` is red now.** The `e2e-smoke` push run on `c090d40` failed (run 43165176510). (b1) will still call the #158 merge `fast-path`, correctly, since that tree passed in full on the PR. Any text-only merge on a red tip gets `full` through (b2). Triage it before the next merge.
+- **Behaviour change once enforced.** A text-only PR can pass and merge onto a red `develop`; today its own `e2e-smoke` run would fail. The post-merge run then goes full and red, so this rests on the rule that the LC triages a red `develop`.
+- **Open PR #135** needs `@dependabot rebase` before merge-gate can accept it.
+- Skipped: no fix was applied and no file written in the repo, as instructed. The S2 is a one-line fixture; a delta re-check of G-1 to G-8 is enough.
+
+## LC response to G3 round 1
+
+All eleven findings accepted and fixed at `fa5a0a0` and the records commit after it; the rulings are in DEC-161.
+G-1 (S2): fixture "a recorded count above the real one fails"; mutation D8 is caught. G-2: DEC-161 (2) now calls itself a relaxation,
+and `*` is narrowed from `scripts/` to `scripts/tests/` (every other script records its exact count; a name-based "can a heavy job
+run it" closure was tried and dropped, because workflow comments name nearly every script); ci-cd §1.2 says so. G-3: the scanner
+reads quoted keys and a space before the colon, allows a failure-only `if:` only on an upload or warning step, and refuses
+`CI_SCOPE_ALLOW_FILE`, `CI_SCOPE_MODE_FILE`, `GH_BIN` and `shell:`; `ci-scope.sh` ignores the three overrides when `GITHUB_ACTIONS`
+is set; nine new mutated copies. G-4: `--ignore-submodules=none --no-relative --no-ext-diff`, with a fixture whose base holds a
+`.gitmodules` with `ignore = all`. G-5: runs sort by `created_at` then `id`, and a candidate without a string time or a numeric id
+gives `full`; two fixtures. G-6: the summary gains "G2 and the GitHub assumptions"; the two unprobed ones are entry conditions in
+the T-M2.26 row. G-7: fixtures for a deleted symlink, a dropped executable bit, a green run on another branch and a PR without
+files; the self-check line is corrected. G-8: a real merge is refused unless the checkout's `HEAD` is `origin/develop` (a dry run is
+exempt; `MERGE_GATE_DEVELOP_REF` for tests), four cases. G-9: the replay table holds all 60 merges. G-10: a Dependabot PR is told
+`@dependabot rebase`. G-11: the scan covers `.github/` whole (the PR template is listed) and `api/` has a fixture.
+A second mutation set of 11 (C18 to D10) covers every rule the reviewer found unprotected: all caught.
+The red `develop` run 43165176510 (`loading.spec.ts` "the loading region in English", phone-small, on the docs-only merge `c090d40`)
+was a flaky test: the failed job was re-run; it is reported to the PO, not ruled in this task.
+
+## G3 round 2 (delta) at `82c2553` — 108,504 tokens, 754.0 s
+
+A fresh reviewer (the first attempt was cut off by an API limit with no result). Scope `git diff 162fc02..82c2553`.
+
+`DOCS-REVIEW T-M2.23: CHANGES REQUESTED`: no S1; one new step-6 test passes on PR runs for another reason than the one it names and
+would fail on `develop`'s first push run (S2), and the reworked workflow scanner has five more bypasses (S3).
+
+**G-1..G-11:** G-1, G-2, G-4 to G-7, G-9 to G-11 closed; G-3 partly (N-2, N-4); G-8 partly (N-1, N-3). The replay was re-run and all
+60 SHA→verdict pairs match. **Checks:** suites 238 / 65 / 413 / 86 pass; `check-docs` and `check-path-ownership` pass; PR #158 7/7.
+**Round 1's surviving mutations re-applied in a private clone:** R2, R10, R15, H4, K1, K2 and the workflow edits (a) to (e) are all
+caught; three new ones survived (`GH=gh` dropped from the runner guard, `--no-relative` alone dropped, step 6's default ref).
+
+| ID | Sev | File:line | Finding | Suggested fix |
+|---|---|---|---|---|
+| N-1 | S2 | `scripts/tests/merge-gate.test.sh:587-588` | `git commit-tree` needs an identity; a runner has none ("Author identity unknown" in run 43266658125), so `OTHER_COMMIT` was empty and the case fell back to `origin/develop`. On a PR run it still exits 1 (HEAD is the merge ref), but on a `develop` push run HEAD is `origin/develop` and the case fails (reproduced: 412 passed, 1 failed). | Give `commit-tree` an identity, check the result is non-empty, assert the step-6 message |
+| N-2 | S3 | `scripts/tests/ci-scope-workflows.test.sh` | Five edits pass: a heavy command chained after a `::warning` echo behind `if: failure()`; a flow-style `defaults` with `shell:`; an escaped quoted key (`"continue-on-erro\u0072"`); a `?` complex key; `uses: evil/actions/checkout@…`. Each needs a reviewed, full workflow PR, so not S1. | Tighten each rule, one mutated copy each; say in ci-cd §1.2 that the scanner is a heuristic |
+| N-3 | S3 | `scripts/merge-gate.sh:395-398`, ci-cd §2, git-governance §4 | Step 6 compares HEAD with a local, unfetched `origin/develop` and cannot see local edits; the docs claim more. The suite sets `MERGE_GATE_DEVELOP_REF=HEAD` globally, so the default ref is never exercised. | Soften the docs or fetch and check the tree; add a case with the variable unset |
+| N-4 | S4 | `scripts/ci-scope.sh:24` | The runner guard's `GH=gh` has no case. | One runner case with a mock that must not be used |
+| N-5 | S4 | `scripts/ci-scope.sh:51` | `--no-relative` has no fixture. | A `diff.relative=true` fixture from a subdirectory |
+
+**Not checked:** whether the runner refuses `env: GITHUB_ACTIONS: ""`; duplicate-key and anchor tricks against GitHub's own parser;
+`gate.sh`, containers, Maven, pnpm; no live `develop` push run (N-1 rests on a local simulation and the PR run log).
+
+## LC response to G3 round 2
+
+All five accepted and fixed. N-1: `commit-tree` gets its own identity and a fixed date, a separate assertion checks the commit
+exists, and the case asserts the step-6 message. The suite was re-run in a private clone with `origin/develop` = HEAD and no git
+identity (as on a `develop` push run): 418 passed. N-3: the docs now say "`origin/develop` as last fetched (`git pull --ff-only`
+first, with no local edits under `scripts/`)" and that the script neither fetches nor reads the working tree; the code is unchanged
+(fetching or comparing with the PR's live base would add a network step to the gate, beyond the mandate's need). A new case runs a
+copy of the gate in a throwaway repository with the variable unset, refused and then accepted (mutation E3 caught). N-2: the scanner
+refuses `shell` anywhere, quoted keys with an escape, `?` keys and flow mappings, needs the checkout to start with
+`actions/checkout@`, and accepts a failure-only `if:` only on a lone `echo "::warning…"` (no `"`, `$`, backtick or backslash inside);
+six mutated copies. ci-cd §1.2 calls the scanner a heuristic backed by the full run and review of every workflow PR. N-4: a runner
+case whose `gh` on `PATH` fails, so the mock's `fast-path` must not be used (E2 caught). N-5: a fixture run from `docs/` with
+`diff.relative=true` (E1 caught). Suites: 243 / 77 / 418 / 86. As an S2 was found, a further delta re-check follows.
+
+## G3 round 3 (delta) at `681a241` — 61,650 tokens, 503.4 s
+
+A fresh reviewer. Scope `git diff 82c2553..681a241`. `DOCS-REVIEW T-M2.23: PASS` (PASS WITH MINOR): N-1 to N-5 closed; round 2's three
+survivors caught; the five N-2 edits refused. Suites 243 / 77 / 418 / 86; `check-docs` and `check-path-ownership` pass; in a private
+clone with `origin/develop` = HEAD and no git identity, `merge-gate.test.sh` 418/0. Summary counts and the cost table match their sources.
+
+| ID | Sev | File:line | Finding | Suggested fix |
+|---|---|---|---|---|
+| P-1 | S3 | `scripts/tests/ci-scope-workflows.test.sh:22-23` | `key()` reads one line, but a plain scalar continues on more-indented lines: `run: echo "::warning::v"` with `&& ./mvnw …` on the next line, or a heavy step's `run:` followed by `&& false`, passes (marker succeeds without the work). Needs a reviewed workflow PR, so not S1. | Refuse a continuation unless the value is a block scalar; mutated copies |
+| P-2 | S3 | same | `!!str continue-on-error: true` and `&a continue-on-error: true` pass. | Refuse keys starting with `!` or `&` |
+| P-3 | S4 | same, flow-mapping rule | It also refuses braces in future `run:` commands (`awk '{print $1}'`, `{ …; }`); fails closed but will surprise an author. | Say so in ci-cd §1.2 |
+| P-4 | S4 | `scripts/tests/merge-gate.test.sh:588` | `commit-tree` writes a fixed dangling commit into the repository running the suite; cosmetic. | Write it elsewhere |
+
+**Not checked:** GitHub's own parser on tags and continuation lines (PyYAML only); a live `develop` push run; `gate.sh`.
+
+## LC response to G3 round 3
+
+P-1: the scanner refuses any plain value continued on a more-indented line in the job body (a `|` or `>` block is fine); two mutated
+copies (the reviewer's (a) and (c)); mutation F1 caught. P-2: keys starting with `!`, `&`, `*` or `<<` are refused; two copies; F2
+caught. P-3: ci-cd §1.2 now says braces outside `${{ }}` are refused and such a command belongs in a script. P-4 accepted as is: the
+commit must exist in the repository the gate reads (`git -C "$SCRIPT_DIR"`), so it cannot go elsewhere; it is one fixed, unreachable
+object that `git gc` removes. The G14 row is marked as measured before round 2. Suites: 243 / 85 / 418 / 86. Only S3/S4 were found,
+so no further review round; the gate runs on the final head.
