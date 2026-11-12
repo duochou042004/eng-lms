@@ -85,4 +85,45 @@ fixture; printf '| a | `a\\|b` |\n|---|---|\n\nA paragraph with `a|b`.\n\n```\n|
 expect_exit 0 "an escaped pipe in a table, a bare one in a paragraph and one in a fenced block pass" -- check
 fixture; mkdir -p "$FX/.claude/scratch" && printf '| a | `a|b` |\n' >"$FX/.claude/scratch/x.md"
 expect_exit 0 "a git-ignored Markdown file is not read" -- check
+# T-M2.23 AC6 (T-M2.22 U2 constraint 7, attack A-7): the standing check behind the text-only CI fast path
+to() { expect_output_contains "text-only CI: $1" "$2"; one_problem "$2"; }
+fixture; ln -s a.md "$FX/docs/link.md"; g "$FX" add -A
+expect_exit 1 "a tracked symlink fails" -- check
+to "tracked symlink 'docs/link.md'" "symlink"
+fixture; g "$FX" update-index --add --cacheinfo "160000,$base_sha,docs/sub"
+expect_exit 1 "a tracked submodule (gitlink) fails" -- check
+to "tracked submodule 'docs/sub'" "gitlink"
+fixture; echo "export const guide = await fetch('../docs/guide.md')" >"$FX/web/src/reads-docs.ts"; g "$FX" add -A
+expect_exit 1 "a new web/ file that mentions docs/ fails" -- check
+to "web/src/reads-docs.ts mentions an allow-listed path (1 line(s)) and is not in scripts/ci-text-only.known-mentions" "new mention"
+fixture; echo "const p = join(ROOT, 'docs', name)" >"$FX/e2e/support/reads.ts"; g "$FX" add -A
+expect_exit 1 "join(ROOT, 'docs', name) in a new e2e/ file fails (a path built from quoted parts, G0 D-7)" -- check
+to "e2e/support/reads.ts mentions an allow-listed path" "quoted token"
+fixture; echo "steps: [{ run: cat progress.json }]" >"$FX/.github/workflows/reads.yml"; g "$FX" add -A
+expect_exit 1 "a workflow that mentions progress.json fails" -- check
+to ".github/workflows/reads.yml mentions an allow-listed path" "workflow mention"
+fixture; echo "const notes = 'CHANGELOG.md'" >"$FX/backend/Notes.java"; g "$FX" add -A
+expect_exit 1 "a backend file that names a root *.md fails" -- check
+to "backend/Notes.java mentions an allow-listed path" "root md name"
+fixture; echo "// see docs/x.md" >>"$FX/e2e/support/evidence.ts"
+expect_exit 1 "a listed file that gains one more mentioning line fails (G0 D-6)" -- check
+to "e2e/support/evidence.ts has 5 line(s) mentioning an allow-listed path, scripts/ci-text-only.known-mentions records 4" "count changed"
+fixture; echo "// see docs/x.md" >>"$FX/scripts/gate.sh"
+expect_exit 0 "a scripts/ tooling file listed with '*' may gain a mention" -- check
+fixture; echo '^api/' >>"$FX/scripts/ci-text-only.paths"
+expect_exit 1 "an allow-list line without a token set fails (the two cannot drift, G0 D-8)" -- check
+expect_output_contains "allow-list line '^api/' has no mention tokens" "names the allow-list line"
+fixture; : >"$FX/scripts/ci-text-only.paths"
+expect_exit 1 "an empty allow-list fails" -- check
+to "scripts/ci-text-only.paths is missing or holds no pattern" "empty allow-list"
+fixture; echo "web/src/none.ts 1 comments only" >>"$FX/scripts/ci-text-only.known-mentions"
+expect_exit 1 "a listed path that is not tracked fails (the list cannot rot)" -- check
+to "lists web/src/none.ts, which is not tracked or no longer mentions" "rotten entry"
+fixture; edit scripts/ci-text-only.known-mentions 're.sub(r"(?m)^(e2e/support/evidence\.ts) 4 ", r"\1 * ", t)'
+expect_exit 1 "'*' outside scripts/ fails" -- check
+to "'*' is allowed only for scripts/" "star outside scripts"
+fixture; echo "e2e/support/evidence.ts" >>"$FX/scripts/ci-text-only.known-mentions"
+expect_exit 1 "a known-mentions line without a count and a reason fails" -- check
+expect_output_contains "expected '<path> <count|*> <reason>'" "names the format"
+
 finish

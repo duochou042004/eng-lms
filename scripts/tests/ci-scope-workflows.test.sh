@@ -1,0 +1,118 @@
+#!/usr/bin/env bash
+# T-M2.23 AC4 (constraints 1, 4, 5, 8): the five heavy workflows are wired to scripts/ci-scope.sh exactly as ci-cd.md §1 says, and
+# docs-check / secrets-scan always run in full. A line scanner (the docs-check job has no YAML library), run on the real workflows
+# and on mutated copies: every rule is seen failing (lessons-learned L-01).
+set -uo pipefail
+source "$(dirname "$0")/lib.sh"
+echo "ci-scope workflow wiring"
+work=$(mktemp -d); trap 'rm -rf "$work"' EXIT
+
+check() { # <workflow dir> → exit 1 and one line per problem
+  python3 - "$1" <<'PY'
+import re, sys
+from pathlib import Path
+HEAVY = {"backend.yml", "web.yml", "contract-drift.yml", "e2e-smoke.yml", "container.yml"}
+ALWAYS_FULL = {"docs-check.yml", "secrets-scan.yml"}
+COND = "steps.scope.outputs.scope != 'fast-path'"
+ALLOWED_IF = {COND, "always() && " + COND}
+EXEMPT_IF = re.compile(r"^(failure\(\)|always\(\) && steps\.[A-Za-z0-9_-]+\.outcome == 'failure')$")
+MARKER_NAME = "Full run on ${{ github.base_ref || github.ref_name }}"
+MARKER_IF = "steps.scope.outputs.verdict != 'fast-path'"
+problems = []
+def key(step, k):  # values of a step-level key (8 spaces, or on the "- " line)
+    return [m.group(1).strip() for l in step for m in [re.match(rf"^      (?:- |  ){k}:(.*)$", l)] if m]
+for path in sorted(Path(sys.argv[1]).glob("*.y*ml")):
+    name, text = path.name, path.read_text(encoding="utf-8")
+    lines = text.splitlines()
+    def bad(msg): problems.append(f"{name}: {msg}")
+    if name in ALWAYS_FULL:
+        if re.search(r"steps\.scope\.|id:\s*scope\b|ci-scope\.sh", text):
+            bad("an always-full workflow must not use the CI scope")
+        continue
+    if name not in HEAVY:
+        bad("a workflow that is neither heavy nor always-full (add it to this test and wire it, or list it as always-full)")
+        continue
+    wf = next((l.split(":", 1)[1].strip() for l in lines if l.startswith("name:")), "?")
+    if re.search(r"^\s*paths(-ignore)?:", text, re.M): bad("a paths filter (a required check must always report)")
+    if not re.search(r"^permissions:\n(  .*\n)*?  actions: read\b", text, re.M): bad("permissions lacks 'actions: read'")
+    group = f"  group: {wf}-${{{{ github.event_name == 'push' && github.sha || github.ref }}}}"
+    if group not in lines: bad("the concurrency group must hold github.sha for pushes: " + group.strip())
+    if "jobs:" not in lines: bad("no jobs"); continue
+    body = lines[lines.index("jobs:") + 1:]
+    jobs = [l for l in body if re.match(r"^  [A-Za-z0-9_-]+:\s*$", l)]
+    if len(jobs) != 1: bad(f"exactly one job expected, found {len(jobs)}")
+    for l in body:
+        if re.match(r"^    (if|strategy|uses|continue-on-error):", l): bad("job-level '" + l.strip().split(":")[0] + "' is not allowed")
+    steps, cur = [], None
+    for l in body:
+        if re.match(r"^      - ", l):
+            if cur is not None: steps.append(cur)
+            cur = [l]
+        elif cur is not None and not re.match(r"^      #", l):
+            cur.append(l)
+    if cur is not None: steps.append(cur)
+    if len(steps) < 4: bad("too few steps"); continue
+    first, scope, last, middle = steps[0], steps[1], steps[-1], steps[2:-1]
+    if not any("actions/checkout@" in v for v in key(first, "uses")) or key(first, "if"): bad("the first step must be an unconditional checkout")
+    if not any(re.match(r"^          fetch-depth: 2\b", l) for l in first): bad("checkout needs fetch-depth: 2")
+    if key(scope, "id") != ["scope"]: bad("the step after checkout must be the scope step (id: scope)")
+    if key(scope, "if"): bad("the scope step must not have an if:")
+    if key(scope, "continue-on-error"): bad("the scope step must not have continue-on-error")
+    if key(scope, "run") != ['./scripts/ci-scope.sh "$CI_SCOPE_KIND"']: bad("the scope step must run ./scripts/ci-scope.sh \"$CI_SCOPE_KIND\"")
+    if "          CI_SCOPE_KIND: ${{ github.event_name == 'pull_request' && 'pr' || 'push' }}" not in scope: bad("the scope step's CI_SCOPE_KIND is not the fixed expression")
+    for s in middle:
+        label = (key(s, "name") or key(s, "uses") or ["?"])[0]
+        ifs = key(s, "if")
+        if key(s, "id") == ["scope"]: bad("a second step with id: scope")
+        if label.startswith("Full run on"): bad(f"step '{label}': only the last step may be named like the marker")
+        if len(ifs) != 1: bad(f"step '{label}': exactly one if: expected, found {len(ifs)}"); continue
+        if ifs[0] not in ALLOWED_IF and not EXEMPT_IF.match(ifs[0]):
+            bad(f"step '{label}': if: must be exactly \"{COND}\" (optionally after \"always() && \") or a failure-only form, found: {ifs[0]}")
+        if key(s, "continue-on-error") and not any("actions/upload-artifact@" in v for v in key(s, "uses")):
+            bad(f"step '{label}': continue-on-error is allowed only on an upload-artifact step")
+    if key(last, "name") != [MARKER_NAME]: bad("the last step must be the marker: " + MARKER_NAME)
+    if key(last, "if") != [MARKER_IF]: bad("the marker's if: must be exactly: " + MARKER_IF)
+    if key(last, "continue-on-error"): bad("the marker must not have continue-on-error")
+for p in problems: print(p)
+sys.exit(1 if problems else 0)
+PY
+}
+
+expect_exit 0 "the real workflows are wired correctly" -- check "$ROOT/.github/workflows"
+
+# mutate <file> <python expression over t> <expected message> <description>: one rule seen failing on a copy
+mutate() {
+  rm -rf "$work/wf"; mkdir "$work/wf"; cp "$ROOT"/.github/workflows/*.yml "$work/wf/"
+  python3 -c 'import sys,re; p=sys.argv[1]; t=open(p).read(); n=eval(sys.argv[2]); assert n!=t, "the mutation changed nothing"; open(p,"w").write(n)' "$work/wf/$1" "$2" \
+    || { FAIL_COUNT=$((FAIL_COUNT + 1)); echo "  FAIL - $4 (mutation not applied)"; return; }
+  expect_exit 1 "$4" -- check "$work/wf"
+  expect_output_contains "$3" "$4: names the problem"
+}
+C="steps.scope.outputs.scope != 'fast-path'"
+mutate web.yml 't.replace("on:\n  pull_request:\n", "on:\n  pull_request:\n    paths: [web/**]\n")' "a paths filter" "constraint 1: a paths filter"
+mutate web.yml 't.replace("    runs-on: ubuntu-24.04\n", "    runs-on: ubuntu-24.04\n    if: github.event_name == \"push\"\n")' "job-level 'if' is not allowed" "constraint 1: a job-level if:"
+mutate web.yml 't.replace("    runs-on: ubuntu-24.04\n", "    runs-on: ubuntu-24.04\n    strategy:\n      matrix:\n        n: [1, 2]\n")' "job-level 'strategy' is not allowed" "a matrix"
+mutate web.yml 't + "  second:\n    runs-on: ubuntu-24.04\n    steps:\n      - run: true\n"' "exactly one job expected, found 2" "a second job without the wiring"
+mutate backend.yml 't.replace("  actions: read", "  issues: read")' "permissions lacks 'actions: read'" "constraint 8: no actions: read"
+mutate e2e-smoke.yml 't.replace("github.event_name == '"'push'"' && github.sha || github.ref", "github.ref")' "the concurrency group must hold github.sha" "constraint 5: a group without the SHA for pushes"
+mutate e2e-smoke.yml 't.replace("          fetch-depth: 2", "          fetch-depth: 1")' "checkout needs fetch-depth: 2" "constraint 8: fetch-depth 1"
+mutate web.yml 't.replace("        id: scope\n", "        id: scope\n        continue-on-error: true\n")' "the scope step must not have continue-on-error" "constraint 4: continue-on-error on the scope step"
+mutate web.yml 't.replace("        id: scope\n", "        id: scope\n        if: github.event_name == \"push\"\n")' "the scope step must not have an if:" "constraint 4: an if: on the scope step"
+mutate web.yml 't.replace("        id: scope\n", "        id: classify\n")' "must be the scope step (id: scope)" "the scope step renamed"
+mutate web.yml 't.replace("./scripts/ci-scope.sh \"$CI_SCOPE_KIND\"", "./scripts/ci-scope.sh \"$CI_SCOPE_KIND\" || true")' "the scope step must run" "the scope step's failure swallowed"
+mutate web.yml 't.replace("&& '"'pr'"' || '"'push'"' }}", "&& '"'push'"' || '"'push'"' }}")' "CI_SCOPE_KIND is not the fixed expression" "the scope kind changed"
+mutate e2e-smoke.yml 't.replace("        if: '"$C"'\n        run: ./scripts/e2e-run.sh", "        if: steps.scope.outputs.scope == '"'full'"'\n        run: ./scripts/e2e-run.sh")' "if: must be exactly" "constraint 4: reversed polarity (== 'full') on a heavy step"
+mutate e2e-smoke.yml 't.replace("        if: '"$C"'\n        run: ./scripts/e2e-run.sh", "        run: ./scripts/e2e-run.sh")' "exactly one if: expected, found 0" "a heavy step without the condition"
+mutate e2e-smoke.yml 't.replace("        if: '"$C"'\n        run: ./scripts/e2e-run.sh", "        if: '"$C"' && github.event_name == '"'push'"'\n        run: ./scripts/e2e-run.sh")' "if: must be exactly" "G0 D-9: an extra conjunct on a heavy step"
+mutate backend.yml 't.replace("        if: '"$C"'\n        run: ./mvnw", "        if: '"$C"'\n        continue-on-error: true\n        run: ./mvnw")' "continue-on-error is allowed only on an upload-artifact step" "continue-on-error on a heavy step"
+mutate web.yml 't.replace("      - name: Typecheck\n", "      - name: Full run on develop\n")' "only the last step may be named like the marker" "a heavy step named like the marker"
+mutate web.yml 't.replace("        if: steps.scope.outputs.verdict != '"'fast-path'"'", "        if: always()")' "the marker's if: must be exactly" "the marker with always()"
+mutate web.yml 't.replace("      - name: Full run on ${{ github.base_ref || github.ref_name }}", "      - name: Full run on develop")' "the last step must be the marker" "the marker with a fixed base name"
+mutate web.yml 't + "      - name: After the marker\n        if: '"$C"'\n        run: true\n"' "the last step must be the marker" "a step after the marker"
+mutate docs-check.yml 't.replace("      - name: Docs gate", "      - name: CI scope\n        id: scope\n        run: ./scripts/ci-scope.sh pr\n      - name: Docs gate")' "an always-full workflow must not use the CI scope" "docs-check with a scope step"
+mutate secrets-scan.yml 't.replace("      - name: Scan full git history\n", "      - name: Scan full git history\n        if: steps.scope.outputs.scope != '"'fast-path'"'\n")' "an always-full workflow must not use the CI scope" "secrets-scan with a scope condition"
+rm -rf "$work/wf"; mkdir "$work/wf"; cp "$ROOT"/.github/workflows/*.yml "$work/wf/"; cp "$work/wf/web.yml" "$work/wf/new.yml"
+expect_exit 1 "a new workflow that is in neither list fails" -- check "$work/wf"
+expect_output_contains "neither heavy nor always-full" "a new workflow: names the problem"
+
+finish

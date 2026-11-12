@@ -6,6 +6,7 @@
 # Usage: scripts/merge-gate.sh [--dry-run] <pr-number>   (--dry-run may also follow the number; any other argument exits 2 before any API call)
 # Env:   GH_BIN (default: gh)  — override for tests
 #        REQUIRED_CHECKS_FILE (default: scripts/required-checks.txt)
+#        CI_TEXT_ONLY_FILE (default: scripts/ci-text-only.paths) — the text-only allow-list; override for tests
 #
 # Merge paths (git-governance.md §4):
 #   feature|fix/<task>-*   → develop : QA-VERDICT <task>: PASS[ WITH MINOR] + LC-APPROVED <task> + progress.json changed
@@ -14,7 +15,8 @@
 #   release|hotfix/<x.y.z> → master  : QA-VERDICT <x.y.z>: PASS + PO-APPROVED <x.y.z> + LC-APPROVED <x.y.z>
 #   dependabot/*           → develop : LC-APPROVED PR-<n>; the PR author and EVERY commit are Dependabot's (verified); only manifests, lockfiles,
 #                                      the Maven wrapper properties and workflow `uses: <action>@<sha>` bumps may change (T-M1.7)
-# In every case: required checks pass, no check fails, branch 0 behind base, no conflicts, no review type's latest fresh verdict is negative,
+# In every case: required checks pass, no check fails, a PR that is not text-only has a full run of every heavy check (step 3b, T-M2.23),
+# branch 0 behind base, no conflicts, no review type's latest fresh verdict is negative,
 # and every verdict comment must be posted AFTER the head commit ARRIVED on the PR (push time, not committedDate; stale verdicts don't count).
 source "$(dirname "$0")/lib/require-bash.sh"
 set -euo pipefail
@@ -40,7 +42,7 @@ REQUIRED_CHECKS_FILE=${REQUIRED_CHECKS_FILE:-$SCRIPT_DIR/required-checks.txt}
 problems=()
 fail() { problems+=("$1"); }
 
-pr_json=$($GH pr view "$PR" --json number,state,isDraft,author,baseRefName,headRefName,headRefOid,mergeStateStatus,comments,commits)
+pr_json=$($GH pr view "$PR" --json number,state,isDraft,author,baseRefName,headRefName,headRefOid,mergeStateStatus,comments,commits,changedFiles)
 state=$(jq -r .state <<<"$pr_json")
 draft=$(jq -r .isDraft <<<"$pr_json")
 base=$(jq -r .baseRefName <<<"$pr_json")
@@ -255,7 +257,8 @@ behind=$($GH api "repos/{owner}/{repo}/compare/${base}...${head}" --jq .behind_b
 # `gh pr checks --json` exits 0 with a JSON array even while checks are pending or failing. Any other outcome (a gh too old for --json, an API
 # or auth error, output that is not an array) is reported as such, not as "every required check is missing" (T-M1.17, DEC-084 R2-1).
 checks_err=$(mktemp); trap 'rm -f "$checks_err"' EXIT
-if ! checks_json=$($GH pr checks "$PR" --json name,bucket 2>"$checks_err") \
+checks_ok=0
+if ! checks_json=$($GH pr checks "$PR" --json name,bucket,link 2>"$checks_err") \
    || ! jq -se 'length == 1 and (.[0] | type == "array")' <<<"$checks_json" >/dev/null 2>&1; then
   checks_why=$(head -c 300 "$checks_err" | tr '\n' ' ')
   [[ -n "$checks_why" ]] || checks_why="output: $(head -c 300 <<<"${checks_json:-(empty)}" | tr '\n' ' ')"
@@ -268,6 +271,50 @@ else
   done <"$REQUIRED_CHECKS_FILE"
   bad=$(jq -r '[.[] | select(.bucket == "fail" or .bucket == "pending" or .bucket == "cancel") | "\(.name)=\(.bucket)"] | join(", ")' <<<"$checks_json")
   [[ -z "$bad" ]] || fail "non-passing checks: $bad"
+  checks_ok=1
+fi
+
+# 3b. CI scope (T-M2.23, DEC-158 PO-1, DEC-160; ci-cd.md §2). A check's result depends on the head AND the base, and `gh pr checks` reads it by
+# head only, so the gate recomputes "text-only" itself from the PR's own file list and the allow-list beside this script (develop's copy, never
+# the PR's). A PR that is not text-only needs a FULL run of every check except docs-check and secrets-scan: the check's job (its `link`) is for
+# this head and has the marker step "Full run on <base>" with conclusion success. A skipped marker is a fast path; a marker for another base is a
+# run from before a retarget. Anything unreadable is "not text-only" or "no full run" (fail closed).
+ALLOW_FILE=${CI_TEXT_ONLY_FILE:-$SCRIPT_DIR/ci-text-only.paths}
+all_files=""; files_ok=0
+if all_files=$($GH api --paginate "repos/{owner}/{repo}/pulls/${PR}/files?per_page=100" 2>/dev/null) && pages_are_arrays "$all_files"; then files_ok=1; fi
+text_only=0
+if ((files_ok)) && [[ "$base" == "develop" && -f "$ALLOW_FILE" ]] \
+   && pats=$(grep -vE '^(#|$)' "$ALLOW_FILE" | jq -Rn '[inputs]') \
+   && jq -en --argjson pats "$pats" --argjson n "$(jq '.changedFiles // -1' <<<"$pr_json")" '
+        [inputs | .[]] as $f
+        | ($pats | length) > 0 and ($f | length) == $n and $n >= 1 and $n < 3000
+          and ($f | all((.status | IN("added", "modified", "removed", "renamed"))
+                and ([.filename, (.previous_filename // empty)]
+                     | all(type == "string" and (explode | all(. >= 32 and . != 127)) and (. as $p | $pats | any(. as $re | $p | test($re)))))))' \
+        <<<"$all_files" >/dev/null 2>&1; then
+  text_only=1
+fi
+scope_line=""
+if ((checks_ok)); then
+  n_full=0; n_fast=0; n_unknown=0
+  marker="Full run on $base"
+  while IFS=$'\t' read -r cname clink; do
+    [[ -z "$cname" || "$cname" == "docs-check" || "$cname" == "secrets-scan" ]] && continue
+    concl=""
+    if [[ "$clink" =~ ^https://github\.com/[^/]+/[^/]+/actions/runs/[0-9]+/job/([0-9]+)$ ]] \
+       && job_json=$($GH api "repos/{owner}/{repo}/actions/jobs/${BASH_REMATCH[1]}" 2>/dev/null); then
+      concl=$(jq -r --arg sha "$head_oid" --arg m "$marker" 'if (type == "object") and .head_sha == $sha and (.steps | type == "array")
+          then ([.steps[] | select(.name == $m) | .conclusion] | if length == 1 then (.[0] // "") else "" end) else "" end' <<<"$job_json" 2>/dev/null) || concl=""
+    fi
+    case "$concl" in
+      success) n_full=$((n_full + 1));;
+      skipped) n_fast=$((n_fast + 1)); ((text_only)) || fail "check '$cname' took the fast path (marker '$marker' skipped), but this PR is not text-only: it needs a full run";;
+      *)       n_unknown=$((n_unknown + 1))
+               ((text_only)) || fail "check '$cname' has no full run for head ${head_oid:0:7}: no successful '$marker' step in its job (a run against another base, an older head, not an Actions job, or an API error); push a new commit or update the branch";;
+    esac
+  done < <(jq -r '.[] | [.name, (.link // "")] | @tsv' <<<"$checks_json")
+  if ((text_only)); then scope_line="scope text-only"; else scope_line="scope full"; fi
+  if ((n_unknown)); then scope_line+="; checks: unknown"; else scope_line+="; checks: $n_full full, $n_fast fast-path"; fi
 fi
 
 # 4. Verdicts: exact tokens only; the latest fresh comment of each type wins within its type
@@ -331,7 +378,7 @@ fi
 # changes the file counts (added, modified, renamed, copied, changed; not removed, unchanged or missing; review T-M1.15 F1, F2).
 case "$kind" in
   feature|fix|docs|chore|release|hotfix)
-    if ! all_files=$($GH api --paginate "repos/{owner}/{repo}/pulls/${PR}/files?per_page=100" 2>/dev/null) || ! pages_are_arrays "$all_files"; then
+    if ! ((files_ok)); then
       fail "cannot list the PR's files (fail closed)"
     else
       jq -en '[inputs | .[] | select(.filename == "progress.json" and ((.status // "") | IN("added", "modified", "renamed", "copied", "changed")))] | length > 0' <<<"$all_files" >/dev/null \
@@ -346,6 +393,7 @@ if ((${#problems[@]})); then
 fi
 
 echo "merge-gate: all gates passed for PR #$PR ($id: $head → $base @ ${head_oid:0:7})"
+echo "merge-gate: $scope_line"
 if ((DRY_RUN)); then
   echo "merge-gate: dry run — not merging"
   exit 0

@@ -17,13 +17,22 @@ USES_BUMP=$'@@ -20,3 +20,3 @@ jobs:\n     steps:\n-      - uses: actions/checkou
 DEP_COMMIT='{"sha":"74cf1910000000000000000000000000000000aa","author":{"login":"dependabot[bot]"},"committer":{"login":"web-flow"},"commit":{"verification":{"verified":true}}}'
 NO_FORCE='{"data":{"repository":{"pullRequest":{"timelineItems":{"nodes":[]}}}}}'
 # Optional overrides for the next write_fixture (reset after each): ACTIVITY / RUNS / FORCE / PRCOMMITS / PRFILES (raw JSON as the API returns it)
-ACTIVITY=""; RUNS=""; FORCE=""; PRCOMMITS=""; PRFILES=""
+ACTIVITY=""; RUNS=""; FORCE=""; PRCOMMITS=""; PRFILES=""; MARKER=""
+write_job() { # <job id> <marker step name> <conclusion> [head sha]: one Actions job as the jobs API returns it (T-M2.23)
+  jq -cn --arg n "$2" --arg c "$3" --arg sha "${4:-abc1234def5678}" '{head_sha:$sha, steps:[{name:"Set up job",conclusion:"success"},{name:$n,conclusion:$c}]}' >"$MOCK_DIR/job-$1.json"; }
 write_fixture() { # <head> <base> <mergeState> <comments-json-array> <files-json-array> <checks-json> <behind> [author] [commits-json]
   jq -n --arg head "$1" --arg base "$2" --arg mss "$3" --argjson comments "$4" --argjson files "$5" --arg t "$HEAD_TIME" \
     --arg author "${8:-duochou042004}" --argjson commits "${9:-null}" \
     '{number:7,state:"OPEN",isDraft:false,author:{login:$author},baseRefName:$base,headRefName:$head,headRefOid:"abc1234def5678",mergeStateStatus:$mss,
-      comments:$comments,files:$files,commits:($commits // [{committedDate:"2026-09-25T09:00:00Z"},{committedDate:$t}])}' >"$MOCK_DIR/pr.json"
-  echo "$6" >"$MOCK_DIR/checks.json"
+      comments:$comments,files:$files,changedFiles:($files | length),commits:($commits // [{committedDate:"2026-09-25T09:00:00Z"},{committedDate:$t}])}' >"$MOCK_DIR/pr.json"
+  # T-M2.23: every check gets a job link and a job with a successful marker for the base (a full run), unless the fixture gives its own link.
+  rm -f "${MOCK_DIR:?}"/job-*.json
+  if jq -e 'type == "array"' <<<"$6" >/dev/null 2>&1; then
+    jq -c 'to_entries | map(.value + {link: (.value.link // "https://github.com/o/r/actions/runs/1/job/\(.key + 100)")})' <<<"$6" >"$MOCK_DIR/checks.json"
+    for i in $(jq -r 'keys[]' <<<"$6"); do write_job $((i + 100)) "Full run on $2" "${MARKER:-success}"; done
+  else
+    echo "$6" >"$MOCK_DIR/checks.json"
+  fi
   echo "$7" >"$MOCK_DIR/behind.txt"
   # Push time (T-M1.7): by default the head was pushed at HEAD_TIME (repository activity; by Dependabot on a Dependabot PR, which created the branch),
   # its pull_request runs were created then, and there was no force-push.
@@ -35,7 +44,7 @@ write_fixture() { # <head> <base> <mergeState> <comments-json-array> <files-json
   echo "${PRFILES:-$(jq -c --arg bump "$USES_BUMP" '[.[] | {filename:.path, status:"modified",
       patch:(if (.path | startswith(".github/workflows/")) then $bump else "@@ -1 +1 @@\n-a\n+b" end)}]' <<<"$5")}" >"$MOCK_DIR/pr-files.json"
   rm -f "$MOCK_DIR/merged.txt" "$MOCK_DIR"/*.fail
-  ACTIVITY=""; RUNS=""; FORCE=""; PRCOMMITS=""; PRFILES=""
+  ACTIVITY=""; RUNS=""; FORCE=""; PRCOMMITS=""; PRFILES=""; MARKER=""
 }
 gate() { "$ROOT/scripts/merge-gate.sh" "$@"; }
 MVN_URL='https://repo.maven.apache.org/maven2/org/apache/maven/apache-maven'
@@ -473,5 +482,94 @@ for args in "" "--dry-run" "7 --dryrun" "7 21" "abc" "--force 7" "07" "7 --dry-r
   [[ ! -s "$MOCK_DIR/calls.txt" ]] && { PASS_COUNT=$((PASS_COUNT + 1)); echo "  ok   - T-M1.12 AC4: '$args' made no gh call"; } \
     || { FAIL_COUNT=$((FAIL_COUNT + 1)); echo "  FAIL - T-M1.12 AC4: '$args' called gh: $(head -1 "$MOCK_DIR/calls.txt")"; }
 done
+
+# T-M2.23 AC5 (constraints 2, 9; attacks A-4, A-6): the gate recomputes text-only from the PR's files and wants a full run otherwise.
+ALL_CHECKS=$(jq -c '. + [{"name":"container-build","bucket":"pass"}]' <<<"$OK_CHECKS")   # jobs 100..106; heavy: backend 102, web 103, contract-drift 104, e2e-smoke 105, container-build 106
+PROD='[{"path":"progress.json"},{"path":"web/src/a.ts"}]'
+prod() { write_fixture chore/T-M9.9-x develop CLEAN "$GOOD" "$PROD" "$ALL_CHECKS" 0; }
+text() { write_fixture chore/T-M9.9-x develop CLEAN "$GOOD" "$FILES" "$ALL_CHECKS" 0; }
+refused() { expect_exit 1 "T-M2.23: $1" -- gate --dry-run 7; expect_output_contains "$2" "T-M2.23: $1: says why"; }
+prod
+expect_exit 0 "T-M2.23: a product PR whose heavy checks all ran in full passes" -- gate --dry-run 7
+expect_output_contains "merge-gate: scope full; checks: 5 full, 0 fast-path" "T-M2.23: the scope line counts the five heavy checks as full"
+MARKER=skipped; prod
+refused "a product PR with skipped markers" "check 'e2e-smoke' took the fast path (marker 'Full run on develop' skipped), but this PR is not text-only"
+expect_output_contains "check 'container-build' took the fast path" "T-M2.23: the non-required heavy check needs a full run too"
+expect_output_not_contains "check 'docs-check'" "T-M2.23: docs-check needs no marker"
+expect_output_not_contains "check 'secrets-scan'" "T-M2.23: secrets-scan needs no marker"
+prod; write_job 105 "Full run on develop" skipped
+refused "one skipped marker among full runs" "check 'e2e-smoke' took the fast path"
+prod; write_job 105 "Full run on feature/T-y" success
+refused "a marker for another base (a run from before a retarget, A-4)" "check 'e2e-smoke' has no full run for head abc1234: no successful 'Full run on develop' step"
+prod; write_job 103 "Typecheck" success
+refused "a job without a marker step" "check 'web' has no full run"
+prod; write_job 102 "Full run on develop" failure
+refused "a failed marker" "check 'backend' has no full run"
+prod; write_job 104 "Full run on develop" success 0000000aaaaaaa
+refused "a job for another head SHA" "check 'contract-drift' has no full run"
+prod; jq -c '.steps += [{name:"Full run on develop",conclusion:"success"}]' "$MOCK_DIR/job-103.json" >"$MOCK_DIR/t" && mv "$MOCK_DIR/t" "$MOCK_DIR/job-103.json"
+refused "two steps named like the marker" "check 'web' has no full run"
+prod; touch "$MOCK_DIR/job-105.json.fail"
+refused "a jobs API error" "check 'e2e-smoke' has no full run"
+prod; echo 'not json' >"$MOCK_DIR/job-105.json"
+refused "a jobs API answer that is not JSON" "check 'e2e-smoke' has no full run"
+write_fixture chore/T-M9.9-x develop CLEAN "$GOOD" "$PROD" "$(jq -c 'map(if .name == "web" then . + {link:"https://example.com/checks/9"} else . end)' <<<"$ALL_CHECKS")" 0
+refused "a check whose link is not an Actions job" "check 'web' has no full run"
+write_fixture chore/T-M9.9-x develop CLEAN "$GOOD" "$PROD" "$(jq -c 'map(if .name == "web" then . + {link:"https://github.com/o/r/actions/runs/1/job/105/x"} else . end)' <<<"$ALL_CHECKS")" 0
+refused "a link with a trailing path" "check 'web' has no full run"
+write_fixture chore/T-M9.9-x develop CLEAN "$GOOD" "$PROD" "$(jq -c '. + [{"name":"new-job","bucket":"pass","link":"https://github.com/o/r/actions/runs/1/job/999"}]' <<<"$ALL_CHECKS")" 0
+refused "a new check without a marker (fail closed for future jobs)" "check 'new-job' has no full run"
+MARKER=skipped; write_fixture dependabot/github_actions/actions-abc develop CLEAN "$(cs "$(c 'LC-APPROVED PR-7')")" '[{"path":".github/workflows/docs-check.yml"}]' "$ALL_CHECKS" 0 app/dependabot
+refused "a Dependabot PR with skipped markers" "took the fast path"
+
+# a text-only PR needs no marker; the markers are read only for the count
+MARKER=skipped; text
+expect_exit 0 "T-M2.23: a text-only PR with skipped markers passes" -- gate --dry-run 7
+expect_output_contains "merge-gate: scope text-only; checks: 0 full, 5 fast-path" "T-M2.23: the scope line counts five fast-path checks (constraint 9)"
+text
+expect_exit 0 "T-M2.23: a text-only PR whose checks ran in full passes (shadow mode on a product-free PR)" -- gate --dry-run 7
+expect_output_contains "merge-gate: scope text-only; checks: 5 full, 0 fast-path" "T-M2.23: the scope line counts five full checks"
+MARKER=skipped; text; write_job 102 "Full run on develop" success
+expect_exit 0 "T-M2.23: a text-only PR with mixed markers passes" -- gate --dry-run 7
+expect_output_contains "checks: 1 full, 4 fast-path" "T-M2.23: a miscount would fail here (1 full, 4 fast-path)"
+MARKER=skipped; text; touch "$MOCK_DIR/job-105.json.fail"
+expect_exit 0 "T-M2.23: a text-only PR is not refused when a job cannot be read" -- gate --dry-run 7
+expect_output_contains "merge-gate: scope text-only; checks: unknown" "T-M2.23: the count is 'unknown' then"
+
+# what is NOT text-only: each PR below has skipped markers, so it is refused exactly when the gate does not call it text-only
+REL=$(cs "$(c 'QA-VERDICT 1.0.0: PASS')" "$(c 'PO-APPROVED 1.0.0')" "$(c 'LC-APPROVED 1.0.0')")
+MARKER=skipped; write_fixture release/1.0.0 master CLEAN "$REL" "$FILES" "$ALL_CHECKS" 0
+refused "only text files but base master (G0 D-3)" "took the fast path (marker 'Full run on master' skipped)"
+write_fixture release/1.0.0 master CLEAN "$REL" "$FILES" "$ALL_CHECKS" 0
+expect_exit 0 "T-M2.23: the same release PR with full runs on master passes" -- gate --dry-run 7
+expect_output_contains "merge-gate: scope full; checks: 5 full, 0 fast-path" "T-M2.23: a PR to master is never text-only"
+nto() { # <description> <PRFILES (raw API pages)> <files json for changedFiles>
+  MARKER=skipped; PRFILES=$2; write_fixture chore/T-M9.9-x develop CLEAN "$GOOD" "$3" "$ALL_CHECKS" 0
+  refused "not text-only: $1" "took the fast path"; }
+P='{"filename":"progress.json","status":"modified"}'
+nto "a file off the list" "[$P,{\"filename\":\"scripts/gate.sh\",\"status\":\"modified\"}]" "$FILES"
+nto ".claude/settings.json" "[$P,{\"filename\":\".claude/settings.json\",\"status\":\"modified\"}]" "$FILES"
+nto "a *.md below the root" "[$P,{\"filename\":\"web/README.md\",\"status\":\"modified\"}]" "$FILES"
+nto "Docs/a.md (case)" "[$P,{\"filename\":\"Docs/a.md\",\"status\":\"added\"}]" "$FILES"
+nto "a rename from a path off the list" "[$P,{\"filename\":\"docs/a.md\",\"status\":\"renamed\",\"previous_filename\":\"web/a.md\"}]" "$FILES"
+nto "a rename to a path off the list" "[$P,{\"filename\":\"web/a.md\",\"status\":\"renamed\",\"previous_filename\":\"docs/a.md\"}]" "$FILES"
+nto "a file name with a newline (bash and jq disagree on \$, G0 D-15)" "[$P,{\"filename\":\"README.md\\n\",\"status\":\"added\"}]" "$FILES"
+nto "a file name with a control character under docs/" "[$P,{\"filename\":\"docs/a\\tb.md\",\"status\":\"added\"}]" "$FILES"
+nto "status copied" "[$P,{\"filename\":\"docs/b.md\",\"status\":\"copied\"}]" "$FILES"
+nto "status changed" "[$P,{\"filename\":\"docs/b.md\",\"status\":\"changed\"}]" "$FILES"
+nto "a listing shorter than changedFiles (truncated)" "[$P,{\"filename\":\"docs/b.md\",\"status\":\"modified\"}]" '[{"path":"a"},{"path":"b"},{"path":"c"}]'
+nto "a listing longer than changedFiles" "[$P,{\"filename\":\"docs/b.md\",\"status\":\"modified\"},{\"filename\":\"docs/c.md\",\"status\":\"modified\"}]" "$FILES"
+nto "3,000 files" "$(jq -cn --argjson p "$P" '[$p] + [range(2999) | {filename:"docs/f\(.).md",status:"added"}]')" "$(jq -cn '[range(3000) | {path:"x"}]')"
+nto "a file entry without a status" "[$P,{\"filename\":\"docs/b.md\"}]" "$FILES"
+MARKER=skipped; text; touch "$MOCK_DIR/pr-files.json.fail"
+refused "not text-only: a files API error" "took the fast path"
+MARKER=skipped; text
+expect_exit 1 "T-M2.23: not text-only: a missing allow-list" -- env CI_TEXT_ONLY_FILE="$MOCK_DIR/none" "$ROOT/scripts/merge-gate.sh" --dry-run 7
+expect_output_contains "took the fast path" "T-M2.23: a missing allow-list: says why"
+printf '# nothing\n' >"$MOCK_DIR/empty.paths"
+expect_exit 1 "T-M2.23: not text-only: an allow-list without a pattern" -- env CI_TEXT_ONLY_FILE="$MOCK_DIR/empty.paths" "$ROOT/scripts/merge-gate.sh" --dry-run 7
+MARKER=skipped; PRFILES=$(jq -cn --argjson p "$P" '[$p] + [range(2998) | {filename:"docs/f\(.).md",status:"added"}]')
+write_fixture chore/T-M9.9-x develop CLEAN "$GOOD" "$(jq -cn '[range(2999) | {path:"x"}]')" "$ALL_CHECKS" 0
+expect_exit 0 "T-M2.23: 2,999 text files are text-only (the 3,000 limit is the cause above)" -- gate --dry-run 7
 
 finish
