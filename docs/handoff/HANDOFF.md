@@ -1,31 +1,37 @@
-# Handoff — 2026-11-11 (the PO accepted the T-M2.22 plan, DEC-158; next: the T-M2.23 packet; T-M2.13 still held)
+# Handoff — 2026-11-12 (the T-M2.23 packet is ready at G0, DEC-160; the PO is asked for its start signal; T-M2.13 still held)
 
-Phase/Milestone: P1 / M2 (in progress) · Current task: **T-M2.23 CI scope by diff (LC, draft, packet not written)** · Next: **T-M2.13**
-(packet ready with AC8, DEC-155, DEC-159; **held by the PO** until a start signal) · Last merges on develop: the T-M2.22 packet (PR #155,
-`c93d128`), this records PR · Remote: https://github.com/duochou042004/eng-lms (mirror: gitlab.com/duochou042004/eng-lms)
+Phase/Milestone: P1 / M2 (in progress) · Current task: **T-M2.23 CI scope by diff (LC, ready; waits for the PO's start signal)** ·
+Next: **T-M2.13** (packet ready with AC8, DEC-155, DEC-159; **held by the PO** until a start signal) · Last merges on develop: the
+T-M2.22 records (PR #156, `e9901dd`), this packet PR #157 · Remote: https://github.com/duochou042004/eng-lms (mirror: gitlab.com/duochou042004/eng-lms)
 
 ## Where we are
-- **T-M2.22 is done.** The PO accepted PO-1..PO-10 as recommended (DEC-158). Packet `docs/tasks/T-M2.22-qa-strategy-review.md`, baseline
-  `evidence/T-M2.22/baseline.md`, G0 record `evidence/T-M2.22/review/docs.md`.
-- **No rule has changed yet.** Each accepted item takes effect when its packet merges: **T-M2.23** (U2: text-only PRs and identical
-  post-merge trees skip the heavy CI steps), **T-M2.24** (U3: split `students.spec.ts`, the `e2e/support/` repeat rule), **T-M2.25** (U4:
-  JaCoCo check, web coverage measurement, local E2E database, the doc corrections incl. the narrower G5 matrix and G0 delta rule).
-- **T-M2.13 gained AC8** (DEC-159): the flaky Guardians AC4 test reads the list by polling. It is still held.
+- **The T-M2.23 packet passed G0** (`docs/tasks/T-M2.23-ci-scope.md`, DEC-160; record `evidence/T-M2.23/review/docs.md`): one fresh
+  docs-reviewer with an adversarial brief, PASS WITH MINOR (141,820 tokens, 9.3 min; 14 S3 and 6 S4, all fixed; no S1 or S2). It found
+  no way for a product change to reach `develop` without a full run, and nothing beyond DEC-158 PO-1 and PO-2.
+- **What the packet decides (DEC-160):** T-M2.23 builds both switches (text-only PRs; post-merge runs on a tested tree), merge-gate's
+  own recomputation, the marker step `Full run on <base>`, the standing `check-docs` check and the offline replay, and **merges in
+  shadow mode**: the classifier reports, every heavy step still runs. The switch-on is the new row **T-M2.26**, after at least 10 PRs
+  in shadow mode without a wrong verdict.
+- **No rule has changed yet.** T-M2.24 (U3) and T-M2.25 (U4) are rows only. T-M2.13 is still held.
 
 ## In flight / uncommitted
-- Nothing, once this records PR (`docs/T-M2.22-po-decisions`) is merged.
+- Nothing, once PR #157 (`docs/T-M2.23-ci-scope`) is merged.
 
 ## Next steps
-1. **T-M2.23 packet** (task-packet skill, tier L): the nine U2 design constraints from the T-M2.22 packet, each with a failing fixture
-   (L-01); read attacks A-1..A-12 and N-1..N-3 in `evidence/T-M2.22/review/docs.md` first. G0 by one fresh docs-reviewer with an
-   adversarial brief. Validation order: fixtures, offline replay over the merged PRs, adversarial review, then shadow mode for at least 10 PRs.
-2. **T-M2.13** on the PO's start signal; it runs with T-M2.23 in shadow mode and is the measurement against baseline §2 and §6.
-3. Then T-M2.24 and T-M2.25. The backend wall-clock flake (T-M2.10 row) runs before the next backend task.
-4. PO-5 (one records PR) is decided after the U2 measurement (T-M2.13 under T-M2.23). U7 (viewport experiment) and U8 (b)–(d) are not scheduled.
+1. **T-M2.23 implementation** on the PO's start signal: `chore/T-M2.23-ci-scope`, the LC implements, 10 ACs, the constraint-to-fixture
+   map in the packet; each rule seen failing (L-01). First verify the four GitHub assumptions in the packet's Risks (expanded step
+   names in the jobs API, `head_sha` of PR runs, re-runs keep the event, the merge ref after a retarget). G3: one fresh docs-reviewer
+   with an adversarial brief. If it passes 2 agent-days, split switch (b) off (packet, Design notes).
+2. **T-M2.13** on the PO's start signal. Under shadow mode it gives the projection of the saving, not the measurement (DEC-160 (7)).
+3. Then T-M2.24, T-M2.25, and T-M2.26 once 10 shadow PRs exist. The backend wall-clock flake (T-M2.10 row) runs before the next backend task.
+4. PO-5 (one records PR) is asked after the first task measured under `enforce` mode (after T-M2.26). U7 and U8 (b)–(d) are not scheduled.
 
 ## Pending PO decisions / actions
-- **T-M2.13 start signal** (held, DEC-156).
-- **GitHub Actions billing** (Settings → Billing): the LC cannot read it; 2,844 wall minutes of CI ran in 22 days.
+- **T-M2.23 start signal** (asked 2026-11-12) and the **T-M2.13 start signal** (held, DEC-156).
+- **To note (DEC-160 (7)):** DEC-158 said PO-5 is decided after "T-M2.13 under T-M2.23". T-M2.13 runs in shadow mode, where nothing is
+  skipped, so it can only project the saving; the measured figure comes from the first task after T-M2.26.
+- **GitHub Actions billing** (Settings → Billing): the LC cannot read it; 2,844 wall minutes of CI ran in 22 days. Shadow mode adds
+  minutes: post-merge runs that a later merge cancels today will finish.
 - **Dependabot (U5, the PO's):** PR #135 is open and red (13 failed runs); Dependabot merges go in outside merge-gate, 18 of 23 while behind. PR #100 is closed.
 - For G5 on this device: Firefox/WebKit browsers and host libraries (`sudo`, PO), unless T-M2.25's manual `regression` workflow covers it.
 - Open points (unchanged): the `ui/index.ts` barrel in the student first visit; `lib/time` uses the browser's time zone (T-M3.1/T-M3.3, L-12);
@@ -94,8 +100,10 @@ Phase/Milestone: P1 / M2 (in progress) · Current task: **T-M2.23 CI scope by di
   later push); open the records PR after the `qa/` PR has merged.
 - **CI infra flake (2026-11-11, run 43042804940):** `playwright install --with-deps` exited 100 before any test; re-run.
 - The CI timing analysis used throwaway scripts in the session scratchpad; the commands in the T-M2.22 packet reproduce the data.
+- **T-M2.23 design traps (G0):** the marker step follows the classifier's *verdict*, the heavy steps follow its *scope* output (always
+  `full` in shadow mode); bash and jq disagree on `$` before a final newline, so a path with a control character is off the list in
+  every reader; after the T-M2.23 merge every open PR needs a new run (ours: `gh pr update-branch`; Dependabot: `@dependabot rebase`).
 
 ## Files to read first
-`CLAUDE.md` → `progress.json` → this file → `docs/tasks/T-M2.22-qa-strategy-review.md` (U2 and its constraints) →
-`evidence/T-M2.22/review/docs.md` → `evidence/T-M2.22/baseline.md` → DEC-157, DEC-158, DEC-159 → `scripts/merge-gate.sh`,
-`.github/workflows/`, `scripts/required-checks.txt` → `docs/tasks/T-M2.13-auth-shell-followups.md`.
+`CLAUDE.md` → `progress.json` → this file → `docs/tasks/T-M2.23-ci-scope.md` → `evidence/T-M2.23/review/docs.md` → DEC-158, DEC-160 →
+`scripts/merge-gate.sh`, `.github/workflows/`, `scripts/check_docs.py`, `scripts/tests/` → `docs/tasks/T-M2.13-auth-shell-followups.md`.

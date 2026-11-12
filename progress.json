@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-11-11T17:21:50Z",
-  "updatedBy": "lead-coordinator (PO accepted the T-M2.22 plan, DEC-158; next T-M2.23 packet)",
+  "updatedAt": "2026-11-12T05:42:43Z",
+  "updatedBy": "lead-coordinator (T-M2.23 packet ready at G0, DEC-160; PO start signal asked)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -32,22 +32,27 @@
   "currentTask": {
     "id": "T-M2.23",
     "title": "CI runs the heavy jobs only where the diff can affect them (T-M2.22 U2)",
-    "status": "draft",
+    "status": "ready",
     "ownerRole": "LC",
-    "branch": null,
-    "packet": null,
-    "pr": null,
+    "branch": "docs/T-M2.23-ci-scope",
+    "packet": "docs/tasks/T-M2.23-ci-scope.md",
+    "pr": "157",
     "lastCommit": null,
     "startedAt": null,
     "entryGate": [
-      "PO decision DEC-158 (PO-1, PO-2) — met"
+      "PO decision DEC-158 (PO-1, PO-2) — met",
+      "G0 PASS WITH MINOR (DEC-160) — met",
+      "PO start signal — pending"
     ],
     "nextSteps": [
-      "LC: write the T-M2.23 packet (task-packet skill; the nine U2 design constraints and attacks A-1..A-12 in evidence/T-M2.22/review/docs.md), adversarial G0; shadow mode runs during T-M2.13"
+      "PO: start signal for T-M2.23 (asked 2026-11-12)",
+      "LC implements on chore/T-M2.23-ci-scope; it merges in shadow mode; G3 by one fresh docs-reviewer with an adversarial brief",
+      "T-M2.26 switches it on after at least 10 shadow PRs (DEC-160)"
     ],
     "trace": [
       "DEC-157",
-      "DEC-158"
+      "DEC-158",
+      "DEC-160"
     ]
   },
   "nextTask": {
@@ -399,8 +404,8 @@
   },
   "gates": {
     "G0": {
-      "status": "n/a",
-      "note": "T-M2.23 not written yet (T-M2.22: G0 PASS, DEC-157; T-M2.13: G0 PASS, DEC-155)"
+      "status": "pass",
+      "note": "T-M2.23: docs-reviewer round 1 PASS WITH MINOR (141,820 tokens, 9.3 min), S3 D-1..D-14 and S4 D-15..D-20 fixed, no delta (DEC-160)"
     },
     "G1": {
       "status": "pass",
@@ -458,7 +463,8 @@
       "DEC-156",
       "DEC-157",
       "DEC-158",
-      "DEC-159"
+      "DEC-159",
+      "DEC-160"
     ],
     "pendingPO": [
       "OQ-03",
@@ -1420,6 +1426,16 @@
       "at": "2026-11-11T17:21:50Z",
       "actor": "docs-reviewer (independent)",
       "event": "Records PR #156 (DEC-158, DEC-159): PASS WITH MINOR (S3 G-1..G-5, S4 G-6..G-10; 46,180 tokens), all fixed."
+    },
+    {
+      "at": "2026-11-12T05:30:39Z",
+      "actor": "lead-coordinator",
+      "event": "T-M2.23 packet written on docs/T-M2.23-ci-scope (DEC-160): both switches built under the nine U2 constraints and merged in shadow mode; the switch-on split into the new row T-M2.26. G0 review next."
+    },
+    {
+      "at": "2026-11-12T05:42:43Z",
+      "actor": "lead-coordinator",
+      "event": "T-M2.23 packet G0: one fresh docs-reviewer with an adversarial brief, PASS WITH MINOR (141,820 tokens, 556.3 s; 14 S3, 6 S4, all fixed; record evidence/T-M2.23/review/docs.md). Packet ready (PR #157); the PO is asked for the start signal. T-M2.13 still held."
     }
   ]
 }
