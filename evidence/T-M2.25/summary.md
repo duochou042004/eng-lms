@@ -145,7 +145,7 @@ parameters; three new cases (`?dbname=devdata`, `?Host=db.example.org`, `?servic
 script: 96 passed, 13 failed. Gate on `5141d85`: `gate: PASS (13 steps, 836s)`, e2e 515 passed (`gate-20261113T140600Z.log`, trimmed to 268 lines).
 
 ## Reviews
-- G3: `DOCS-REVIEW T-M2.25:` pending (fresh adversarial docs-reviewer).
+- G3: round 3 `DOCS-REVIEW T-M2.25: PASS` (three fresh adversarial rounds; `review/docs.md`).
 
 ## G3 cost (one row per round; DEC-131 (9))
 | Round | Reviewer | Head | Verdict | S1/S2/S3/S4 | Scope (full / delta) | Agent tokens | Agent min | Gate runs | Gate min |

@@ -395,7 +395,7 @@
       "completedAt": "2026-11-13T14:36:49Z",
       "mergeCommit": "b3cd6fd",
       "evidence": "evidence/T-M2.25/summary.md",
-      "note": "PR #174 via merge-gate (head da37eed, CI 7/7 (0 fast-path)); packet PR #173 (e253c59); gate PASS on 5141d85 (836 s); G3 three adversarial rounds, round 3 PASS (152,000 tokens); first regression run 43444433118: 7 failed -> T-M2.28 (DEC-169)"
+      "note": "PR #174 via merge-gate (head da37eed, CI 7/7 (0 fast-path)); packet PR #173 (e253c59); gate PASS on 5141d85 (836 s); G3 three adversarial rounds, round 3 PASS (153,000 tokens); first regression run 43444433118: 7 failed -> T-M2.28 (DEC-169)"
     }
   ],
   "tests": {
@@ -439,7 +439,7 @@
     },
     "G3": {
       "status": "pass",
-      "note": "T-M2.25: three fresh adversarial docs-reviewers; round 3 DOCS-REVIEW T-M2.25: PASS; 152,000 tokens"
+      "note": "T-M2.25: three fresh adversarial docs-reviewers; round 3 DOCS-REVIEW T-M2.25: PASS; 153,000 tokens"
     },
     "G4": {
       "status": "pass",
