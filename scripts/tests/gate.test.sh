@@ -164,6 +164,8 @@ w e2e/support/mid.ts "export * from './deep'"
 w e2e/support/js.ts "export const js = 1"
 w e2e/support/pkg/index.ts "export const pkg = 1"
 w e2e/support/vi.ts "export const vi = 1"
+w e2e/support/dyn.ts "export const dyn = 1"
+w e2e/support/side.ts "globalThis.side = 1"
 w e2e/support/global-setup.ts "export default async () => {}"
 w e2e/support/data.json '{"a": 1}'
 w e2e/tests/one.spec.ts "import { one } from '../support/one'"
@@ -173,6 +175,8 @@ w e2e/tests/chain.spec.ts "import { deep } from '../support/mid'"
 w e2e/tests/js.spec.ts "import { js } from '../support/js.js'"
 w e2e/tests/idx.spec.ts "import { pkg } from '../support/pkg'"
 w "e2e/tests/học viên.spec.ts" "import { vi } from '../support/vi'"
+w e2e/tests/dyn.spec.ts $'const { dyn } = await import(\n  "../support/dyn"\n)'
+w e2e/tests/side.spec.ts "import '../support/side'"
 g add -A; g commit -qm support-base; g branch -f base
 all_specs=$(cd "$repo/e2e" && find tests -type f -name '*.spec.ts' | sort | paste -sd' ' -)
 # repeat_case <description> <expected specs, space-separated>: the run passes, e2e then one repeat with exactly those specs; then reset.
@@ -224,6 +228,7 @@ reset_case
 
 echo '{"a": 2}' >"$repo/e2e/support/data.json"
 repeat_case "a non-.ts support file" "$all_specs"
+expect_output_contains "all specs: e2e/support/data.json is not a .ts file" "DEC-170: a non-.ts support file: says why"
 reset_case
 
 echo "import { gone } from '../support/gone'" >>"$repo/e2e/tests/one.spec.ts"
@@ -244,6 +249,10 @@ reset_case
 
 echo "export const one = 4" >"$repo/e2e/support/one.ts"; echo "// changed" >>"$repo/e2e/tests/one.spec.ts"
 repeat_case "a changed support file and its changed importer (once)" "tests/one.spec.ts"
+reset_case
+
+echo "export const dyn = 2" >"$repo/e2e/support/dyn.ts"; echo "globalThis.side = 2" >"$repo/e2e/support/side.ts"
+repeat_case "a dynamic import( (multi-line) and a side-effect import" "tests/dyn.spec.ts tests/side.spec.ts"
 reset_case
 
 echo "export const vi = 2" >"$repo/e2e/support/vi.ts"
