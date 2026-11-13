@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-11-12T19:40:00Z",
-  "updatedBy": "lead-coordinator (T-M2.23 merged in shadow mode, DEC-162; records PR)",
+  "updatedAt": "2026-11-12T20:10:00Z",
+  "updatedBy": "lead-coordinator (DEC-163: testing first; T-M2.27 next; handover review)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -30,33 +30,8 @@
     "exitCriteria": "FR-AUTH-01..10 and FR-STU-01..07 accepted; authorization-matrix and student-isolation harnesses fail on any unregistered endpoint; add-student flow E2E at 360/768/1280 within its step budget; security review of authentication passed (docs/01-product/roadmap.md)."
   },
   "currentTask": {
-    "id": "T-M2.13",
-    "title": "Auth and shell feedback follow-ups (T-M2.12 G3, DEC-118)",
-    "status": "ready",
-    "ownerRole": "FE",
-    "branch": "docs/T-M2.13-auth-shell-followups",
-    "packet": "docs/tasks/T-M2.13-auth-shell-followups.md",
-    "pr": "153",
-    "lastCommit": null,
-    "startedAt": null,
-    "entryGate": [
-      "T-M2.21 merged — met (d890aae)"
-    ],
-    "nextSteps": [
-      "HELD by the PO (DEC-156): starts only on a PO start signal; packet ready (DEC-155) with AC8 (flaky Guardians AC4 test, DEC-159)",
-      "Before starting: gh pr update-branch on its PR (a new run is needed since T-M2.23); a real merge needs HEAD = origin/develop (merge-gate step 6)",
-      "PO to place: the data-dependence fix for students.spec.ts:2252 and the flaky loading.spec.ts:173 (run 43165176510)"
-    ],
-    "trace": [
-      "DEC-118",
-      "DEC-119",
-      "DEC-155",
-      "DEC-159"
-    ]
-  },
-  "nextTask": {
-    "id": "T-M2.24",
-    "title": "Split e2e/tests/students.spec.ts into cohesive spec files (T-M2.22 U3; DEC-158 PO-9)",
+    "id": "T-M2.27",
+    "title": "E2E stability before T-M2.13: the three known unstable kept E2E tests (DEC-163)",
     "status": "draft",
     "ownerRole": "FE",
     "branch": null,
@@ -65,15 +40,40 @@
     "lastCommit": null,
     "startedAt": null,
     "entryGate": [
-      "T-M2.13 merged",
-      "T-M2.23 merged — met (d2db003)"
+      "T-M2.23 merged — met (d2db003)",
+      "Packet written by the LC (task-packet skill) and G0 passed"
     ],
     "nextSteps": [
-      "Packet to write after T-M2.13 (task-packet skill); on a PO signal"
+      "LC: write docs/tasks/T-M2.27-e2e-stability.md from the backlog row (a) students.spec.ts:2252, (b) loading.spec.ts:173, (c) Guardians AC4 polling read; G0 by a docs-reviewer; merge the packet",
+      "Then the frontend-implementer on feature/T-M2.27-e2e-stability; gate, CI, G3 (QA), merge, records",
+      "Then T-M2.25, then T-M2.24; T-M2.13 is held until those three are merged (DEC-163); T-M2.26 placement asked of the PO"
+    ],
+    "trace": [
+      "DEC-159",
+      "DEC-162",
+      "DEC-163"
+    ]
+  },
+  "nextTask": {
+    "id": "T-M2.25",
+    "title": "The quality docs promise only what exists; local E2E on its own database per run (T-M2.22 U4, U8 (a); DEC-158)",
+    "status": "draft",
+    "ownerRole": "LC",
+    "branch": null,
+    "packet": null,
+    "pr": null,
+    "lastCommit": null,
+    "startedAt": null,
+    "entryGate": [
+      "T-M2.27 merged"
+    ],
+    "nextSteps": [
+      "Packet after T-M2.27 (task-packet skill); then T-M2.24; T-M2.13 (held, packet ready, PR #153) after T-M2.24"
     ],
     "trace": [
       "DEC-157",
-      "DEC-158"
+      "DEC-158",
+      "DEC-163"
     ]
   },
   "completed": [
@@ -1465,6 +1465,11 @@
       "at": "2026-11-12T19:40:00Z",
       "actor": "lead-coordinator",
       "event": "T-M2.23 merged in shadow mode (PR #158, d2db003, DEC-162). G3 rounds 2 and 3 (N-1 S2 fixed; round 3 PASS WITH MINOR). Local gate e2e failed on dev-DB data; PO ruled 'Clean the dev DB'; purged; e2e PASS. First live switch (b): five heavy push jobs fast-path in shadow, all steps run, marker skipped."
+    },
+    {
+      "at": "2026-11-12T20:10:00Z",
+      "actor": "lead-coordinator",
+      "event": "PO answered the open items (DEC-163): testing work first, then T-M2.13. New T-M2.27 (three unstable E2E tests; loading.spec.ts:173 diagnosed as a 5 s cold-start budget), order T-M2.27 → T-M2.25 → T-M2.24 → T-M2.13; T-M2.13 AC8 moved to T-M2.27. Handover reviewed and fixed."
     }
   ]
 }

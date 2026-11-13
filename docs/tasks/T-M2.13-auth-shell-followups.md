@@ -3,13 +3,13 @@
 | Field | Value |
 |---|---|
 | Milestone | M2 |
-| Status | ready |
+| Status | ready (held: starts after T-M2.27, T-M2.25 and T-M2.24 are merged, DEC-163) |
 | Owner role | FE (frontend-implementer) |
 | Branch | `feature/T-M2.13-auth-shell-followups` (from `develop`) |
-| Depends on | T-M2.12 (`b5596d3`), T-M2.20 (`f3a77fa`, the mutation-cache boundaries), T-M2.21 (`d890aae`): merged |
+| Depends on | T-M2.12 (`b5596d3`), T-M2.20 (`f3a77fa`, the mutation-cache boundaries), T-M2.21 (`d890aae`): merged; T-M2.27, T-M2.25, T-M2.24 (DEC-163): not yet |
 | Estimate | 1–1.5 agent-days |
 | Risk tier | **M**: UI and behaviour, no SEC trigger. Scope 3 changes what the client does after a **failed** `POST /auth/logout` (it no longer pretends the user is signed out), but no endpoint, server code, cookie, CSRF rule, authz rule, DTO, storage or migration changes, and the failure path now keeps only what the server still holds (the live session); T-M2.12 SEC rated O-2 S4. Scope 2 adds a navigation `state` flag with no user data. G3 = **one combined fresh QA+UX reviewer** (qa-protocol §2a) that also checks scope 2 and 3 from the code and the unit tests |
-| Trace | DEC-159 (AC8), DEC-118 (UX-3, UX-4, QA O-1, O-2 deferred here), DEC-119 (UX-6 deferred here), T-M2.12 reviews (`evidence/T-M2.12/review/ux.md` UX-3, UX-4, UX-6; `review/security.md` O-2; `qa/report.md` O-1, O-2); FR-AUTH-04; NFR-A11Y-01, NFR-A11Y-02; design-system §6 item 5 (no hover-only information), §3 (inventory); interaction-states §1 (Error (recoverable), Offline: never a silent failure or an endless busy state); frontend-architecture §2; security.md T19; ux-flows (Log out ≤ 2 steps); DEC-131 (tier M, UI rules); DEC-155 (this packet's decisions) |
+| Trace | DEC-163 (AC8 moved to T-M2.27), DEC-118 (UX-3, UX-4, QA O-1, O-2 deferred here), DEC-119 (UX-6 deferred here), T-M2.12 reviews (`evidence/T-M2.12/review/ux.md` UX-3, UX-4, UX-6; `review/security.md` O-2; `qa/report.md` O-1, O-2); FR-AUTH-04; NFR-A11Y-01, NFR-A11Y-02; design-system §6 item 5 (no hover-only information), §3 (inventory); interaction-states §1 (Error (recoverable), Offline: never a silent failure or an endless busy state); frontend-architecture §2; security.md T19; ux-flows (Log out ≤ 2 steps); DEC-131 (tier M, UI rules); DEC-155 (this packet's decisions) |
 
 ## Goal
 Close the four feedback gaps the T-M2.12 reviews deferred. On a touch phone, the compact workspace-name error says what failed. After a
@@ -81,8 +81,8 @@ description. No new feature, no endpoint change.
      để tải.", en "You're offline. This page needs a connection to load."). The titles do not change.
 
 ## Out of scope (explicit)
-- Any other S3/S4 finding, new feature or copy beyond the keys listed in UI rules. (AC8, the Guardians AC4 polling read in
-  `e2e/tests/students.spec.ts`, is in scope by DEC-159: one test line, no product code.)
+- Any other S3/S4 finding, new feature or copy beyond the keys listed in UI rules. (The Guardians AC4 polling read, AC8 by DEC-159,
+  moved to T-M2.27 by DEC-163.)
 - The `/login` loader's own must-change logout when its call fails (`guards.ts` `login`: there is no finding, and it never held tutor data).
 - A request timeout for a logout that hangs without an answer (the fetch has no timeout today; no finding).
 - The global offline banner for autosave areas (interaction-states §1, M5); O-3 (accepted, DEC-118).
@@ -190,12 +190,9 @@ text; `ForbiddenIdentifiersTest` and the web grep stay green.
   toggletip open, logout alert, `/login` notice (`expectSettledAccessible`). `expectNoMidWordBreak` runs on each new text at 360 in vi.
   Every new string exists in vi and en.
 - AC7: `./scripts/gate.sh` green once on the final head and CI green (DEC-131 (6)). All existing unit and E2E assertions are kept except
-  the changed kept assertions (a)–(e) of the contradiction scan and the AC8 read (same expected value, polling form). The bundle budget is green, `api/openapi.json` and `backend/` are
+  the changed kept assertions (a)–(e) of the contradiction scan. The bundle budget is green, `api/openapi.json` and `backend/` are
   unchanged, and `ForbiddenIdentifiersTest` is green with no exam or curriculum name in `web/src`.
-- AC8 (DEC-159; T-M2.22 U1): in `e2e/tests/students.spec.ts` "Guardians (T-M2.15) AC4: two pages: a stale save opens the conflict dialog…" the
-  single read after the removed-guardian alert, `expect(await guardianNames(page)).toEqual(['Vũ Thị Hư Cấu'])`, becomes a polling read
-  with the same expected value (`await expect.poll(() => guardianNames(page)).toEqual([...])`). No other line of the test changes and no
-  assertion is removed or weakened. That test, selected by title, passes ×20 on `phone-small`, `tablet` and `laptop`.
+- AC8: moved to T-M2.27 (DEC-163: the PO wants the known unstable E2E tests fixed before T-M2.13 starts).
 
 ## Test plan
 - Implementation: unit (`Toggletip`; `useLogout` success and failure, offline not paused; `connectAuthProblems` notice decision per case;
@@ -213,7 +210,6 @@ text; `ForbiddenIdentifiersTest` and the web grep stay green.
   en and the offline Retry announcement. Exploratory charter: find a path where Log out spins without end, fails silently, or shows the
   cross-tab notice when the tab was not signed out by another tab.
 - **Isolation**: no endpoint change; the backend harness stays green.
-- AC8: the Guardians AC4 test, selected by title (`-g`), `--repeat-each=20 --retries=0` on `phone-small`, `tablet` and `laptop`.
 
 ## Evidence required
 - `evidence/T-M2.13/summary.md`, recorded by the LC from the implementer's returned text (L-07): AC → proof, the `frontend-standards`
@@ -221,7 +217,6 @@ text; `ForbiddenIdentifiersTest` and the web grep stay green.
   committed) at 360×740, 768×1024 and 1280×800 of the open toggletip (vi, en), the `/login` notice, the logout failure alert (offline and
   500) in each overlay, and the offline page. G3: the combined `review/ux.md` (+ QA verdict), recorded by the LC on a docs branch; the QA
   report via `qa/T-M2.13` (reviewer evidence never on the feature branch).
-- AC8: the result line of the ×20 run in the summary.
 
 ## Docs to update
 - FR-AUTH-04 AC (functional-requirements.md: a failed logout keeps the page and says the user is still signed in), frontend-architecture §2
