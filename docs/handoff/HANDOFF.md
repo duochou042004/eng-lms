@@ -1,36 +1,35 @@
-# Handoff — 2026-11-13T15:52Z (T-M2.24 packet merged; implementation not started)
+# Handoff — 2026-11-13T18:04Z (T-M2.24 merged; next T-M2.13 on the PO's start signal)
 
-Phase/Milestone: P1 / M2 (in progress) · Task: **T-M2.24** (ready; no feature branch yet) · Branch: `develop` (`f010cd8`; this handoff on
-`docs/T-M2.24-handoff`) · Next: **T-M2.13** (packet ready, PR #153; ask the PO after T-M2.24) · Remote: https://github.com/duochou042004/eng-lms
+Phase/Milestone: P1 / M2 (in progress) · Task: **T-M2.13** (ready; waits for the PO's start signal) · Branch: `develop` (`90bbfe0` before the
+QA PR #179 and this records PR `docs/T-M2.24-records`) · Next after it: **T-M2.28** (draft) before the M2 G5 · Remote: https://github.com/duochou042004/eng-lms
 
 ## Where we are
-- **Merged today:** T-M2.27 (`c5772f0`, DEC-166; records `925d7d2`); T-M2.25 (`b3cd6fd`, DEC-169; records `503eb44`); the T-M2.24 packet
-  (`f010cd8`, PR #176, DEC-170; G0 adversarial: round 1 CHANGES REQUESTED, round 2 no S1/S2 with S3/S4 fixed by the LC, round 3 PASS).
-- **T-M2.24 implementation has not started:** no `feature/T-M2.24-split-students-spec` branch, no subagent running, nothing uncommitted.
-- Local E2E runs on its own per-run database (`englms_e2e`, `.data/e2e/fresh/`); `E2E_KEEP_DB=1` uses the PO's dev DB (G5 only).
-- The first `regression` run (43444433118) failed 7 tests (phone ×2, WebKit smoke ×4 with CSP `style-src-elem` refusals,
-  Firefox smoke ×1) → **T-M2.28**, which also holds the Hikari/Flyway S4 and the e2e-run test race; before the M2 G5, not blocking T-M2.13.
+- **T-M2.24 merged** (`90bbfe0`, PR #178, DEC-171): `students.spec.ts` split into eight files (helpers in `e2e/support/students.ts`);
+  `gate.sh` repeats ×3 the transitive importers of a changed `e2e/support/` file, all specs when unknown (92 fixtures). G3: adversarial
+  docs-reviewer PASS + a qa-evaluator PASS (merge-gate's `feature/` path needs `QA-VERDICT`; DEC-171: feature packets name a QA run at G3).
+- **OQ T-M2.24-1:** `students-list.spec.ts` "… sign-out never asks" (laptop) failed once in ~21 runs (`/login?next=…` after Log out) →
+  T-M2.28 (f). G3 S3-1/S4-2 (a fixture for a helper only `global-setup.ts` imports; global-setup dependants → all specs) → T-M2.28 (g).
+- PR #153 is the T-M2.13 **packet** PR, merged 2026-11-11 (`b1a542f`): the old "gh pr update-branch 153" step was stale; nothing to update.
 
 ## In flight / uncommitted
-- This handoff PR (`docs/T-M2.24-handoff`): open; it needs one docs-reviewer and merge-gate (step 1 below). Nothing else.
+- QA PR #179 (`qa/T-M2.24`, the QA report): LC-APPROVED + merge-gate after CI. Then this records PR (`docs/T-M2.24-records`): one
+  docs-reviewer (records check), `DOCS-REVIEW T-M2.24: PASS` + `LC-APPROVED T-M2.24`, merge-gate. Nothing else.
 
 ## Next steps (in this order)
-1. Merge this handoff PR: one fresh docs-reviewer (records check, text only), then `DOCS-REVIEW T-M2.24: PASS` and `LC-APPROVED T-M2.24`,
-   `./scripts/merge-gate.sh <n>` from an up-to-date `develop`.
-2. `git switch -c feature/T-M2.24-split-students-spec` from `develop`; brief the `frontend-implementer` with
-   `docs/tasks/T-M2.24-split-students-spec.md` (scope 1–5, AC1–AC7; the environment notes in `docs/handoff/next-session-prompt.md`; gate once on the final head; return the
-   summary text). The LC writes `evidence/T-M2.24/summary.md`, updates `progress.json` (`in_review`, `pr` as a string), pushes, opens the PR.
-3. CI (one background `gh pr checks <n> --watch`); G3: one fresh adversarial docs-reviewer that runs `scripts/tests/gate.test.sh`, mutates
-   the new rule in a private clone and reruns the AC2/AC3 comparisons; S1/S2 → an AC + DEC and a delta re-check; merge via merge-gate;
-   records PR (part C: DEC with merge-gate's scope line, `review/docs.md`, backlog and packet `done`, progress, handoff archive).
-4. `gh pr update-branch 153`, then ask the PO to start T-M2.13 (DEC-163, DEC-164).
-5. Later: T-M2.28 before the M2 G5; T-M2.26 after at least 10 shadow PRs and its two probes.
+1. Merge #179, then the records PR (above); `gitlab-sync.sh` after each merge.
+2. Ask the PO for the T-M2.13 start signal (DEC-163, DEC-164; no other PO decision pending).
+3. On the signal: `feature/T-M2.13-…` from `develop`; frontend-implementer with `docs/tasks/T-M2.13-auth-shell-followups.md`; gate; PR; CI;
+   G3 with a QA run (DEC-171); merge-gate; records.
+4. T-M2.28 (a)–(g) before the M2 G5; T-M2.26 after at least 10 shadow PRs and its two probes.
 
 ## Pending PO decisions / actions
-- None open. After T-M2.24: the PO's start signal for T-M2.13.
-- **Dependabot (the PO's):** PRs #135 and #160–#166 need `@dependabot rebase`.
+- The T-M2.13 start signal. **Dependabot (the PO's):** PRs #135 and #160–#166 need `@dependabot rebase`.
 
 ## Gotchas
+- **A `feature/` branch merges only on `QA-VERDICT <task>: PASS`** (merge-gate); a docs-reviewer's `DOCS-REVIEW` counts only on `docs/`/`chore/`.
+  Name the QA run in the packet's G3 (T-M2.24 needed an extra QA round at merge time, DEC-171).
+- **The e2e repeat now follows `e2e/support/` imports** (T-M2.24): a change to `e2e/support/fixtures.ts` repeats all 17 specs ×3 and
+  `auth.ts` 16 (~15 min per project set); budget for it.
 - **Context rule over the goal hook (PO, 2026-11-13):** at ~300k tokens finish the safe step, commit, hand off and **stop**, even if a `/goal`
   Stop hook says the goal is not met: tell the PO the two conflict. This session ran to ~370k because the LC let the hook override the rule.
 - **A DOCS-REVIEW PASS token needs a reviewer's PASS verdict line:** when the LC fixes S3/S4 after a CHANGES REQUESTED delta (PO-6), get a short
@@ -114,5 +113,5 @@ Phase/Milestone: P1 / M2 (in progress) · Task: **T-M2.24** (ready; no feature b
   `evidence/<task>/records/` (delete it) and a ~2,000-line log (trim it to ≤ 300 lines).
 
 ## Files to read first
-`CLAUDE.md` → `progress.json` → this file → DEC-170 → `docs/tasks/T-M2.24-split-students-spec.md` → `scripts/gate.sh` (`changed_files`,
-`e2e_repeat`) → `scripts/tests/gate.test.sh` → `e2e/tests/students.spec.ts` (17 top-level groups) → `docs/09-harness/coding-agent-rules.md`.
+`CLAUDE.md` → `progress.json` → this file → DEC-171 → `docs/tasks/T-M2.13-auth-shell-followups.md` → its trace DECs (DEC-155, DEC-163,
+DEC-164) → `docs/09-harness/coding-agent-rules.md`.

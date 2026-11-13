@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-11-13T17:31:33Z",
-  "updatedBy": "lead-coordinator (T-M2.24 implemented; PR #178 in review)",
+  "updatedAt": "2026-11-13T18:03:59Z",
+  "updatedBy": "lead-coordinator (T-M2.24 merged 90bbfe0; records, DEC-171)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -30,33 +30,6 @@
     "exitCriteria": "FR-AUTH-01..10 and FR-STU-01..07 accepted; authorization-matrix and student-isolation harnesses fail on any unregistered endpoint; add-student flow E2E at 360/768/1280 within its step budget; security review of authentication passed (docs/01-product/roadmap.md)."
   },
   "currentTask": {
-    "id": "T-M2.24",
-    "title": "Split e2e/tests/students.spec.ts into cohesive spec files; gate repeats the specs importing a changed e2e/support file (T-M2.22 U3; DEC-158 PO-9)",
-    "status": "in_review",
-    "ownerRole": "FE",
-    "branch": "feature/T-M2.24-split-students-spec",
-    "packet": "docs/tasks/T-M2.24-split-students-spec.md",
-    "pr": "178",
-    "lastCommit": "5d96ada",
-    "startedAt": "2026-11-13T16:42:30Z",
-    "entryGate": [
-      "T-M2.25 merged — met (b3cd6fd)",
-      "Packet written by the LC (task-packet skill) and G0 passed — met (PR #176, f010cd8)"
-    ],
-    "nextSteps": [
-      "CI on PR #178 (one background gh pr checks --watch)",
-      "G3 by a fresh adversarial docs-reviewer (gate fixtures, mutations of the new rule in a private clone, AC2/AC3 reruns); S1/S2 -> an AC + DEC and a delta re-check",
-      "Merge via merge-gate from an up-to-date develop; records PR (part C: merge DEC with merge-gate's scope line and the OQ T-M2.24-1 ruling, T-M2.28 (f), review/docs.md, backlog and packet done, handoff archive)",
-      "Then gh pr update-branch 153 and ask the PO to start T-M2.13; T-M2.28 before the M2 G5"
-    ],
-    "trace": [
-      "DEC-157",
-      "DEC-158",
-      "DEC-163",
-      "DEC-170"
-    ]
-  },
-  "nextTask": {
     "id": "T-M2.13",
     "title": "Auth and shell feedback follow-ups (T-M2.12 G3, DEC-118)",
     "status": "ready",
@@ -67,16 +40,36 @@
     "lastCommit": null,
     "startedAt": null,
     "entryGate": [
-      "T-M2.27, T-M2.25, T-M2.24 merged (DEC-163)",
+      "T-M2.27, T-M2.25, T-M2.24 merged (DEC-163) — met (90bbfe0)",
       "PO start signal"
     ],
     "nextSteps": [
-      "After T-M2.24: gh pr update-branch 153; ask the PO to start"
+      "PR #153 is the packet PR, merged 2026-11-11 (b1a542f): no update-branch needed (the earlier step was stale)",
+      "On the PO's start signal: feature/T-M2.13-<slug> from develop; frontend-implementer with the packet; gate; PR; CI; G3 (QA for a feature/ branch, DEC-171); merge-gate; records"
     ],
     "trace": [
       "DEC-155",
       "DEC-163",
       "DEC-164"
+    ]
+  },
+  "nextTask": {
+    "id": "T-M2.28",
+    "title": "Follow-ups from T-M2.25 and T-M2.24 before the M2 G5 regression (DEC-169, DEC-171)",
+    "status": "draft",
+    "ownerRole": "FE",
+    "branch": null,
+    "packet": null,
+    "pr": null,
+    "lastCommit": null,
+    "startedAt": null,
+    "nextSteps": [
+      "LC writes the packet from the backlog row (a)-(g); before the M2 G5"
+    ],
+    "trace": [
+      "DEC-169",
+      "DEC-170",
+      "DEC-171"
     ]
   },
   "completed": [
@@ -399,11 +392,19 @@
       "mergeCommit": "b3cd6fd",
       "evidence": "evidence/T-M2.25/summary.md",
       "note": "PR #174 via merge-gate (head da37eed, CI 7/7 (0 fast-path)); packet PR #173 (e253c59); gate PASS on 5141d85 (836 s); G3 three adversarial rounds, round 3 PASS (153,000 tokens); first regression run 43444433118: 7 failed -> T-M2.28 (DEC-169)"
+    },
+    {
+      "id": "T-M2.24",
+      "title": "Split e2e/tests/students.spec.ts into cohesive spec files; gate repeats the specs importing a changed e2e/support file (T-M2.22 U3; DEC-158 PO-9)",
+      "completedAt": "2026-11-13T18:01:34Z",
+      "mergeCommit": "90bbfe0",
+      "evidence": "evidence/T-M2.24/summary.md",
+      "note": "PR #178 via merge-gate (head 6f66b5a, CI 7/7 (0 fast-path)); packet PR #176 (f010cd8); gate run 1 red on one byte-identical flaky test (OQ T-M2.24-1 -> T-M2.28 (f)), run 2 PASS (13 steps, 1003 s) on 5d96ada; G3 DOCS-REVIEW PASS (80,018 tokens) + QA-VERDICT PASS (43,298 tokens); S3-1/S4-2 -> T-M2.28 (g) (DEC-171)"
     }
   ],
   "tests": {
-    "lastRun": "2026-11-13T14:19:56Z",
-    "summary": "T-M2.25 code head 5141d85: gate PASS (13 steps, 836 s), e2e 515 passed / 31 skipped on the per-run englms_e2e; e2e-run tests 109; CI 7/7 on da37eed. First regression run 43444433118 on b3cd6fd: 1,021 passed, 7 failed, 76 skipped (T-M2.28).",
+    "lastRun": "2026-11-13T17:30:53Z",
+    "summary": "T-M2.24 code head 5d96ada: gate PASS (13 steps, 1003 s), e2e 515 passed / 31 skipped, support-rule repeat x3 537 passed; gate.test.sh 92 passed; QA AC4 x3 1,545 passed, 0 failed on 6f66b5a; CI 7/7 on 6f66b5a. First regression run 43444433118 on b3cd6fd: 7 failed (T-M2.28).",
     "suites": [
       {
         "name": "backend (./mvnw -B verify)",
@@ -430,23 +431,23 @@
   "gates": {
     "G0": {
       "status": "pass",
-      "note": "T-M2.25 packet: adversarial docs-reviewer, round 2 PASS (76,105 tokens cumulative), DEC-167; merged e253c59"
+      "note": "T-M2.24 packet: adversarial docs-reviewer, round 3 PASS (DEC-170); merged f010cd8"
     },
     "G1": {
       "status": "pass",
-      "note": "T-M2.25: gate PASS (13 steps, 836 s) on 5141d85, e2e 515 passed on the per-run database (DEC-169)"
+      "note": "T-M2.24: gate PASS (13 steps, 1003 s) on 5d96ada after one red run on a byte-identical flaky test (OQ T-M2.24-1, DEC-171)"
     },
     "G2": {
       "status": "pass",
-      "note": "T-M2.25: CI 7/7 on da37eed (0 fast-path)"
+      "note": "T-M2.24: CI 7/7 on 6f66b5a (0 fast-path)"
     },
     "G3": {
       "status": "pass",
-      "note": "T-M2.25: three fresh adversarial docs-reviewers; round 3 DOCS-REVIEW T-M2.25: PASS; 153,000 tokens"
+      "note": "T-M2.24: DOCS-REVIEW T-M2.24: PASS (adversarial, 80,018 tokens) + QA-VERDICT T-M2.24: PASS (43,298 tokens)"
     },
     "G4": {
       "status": "pass",
-      "note": "T-M2.25 PR #174 merged via merge-gate (b3cd6fd)"
+      "note": "T-M2.24 PR #178 merged via merge-gate (90bbfe0)"
     },
     "G5": {
       "status": "n/a",
@@ -1533,6 +1534,11 @@
       "at": "2026-11-13T17:31:33Z",
       "actor": "lead-coordinator",
       "event": "T-M2.24 implemented on feature/T-M2.24-split-students-spec (frontend-implementer, 154,002 tokens); gate run 1 red on one byte-identical flaky test (OQ T-M2.24-1, to T-M2.28 (f)); LC gate run 2 PASS (13 steps, 1003s) on 5d96ada; PR #178 opened."
+    },
+    {
+      "at": "2026-11-13T18:03:59Z",
+      "actor": "lead-coordinator",
+      "event": "T-M2.24 merged (90bbfe0, PR #178, DEC-171); QA report PR #179; records PR; OQ T-M2.24-1 and G3 S3-1/S4-2 to T-M2.28 (f)/(g); next T-M2.13 on the PO's start signal."
     }
   ]
 }

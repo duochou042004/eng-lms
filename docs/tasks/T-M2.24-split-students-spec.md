@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Milestone | M2 |
-| Status | ready |
+| Status | done (`90bbfe0`, DEC-171) |
 | Owner role | FE (`frontend-implementer`; the `gate.sh` change and its fixtures are in the same PR) |
 | Branch | `feature/T-M2.24-split-students-spec` (from `develop`); this packet on `docs/T-M2.24-split-students-spec` |
 | Depends on | T-M2.27 (`c5772f0`), T-M2.25 (`b3cd6fd`) and their records: merged |

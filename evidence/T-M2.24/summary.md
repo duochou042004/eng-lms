@@ -30,7 +30,7 @@ Branch feature/T-M2.24-split-students-spec (from `develop` 50f73c4) · split `e0
 | AC4 | `./scripts/e2e-run.sh --project=phone-small --project=tablet --project=laptop --repeat-each=3 --retries=0`: `93 skipped / 1545 passed (13.2m)`, 0 failed, exit 0 | pass |
 | AC5 | `bash scripts/tests/gate.test.sh`: `-> 92 passed, 0 failed`; `scripts/tests/run-all.sh`: `script tests: PASS`; fixtures and mutations below | pass |
 | AC6 | `git grep -n 'students\.spec\.ts' -- docs/05-frontend/ux-flows.md docs/04-backend/security.md`: none; F2 → `students-list`, F10 → `students-account`, F11 → `students-guardians`, F12 → `students-learning-profile`; security.md:36 → `students-list.spec.ts` AC7; the T-M2.28 row (a) → `students-list.spec.ts`; the T-M2.20, T-M2.22, T-M2.27, T-M2.24 rows untouched | pass |
-| AC7 | Gate run 2 above (green); CI on the PR: LC | gate pass, CI pending |
+| AC7 | Gate run 2 above (green); CI 7/7 (0 fast-path) on `6f66b5a` | pass |
 
 ## AC2 commands and output
     (cd e2e && pnpm exec playwright test --list) > list-before-raw.txt   # on the pre-change tree (git diff --quiet develop HEAD -- e2e)
@@ -85,7 +85,7 @@ dynamic `import(` across lines + side-effect `import '…'`; `tests/học viên.
 | M11 | `from`-only regex | the dynamic/side-effect case (91/1; passed every fixture before `b8227e4` added it) |
 
 ## Open questions
-- **OQ T-M2.24-1 (LC ruling, recorded in the merge DEC; to T-M2.28 as (f)):** `students-list.spec.ts:207` "Add student (F2) and the credentials
+- **OQ T-M2.24-1 (LC ruling, DEC-171; T-M2.28 (f)):** `students-list.spec.ts:207` "Add student (F2) and the credentials
   card › AC6: … sign-out never asks" (laptop) failed once in gate run 1: after Log out on a fresh sign-in context the URL was
   `/login?next=%2Ftutor%2Fstudents%2Fnew`, not `/login`. The block is byte-identical to the old one (AC3) and passed 9/9 on laptop in the ×3 run,
   so it is not the split; likely a race where the signed-out guard's redirect (keeping `next`) beats the logout's own navigation (not diagnosed).
@@ -98,5 +98,9 @@ search keeps a visited set; no fixture).
 ## G3 cost (one row per round; DEC-131 (9))
 | Round | Reviewer | Head | Verdict | S1/S2/S3/S4 | Scope (full / delta) | Agent tokens | Agent min | Gate runs | Gate min |
 |---|---|---|---|---|---|---|---|---|---|
+| 1 | docs-reviewer (fresh, adversarial) | `6f66b5a` | PASS | 0/0/1/4 | full | 80,018 | 9.4 | 0 | 0 |
+| 1b | qa-evaluator (fresh; runtime part, DEC-171) | `6f66b5a` | PASS | 0/0/0/1 | full (AC4, live rule) | 43,298 | 13.0 | 0 (E2E ×3 11.4 min) | 0 |
 
-Implementation: frontend-implementer 154,002 tokens, 35.2 min, 84 tool uses.
+Implementation: frontend-implementer 154,002 tokens, 35.2 min, 84 tool uses; LC gate run 2: 16.7 min.
+
+Merged `90bbfe0` (PR #178, DEC-171); verdicts `DOCS-REVIEW T-M2.24: PASS` (`review/docs.md`) and `QA-VERDICT T-M2.24: PASS` (`qa/report.md`); S3-1 and S4-2 → T-M2.28 (g), OQ T-M2.24-1 → T-M2.28 (f).
