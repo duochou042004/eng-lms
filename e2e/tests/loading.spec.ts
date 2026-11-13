@@ -175,6 +175,7 @@ test.describe(() => {
     const release = await slowDown(page, PAGES[0].chunk, true)
     await page.goto('/tutor', { waitUntil: 'commit' })
     const region = page.getByRole('status', { name: LOADING_LABEL.en })
+    await expect(region).toHaveAttribute('aria-busy', 'true')
     await expect(region.locator('[data-shown]')).toHaveCount(1)
     await evidenceShot(page, testInfo, 'route-loading-tutor-en')
     release()

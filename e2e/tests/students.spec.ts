@@ -1802,7 +1802,7 @@ test.describe('Guardians (T-M2.15)', () => {
     const removed = guardiansRegion(page).getByText('Phụ huynh này đã bị xoá ở một tab hoặc cửa sổ khác.')
     await expect(removed).toBeVisible()
     await expect(page.locator('#guardians-removed')).toBeFocused()
-    expect(await guardianNames(page)).toEqual(['Vũ Thị Hư Cấu'])
+    await expect.poll(() => guardianNames(page)).toEqual(['Vũ Thị Hư Cấu'])
     await expectSettledAccessible(page)
     await shot(page, testInfo, 'guardian-removed-elsewhere-vi')
     await page.getByRole('button', { name: 'Thêm phụ huynh' }).click()
@@ -2212,13 +2212,19 @@ test.describe('Focus after an action removes or disables its own control (T-M2.1
   const listAlert = (page: Page) => page.getByRole('alert').filter({ hasText: 'Không tải được danh sách học viên' })
   const listShown = (page: Page) => page.getByRole('table').or(page.getByRole('list', { name: 'Học viên' }))
   const anyCheck = (url: URL) => url.searchParams.get('size') === '1'
-  /** No active or paused student, only archived ones (simulated): the default view is empty; the rest passes through. */
-  const onlyArchived = (page: Page) =>
+  /**
+   * No active or paused student, only archived ones (simulated): the default view is empty; the rest passes through. With
+   * `q`, the archived-inclusive list request (not the `size=1` check) carries it, so the test's own student is on the
+   * first page whatever else the DB holds (DEC-165); the page URL keeps no `q`.
+   */
+  const onlyArchived = (page: Page, q?: string) =>
     page.route('**/api/v1/tutor/students?**', (route) => {
       const url = new URL(route.request().url())
-      return anyCheck(url) || url.searchParams.getAll('status').includes('ARCHIVED')
-        ? route.fallback()
-        : route.fulfill({ json: { items: [], page: 0, size: 25, totalItems: 0, totalPages: 0 } })
+      if (anyCheck(url)) return route.fallback()
+      if (!url.searchParams.getAll('status').includes('ARCHIVED'))
+        return route.fulfill({ json: { items: [], page: 0, size: 25, totalItems: 0, totalPages: 0 } })
+      if (q) url.searchParams.set('q', q)
+      return route.fallback({ url: url.toString() })
     })
   const noActive = (page: Page) =>
     page.getByRole('heading', { level: 2, name: 'Không có học viên đang học hoặc tạm nghỉ' })
@@ -2250,11 +2256,23 @@ test.describe('Focus after an action removes or disables its own control (T-M2.1
   })
 
   test('only archived students: Include archived: focus to the toolbar control', async ({ page }) => {
-    await onlyArchived(page)
+    const fullName = `Chỉ Lưu Trữ ${token()}`
+    await onlyArchived(page, fullName)
     await page.goto('/tutor/students')
+    const archived = await apiStudent(page, { fullName, username: `e2e-only-arch-${token()}` })
+    const status = await apiCall(page, 'POST', `/api/v1/tutor/students/${archived.student.id}/status`, {
+      status: 'ARCHIVED',
+      version: archived.student.version,
+    })
+    expect(status.status).toBe(200)
     await page.getByRole('main').getByRole('button', { name: 'Gồm cả học viên đã lưu trữ' }).click()
     await expect(noActive(page)).toHaveCount(0)
-    await expect(page.getByText('Đã lưu trữ', { exact: true }).first()).toBeVisible()
+    await expect(page).not.toHaveURL(/[?&]q=/)
+    const row = page
+      .getByRole('row')
+      .or(page.getByRole('listitem'))
+      .filter({ has: page.getByRole('link', { name: fullName }) })
+    await expect(row.getByText('Đã lưu trữ', { exact: true })).toBeVisible()
     await expectFocusNotLost(page)
     await expect(page.getByRole('checkbox', { name: 'Gồm cả học viên đã lưu trữ' })).toBeFocused()
   })
