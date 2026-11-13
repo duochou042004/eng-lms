@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-11-13T09:40:09Z",
-  "updatedBy": "lead-coordinator (T-M2.27 in review, PR #170)",
+  "updatedAt": "2026-11-13T10:00:33Z",
+  "updatedBy": "lead-coordinator (T-M2.27 records, DEC-166)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -30,31 +30,6 @@
     "exitCriteria": "FR-AUTH-01..10 and FR-STU-01..07 accepted; authorization-matrix and student-isolation harnesses fail on any unregistered endpoint; add-student flow E2E at 360/768/1280 within its step budget; security review of authentication passed (docs/01-product/roadmap.md)."
   },
   "currentTask": {
-    "id": "T-M2.27",
-    "title": "E2E stability before T-M2.13: the three known unstable kept E2E tests (DEC-163)",
-    "status": "in_review",
-    "ownerRole": "FE",
-    "branch": "feature/T-M2.27-e2e-stability",
-    "packet": "docs/tasks/T-M2.27-e2e-stability.md",
-    "pr": "170",
-    "lastCommit": "86ee35c",
-    "startedAt": "2026-11-13T09:40:09Z",
-    "entryGate": [
-      "T-M2.23 merged — met (d2db003)",
-      "Packet written by the LC (task-packet skill) and G0 passed — met (PR #169, 6f284c4)"
-    ],
-    "nextSteps": [
-      "CI on PR #170, then G3 by one qa-evaluator (DEC-165), merge via merge-gate from develop, records PR",
-      "Then T-M2.25, then T-M2.24 (packets first); then ask the PO to start T-M2.13"
-    ],
-    "trace": [
-      "DEC-159",
-      "DEC-162",
-      "DEC-163",
-      "DEC-165"
-    ]
-  },
-  "nextTask": {
     "id": "T-M2.25",
     "title": "The quality docs promise only what exists; local E2E on its own database per run (T-M2.22 U4, U8 (a); DEC-158)",
     "status": "draft",
@@ -65,10 +40,34 @@
     "lastCommit": null,
     "startedAt": null,
     "entryGate": [
-      "T-M2.27 merged"
+      "T-M2.27 merged — met (c5772f0)",
+      "Packet written by the LC (task-packet skill) and G0 passed"
     ],
     "nextSteps": [
-      "Packet after T-M2.27 (task-packet skill); then T-M2.24; T-M2.13 (held, packet ready, PR #153) after T-M2.24"
+      "LC: write docs/tasks/T-M2.25-*.md from the backlog row (task-packet skill); G0; merge the packet; then build it",
+      "Then T-M2.24 (packet first); then ask the PO to start T-M2.13 (gh pr update-branch 153 first)"
+    ],
+    "trace": [
+      "DEC-157",
+      "DEC-158",
+      "DEC-163"
+    ]
+  },
+  "nextTask": {
+    "id": "T-M2.24",
+    "title": "Split e2e/tests/students.spec.ts into cohesive spec files; gate repeats the specs importing a changed e2e/support file (T-M2.22 U3; DEC-158 PO-9)",
+    "status": "draft",
+    "ownerRole": "FE",
+    "branch": null,
+    "packet": null,
+    "pr": null,
+    "lastCommit": null,
+    "startedAt": null,
+    "entryGate": [
+      "T-M2.25 merged"
+    ],
+    "nextSteps": [
+      "Packet after T-M2.25; then T-M2.13 (held, packet ready, PR #153)"
     ],
     "trace": [
       "DEC-157",
@@ -380,11 +379,19 @@
       "mergeCommit": "d2db003",
       "evidence": "evidence/T-M2.23/summary.md",
       "note": "PR #158 via merge-gate (head d3d20f1, CI 7/7, every heavy job in full); shadow mode; G3 three rounds (round 3 PASS WITH MINOR, 361,892 tokens); gate green in two parts (12 steps on 299f508; e2e on 29bc181 after the PO-approved dev-DB purge); first live switch (b) on d2db003: five heavy push jobs fast-path in shadow, all steps run, marker skipped (DEC-162)"
+    },
+    {
+      "id": "T-M2.27",
+      "title": "E2E stability before T-M2.13: the three known unstable kept E2E tests (DEC-163)",
+      "completedAt": "2026-11-13T09:59:05Z",
+      "mergeCommit": "c5772f0",
+      "evidence": "evidence/T-M2.27/summary.md",
+      "note": "PR #170 via merge-gate (head edfeec4, CI 7/7 (0 fast-path)); packet PR #169 (6f284c4, G0 round 2 PASS); gate PASS on 86ee35c (e2e 515 passed); AC5 60/60 ×3; G3 qa-evaluator PASS WITH MINOR (2 × S4; 53,720 tokens) (DEC-166)"
     }
   ],
   "tests": {
-    "lastRun": "2026-11-12T18:58:42Z",
-    "summary": "T-M2.23 final code: gate 12 steps OK on 299f508 (scripts 202 s; backend and contract-drift skipped), e2e on 29bc181 after the dev-DB purge: 515 passed / 31 skipped (291 s). Script suites: ci-scope 243, ci-scope-workflows 85, merge-gate 418, check-docs 86. CI 7/7 on d3d20f1; push runs 7/7 on d2db003.",
+    "lastRun": "2026-11-13T09:38:16Z",
+    "summary": "T-M2.27 code head 86ee35c: gate PASS (13 steps, 970 s; backend and contract-drift skipped), e2e 515 passed / 31 skipped, changed specs ×3 573 passed / 3 skipped; AC5 ×20 on three projects 60/60 for each changed test. CI 7/7 on edfeec4.",
     "suites": [
       {
         "name": "backend (./mvnw -B verify)",
@@ -411,23 +418,23 @@
   "gates": {
     "G0": {
       "status": "pass",
-      "note": "T-M2.23 packet: docs-reviewer PASS WITH MINOR (141,820 tokens, 9.3 min), DEC-160; merged c090d40"
+      "note": "T-M2.27 packet: one docs-reviewer, round 1 CHANGES REQUESTED, round 2 PASS (48,975 tokens cumulative, 162.4 s last round), DEC-165; merged 6f284c4"
     },
     "G1": {
       "status": "pass",
-      "note": "T-M2.23: gate on the final code in two parts (299f508: 12 steps; 29bc181: e2e 515 passed after the PO-approved dev-DB purge), DEC-162"
+      "note": "T-M2.27: gate PASS (13 steps, 970 s) on 86ee35c, e2e 515 passed, 31 skipped (DEC-166)"
     },
     "G2": {
       "status": "pass",
-      "note": "T-M2.23: CI 7/7 on d3d20f1, every heavy job in full (shadow mode); push runs 7/7 on d2db003"
+      "note": "T-M2.27: CI 7/7 on edfeec4 (0 fast-path)"
     },
     "G3": {
       "status": "pass",
-      "note": "T-M2.23: three fresh docs-reviewers; round 3 DOCS-REVIEW T-M2.23: PASS (PASS WITH MINOR); 361,892 tokens, 2,901.4 s"
+      "note": "T-M2.27: one fresh qa-evaluator, QA-VERDICT PASS WITH MINOR (2 × S4), 53,720 tokens, 336.6 s"
     },
     "G4": {
-      "status": "pending",
-      "note": "T-M2.23 implementation PR #158 not merged"
+      "status": "pass",
+      "note": "T-M2.27 PR #170 merged via merge-gate (c5772f0)"
     },
     "G5": {
       "status": "n/a",
@@ -788,6 +795,13 @@
       "status": "approved",
       "at": "2026-11-12T12:06:51Z",
       "ref": "DEC-161"
+    },
+    {
+      "what": "LC-APPROVED T-M2.27 (PR #170)",
+      "by": "LC",
+      "status": "approved",
+      "at": "2026-11-13T09:59:05Z",
+      "ref": "DEC-166"
     }
   ],
   "environment": {
@@ -1475,6 +1489,11 @@
       "at": "2026-11-12T20:45:00Z",
       "actor": "lead-coordinator",
       "event": "PO: T-M2.13 does not wait for T-M2.26 (DEC-164)."
+    },
+    {
+      "at": "2026-11-13T10:00:33Z",
+      "actor": "lead-coordinator",
+      "event": "T-M2.27 merged (c5772f0, PR #170; packet PR #169; DEC-165, DEC-166). Current task T-M2.25 (draft), then T-M2.24, then T-M2.13."
     }
   ]
 }
