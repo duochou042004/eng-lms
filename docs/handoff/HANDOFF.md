@@ -1,7 +1,7 @@
 # Handoff — 2026-11-13T18:04Z (T-M2.24 merged; next T-M2.13 on the PO's start signal)
 
-Phase/Milestone: P1 / M2 (in progress) · Task: **T-M2.13** (ready; waits for the PO's start signal) · Branch: `develop` (`90bbfe0` before the
-QA PR #179 and this records PR `docs/T-M2.24-records`) · Next after it: **T-M2.28** (draft) before the M2 G5 · Remote: https://github.com/duochou042004/eng-lms
+Phase/Milestone: P1 / M2 (in progress) · Task: **T-M2.13** (ready; waits for the PO's start signal) · Branch: `develop` (`000c7a6`: T-M2.24 `90bbfe0` and its QA PR #179;
+this records PR on `docs/T-M2.24-records`) · Next after it: **T-M2.28** (draft) before the M2 G5 · Remote: https://github.com/duochou042004/eng-lms
 
 ## Where we are
 - **T-M2.24 merged** (`90bbfe0`, PR #178, DEC-171): `students.spec.ts` split into eight files (helpers in `e2e/support/students.ts`);
@@ -12,11 +12,11 @@ QA PR #179 and this records PR `docs/T-M2.24-records`) · Next after it: **T-M2.
 - PR #153 is the T-M2.13 **packet** PR, merged 2026-11-11 (`b1a542f`): the old "gh pr update-branch 153" step was stale; nothing to update.
 
 ## In flight / uncommitted
-- QA PR #179 (`qa/T-M2.24`, the QA report): LC-APPROVED + merge-gate after CI. Then this records PR (`docs/T-M2.24-records`): one
+- QA PR #179 merged (`000c7a6`). This records PR (`docs/T-M2.24-records`): open; one
   docs-reviewer (records check), `DOCS-REVIEW T-M2.24: PASS` + `LC-APPROVED T-M2.24`, merge-gate. Nothing else.
 
 ## Next steps (in this order)
-1. Merge #179, then the records PR (above); `gitlab-sync.sh` after each merge.
+1. Merge the records PR (above); `gitlab-sync.sh` after each merge.
 2. Ask the PO for the T-M2.13 start signal (DEC-163, DEC-164; no other PO decision pending).
 3. On the signal: `feature/T-M2.13-…` from `develop`; frontend-implementer with `docs/tasks/T-M2.13-auth-shell-followups.md`; gate; PR; CI;
    G3 with a QA run (DEC-171); merge-gate; records.

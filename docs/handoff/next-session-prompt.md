@@ -1,8 +1,8 @@
 You are resuming the Eng-LMS project (private 1:1 teaching workspace for ONE English tutor; no hard-coded curricula) as Lead Coordinator in /home/linux/Projects/eng-lms.
 Read in order: CLAUDE.md, progress.json, docs/handoff/HANDOFF.md, DEC-171 in docs/10-governance/decision-log.md, docs/tasks/T-M2.13-auth-shell-followups.md, docs/09-harness/coding-agent-rules.md.
-State: P1/M2. T-M2.24 merged (90bbfe0, PR #178, DEC-171). Current task T-M2.13 (ready; packet merged in PR #153, b1a542f; waits for the PO's start signal). The QA PR #179 (qa/T-M2.24) and the records PR docs/T-M2.24-records may still be open. Start: git fetch; git switch develop; git pull --ff-only; git status clean.
+State: P1/M2. T-M2.24 merged (90bbfe0, PR #178, DEC-171). Current task T-M2.13 (ready; packet merged in PR #153, b1a542f; waits for the PO's start signal). The records PR docs/T-M2.24-records may still be open (QA PR #179 merged, 000c7a6). Start: git fetch; git switch develop; git pull --ff-only; git status clean.
 Do next:
-1. If #179 is open: LC-APPROVED T-M2.24, merge via merge-gate. If the records PR is open: one docs-reviewer (records check, text only), DOCS-REVIEW T-M2.24: PASS + LC-APPROVED T-M2.24, merge via merge-gate. gitlab-sync after each merge.
+1. If the records PR is open: one docs-reviewer (records check, text only), DOCS-REVIEW T-M2.24: PASS + LC-APPROVED T-M2.24, merge via merge-gate. gitlab-sync after each merge.
 2. Ask the PO for the T-M2.13 start signal. On it: feature/T-M2.13-<slug> from develop; frontend-implementer with the packet; gate once on the final head; LC summary, progress, push, PR.
 3. CI; G3 including a fresh qa-evaluator (a feature/ branch needs QA-VERDICT, DEC-171); merge via merge-gate; QA PR then records PR (part C).
 4. T-M2.28 (a)-(g) before the M2 G5.
