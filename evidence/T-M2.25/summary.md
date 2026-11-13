@@ -152,8 +152,13 @@ script: 96 passed, 13 failed. Gate on `5141d85`: `gate: PASS (13 steps, 836s)`, 
 |---|---|---|---|---|---|---|---|---|---|
 | 1 | docs-reviewer (fresh, adversarial) | `ef5f0a6` | CHANGES REQUESTED | 0/0/3/2 | full | 73,871 | 9.7 | 0 | 0 |
 | 2 | docs-reviewer (fresh, adversarial) | `83e2296` | CHANGES REQUESTED | 0/0/1/0 | delta (F1–F3) | 48,255 | 2.9 | 1 (fix round) | 13.9 |
+| 3 | docs-reviewer (fresh, adversarial) | `da37eed` | PASS | 0/0/0/1 | delta (F2-bis) | 30,874 | 1.5 | 0 | 0 |
 
 ## LC notes
 - Implementer: one `general-purpose` subagent briefed by the LC (DEC-167 (6)): 211,315 tokens, 2,605.5 s (43.4 min), 109 tool uses; one gate run (797 s).
 - Summary recorded by the LC from the implementer's returned text (the harness blocked the agent's write).
 
+
+## Merge and first regression run
+- Merged: PR #174, `b3cd6fd` (DEC-169); G3 round 3 `DOCS-REVIEW T-M2.25: PASS` (`review/docs.md`).
+- First `regression` run 43444433118 on `b3cd6fd`: failure, 1,021 passed, 7 failed, 76 skipped (29.5 min): `phone` ×2, `webkit-smoke` ×4, `firefox-smoke` ×1 → T-M2.28.

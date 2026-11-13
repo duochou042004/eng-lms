@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Milestone | M2 |
-| Status | ready |
+| Status | done (`b3cd6fd`, DEC-169) |
 | Owner role | LC (the LC briefs one implementer subagent at a time on the branch; the LC reviews, commits records and merges) |
 | Branch | `chore/T-M2.25-quality-docs-truth` (from `develop`); this packet on `docs/T-M2.25-quality-docs-truth` |
 | Depends on | T-M2.27 (`c5772f0`) and its records: merged |
