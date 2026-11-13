@@ -1,0 +1,80 @@
+name: regression
+
+# Manual regression run (T-M2.25, DEC-158 PO-3; ci-cd.md §1): every Playwright project (the six viewports on Chromium, plus
+# Firefox and WebKit smoke at the laptop viewport, E2E_ENGINES=all in e2e/playwright.config.ts) against the packaged app on an
+# empty database. Started by hand only (workflow_dispatch): not a required check, no CI scope (scripts/tests/ci-scope-workflows.test.sh
+# lists it as manual-only). The steps are those of e2e-smoke.yml without its CI-scope parts.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  regression:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 75
+    services:
+      postgres:
+        # Same image as the dev stack (tech-stack §7), pinned by index digest.
+        image: docker.io/library/postgres:18@sha256:5a5a84b19854a9ffaa54082c166ff4ec27473a361e496e5ea167f298f2da9722
+        env:
+          POSTGRES_DB: englms
+          POSTGRES_USER: englms
+          # Throwaway credential of an ephemeral CI database; not a secret.
+          POSTGRES_PASSWORD: englms-ci
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U englms -d englms"
+          --health-interval 5s --health-timeout 5s --health-retries 20
+    env:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/englms
+      SPRING_DATASOURCE_USERNAME: englms
+      SPRING_DATASOURCE_PASSWORD: englms-ci
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
+        with:
+          distribution: temurin
+          java-version: "25"
+          cache: maven
+          cache-dependency-path: backend/pom.xml
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: "24"
+      - name: Enable pnpm
+        run: corepack enable
+      - name: Install e2e dependencies and the three browsers
+        working-directory: e2e
+        run: |
+          pnpm install --frozen-lockfile
+          pnpm exec playwright install --with-deps chromium firefox webkit
+      - name: Typecheck the e2e suite
+        working-directory: e2e
+        run: pnpm typecheck
+      - name: Typecheck the QA suite
+        working-directory: qa
+        run: |
+          pnpm install --frozen-lockfile
+          pnpm typecheck
+      # Builds web/dist + the jar with the SPA, starts it on :8080/:8081, runs Playwright, always stops the app.
+      - name: All projects (six viewports, Firefox and WebKit smoke)
+        run: E2E_ENGINES=all ./scripts/e2e-run.sh
+      - name: Upload the Playwright report
+        id: upload-playwright-report
+        if: failure()
+        continue-on-error: true
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: regression-playwright-report
+          path: |
+            e2e/playwright-report/
+            e2e/test-results/
+            backend/target/e2e-app.log
+          retention-days: 5
+      - name: Warn when the Playwright report upload failed
+        if: always() && steps.upload-playwright-report.outcome == 'failure'
+        run: echo "::warning title=Playwright report not uploaded::The regression-playwright-report artifact upload failed (storage quota?); re-run the workflow."

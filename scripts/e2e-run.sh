@@ -3,19 +3,22 @@
 # same layout as the image (deploy/Containerfile), on :8080 (management :8081) against PostgreSQL 18. The app is always
 # stopped afterwards, also when a test or the build fails. Usage:
 #   ./scripts/e2e-run.sh [--no-build] [playwright args...]     e.g. --project=phone-small --project=tablet --project=laptop
-# Database: with a .env file, the dev DB is started with scripts/dev-up.sh and .env is loaded; without one (CI), the
-# SPRING_DATASOURCE_* variables must already be set. E2E_READY_TIMEOUT (default 120) bounds the startup wait;
-# E2E_CHECK_PORTS (default "8080 8081") lists the ports that must be free.
+# Database: with a .env file (local), .env is loaded, the dev DB is started with scripts/dev-up.sh, and the run uses its own
+# database E2E_DB_NAME (default englms_e2e) in the dev container, dropped and created at the start of every run (Flyway builds
+# the schema) and left in place afterwards; its data folder is .data/e2e/fresh/. E2E_KEEP_DB=1 uses the .env database and
+# .data/e2e/ instead (the G5 run on a large data set). Both are read from the caller's environment only; .env cannot set them.
+# Without .env (CI), the SPRING_DATASOURCE_* variables must already be set. E2E_READY_TIMEOUT (default 120) bounds the startup
+# wait; E2E_CHECK_PORTS (default "8080 8081") lists the ports that must be free.
 # Sign-in (T-M2.4): the app starts with its own tutor bootstrap (username e2e-tutor, password file
-# .data/e2e/tutor-bootstrap-password, generated once, git-ignored, dev-only) and a raised per-IP login throttle; both
-# override .env for this process only. Playwright's global setup signs in and keeps the changed password in .data/e2e/.
+# <data folder>/tutor-bootstrap-password, generated once, git-ignored, dev-only) and a raised per-IP login throttle; both
+# override .env for this process only. Playwright's global setup signs in and keeps the changed password in the data folder.
 source "$(dirname "$0")/lib/require-bash.sh"
 set -uo pipefail
 ROOT=$(cd "$(dirname "$0")/.." && pwd)
 READY_TIMEOUT=${E2E_READY_TIMEOUT:-120}
 APP_LOG="$ROOT/backend/target/e2e-app.log"
 
-usage() { sed -n '2,7p' "$0" | sed 's/^# \{0,1\}//'; }
+usage() { sed -n '2,11p' "$0" | sed 's/^# \{0,1\}//'; }
 build=1
 args=()
 for arg in "$@"; do
@@ -34,18 +37,53 @@ for port in ${E2E_CHECK_PORTS:-8080 8081}; do
   fi
 done
 
+E2E_DATA="$ROOT/.data/e2e"
 if [[ -f "$ROOT/.env" ]]; then
-  "$ROOT/scripts/dev-up.sh" || exit 1
+  # The two inputs come from the caller only (T-M2.25): saved before .env is sourced, restored after it.
+  name_set=${E2E_DB_NAME+1} db_name=${E2E_DB_NAME-englms_e2e} keep_set=${E2E_KEEP_DB+1} keep_db=${E2E_KEEP_DB-}
   set -a
   # shellcheck disable=SC1091
   source "$ROOT/.env"
   set +a
+  unset E2E_DB_NAME E2E_KEEP_DB
+  [[ -n "$name_set" ]] && export E2E_DB_NAME="$db_name"
+  [[ -n "$keep_set" ]] && export E2E_KEEP_DB="$keep_db"
+  fresh=0
+  if [[ "$keep_db" != 1 ]]; then
+    fresh=1
+    refuse() { echo "e2e-run: E2E_DB_NAME='$db_name' refused: $1 (set E2E_KEEP_DB=1 to use the .env database)" >&2; exit 1; }
+    db_user=${ENGLMS_DEV_DB_USER:-englms} dev_name=${ENGLMS_DEV_DB_NAME:-englms} dev_port=${ENGLMS_DEV_DB_PORT:-5432}
+    [[ "$db_name" =~ ^[a-z][a-z0-9_]{0,62}$ ]] || refuse "the name must match ^[a-z][a-z0-9_]{0,62}\$"
+    [[ "$db_user" =~ ^[a-z_][a-z0-9_]*$ ]] || refuse "ENGLMS_DEV_DB_USER '$db_user' is not a plain identifier"
+    [[ "${SPRING_DATASOURCE_URL:-}" =~ ^jdbc:postgresql://([^/:?]+)(:([0-9]+))?/([^/?]+)(\?.*)?$ ]] ||
+      refuse "the .env SPRING_DATASOURCE_URL is not a jdbc:postgresql://host:port/database URL"
+    url_host=${BASH_REMATCH[1]} url_port=${BASH_REMATCH[3]:-5432} url_db=${BASH_REMATCH[4]} url_params=${BASH_REMATCH[5]}
+    [[ "$url_host" == 127.0.0.1 || "$url_host" == localhost ]] && [[ "$url_port" == "$dev_port" ]] ||
+      refuse "the .env SPRING_DATASOURCE_URL points at $url_host:$url_port, not the dev container on 127.0.0.1:$dev_port"
+    for other in "${dev_name,,}" "${url_db,,}" postgres template0 template1; do
+      [[ "$db_name" != "$other" ]] || refuse "it is the dev database or a system database ($other)"
+    done
+  fi
+  "$ROOT/scripts/dev-up.sh" || exit 1
+  if ((fresh)); then
+    # dev-up exports the engine only in its own process.
+    # shellcheck source=scripts/lib/engine.sh
+    source "$ROOT/scripts/lib/engine.sh" || exit 1
+    echo "e2e-run: recreating the E2E database $db_name in englms-dev-db"
+    # Two statements: DROP DATABASE cannot run inside a transaction block.
+    "$ENGLMS_CONTAINER_ENGINE" exec englms-dev-db psql -U "$db_user" -d postgres -v ON_ERROR_STOP=1 \
+      -c "DROP DATABASE IF EXISTS $db_name WITH (FORCE)" -c "CREATE DATABASE $db_name OWNER $db_user" ||
+      { echo "e2e-run: could not recreate the E2E database $db_name" >&2; exit 1; }
+    export SPRING_DATASOURCE_URL="jdbc:postgresql://$url_host:$url_port/$db_name$url_params"
+    E2E_DATA="$ROOT/.data/e2e/fresh"
+    mkdir -p "$E2E_DATA" && chmod 700 "$ROOT/.data/e2e" "$E2E_DATA"
+    rm -rf "${E2E_DATA:?}/tutor-password" "${E2E_DATA:?}/state"
+  fi
 elif [[ -z "${SPRING_DATASOURCE_URL:-}" ]]; then
   echo "e2e-run: no .env and no SPRING_DATASOURCE_URL; create .env (cp .env.example .env) or export the datasource variables" >&2
   exit 1
 fi
 
-E2E_DATA="$ROOT/.data/e2e"
 mkdir -p "$E2E_DATA" && chmod 700 "$E2E_DATA"
 if [[ ! -s "$E2E_DATA/tutor-bootstrap-password" ]]; then
   # 24 random URL-safe characters: passes the password policy (10–128, not common, not the username).

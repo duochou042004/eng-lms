@@ -5,7 +5,7 @@
 #   --from <step>  start at <step> (resume after fixing a failure)
 # With ENGLMS_TASK=<task id> (e.g. T-M1.5) the whole output is also written to evidence/<task>/gate-<UTC timestamp>.log.
 # The backend and contract-drift steps need Testcontainers: Docker or Podman (scripts/env.sh is sourced here).
-# The e2e step runs the packaged app on :8080/:8081 against the dev DB (scripts/e2e-run.sh), then the new or changed specs x3.
+# The e2e step runs the packaged app on :8080/:8081 (scripts/e2e-run.sh: locally on its own per-run database), then the new or changed specs x3.
 # Path-aware (DEC-131 (6)): backend and contract-drift are skipped when nothing under backend/, api/ or scripts/contract-drift.sh
 # changed since ${ENGLMS_GATE_BASE:-origin/develop} (committed, staged, unstaged or untracked); CI still runs them. ENGLMS_GATE_FULL=1 runs every step.
 source "$(dirname "$0")/lib/require-bash.sh"

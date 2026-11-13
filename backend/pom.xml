@@ -32,7 +32,7 @@
 		<!-- Non-Initializr dependencies (T-M1.2; tech-stack.md §7). -->
 		<springdoc-openapi.version>3.2.0</springdoc-openapi.version>
 		<archunit.version>1.5.1</archunit.version>
-		<!-- Coverage report only, no threshold yet (T-M1.5, OQ-16; floors start with the first domain module). -->
+		<!-- Coverage report and, since T-M2.25, the per-package floor (check execution below; test-strategy §5). -->
 		<jacoco.version>0.8.16</jacoco.version>
 	</properties>
 	<dependencies>
@@ -233,6 +233,39 @@
 						<goals>
 							<goal>report</goal>
 						</goals>
+					</execution>
+					<!-- T-M2.25: the floor of test-strategy §5, per module package (app and domain, sub-packages included). -->
+					<execution>
+						<id>check</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>check</goal>
+						</goals>
+						<configuration>
+							<rules>
+								<rule>
+									<element>PACKAGE</element>
+									<includes>
+										<include>com.englms.*.internal.app</include>
+										<include>com.englms.*.internal.app.*</include>
+										<include>com.englms.*.internal.domain</include>
+										<include>com.englms.*.internal.domain.*</include>
+									</includes>
+									<limits>
+										<limit>
+											<counter>LINE</counter>
+											<value>COVEREDRATIO</value>
+											<minimum>0.80</minimum>
+										</limit>
+										<limit>
+											<counter>BRANCH</counter>
+											<value>COVEREDRATIO</value>
+											<minimum>0.70</minimum>
+										</limit>
+									</limits>
+								</rule>
+							</rules>
+						</configuration>
 					</execution>
 				</executions>
 			</plugin>
