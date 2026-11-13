@@ -15,9 +15,9 @@
 | **Student isolation / secret scan** | Fixture world (tutor, A, B, private notes, answer keys) + scan of all student responses | NFR-SEC-01/02 | Implementer (framework M2) + Security Reviewer audits | Every build |
 | Architecture | Spring Modulith `verify()`, ArchUnit | Boundaries, controller rules, student DTO rules, forbidden identifiers | LC-maintained | Every build |
 | Migration | Flyway on an empty DB + `ddl-auto=validate`; upgrade test from the previous release dump (from M8) | Schema correctness | Implementer | Every build / release |
-| Mutation | PIT on `activities..grading` and the question handlers | Test quality for grading | Implementer | Nightly + release (≥ 70%) |
+| Mutation | PIT on `activities..grading` and the question handlers | Test quality for grading | Implementer | Planned with the grading module (not wired yet): release + on demand (≥ 70%) |
 | Unit/component (web) | Vitest + Testing Library + MSW + vitest-axe | `model/` logic, `ui/` components (all states), feature components | Implementer | Every build |
-| E2E (implementation) | Playwright in `/e2e` against the packaged jar + PostgreSQL | Critical flows F1–F9 on the mandatory viewports, axe, step budgets, visual snapshots; the new or changed specs ×3 in the gate (DEC-131). Shared checks in `e2e/support/checks.ts` (T-M2.19, each proved to fail in `checks.spec.ts`): `expectSettledAccessible` (axe and no horizontal scroll once nothing is entering or exiting), `expectNoMidWordBreak` (no word of a name, heading, label or button on two line boxes), `expectFocusNotLost` (after an action that removes or disables its own control); a long-data walk per changed screen with the fictitious values of `e2e/support/longData.ts` at 360/768/1280 in vi and en | Implementer (frontend) | PR (mandatory viewports), nightly (all 6 + Firefox + WebKit) |
+| E2E (implementation) | Playwright in `/e2e` against the packaged jar + PostgreSQL | Critical flows F1–F9 on the mandatory viewports, axe, step budgets, visual snapshots; the new or changed specs ×3 in the gate (DEC-131). Shared checks in `e2e/support/checks.ts` (T-M2.19, each proved to fail in `checks.spec.ts`): `expectSettledAccessible` (axe and no horizontal scroll once nothing is entering or exiting), `expectNoMidWordBreak` (no word of a name, heading, label or button on two line boxes), `expectFocusNotLost` (after an action that removes or disables its own control); a long-data walk per changed screen with the fictitious values of `e2e/support/longData.ts` at 360/768/1280 in vi and en | Implementer (frontend) | PR (mandatory viewports); the manual `regression` workflow (all 6 + Firefox and WebKit smoke, ci-cd §1) |
 | **Independent QA** | Playwright + manual exploratory in `/qa` | Acceptance criteria black-box; exploratory charters; viewports; accessibility spot checks | **QA Evaluator** (combined with UX for tiers M/H, qa-protocol §2a) | Per task (G3, targeted) + milestone regression (full, G5) |
 | Performance | Seeded dataset + load script; Lighthouse | NFR-PERF | LC / QA | M8 + release |
 | Security | Authz and isolation suites; header checks; dependency scans; manual review | security.md | Security Reviewer | Per PR (triggered) + release |
@@ -38,7 +38,9 @@
 - Builders (Java test data builders) for aggregates. Never depend on the order of generated IDs.
 - Time: tests inject a fixed `Clock`. Deadlines and overdue logic are tested at the boundaries (just before, at, and just after).
 - The web uses MSW handlers generated from `api/openapi.json` examples where possible.
-- E2E: `scripts/seed-e2e` resets the DB through a test-only profile endpoint **disabled in prod builds** (`@Profile("e2e")`, verified absent in the prod image by a test).
+- E2E: there is no seed or reset endpoint. Locally, `scripts/e2e-run.sh` drops and creates its own database (`E2E_DB_NAME`, default `englms_e2e`, in the
+  dev container) at the start of every run, Flyway builds the schema, and the specs create their data through the API; `E2E_KEEP_DB=1` runs on the
+  `.env` database instead (development-setup §2). CI starts from the PostgreSQL service's empty database.
 
 ## 3. Conventions
 
@@ -80,9 +82,9 @@
 
 | Area | Target |
 |---|---|
-| Backend domain + application packages | ≥ 80% line, ≥ 70% branch (JaCoCo; reported per module) |
+| Backend domain + application packages | ≥ 80% line, ≥ 70% branch per package: **enforced** by `./mvnw verify` (JaCoCo `check` on `com.englms.*.internal.app` and `com.englms.*.internal.domain`, sub-packages included, T-M2.25) |
 | Grading and handlers | ≥ 90% line, PIT mutation ≥ 70% |
-| Web `model/` and `ui/` | ≥ 80% line (Vitest c8/istanbul) |
+| Web `model/` and `ui/` | ≥ 80% line: **measured, not enforced** (no coverage dependency is installed); measured once on 2026-11-13 with `@vitest/coverage-v8` 5.1.0: 100 % line (526 of 526; statements 98.7 %, branches 95.6 %; `evidence/T-M2.25/summary.md`) |
 | Critical flows F1–F9 | 100% covered by E2E (implementation) **and** QA scenarios |
 | Endpoints | 100% in the authz matrix; 100% of student endpoints in the isolation scan |
 
