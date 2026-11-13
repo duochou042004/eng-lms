@@ -133,7 +133,7 @@ any analytics or tracking script.
 | Image build: Node base | `docker.io/library/node:24-slim@sha256:0e0ff40c39bc087845bfb27465a0df4ea419520094bc35842ff83dd8cbe6f9b6` (multi-arch index; Node 24.21.0, corepack 0.36.0) | T-M1.5 | 2026-09-25 |
 | Image build: JDK base | `docker.io/library/eclipse-temurin:25-jdk@sha256:97014c4b396021f9ddb7d592a7dbedb0c4e4215c29e03dc01c393558aefb71c2` (multi-arch index; Temurin 25.0.4+7) | T-M1.5 | 2026-09-25 |
 | Image runtime: JRE base | `docker.io/library/eclipse-temurin:25-jre@sha256:bb036ed6cfdc57e3da7c22634d15f1b840d2caf76183861c80e81ca4b5104abb` (multi-arch index; Temurin 25.0.4+7 JRE, Ubuntu 26.04) | T-M1.5 | 2026-09-25 |
-| JaCoCo (`jacoco-maven-plugin`) | 0.8.15 (report in `verify`, no threshold yet; EPL-2.0) | T-M1.5 | 2026-09-25 |
+| JaCoCo (`jacoco-maven-plugin`) | 0.8.16 (report and the per-package `check` floor in `verify`, T-M2.25; EPL-2.0) | T-M1.5 | 2026-09-25 |
 | Podman (local image build) | 5.8.6 (CI: the runner's preinstalled Podman) | T-M1.5 | 2026-09-25 |
 | React Hook Form · Zod · @hookform/resolvers | 7.89.0 · 4.6.5 (`z.config({ jitless: true })`: no `new Function` probe under the CSP) · 5.9.1 (all MIT) | T-M2.4 | 2026-10-11 |
 | Playwright (`@playwright/test`, e2e/ and qa/) | 1.63.0 (Apache-2.0); Chromium headless shell 153.0.8010.12 (playwright build 1243) | T-M1.6 | 2026-09-26 |
