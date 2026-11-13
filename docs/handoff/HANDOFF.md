@@ -1,42 +1,35 @@
-# Handoff — 2026-11-12T20:10Z (testing work before T-M2.13, DEC-163)
+# Handoff — 2026-11-13T10:00Z (T-M2.27 merged; next T-M2.25)
 
-Phase/Milestone: P1 / M2 (in progress) · Task: **T-M2.27** E2E stability (draft: the LC writes its packet) · Branch: `develop` (no task
-branch yet) · Last commit on develop: see `git log -1` after this PR merges (`b488ec8` before it) · Next: T-M2.25, then T-M2.24, then
-**T-M2.13** (packet ready, PR #153, held until those three are merged) · Remote: https://github.com/duochou042004/eng-lms (mirror: gitlab.com/duochou042004/eng-lms)
+Phase/Milestone: P1 / M2 (in progress) · Task: **T-M2.25** (draft: the LC writes its packet) · Branch: `develop` · Last commit on develop: see
+`git log -1` after the records PR merges (`c5772f0` before it) · Next: T-M2.24, then **T-M2.13** (packet ready, PR #153, held until T-M2.25 and
+T-M2.24 are merged) · Remote: https://github.com/duochou042004/eng-lms (mirror: gitlab.com/duochou042004/eng-lms)
 
 ## Where we are
-- **T-M2.23 is merged in shadow mode** (`d2db003`, DEC-162) with its records (PR #159, `b488ec8`). On `develop` the five heavy push
-  jobs log their verdict but run everything; the first live switch (b) worked. Shadow PR count for T-M2.26: #159 is the first.
-- **The PO set the order (DEC-163):** test stability and shorter test runs first, then T-M2.13. New **T-M2.27** fixes the three
-  unstable E2E tests: `students.spec.ts:2252` (depends on the DB's other rows), `loading.spec.ts:173` (one 5 s read covers the whole
-  cold start; the Vietnamese twin chains three reads; a test fix), and the Guardians AC4 polling read (moved out of T-M2.13 AC8).
-  Then T-M2.25 (its own E2E database per run, honest quality docs), then T-M2.24 (split `students.spec.ts`, targeted gate repeats).
-- **The dev DB was purged** on the PO's ruling (it held only test data); local E2E rebuilds it on the next run.
+- **T-M2.27 is merged** (`c5772f0`, PR #170, DEC-166; packet PR #169 `6f284c4`, DEC-165): the three unstable kept E2E tests are fixed
+  ((a) own archived student via the request's `q`; (b) the twin's `aria-busy` read; (c) the Guardians AC4 polling read). AC5 60/60 ×3;
+  G3 `QA-VERDICT T-M2.27: PASS WITH MINOR` (2 × S4: generator fixed in the records, (b) residual risk accepted).
+- Order (DEC-163, DEC-164): T-M2.25 → T-M2.24 → T-M2.13. T-M2.26 follows after at least 10 shadow PRs and its two probes.
 
 ## In flight / uncommitted
-- None after this PR (`docs/T-M2.27-test-stability-order`: DEC-163, backlog order, T-M2.13 packet AC8 moved, `progress.json`, this
-  handoff) is merged.
+- None after the records PR (`docs/T-M2.27-records`) and the QA PR (`qa/T-M2.27`, #171) are merged.
 
 ## Next steps (in this order)
-1. **Write the T-M2.27 packet** (`task-packet` skill) from its backlog row: for (a) the test makes and finds its own archived student;
-   for (b) the first read after `goto` waits for the busy region with the boot budget, as the Vietnamese twin; for (c) the polling
-   read as T-M2.13's old AC8 said. Each old form shown failing where its cause can be reproduced; ×20 green on the three projects.
-   G0 by one docs-reviewer; merge the packet PR.
-2. T-M2.27 by the `frontend-implementer` on `feature/T-M2.27-e2e-stability`; gate once on the final head; CI; G3 (QA); merge from an
-   up-to-date `develop`; records PR (part C), with merge-gate's scope line in the DEC.
-3. T-M2.25, then T-M2.24, each packet first. Then ask the PO for T-M2.13 (before it: `gh pr update-branch 153`).
-4. T-M2.26 after at least 10 shadow PRs and its two entry probes (DEC-160, DEC-161); T-M2.13 does not wait for it (DEC-164).
+1. **Write the T-M2.25 packet** (`task-packet` skill) from its backlog row (LC task: JaCoCo floor with a failing fixture, one-off web
+   coverage measurement, local E2E on its own database per run, a manual `regression` workflow, the quality docs corrected). It is
+   tier L but changes gate/CI tooling: adversarial G0 and G3 (T-M2.22 rule). Merge the packet; build it; G3; merge; records.
+2. T-M2.24 (FE), packet first. Then ask the PO to start T-M2.13 (before it: `gh pr update-branch 153`).
+3. T-M2.26 after at least 10 shadow PRs and its two entry probes (DEC-160, DEC-161).
 
 ## Pending PO decisions / actions
-- **Ruled (DEC-164):** T-M2.13 does not wait for T-M2.26.
-- **To note (DEC-160 (7)):** PO-5 is asked after the first task measured under `enforce` (after T-M2.26), not after T-M2.13.
-- **Dependabot (the PO's):** PRs #135 and #160–#166 are open. T-M2.23 has merged: each needs `@dependabot rebase` before merge-gate can accept it.
-- **GitHub Actions billing:** not readable by the LC. Shadow mode adds minutes (post-merge runs are no longer cancelled by the next merge).
+- None open. **Dependabot (the PO's):** PRs #135 and #160–#166 need `@dependabot rebase` before merge-gate can accept them.
+- **GitHub Actions billing:** not readable by the LC. Shadow mode adds minutes.
 - For G5 on this device: Firefox/WebKit browsers and host libraries (`sudo`, PO), unless T-M2.25's `regression` workflow covers it.
 - Open points (unchanged): the `ui/index.ts` barrel in the student first visit; `lib/time` uses the browser's time zone (T-M3.1/T-M3.3, L-12);
   `SERVER_FORWARDHEADERSSTRATEGY=native` (M8); the common-password list (T-M2.3 SEC S4-9); `glab` deny rules (DEC-061); OQ-03..OQ-14.
 
 ## Gotchas
+- **T-M2.27 (DEC-166):** the dev DB now holds 1,065 active, 30 paused and 133 archived students (read-only count by QA, 2026-11-13); local E2E keeps adding rows until T-M2.25. `loading.spec.ts` "the loading region in English" can still fail on a very slow runner (CPU throttle ≥ 30 in the reproduction): a CI recurrence needs a new ruling (the packet forbade raising a timeout). Reproduction generators must read the old form from the pre-task commit, not `HEAD`.
+- **A QA agent can end on an API error after its verdict** (T-M2.27: Cloudflare 403 after the full report): the report already returned counts; check `git status` and `e2e/tests` for scratch files.
 - **This device (2026-11-11): agent shells run with `NoNewPrivs=1`** (inherited from the desktop app), so rootless `podman` fails with
   "newuidmap: write to uid_map failed". `export CONTAINER_HOST=unix:///run/user/1000/podman/podman.sock` in every agent shell (podman remote
   mode through the systemd user socket, enabled 2026-11-11) before `dev-up`, `gate.sh`, `e2e-run.sh`; Testcontainers uses `DOCKER_HOST` from
@@ -110,5 +103,5 @@ branch yet) · Last commit on develop: see `git log -1` after this PR merges (`b
   `evidence/<task>/records/` (delete it) and a ~2,000-line log (trim it to ≤ 300 lines).
 
 ## Files to read first
-`CLAUDE.md` → `progress.json` → this file → DEC-162, DEC-163 → the T-M2.27 row in `docs/tasks/backlog.md` → `.claude/skills/task-packet/`
-→ `e2e/tests/loading.spec.ts` (lines 96–182) and `e2e/tests/students.spec.ts` (≈ 2200–2260, the Guardians AC4 test ≈ 1756).
+`CLAUDE.md` → `progress.json` → this file → DEC-163, DEC-166 → the T-M2.25 row in `docs/tasks/backlog.md` → `.claude/skills/task-packet/`
+→ `docs/tasks/T-M2.22-qa-strategy-review.md` (U4, U8 (a), the "promised but missing" table) → `scripts/e2e-run.sh`, `scripts/gate.sh`.

@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Milestone | M2 |
-| Status | ready |
+| Status | done (`c5772f0`, DEC-166) |
 | Owner role | FE (`frontend-implementer`) |
 | Branch | `feature/T-M2.27-e2e-stability` (from `develop`); this packet on `docs/T-M2.27-e2e-stability` |
 | Depends on | T-M2.23 (`d2db003`) and its records (`b488ec8`): merged |

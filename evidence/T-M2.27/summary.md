@@ -12,9 +12,9 @@ AC1 (a) pass: own archived student (status 200), onlyArchived(page, q) adds q on
   holding the student's link; noActive, expectFocusNotLost, checkbox toBeFocused kept.
 AC2 (b) pass: +1 line, toHaveAttribute('aria-busy','true') before [data-shown], default budget.
 AC3 (c) pass: expect.poll(() => guardianNames(page)).toEqual(['Vũ Thị Hư Cấu']); nothing else changed.
-AC4 pass ((b) partly reproduced). AC5 pass (60/60 x3). AC6 gate pass; CI pending.
+AC4 pass ((b) partly reproduced). AC5 pass (60/60 x3). AC6 gate pass; CI 7/7 on `edfeec4`.
 
-## AC4 (scratch copies e2e/tests/scratch-t-m2-27-{a,b,c}-{old,new}.spec.ts from .claude/scratch/lc-records/T-M2.27/make-scratch.py <rate>; deleted)
+## AC4 (scratch copies e2e/tests/scratch-t-m2-27-{a,b,c}-{old,new}.spec.ts from .claude/scratch/lc-records/T-M2.27/make-scratch.py <rate>, which must read the old form from `6f284c4` (the pre-task develop), not `HEAD`: on the final head `HEAD` holds the new form (QA S4); the QA copy `qa/make-scratch-qa.py` does that; deleted)
 (a)+(c): ./scripts/e2e-run.sh --project=phone-small --project=tablet --project=laptop --retries=0 -g 'only archived students: Include archived|AC4: two pages: a stale save opens the conflict dialog' tests/scratch-t-m2-27-a-old.spec.ts tests/scratch-t-m2-27-a-new.spec.ts tests/scratch-t-m2-27-c-old.spec.ts tests/scratch-t-m2-27-c-new.spec.ts
   → 6 failed, 18 passed. Failures = a-old x3 (getByText('Đã lưu trữ').first() toBeVisible: element(s) not found; route log "archived on page: 0")
   and c-old x3 (toEqual: + Received + 1 at the single guardianNames read). a-new, c-new pass on all three (route log "pass-through …&q=…").
@@ -35,11 +35,20 @@ Gate output captured by redirection (no ENGLMS_TASK) instead of a second gate ru
 ## Open questions
 None.
 
+## G0 cost (packet PR #169)
+| Round | Reviewer | Verdict | Findings | Agent tokens | Agent s |
+|---|---|---|---|---|---|
+| 1 | docs-reviewer (fresh) | CHANGES REQUESTED | S2 1, S3 1, S4 2 | 46,069 | 124.7 |
+| 2 (delta, same agent) | docs-reviewer | PASS | none | 48,975 (cumulative; 2,906 this round) | 162.4 |
+
 ## G3 cost (DEC-131 (9))
 | Round | Reviewer | Head | Verdict | S1/S2/S3/S4 | Scope | Agent tokens | Agent min | Gate runs | Gate min |
 |---|---|---|---|---|---|---|---|---|---|
+| 1 | qa-evaluator (fresh) | `edfeec4` | PASS WITH MINOR | 0/0/0/2 | full | 53,720 | 5.6 | 0 | 0 |
 
 ## LC notes
 - Implementer: `frontend-implementer`, 92,059 tokens, 2,109.7 s (35.2 min), 53 tool uses; one gate run (970 s).
 - (b) at CPU rate 30: the new form passes 14/20 where the old passes 6/20; the remaining failures are the region itself taking over 5 s to appear (no timeout raised, as the packet requires). Accepted under the packet's Risks; the CI failure itself was not reproduced.
 
+- G3: `QA-VERDICT T-M2.27: PASS WITH MINOR` (`qa/report.md`); S4 1 (generator) fixed here, S4 2 ((b) residual risk) accepted (DEC-166).
+- Merged: PR #170, `c5772f0` (DEC-166).
