@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-11-13T08:45:06Z",
-  "updatedBy": "lead-coordinator (T-M2.27 packet, DEC-165)",
+  "updatedAt": "2026-11-13T09:40:09Z",
+  "updatedBy": "lead-coordinator (T-M2.27 in review, PR #170)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -32,21 +32,20 @@
   "currentTask": {
     "id": "T-M2.27",
     "title": "E2E stability before T-M2.13: the three known unstable kept E2E tests (DEC-163)",
-    "status": "ready",
+    "status": "in_review",
     "ownerRole": "FE",
     "branch": "feature/T-M2.27-e2e-stability",
     "packet": "docs/tasks/T-M2.27-e2e-stability.md",
-    "pr": null,
-    "lastCommit": null,
-    "startedAt": null,
+    "pr": "170",
+    "lastCommit": "86ee35c",
+    "startedAt": "2026-11-13T09:40:09Z",
     "entryGate": [
       "T-M2.23 merged — met (d2db003)",
-      "Packet written by the LC (task-packet skill) and G0 passed (DOCS-REVIEW PASS, round 2) — packet PR pending"
+      "Packet written by the LC (task-packet skill) and G0 passed — met (PR #169, 6f284c4)"
     ],
     "nextSteps": [
-      "LC: write docs/tasks/T-M2.27-e2e-stability.md from the backlog row (a) students.spec.ts:2252, (b) loading.spec.ts:173, (c) Guardians AC4 polling read; G0 by a docs-reviewer; merge the packet",
-      "Then the frontend-implementer on feature/T-M2.27-e2e-stability; gate, CI, G3 (QA), merge, records",
-      "Then T-M2.25, then T-M2.24; T-M2.13 is held until those three are merged (DEC-163) and does not wait for T-M2.26 (DEC-164)"
+      "CI on PR #170, then G3 by one qa-evaluator (DEC-165), merge via merge-gate from develop, records PR",
+      "Then T-M2.25, then T-M2.24 (packets first); then ask the PO to start T-M2.13"
     ],
     "trace": [
       "DEC-159",

@@ -1,0 +1,46 @@
+[trimmed by the implementer from the full gate.sh output (2542 lines): step lines, test-count lines and the e2e summary; run without ENGLMS_TASK, so the output was captured by redirection and copied here]
+gate: 86ee35c 2026-11-13T09:22:06Z, steps: docs scripts backend web-install web-lint web-typecheck web-test web-build web-budget web-contrast contract-drift qa-typecheck e2e
+gate: ==> docs
+gate: <== docs OK (2s)
+gate: ==> scripts
+gate: <== scripts OK (207s)
+gate: ==> backend
+gate: backend skipped: no backend/ or api/ change (CI runs it; ENGLMS_GATE_FULL=1 forces it)
+gate: <== backend OK (0s)
+gate: ==> web-install
+gate: <== web-install OK (0s)
+gate: ==> web-lint
+gate: <== web-lint OK (4s)
+gate: ==> web-typecheck
+gate: <== web-typecheck OK (6s)
+gate: ==> web-test
+gate: <== web-test OK (53s)
+gate: ==> web-build
+gate: <== web-build OK (7s)
+gate: ==> web-budget
+gate: <== web-budget OK (0s)
+gate: ==> web-contrast
+gate: <== web-contrast OK (0s)
+gate: ==> contract-drift
+gate: contract-drift skipped: no backend/ or api/ change (CI runs it)
+gate: <== contract-drift OK (0s)
+gate: ==> qa-typecheck
+gate: <== qa-typecheck OK (2s)
+gate: ==> e2e
+e2e-run: building web/dist and the jar with the SPA
+e2e-run: started englms-0.0.1-SNAPSHOT.jar (pid 187822, log backend/target/e2e-app.log)
+e2e-run: app ready; running Playwright --project=phone-small --project=tablet --project=laptop
+  ✘  414 [laptop] › tests/guards.spec.ts:100:1 › the console guard fails on an error raised 300 ms after the test body ends (expected failure) (1.0s)
+  31 skipped
+  515 passed (4.3m)
+e2e-run: playwright exit 0
+e2e-run: app stopped (pid 187822)
+gate: e2e repeat x3: tests/loading.spec.ts tests/students.spec.ts
+e2e-run: started englms-0.0.1-SNAPSHOT.jar (pid 217812, log backend/target/e2e-app.log)
+e2e-run: app ready; running Playwright --project=phone-small --project=tablet --project=laptop --repeat-each=3 --retries=0 tests/loading.spec.ts tests/students.spec.ts
+  3 skipped
+  573 passed (6.5m)
+e2e-run: playwright exit 0
+e2e-run: app stopped (pid 217812)
+gate: <== e2e OK (689s)
+gate: PASS (13 steps, 970s)
