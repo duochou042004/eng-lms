@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-11-13T15:52:57Z",
-  "updatedBy": "lead-coordinator (T-M2.24 packet merged f010cd8; handoff at the context limit)",
+  "updatedAt": "2026-11-13T17:31:33Z",
+  "updatedBy": "lead-coordinator (T-M2.24 implemented; PR #178 in review)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -32,21 +32,21 @@
   "currentTask": {
     "id": "T-M2.24",
     "title": "Split e2e/tests/students.spec.ts into cohesive spec files; gate repeats the specs importing a changed e2e/support file (T-M2.22 U3; DEC-158 PO-9)",
-    "status": "ready",
+    "status": "in_review",
     "ownerRole": "FE",
     "branch": "feature/T-M2.24-split-students-spec",
     "packet": "docs/tasks/T-M2.24-split-students-spec.md",
-    "pr": null,
-    "lastCommit": null,
-    "startedAt": null,
+    "pr": "178",
+    "lastCommit": "5d96ada",
+    "startedAt": "2026-11-13T16:42:30Z",
     "entryGate": [
       "T-M2.25 merged — met (b3cd6fd)",
       "Packet written by the LC (task-packet skill) and G0 passed — met (PR #176, f010cd8)"
     ],
     "nextSteps": [
-      "Merge this handoff PR first (docs/T-M2.24-handoff: one docs-reviewer, DOCS-REVIEW T-M2.24: PASS + LC-APPROVED T-M2.24, merge-gate from develop)",
-      "git switch -c feature/T-M2.24-split-students-spec from develop; brief the frontend-implementer with docs/tasks/T-M2.24-split-students-spec.md (scope 1-5, AC1-AC7); gate once on the final head; LC records summary, pushes, opens the PR",
-      "CI; G3 by a fresh adversarial docs-reviewer (fixtures + mutations of the gate rule in a private clone; reruns AC2/AC3); merge via merge-gate from an up-to-date develop; records PR (part C, DEC with merge-gate's scope line)",
+      "CI on PR #178 (one background gh pr checks --watch)",
+      "G3 by a fresh adversarial docs-reviewer (gate fixtures, mutations of the new rule in a private clone, AC2/AC3 reruns); S1/S2 -> an AC + DEC and a delta re-check",
+      "Merge via merge-gate from an up-to-date develop; records PR (part C: merge DEC with merge-gate's scope line and the OQ T-M2.24-1 ruling, T-M2.28 (f), review/docs.md, backlog and packet done, handoff archive)",
       "Then gh pr update-branch 153 and ask the PO to start T-M2.13; T-M2.28 before the M2 G5"
     ],
     "trace": [
@@ -1528,6 +1528,11 @@
       "at": "2026-11-13T15:52:57Z",
       "actor": "lead-coordinator",
       "event": "T-M2.24 packet merged (f010cd8, PR #176, DEC-170); session handed off (context ~370k, past the PO's 300k rule)."
+    },
+    {
+      "at": "2026-11-13T17:31:33Z",
+      "actor": "lead-coordinator",
+      "event": "T-M2.24 implemented on feature/T-M2.24-split-students-spec (frontend-implementer, 154,002 tokens); gate run 1 red on one byte-identical flaky test (OQ T-M2.24-1, to T-M2.28 (f)); LC gate run 2 PASS (13 steps, 1003s) on 5d96ada; PR #178 opened."
     }
   ]
 }
