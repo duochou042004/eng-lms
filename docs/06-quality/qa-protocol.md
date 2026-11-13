@@ -16,7 +16,7 @@
 ## 2. Procedure per task
 
 ```text
-1. Prepare   : verify the checkout is on the PR head (the LC switches branches, DEC-094); ./scripts/dev-up (DB) ; build & run packaged app with e2e profile ; seed QA world (scripts/seed-e2e)
+1. Prepare   : verify the checkout is on the PR head (the LC switches branches, DEC-094); ./scripts/dev-up (DB) ; build & run the packaged app (scripts/e2e-run.sh or the image) ; the scenarios create their own data through the API
 2. Plan      : write qa/plans/<task-id>.md — each AC → scenario(s) (happy, edge, negative, isolation), viewports, a11y checks, exploratory charter
 3. Execute   : automated scenarios (qa/e2e/<task-id>.spec.ts, Playwright) + manual exploratory session (timeboxed 30–60 min) with notes
 4. Evidence  : evidence/<task-id>/qa/{report.md, playwright-report link or summary, a11y.json}; screenshots stay local (git-ignored PNGs, DEC-131 (8)):
@@ -41,14 +41,14 @@ them. Run the changed specs ×3 (and ×20 when they cover focus, loading or keyb
 (CI on the new head is the regression), unless the LC names a wider scope because the fix touched a shared piece.
 
 **Tooling (T-M1.6, DEC-057):** `qa/` has its own pinned Playwright package and config, independent of the implementer's `e2e/`
-(6 reference viewports; `QA_ENGINES=all` adds Firefox and WebKit for the milestone regression). See `qa/README.md`. The packaged app for step 1
-comes from `scripts/e2e-run.sh` (the jar with the SPA) or the image; the e2e profile and `scripts/seed-e2e` arrive with the first data (M2).
+(6 reference viewports; `QA_ENGINES=all` adds Firefox and WebKit to a `qa/` run). See `qa/README.md`. The packaged app for step 1
+comes from `scripts/e2e-run.sh` (the jar with the SPA) or the image. There is no seed endpoint or `e2e` profile: data comes through the API.
 
 ## 3. Standard scenario checklist (apply what is relevant)
 
 - **Happy path** per AC, at `phone-small`, `tablet` and `laptop`.
 - **Validation:** empty, too long, invalid formats, boundary values (from validation-rules.md).
-- **State:** loading (throttled network), empty (first use and filtered), error (kill the backend / 500 injection in the e2e profile), offline (for autosave areas), stale version (two tabs).
+- **State:** loading (throttled network), empty (first use and filtered), error (kill the backend, or a 500 injected by Playwright request routing), offline (for autosave areas), stale version (two tabs).
 - **Isolation:** log in as student B and try student A's URLs (lessons, work, files, materials): expect the 404 page. Look for tutor-private data in network responses (DevTools / HAR scan for the `SECRET-*` markers).
 - **Keyboard only:** complete the flow. Check visible focus and focus return.
 - **Screen reader spot check:** new components announce the correct name, role and state.
@@ -78,5 +78,7 @@ Verdict: PASS | PASS WITH MINOR | FAIL · Build: <commit sha> · Date: · Evalua
 
 ## 5. Milestone regression
 
-The milestone regression is the only full regression (per-task QA runs targeted specs, DEC-131 (7)). At each milestone gate, QA runs `qa/regression/*.spec.ts` (accumulated scenarios) on all six viewports and three engines, plus a 90-minute exploratory
-session on the milestone's user journeys. The report goes to `evidence/<milestone>/qa-regression.md`.
+The milestone regression is the only full regression (per-task QA runs targeted specs, DEC-131 (7)). At each milestone gate the matrix is 6 viewports × Chromium plus Firefox and WebKit smoke (quality-gates G5, DEC-158 PO-3): the implementation suite runs
+through the manual `regression` workflow (ci-cd §1) and once locally with `E2E_KEEP_DB=1` on the large dev data set; QA runs `qa/regression/*.spec.ts`
+(accumulated scenarios) on the six viewports, plus a 90-minute exploratory session on the milestone's user journeys. Retention (DEC-158 PO-4, option (a)):
+an independent finding is kept as an implementation E2E test in `e2e/` through its fix AC; `qa/` is the reviewer's tooling. The report goes to `evidence/<milestone>/qa-regression.md`.

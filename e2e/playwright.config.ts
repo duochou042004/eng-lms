@@ -27,14 +27,23 @@ export default defineConfig({
     trace: 'retain-on-failure',
     screenshot: 'only-on-failure',
   },
-  projects: Object.entries(VIEWPORTS).map(([name, viewport]) => ({
-    name,
-    use: {
-      ...devices['Desktop Chrome'],
-      viewport,
-      // Below the tablet-landscape width the devices are touch phones/tablets.
-      isMobile: viewport.width < 1024,
-      hasTouch: viewport.width < 1024,
-    },
-  })),
+  projects: [
+    ...Object.entries(VIEWPORTS).map(([name, viewport]) => ({
+      name,
+      use: {
+        ...devices['Desktop Chrome'],
+        viewport,
+        // Below the tablet-landscape width the devices are touch phones/tablets.
+        isMobile: viewport.width < 1024,
+        hasTouch: viewport.width < 1024,
+      },
+    })),
+    // E2E_ENGINES=all (the `regression` workflow, T-M2.25; like qa/'s QA_ENGINES=all): Firefox and WebKit smoke at the laptop viewport.
+    ...(process.env.E2E_ENGINES === 'all'
+      ? [
+          { name: 'firefox-smoke', testMatch: 'smoke.spec.ts', use: { ...devices['Desktop Firefox'], viewport: VIEWPORTS.laptop } },
+          { name: 'webkit-smoke', testMatch: 'smoke.spec.ts', use: { ...devices['Desktop Safari'], viewport: VIEWPORTS.laptop } },
+        ]
+      : []),
+  ],
 })

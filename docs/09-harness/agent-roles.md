@@ -27,7 +27,7 @@ reports and posts the verdict lines after CI is green on the final head.
 | Read the whole repo | ✓ | ✓ | ✓ | ✓ (implementation only **after** the verdict draft) | ✓ | ✓ |
 | Write paths | docs, progress, summary, .claude, .github | backend, api, impl evidence | web, e2e, impl evidence | qa, qa evidence | review evidence | review evidence |
 | Run build, tests, E2E locally | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| Run the app (dev/e2e profile) | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Run the app (dev, or packaged by `scripts/e2e-run.sh`) | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
 | Browser automation (built-in browser / Playwright) | ✓ | – | ✓ | ✓ | ✓ | ✓ |
 | `git commit` / push feature branch | ✓ (docs/chore) | ✓ | ✓ | ✓ (qa/ branch only) | – | – |
 | Open PR (`gh pr create`) | ✓ | ✓ | ✓ | – | – | – |

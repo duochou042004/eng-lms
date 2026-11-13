@@ -35,7 +35,7 @@ column (a split view or a side panel), once such a placement exists.
 | `desktop` | 1440 × 900 | Tutor desktop |
 
 **Mandatory for every UI packet:** `phone-small`, `tablet` and `laptop` screenshots of each changed screen in its main states. Critical flows run
-E2E on all six (nightly) and on the three mandatory ones per PR.
+E2E on all six through the manually started `regression` workflow (ci-cd §1) and on the three mandatory ones per PR.
 
 ## 3. Rules
 

@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-11-13T12:00:20Z",
-  "updatedBy": "lead-coordinator (T-M2.25 packet, DEC-167)",
+  "updatedAt": "2026-11-13T14:20:30Z",
+  "updatedBy": "lead-coordinator (T-M2.25 F2-bis fixed, 5141d85)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -32,26 +32,28 @@
   "currentTask": {
     "id": "T-M2.25",
     "title": "The quality docs promise only what exists; local E2E on its own database per run (T-M2.22 U4, U8 (a); DEC-158)",
-    "status": "ready",
+    "status": "in_review",
     "ownerRole": "LC",
     "branch": "chore/T-M2.25-quality-docs-truth",
     "packet": "docs/tasks/T-M2.25-quality-docs-truth.md",
-    "pr": null,
-    "lastCommit": null,
-    "startedAt": null,
+    "pr": "174",
+    "lastCommit": "5141d85",
+    "startedAt": "2026-11-13T11:15:00Z",
     "entryGate": [
       "T-M2.27 merged — met (c5772f0)",
-      "Packet written by the LC (task-packet skill) and G0 passed (adversarial docs-reviewer, round 2 PASS) — packet PR pending"
+      "Packet written by the LC (task-packet skill) and G0 passed — met (PR #173, e253c59)"
     ],
     "nextSteps": [
-      "LC: write docs/tasks/T-M2.25-*.md from the backlog row (task-packet skill); G0; merge the packet; then build it",
+      "AC9 and F2-bis done (5141d85; gate PASS 836 s); delta re-check of F2 only by a fresh adversarial docs-reviewer",
+      "CI on PR #174; delta re-check of F1-F3 by a fresh adversarial docs-reviewer (private clone); merge via merge-gate from develop; records PR (DEC with merge-gate's scope line); first regression workflow run on develop (records step)",
       "Then T-M2.24 (packet first); then ask the PO to start T-M2.13 (gh pr update-branch 153 first)"
     ],
     "trace": [
       "DEC-157",
       "DEC-158",
       "DEC-163",
-      "DEC-167"
+      "DEC-167",
+      "DEC-168"
     ]
   },
   "nextTask": {
@@ -1495,6 +1497,11 @@
       "at": "2026-11-13T10:00:33Z",
       "actor": "lead-coordinator",
       "event": "T-M2.27 merged (c5772f0, PR #170; packet PR #169; DEC-165, DEC-166). Current task T-M2.25 (draft), then T-M2.24, then T-M2.13."
+    },
+    {
+      "at": "2026-11-13T13:19:50Z",
+      "actor": "lead-coordinator",
+      "event": "T-M2.25 implemented (PR #174, gate PASS on 1123d27); G3 round 1 CHANGES REQUESTED (3 S3, 2 S4) -> AC9 (DEC-168); session handed off at the context limit."
     }
   ]
 }

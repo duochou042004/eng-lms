@@ -10,6 +10,7 @@
 - [ ] Dependencies are merged. Open questions affecting the task are answered, or a default is accepted.
 - [ ] The branch is created from an up-to-date `develop`: `feature/<task-id>-<slug>` (or `fix/`, `docs/`, `chore/`).
 - [ ] `progress.json` has the task set to `in_progress` with the branch name.
+- [ ] Packet review (DEC-158 PO-6): after an S1/S2 packet finding, a delta re-check by the reviewer; S3/S4 findings the LC fixes and records, with no new round.
 - **Special G0 for M1 onwards:** the M0 planning baseline has been **approved by the PO** (recorded in the decision log).
 
 ## G1 Local implementation gate. Owner: Implementer
@@ -68,7 +69,8 @@ Review effort follows the packet's **risk tier** (set by the LC at G0, DEC-131 (
 ## G5 Milestone gate. Owners: LC + PO
 
 - [ ] Every packet in the milestone is merged, and the milestone exit criteria in roadmap.md are met.
-- [ ] Milestone regression (the only full regression; per task G3 runs targeted specs, DEC-131 (7)): full E2E on all 6 viewports × Chromium, plus smoke on Firefox and WebKit. The QA milestone report is in `evidence/<milestone>/`.
+- [ ] Milestone regression (the only full regression; per task G3 runs targeted specs, DEC-131 (7)): full E2E on all 6 viewports × Chromium, plus smoke on Firefox and WebKit, through the manual `regression` workflow (ci-cd §1), plus one local run with
+  `E2E_KEEP_DB=1` against the large dev data set (development-setup §2). The QA milestone report is in `evidence/<milestone>/`.
 - [ ] Risk register, decision log and roadmap reviewed (retrospective notes in `evidence/<milestone>/retro.md`); `docs/09-harness/lessons-learned.md`
   updated; the `shortcut:` ledger reviewed (`grep -rnE '(shortcut|ponytail):'`, or `/ponytail-debt` where installed: any trigger the next milestone fires becomes a backlog item); the README roadmap row updated.
 - [ ] For user-facing milestones (M2, M3, M5, M7): the PO demo (a recorded walkthrough or a live session) is accepted, and the feedback is logged as tasks or DEC entries.

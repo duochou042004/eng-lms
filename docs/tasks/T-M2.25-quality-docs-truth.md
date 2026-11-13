@@ -132,6 +132,15 @@ in the existing dev container, a manual workflow on the existing runner. 3. Mand
   decision log, packets and evidence leaves only lines that are not about a test lane (the backup lines in runbooks, NFR-OPS-02, A-020, G-11,
   architecture-overview, files-and-storage and R-05, each named in the summary); the list of changed lines in the summary.
 - AC8: `./scripts/gate.sh` green once on the final head (its e2e step on the new per-run database) and CI green; `./scripts/check-docs.sh` passes.
+- AC9 (G3 round 1, DEC-168; fix round, then a delta re-check of F1–F3 by a fresh reviewer): **F1** `scripts/tests/ci-scope-workflows.test.sh`
+  takes every line of the `on:` block (up to the next non-blank, non-comment line at column 0), drops blank and comment lines and requires exactly
+  `workflow_dispatch:`; copies with a blank line or a column-0 comment before a second trigger fail. **F2** `scripts/e2e-run.sh` refuses a `.env`
+  URL whose parameters set `PGHOST`, `PGPORT` or `PGDBNAME` (any case) and a `%` in the URL's database name; a test case each. **F3** the caller's
+  `E2E_DB_NAME`/`E2E_KEEP_DB` copies cannot be changed by `.env` (e.g. `readonly`, or names `.env` cannot reach), verified that the script stops or
+  ignores rather than warns and goes on; a test with `keep_db=1` and `db_name=…` in `.env`. **F5** the java/pnpm stub asserts `E2E_KEEP_DB` and
+  `E2E_DB_NAME` from `.env` are absent, or the `unset` line goes. **F4** (S4): a `shortcut:` comment on the JaCoCo includes naming the limit (a
+  misspelled include passes at the real floor; the 1.00 run is the check) and when to upgrade. Each new case shown failing; the gate once more on the
+  final head.
 
 ## Test plan
 - Implementation: the e2e-run tests (scope 4) with mutations; the JaCoCo mutation; the web measurement; the fresh-database run; `--list`
