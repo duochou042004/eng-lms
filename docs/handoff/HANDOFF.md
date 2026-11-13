@@ -8,8 +8,8 @@ Phase/Milestone: P1 / M2 (in progress) · Task: **T-M2.24** (ready; no feature b
   (`f010cd8`, PR #176, DEC-170; G0 adversarial: round 1 CHANGES REQUESTED, round 2 no S1/S2 with S3/S4 fixed by the LC, round 3 PASS).
 - **T-M2.24 implementation has not started:** no `feature/T-M2.24-split-students-spec` branch, no subagent running, nothing uncommitted.
 - Local E2E runs on its own per-run database (`englms_e2e`, `.data/e2e/fresh/`); `E2E_KEEP_DB=1` uses the PO's dev DB (G5 only).
-- The first `regression` run (43444433118) failed 7 tests → **T-M2.28** (phone ×2, WebKit smoke ×4 with CSP `style-src-elem` refusals,
-  Firefox smoke ×1, the Hikari/Flyway S4, the e2e-run test race); before the M2 G5, not blocking T-M2.13.
+- The first `regression` run (43444433118) failed 7 tests (phone ×2, WebKit smoke ×4 with CSP `style-src-elem` refusals,
+  Firefox smoke ×1) → **T-M2.28**, which also holds the Hikari/Flyway S4 and the e2e-run test race; before the M2 G5, not blocking T-M2.13.
 
 ## In flight / uncommitted
 - This handoff PR (`docs/T-M2.24-handoff`): open; it needs one docs-reviewer and merge-gate (step 1 below). Nothing else.
@@ -18,7 +18,7 @@ Phase/Milestone: P1 / M2 (in progress) · Task: **T-M2.24** (ready; no feature b
 1. Merge this handoff PR: one fresh docs-reviewer (records check, text only), then `DOCS-REVIEW T-M2.24: PASS` and `LC-APPROVED T-M2.24`,
    `./scripts/merge-gate.sh <n>` from an up-to-date `develop`.
 2. `git switch -c feature/T-M2.24-split-students-spec` from `develop`; brief the `frontend-implementer` with
-   `docs/tasks/T-M2.24-split-students-spec.md` (scope 1–5, AC1–AC7; the environment lines below; gate once on the final head; return the
+   `docs/tasks/T-M2.24-split-students-spec.md` (scope 1–5, AC1–AC7; the environment notes in `docs/handoff/next-session-prompt.md`; gate once on the final head; return the
    summary text). The LC writes `evidence/T-M2.24/summary.md`, updates `progress.json` (`in_review`, `pr` as a string), pushes, opens the PR.
 3. CI (one background `gh pr checks <n> --watch`); G3: one fresh adversarial docs-reviewer that runs `scripts/tests/gate.test.sh`, mutates
    the new rule in a private clone and reruns the AC2/AC3 comparisons; S1/S2 → an AC + DEC and a delta re-check; merge via merge-gate;
@@ -96,7 +96,7 @@ Phase/Milestone: P1 / M2 (in progress) · Task: **T-M2.24** (ready; no feature b
 - **T-M2.23 design traps (G0):** the marker step follows the classifier's *verdict*, the heavy steps follow its *scope* output (always
   `full` in shadow mode); bash and jq disagree on `$` before a final newline, so a path with a control character is off the list in
   every reader; after the T-M2.23 merge every open PR needs a new run (ours: `gh pr update-branch`; Dependabot: `@dependabot rebase`).
-- **Local E2E used the PO's dev DB** until T-M2.25 (on its branch now: a per-run `englms_e2e` and `.data/e2e/fresh/`; `E2E_KEEP_DB=1` keeps the old way) and every run added students; tests that read
+- **Local E2E used the PO's dev DB** until T-M2.25 (merged: a per-run `englms_e2e` and `.data/e2e/fresh/`; `E2E_KEEP_DB=1` keeps the old way) and every run added students; tests that read
   "the first page" break as it grows (`students.spec.ts:2252` failed at 468 active, DEC-162). Purged on the PO's ruling 2026-11-12;
   never purge again without one. T-M2.25 gives local E2E its own database per run.
 - **merge-gate step 6 (T-M2.23):** a real merge runs only from a checkout whose `HEAD` is `origin/develop`
