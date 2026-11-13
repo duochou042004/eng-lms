@@ -5,7 +5,8 @@
 #   --from <step>  start at <step> (resume after fixing a failure)
 # With ENGLMS_TASK=<task id> (e.g. T-M1.5) the whole output is also written to evidence/<task>/gate-<UTC timestamp>.log.
 # The backend and contract-drift steps need Testcontainers: Docker or Podman (scripts/env.sh is sourced here).
-# The e2e step runs the packaged app on :8080/:8081 (scripts/e2e-run.sh: locally on its own per-run database), then the new or changed specs x3.
+# The e2e step runs the packaged app on :8080/:8081 (scripts/e2e-run.sh: locally on its own per-run database), then the new or changed specs x3,
+# with every spec that imports a changed e2e/support/ file (all specs when its importers cannot be known; DEC-170).
 # Path-aware (DEC-131 (6)): backend and contract-drift are skipped when nothing under backend/, api/ or scripts/contract-drift.sh
 # changed since ${ENGLMS_GATE_BASE:-origin/develop} (committed, staged, unstaged or untracked); CI still runs them. ENGLMS_GATE_FULL=1 runs every step.
 source "$(dirname "$0")/lib/require-bash.sh"
@@ -21,7 +22,9 @@ changed_files() {
   local base=${ENGLMS_GATE_BASE:-origin/develop}
   git -C "$ROOT" rev-parse --verify -q "$base" >/dev/null || return 1
   local g=(git -C "$ROOT" -c core.quotePath=false)
-  { "${g[@]}" diff --name-only "$base"...HEAD && "${g[@]}" diff --name-only HEAD && "${g[@]}" ls-files --others --exclude-standard; } 2>/dev/null || return 1
+  # --no-renames: a renamed file shows its old path as deleted (the e2e support rule repeats all specs for it).
+  { "${g[@]}" diff --no-renames --name-only "$base"...HEAD && "${g[@]}" diff --no-renames --name-only HEAD \
+    && "${g[@]}" ls-files --others --exclude-standard; } 2>/dev/null || return 1
 }
 backend_changed() {
   [[ "${ENGLMS_GATE_FULL:-}" == 1 ]] && return 0
@@ -29,12 +32,82 @@ backend_changed() {
   files=$(changed_files) || return 0
   grep -qE '^(backend/|api/|scripts/contract-drift\.sh$)' <<<"$files"
 }
-# The new or changed specs (paths relative to e2e/), ×3 without retries on the mandatory viewports (DEC-131 (1); qa-protocol §3).
+# norm_path <path>: drops "." and resolves ".." segments (e2e/tests/../support/a -> e2e/support/a).
+norm_path() {
+  local IFS=/ part parts out=()
+  read -ra parts <<<"$1"
+  for part in "${parts[@]}"; do
+    case $part in
+      '' | .) ;;
+      ..) if ((${#out[@]})) && [[ ${out[-1]} != .. ]]; then unset 'out[-1]'; out=("${out[@]}"); else out+=(..); fi ;;
+      *) out+=("$part") ;;
+    esac
+  done
+  printf '%s' "${out[*]}"
+}
+# resolve_ts <repo path>: the file a specifier names (moduleResolution bundler, e2e/tsconfig.json): the exact path, <p>.ts, a .js
+# ending mapped to .ts, then <p>/index.ts; prints nothing when none exists.
+resolve_ts() {
+  local c
+  for c in "$1" "$1.ts" "${1%.js}.ts" "$1/index.ts"; do
+    [[ -f "$ROOT/$c" ]] && { printf '%s' "$c"; return 0; }
+  done
+}
+# import_specifiers <file>: every relative specifier of from '…', import '…' and import('…') (either quote; a multi-line import counts
+# by its last line, export … from and import type included).
+import_specifiers() {
+  tr '\n' ' ' <"$1" | grep -oE "(from|import)[[:space:]]*(\([[:space:]]*)?['\"]\.\.?(/[^'\"]*)?['\"]" | sed -E "s/^[^'\"]*['\"]//; s/['\"]$//"
+}
+# e2e_support_specs <changed e2e/support/ path>...: prints "<spec>\t<why>" for each spec that imports a changed support file, directly or
+# through other modules, and "*\t<why>" when the importers cannot be known (then every spec repeats; PO-9, DEC-170).
+e2e_support_specs() {
+  local -A rdeps=() seen=()
+  local nodes=() queue=() f s p r x imp found
+  mapfile -t nodes < <(cd "$ROOT" && find e2e/tests e2e/support -type f -name '*.ts' 2>/dev/null | sort)
+  for f in "${nodes[@]}"; do
+    while IFS= read -r s; do
+      p=$(norm_path "$(dirname "$f")/$s")
+      r=$(resolve_ts "$p")
+      [[ $f == e2e/support/* && ${r:-$p} == e2e/tests/* ]] && printf '*\t%s imports from e2e/tests/ (%s)\n' "$f" "$s"
+      [[ -z $r && $p == e2e/support/* ]] && printf '*\t%s: %s resolves to no file\n' "$f" "$s"
+      [[ $r == e2e/support/* ]] && rdeps[$r]+="$f"$'\n'
+    done < <(import_specifiers "$ROOT/$f")
+  done
+  for s in "$@"; do
+    [[ -f "$ROOT/$s" ]] || { printf '*\t%s was deleted or renamed\n' "$s"; continue; }
+    [[ $s == *.ts ]] || { printf '*\t%s is not a .ts file\n' "$s"; continue; }
+    seen=(["$s"]=1); queue=("$s"); found=0
+    while ((${#queue[@]})); do
+      x=${queue[0]}; queue=("${queue[@]:1}")
+      while IFS= read -r imp; do
+        [[ -n $imp && -z ${seen[$imp]:-} ]] || continue
+        seen[$imp]=1; queue+=("$imp")
+        [[ $imp == e2e/tests/*.spec.ts ]] || continue
+        found=1
+        if [[ $x == "$s" ]]; then printf '%s\timports %s\n' "$imp" "$s"; else printf '%s\timports %s through %s\n' "$imp" "$s" "$x"; fi
+      done <<<"${rdeps[$x]:-}"
+    done
+    ((found)) || printf '*\t%s is imported by no spec\n' "$s"
+  done
+}
+# The new or changed specs and the importers of a changed e2e/support/ file (paths relative to e2e/), ×3 without retries on the
+# mandatory viewports (DEC-131 (1), DEC-170; qa-protocol §3).
 e2e_repeat() {
-  local files specs=()
+  local files f p why specs=() support=() all=()
   files=$(changed_files) || { echo "gate: e2e repeat skipped (changed files unknown)"; return 0; }
-  while IFS= read -r f; do [[ -f "$ROOT/$f" ]] && specs+=("${f#e2e/}"); done < <(grep -E '^e2e/tests/.*\.spec\.ts$' <<<"$files" | sort -u)
+  while IFS= read -r f; do [[ -f "$ROOT/$f" ]] && specs+=("$f"); done < <(grep -E '^e2e/tests/.*\.spec\.ts$' <<<"$files" | sort -u)
+  mapfile -t support < <(grep -E '^e2e/support/' <<<"$files" | sort -u)
+  if ((${#specs[@]} + ${#support[@]})); then
+    while IFS=$'\t' read -r p why; do
+      if [[ $p == '*' ]]; then all+=("$why"); else specs+=("$p"); echo "gate: e2e repeat: ${p#e2e/} $why"; fi
+    done < <(e2e_support_specs "${support[@]}")
+  fi
+  if ((${#all[@]})); then
+    printf 'gate: e2e repeat: all specs: %s\n' "${all[@]}"
+    mapfile -t specs < <(cd "$ROOT" && find e2e/tests -type f -name '*.spec.ts')
+  fi
   ((${#specs[@]})) || { echo "gate: e2e repeat: no new or changed spec"; return 0; }
+  mapfile -t specs < <(printf '%s\n' "${specs[@]#e2e/}" | sort -u)
   echo "gate: e2e repeat x3: ${specs[*]}"
   "$ROOT/scripts/e2e-run.sh" --no-build --project=phone-small --project=tablet --project=laptop --repeat-each=3 --retries=0 "${specs[@]}"
 }
