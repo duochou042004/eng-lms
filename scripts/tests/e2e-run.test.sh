@@ -115,13 +115,20 @@ refused "another port" E2E_DB_NAME=englms_e2e
 # (write_env writes the URL unquoted, so these use one parameter: a & would background the .env line)
 URL='jdbc:postgresql://127.0.0.1:5432/other?PGDBNAME=devdata' write_env
 refused "a PGDBNAME URL parameter" E2E_DB_NAME=englms_e2e
-expect_output_contains "sets PGHOST, PGPORT or PGDBNAME as a parameter" "guard: a PGDBNAME URL parameter: names the parameter rule"
+expect_output_contains "sets the host, port, database or service as a parameter" "guard: a PGDBNAME URL parameter: names the parameter rule"
 URL='jdbc:postgresql://127.0.0.1:5432/devdata?pghost=db.example.org' write_env
 refused "a lower-case pghost URL parameter" E2E_DB_NAME=englms_e2e
-expect_output_contains "sets PGHOST, PGPORT or PGDBNAME as a parameter" "guard: a pghost URL parameter: names the parameter rule"
+expect_output_contains "sets the host, port, database or service as a parameter" "guard: a pghost URL parameter: names the parameter rule"
 URL='jdbc:postgresql://127.0.0.1:5432/devdata?PgPort=5433' write_env
 refused "a mixed-case PgPort URL parameter" E2E_DB_NAME=englms_e2e
-expect_output_contains "sets PGHOST, PGPORT or PGDBNAME as a parameter" "guard: a PgPort URL parameter: names the parameter rule"
+expect_output_contains "sets the host, port, database or service as a parameter" "guard: a PgPort URL parameter: names the parameter rule"
+URL='jdbc:postgresql://127.0.0.1:5432/other?dbname=devdata' write_env
+refused "a dbname URL parameter (G3 F2-bis)" E2E_DB_NAME=englms_e2e
+expect_output_contains "sets the host, port, database or service as a parameter" "guard: a dbname URL parameter: names the parameter rule"
+URL='jdbc:postgresql://127.0.0.1:5432/other?Host=db.example.org' write_env
+refused "a mixed-case Host URL parameter (G3 F2-bis)" E2E_DB_NAME=englms_e2e
+URL='jdbc:postgresql://127.0.0.1:5432/other?service=x' write_env
+refused "a service URL parameter (G3 F2-bis)" E2E_DB_NAME=englms_e2e
 URL='jdbc:postgresql://127.0.0.1:5432/dev%64ata' write_env
 refused "a % escape in the URL database name" E2E_DB_NAME=devdata
 expect_output_contains "holds a % escape" "guard: a % escape: names the rule"

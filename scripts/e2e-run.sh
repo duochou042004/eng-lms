@@ -60,9 +60,10 @@ if [[ -f "$ROOT/.env" ]]; then
     [[ "${SPRING_DATASOURCE_URL:-}" =~ ^jdbc:postgresql://([^/:?]+)(:([0-9]+))?/([^/?]+)(\?.*)?$ ]] ||
       refuse "the .env SPRING_DATASOURCE_URL is not a jdbc:postgresql://host:port/database URL"
     url_host=${BASH_REMATCH[1]} url_port=${BASH_REMATCH[3]:-5432} url_db=${BASH_REMATCH[4]} url_params=${BASH_REMATCH[5]}
-    # G3 F2: pgjdbc lets URL parameters override the host, port and database, and decodes %-escapes in the name.
-    [[ ! "${url_params^^}" =~ [?\&]PG(HOST|PORT|DBNAME)= ]] ||
-      refuse "the .env SPRING_DATASOURCE_URL sets PGHOST, PGPORT or PGDBNAME as a parameter"
+    # G3 F2: pgjdbc lets URL parameters (PGHOST or host, PGPORT or port, PGDBNAME or dbname, service) override the host, port
+    # and database, and decodes %-escapes in the name.
+    [[ ! "${url_params^^}" =~ [?\&](PG)?(HOST|PORT|DBNAME|SERVICE)= ]] ||
+      refuse "the .env SPRING_DATASOURCE_URL sets the host, port, database or service as a parameter"
     [[ "$url_db" != *%* ]] || refuse "the database name in the .env SPRING_DATASOURCE_URL holds a % escape"
     [[ "$url_host" == 127.0.0.1 || "$url_host" == localhost ]] && [[ "$url_port" == "$dev_port" ]] ||
       refuse "the .env SPRING_DATASOURCE_URL points at $url_host:$url_port, not the dev container on 127.0.0.1:$dev_port"
