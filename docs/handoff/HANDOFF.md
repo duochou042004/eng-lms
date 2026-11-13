@@ -1,35 +1,34 @@
-# Handoff — 2026-11-13T13:20Z (T-M2.25 fix round; session ended at the context limit)
+# Handoff — 2026-11-13T15:12Z (T-M2.25 merged; next T-M2.24)
 
-Phase/Milestone: P1 / M2 (in progress) · Task: **T-M2.25** (in review, fix round AC9) · Branch: `chore/T-M2.25-quality-docs-truth` (PR #174)
-· develop: `e253c59` · Next: T-M2.24, then **T-M2.13** (packet ready, PR #153) · Remote: https://github.com/duochou042004/eng-lms
+Phase/Milestone: P1 / M2 (in progress) · Task: **T-M2.24** (draft: the LC writes its packet) · Branch: `develop` · Last commit on develop:
+see `git log -1` after the records PR merges (`b3cd6fd` before it) · Next: **T-M2.13** (packet ready, PR #153; ask the PO after T-M2.24)
+· Remote: https://github.com/duochou042004/eng-lms (mirror: gitlab.com/duochou042004/eng-lms)
 
 ## Where we are
-- **T-M2.27 merged** (`c5772f0`, DEC-166; records `925d7d2`). **T-M2.25 packet merged** (`e253c59`, DEC-167; G0 adversarial, round 2 PASS).
-- **T-M2.25 built** on its branch (`148e84f` code, `1123d27` docs, `f192183` gate log, `ef5f0a6` progress + tech-stack row): JaCoCo `check`
-  per app/domain package (all above floor), web line coverage 100 % (measured once), local E2E on a per-run `englms_e2e` + `.data/e2e/fresh/`
-  (dev DB counts unchanged by a fresh run), manual `regression.yml`, quality docs corrected. Gate PASS (797 s) on `1123d27`.
-- **G3 round 1: CHANGES REQUESTED** (3 S3 guard bypasses F1–F3, 2 S4): now **AC9** in the packet (DEC-168). CI on PR #174 was green except
-  e2e-smoke still pending at hand-off.
+- **T-M2.27 merged** (`c5772f0`, DEC-166). **T-M2.25 merged** (`b3cd6fd`, PR #174, DEC-169): JaCoCo floor enforced, web coverage
+  measured (100 % line), local E2E on a per-run database, a manual `regression` workflow, quality docs corrected; G3 three adversarial rounds.
+- The first `regression` run (43444433118) failed 7 of 1,104 (phone ×2, WebKit smoke ×4, Firefox smoke ×1): new row **T-M2.28**, before the
+  M2 G5, not blocking T-M2.13.
 
 ## In flight / uncommitted
-- Nothing uncommitted after this commit (on the task branch). PR #174 open; the fix round is next.
+- None after the records PR (`docs/T-M2.25-records`) merges.
 
 ## Next steps (in this order)
-1. On `chore/T-M2.25-quality-docs-truth`: brief one implementer subagent (general-purpose, as for the build; DEC-167 (6)) with AC9: F1, F2, F3,
-   F5 fixes and the F4 `shortcut:` comment, each new case shown failing; gate once on the final head; the LC records the summary and pushes.
-2. CI on #174; a **fresh** adversarial docs-reviewer re-checks F1–F3 only (private clone, text only); post `DOCS-REVIEW T-M2.25: PASS` +
-   `LC-APPROVED T-M2.25`; merge from an up-to-date `develop` via merge-gate; records PR (part C: DEC with merge-gate's scope line,
-   `review/docs.md`, backlog/packet done, progress, handoff); then start `regression.yml` once on `develop` (`gh workflow run regression.yml
-   --ref develop`) and record the result (a failure becomes a fix row).
-3. T-M2.24 (packet first). Then ask the PO to start T-M2.13 (before it: `gh pr update-branch 153`).
+1. **Write the T-M2.24 packet** (`task-packet` skill) from its backlog row: split `e2e/tests/students.spec.ts` into cohesive files, shared
+   helpers under `e2e/support/`, the same titles per project (`playwright test --list` before/after), no assertion text change, full suite ×3
+   green; `gate.sh` repeats ×3 the specs importing a changed `e2e/support/` file (unknown importer: all specs), with gate fixtures (PO-9). G0;
+   merge; `frontend-implementer` (gate change maybe LC); G3; merge; records.
+2. Then `gh pr update-branch 153` and ask the PO to start T-M2.13.
+3. T-M2.28 before the M2 G5; T-M2.26 after at least 10 shadow PRs and its two probes.
 
 ## Pending PO decisions / actions
 - None open. **Dependabot (the PO's):** PRs #135 and #160–#166 need `@dependabot rebase`.
-- Open points (unchanged): see the archived handoff's list; `e2e/support/global-setup.ts`'s purge advice still says "dev database" (out of T-M2.25's scope).
+- Open points: see the archived handoffs.
 
 ## Gotchas
-- **T-M2.25 fix round (DEC-168):** pgjdbc URL parameters (`PGDBNAME`, `PGHOST`) override the host and database in the URL, and `.env` is sourced into the script's own shell (it can reassign any variable): guard against both. The G3 report is `.claude/scratch/lc-records/T-M2.25-g3-round1.md` (git-ignored; copy its findings into `review/docs.md` at the records step).
-- **T-M2.27 (DEC-166):** the dev DB now holds 1,065 active, 30 paused and 133 archived students (read-only count by QA, 2026-11-13); local E2E keeps adding rows until T-M2.25. `loading.spec.ts` "the loading region in English" can still fail on a very slow runner (CPU throttle ≥ 30 in the reproduction): a CI recurrence needs a new ruling (the packet forbade raising a timeout). Reproduction generators must read the old form from the pre-task commit, not `HEAD`.
+- **Local E2E now runs on its own database** (T-M2.25): `e2e-run.sh` recreates `englms_e2e` per run with `.data/e2e/fresh/`; `E2E_KEEP_DB=1` runs against the PO's dev DB as before (G5). pgjdbc URL parameters and `.env` reassignments are guarded (DEC-168, DEC-169).
+- **The `regression` workflow** is manual (`gh workflow run regression.yml --ref develop`, ~33 min, all 6 viewports + Firefox/WebKit smoke); its first run failed 7 tests (T-M2.28).
+- **T-M2.27 (DEC-166):** the dev DB now holds 1,065 active, 30 paused and 133 archived students (read-only count by QA, 2026-11-13); local E2E added rows until T-M2.25 (now only `E2E_KEEP_DB=1` runs do). `loading.spec.ts` "the loading region in English" can still fail on a very slow runner (CPU throttle ≥ 30 in the reproduction): a CI recurrence needs a new ruling (the packet forbade raising a timeout). Reproduction generators must read the old form from the pre-task commit, not `HEAD`.
 - **A QA agent can end on an API error after its verdict** (T-M2.27: Cloudflare 403 after the full report): the report already returned counts; check `git status` and `e2e/tests` for scratch files.
 - **This device (2026-11-11): agent shells run with `NoNewPrivs=1`** (inherited from the desktop app), so rootless `podman` fails with
   "newuidmap: write to uid_map failed". `export CONTAINER_HOST=unix:///run/user/1000/podman/podman.sock` in every agent shell (podman remote
@@ -104,5 +103,5 @@ Phase/Milestone: P1 / M2 (in progress) · Task: **T-M2.25** (in review, fix roun
   `evidence/<task>/records/` (delete it) and a ~2,000-line log (trim it to ≤ 300 lines).
 
 ## Files to read first
-`CLAUDE.md` → `progress.json` → this file → DEC-167, DEC-168 → `docs/tasks/T-M2.25-quality-docs-truth.md` (AC9) → `evidence/T-M2.25/summary.md`
-→ `.claude/scratch/lc-records/T-M2.25-g3-round1.md` → `scripts/e2e-run.sh`, `scripts/tests/e2e-run.test.sh`, `scripts/tests/ci-scope-workflows.test.sh`.
+`CLAUDE.md` → `progress.json` → this file → DEC-163, DEC-169 → the T-M2.24 row in `docs/tasks/backlog.md` → `.claude/skills/task-packet/`
+→ `docs/tasks/T-M2.22-qa-strategy-review.md` (U3) → `scripts/gate.sh` (the e2e repeat) → `e2e/tests/students.spec.ts` (structure).

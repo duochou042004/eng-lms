@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-11-13T14:20:30Z",
-  "updatedBy": "lead-coordinator (T-M2.25 F2-bis fixed, 5141d85)",
+  "updatedAt": "2026-11-13T15:11:50Z",
+  "updatedBy": "lead-coordinator (T-M2.25 records, DEC-169)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -30,33 +30,6 @@
     "exitCriteria": "FR-AUTH-01..10 and FR-STU-01..07 accepted; authorization-matrix and student-isolation harnesses fail on any unregistered endpoint; add-student flow E2E at 360/768/1280 within its step budget; security review of authentication passed (docs/01-product/roadmap.md)."
   },
   "currentTask": {
-    "id": "T-M2.25",
-    "title": "The quality docs promise only what exists; local E2E on its own database per run (T-M2.22 U4, U8 (a); DEC-158)",
-    "status": "in_review",
-    "ownerRole": "LC",
-    "branch": "chore/T-M2.25-quality-docs-truth",
-    "packet": "docs/tasks/T-M2.25-quality-docs-truth.md",
-    "pr": "174",
-    "lastCommit": "5141d85",
-    "startedAt": "2026-11-13T11:15:00Z",
-    "entryGate": [
-      "T-M2.27 merged — met (c5772f0)",
-      "Packet written by the LC (task-packet skill) and G0 passed — met (PR #173, e253c59)"
-    ],
-    "nextSteps": [
-      "AC9 and F2-bis done (5141d85; gate PASS 836 s); delta re-check of F2 only by a fresh adversarial docs-reviewer",
-      "CI on PR #174; delta re-check of F1-F3 by a fresh adversarial docs-reviewer (private clone); merge via merge-gate from develop; records PR (DEC with merge-gate's scope line); first regression workflow run on develop (records step)",
-      "Then T-M2.24 (packet first); then ask the PO to start T-M2.13 (gh pr update-branch 153 first)"
-    ],
-    "trace": [
-      "DEC-157",
-      "DEC-158",
-      "DEC-163",
-      "DEC-167",
-      "DEC-168"
-    ]
-  },
-  "nextTask": {
     "id": "T-M2.24",
     "title": "Split e2e/tests/students.spec.ts into cohesive spec files; gate repeats the specs importing a changed e2e/support file (T-M2.22 U3; DEC-158 PO-9)",
     "status": "draft",
@@ -67,15 +40,40 @@
     "lastCommit": null,
     "startedAt": null,
     "entryGate": [
-      "T-M2.25 merged"
+      "T-M2.25 merged — met (b3cd6fd)",
+      "Packet written by the LC (task-packet skill) and G0 passed"
     ],
     "nextSteps": [
-      "Packet after T-M2.25; then T-M2.13 (held, packet ready, PR #153)"
+      "LC: write docs/tasks/T-M2.24-*.md from the backlog row (split students.spec.ts; gate repeats importers of a changed e2e/support file); G0; merge the packet; frontend-implementer; G3; merge; records",
+      "Then ask the PO to start T-M2.13 (gh pr update-branch 153 first); T-M2.28 before the M2 G5"
     ],
     "trace": [
       "DEC-157",
       "DEC-158",
       "DEC-163"
+    ]
+  },
+  "nextTask": {
+    "id": "T-M2.13",
+    "title": "Auth and shell feedback follow-ups (T-M2.12 G3, DEC-118)",
+    "status": "ready",
+    "ownerRole": "FE",
+    "branch": null,
+    "packet": "docs/tasks/T-M2.13-auth-shell-followups.md",
+    "pr": "153",
+    "lastCommit": null,
+    "startedAt": null,
+    "entryGate": [
+      "T-M2.27, T-M2.25, T-M2.24 merged (DEC-163)",
+      "PO start signal"
+    ],
+    "nextSteps": [
+      "After T-M2.24: gh pr update-branch 153; ask the PO to start"
+    ],
+    "trace": [
+      "DEC-155",
+      "DEC-163",
+      "DEC-164"
     ]
   },
   "completed": [
@@ -390,11 +388,19 @@
       "mergeCommit": "c5772f0",
       "evidence": "evidence/T-M2.27/summary.md",
       "note": "PR #170 via merge-gate (head edfeec4, CI 7/7 (0 fast-path)); packet PR #169 (6f284c4, G0 round 2 PASS); gate PASS on 86ee35c (e2e 515 passed); AC5 60/60 ×3; G3 qa-evaluator PASS WITH MINOR (2 × S4; 53,720 tokens) (DEC-166)"
+    },
+    {
+      "id": "T-M2.25",
+      "title": "The quality docs promise only what exists; local E2E on its own database per run (T-M2.22 U4, U8 (a); DEC-158)",
+      "completedAt": "2026-11-13T14:36:49Z",
+      "mergeCommit": "b3cd6fd",
+      "evidence": "evidence/T-M2.25/summary.md",
+      "note": "PR #174 via merge-gate (head da37eed, CI 7/7 (0 fast-path)); packet PR #173 (e253c59); gate PASS on 5141d85 (836 s); G3 three adversarial rounds, round 3 PASS (153,000 tokens); first regression run 43444433118: 7 failed -> T-M2.28 (DEC-169)"
     }
   ],
   "tests": {
-    "lastRun": "2026-11-13T09:38:16Z",
-    "summary": "T-M2.27 code head 86ee35c: gate PASS (13 steps, 970 s; backend and contract-drift skipped), e2e 515 passed / 31 skipped, changed specs ×3 573 passed / 3 skipped; AC5 ×20 on three projects 60/60 for each changed test. CI 7/7 on edfeec4.",
+    "lastRun": "2026-11-13T14:19:56Z",
+    "summary": "T-M2.25 code head 5141d85: gate PASS (13 steps, 836 s), e2e 515 passed / 31 skipped on the per-run englms_e2e; e2e-run tests 109; CI 7/7 on da37eed. First regression run 43444433118 on b3cd6fd: 1,021 passed, 7 failed, 76 skipped (T-M2.28).",
     "suites": [
       {
         "name": "backend (./mvnw -B verify)",
@@ -421,27 +427,27 @@
   "gates": {
     "G0": {
       "status": "pass",
-      "note": "T-M2.27 packet: one docs-reviewer, round 1 CHANGES REQUESTED, round 2 PASS (48,975 tokens cumulative, 162.4 s last round), DEC-165; merged 6f284c4"
+      "note": "T-M2.25 packet: adversarial docs-reviewer, round 2 PASS (76,105 tokens cumulative), DEC-167; merged e253c59"
     },
     "G1": {
       "status": "pass",
-      "note": "T-M2.27: gate PASS (13 steps, 970 s) on 86ee35c, e2e 515 passed, 31 skipped (DEC-166)"
+      "note": "T-M2.25: gate PASS (13 steps, 836 s) on 5141d85, e2e 515 passed on the per-run database (DEC-169)"
     },
     "G2": {
       "status": "pass",
-      "note": "T-M2.27: CI 7/7 on edfeec4 (0 fast-path)"
+      "note": "T-M2.25: CI 7/7 on da37eed (0 fast-path)"
     },
     "G3": {
       "status": "pass",
-      "note": "T-M2.27: one fresh qa-evaluator, QA-VERDICT PASS WITH MINOR (2 × S4), 53,720 tokens, 336.6 s"
+      "note": "T-M2.25: three fresh adversarial docs-reviewers; round 3 DOCS-REVIEW T-M2.25: PASS; 153,000 tokens"
     },
     "G4": {
       "status": "pass",
-      "note": "T-M2.27 PR #170 merged via merge-gate (c5772f0)"
+      "note": "T-M2.25 PR #174 merged via merge-gate (b3cd6fd)"
     },
     "G5": {
       "status": "n/a",
-      "note": "M2 in progress"
+      "note": "M2 in progress; first regression run failed (T-M2.28)"
     }
   },
   "blockers": [],
@@ -805,6 +811,13 @@
       "status": "approved",
       "at": "2026-11-13T09:59:05Z",
       "ref": "DEC-166"
+    },
+    {
+      "what": "LC-APPROVED T-M2.25 (PR #174)",
+      "by": "LC",
+      "status": "approved",
+      "at": "2026-11-13T14:36:49Z",
+      "ref": "DEC-169"
     }
   ],
   "environment": {
@@ -1502,6 +1515,11 @@
       "at": "2026-11-13T13:19:50Z",
       "actor": "lead-coordinator",
       "event": "T-M2.25 implemented (PR #174, gate PASS on 1123d27); G3 round 1 CHANGES REQUESTED (3 S3, 2 S4) -> AC9 (DEC-168); session handed off at the context limit."
+    },
+    {
+      "at": "2026-11-13T15:11:50Z",
+      "actor": "lead-coordinator",
+      "event": "T-M2.25 merged (b3cd6fd, PR #174; DEC-167..169); first regression run failed (7) -> T-M2.28. Current task T-M2.24 (draft), then T-M2.13."
     }
   ]
 }
