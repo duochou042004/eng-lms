@@ -154,4 +154,109 @@ g rm -q e2e/tests/new.spec.ts; g commit -qm rm
 expect_exit 0 "DEC-131: a deleted spec passes" -- gbase env
 check '[[ $(grep -c "^e2e " "$calls") == 1 ]]' "DEC-131: a deleted spec is not repeated"
 
+# DEC-170 (PO-9): a changed e2e/support/ file repeats every spec that imports it (transitively), all specs when that cannot be known.
+w() { mkdir -p "$(dirname "$repo/$1")"; printf '%s\n' "$2" >"$repo/$1"; }
+w e2e/support/one.ts "export const one = 1"
+w e2e/support/multi.ts "export const m1 = 1, m2 = 2"
+w e2e/support/types.ts "export type T = number"
+w e2e/support/deep.ts "export const deep = 1"
+w e2e/support/mid.ts "export * from './deep'"
+w e2e/support/js.ts "export const js = 1"
+w e2e/support/pkg/index.ts "export const pkg = 1"
+w e2e/support/vi.ts "export const vi = 1"
+w e2e/support/dyn.ts "export const dyn = 1"
+w e2e/support/side.ts "globalThis.side = 1"
+w e2e/support/global-setup.ts "export default async () => {}"
+w e2e/support/data.json '{"a": 1}'
+w e2e/tests/one.spec.ts "import { one } from '../support/one'"
+w e2e/tests/multi.spec.ts $'import {\n  m1,\n  m2,\n} from \'../support/multi\''
+w e2e/tests/types.spec.ts 'import type { T } from "../support/types"'
+w e2e/tests/chain.spec.ts "import { deep } from '../support/mid'"
+w e2e/tests/js.spec.ts "import { js } from '../support/js.js'"
+w e2e/tests/idx.spec.ts "import { pkg } from '../support/pkg'"
+w "e2e/tests/học viên.spec.ts" "import { vi } from '../support/vi'"
+w e2e/tests/dyn.spec.ts $'const { dyn } = await import(\n  "../support/dyn"\n)'
+w e2e/tests/side.spec.ts "import '../support/side'"
+g add -A; g commit -qm support-base; g branch -f base
+all_specs=$(cd "$repo/e2e" && find tests -type f -name '*.spec.ts' | sort | paste -sd' ' -)
+# repeat_case <description> <expected specs, space-separated>: the run passes, e2e then one repeat with exactly those specs; then reset.
+repeat_case() {
+  : >"$calls"
+  expect_exit 0 "DEC-170: $1 passes" -- gbase env
+  local out=$LAST_OUTPUT want="e2e --no-build --project=phone-small --project=tablet --project=laptop --repeat-each=3 --retries=0 $2"
+  check '[[ $(grep -c "^e2e " "$calls") == 2 && "$(grep "^e2e " "$calls" | tail -1)" == "$want" ]]' \
+    "DEC-170: $1 repeats: $2"
+  LAST_OUTPUT=$out
+}
+reset_case() { g reset -q --hard base; g clean -fdq e2e; }
+
+echo "export const one = 2" >"$repo/e2e/support/one.ts"
+repeat_case "a changed support file imported by one spec" "tests/one.spec.ts"
+expect_output_contains "gate: e2e repeat: tests/one.spec.ts imports e2e/support/one.ts" "DEC-170: names why the spec repeats"
+reset_case
+
+echo "export const m1 = 3, m2 = 4" >"$repo/e2e/support/multi.ts"; g add -A; g commit -qm multi
+repeat_case "a support file behind a multi-line import (committed)" "tests/multi.spec.ts"
+reset_case
+
+echo "export type T = string" >"$repo/e2e/support/types.ts"
+repeat_case "a support file behind an import type (double quotes)" "tests/types.spec.ts"
+reset_case
+
+echo "export const deep = 2" >"$repo/e2e/support/deep.ts"
+repeat_case "a support file re-exported by another (export * from)" "tests/chain.spec.ts"
+expect_output_contains "tests/chain.spec.ts imports e2e/support/deep.ts through e2e/support/mid.ts" "DEC-170: names the re-export chain"
+reset_case
+
+echo "export const js = 2" >"$repo/e2e/support/js.ts"; echo "export const pkg = 2" >"$repo/e2e/support/pkg/index.ts"
+repeat_case "a .js specifier and an index specifier" "tests/idx.spec.ts tests/js.spec.ts"
+reset_case
+
+echo "export default async () => { /* changed */ }" >"$repo/e2e/support/global-setup.ts"
+repeat_case "global-setup.ts (no spec imports it)" "$all_specs"
+expect_output_contains "gate: e2e repeat: all specs: e2e/support/global-setup.ts is imported by no spec" "DEC-170: says why all specs repeat"
+reset_case
+
+g rm -q e2e/support/one.ts; g commit -qm rm-support
+repeat_case "a deleted support file" "$all_specs"
+expect_output_contains "all specs: e2e/support/one.ts was deleted or renamed" "DEC-170: a deleted support file: says why"
+reset_case
+
+g mv e2e/support/one.ts e2e/support/uno.ts; echo "import { one } from '../support/uno'" >"$repo/e2e/tests/one.spec.ts"; g add -A; g commit -qm rename
+repeat_case "a renamed support file (--no-renames)" "$all_specs"
+reset_case
+
+echo '{"a": 2}' >"$repo/e2e/support/data.json"
+repeat_case "a non-.ts support file" "$all_specs"
+expect_output_contains "all specs: e2e/support/data.json is not a .ts file" "DEC-170: a non-.ts support file: says why"
+reset_case
+
+echo "import { gone } from '../support/gone'" >>"$repo/e2e/tests/one.spec.ts"
+repeat_case "a relative specifier into e2e/support/ that resolves to no file" "$all_specs"
+expect_output_contains "e2e/tests/one.spec.ts: ../support/gone resolves to no file" "DEC-170: names the unresolved specifier"
+reset_case
+
+# The support file importing from e2e/tests/ is in the base: a change to an unrelated spec still repeats all specs.
+echo "export { one } from '../tests/one.spec'" >>"$repo/e2e/support/types.ts"; g add -A; g commit -qm into-tests; g branch -f base
+echo "// changed" >>"$repo/e2e/tests/multi.spec.ts"
+repeat_case "a support file importing from e2e/tests/ (unchanged), with a changed spec" "$all_specs"
+expect_output_contains "e2e/support/types.ts imports from e2e/tests/ (../tests/one.spec)" "DEC-170: names the support file importing a spec"
+g reset -q --hard HEAD~1; g branch -f base; g clean -fdq e2e
+
+echo "export const one = 3" >"$repo/e2e/support/one.ts"; echo "// changed" >>"$repo/e2e/tests/multi.spec.ts"
+repeat_case "a changed support file plus a changed spec" "tests/multi.spec.ts tests/one.spec.ts"
+reset_case
+
+echo "export const one = 4" >"$repo/e2e/support/one.ts"; echo "// changed" >>"$repo/e2e/tests/one.spec.ts"
+repeat_case "a changed support file and its changed importer (once)" "tests/one.spec.ts"
+reset_case
+
+echo "export const dyn = 2" >"$repo/e2e/support/dyn.ts"; echo "globalThis.side = 2" >"$repo/e2e/support/side.ts"
+repeat_case "a dynamic import( (multi-line) and a side-effect import" "tests/dyn.spec.ts tests/side.spec.ts"
+reset_case
+
+echo "export const vi = 2" >"$repo/e2e/support/vi.ts"
+repeat_case "a support file imported by a spec with a space and vi letters" "tests/học viên.spec.ts"
+reset_case
+
 finish

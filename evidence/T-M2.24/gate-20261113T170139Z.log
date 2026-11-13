@@ -1,0 +1,215 @@
+# Trimmed from 2141 lines (T-M2.24): passing test lines (✓, ok -), skipped-test lines (-), vite dist/ lines, Maven [INFO] and blank lines removed; every gate:, summary and failure line kept.
+gate: logging to evidence/T-M2.24/gate-20261113T170139Z.log
+engine: podman (DOCKER_HOST=unix:///run/user/1000/podman/podman.sock)
+env.sh: DOCKER_HOST=unix:///run/user/1000/podman/podman.sock TESTCONTAINERS_RYUK_DISABLED=true
+gate: 51b13d2 2026-11-13T17:01:39Z, steps: docs scripts backend web-install web-lint web-typecheck web-test web-build web-budget web-contrast contract-drift qa-typecheck e2e
+gate: ==> docs
+docs-check: PASS (326 markdown files, progress.json valid, sources intact, prompt within limit, records consistent, handoff archived, table code spans escaped, text-only CI inputs clean)
+gate: <== docs OK (1s)
+gate: ==> scripts
+check-docs.sh (records, handoff archive, table code spans)
+  -> 86 passed, 0 failed
+ci-scope.sh
+ AC1: the text-only diff (through the PR mode)
+ AC2: switch (a), pull requests
+ AC7: the mode file
+ AC3: switch (b), pushes to develop
+ replay
+  -> 243 passed, 0 failed
+ci-scope workflow wiring
+  -> 97 passed, 0 failed
+coverage-summary.sh
+  -> 9 passed, 0 failed
+dev scripts
+ engine.sh (AC1)
+ env.sh (AC2, AC6)
+ dev-up.sh / dev-down.sh (AC3, T-M1.8 AC5)
+  -> 164 passed, 0 failed
+e2e-run.sh
+  -> 109 passed, 0 failed
+gate.sh
+  -> 92 passed, 0 failed
+gitlab-sync.sh
+  -> 11 passed, 0 failed
+merge-gate.sh
+  -> 418 passed, 0 failed
+check-path-ownership.sh
+  -> 15 passed, 0 failed
+pre-push hook
+  -> 15 passed, 0 failed
+require-bash.sh
+  skip - no bash 3.2 here (/bin/bash is 5.3.9(1)-release); set ENGLMS_BASH32=<path> or run on macOS
+  -> 11 passed, 0 failed
+workflow upload warnings
+  -> 10 passed, 0 failed
+script tests: PASS
+gate: <== scripts OK (217s)
+gate: ==> backend
+gate: backend skipped: no backend/ or api/ change (CI runs it; ENGLMS_GATE_FULL=1 forces it)
+gate: <== backend OK (1s)
+gate: ==> web-install
+✓ Lockfile passes supply-chain policies (verified 2d ago)
+Lockfile is up to date, resolution step is skipped
+Done in 38ms using pnpm v12.6.0
+gate: <== web-install OK (0s)
+gate: ==> web-lint
+$ oxlint --deny-warnings && sh scripts/no-lint-directives.sh && stylelint "src/**/*.css" && prettier --check .
+Checking formatting...
+All matched files use Prettier code style!
+gate: <== web-lint OK (4s)
+gate: ==> web-typecheck
+$ tsc -b
+gate: <== web-typecheck OK (6s)
+gate: ==> web-test
+$ vitest --run
+ RUN  v5.1.0 /home/linux/Projects/eng-lms/web
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+ Test Files  68 passed (68)
+      Tests  818 passed (818)
+   Start at  00:05:28
+   Duration  51.32s (tests 59%, setup 22%, environment 16%, import 2%, transform 1%)
+    Isolate  68 workers spawned · ~1.46s startup each (spawn + environment, per file)
+             at least ~5.17s faster with isolate: false — reuses workers across files instead of one per file
+gate: <== web-test OK (51s)
+gate: ==> web-build
+$ tsc -b && vite build
+vite v8.3.5 building client environment for production...
+transforming...
+✓ 3636 modules transformed.
+rendering chunks...
+computing gzip size...
+✓ built in 514ms
+gate: <== web-build OK (7s)
+gate: ==> web-budget
+$ node scripts/bundle-budget.mjs
+ok    student   187.6 KB gz ≤ 200 KB  (9 chunks)
+ok    tutor     187.8 KB gz ≤ 300 KB  (9 chunks)
+budget: PASS
+gate: <== web-budget OK (0s)
+gate: ==> web-contrast
+$ node scripts/contrast-check.mjs
+ok    15.98:1 ≥ 4.5  --color-text (#1f1d1a) on --color-bg (#faf9f7)  body text
+ok    16.81:1 ≥ 4.5  --color-text (#1f1d1a) on --color-surface (#fff)  body text
+ok    14.91:1 ≥ 4.5  --color-text (#1f1d1a) on --color-surface-sunken (#f3f1ed)  body text
+ok     7.36:1 ≥ 4.5  --color-text-muted (#57524a) on --color-bg (#faf9f7)  body text
+ok     7.75:1 ≥ 4.5  --color-text-muted (#57524a) on --color-surface (#fff)  body text
+ok     6.87:1 ≥ 4.5  --color-text-muted (#57524a) on --color-surface-sunken (#f3f1ed)  body text
+ok     5.49:1 ≥ 4.5  --color-text-subtle (#6b655b) on --color-bg (#faf9f7)  body text
+ok     5.77:1 ≥ 4.5  --color-text-subtle (#6b655b) on --color-surface (#fff)  body text
+ok     5.12:1 ≥ 4.5  --color-text-subtle (#6b655b) on --color-surface-sunken (#f3f1ed)  body text
+ok     6.51:1 ≥ 4.5  --color-accent (#2f5d8c) on --color-bg (#faf9f7)  links
+ok     6.85:1 ≥ 4.5  --color-accent (#2f5d8c) on --color-surface (#fff)  links, secondary button label
+ok     7.84:1 ≥ 4.5  --color-accent-strong (#234a70) on --color-accent-subtle (#e6eef6)  quiet button hover label
+ok     6.85:1 ≥ 4.5  --color-on-accent (#fff) on --color-accent (#2f5d8c)  primary button label
+ok     9.19:1 ≥ 4.5  --color-on-accent (#fff) on --color-accent-strong (#234a70)  primary button hover label
+ok     6.54:1 ≥ 4.5  --color-on-accent (#fff) on --color-danger (#b3261e)  danger button label
+ok     9.11:1 ≥ 4.5  --color-on-accent (#fff) on --color-danger-strong (#8c1d18)  danger button hover label
+ok     6.96:1 ≥ 4.5  --color-success-text (#1f5c39) on --color-success-subtle (#e7f3ec)  success alert
+ok     7.33:1 ≥ 4.5  --color-warning-text (#6b4800) on --color-warning-subtle (#fbf1dc)  warning alert
+ok     7.77:1 ≥ 4.5  --color-danger-text (#8c1d18) on --color-danger-subtle (#fbe9e7)  danger alert
+ok     7.84:1 ≥ 4.5  --color-info-text (#234a70) on --color-info-subtle (#e6eef6)  info alert
+ok     6.54:1 ≥ 4.5  --color-danger (#b3261e) on --color-surface (#fff)  field error text
+ok     6.21:1 ≥ 4.5  --color-danger (#b3261e) on --color-bg (#faf9f7)  field error text on the page background
+ok     6.54:1 ≥ 3  --color-danger (#b3261e) on --color-surface (#fff)  field error icon (T-M1.9 AC5)
+ok     6.21:1 ≥ 3  --color-danger (#b3261e) on --color-bg (#faf9f7)  field error icon on the page background (T-M1.9 AC5)
+ok     7.84:1 ≥ 4.5  --color-accent-strong (#234a70) on --color-accent-subtle (#e6eef6)  segmented control: selected label
+ok     7.84:1 ≥ 3  --color-accent-strong (#234a70) on --color-accent-subtle (#e6eef6)  segmented control: selected check icon
+ok    14.91:1 ≥ 4.5  --color-text (#1f1d1a) on --color-surface-sunken (#f3f1ed)  segmented control: hovered label
+ok     5.85:1 ≥ 3  --color-focus (#2f5d8c) on --color-accent-subtle (#e6eef6)  segmented control: focus ring inside a selected segment
+ok     3.51:1 ≥ 3  --color-border-strong (#8f887c) on --color-surface (#fff)  input boundary
+ok     3.34:1 ≥ 3  --color-border-strong (#8f887c) on --color-bg (#faf9f7)  input boundary
+ok     6.51:1 ≥ 3  --color-focus (#2f5d8c) on --color-bg (#faf9f7)  focus ring
+ok     6.85:1 ≥ 3  --color-focus (#2f5d8c) on --color-surface (#fff)  focus ring
+contrast: PASS (32 pairs)
+gate: <== web-contrast OK (0s)
+gate: ==> contract-drift
+gate: contract-drift skipped: no backend/ or api/ change (CI runs it)
+gate: <== contract-drift OK (0s)
+gate: ==> qa-typecheck
+✓ Lockfile passes supply-chain policies (verified 2d ago)
+Lockfile is up to date, resolution step is skipped
+Done in 15ms using pnpm v12.6.0
+$ tsc --noEmit
+gate: <== qa-typecheck OK (1s)
+gate: ==> e2e
+engine: podman (DOCKER_HOST=unix:///run/user/1000/podman/podman.sock)
+662db3da228c2ea2649b3ae04db4b4479e85fea5979f6a917a7f6d5cb1e7ec39
+dev-up: englms-dev-db is healthy on 127.0.0.1:5432
+engine: podman (DOCKER_HOST=unix:///run/user/1000/podman/podman.sock)
+e2e-run: recreating the E2E database englms_e2e in englms-dev-db
+DROP DATABASE
+CREATE DATABASE
+e2e-run: building web/dist and the jar with the SPA
+✓ Lockfile passes supply-chain policies (verified 2d ago)
+Lockfile is up to date, resolution step is skipped
+Done in 25ms using pnpm v12.6.0
+$ tsc -b && vite build
+vite v8.3.5 building client environment for production...
+transforming...
+✓ 3636 modules transformed.
+rendering chunks...
+computing gzip size...
+✓ built in 481ms
+e2e-run: started englms-0.0.1-SNAPSHOT.jar (pid 1496047, log backend/target/e2e-app.log)
+e2e-run: app ready; running Playwright --project=phone-small --project=tablet --project=laptop
+Running 546 tests using 8 workers
+  ✘  414 [laptop] › tests/guards.spec.ts:100:1 › the console guard fails on an error raised 300 ms after the test body ends (expected failure) (996ms)
+  ✘  527 [laptop] › tests/students-list.spec.ts:207:3 › Add student (F2) and the credentials card › AC6: leaving a dirty form asks (navigation, home link); a clean or created form leaves; sign-out never asks (9.4s)
+  1) [laptop] › tests/students-list.spec.ts:207:3 › Add student (F2) and the credentials card › AC6: leaving a dirty form asks (navigation, home link); a clean or created form leaves; sign-out never asks 
+    Error: expect(page).toHaveURL(expected) failed
+    Expected pattern: /\/login$/
+    Received string:  "http://localhost:8080/login?next=%2Ftutor%2Fstudents%2Fnew"
+    Timeout: 5000ms
+    Call log:
+      - Expect "toHaveURL" with timeout 5000ms
+        - locator resolved to <html lang="vi">…</html>
+        - unexpected value "http://localhost:8080/tutor/students/new"
+        13 × locator resolved to <html lang="vi">…</html>
+           - unexpected value "http://localhost:8080/login?next=%2Ftutor%2Fstudents%2Fnew"
+      243 |     const account = await openAccountSection(other, 'tutor')
+      244 |     await account.getByRole('button', { name: 'Đăng xuất' }).click()
+    > 245 |     await expect(other).toHaveURL(/\/login$/)
+          |                         ^
+      246 |     await expect(other.getByRole('alertdialog')).toHaveCount(0)
+      247 |     await fresh.close()
+      248 |   })
+        at /home/linux/Projects/eng-lms/e2e/tests/students-list.spec.ts:245:25
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/students-list-Add-student--25706--leaves-sign-out-never-asks-laptop/test-failed-2.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+    attachment #2: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/students-list-Add-student--25706--leaves-sign-out-never-asks-laptop/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+    Error Context: test-results/students-list-Add-student--25706--leaves-sign-out-never-asks-laptop/error-context.md
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/students-list-Add-student--25706--leaves-sign-out-never-asks-laptop/trace.zip
+    Usage:
+        pnpm exec playwright show-trace test-results/students-list-Add-student--25706--leaves-sign-out-never-asks-laptop/trace.zip
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+  1 failed
+    [laptop] › tests/students-list.spec.ts:207:3 › Add student (F2) and the credentials card › AC6: leaving a dirty form asks (navigation, home link); a clean or created form leaves; sign-out never asks 
+  31 skipped
+  514 passed (4.6m)
+e2e-run: playwright exit 1
+e2e-run: app stopped (pid 1496047)
+gate: FAIL at step 'e2e' (exit 1) after 311s; later steps were not run. Resume with: ./scripts/gate.sh --from e2e
