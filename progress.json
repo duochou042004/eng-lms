@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-11-12T20:45:00Z",
-  "updatedBy": "lead-coordinator (DEC-164: T-M2.13 does not wait for T-M2.26)",
+  "updatedAt": "2026-11-13T08:45:06Z",
+  "updatedBy": "lead-coordinator (T-M2.27 packet, DEC-165)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -32,16 +32,16 @@
   "currentTask": {
     "id": "T-M2.27",
     "title": "E2E stability before T-M2.13: the three known unstable kept E2E tests (DEC-163)",
-    "status": "draft",
+    "status": "ready",
     "ownerRole": "FE",
-    "branch": null,
-    "packet": null,
+    "branch": "feature/T-M2.27-e2e-stability",
+    "packet": "docs/tasks/T-M2.27-e2e-stability.md",
     "pr": null,
     "lastCommit": null,
     "startedAt": null,
     "entryGate": [
       "T-M2.23 merged — met (d2db003)",
-      "Packet written by the LC (task-packet skill) and G0 passed"
+      "Packet written by the LC (task-packet skill) and G0 passed (DOCS-REVIEW PASS, round 2) — packet PR pending"
     ],
     "nextSteps": [
       "LC: write docs/tasks/T-M2.27-e2e-stability.md from the backlog row (a) students.spec.ts:2252, (b) loading.spec.ts:173, (c) Guardians AC4 polling read; G0 by a docs-reviewer; merge the packet",
@@ -51,7 +51,8 @@
     "trace": [
       "DEC-159",
       "DEC-162",
-      "DEC-163"
+      "DEC-163",
+      "DEC-165"
     ]
   },
   "nextTask": {
