@@ -34,8 +34,12 @@ for path in sorted(Path(sys.argv[1]).glob("*.y*ml")):
         if re.search(r"steps\.scope\.|id:\s*scope\b|ci-scope\.sh|Full run on", text):
             bad("a manual-only workflow must not use the CI scope")
         tops = [l for l in lines if re.match(r"""^["']?(on|true)["']?\s*:""", l)]
-        i = lines.index("on:") if "on:" in lines else -1
-        if tops != ["on:"] or lines[i + 1:i + 2] != ["  workflow_dispatch:"] or (lines[i + 2:i + 3] or [""])[0].startswith(" "):
+        # G3 F1: the whole on: block (up to the next non-blank, non-comment line at column 0), blank and comment lines dropped;
+        # only the block form is accepted (on: workflow_dispatch and on: [workflow_dispatch] are refused)
+        i = lines.index("on:") if "on:" in lines else len(lines)
+        j = next((k for k in range(i + 1, len(lines)) if lines[k].strip() and not lines[k].startswith((" ", "#"))), len(lines))
+        block = [l for l in lines[i + 1:j] if l.strip() and not l.lstrip().startswith("#")]
+        if tops != ["on:"] or block != ["  workflow_dispatch:"]:
             bad("a manual-only workflow must have workflow_dispatch as its only trigger")
         continue
     if name not in HEAVY:
@@ -167,6 +171,10 @@ mutate backend.yml 't.replace("        if: '"$C"'\n        run: ./mvnw", "      
 mutate backend.yml 't.replace("        if: '"$C"'\n        run: ./mvnw", "        if: '"$C"'\n        \u0026a continue-on-error: true\n        run: ./mvnw")' "a tagged, anchored, aliased or merge key is not allowed" "an anchored continue-on-error key"
 # T-M2.25: the manual-only set
 mutate regression.yml 't.replace("on:\n  workflow_dispatch:\n", "on:\n  workflow_dispatch:\n  pull_request:\n")' "workflow_dispatch as its only trigger" "a manual-only workflow with pull_request: added"
+mutate regression.yml 't.replace("on:\n  workflow_dispatch:\n", "on:\n  workflow_dispatch:\n\n  pull_request:\n")' "workflow_dispatch as its only trigger" "G3 F1: a blank line before a second trigger"
+mutate regression.yml 't.replace("on:\n  workflow_dispatch:\n", "on:\n  workflow_dispatch:\n# also\n  push:\n")' "workflow_dispatch as its only trigger" "G3 F1: a column-0 comment before a second trigger"
+mutate regression.yml 't.replace("on:\n  workflow_dispatch:\n", "on:\n  workflow_dispatch:\n    # inputs\n\n  schedule:\n    - cron: \"0 0 * * *\"\n")' "workflow_dispatch as its only trigger" "G3 F1: an indented comment and a blank line before a schedule"
+mutate regression.yml 't.replace("on:\n  workflow_dispatch:\n", "on: workflow_dispatch\n")' "workflow_dispatch as its only trigger" "G3 F1: the one-line on: form is refused (block form only)"
 mutate regression.yml 't.replace("        run: E2E_ENGINES=all", "        id: scope\n        run: E2E_ENGINES=all")' "a manual-only workflow must not use the CI scope" "a manual-only workflow with a scope step"
 rm -rf "$work/wf"; mkdir "$work/wf"; cp "$ROOT"/.github/workflows/*.yml "$work/wf/"; cp "$work/wf/web.yml" "$work/wf/new.yml"
 expect_exit 1 "a new workflow that is in neither list fails" -- check "$work/wf"

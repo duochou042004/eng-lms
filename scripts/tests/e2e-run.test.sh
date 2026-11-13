@@ -63,7 +63,7 @@ touch "$repo2/backend/target/englms-0.0.1-SNAPSHOT.jar"
 printf '#!/usr/bin/env bash\necho dev-up >>"%s"\n' "$log" >"$repo2/scripts/dev-up.sh"
 # podman stub: one line per call, its arguments joined by "|"; exit $PODMAN_EXIT. java/pnpm stubs: log the call order and what the app sees.
 printf '#!/usr/bin/env bash\n(IFS="|"; echo "podman|$*") >>"%s"\nexit "${PODMAN_EXIT:-0}"\n' "$log" >"$work/bin2/podman"
-printf '#!/usr/bin/env bash\necho java >>"%s"\necho $$ >"%s/app.pid"\nenv | grep -E "^(SPRING_DATASOURCE_URL|ENGLMS_BOOTSTRAP_TUTOR_PASSWORD_FILE)=" | sort >"%s/app2.env"\nexec sleep 300\n' "$log" "$work" "$work" >"$work/bin2/java"
+printf '#!/usr/bin/env bash\necho java >>"%s"\necho $$ >"%s/app.pid"\nenv | grep -E "^(SPRING_DATASOURCE_URL|ENGLMS_BOOTSTRAP_TUTOR_PASSWORD_FILE|E2E_DB_NAME|E2E_KEEP_DB)=" | sort >"%s/app2.env"\nexec sleep 300\n' "$log" "$work" "$work" >"$work/bin2/java"
 printf '#!/usr/bin/env bash\n[[ "$1" == exec ]] && echo "E2E_DATA_DIR=$E2E_DATA_DIR" >"%s/pw.env"\nexit 0\n' "$work" >"$work/bin2/pnpm"
 chmod +x "$work/bin2/"* "$repo2/scripts/dev-up.sh"
 write_env() { printf 'ENGLMS_DEV_DB_USER=englms\nENGLMS_DEV_DB_PORT=5432\nSPRING_DATASOURCE_URL=%s\nSPRING_DATASOURCE_USERNAME=englms\n' "${URL:-jdbc:postgresql://127.0.0.1:5432/devdata}" >"$repo2/.env"; [[ $# -gt 0 ]] && printf '%s\n' "$@" >>"$repo2/.env"; return 0; }
@@ -111,10 +111,31 @@ URL=jdbc:postgresql://db.example.org:5432/devdata write_env
 refused "a non-local URL host" E2E_DB_NAME=englms_e2e
 URL=jdbc:postgresql://127.0.0.1:5433/devdata write_env
 refused "another port" E2E_DB_NAME=englms_e2e
+# G3 F2: pgjdbc URL parameters override the host, port and database name, and it decodes %-escapes in the name
+# (write_env writes the URL unquoted, so these use one parameter: a & would background the .env line)
+URL='jdbc:postgresql://127.0.0.1:5432/other?PGDBNAME=devdata' write_env
+refused "a PGDBNAME URL parameter" E2E_DB_NAME=englms_e2e
+expect_output_contains "sets PGHOST, PGPORT or PGDBNAME as a parameter" "guard: a PGDBNAME URL parameter: names the parameter rule"
+URL='jdbc:postgresql://127.0.0.1:5432/devdata?pghost=db.example.org' write_env
+refused "a lower-case pghost URL parameter" E2E_DB_NAME=englms_e2e
+expect_output_contains "sets PGHOST, PGPORT or PGDBNAME as a parameter" "guard: a pghost URL parameter: names the parameter rule"
+URL='jdbc:postgresql://127.0.0.1:5432/devdata?PgPort=5433' write_env
+refused "a mixed-case PgPort URL parameter" E2E_DB_NAME=englms_e2e
+expect_output_contains "sets PGHOST, PGPORT or PGDBNAME as a parameter" "guard: a PgPort URL parameter: names the parameter rule"
+URL='jdbc:postgresql://127.0.0.1:5432/dev%64ata' write_env
+refused "a % escape in the URL database name" E2E_DB_NAME=devdata
+expect_output_contains "holds a % escape" "guard: a % escape: names the rule"
 
 write_env E2E_DB_NAME=devdata E2E_KEEP_DB=1
 expect_exit 0 "E2E_DB_NAME and E2E_KEEP_DB set inside .env are ignored" -- erun
 expect_equal "$(cat "$log")" "dev-up"$'\n'"$SQL"$'\n'"java" ".env inputs ignored: the default per-run database is recreated"
+FRESH_ENV="ENGLMS_BOOTSTRAP_TUTOR_PASSWORD_FILE=$repo2/.data/e2e/fresh/tutor-bootstrap-password"$'\n'"SPRING_DATASOURCE_URL=jdbc:postgresql://127.0.0.1:5432/englms_e2e"
+expect_equal "$(cat "$work/app2.env")" "$FRESH_ENV" "G3 F5: E2E_DB_NAME and E2E_KEEP_DB from .env do not reach the app"
+# G3 F3: .env assigning the script's saved copies (readonly) changes neither the mode nor the name
+write_env keep_db=1 db_name=englms_x keep_set=1 name_set=1
+expect_exit 0 "G3 F3: keep_db and db_name set inside .env are ignored" -- erun
+expect_equal "$(cat "$log")" "dev-up"$'\n'"$SQL"$'\n'"java" "G3 F3: still a fresh run on englms_e2e"
+expect_equal "$(cat "$work/app2.env")" "$FRESH_ENV" "G3 F3: the app sees the per-run database"
 write_env
 expect_exit 1 "a failing psql stops the run" -- erun PODMAN_EXIT=1
 expect_output_contains "could not recreate the E2E database englms_e2e" "a failing psql: says so"
@@ -122,7 +143,7 @@ expect_output_not_contains "e2e-run: started" "a failing psql: the app is not st
 expect_equal "$(grep -c '^java' "$log")" "0" "a failing psql: no java"
 expect_exit 0 "E2E_KEEP_DB=1 runs on the .env database" -- erun E2E_KEEP_DB=1
 expect_equal "$(cat "$log")" "dev-up"$'\n'"java" "E2E_KEEP_DB=1: no SQL"
-expect_equal "$(cat "$work/app2.env")" "ENGLMS_BOOTSTRAP_TUTOR_PASSWORD_FILE=$repo2/.data/e2e/tutor-bootstrap-password"$'\n'"SPRING_DATASOURCE_URL=jdbc:postgresql://127.0.0.1:5432/devdata" "E2E_KEEP_DB=1: the .env URL and .data/e2e/"
+expect_equal "$(cat "$work/app2.env")" "E2E_KEEP_DB=1"$'\n'"ENGLMS_BOOTSTRAP_TUTOR_PASSWORD_FILE=$repo2/.data/e2e/tutor-bootstrap-password"$'\n'"SPRING_DATASOURCE_URL=jdbc:postgresql://127.0.0.1:5432/devdata" "E2E_KEEP_DB=1: the caller's value, the .env URL and .data/e2e/"
 expect_equal "$(cat "$work/pw.env")" "E2E_DATA_DIR=$repo2/.data/e2e" "E2E_KEEP_DB=1: Playwright uses .data/e2e/"
 rm "$repo2/.env"
 expect_exit 0 "without .env (CI): runs on SPRING_DATASOURCE_URL" -- erun SPRING_DATASOURCE_URL=jdbc:postgresql://ci/db

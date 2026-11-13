@@ -245,6 +245,7 @@
 							<rules>
 								<rule>
 									<element>PACKAGE</element>
+									<!-- shortcut: a misspelled include matches nothing and still passes at the real floors (proof is only the one-off run with both minimums at 1.00, recorded in the T-M2.25 evidence), upgrade to a permanent check that lists the module packages when an include is edited or a module is added. -->
 									<includes>
 										<include>com.englms.*.internal.app</include>
 										<include>com.englms.*.internal.app.*</include>
