@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-11-13T15:11:50Z",
-  "updatedBy": "lead-coordinator (T-M2.25 records, DEC-169)",
+  "updatedAt": "2026-11-13T15:36:57Z",
+  "updatedBy": "lead-coordinator (T-M2.24 packet, DEC-170)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -32,25 +32,26 @@
   "currentTask": {
     "id": "T-M2.24",
     "title": "Split e2e/tests/students.spec.ts into cohesive spec files; gate repeats the specs importing a changed e2e/support file (T-M2.22 U3; DEC-158 PO-9)",
-    "status": "draft",
+    "status": "ready",
     "ownerRole": "FE",
-    "branch": null,
-    "packet": null,
+    "branch": "feature/T-M2.24-split-students-spec",
+    "packet": "docs/tasks/T-M2.24-split-students-spec.md",
     "pr": null,
     "lastCommit": null,
     "startedAt": null,
     "entryGate": [
       "T-M2.25 merged — met (b3cd6fd)",
-      "Packet written by the LC (task-packet skill) and G0 passed"
+      "Packet written by the LC (task-packet skill) and G0 passed (adversarial docs-reviewer; round 2 no S1/S2, S3/S4 fixed by the LC, PO-6) — packet PR pending"
     ],
     "nextSteps": [
-      "LC: write docs/tasks/T-M2.24-*.md from the backlog row (split students.spec.ts; gate repeats importers of a changed e2e/support file); G0; merge the packet; frontend-implementer; G3; merge; records",
+      "G0 of docs/tasks/T-M2.24-split-students-spec.md (adversarial docs-reviewer); merge the packet; then frontend-implementer on feature/T-M2.24-split-students-spec; gate; CI; G3; merge; records",
       "Then ask the PO to start T-M2.13 (gh pr update-branch 153 first); T-M2.28 before the M2 G5"
     ],
     "trace": [
       "DEC-157",
       "DEC-158",
-      "DEC-163"
+      "DEC-163",
+      "DEC-170"
     ]
   },
   "nextTask": {
