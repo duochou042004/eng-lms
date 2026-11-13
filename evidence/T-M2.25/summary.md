@@ -129,6 +129,7 @@ AC7 grep (`grep -rniE 'nightly|seed-e2e|e2e.?profile|three engines' docs/` minus
 ## G3 cost (one row per round; DEC-131 (9))
 | Round | Reviewer | Head | Verdict | S1/S2/S3/S4 | Scope (full / delta) | Agent tokens | Agent min | Gate runs | Gate min |
 |---|---|---|---|---|---|---|---|---|---|
+| 1 | docs-reviewer (fresh, adversarial) | `ef5f0a6` | CHANGES REQUESTED | 0/0/3/2 | full | 73,871 | 9.7 | 0 | 0 |
 
 ## LC notes
 - Implementer: one `general-purpose` subagent briefed by the LC (DEC-167 (6)): 211,315 tokens, 2,605.5 s (43.4 min), 109 tool uses; one gate run (797 s).

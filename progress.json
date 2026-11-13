@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-11-13T13:08:29Z",
-  "updatedBy": "lead-coordinator (T-M2.25 in review, PR #174)",
+  "updatedAt": "2026-11-13T13:19:50Z",
+  "updatedBy": "lead-coordinator (T-M2.25 G3 round 1 CHANGES REQUESTED, AC9, DEC-168; handoff)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -44,14 +44,16 @@
       "Packet written by the LC (task-packet skill) and G0 passed — met (PR #173, e253c59)"
     ],
     "nextSteps": [
-      "CI on PR #174; G3 by one fresh adversarial docs-reviewer (mutations in a private clone); merge via merge-gate from develop; records PR; then the first regression workflow run on develop (records step)",
+      "Fix round (AC9, DEC-168): resume or re-brief the implementer on chore/T-M2.25-quality-docs-truth for F1, F2, F3, F5 (+F4 shortcut comment); each new case shown failing; gate once on the final head; push",
+      "CI on PR #174; delta re-check of F1-F3 by a fresh adversarial docs-reviewer (private clone); merge via merge-gate from develop; records PR (DEC with merge-gate's scope line); first regression workflow run on develop (records step)",
       "Then T-M2.24 (packet first); then ask the PO to start T-M2.13 (gh pr update-branch 153 first)"
     ],
     "trace": [
       "DEC-157",
       "DEC-158",
       "DEC-163",
-      "DEC-167"
+      "DEC-167",
+      "DEC-168"
     ]
   },
   "nextTask": {
@@ -1495,6 +1497,11 @@
       "at": "2026-11-13T10:00:33Z",
       "actor": "lead-coordinator",
       "event": "T-M2.27 merged (c5772f0, PR #170; packet PR #169; DEC-165, DEC-166). Current task T-M2.25 (draft), then T-M2.24, then T-M2.13."
+    },
+    {
+      "at": "2026-11-13T13:19:50Z",
+      "actor": "lead-coordinator",
+      "event": "T-M2.25 implemented (PR #174, gate PASS on 1123d27); G3 round 1 CHANGES REQUESTED (3 S3, 2 S4) -> AC9 (DEC-168); session handed off at the context limit."
     }
   ]
 }
