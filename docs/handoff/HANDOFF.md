@@ -25,12 +25,12 @@ branch yet) · Last commit on develop: see `git log -1` after this PR merges (`b
 2. T-M2.27 by the `frontend-implementer` on `feature/T-M2.27-e2e-stability`; gate once on the final head; CI; G3 (QA); merge from an
    up-to-date `develop`; records PR (part C), with merge-gate's scope line in the DEC.
 3. T-M2.25, then T-M2.24, each packet first. Then ask the PO for T-M2.13 (before it: `gh pr update-branch 153`).
-4. T-M2.26 after at least 10 shadow PRs and its two entry probes (DEC-160, DEC-161); its placement relative to T-M2.13 is asked.
+4. T-M2.26 after at least 10 shadow PRs and its two entry probes (DEC-160, DEC-161); T-M2.13 does not wait for it (DEC-164).
 
 ## Pending PO decisions / actions
-- **Asked (DEC-163):** does T-M2.13 also wait for T-M2.26 (`enforce`: at least 10 shadow PRs and two probes)? LC recommendation: no.
+- **Ruled (DEC-164):** T-M2.13 does not wait for T-M2.26.
 - **To note (DEC-160 (7)):** PO-5 is asked after the first task measured under `enforce` (after T-M2.26), not after T-M2.13.
-- **Dependabot (the PO's):** PR #135 is open and red. T-M2.23 has merged: it needs `@dependabot rebase` before merge-gate can accept it.
+- **Dependabot (the PO's):** PRs #135 and #160–#166 are open. T-M2.23 has merged: each needs `@dependabot rebase` before merge-gate can accept it.
 - **GitHub Actions billing:** not readable by the LC. Shadow mode adds minutes (post-merge runs are no longer cancelled by the next merge).
 - For G5 on this device: Firefox/WebKit browsers and host libraries (`sudo`, PO), unless T-M2.25's `regression` workflow covers it.
 - Open points (unchanged): the `ui/index.ts` barrel in the student first visit; `lib/time` uses the browser's time zone (T-M3.1/T-M3.3, L-12);
