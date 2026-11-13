@@ -58,7 +58,7 @@ password-reset action (no password-suggestion endpoint). The template step (SPEC
 follows the name until edited; "Available" / "Taken" / "Not a valid username") → optional collapsed Password, Contact (email, phone, up to 30
 handles), Guardians (T-M2.15: 0–10 rows of name, relationship, phone, email and notes; an all-empty row is left out) and Note → **Create** →
 the credentials card (focus on "Student created") → **Copy message** → **Open workspace**. The Guardians section is optional and collapsed, so
-F2 without guardians keeps its steps; no first goal until T-M7.2 (DEC-102). Measured by `e2e/tests/students.spec.ts` (`steps-f2` record): 6 counted steps at
+F2 without guardians keeps its steps; no first goal until T-M7.2 (DEC-102). Measured by `e2e/tests/students-list.spec.ts` (`steps-f2` record): 6 counted steps at
 360, 768 and 1280 px, with ux-flows step [3] "expand Contact → phone" counted as one step as listed above (strictly, the expand click and the
 phone entry are two actions); the wall time is reported, not asserted (DEC-093). Keyboard-only F2: `keyboard-f2` record.
 
@@ -112,20 +112,20 @@ Home → "Recent results" item → the result page with feedback. Or More → Pr
 From the student's workspace page, Account section: **Reset password** → the confirmation names the student and the consequences
 (signed out everywhere, a new password at the next sign-in, 7-day expiry) → **Reset password** (danger) → the credentials card replaces the
 Account actions (focus on "New temporary password") → **Copy message** (the same localised message as F2). **Done** closes the card (focus
-back to Reset password); it is not counted. E2E: `e2e/tests/students.spec.ts` (step log `evidence/T-M2.14/records/<project>/steps-f10.json`,
+back to Reset password); it is not counted. E2E: `e2e/tests/students-account.spec.ts` (step log `evidence/T-M2.14/records/<project>/steps-f10.json`,
 3 steps at 360, 768 and 1280).
 
 ## F11 Add a guardian (FR-STU-03, T-M2.15): budget ≤ 3 steps
 
 From the student's Profile view, Guardians section: **Add guardian** (the form opens after the list, focus on Name) → type the name →
 **Save** (the guardian is appended, "Guardian added" toasts, focus on its **Edit**). Relationship, phone, email and notes are optional and not
-counted. E2E: `e2e/tests/students.spec.ts` (step log `evidence/T-M2.15/records/<project>/steps-f11.json`, 3 steps at 360, 768 and 1280).
+counted. E2E: `e2e/tests/students-guardians.spec.ts` (step log `evidence/T-M2.15/records/<project>/steps-f11.json`, 3 steps at 360, 768 and 1280).
 
 ## F12 Update a learning profile (FR-STU-04, T-M2.17): budget ≤ 3 steps
 
 From the student's Profile view, Learning profile section: **Edit learning profile** (the form opens in place, focus on Current level) →
 type a weakness and press Enter (the chip is added, focus stays in the input) → **Save** ("Learning profile saved" toasts, focus on **Edit
-learning profile**). Text left in a tag input is committed by Save. E2E: `e2e/tests/students.spec.ts` (step log
+learning profile**). Text left in a tag input is committed by Save. E2E: `e2e/tests/students-learning-profile.spec.ts` (step log
 `evidence/T-M2.17/records/<project>/steps-f12.json`, 3 steps at 360, 768 and 1280).
 
 ## Flow review checklist (UX reviewer)
