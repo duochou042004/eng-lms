@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-11-13T10:00:33Z",
-  "updatedBy": "lead-coordinator (T-M2.27 records, DEC-166)",
+  "updatedAt": "2026-11-13T12:00:20Z",
+  "updatedBy": "lead-coordinator (T-M2.25 packet, DEC-167)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -32,16 +32,16 @@
   "currentTask": {
     "id": "T-M2.25",
     "title": "The quality docs promise only what exists; local E2E on its own database per run (T-M2.22 U4, U8 (a); DEC-158)",
-    "status": "draft",
+    "status": "ready",
     "ownerRole": "LC",
-    "branch": null,
-    "packet": null,
+    "branch": "chore/T-M2.25-quality-docs-truth",
+    "packet": "docs/tasks/T-M2.25-quality-docs-truth.md",
     "pr": null,
     "lastCommit": null,
     "startedAt": null,
     "entryGate": [
       "T-M2.27 merged — met (c5772f0)",
-      "Packet written by the LC (task-packet skill) and G0 passed"
+      "Packet written by the LC (task-packet skill) and G0 passed (adversarial docs-reviewer, round 2 PASS) — packet PR pending"
     ],
     "nextSteps": [
       "LC: write docs/tasks/T-M2.25-*.md from the backlog row (task-packet skill); G0; merge the packet; then build it",
@@ -50,7 +50,8 @@
     "trace": [
       "DEC-157",
       "DEC-158",
-      "DEC-163"
+      "DEC-163",
+      "DEC-167"
     ]
   },
   "nextTask": {
