@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-11-13T15:36:57Z",
-  "updatedBy": "lead-coordinator (T-M2.24 packet, DEC-170)",
+  "updatedAt": "2026-11-13T15:52:57Z",
+  "updatedBy": "lead-coordinator (T-M2.24 packet merged f010cd8; handoff at the context limit)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -41,11 +41,13 @@
     "startedAt": null,
     "entryGate": [
       "T-M2.25 merged — met (b3cd6fd)",
-      "Packet written by the LC (task-packet skill) and G0 passed (adversarial docs-reviewer; round 2 no S1/S2, S3/S4 fixed by the LC, PO-6) — packet PR pending"
+      "Packet written by the LC (task-packet skill) and G0 passed — met (PR #176, f010cd8)"
     ],
     "nextSteps": [
-      "G0 of docs/tasks/T-M2.24-split-students-spec.md (adversarial docs-reviewer); merge the packet; then frontend-implementer on feature/T-M2.24-split-students-spec; gate; CI; G3; merge; records",
-      "Then ask the PO to start T-M2.13 (gh pr update-branch 153 first); T-M2.28 before the M2 G5"
+      "Merge this handoff PR first (docs/T-M2.24-handoff: one docs-reviewer, DOCS-REVIEW T-M2.24: PASS + LC-APPROVED T-M2.24, merge-gate from develop)",
+      "git switch -c feature/T-M2.24-split-students-spec from develop; brief the frontend-implementer with docs/tasks/T-M2.24-split-students-spec.md (scope 1-5, AC1-AC7); gate once on the final head; LC records summary, pushes, opens the PR",
+      "CI; G3 by a fresh adversarial docs-reviewer (fixtures + mutations of the gate rule in a private clone; reruns AC2/AC3); merge via merge-gate from an up-to-date develop; records PR (part C, DEC with merge-gate's scope line)",
+      "Then gh pr update-branch 153 and ask the PO to start T-M2.13; T-M2.28 before the M2 G5"
     ],
     "trace": [
       "DEC-157",
@@ -1521,6 +1523,11 @@
       "at": "2026-11-13T15:11:50Z",
       "actor": "lead-coordinator",
       "event": "T-M2.25 merged (b3cd6fd, PR #174; DEC-167..169); first regression run failed (7) -> T-M2.28. Current task T-M2.24 (draft), then T-M2.13."
+    },
+    {
+      "at": "2026-11-13T15:52:57Z",
+      "actor": "lead-coordinator",
+      "event": "T-M2.24 packet merged (f010cd8, PR #176, DEC-170); session handed off (context ~370k, past the PO's 300k rule)."
     }
   ]
 }
