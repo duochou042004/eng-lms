@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-11-13T14:01:06Z",
-  "updatedBy": "lead-coordinator (T-M2.25 AC9 fixed, 0130fcc)",
+  "updatedAt": "2026-11-13T14:20:30Z",
+  "updatedBy": "lead-coordinator (T-M2.25 F2-bis fixed, 5141d85)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -37,14 +37,14 @@
     "branch": "chore/T-M2.25-quality-docs-truth",
     "packet": "docs/tasks/T-M2.25-quality-docs-truth.md",
     "pr": "174",
-    "lastCommit": "0130fcc",
+    "lastCommit": "5141d85",
     "startedAt": "2026-11-13T11:15:00Z",
     "entryGate": [
       "T-M2.27 merged — met (c5772f0)",
       "Packet written by the LC (task-packet skill) and G0 passed — met (PR #173, e253c59)"
     ],
     "nextSteps": [
-      "Fix round (AC9) done: 0130fcc, gate PASS on it (831 s); delta re-check of F1-F3 by a fresh adversarial docs-reviewer",
+      "AC9 and F2-bis done (5141d85; gate PASS 836 s); delta re-check of F2 only by a fresh adversarial docs-reviewer",
       "CI on PR #174; delta re-check of F1-F3 by a fresh adversarial docs-reviewer (private clone); merge via merge-gate from develop; records PR (DEC with merge-gate's scope line); first regression workflow run on develop (records step)",
       "Then T-M2.24 (packet first); then ask the PO to start T-M2.13 (gh pr update-branch 153 first)"
     ],

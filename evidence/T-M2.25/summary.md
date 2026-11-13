@@ -138,6 +138,12 @@ G3 round 1 (DEC-168) findings F1–F5, fixed on 0130fcc; gate on that head: `gat
 `e2e-run.test.sh`: 99 passed, 0 failed. `run-all.sh`: `script tests: PASS`. `check-docs.sh`: PASS. Raw logs: `.claude/scratch/lc-records/T-M2.25/fix/`.
 Implementer (fix round): 117,940 tokens, 1,339.6 s, 35 tool uses; one gate run (831 s).
 
+### F2-bis (G3 delta re-check, LC fix)
+The fresh delta reviewer (48,255 tokens, 176.7 s) closed F1, F3, F4, F5 and found F2 still open: pgjdbc maps `dbname=`, `host=`, `port=` (any case) onto
+`PGDBNAME`/`PGHOST`/`PGPORT`, and `service=` can supply them. LC fix `5141d85`: the rule matches an optional `PG` prefix before `HOST`, `PORT`, `DBNAME` or `SERVICE` and `=`, after `?` or `&`, on the upper-cased
+parameters; three new cases (`?dbname=devdata`, `?Host=db.example.org`, `?service=x`). `e2e-run.test.sh`: 109 passed, 0 failed; the previous head's
+script: 96 passed, 13 failed. Gate on `5141d85`: `gate: PASS (13 steps, 836s)`, e2e 515 passed (`gate-20261113T140600Z.log`, trimmed to 268 lines).
+
 ## Reviews
 - G3: `DOCS-REVIEW T-M2.25:` pending (fresh adversarial docs-reviewer).
 
@@ -145,6 +151,7 @@ Implementer (fix round): 117,940 tokens, 1,339.6 s, 35 tool uses; one gate run (
 | Round | Reviewer | Head | Verdict | S1/S2/S3/S4 | Scope (full / delta) | Agent tokens | Agent min | Gate runs | Gate min |
 |---|---|---|---|---|---|---|---|---|---|
 | 1 | docs-reviewer (fresh, adversarial) | `ef5f0a6` | CHANGES REQUESTED | 0/0/3/2 | full | 73,871 | 9.7 | 0 | 0 |
+| 2 | docs-reviewer (fresh, adversarial) | `83e2296` | CHANGES REQUESTED | 0/0/1/0 | delta (F1–F3) | 48,255 | 2.9 | 1 (fix round) | 13.9 |
 
 ## LC notes
 - Implementer: one `general-purpose` subagent briefed by the LC (DEC-167 (6)): 211,315 tokens, 2,605.5 s (43.4 min), 109 tool uses; one gate run (797 s).
