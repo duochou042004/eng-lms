@@ -1,31 +1,42 @@
-# Handoff — 2026-11-13T15:12Z (T-M2.25 merged; next T-M2.24)
+# Handoff — 2026-11-13T15:52Z (T-M2.24 packet merged; implementation not started)
 
-Phase/Milestone: P1 / M2 (in progress) · Task: **T-M2.24** (draft: the LC writes its packet) · Branch: `develop` · Last commit on develop:
-see `git log -1` after the records PR merges (`b3cd6fd` before it) · Next: **T-M2.13** (packet ready, PR #153; ask the PO after T-M2.24)
-· Remote: https://github.com/duochou042004/eng-lms (mirror: gitlab.com/duochou042004/eng-lms)
+Phase/Milestone: P1 / M2 (in progress) · Task: **T-M2.24** (ready; no feature branch yet) · Branch: `develop` (`f010cd8`; this handoff on
+`docs/T-M2.24-handoff`) · Next: **T-M2.13** (packet ready, PR #153; ask the PO after T-M2.24) · Remote: https://github.com/duochou042004/eng-lms
 
 ## Where we are
-- **T-M2.27 merged** (`c5772f0`, DEC-166). **T-M2.25 merged** (`b3cd6fd`, PR #174, DEC-169): JaCoCo floor enforced, web coverage
-  measured (100 % line), local E2E on a per-run database, a manual `regression` workflow, quality docs corrected; G3 three adversarial rounds.
-- The first `regression` run (43444433118) failed 7 of 1,104 (phone ×2, WebKit smoke ×4, Firefox smoke ×1): new row **T-M2.28**, before the
-  M2 G5, not blocking T-M2.13.
+- **Merged today:** T-M2.27 (`c5772f0`, DEC-166; records `925d7d2`); T-M2.25 (`b3cd6fd`, DEC-169; records `503eb44`); the T-M2.24 packet
+  (`f010cd8`, PR #176, DEC-170; G0 adversarial: round 1 CHANGES REQUESTED, round 2 no S1/S2 with S3/S4 fixed by the LC, round 3 PASS).
+- **T-M2.24 implementation has not started:** no `feature/T-M2.24-split-students-spec` branch, no subagent running, nothing uncommitted.
+- Local E2E runs on its own per-run database (`englms_e2e`, `.data/e2e/fresh/`); `E2E_KEEP_DB=1` uses the PO's dev DB (G5 only).
+- The first `regression` run (43444433118) failed 7 tests → **T-M2.28** (phone ×2, WebKit smoke ×4 with CSP `style-src-elem` refusals,
+  Firefox smoke ×1, the Hikari/Flyway S4, the e2e-run test race); before the M2 G5, not blocking T-M2.13.
 
 ## In flight / uncommitted
-- None after the records PR (`docs/T-M2.25-records`) merges.
+- This handoff PR (`docs/T-M2.24-handoff`): open; it needs one docs-reviewer and merge-gate (step 1 below). Nothing else.
 
 ## Next steps (in this order)
-1. **Write the T-M2.24 packet** (`task-packet` skill) from its backlog row: split `e2e/tests/students.spec.ts` into cohesive files, shared
-   helpers under `e2e/support/`, the same titles per project (`playwright test --list` before/after), no assertion text change, full suite ×3
-   green; `gate.sh` repeats ×3 the specs importing a changed `e2e/support/` file (unknown importer: all specs), with gate fixtures (PO-9). G0;
-   merge; `frontend-implementer` (gate change maybe LC); G3; merge; records.
-2. Then `gh pr update-branch 153` and ask the PO to start T-M2.13.
-3. T-M2.28 before the M2 G5; T-M2.26 after at least 10 shadow PRs and its two probes.
+1. Merge this handoff PR: one fresh docs-reviewer (records check, text only), then `DOCS-REVIEW T-M2.24: PASS` and `LC-APPROVED T-M2.24`,
+   `./scripts/merge-gate.sh <n>` from an up-to-date `develop`.
+2. `git switch -c feature/T-M2.24-split-students-spec` from `develop`; brief the `frontend-implementer` with
+   `docs/tasks/T-M2.24-split-students-spec.md` (scope 1–5, AC1–AC7; the environment lines below; gate once on the final head; return the
+   summary text). The LC writes `evidence/T-M2.24/summary.md`, updates `progress.json` (`in_review`, `pr` as a string), pushes, opens the PR.
+3. CI (one background `gh pr checks <n> --watch`); G3: one fresh adversarial docs-reviewer that runs `scripts/tests/gate.test.sh`, mutates
+   the new rule in a private clone and reruns the AC2/AC3 comparisons; S1/S2 → an AC + DEC and a delta re-check; merge via merge-gate;
+   records PR (part C: DEC with merge-gate's scope line, `review/docs.md`, backlog and packet `done`, progress, handoff archive).
+4. `gh pr update-branch 153`, then ask the PO to start T-M2.13 (DEC-163, DEC-164).
+5. Later: T-M2.28 before the M2 G5; T-M2.26 after at least 10 shadow PRs and its two probes.
 
 ## Pending PO decisions / actions
-- None open. **Dependabot (the PO's):** PRs #135 and #160–#166 need `@dependabot rebase`.
-- Open points: see the archived handoffs.
+- None open. After T-M2.24: the PO's start signal for T-M2.13.
+- **Dependabot (the PO's):** PRs #135 and #160–#166 need `@dependabot rebase`.
 
 ## Gotchas
+- **Context rule over the goal hook (PO, 2026-11-13):** at ~300k tokens finish the safe step, commit, hand off and **stop**, even if a `/goal`
+  Stop hook says the goal is not met: tell the PO the two conflict. This session ran to ~370k because the LC let the hook override the rule.
+- **A DOCS-REVIEW PASS token needs a reviewer's PASS verdict line:** when the LC fixes S3/S4 after a CHANGES REQUESTED delta (PO-6), get a short
+  confirmation from the same reviewer before posting PASS (T-M2.24 G0).
+- **docs-check reads `](x)` inside code spans as a link:** write regexes like `(PG)?` after `]` as `\(PG\)` or in words (T-M2.25 records).
+- **`scripts/tests/e2e-run.test.sh` can flake in CI** ("keeps the host and parameters": a stale `app2.env` race, T-M2.28 (e)): `gh run rerun <id> --failed`.
 - **Local E2E now runs on its own database** (T-M2.25): `e2e-run.sh` recreates `englms_e2e` per run with `.data/e2e/fresh/`; `E2E_KEEP_DB=1` runs against the PO's dev DB as before (G5). pgjdbc URL parameters and `.env` reassignments are guarded (DEC-168, DEC-169).
 - **The `regression` workflow** is manual (`gh workflow run regression.yml --ref develop`, ~33 min, all 6 viewports + Firefox/WebKit smoke); its first run failed 7 tests (T-M2.28).
 - **T-M2.27 (DEC-166):** the dev DB now holds 1,065 active, 30 paused and 133 archived students (read-only count by QA, 2026-11-13); local E2E added rows until T-M2.25 (now only `E2E_KEEP_DB=1` runs do). `loading.spec.ts` "the loading region in English" can still fail on a very slow runner (CPU throttle ≥ 30 in the reproduction): a CI recurrence needs a new ruling (the packet forbade raising a timeout). Reproduction generators must read the old form from the pre-task commit, not `HEAD`.
@@ -103,5 +114,5 @@ see `git log -1` after the records PR merges (`b3cd6fd` before it) · Next: **T-
   `evidence/<task>/records/` (delete it) and a ~2,000-line log (trim it to ≤ 300 lines).
 
 ## Files to read first
-`CLAUDE.md` → `progress.json` → this file → DEC-163, DEC-169 → the T-M2.24 row in `docs/tasks/backlog.md` → `.claude/skills/task-packet/`
-→ `docs/tasks/T-M2.22-qa-strategy-review.md` (U3) → `scripts/gate.sh` (the e2e repeat) → `e2e/tests/students.spec.ts` (structure).
+`CLAUDE.md` → `progress.json` → this file → DEC-170 → `docs/tasks/T-M2.24-split-students-spec.md` → `scripts/gate.sh` (`changed_files`,
+`e2e_repeat`) → `scripts/tests/gate.test.sh` → `e2e/tests/students.spec.ts` (17 top-level groups) → `docs/09-harness/coding-agent-rules.md`.
