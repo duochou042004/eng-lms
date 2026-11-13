@@ -123,6 +123,21 @@ AC7 grep (`grep -rniE 'nightly|seed-e2e|e2e.?profile|three engines' docs/` minus
 - No sub-package of `internal.app`/`internal.domain` exists today, so the `.*` includes are not exercised by any package yet.
 - Not changed (outside the packet): `docs/03-architecture/tech-stack.md:136` ("no threshold yet"; the packet keeps tech-stack unchanged); `docs/handoff/HANDOFF.md:88` (the LC's); the purge advice in `e2e/support/global-setup.ts` ("dev database").
 
+## AC9 fix round
+
+G3 round 1 (DEC-168) findings F1–F5, fixed on 0130fcc; gate on that head: `gate: PASS (13 steps, 831s)` (`gate-20261113T134525Z.log`).
+
+| Item | Change | Proof (new case failing first) |
+|---|---|---|
+| F1 | `ci-scope-workflows.test.sh`: the manual-only rule takes the whole `on:` block (up to the next non-blank, non-comment line at column 0), drops blank and comment lines and requires exactly `  workflow_dispatch:`; block form only (`on: workflow_dispatch` and `on: [workflow_dispatch]` are refused) | 4 new mutations (blank line before `pull_request:`, column-0 comment before `push:`, indented comment and blank line before `schedule:`, one-line form). With the old rule: 93 passed, 4 failed (blank-line and comment copies). Now: 97 passed, 0 failed |
+| F2 | `e2e-run.sh` refuses a `.env` URL whose parameters set `PGHOST`, `PGPORT` or `PGDBNAME` (any case) and a `%` in the URL database name, before any engine call | 4 cases (`?PGDBNAME=`, `?pghost=`, `?PgPort=`, `dev%64ata`). Old script: 81 passed, 18 failed. Mutations: parameter check removed 12 failed, case-sensitive check 8 failed, `%` check removed 4 failed |
+| F3 | the saved copies are `readonly`; a `.env` assignment prints `readonly variable` (bash 5.3) and the caller's value stays (ignored, never applied) | `.env` with `keep_db=1 db_name=englms_x keep_set=1 name_set=1`: still a fresh run recreating `englms_e2e`, the app gets its URL. Without `readonly`: 93 passed, 2 failed |
+| F5 | the `unset` line stays; the java stub asserts `E2E_DB_NAME` and `E2E_KEEP_DB` from `.env` do not reach the app (a caller's `E2E_KEEP_DB=1` does) | without the `unset` line: 94 passed, 1 failed |
+| F4 | `shortcut:` comment on the JaCoCo includes in `backend/pom.xml` (a misspelled include passes at the real floors; the 1.00 run is the only proof; upgrade to a permanent package check when an include is edited or a module is added) | comment only (no behaviour); the 1.00 run of AC1 (ii) is the proof |
+
+`e2e-run.test.sh`: 99 passed, 0 failed. `run-all.sh`: `script tests: PASS`. `check-docs.sh`: PASS. Raw logs: `.claude/scratch/lc-records/T-M2.25/fix/`.
+Implementer (fix round): 117,940 tokens, 1,339.6 s, 35 tool uses; one gate run (831 s).
+
 ## Reviews
 - G3: `DOCS-REVIEW T-M2.25:` pending (fresh adversarial docs-reviewer).
 
