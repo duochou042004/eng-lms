@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-11-12T20:10:00Z",
-  "updatedBy": "lead-coordinator (DEC-163: testing first; T-M2.27 next; handover review)",
+  "updatedAt": "2026-11-12T20:45:00Z",
+  "updatedBy": "lead-coordinator (DEC-164: T-M2.13 does not wait for T-M2.26)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -46,7 +46,7 @@
     "nextSteps": [
       "LC: write docs/tasks/T-M2.27-e2e-stability.md from the backlog row (a) students.spec.ts:2252, (b) loading.spec.ts:173, (c) Guardians AC4 polling read; G0 by a docs-reviewer; merge the packet",
       "Then the frontend-implementer on feature/T-M2.27-e2e-stability; gate, CI, G3 (QA), merge, records",
-      "Then T-M2.25, then T-M2.24; T-M2.13 is held until those three are merged (DEC-163); T-M2.26 placement asked of the PO"
+      "Then T-M2.25, then T-M2.24; T-M2.13 is held until those three are merged (DEC-163) and does not wait for T-M2.26 (DEC-164)"
     ],
     "trace": [
       "DEC-159",
@@ -1470,6 +1470,11 @@
       "at": "2026-11-12T20:10:00Z",
       "actor": "lead-coordinator",
       "event": "PO answered the open items (DEC-163): testing work first, then T-M2.13. New T-M2.27 (three unstable E2E tests; loading.spec.ts:173 diagnosed as a 5 s cold-start budget), order T-M2.27 → T-M2.25 → T-M2.24 → T-M2.13; T-M2.13 AC8 moved to T-M2.27. Handover reviewed and fixed."
+    },
+    {
+      "at": "2026-11-12T20:45:00Z",
+      "actor": "lead-coordinator",
+      "event": "PO: T-M2.13 does not wait for T-M2.26 (DEC-164)."
     }
   ]
 }
