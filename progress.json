@@ -36,7 +36,7 @@
     "ownerRole": "FE",
     "branch": "feature/T-M2.13-auth-shell-followups",
     "packet": "docs/tasks/T-M2.13-auth-shell-followups.md",
-    "pr": "153",
+    "pr": "182",
     "lastCommit": "93cb41a",
     "startedAt": "2026-11-14T09:40:30Z",
     "entryGate": [
