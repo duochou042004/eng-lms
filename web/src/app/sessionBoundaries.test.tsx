@@ -40,29 +40,47 @@ describe('the mutation cache at the session boundaries (T-M2.20 AC3)', { timeout
     expect(queryClient.getMutationCache().getAll()).toEqual([])
   })
 
-  it.each([
-    ['answered 204', () => new HttpResponse(null, { status: 204 })],
-    ['failing', () => HttpResponse.error() as unknown as Response],
-  ])('sign-out, the call %s: the earlier write is gone', async (_, logoutResponse) => {
+  it.each([['answered 204', () => new HttpResponse(null, { status: 204 })]])(
+    'sign-out, the call %s: the earlier write is gone',
+    async (_, logoutResponse) => {
+      setXsrfCookie()
+      let loggedOut = false
+      server.use(
+        http.get('*/api/v1/auth/session', () =>
+          loggedOut ? problem(401, 'UNAUTHENTICATED') : HttpResponse.json(sessionBody('TUTOR')),
+        ),
+        http.post('*/api/v1/auth/logout', () => {
+          loggedOut = true
+          return logoutResponse()
+        }),
+      )
+      const { queryClient } = renderRoute('/tutor')
+      await screen.findByText('Lớp cô Lan')
+      const write = await seedFinishedWrite(queryClient)
+      await openAccountMenu()
+      await userEvent.click(screen.getByRole('button', { name: 'Đăng xuất' }))
+      await screen.findByRole('heading', { level: 1, name: 'Đăng nhập' })
+      expect(queryClient.getMutationCache().getAll()).not.toContain(write)
+      expect(queryClient.getMutationCache().findAll({ mutationKey: ['students'] })).toEqual([])
+    },
+  )
+
+  // T-M2.13 scope 3 (c), DEC-155: the session is still alive on the server, so its caches stay.
+  it("a failing call keeps the session's caches: the seeded write is still there, no navigation", async () => {
     setXsrfCookie()
-    let loggedOut = false
     server.use(
-      http.get('*/api/v1/auth/session', () =>
-        loggedOut ? problem(401, 'UNAUTHENTICATED') : HttpResponse.json(sessionBody('TUTOR')),
-      ),
-      http.post('*/api/v1/auth/logout', () => {
-        loggedOut = true
-        return logoutResponse()
-      }),
+      sessionAs('TUTOR'),
+      http.post('*/api/v1/auth/logout', () => HttpResponse.error() as unknown as Response),
     )
-    const { queryClient } = renderRoute('/tutor')
+    const { router, queryClient } = renderRoute('/tutor')
     await screen.findByText('Lớp cô Lan')
     const write = await seedFinishedWrite(queryClient)
     await openAccountMenu()
     await userEvent.click(screen.getByRole('button', { name: 'Đăng xuất' }))
-    await screen.findByRole('heading', { level: 1, name: 'Đăng nhập' })
-    expect(queryClient.getMutationCache().getAll()).not.toContain(write)
-    expect(queryClient.getMutationCache().findAll({ mutationKey: ['students'] })).toEqual([])
+    await screen.findByText('Bạn vẫn đang đăng nhập. Hãy thử lại.')
+    expect(queryClient.getMutationCache().getAll()).toContain(write)
+    expect(queryClient.getQueryData(['settings', 'meta'])).toBeDefined()
+    expect(router.state.location.pathname).toBe('/tutor/today')
   })
 
   it('a 401 from any call: the earlier write is gone', async () => {

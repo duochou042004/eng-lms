@@ -40,6 +40,7 @@
 
 **AC FR-AUTH-04**
 - Logout invalidates the server session, clears the cookies and redirects to `/login`. Pressing Back does not show protected data (responses are `Cache-Control: no-store`).
+- A logout call that fails (offline, a network error, a 5xx or 4xx answer) keeps the page, the account section and the client state, and says the user is still signed in (offline: to log out again when back online); Log out is the retry. It never pauses offline and never lands on `/login` while the session may be alive (T-M2.13, DEC-155).
 
 **AC FR-AUTH-05**
 - The current password is required. The new password must satisfy the policy (NFR-SEC-06) and differ from the current one.

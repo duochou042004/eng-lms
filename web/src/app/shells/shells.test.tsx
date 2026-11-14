@@ -1,10 +1,13 @@
 import { act, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { http, HttpResponse } from 'msw'
-import { describe, expect, it } from 'vitest'
+import { onlineManager } from '@tanstack/react-query'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { changeLocale } from '../../lib/i18n'
 import { expectNoAxeViolations } from '../../test/axe'
 import { renderRoute } from '../../test/render'
+import { AUTH_CHANNEL } from '../../features/auth/api/authChannel'
+import { SESSION_KEY } from '../../features/auth/api/session'
 import { META, problem, server, sessionAs, sessionBody, setXsrfCookie } from '../../test/server'
 import { openAccountMenu } from '../../test/shell'
 import { setViewportWidth } from '../../test/viewport'
@@ -506,7 +509,7 @@ describe('AC11 (f): a frame change moves focus from body to the new frame trigge
 })
 
 describe('AC11 (c): the compact meta error in a narrow shell top bar', () => {
-  it('keeps the message inside the alert, describing Retry, with a decorative icon for the narrow layout', async () => {
+  it('keeps the message inside the alert, describing Retry, with a toggletip trigger for the narrow layout', async () => {
     setViewportWidth(360)
     server.use(
       sessionAs('TUTOR'),
@@ -517,12 +520,123 @@ describe('AC11 (c): the compact meta error in a narrow shell top bar', () => {
     const retry = within(alert).getByRole('button', { name: 'Thử lại' })
     expect(retry).toHaveAccessibleDescription('Không tải được tên không gian dạy học')
     expect(alert).toHaveTextContent('Không tải được tên không gian dạy học')
-    expect(alert.querySelector('svg')).toHaveAttribute('aria-hidden', 'true')
-    // UX-9 (T-M2.12): the icon's wrapper carries the message as its title (Retry sits right beside it, e2e).
-    expect(alert.querySelector('svg')!.parentElement).toHaveAttribute('title', 'Không tải được tên không gian dạy học')
+    // UX-3 (T-M2.13): the icon is a toggletip trigger named "Xem lỗi"; its svg stays decorative.
+    const trigger = within(alert).getByRole('button', { name: 'Xem lỗi' })
+    expect(trigger.querySelector('svg')).toHaveAttribute('aria-hidden', 'true')
+    // UX-9 (T-M2.12): the trigger carries the message as its title (Retry sits right beside it, e2e).
+    expect(trigger).toHaveAttribute('title', 'Không tải được tên không gian dạy học')
     // The shell makes the alert the size container the narrow rule queries (WorkspaceName.module.css).
     expect(alert.parentElement).toHaveClass('identity')
     await expectNoAxeViolations(container)
+  })
+})
+
+describe('T-M2.13 scope 1: the compact meta error toggletip in the shell', () => {
+  it('opens a popover with the message on a press, and closes on a navigation', async () => {
+    setViewportWidth(360)
+    server.use(
+      sessionAs('TUTOR'),
+      http.get('*/api/v1/meta', () => problem(500, 'INTERNAL_ERROR')),
+    )
+    const { router } = renderRoute('/tutor/today')
+    const alert = await screen.findByRole('alert')
+    await userEvent.click(within(alert).getByRole('button', { name: 'Xem lỗi' }))
+    expect(await screen.findByRole('dialog', { name: 'Không tải được tên không gian dạy học' })).toBeInTheDocument()
+    await act(() => router.navigate('/tutor/students'))
+    await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument())
+  })
+})
+
+// T-M2.13 scope 3 (AC3, AC4; DEC-155): a failed Log out keeps the page and the session and says so, in every overlay
+// that holds the account section; Log out stays the retry.
+describe('T-M2.13 scope 3: a failed Log out in each account overlay', () => {
+  afterEach(() => onlineManager.setOnline(true))
+
+  it.each([
+    ['TUTOR', '/tutor/today', 1024, 'co-lan', 'popover'],
+    ['TUTOR', '/tutor/today', 360, 'Mở điều hướng', 'drawer footer'],
+    ['STUDENT', '/student/home', 360, 'Thêm', 'More sheet'],
+  ] as const)(
+    '%s on %s at %i px (%s → %s): a 500 shows the alert; Log out again (204) signs out',
+    async (role, at, width, opener, _place) => {
+      setViewportWidth(width)
+      setXsrfCookie()
+      let answer = () => problem(500, 'INTERNAL_ERROR')
+      const posted: unknown[] = []
+      const channel = new BroadcastChannel(AUTH_CHANNEL)
+      channel.addEventListener('message', (event) => posted.push(event.data))
+      server.use(
+        sessionAs(role),
+        http.post('*/api/v1/auth/logout', () => answer()),
+      )
+      const { router, queryClient } = renderRoute(at)
+      await screen.findByRole('heading', { level: 1 })
+      await userEvent.click(await screen.findByRole('button', { name: opener }))
+      const dialog = await screen.findByRole('dialog')
+      const logout = within(dialog).getByRole('button', { name: 'Đăng xuất' })
+      await userEvent.click(logout)
+      const alert = await within(dialog).findByRole('alert')
+      expect(alert).toHaveTextContent('Chưa đăng xuất được')
+      expect(alert).toHaveTextContent('Bạn vẫn đang đăng nhập. Hãy thử lại.')
+      expect(logout).toHaveFocus()
+      expect(path(router)).toBe(at)
+      expect(queryClient.getQueryData(SESSION_KEY)).toEqual(sessionBody(role))
+      expect(queryClient.getQueryData(['settings', 'meta'])).toEqual(META)
+      await expectNoAxeViolations(document.body)
+      expect(posted).toEqual([])
+
+      answer = () => new HttpResponse(null, { status: 204 })
+      server.use(sessionAs(null))
+      await userEvent.click(logout)
+      expect(within(dialog).queryByRole('alert')).not.toBeInTheDocument()
+      await screen.findByRole('heading', { level: 1, name: 'Đăng nhập' })
+      expect(path(router)).toBe('/login')
+      await waitFor(() => expect(posted).toEqual([{ type: 'signed-out' }]))
+      channel.close()
+    },
+  )
+
+  it('offline: the call is sent, not paused, and fails at once with the offline copy (O-1)', async () => {
+    setXsrfCookie()
+    server.use(
+      sessionAs('TUTOR'),
+      http.post('*/api/v1/auth/logout', () => HttpResponse.error() as unknown as Response),
+    )
+    const { router, queryClient } = renderRoute('/tutor/today')
+    await h1(TUTOR_HOME)
+    const dialog = await openAccountMenu()
+    onlineManager.setOnline(false)
+    const onLine = vi.spyOn(navigator, 'onLine', 'get').mockReturnValue(false)
+    await userEvent.click(within(dialog).getByRole('button', { name: 'Đăng xuất' }))
+    const alert = await within(dialog).findByRole('alert')
+    expect(alert).toHaveTextContent('Chưa đăng xuất được')
+    expect(alert).toHaveTextContent('Bạn đang ngoại tuyến và vẫn đang đăng nhập. Hãy đăng xuất lại khi có mạng.')
+    const [mutation] = queryClient.getMutationCache().getAll()
+    expect(mutation!.state).toMatchObject({ status: 'error', isPaused: false })
+    expect(within(dialog).getByRole('button', { name: 'Đăng xuất' })).not.toHaveAttribute('aria-disabled')
+    expect(path(router)).toBe('/tutor/today')
+    // The copy was decided at the failure: back online, it stays until Log out is pressed again.
+    onLine.mockReturnValue(true)
+    await act(() => changeLocale('en'))
+    expect(within(dialog).getByRole('alert')).toHaveTextContent("You're offline and still signed in.")
+    onLine.mockRestore()
+  })
+
+  it('the alert goes away when the overlay closes', async () => {
+    setXsrfCookie()
+    server.use(
+      sessionAs('TUTOR'),
+      http.post('*/api/v1/auth/logout', () => problem(500, 'INTERNAL_ERROR')),
+    )
+    renderRoute('/tutor/today')
+    await h1(TUTOR_HOME)
+    const dialog = await openAccountMenu()
+    await userEvent.click(within(dialog).getByRole('button', { name: 'Đăng xuất' }))
+    await within(dialog).findByRole('alert')
+    await userEvent.keyboard('{Escape}')
+    await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument())
+    await openAccountMenu()
+    expect(within(screen.getByRole('dialog')).queryByRole('alert')).not.toBeInTheDocument()
   })
 })
 

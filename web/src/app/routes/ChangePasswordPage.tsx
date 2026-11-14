@@ -5,6 +5,7 @@ import { Controller, useForm, type FieldErrors } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { Link, useLocation, useNavigate, useSearchParams } from 'react-router'
 import { refreshSession, useChangePassword, useLogout, useSession } from '../../features/auth/api/session'
+import { LogoutFailedAlert } from '../../features/auth/components/LogoutFailedAlert'
 import { roleHome, safeNext } from '../../features/auth/model/redirect'
 import { changePasswordSchema, type ChangePasswordValues } from '../../features/auth/model/schemas'
 import { ApiError } from '../../lib/api'
@@ -214,6 +215,7 @@ export function ChangePasswordPage() {
                 </Button>
               )}
             </div>
+            {forced && logout.isError ? <LogoutFailedAlert /> : null}
           </Stack>
         </form>
       </Stack>

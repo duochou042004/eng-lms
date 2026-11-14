@@ -1,10 +1,10 @@
 import { QueryClientProvider, useQuery } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { http, HttpResponse } from 'msw'
+import { delay, http, HttpResponse } from 'msw'
 import { afterEach, describe, expect, it } from 'vitest'
 import { AUTH_CHANNEL } from '../features/auth/api/authChannel'
-import { SESSION_KEY } from '../features/auth/api/session'
+import { SESSION_KEY, useSession } from '../features/auth/api/session'
 import { api } from '../lib/api'
 import { renderRoute } from '../test/render'
 import { META, problem, server, sessionAs, sessionBody, setXsrfCookie } from '../test/server'
@@ -211,6 +211,171 @@ describe('cross-tab sign-in/out: the receiving tab (T-M2.12 AC5, AC6, AC7)', () 
   })
 })
 
+// T-M2.13 scope 2 (UX-4, G0 D-1): a `signed-out` message reads the session first; the tab shows the notice only when it
+// had a session, the read is anonymous and the page needs one.
+const notice = (router: { state: { location: { state: unknown } } }) =>
+  (router.state.location.state as { signedOutElsewhere?: boolean } | null)?.signedOutElsewhere === true
+
+/** Every navigation the router commits from now on (by location key, so two to the same URL count twice). */
+function recordLocations(router: ReturnType<typeof createTestRouter>) {
+  const seen: string[] = []
+  let last = router.state.location.key
+  router.subscribe((state) => {
+    if (state.location.key === last) return
+    last = state.location.key
+    seen.push(state.location.pathname + state.location.search)
+  })
+  return seen
+}
+
+describe('cross-tab sign-out: the /login notice (T-M2.13 AC2)', () => {
+  it.each([
+    ['/tutor/today', '/login?next=%2Ftutor%2Ftoday'],
+    ['/tutor/students?q=an', '/login?next=%2Ftutor%2Fstudents%3Fq%3Dan'],
+    ['/student/home', '/login?next=%2Fstudent%2Fhome'],
+  ])(
+    'signed-out on %s: the tab goes to %s with the notice flag, and nothing but the anonymous session cached',
+    async (at, target) => {
+      server.use(sessionAs(at.startsWith('/student') ? 'STUDENT' : 'TUTOR'))
+      const { router, queryClient } = await bareTab(at)
+      queryClient.setQueryData(TUTOR_DATA, [{ name: 'An' }])
+      server.use(sessionAs(null))
+      otherTab().post({ type: 'signed-out' })
+      await waitFor(() => expect(path(router)).toBe(target))
+      expect(router.state.location.state).toEqual({ signedOutElsewhere: true })
+      expect(
+        queryClient
+          .getQueryCache()
+          .getAll()
+          .map((q) => q.queryKey),
+      ).toEqual([SESSION_KEY])
+    },
+  )
+
+  it('signed-out on the forced /change-password: /login (no next) with the notice', async () => {
+    server.use(sessionAs('STUDENT', true))
+    const { router } = await bareTab('/change-password')
+    server.use(sessionAs(null))
+    otherTab().post({ type: 'signed-out' })
+    await waitFor(() => expect(path(router)).toBe('/login'))
+    expect(notice(router)).toBe(true)
+  })
+
+  it('a 401 in flight and a mounted query answering 401 during the follow: one navigation, with the notice (G0 D-1)', async () => {
+    /** A page query that refetches when the session changes, and answers 401 once signed out. */
+    function Probe() {
+      const session = useSession().data
+      const probe = useQuery({
+        queryKey: ['tutor', 'probe', session?.userId ?? 'none'],
+        queryFn: async () => (await api.GET('/api/v1/meta')).data!.displayName,
+      })
+      return <p>{probe.data ?? 'loading'}</p>
+    }
+    server.use(sessionAs('TUTOR'))
+    const { router, queryClient } = await bareTab('/tutor/students')
+    render(
+      <QueryClientProvider client={queryClient}>
+        <Probe />
+      </QueryClientProvider>,
+    )
+    expect(await screen.findByText(META.displayName)).toBeInTheDocument()
+    const calls = recordCalls()
+    const locations = recordLocations(router)
+    server.use(
+      // The session read is slow, so the in-flight request's 401 arrives while it runs.
+      http.get('*/api/v1/auth/session', async () => {
+        await delay(60)
+        return problem(401, 'UNAUTHENTICATED')
+      }),
+      http.get('*/api/v1/meta', async () => {
+        await delay(10)
+        return problem(401, 'UNAUTHENTICATED')
+      }),
+    )
+    otherTab().post({ type: 'signed-out' })
+    const inFlight = api.GET('/api/v1/meta').catch((e: unknown) => e)
+    expect(await inFlight).toMatchObject({ status: 401 })
+    await waitFor(() => expect(path(router)).toBe('/login?next=%2Ftutor%2Fstudents'))
+    // The probe's 401 arrived during the follow (it refetched for the anonymous session).
+    await waitFor(() => expect(calls).toContain('GET /api/v1/meta'))
+    await new Promise((resolve) => setTimeout(resolve, 50))
+    expect(locations).toEqual(['/login?next=%2Ftutor%2Fstudents'])
+    expect(notice(router)).toBe(true)
+  })
+
+  it('no notice when the read still returns a session: nothing navigates', async () => {
+    server.use(sessionAs('TUTOR'))
+    const { router } = await bareTab('/tutor/today')
+    const calls = recordCalls()
+    otherTab().post({ type: 'signed-out' })
+    await waitFor(() => expect(sessionReads(calls)).toBe(1))
+    await new Promise((resolve) => setTimeout(resolve, 50))
+    expect(path(router)).toBe('/tutor/today')
+    expect(notice(router)).toBe(false)
+  })
+
+  it('no notice for a signed-in message, a pageshow restore or a 401', async () => {
+    server.use(sessionAs('TUTOR'))
+    const signedIn = await bareTab('/tutor/today')
+    server.use(sessionAs(null))
+    otherTab().post({ type: 'signed-in' })
+    await waitFor(() => expect(path(signedIn.router)).toBe('/login?next=%2Ftutor%2Ftoday'))
+    expect(notice(signedIn.router)).toBe(false)
+    signedIn.disconnect()
+
+    server.use(sessionAs('TUTOR'))
+    const restored = await bareTab('/tutor/today')
+    server.use(sessionAs(null))
+    window.dispatchEvent(new PageTransitionEvent('pageshow', { persisted: true }))
+    await waitFor(() => expect(path(restored.router)).toBe('/login?next=%2Ftutor%2Ftoday'))
+    expect(notice(restored.router)).toBe(false)
+    restored.disconnect()
+
+    server.use(sessionAs('TUTOR'))
+    const expired = await bareTab('/tutor/today')
+    server.use(
+      sessionAs(null),
+      http.get('*/api/v1/meta', () => problem(401, 'SESSION_EXPIRED')),
+    )
+    await api.GET('/api/v1/meta').catch(() => undefined)
+    await waitFor(() => expect(path(expired.router)).toBe('/login?next=%2Ftutor%2Ftoday'))
+    expect(notice(expired.router)).toBe(false)
+  })
+
+  it("no notice after this tab's own logout", async () => {
+    server.use(sessionAs('TUTOR'))
+    const { router } = renderRoute('/tutor/today')
+    await screen.findByRole('heading', { level: 1, name: 'Hôm nay' })
+    setXsrfCookie()
+    server.use(
+      http.post('*/api/v1/auth/logout', () => new HttpResponse(null, { status: 204 })),
+      sessionAs(null),
+    )
+    await openAccountMenu()
+    await userEvent.click(screen.getByRole('button', { name: 'Đăng xuất' }))
+    await screen.findByRole('heading', { level: 1, name: 'Đăng nhập' })
+    expect(path(router)).toBe('/login')
+    expect(notice(router)).toBe(false)
+    expect(screen.queryByText('Bạn đã đăng xuất ở một thẻ khác.')).not.toBeInTheDocument()
+  })
+
+  it('rendered: /login shows the notice as a status between the heading and the form', async () => {
+    const { router } = await tutorTab()
+    server.use(sessionAs(null))
+    otherTab().post({ type: 'signed-out' })
+    await screen.findByRole('heading', { level: 1, name: 'Đăng nhập' })
+    expect(path(router)).toBe('/login?next=%2Ftutor%2Ftoday')
+    const status = (await screen.findByText('Bạn đã đăng xuất ở một thẻ khác.')).closest('[role="status"]')
+    expect(status).not.toBeNull()
+    const heading = screen.getByRole('heading', { level: 1, name: 'Đăng nhập' })
+    const form = document.querySelector('form')!
+    expect(heading.compareDocumentPosition(status!) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
+    expect(status!.compareDocumentPosition(form) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
+    // It never takes focus: the route focus is on the h1.
+    await waitFor(() => expect(heading).toHaveFocus())
+  })
+})
+
 describe('cross-tab sign-in/out: the posting tab (T-M2.12 AC7)', () => {
   it('a sign-in posts exactly { type: "signed-in" }', async () => {
     const tab = otherTab()
@@ -237,20 +402,39 @@ describe('cross-tab sign-in/out: the posting tab (T-M2.12 AC7)', () => {
     expect(tab.received).toEqual([])
   })
 
+  it.each([['succeeded', () => new HttpResponse(null, { status: 204 })]])(
+    'a logout that %s posts exactly { type: "signed-out" }',
+    async (_, answer) => {
+      const tab = otherTab()
+      server.use(sessionAs('TUTOR'))
+      renderRoute('/tutor/today')
+      await screen.findByRole('heading', { level: 1, name: 'Hôm nay' })
+      setXsrfCookie()
+      server.use(http.post('*/api/v1/auth/logout', answer), sessionAs(null))
+      await openAccountMenu()
+      await userEvent.click(screen.getByRole('button', { name: 'Đăng xuất' }))
+      await screen.findByRole('heading', { level: 1, name: 'Đăng nhập' })
+      await waitFor(() => expect(tab.received).toEqual([{ type: 'signed-out' }]))
+    },
+  )
+
+  // T-M2.13 scope 3 (DEC-155): the session is still alive, so the other tabs are not told anything.
   it.each([
-    ['succeeded', () => new HttpResponse(null, { status: 204 })],
-    ['failed', () => HttpResponse.error() as unknown as Response],
-  ])('a logout that %s posts exactly { type: "signed-out" }', async (_, answer) => {
+    ['a network error', () => HttpResponse.error() as unknown as Response],
+    ['a 500', () => problem(500, 'INTERNAL_ERROR')],
+  ])('a failed logout (%s) posts nothing', async (_, answer) => {
     const tab = otherTab()
     server.use(sessionAs('TUTOR'))
-    renderRoute('/tutor/today')
+    const { router } = renderRoute('/tutor/today')
     await screen.findByRole('heading', { level: 1, name: 'Hôm nay' })
     setXsrfCookie()
-    server.use(http.post('*/api/v1/auth/logout', answer), sessionAs(null))
+    server.use(http.post('*/api/v1/auth/logout', answer))
     await openAccountMenu()
     await userEvent.click(screen.getByRole('button', { name: 'Đăng xuất' }))
-    await screen.findByRole('heading', { level: 1, name: 'Đăng nhập' })
-    await waitFor(() => expect(tab.received).toEqual([{ type: 'signed-out' }]))
+    await screen.findByText('Bạn vẫn đang đăng nhập. Hãy thử lại.')
+    await new Promise((resolve) => setTimeout(resolve, 50))
+    expect(tab.received).toEqual([])
+    expect(path(router)).toBe('/tutor/today')
   })
 
   it('the /login guard posts { type: "signed-out" } after logging out a must-change session', async () => {

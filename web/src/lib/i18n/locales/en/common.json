@@ -21,16 +21,18 @@
     "descriptionWithRequestId": "Reload the page. If the problem continues, include the request ID when you report it.",
     "requestId": "Request ID: {{requestId}}",
     "reload": "Reload page",
-    "offlineDescription": "You're offline. This page needs a connection to load.",
-    "chunkDescription": "This page couldn't load. Check your connection and try again.",
+    "offlineDescription": "This page needs a connection to load.",
+    "chunkDescription": "Check your connection and try again.",
     "retry": "Try again",
     "offlineTitle": "You're offline",
-    "chunkTitle": "This page couldn't load"
+    "chunkTitle": "This page couldn't load",
+    "offlineAnnouncement": "You're offline. This page needs a connection to load."
   },
   "meta": {
     "loading": "Loading workspace information",
     "error": "Couldn't load the workspace name",
-    "retry": "Try again"
+    "retry": "Try again",
+    "errorDetails": "Show the error"
   },
   "status": {
     "student": {
@@ -38,5 +40,10 @@
       "PAUSED": "Paused",
       "ARCHIVED": "Archived"
     }
+  },
+  "logout": {
+    "failedTitle": "Couldn't log out",
+    "failed": "You're still signed in. Try again.",
+    "offline": "You're offline and still signed in. Log out again when you're back online."
   }
 }

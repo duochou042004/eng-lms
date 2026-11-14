@@ -264,7 +264,11 @@ describe('Account section: status (AC5)', { timeout: 20_000 }, () => {
     await press('Tạm nghỉ')
     await waitFor(() => expect(toastTexts()).toHaveLength(1))
     await openAccountMenu()
-    server.use(sessionAs(null))
+    // The call answers 204: since T-M2.13 (DEC-155) only a successful logout leaves the page.
+    server.use(
+      sessionAs(null),
+      http.post('*/api/v1/auth/logout', () => new HttpResponse(null, { status: 204 })),
+    )
     await userEvent.click(screen.getByRole('button', { name: 'Đăng xuất' }))
     await waitFor(() => expect(path(router)).toBe('/login'))
     await waitFor(() => expect(toastRegion()).not.toBeInTheDocument())

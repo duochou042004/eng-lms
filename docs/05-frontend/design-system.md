@@ -49,7 +49,7 @@ Use at most **3 sizes per screen region**.
 | Actions | `Button` (primary, secondary, quiet, danger; sizes md and lg), `ButtonLink` (a router link that looks like a `Button`), `IconButton` (label required), `Menu`, `SplitButton`, `CopyButton` |
 | Forms | `Form`, `Field` (label + hint + error wrapper), `TextField`, `TextArea` (auto-grow, counter), `NumberField`, `Select`, `ComboBox`, `StudentPicker`, `DatePicker`, `TimeField`, `DurationField`, `Checkbox`, `RadioGroup`, `SegmentedControl` (one of a few options, always one selected; e.g. the language switcher), `Switch`, `TagInput`, `FileDrop` + `UploadList`, `RichTextEditor`, `AudioRecorder`, `PasswordField` (reveal), `ErrorSummary` |
 | Data display | `DataList` (responsive table ↔ list), `Timeline`, `DescriptionList`, `StatusBadge`, `Meter` (labelled bar), `ScoreLine`, `Sparkline`, `Avatar` (initials), `EmptyState`, `KeyValueSummary`, `Countdown` |
-| Feedback | `Toast` (polite live region), `InlineAlert`, `Skeleton` (shape-matched) + `DelayedSkeleton` (the 150 ms delay), `ProgressLine` (navigation), `Spinner` (only for actions under 1 s), `ProgressBar` (uploads), `ConfirmDialog`, `UnsavedChangesGuard`, `SaveIndicator` |
+| Feedback | `Toast` (polite live region), `InlineAlert`, `Toggletip` (a tap target for one message), `Skeleton` (shape-matched) + `DelayedSkeleton` (the 150 ms delay), `ProgressLine` (navigation), `Spinner` (only for actions under 1 s), `ProgressBar` (uploads), `ConfirmDialog`, `UnsavedChangesGuard`, `SaveIndicator` |
 | Reorder | `ReorderableList` (React Aria DnD with keyboard, plus a "Move to…" menu fallback) |
 
 Every component ships with: its states (default, hover, focus-visible, active, disabled, invalid, loading), keyboard behaviour, an accessible name
@@ -110,6 +110,12 @@ Decorative: `aria-hidden="true"`, never focusable; its owner announces the state
   `--size-account-button` wide so a skeleton can take its shape) opening a dialog-type popover (not an ARIA `menu`, so it may hold any
   control, e.g. the language `SegmentedControl`). Modal: focus in and contained, Esc and an outside click close it, focus returns. Fixed width
   (`--size-popover`), so a language change never moves its content. Controlled (`isOpen`, `onOpenChange`).
+- `Toggletip` (T-M2.13, UX-3): a quiet icon button (`--size-control-md`, ≥ 44 px; required accessible name; `aria-haspopup="dialog"`,
+  `aria-expanded`; the message as its `title` for mouse hover) that opens a small dialog-type popover holding the message, named by it, with
+  the `Popover` surface, at most `--size-popover` wide and never wider than the viewport less the 16 px gutters. It behaves as `Popover` (focus
+  in, Esc and an outside tap close it, focus returns to the trigger; modal). Controlled; it closes when its trigger renders no box while open
+  (a `ResizeObserver`, since a container query cannot be read from script) and then calls `onTriggerHidden`, so the owner moves focus to a
+  visible control. Used by the compact workspace-name error in a narrow shell top bar (design-system §6 item 5: no hover-only information).
 - `NavList`: a labelled `nav` with a list of router links (icon + always-visible label), vertical (sidebar, drawer) or horizontal (student top
   bar). The current item (its route or one below it) has `aria-current="page"`, the accent-subtle background, a semibold label and a bar on its
   inline-start (vertical) or block-end (horizontal) edge (`--size-marker`), so the state is not colour alone. `onNavigate` lets a drawer close first.

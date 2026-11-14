@@ -23,7 +23,9 @@ shows `ProgressLine` at the top edge and a polite "Loading the page" status, the
 faster one shows nothing (the first load keeps `RouteLoading`'s skeleton). *Chunk offline*: a route whose code cannot load shows the offline
 page (offline, also for any route error while `navigator.onLine` is `false`) or the couldn't-load page (online), each with its own heading,
 a primary **Retry** and the start-page link, never an endless busy state; the copy follows the connection while shown; Retry offline keeps the page and announces the message again, online it loads the URL in full. The global
-offline banner for autosave areas is still to come (M5).
+offline banner for autosave areas is still to come (M5). *Log out fails* (T-M2.13, DEC-155): offline or on a failed answer, Log out stops being
+busy at once (never paused) and the open account section (or the forced change-password page) shows a danger `InlineAlert`: "still signed in",
+or offline "offline and still signed in; log out again when back online"; the page and the session stay, and Log out is the retry.
 
 TanStack Query settings: `retry: 2` for GET (none for 4xx), `staleTime` 30 s by default and 0 for the Review queue and attempts, refetch on window focus
 for Today and Home.

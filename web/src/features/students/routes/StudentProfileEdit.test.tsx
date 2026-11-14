@@ -354,7 +354,11 @@ describe('Edit profile: the unsaved changes guard (AC8)', { timeout: 20_000 }, (
     const { router } = await openEdit()
     await userEvent.type(field('Email'), 'x')
     await openAccountMenu()
-    server.use(sessionAs(null))
+    // The call answers 204: since T-M2.13 (DEC-155) only a successful logout leaves the page.
+    server.use(
+      sessionAs(null),
+      http.post('*/api/v1/auth/logout', () => new HttpResponse(null, { status: 204 })),
+    )
     await userEvent.click(screen.getByRole('button', { name: 'Đăng xuất' }))
     await waitFor(() => expect(path(router)).toBe('/login'))
     expect(screen.queryByRole('alertdialog')).not.toBeInTheDocument()

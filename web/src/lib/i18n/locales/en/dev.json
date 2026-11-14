@@ -16,7 +16,8 @@
     "buttonLink": "Button-styled link",
     "students": "Students components (T-M2.5)",
     "profile": "Profile and account components (T-M2.14)",
-    "tagInput": "TagInput (T-M2.17)"
+    "tagInput": "TagInput (T-M2.17)",
+    "toggletip": "Toggletip (T-M2.13)"
   },
   "sample": {
     "primary": "Save",
@@ -156,6 +157,8 @@
     "tagListLabel": "Read-only tags",
     "tagFirst": "Listening",
     "tagSecond": "Pronunciation",
-    "tagLong": "Vocabulary for describing everyday routines"
+    "tagLong": "Vocabulary for describing everyday routines",
+    "toggletipLabel": "Show the error",
+    "toggletipMessage": "Couldn't load the workspace name. The full text shows when you tap the icon."
   }
 }

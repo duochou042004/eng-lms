@@ -62,6 +62,18 @@ describe('/dev/ui (development builds only)', { timeout: 20_000 }, () => {
     expect(long).toBeInTheDocument()
   })
 
+  it('shows the Toggletip (T-M2.13): open, its message, Esc back to the trigger; axe clean while open', async () => {
+    renderRoute('/dev/ui')
+    await screen.findByRole('heading', { level: 1, name: 'Thư viện thành phần' })
+    const trigger = screen.getByRole('button', { name: 'Xem lỗi' })
+    await userEvent.click(trigger)
+    const dialog = await screen.findByRole('dialog', { name: /^Không tải được tên không gian dạy học\./ })
+    expect(dialog).toHaveTextContent('Nội dung đầy đủ hiện ra khi chạm vào biểu tượng.')
+    await expectNoAxeViolations(document.body)
+    await userEvent.keyboard('{Escape}')
+    await waitFor(() => expect(trigger).toHaveFocus())
+  })
+
   it('shows the ProgressLine (T-M2.12) on demand: decorative, axe clean', async () => {
     const { container } = renderRoute('/dev/ui')
     await screen.findByRole('heading', { level: 1, name: 'Thư viện thành phần' })

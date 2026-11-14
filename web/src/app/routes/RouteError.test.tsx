@@ -185,15 +185,18 @@ describe('RouteError: a page whose code could not load (T-M2.12 AC2, AC3, DEC-08
     vi: {
       offlineTitle: 'Bạn đang ngoại tuyến',
       chunkTitle: 'Không tải được trang này',
-      offline: 'Bạn đang ngoại tuyến. Trang này cần kết nối mạng để tải.',
-      chunk: 'Không tải được trang này. Hãy kiểm tra kết nối mạng rồi thử lại.',
+      // T-M2.13 scope 4 (UX-6): the descriptions no longer repeat the h1; the offline Retry still announces it all.
+      offline: 'Trang này cần kết nối mạng để tải.',
+      chunk: 'Hãy kiểm tra kết nối mạng rồi thử lại.',
+      offlineAnnouncement: 'Bạn đang ngoại tuyến. Trang này cần kết nối mạng để tải.',
       retry: 'Thử lại',
     },
     en: {
       offlineTitle: "You're offline",
       chunkTitle: "This page couldn't load",
-      offline: "You're offline. This page needs a connection to load.",
-      chunk: "This page couldn't load. Check your connection and try again.",
+      offline: 'This page needs a connection to load.',
+      chunk: 'Check your connection and try again.',
+      offlineAnnouncement: "You're offline. This page needs a connection to load.",
       retry: 'Try again',
     },
   } as const
@@ -267,12 +270,12 @@ describe('RouteError: a page whose code could not load (T-M2.12 AC2, AC3, DEC-08
     const status = within(screen.getByRole('main')).getByRole('status')
     expect(status).toHaveTextContent('')
     await userEvent.click(screen.getByRole('button', { name: 'Thử lại' }))
-    expect(status).toHaveTextContent(CHUNK.vi.offline)
+    expect(status).toHaveTextContent(CHUNK.vi.offlineAnnouncement)
     const first = status.firstElementChild
     await userEvent.click(screen.getByRole('button', { name: 'Thử lại' }))
     // A new node, so screen readers announce it again.
     expect(status.firstElementChild).not.toBe(first)
-    expect(status).toHaveTextContent(CHUNK.vi.offline)
+    expect(status).toHaveTextContent(CHUNK.vi.offlineAnnouncement)
     expect(screen.getByRole('heading', { level: 1, name: CHUNK.vi.offlineTitle })).toBeInTheDocument()
     expect(requests).toEqual([])
     expect(location.reload).not.toHaveBeenCalled()

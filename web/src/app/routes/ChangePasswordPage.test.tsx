@@ -222,6 +222,33 @@ describe('/change-password, forced mode (FR-AUTH-06, AC4)', () => {
     expect(router.state.location.pathname).toBe('/login')
   })
 
+  // T-M2.13 scope 3 (AC4, DEC-155): the session is still alive, so the forced page stays and says so.
+  it('a failed Log out keeps the page and shows the alert below the actions; Log out again (204) signs out', async () => {
+    setXsrfCookie()
+    let answer = () => problem(500, 'INTERNAL_ERROR')
+    server.use(
+      sessionAs('STUDENT', true),
+      http.post('*/api/v1/auth/logout', () => answer()),
+    )
+    const { router, container } = await openPage()
+    const logout = screen.getByRole('button', { name: 'Đăng xuất' })
+    await userEvent.click(logout)
+    const alert = await screen.findByRole('alert')
+    expect(alert).toHaveTextContent('Chưa đăng xuất được')
+    expect(alert).toHaveTextContent('Bạn vẫn đang đăng nhập. Hãy thử lại.')
+    expect(router.state.location.pathname).toBe('/change-password')
+    expect(logout).toHaveFocus()
+    // Below the form actions, inside the form.
+    expect(logout.parentElement!.nextElementSibling).toContainElement(alert)
+    await expectNoAxeViolations(container)
+    answer = () => new HttpResponse(null, { status: 204 })
+    server.use(sessionAs(null))
+    await userEvent.click(logout)
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+    await screen.findByRole('heading', { level: 1, name: 'Đăng nhập' })
+    expect(router.state.location.pathname).toBe('/login')
+  })
+
   it('has no Log out button in voluntary mode (the header has one)', async () => {
     server.use(sessionAs('STUDENT'))
     await openPage()

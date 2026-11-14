@@ -17,7 +17,8 @@ forced change on `/change-password` (current, new, repeat, submit). Measured by 
 
 - **Log out** (FR-AUTH-04): ≤ 2 steps from any shell page at every viewport: open the account section (the account menu button, the tutor's
   menu button below 1024 px, or the student's More tab below 768 px), then Log out → `/login`. Measured by `e2e/tests/shells.spec.ts`
-  (`steps-logout-*`).
+  (`steps-logout-*`). A failed call (offline, an error answer) keeps the page and the open account section and says the user is still signed in;
+  pressing Log out again is the retry (T-M2.13, DEC-155).
 - **Switch the language:** 1 step on the public pages (the switcher in their toolbar row); ≤ 2 from a shell page (open the account section,
   pick a language). Was 1 step everywhere (T-M1.9) until the shell's switcher moved into the account section. Measured by
   `e2e/tests/route-focus.spec.ts` (`steps-switch-language`).
