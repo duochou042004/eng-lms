@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-11-14T09:10:08Z",
-  "updatedBy": "lead-coordinator (handoff after the PO's Dependabot merges)",
+  "updatedAt": "2026-11-14T10:23:59Z",
+  "updatedBy": "lead-coordinator (T-M2.13 implemented, gate PASS)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -32,20 +32,21 @@
   "currentTask": {
     "id": "T-M2.13",
     "title": "Auth and shell feedback follow-ups (T-M2.12 G3, DEC-118)",
-    "status": "ready",
+    "status": "in_progress",
     "ownerRole": "FE",
-    "branch": null,
+    "branch": "feature/T-M2.13-auth-shell-followups",
     "packet": "docs/tasks/T-M2.13-auth-shell-followups.md",
     "pr": "153",
-    "lastCommit": null,
-    "startedAt": null,
+    "lastCommit": "93cb41a",
+    "startedAt": "2026-11-14T09:40:30Z",
     "entryGate": [
       "T-M2.27, T-M2.25, T-M2.24 merged (DEC-163) — met (90bbfe0)",
-      "PO start signal"
+      "PO start signal — given 2026-11-14T09:40:30Z (chat: \"Start T-M2.13\")"
     ],
     "nextSteps": [
-      "PR #153 is the packet PR, merged 2026-11-11 (b1a542f): no update-branch needed (the earlier step was stale)",
-      "On the PO's start signal: feature/T-M2.13-<slug> from develop; frontend-implementer with the packet; gate; PR; CI; G3 (QA for a feature/ branch, DEC-171); merge-gate; records"
+      "Push, PR, CI (Playwright 1.65 in CI installs its own browsers)",
+      "G3 tier M: one combined fresh QA+UX reviewer with QA-VERDICT (DEC-171); merge-gate; QA PR qa/T-M2.13, then records PR",
+      "PO: pnpm --dir e2e browsers (local Chromium build 1254 missing after the Playwright 1.65 bump)"
     ],
     "trace": [
       "DEC-155",
@@ -403,8 +404,8 @@
     }
   ],
   "tests": {
-    "lastRun": "2026-11-13T17:30:53Z",
-    "summary": "T-M2.24 code head 5d96ada: gate PASS (13 steps, 1003 s), e2e 515 passed / 31 skipped, support-rule repeat x3 537 passed; gate.test.sh 92 passed; QA AC4 x3 1,545 passed, 0 failed on 6f66b5a; CI 7/7 on 6f66b5a. First regression run 43444433118 on b3cd6fd: 7 failed (T-M2.28).",
+    "lastRun": "2026-11-14T10:21:42Z",
+    "summary": "T-M2.13 head 0a01995: gate PASS (13 steps, 763 s); web 846 tests in 69 files; e2e 381 passed / 60 skipped; navigation+shells x3 525 passed.",
     "suites": [
       {
         "name": "backend (./mvnw -B verify)",
@@ -435,19 +436,19 @@
     },
     "G1": {
       "status": "pass",
-      "note": "T-M2.24: gate PASS (13 steps, 1003 s) on 5d96ada after one red run on a byte-identical flaky test (OQ T-M2.24-1, DEC-171)"
+      "note": "T-M2.13: gate PASS (13 steps, 763 s) on 0a01995 (local Chromium 1248 via a temporary symlink, see summary deviation 1)"
     },
     "G2": {
-      "status": "pass",
-      "note": "T-M2.24: CI 7/7 on 6f66b5a (0 fast-path)"
+      "status": "pending",
+      "note": "T-M2.13: CI after push"
     },
     "G3": {
-      "status": "pass",
-      "note": "T-M2.24: DOCS-REVIEW T-M2.24: PASS (adversarial, 80,018 tokens) + QA-VERDICT T-M2.24: PASS (43,298 tokens)"
+      "status": "pending",
+      "note": "T-M2.13: combined QA+UX (tier M) with QA-VERDICT"
     },
     "G4": {
-      "status": "pass",
-      "note": "T-M2.24 PR #178 merged via merge-gate (90bbfe0)"
+      "status": "pending",
+      "note": "T-M2.13"
     },
     "G5": {
       "status": "n/a",
@@ -822,6 +823,13 @@
       "status": "approved",
       "at": "2026-11-13T14:36:49Z",
       "ref": "DEC-169"
+    },
+    {
+      "what": "Start T-M2.13 (chat: \"Start T-M2.13\")",
+      "by": "PO",
+      "status": "approved",
+      "at": "2026-11-14T09:40:30Z",
+      "ref": "DEC-155"
     }
   ],
   "environment": {
@@ -1544,6 +1552,11 @@
       "at": "2026-11-14T09:10:08Z",
       "actor": "lead-coordinator",
       "event": "The PO merged Dependabot #160-#164 and #166 (develop 1be3e45); #165 (msw 3, web typecheck fails) and #135 (react group) held by the PO. Local and GitHub in sync; handoff updated."
+    },
+    {
+      "at": "2026-11-14T10:23:59Z",
+      "actor": "lead-coordinator",
+      "event": "T-M2.13 started on the PO signal; frontend-implementer done (5 commits, final 93cb41a); gate PASS on 0a01995; summary recorded."
     }
   ]
 }
