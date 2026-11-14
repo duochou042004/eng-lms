@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-11-14T18:04:18Z",
-  "updatedBy": "lead-coordinator (T-M2.29 packet drafted)",
+  "updatedAt": "2026-11-14T18:14:46Z",
+  "updatedBy": "lead-coordinator (T-M2.29 packet ready; handoff)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -32,21 +32,27 @@
   "currentTask": {
     "id": "T-M2.29",
     "title": "UI follow-ups from T-M2.13 and the own-logout race (DEC-172, DEC-173, DEC-174)",
-    "status": "draft",
+    "status": "ready",
     "ownerRole": "FE",
-    "branch": null,
+    "branch": "feature/T-M2.29-ui-logout-followups",
     "packet": "docs/tasks/T-M2.29-ui-logout-followups.md",
     "pr": null,
     "lastCommit": null,
     "startedAt": null,
     "nextSteps": [
-      "Packet drafted on docs/T-M2.29-packet; G0 adversarial docs-reviewer; merge; ask the PO for the start signal",
-      "Then the M2 G5 regression (a Firefox 'Page crashed' recurrence: capture stderr first, DEC-174 (5))"
+      "Packet ready (G0: CHANGES REQUESTED S2-1 -> (i) accepted as is DEC-176 -> delta PASS WITH MINOR -> confirmation); packet PR #189",
+      "Ask the PO for the start signal; on it: feature/T-M2.29-ui-logout-followups, frontend-implementer, gate, PR, CI, G3 combined QA+UX (QA-VERDICT), merge-gate, QA PR, records",
+      "Then the M2 G5 regression (a Firefox 'Page crashed' recurrence: capture stderr first, DEC-174 (5)); T-M2.30"
     ],
     "trace": [
       "DEC-172",
       "DEC-173",
-      "DEC-174"
+      "DEC-174",
+      "DEC-176"
+    ],
+    "entryGate": [
+      "T-M2.13, T-M2.28 merged — met (a1bcf12)",
+      "PO start signal — not yet asked"
     ]
   },
   "nextTask": {
@@ -441,8 +447,8 @@
   },
   "gates": {
     "G0": {
-      "status": "n/a",
-      "note": "T-M2.29 packet not written yet"
+      "status": "pass",
+      "note": "T-M2.29 packet: adversarial docs-reviewer, round 1 CHANGES REQUESTED (S2-1), delta PASS WITH MINOR (N-1..N-4 fixed), confirmation"
     },
     "G1": {
       "status": "pass",
@@ -516,7 +522,8 @@
       "DEC-172",
       "DEC-173",
       "DEC-174",
-      "DEC-175"
+      "DEC-175",
+      "DEC-176"
     ],
     "pendingPO": [
       "OQ-03",
@@ -1620,6 +1627,11 @@
       "at": "2026-11-14T17:39:35Z",
       "actor": "lead-coordinator",
       "event": "T-M2.28 merged (PR #187, a1bcf12, head 91f94b5); records PR docs/T-M2.28-records (DEC-175); T-M2.29 next, T-M2.30 added (DEC-174)."
+    },
+    {
+      "at": "2026-11-14T18:14:46Z",
+      "actor": "lead-coordinator",
+      "event": "T-M2.28 records merged (PR #188, bda1715); T-M2.29 packet ready after G0 (PR #189; DEC-176: (i) accepted as is); session handoff."
     }
   ]
 }

@@ -3,27 +3,27 @@
 | Field | Value |
 |---|---|
 | Milestone | M2 |
-| Status | draft (G0 pending) |
+| Status | ready (G0 PASS, DEC-176; waits for the PO start signal) |
 | Owner role | FE (frontend-implementer) |
 | Branch | `feature/T-M2.29-ui-logout-followups` (from `develop`) |
 | Depends on | T-M2.13 (`e3ce22c`), T-M2.28 (`a1bcf12`): merged |
 | Estimate | 1–1.5 agent-days |
 | Risk tier | **M**: UI and client behaviour (`ui/Sheet`, `LogoutFailedAlert`, the logout navigation and the API client's 401 reaction). No endpoint, DTO, migration, CSP, cookie or server session change, so no SEC trigger (as T-M2.13, DEC-155). G3 = **one combined QA+UX `qa-evaluator`** with `QA-VERDICT` and `UX-REVIEW` (a `feature/` branch merges on `QA-VERDICT T-M2.29: PASS` or `PASS WITH MINOR`) |
-| Trace | DEC-172 (T-M2.13 G3: UX-1 S3, UX-2 S4, QA-1 S4 / OQ T-M2.13-1), DEC-173 (split from T-M2.28), DEC-174 (3) (OQ T-M2.28-1 → (j)), DEC-176 ((i) accepted as is, G0); FR-AUTH-04 (log out); design-system §3 (`ui/Sheet`, `ui/Popover`, `ui/Toggletip`); interaction-states §1; accessibility.md §2; frontend-architecture §2 (auth-problem reactions); lessons L-01, L-03, L-05, L-10, L-11; backlog row T-M2.29 |
+| Trace | DEC-172 (T-M2.13 G3: UX-1 S3, UX-2 S4, QA-1 S4 / OQ T-M2.13-1), DEC-173 (split from T-M2.28), DEC-174 (3) (OQ T-M2.28-1 → (j)), DEC-176 ((i) accepted as is, G0); FR-AUTH-04 (log out); design-system §3 (`ui/Sheet`); interaction-states §1; accessibility.md §2; frontend-architecture §2 (auth-problem reactions); lessons L-01, L-03, L-05, L-10; backlog row T-M2.29 |
 
 ## Goal
-Close the three small UI gaps T-M2.13's review found and the logout race T-M2.28 diagnosed: the logout failure alert is fully readable in the
+Close the two UI gaps T-M2.13's review found and the logout race T-M2.28 diagnosed: the logout failure alert is fully readable in the
 tutor drawer on a phone held sideways and is on screen on the forced change-password page, and after the user's own Log out they always land on `/login`, never on `/login?next=<page>`.
 
 ## Scope
 - In:
   - **(h1) UX-1 (S3):** the `ui/Sheet` footer cannot scroll, so at 740×360 the tutor drawer's logout failure alert shows only its title
     (`web/src/ui/Sheet.module.css` `.footer`, rendered by `ShellParts.tsx:75`; the sheet is 429 px in a 360 px window). Fix in `ui/Sheet` so
-    a footer taller than its share scrolls (or the dialog scrolls as a whole) while the body keeps its own scroll; the sheet stays inside the
+    a footer taller than its share scrolls while the body keeps its own scroll; the sheet stays inside the
     viewport. One shared fix for every `ui/Sheet` (drawer and bottom sheet).
   - **(h2) UX-2 (S4):** on the forced change-password page at 360×740 the logout failure alert renders below the fold (`ChangePasswordPage.tsx:218`).
     Fix: `LogoutFailedAlert` scrolls itself into view on mount with `scrollIntoView({ block: 'nearest' })`, without moving focus (focus stays on
-    Log out). `nearest` is a no-op where the alert is already visible (popover, drawer, More sheet).
+    Log out). In the drawer at short heights it scrolls the footer (UI rules); elsewhere where the alert is visible `nearest` does nothing.
   - **(i) OQ T-M2.13-1 (S4): ruled "accept as is" (DEC-176), no change here.** React Aria 3.52.1 ships no `vi` strings for
     `@react-aria/overlays`, so the visually hidden dismiss buttons of `ui/Toggletip`, `ui/Popover` and `ui/Sheet` (`isDismissable`,
     `Sheet.tsx:33`) are named "Dismiss" in vi. Its only global override (`window[Symbol.for('react-aria.i18n.strings')]`, read by
