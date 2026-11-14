@@ -1,0 +1,14 @@
+  ✘  1 [tablet] › tests/students-list.spec.ts:317:3 › Students list › AC2/AC3/AC4/AC10: search (diacritics), Include archived, Newest, paging, URL with Back and reload, fallbacks, layout (11.5s)
+  ✘  2 [phone] › tests/students-list.spec.ts:317:3 › Students list › AC2/AC3/AC4/AC10: search (diacritics), Include archived, Newest, paging, URL with Back and reload, fallbacks, layout (20.1s)
+    Error: expect(locator).toContainText(expected) failed
+    Expected substring: "Trang 1 / 2"
+    Received string:    "Trang trướcTrang 1 / 3Trang sau"
+    > 382 |     await expect(pages).toContainText('Trang 1 / 2')
+    test-results/students-list-Students-lis-f726e-and-reload-fallbacks-layout-phone/test-failed-1.png
+    Error: expect(locator).toContainText(expected) failed
+    Expected substring: "Trang 1 / 2"
+    Received string:    "Trang trướcTrang 1 / 3Trang sau"
+    > 382 |     await expect(pages).toContainText('Trang 1 / 2')
+    test-results/students-list-Students-lis-f726e-and-reload-fallbacks-layout-tablet/test-failed-1.png
+  2 failed
+e2e-run: playwright exit 1

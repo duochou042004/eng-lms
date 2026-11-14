@@ -70,6 +70,13 @@ if [[ -f "$ROOT/.env" ]]; then
     for other in "${dev_name,,}" "${url_db,,}" postgres template0 template1; do
       [[ "$db_name" != "$other" ]] || refuse "it is the dev database or a system database ($other)"
     done
+    # T-M2.28 (d), a Boot 4.1.2 jar run: these send the pool or Flyway past the rewritten URL (any case, any underscores, from the
+    # caller or .env); SPRING_FLYWAY_USER does not.
+    while read -r var; do
+      key=${var^^}; key=${key//_/}
+      [[ $key != SPRINGDATASOURCEHIKARIJDBCURL && $key != SPRINGFLYWAYURL && $key != SPRINGAPPLICATIONJSON ]] ||
+        refuse "$var would point the pool or Flyway at another database than $db_name; unset it"
+    done < <(compgen -e)
   fi
   "$ROOT/scripts/dev-up.sh" || exit 1
   if ((fresh)); then

@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-11-14T11:54:01Z",
-  "updatedBy": "lead-coordinator (T-M2.28 held by the PO; handoff)",
+  "updatedAt": "2026-11-14T17:11:11Z",
+  "updatedBy": "lead-coordinator (T-M2.28 in review)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -32,28 +32,29 @@
   "currentTask": {
     "id": "T-M2.28",
     "title": "Regression and tooling follow-ups before the M2 G5 (DEC-169, DEC-171, DEC-173)",
-    "status": "ready",
+    "status": "in_review",
     "ownerRole": "FE",
-    "branch": null,
+    "branch": "chore/T-M2.28-regression-followups",
     "packet": "docs/tasks/T-M2.28-regression-followups.md",
-    "pr": "185",
-    "lastCommit": null,
-    "startedAt": null,
+    "pr": "187",
+    "lastCommit": "a7a1e4d",
+    "startedAt": "2026-11-14T13:49:56Z",
     "nextSteps": [
-      "Packet merged in PR #185 (3894451, G0 PASS after one CHANGES REQUESTED round)",
-      "Held by the PO (\"Not yet\", 2026-11-14): ask again for the start signal; on it chore/T-M2.28-regression-followups, frontend-implementer, LC-started regression runs on the branch, gate, PR, CI, adversarial G3 (DOCS-REVIEW), merge-gate, records",
-      "T-M2.29 (UI follow-ups from T-M2.13) and the M2 G5 after it"
+      "Gate PASS on a7a1e4d (13 steps, 720 s); CI 7/7 on ddd51f4; regression 43617206392 green on ddd51f4 (43611629190's Firefox crash ruled an engine crash, DEC-174 (5))",
+      "PR, CI, adversarial G3 docs-reviewer (DOCS-REVIEW, re-runs specs and suites), merge-gate, records",
+      "T-M2.29 (now with (j), DEC-174), then the M2 G5"
     ],
     "trace": [
       "DEC-169",
       "DEC-170",
       "DEC-171",
       "DEC-172",
-      "DEC-173"
+      "DEC-173",
+      "DEC-174"
     ],
     "entryGate": [
       "T-M2.25, T-M2.24, T-M2.13 merged — met (e3ce22c)",
-      "PO start signal — asked 2026-11-14, answered \"Not yet\" (held)"
+      "PO start signal — given 2026-11-14T13:49:56Z (chat: \"Start T-M2.28\")"
     ]
   },
   "nextTask": {
@@ -67,11 +68,12 @@
     "lastCommit": null,
     "startedAt": null,
     "nextSteps": [
-      "LC writes the packet from the backlog row (h), (i)"
+      "LC writes the packet from the backlog row (h), (i), (j)"
     ],
     "trace": [
       "DEC-172",
-      "DEC-173"
+      "DEC-173",
+      "DEC-174"
     ]
   },
   "completed": [
@@ -413,8 +415,8 @@
     }
   ],
   "tests": {
-    "lastRun": "2026-11-14T10:21:42Z",
-    "summary": "T-M2.13 head 0a01995: gate PASS (13 steps, 763 s); web 846 tests in 69 files; e2e 381 passed / 60 skipped; navigation+shells x3 525 passed.",
+    "lastRun": "2026-11-14T15:42:54Z",
+    "summary": "T-M2.28 head a7a1e4d: gate PASS (13 steps, 720 s); e2e 525 passed / 42 skipped; repeat x3 150 passed / 3 skipped; e2e-run.test.sh 127/127, gate.test.sh 98/98.",
     "suites": [
       {
         "name": "backend (./mvnw -B verify)",
@@ -445,19 +447,19 @@
     },
     "G1": {
       "status": "pass",
-      "note": "T-M2.13: gate PASS (13 steps, 763 s) on 0a01995"
+      "note": "T-M2.28: gate PASS (13 steps, 720 s) on a7a1e4d"
     },
     "G2": {
       "status": "pass",
-      "note": "T-M2.13: CI 7/7 on 7d843d4 (5 full)"
+      "note": "T-M2.28: CI 7/7 on ddd51f4; regression 43617206392 green"
     },
     "G3": {
-      "status": "pass",
-      "note": "T-M2.13: QA-VERDICT PASS WITH MINOR + UX-REVIEW APPROVED (combined, 155,246 tokens)"
+      "status": "pending",
+      "note": "T-M2.28: adversarial docs-reviewer"
     },
     "G4": {
-      "status": "pass",
-      "note": "T-M2.13 PR #182 merged via merge-gate (e3ce22c)"
+      "status": "pending",
+      "note": "T-M2.28: merge-gate"
     },
     "G5": {
       "status": "n/a",
@@ -513,7 +515,8 @@
       "DEC-170",
       "DEC-171",
       "DEC-172",
-      "DEC-173"
+      "DEC-173",
+      "DEC-174"
     ],
     "pendingPO": [
       "OQ-03",
@@ -851,6 +854,13 @@
       "status": "approved",
       "at": "2026-11-14T09:40:30Z",
       "ref": "DEC-155"
+    },
+    {
+      "what": "Start T-M2.28 (chat: \"Start T-M2.28\")",
+      "by": "PO",
+      "status": "approved",
+      "at": "2026-11-14T13:49:56Z",
+      "ref": "DEC-173"
     }
   ],
   "environment": {

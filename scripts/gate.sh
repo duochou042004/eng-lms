@@ -6,7 +6,8 @@
 # With ENGLMS_TASK=<task id> (e.g. T-M1.5) the whole output is also written to evidence/<task>/gate-<UTC timestamp>.log.
 # The backend and contract-drift steps need Testcontainers: Docker or Podman (scripts/env.sh is sourced here).
 # The e2e step runs the packaged app on :8080/:8081 (scripts/e2e-run.sh: locally on its own per-run database), then the new or changed specs x3,
-# with every spec that imports a changed e2e/support/ file (all specs when its importers cannot be known; DEC-170).
+# with every spec that imports a changed e2e/support/ file (all specs when its importers cannot be known, DEC-170, or when it
+# reaches e2e/support/global-setup.ts, T-M2.28).
 # Path-aware (DEC-131 (6)): backend and contract-drift are skipped when nothing under backend/, api/ or scripts/contract-drift.sh
 # changed since ${ENGLMS_GATE_BASE:-origin/develop} (committed, staged, unstaged or untracked); CI still runs them. ENGLMS_GATE_FULL=1 runs every step.
 source "$(dirname "$0")/lib/require-bash.sh"
@@ -82,6 +83,8 @@ e2e_support_specs() {
       while IFS= read -r imp; do
         [[ -n $imp && -z ${seen[$imp]:-} ]] || continue
         seen[$imp]=1; queue+=("$imp")
+        # Global setup (playwright.config.ts globalSetup) runs before every spec (T-M2.28 (g2)).
+        [[ $imp == e2e/support/global-setup.ts ]] && printf '*\t%s reaches %s, which runs before every spec\n' "$s" "$imp"
         [[ $imp == e2e/tests/*.spec.ts ]] || continue
         found=1
         if [[ $x == "$s" ]]; then printf '%s\timports %s\n' "$imp" "$s"; else printf '%s\timports %s through %s\n' "$imp" "$s" "$x"; fi

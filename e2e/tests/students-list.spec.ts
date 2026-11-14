@@ -298,9 +298,12 @@ test.describe('Add student (F2) and the credentials card', () => {
 })
 
 test.describe('Students list', () => {
-  /** 26 students under a per-project prefix: reused across runs (only the missing ones are created). */
-  async function pagingSet(page: Page, project: string) {
-    const prefix = `E2E Paging ${project}`
+  /**
+   * 26 students under a per-project, per-repeat prefix: reused across runs (only the missing ones are created). The repeat
+   * index keeps concurrent repeats (fullyParallel, --repeat-each) from each creating the same missing set (T-M2.28).
+   */
+  async function pagingSet(page: Page, project: string, repeat: number) {
+    const prefix = `E2E Paging ${project}:${repeat}:`
     const found = await apiCall<{ totalItems: number; items: Array<{ fullName: string }> }>(
       page,
       'GET',
@@ -324,7 +327,7 @@ test.describe('Students list', () => {
     const nav = await navItem(page, 'Học viên')
     await expect(nav).toHaveAttribute('aria-current', 'page')
     if (page.viewportSize()!.width < 1024) await page.keyboard.press('Escape')
-    const prefix = await pagingSet(page, project)
+    const prefix = await pagingSet(page, project, testInfo.repeatEachIndex)
     const diacritic = await apiStudent(page, { fullName: `Nguyễn Thị Dấu ${t}`, username: `e2e-dau-${t}` })
     const archived = await apiStudent(page, { fullName: `Lưu Trữ ${t}`, username: `e2e-arch-${t}` })
     const status = await apiCall(page, 'POST', `/api/v1/tutor/students/${archived.student.id}/status`, {
@@ -497,7 +500,7 @@ test.describe('Students table with realistic data (AC12 (t))', () => {
     page,
   }, testInfo) => {
     const project = testInfo.project.name
-    test.skip(project === 'phone-small', 'the table starts at 768 px')
+    test.skip(page.viewportSize()!.width < 768, 'the table starts at 768 px')
     const widths = project === 'laptop' ? [768, 1024, 1280] : [page.viewportSize()!.width]
     const t = token()
     await page.goto('/tutor/students')

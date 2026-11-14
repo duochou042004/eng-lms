@@ -1,0 +1,2 @@
+  FAIL - T-M2.28 (g1): a non-spec importer is not a spec (missing: gate: e2e repeat: all specs: e2e/support/setup-only.ts is imported by no spec)
+  -> 97 passed, 1 failed

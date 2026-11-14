@@ -1,0 +1,5 @@
+  ✘  1 [phone] › tests/students-list.spec.ts:496:3 › Students table with realistic data (AC12 (t)) › fixed column shares at 768, 1024 and 1280 in vi and en: no horizontal scroll, every value whole (7.7s)
+    Error: expect(locator).toHaveCount(expected) failed
+    test-results/students-list-Students-tab-ef647-al-scroll-every-value-whole-phone/test-failed-1.png
+  1 failed
+e2e-run: playwright exit 1

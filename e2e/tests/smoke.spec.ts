@@ -1,4 +1,5 @@
-import type { Page } from '@playwright/test'
+import { readFileSync } from 'node:fs'
+import type { BrowserContextOptions, Page } from '@playwright/test'
 import { ANONYMOUS, STUDENT_STATE, TUTOR_STATE } from '../support/auth'
 import { expectNoAxeViolations, expectNoHorizontalScroll } from '../support/checks'
 import { evidenceShot } from '../support/evidence'
@@ -43,6 +44,28 @@ const PAGES = [
   },
 ] as const
 
+/**
+ * T-M2.28 (c): Firefox logs a font download that a reload aborts (NS_BINDING_ABORTED) as a console error. The shell renders
+ * only after /auth/session and fonts are requested once text that uses them renders, so wait for the h1, then until no font
+ * load is in flight (`document.fonts.ready` alone can resolve before any font request has started).
+ */
+async function fontsSettled(page: Page, heading: string) {
+  await expect(page.getByRole('heading', { level: 1, name: heading })).toBeVisible()
+  await expect.poll(() => page.evaluate(() => document.fonts.status)).toBe('loaded')
+}
+
+type StoredState = Exclude<BrowserContextOptions['storageState'], string | undefined>
+/**
+ * T-M2.28 (b), DEC-174: WebKit neither sends nor keeps a Secure cookie on http://localhost (development-setup "Cookies on
+ * http://localhost"), so on WebKit a stored session is loaded with its cookies marked not Secure, on the client side only.
+ * The server still sets them Secure (NFR-SEC-04); Chromium and Firefox use the stored state as it is.
+ */
+function stateFor(state: string | StoredState, browserName: string): string | StoredState {
+  if (browserName !== 'webkit' || typeof state !== 'string') return state
+  const stored = JSON.parse(readFileSync(state, 'utf8')) as StoredState
+  return { ...stored, cookies: stored.cookies.map((cookie) => ({ ...cookie, secure: false })) }
+}
+
 /** The shells' account section holds their switcher (T-M2.11); the public pages show it in their toolbar row. */
 async function revealSwitcher(page: Page, target: (typeof PAGES)[number]) {
   if ('shell' in target) await openAccountSection(page, target.shell)
@@ -50,7 +73,7 @@ async function revealSwitcher(page: Page, target: (typeof PAGES)[number]) {
 
 for (const target of PAGES) {
   test.describe(() => {
-    test.use({ storageState: target.state })
+    test.use({ storageState: async ({ browserName }, use) => use(stateFor(target.state, browserName)) })
     test(`${target.name} renders in vi and en`, async ({ page }, testInfo) => {
       await page.goto(target.path)
       await expect(page.getByRole('heading', { level: 1, name: target.vi })).toBeVisible()
@@ -104,10 +127,11 @@ for (const deepLink of [
   },
 ]) {
   test.describe(() => {
-    test.use({ storageState: deepLink.state })
+    test.use({ storageState: async ({ browserName }, use) => use(stateFor(deepLink.state, browserName)) })
     test(`a deep link survives a reload: ${deepLink.path} (same-origin SPA fallback)`, async ({ page }) => {
       const response = await page.goto(deepLink.path)
       expect(response?.status()).toBe(200)
+      await fontsSettled(page, deepLink.heading)
       await page.reload()
       await expect(page.getByRole('heading', { level: 1, name: deepLink.heading })).toBeVisible()
     })

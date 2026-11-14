@@ -13,9 +13,11 @@ repo="$work/repo"
 mkdir -p "$repo/scripts" "$repo/backend/target" "$repo/e2e" "$work/bin"
 cp "$ROOT/scripts/e2e-run.sh" "$repo/scripts/e2e-run.sh"; cp -R "$ROOT/scripts/lib" "$repo/scripts/"
 touch "$repo/backend/target/englms-0.0.1-SNAPSHOT.jar"
-# java stub: a long-running "app" that records its pid; curl stub: always ready; pnpm stub: exit $PNPM_EXIT for the test run.
-printf '#!/usr/bin/env bash\necho $$ >"%s/app.pid"\nenv | grep -E "^ENGLMS_(BOOTSTRAP|SECURITY)" | sort >"%s/app.env"\nexec sleep 300\n' "$work" "$work" >"$work/bin/java"
-printf '#!/usr/bin/env bash\nexit 0\n' >"$work/bin/curl"
+# java stub: a long-running "app" that records its pid, then its environment (a temp file moved into place); curl stub: ready
+# only once that file exists, so the cleanup trap cannot kill the stub before it is written (T-M2.28 (e), DEC-170); pnpm stub:
+# exit $PNPM_EXIT for the test run.
+printf '#!/usr/bin/env bash\necho $$ >"%s/app.pid"\nenv | grep -E "^ENGLMS_(BOOTSTRAP|SECURITY)" | sort >"%s/app.env.tmp"\nmv "%s/app.env.tmp" "%s/app.env"\nexec sleep 300\n' "$work" "$work" "$work" "$work" >"$work/bin/java"
+printf '#!/usr/bin/env bash\n[[ -s "%s/app.env" ]]\n' "$work" >"$work/bin/curl"
 printf '#!/usr/bin/env bash\necho "pnpm $*" >>"%s/pnpm.args"\n[[ "$1" == exec ]] && exit "${PNPM_EXIT:-0}"\nexit 0\n' "$work" >"$work/bin/pnpm"
 chmod +x "$work/bin/"*
 run() { env PATH="$work/bin:$PATH" E2E_CHECK_PORTS="${PORTS:-}" SPRING_DATASOURCE_URL=jdbc:postgresql://stub/db "$@"; }
@@ -40,7 +42,7 @@ pw=$(cat "$repo/.data/e2e/tutor-bootstrap-password")
 expect_exit 0 "reuses the bootstrap password file on a re-run" -- run "$repo/scripts/e2e-run.sh" --no-build
 [[ "$(cat "$repo/.data/e2e/tutor-bootstrap-password")" == "$pw" ]] && { PASS_COUNT=$((PASS_COUNT + 1)); echo "  ok   - the bootstrap password is generated once"; } || { FAIL_COUNT=$((FAIL_COUNT + 1)); echo "  FAIL - the bootstrap password changed on a re-run"; }
 
-rm -f "$work/app.pid"
+rm -f "$work/app.pid" "$work/app.env"
 expect_exit 3 "propagates Playwright's exit code" -- env PNPM_EXIT=3 PATH="$work/bin:$PATH" E2E_CHECK_PORTS= SPRING_DATASOURCE_URL=x "$repo/scripts/e2e-run.sh" --no-build
 expect_output_contains "e2e-run: app stopped" "stops the app after a failing run too"
 app_gone && { PASS_COUNT=$((PASS_COUNT + 1)); echo "  ok   - no app process is left after a failure"; } || { FAIL_COUNT=$((FAIL_COUNT + 1)); echo "  FAIL - the app process is still running after a failure"; }
@@ -61,9 +63,11 @@ mkdir -p "$repo2/scripts" "$repo2/backend/target" "$repo2/e2e" "$work/bin2"
 cp "$ROOT/scripts/e2e-run.sh" "$repo2/scripts/e2e-run.sh"; cp -R "$ROOT/scripts/lib" "$repo2/scripts/"
 touch "$repo2/backend/target/englms-0.0.1-SNAPSHOT.jar"
 printf '#!/usr/bin/env bash\necho dev-up >>"%s"\n' "$log" >"$repo2/scripts/dev-up.sh"
-# podman stub: one line per call, its arguments joined by "|"; exit $PODMAN_EXIT. java/pnpm stubs: log the call order and what the app sees.
+# podman stub: one line per call, its arguments joined by "|"; exit $PODMAN_EXIT. java/pnpm stubs: log the call order and what the app sees
+# (app2.env, written like app.env above; the curl stub here is ready only once it exists).
 printf '#!/usr/bin/env bash\n(IFS="|"; echo "podman|$*") >>"%s"\nexit "${PODMAN_EXIT:-0}"\n' "$log" >"$work/bin2/podman"
-printf '#!/usr/bin/env bash\necho java >>"%s"\necho $$ >"%s/app.pid"\nenv | grep -E "^(SPRING_DATASOURCE_URL|ENGLMS_BOOTSTRAP_TUTOR_PASSWORD_FILE|E2E_DB_NAME|E2E_KEEP_DB)=" | sort >"%s/app2.env"\nexec sleep 300\n' "$log" "$work" "$work" >"$work/bin2/java"
+printf '#!/usr/bin/env bash\necho java >>"%s"\necho $$ >"%s/app.pid"\nenv | grep -E "^(SPRING_DATASOURCE_URL|ENGLMS_BOOTSTRAP_TUTOR_PASSWORD_FILE|E2E_DB_NAME|E2E_KEEP_DB)=" | sort >"%s/app2.env.tmp"\nmv "%s/app2.env.tmp" "%s/app2.env"\nexec sleep 300\n' "$log" "$work" "$work" "$work" "$work" >"$work/bin2/java"
+printf '#!/usr/bin/env bash\n[[ -s "%s/app2.env" ]]\n' "$work" >"$work/bin2/curl"
 printf '#!/usr/bin/env bash\n[[ "$1" == exec ]] && echo "E2E_DATA_DIR=$E2E_DATA_DIR" >"%s/pw.env"\nexit 0\n' "$work" >"$work/bin2/pnpm"
 chmod +x "$work/bin2/"* "$repo2/scripts/dev-up.sh"
 write_env() { printf 'ENGLMS_DEV_DB_USER=englms\nENGLMS_DEV_DB_PORT=5432\nSPRING_DATASOURCE_URL=%s\nSPRING_DATASOURCE_USERNAME=englms\n' "${URL:-jdbc:postgresql://127.0.0.1:5432/devdata}" >"$repo2/.env"; [[ $# -gt 0 ]] && printf '%s\n' "$@" >>"$repo2/.env"; return 0; }
@@ -132,6 +136,22 @@ refused "a service URL parameter (G3 F2-bis)" E2E_DB_NAME=englms_e2e
 URL='jdbc:postgresql://127.0.0.1:5432/dev%64ata' write_env
 refused "a % escape in the URL database name" E2E_DB_NAME=devdata
 expect_output_contains "holds a % escape" "guard: a % escape: names the rule"
+# T-M2.28 (d): a Boot 4.1.2 jar run against a throwaway database (the task evidence) shows these redirect the pool or Flyway away from the
+# rewritten URL (from .env or the caller); SPRING_FLYWAY_USER keeps the rewritten URL, so it is not refused.
+write_env SPRING_DATASOURCE_HIKARI_JDBC_URL=jdbc:postgresql://127.0.0.1:5432/devdata
+refused "SPRING_DATASOURCE_HIKARI_JDBC_URL from .env" E2E_DB_NAME=englms_e2e
+expect_output_contains "SPRING_DATASOURCE_HIKARI_JDBC_URL would point the pool or Flyway at another database" "guard: names SPRING_DATASOURCE_HIKARI_JDBC_URL"
+write_env SPRING_FLYWAY_URL=jdbc:postgresql://127.0.0.1:5432/devdata
+refused "SPRING_FLYWAY_URL from .env" E2E_DB_NAME=englms_e2e
+expect_output_contains "SPRING_FLYWAY_URL would point" "guard: names SPRING_FLYWAY_URL"
+write_env
+refused "SPRING_DATASOURCE_HIKARI_JDBCURL from the caller" SPRING_DATASOURCE_HIKARI_JDBCURL=jdbc:postgresql://127.0.0.1:5432/devdata
+expect_output_contains "SPRING_DATASOURCE_HIKARI_JDBCURL would point" "guard: names SPRING_DATASOURCE_HIKARI_JDBCURL"
+refused "SPRING_APPLICATION_JSON from the caller" 'SPRING_APPLICATION_JSON={"spring":{"flyway":{"url":"jdbc:postgresql://127.0.0.1:5432/devdata"}}}'
+expect_output_contains "SPRING_APPLICATION_JSON would point" "guard: names SPRING_APPLICATION_JSON"
+write_env SPRING_FLYWAY_USER=other
+expect_exit 0 "SPRING_FLYWAY_USER (the rewritten URL stays) is not refused" -- erun
+expect_equal "$(cat "$log")" "dev-up"$'\n'"$SQL"$'\n'"java" "SPRING_FLYWAY_USER: a fresh run on englms_e2e"
 
 write_env E2E_DB_NAME=devdata E2E_KEEP_DB=1
 expect_exit 0 "E2E_DB_NAME and E2E_KEEP_DB set inside .env are ignored" -- erun

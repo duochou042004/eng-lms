@@ -1,0 +1,14 @@
+== new form, kept DB, run 1
+  ✓  4 [tablet-land] › tests/students-list.spec.ts:317:3 › Students list › AC2/AC3/AC4/AC10: search (diacritics), Include archived, Newest, paging, URL with Back and reload, fallbacks, layout (17.4s)
+  ✓  2 [phone] › tests/students-list.spec.ts:317:3 › Students list › AC2/AC3/AC4/AC10: search (diacritics), Include archived, Newest, paging, URL with Back and reload, fallbacks, layout (17.7s)
+  ✓  1 [phone-small] › tests/students-list.spec.ts:317:3 › Students list › AC2/AC3/AC4/AC10: search (diacritics), Include archived, Newest, paging, URL with Back and reload, fallbacks, layout (17.7s)
+  ✓  3 [tablet] › tests/students-list.spec.ts:317:3 › Students list › AC2/AC3/AC4/AC10: search (diacritics), Include archived, Newest, paging, URL with Back and reload, fallbacks, layout (17.7s)
+  4 passed (21.4s)
+e2e-run: playwright exit 0
+== new form, kept DB, run 2
+  ✓  2 [tablet-land] › tests/students-list.spec.ts:317:3 › Students list › AC2/AC3/AC4/AC10: search (diacritics), Include archived, Newest, paging, URL with Back and reload, fallbacks, layout (9.2s)
+  ✓  1 [phone-small] › tests/students-list.spec.ts:317:3 › Students list › AC2/AC3/AC4/AC10: search (diacritics), Include archived, Newest, paging, URL with Back and reload, fallbacks, layout (9.2s)
+  ✓  3 [phone] › tests/students-list.spec.ts:317:3 › Students list › AC2/AC3/AC4/AC10: search (diacritics), Include archived, Newest, paging, URL with Back and reload, fallbacks, layout (9.2s)
+  ✓  4 [tablet] › tests/students-list.spec.ts:317:3 › Students list › AC2/AC3/AC4/AC10: search (diacritics), Include archived, Newest, paging, URL with Back and reload, fallbacks, layout (9.3s)
+  4 passed (12.8s)
+e2e-run: playwright exit 0
