@@ -1,40 +1,36 @@
-# Handoff — 2026-11-14T09:09Z (T-M2.24 merged and recorded; Dependabot batch merged by the PO; next T-M2.13 on the PO's start signal)
+# Handoff — 2026-11-14T11:02Z (T-M2.13 merged and recorded; next T-M2.28 packet)
 
-Phase/Milestone: P1 / M2 (in progress) · Task: **T-M2.13** (ready; waits for the PO's start signal) · Branch: `develop` (`1be3e45`: T-M2.24 records `cdec7bb`, then the PO's
-Dependabot merges; this handoff on `docs/T-M2.24-dependabot-handoff`) · Next after it: **T-M2.28** (draft) before the M2 G5 · Remote: https://github.com/duochou042004/eng-lms
+Phase/Milestone: P1 / M2 (in progress) · Task: **T-M2.28** (draft; LC writes the packet) · Branch: `develop` (`f6ba376`: T-M2.13 `e3ce22c`, QA `f6ba376`;
+this handoff on `docs/T-M2.13-records`) · Next after it: the M2 G5 regression; T-M2.26 after at least 10 shadow PRs · Remote: https://github.com/duochou042004/eng-lms
 
 ## Where we are
-- **T-M2.24 merged** (`90bbfe0`, PR #178, DEC-171): `students.spec.ts` split into eight files (helpers in `e2e/support/students.ts`);
-  `gate.sh` repeats ×3 the transitive importers of a changed `e2e/support/` file, all specs when unknown (92 fixtures). G3: adversarial
-  docs-reviewer PASS + a qa-evaluator PASS (merge-gate's `feature/` path needs `QA-VERDICT`; DEC-171: feature packets name a QA run at G3).
-- **OQ T-M2.24-1:** `students-list.spec.ts` "… sign-out never asks" (laptop) failed once in ~21 runs (`/login?next=…` after Log out) →
-  T-M2.28 (f). G3 S3-1/S4-2 (a fixture for a helper only `global-setup.ts` imports; global-setup dependants → all specs) → T-M2.28 (g).
-- PR #153 is the T-M2.13 **packet** PR, merged 2026-11-11 (`b1a542f`): the old "gh pr update-branch 153" step was stale; nothing to update.
+- **T-M2.13 merged** (`e3ce22c`, PR #182, DEC-172): `ui/Toggletip` for the compact workspace-name error; the `/login` notice after a cross-tab
+  sign-out; a failed Log out keeps the page and says "still signed in" (`LogoutFailedAlert`); chunk pages lose their repeated sentence.
+  Gate PASS on `0a01995` (763 s); CI 7/7; G3 one combined QA+UX qa-evaluator: `QA-VERDICT T-M2.13: PASS WITH MINOR`, `UX-REVIEW T-M2.13: APPROVED`.
+- **Deferred to T-M2.28:** (h) UX-1 S3 (the `ui/Sheet` footer cannot scroll: at 740×360 the drawer's logout alert shows only its title) and
+  UX-2 S4 (change-password alert below the fold at 360×740); (i) OQ T-M2.13-1 (React Aria's hidden "Dismiss" buttons in vi, older than T-M2.13).
+- **Playwright browser:** the PO approved the download; Chromium headless shell **1254** (Chrome 158, Playwright 1.65) is installed beside 1248.
 
 ## In flight / uncommitted
-- QA PR #179 (`000c7a6`) and records PR #180 (`cdec7bb`) merged. This handoff PR (`docs/T-M2.24-dependabot-handoff`): one docs-reviewer,
-  `DOCS-REVIEW T-M2.24: PASS` + `LC-APPROVED T-M2.24`, merge-gate. Nothing else.
-- **The PO merged Dependabot #160–#164 and #166 on 2026-11-14** (develop `1be3e45`): actions/setup-java 6.2.0, `@playwright/test` 1.65.0
-  (e2e, qa), the web tooling group (vite 8.3.7, `@vitejs/plugin-react` 6.3.0, oxlint 1.93.0, stylelint 18.0.0 with config-standard 41.0.0),
-  lucide-react 1.72.0, `@tanstack/react-query` 5.107.1. No `shortcut:` comment names any of them (coding-agent-rules §8). Develop's CI on
-  `1be3e45` was green except e2e-smoke, still running at 09:09Z: check it first. `docs/03-architecture/tech-stack.md` §7 still lists older
-  versions (it already did before these merges; it is not updated per bump).
+- Records PR `docs/T-M2.13-records` (DEC-172, backlog, packet Status, summary, `review/ux.md`, progress.json, this handoff, the trimmed gate log):
+  text-only; one docs-reviewer (text only) → `DOCS-REVIEW T-M2.13: PASS` + `LC-APPROVED T-M2.13`, merge-gate, `gitlab-sync.sh`. If it is still open, do that first.
 
 ## Next steps (in this order)
-1. Merge this handoff PR (above); `gitlab-sync.sh` after each merge. Check develop's e2e-smoke on `1be3e45`.
-2. Ask the PO for the T-M2.13 start signal (DEC-163, DEC-164; no other PO decision pending).
-3. On the signal: `feature/T-M2.13-…` from `develop`; frontend-implementer with `docs/tasks/T-M2.13-auth-shell-followups.md`; gate; PR; CI;
-   G3 with a QA run (DEC-171); merge-gate; records.
-4. T-M2.28 (a)–(g) before the M2 G5; T-M2.26 after at least 10 shadow PRs and its two probes.
+1. Merge the records PR (above); `gitlab-sync.sh` after each merge.
+2. Write the T-M2.28 packet from the backlog row (a)–(i) (`task-packet` skill); G0 docs-reviewer; ask the PO for the start signal.
+   Its G3 names a QA run if it goes on a `feature/`/`fix/` branch (DEC-171).
+3. M2 G5 regression after T-M2.28; T-M2.26 after at least 10 shadow PRs and its two probes.
 
 ## Pending PO decisions / actions
-- The T-M2.13 start signal.
-- **Dependabot, held by the PO for develop's stability:** #165 (msw 2.15.0 → 3.0.5, a major) fails `web` typecheck at
-  `web/src/test/setup.ts:14` (`onUnhandledRequest` is not in msw 3's options), `container-build` and `e2e-smoke`: it needs a code change,
-  i.e. a packet, not a rebase. #135 (react, react-dom 19.3.1, react-aria-components 1.22.1, react-router 8.5.1) was re-run at 09:05Z
-  (`web` green, backend and e2e-smoke still running). Both remain the PO's to merge or close; the LC does not touch them unasked.
+- The T-M2.28 start signal (after its G0).
+- **Dependabot, held by the PO:** #165 (msw 3 major: `web` typecheck fails at `web/src/test/setup.ts:14`; needs a packet) and #135 (react group).
+  The LC does not touch them unasked.
 
 ## Gotchas
+- **A Playwright bump needs its browser build locally** (T-M2.13): after a Dependabot bump of `@playwright/test`, run `pnpm --dir e2e browsers`
+  (a download: PO approval) before the next local E2E or gate; check `ls ~/.cache/ms-playwright/`. In the app shell `pnpm` may resolve to
+  12.18 (Node 24.22.2) and refuse with a version check: run it from `e2e/` after `nvm use 24.21.0`, and never pipe it to `head` (the install stops).
+- **Gate logs:** an implementer may commit the full ~2,600-line log; trim it in the records PR, keeping every `gate:` line (T-M2.13).
 - **A `feature/` branch merges only on `QA-VERDICT <task>: PASS`** (merge-gate); a docs-reviewer's `DOCS-REVIEW` counts only on `docs/`/`chore/`.
   Name the QA run in the packet's G3 (T-M2.24 needed an extra QA round at merge time, DEC-171).
 - **The e2e repeat now follows `e2e/support/` imports** (T-M2.24): a change to `e2e/support/fixtures.ts` repeats all 17 specs ×3 and
@@ -122,5 +118,5 @@ Dependabot merges; this handoff on `docs/T-M2.24-dependabot-handoff`) · Next af
   `evidence/<task>/records/` (delete it) and a ~2,000-line log (trim it to ≤ 300 lines).
 
 ## Files to read first
-`CLAUDE.md` → `progress.json` → this file → DEC-171 → `docs/tasks/T-M2.13-auth-shell-followups.md` → its trace DECs (DEC-155, DEC-163,
-DEC-164) → `docs/09-harness/coding-agent-rules.md`.
+`CLAUDE.md` → `progress.json` → this file → DEC-172 → the backlog row T-M2.28 (`docs/tasks/backlog.md`) and its trace DECs (DEC-169, DEC-171,
+DEC-172) → `.claude/skills/task-packet` → `docs/09-harness/coding-agent-rules.md`.

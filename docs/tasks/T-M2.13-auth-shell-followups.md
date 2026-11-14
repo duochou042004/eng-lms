@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Milestone | M2 |
-| Status | ready (held: starts after T-M2.27, T-M2.25 and T-M2.24 are merged, DEC-163) |
+| Status | done (`e3ce22c`, DEC-172) |
 | Owner role | FE (frontend-implementer) |
 | Branch | `feature/T-M2.13-auth-shell-followups` (from `develop`) |
 | Depends on | T-M2.12 (`b5596d3`), T-M2.20 (`f3a77fa`, the mutation-cache boundaries), T-M2.21 (`d890aae`): merged; T-M2.27, T-M2.25, T-M2.24 (DEC-163): not yet |
