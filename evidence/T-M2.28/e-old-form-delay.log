@@ -1,0 +1,7 @@
+  FAIL - with .env: the app sees the E2E database URL and .data/e2e/fresh/
+  FAIL - keeps the host and parameters, replaces only the database name (missing: SPRING_DATASOURCE_URL=jdbc:postgresql://localhost:5432/englms_e2e?sslmode=disable)
+  FAIL - G3 F5: E2E_DB_NAME and E2E_KEEP_DB from .env do not reach the app
+  FAIL - G3 F3: the app sees the per-run database
+  FAIL - E2E_KEEP_DB=1: the caller's value, the .env URL and .data/e2e/
+  FAIL - without .env: the given URL and .data/e2e/
+  -> 103 passed, 6 failed

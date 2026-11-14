@@ -100,7 +100,10 @@ Sign-in needs the CSRF handshake (`GET /api/v1/auth/session` sets `XSRF-TOKEN`, 
 and creates `E2E_DB_NAME` (default `englms_e2e`) in the `englms-dev-db` container, Flyway builds the schema at startup, and the database is left in
 place for inspection until the next run. Its data folder is `.data/e2e/fresh/` (its own bootstrap password, `tutor-password` and `state/`, the last
 two removed at the start of each run). The script refuses a name that is not `[a-z][a-z0-9_]*`, that is the dev database, the `.env` database,
-`postgres` or a template, or a `.env` URL that is not the dev container on `127.0.0.1`/`localhost`. `E2E_KEEP_DB=1` runs on the `.env` database with
+`postgres` or a template, or a `.env` URL that is not the dev container on `127.0.0.1`/`localhost`. It also refuses (T-M2.28, "… would point the
+pool or Flyway at another database than englms_e2e; unset it") `SPRING_DATASOURCE_HIKARI_JDBC_URL` / `SPRING_DATASOURCE_HIKARI_JDBCURL`,
+`SPRING_FLYWAY_URL` and `SPRING_APPLICATION_JSON` from your shell or `.env`: on Boot 4.1 these send the pool or Flyway past the rewritten URL
+(`SPRING_FLYWAY_USER` does not, and is allowed). `E2E_KEEP_DB=1` runs on the `.env` database with
 `.data/e2e/` (the G5 run on the large data set). Both variables come from your shell only; a value in `.env` is ignored. Without `.env` (CI) the
 given `SPRING_DATASOURCE_URL` is used as is.
 

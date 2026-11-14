@@ -1,0 +1,17 @@
+  FAIL - guard: refuses SPRING_DATASOURCE_HIKARI_JDBC_URL from .env (expected exit 1, got 0)
+  FAIL - guard: SPRING_DATASOURCE_HIKARI_JDBC_URL from .env: says why (missing: e2e-run: E2E_DB_NAME=)
+  FAIL - guard: SPRING_DATASOURCE_HIKARI_JDBC_URL from .env: before any engine call
+  FAIL - guard: names SPRING_DATASOURCE_HIKARI_JDBC_URL (missing: SPRING_DATASOURCE_HIKARI_JDBC_URL would point the pool or Flyway at another database)
+  FAIL - guard: refuses SPRING_FLYWAY_URL from .env (expected exit 1, got 0)
+  FAIL - guard: SPRING_FLYWAY_URL from .env: says why (missing: e2e-run: E2E_DB_NAME=)
+  FAIL - guard: SPRING_FLYWAY_URL from .env: before any engine call
+  FAIL - guard: names SPRING_FLYWAY_URL (missing: SPRING_FLYWAY_URL would point)
+  FAIL - guard: refuses SPRING_DATASOURCE_HIKARI_JDBCURL from the caller (expected exit 1, got 0)
+  FAIL - guard: SPRING_DATASOURCE_HIKARI_JDBCURL from the caller: says why (missing: e2e-run: E2E_DB_NAME=)
+  FAIL - guard: SPRING_DATASOURCE_HIKARI_JDBCURL from the caller: before any engine call
+  FAIL - guard: names SPRING_DATASOURCE_HIKARI_JDBCURL (missing: SPRING_DATASOURCE_HIKARI_JDBCURL would point)
+  FAIL - guard: refuses SPRING_APPLICATION_JSON from the caller (expected exit 1, got 0)
+  FAIL - guard: SPRING_APPLICATION_JSON from the caller: says why (missing: e2e-run: E2E_DB_NAME=)
+  FAIL - guard: SPRING_APPLICATION_JSON from the caller: before any engine call
+  FAIL - guard: names SPRING_APPLICATION_JSON (missing: SPRING_APPLICATION_JSON would point)
+  -> 111 passed, 16 failed
