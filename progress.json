@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-11-14T17:11:11Z",
-  "updatedBy": "lead-coordinator (T-M2.28 in review)",
+  "updatedAt": "2026-11-14T17:40:39Z",
+  "updatedBy": "lead-coordinator (T-M2.28 merged and recorded)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -30,36 +30,8 @@
     "exitCriteria": "FR-AUTH-01..10 and FR-STU-01..07 accepted; authorization-matrix and student-isolation harnesses fail on any unregistered endpoint; add-student flow E2E at 360/768/1280 within its step budget; security review of authentication passed (docs/01-product/roadmap.md)."
   },
   "currentTask": {
-    "id": "T-M2.28",
-    "title": "Regression and tooling follow-ups before the M2 G5 (DEC-169, DEC-171, DEC-173)",
-    "status": "in_review",
-    "ownerRole": "FE",
-    "branch": "chore/T-M2.28-regression-followups",
-    "packet": "docs/tasks/T-M2.28-regression-followups.md",
-    "pr": "187",
-    "lastCommit": "a7a1e4d",
-    "startedAt": "2026-11-14T13:49:56Z",
-    "nextSteps": [
-      "Gate PASS on a7a1e4d (13 steps, 720 s); CI 7/7 on ddd51f4; regression 43617206392 green on ddd51f4 (43611629190's Firefox crash ruled an engine crash, DEC-174 (5))",
-      "PR, CI, adversarial G3 docs-reviewer (DOCS-REVIEW, re-runs specs and suites), merge-gate, records",
-      "T-M2.29 (now with (j), DEC-174), then the M2 G5"
-    ],
-    "trace": [
-      "DEC-169",
-      "DEC-170",
-      "DEC-171",
-      "DEC-172",
-      "DEC-173",
-      "DEC-174"
-    ],
-    "entryGate": [
-      "T-M2.25, T-M2.24, T-M2.13 merged — met (e3ce22c)",
-      "PO start signal — given 2026-11-14T13:49:56Z (chat: \"Start T-M2.28\")"
-    ]
-  },
-  "nextTask": {
     "id": "T-M2.29",
-    "title": "UI follow-ups from T-M2.13 (DEC-172, DEC-173)",
+    "title": "UI follow-ups from T-M2.13 and the logout race (DEC-172, DEC-173, DEC-174)",
     "status": "draft",
     "ownerRole": "FE",
     "branch": null,
@@ -68,12 +40,31 @@
     "lastCommit": null,
     "startedAt": null,
     "nextSteps": [
-      "LC writes the packet from the backlog row (h), (i), (j)"
+      "LC writes the packet from the backlog row (h), (i), (j); G0; PO start signal",
+      "Then the M2 G5 regression (a Firefox 'Page crashed' recurrence: capture stderr first, DEC-174 (5))"
     ],
     "trace": [
       "DEC-172",
       "DEC-173",
       "DEC-174"
+    ]
+  },
+  "nextTask": {
+    "id": "T-M2.30",
+    "title": "e2e-run.sh fresh-mode refusal gaps (T-M2.28 G3 S4-1, S4-2)",
+    "status": "draft",
+    "ownerRole": "FE",
+    "branch": null,
+    "packet": null,
+    "pr": null,
+    "lastCommit": null,
+    "startedAt": null,
+    "nextSteps": [
+      "M2 polish, tier L (backlog row); T-M2.26 after at least 10 shadow PRs"
+    ],
+    "trace": [
+      "DEC-174",
+      "DEC-175"
     ]
   },
   "completed": [
@@ -412,6 +403,14 @@
       "mergeCommit": "e3ce22c",
       "evidence": "evidence/T-M2.13/summary.md",
       "note": "PR #182 via merge-gate (head 7d843d4, CI 7/7 (5 full)); packet PR #153 (b1a542f); PO start 2026-11-14T09:40:30Z; gate PASS on 0a01995 (763 s); G3 tier M: one combined QA+UX qa-evaluator round 1 PASS WITH MINOR / APPROVED (155,246 tokens); UX-1 S3 + UX-2 S4 -> T-M2.28 (h), QA-1 -> OQ T-M2.13-1 (i); QA report PR #183 (DEC-172)"
+    },
+    {
+      "id": "T-M2.28",
+      "title": "Regression and tooling follow-ups before the M2 G5 (DEC-169, DEC-171, DEC-173)",
+      "completedAt": "2026-11-14T17:40:39Z",
+      "mergeCommit": "a1bcf12",
+      "evidence": "evidence/T-M2.28/summary.md",
+      "note": "PR #187 via merge-gate (head 91f94b5, CI 7/7 (5 full)); packet PR #185 (3894451); PO start 2026-11-14T13:49:56Z; gate PASS on a7a1e4d (720 s); regression 43617206392 green on ddd51f4; G3 adversarial docs-reviewer PASS WITH MINOR -> confirmation PASS (111,691 tokens); (f) product race -> T-M2.29 (j), G3 S4-1/S4-2 -> T-M2.30 (DEC-174, DEC-175)"
     }
   ],
   "tests": {
@@ -442,8 +441,8 @@
   },
   "gates": {
     "G0": {
-      "status": "pass",
-      "note": "T-M2.28 packet: adversarial docs-reviewer, round 1 CHANGES REQUESTED, delta + confirmation PASS (97,243 tokens)"
+      "status": "n/a",
+      "note": "T-M2.29 packet not written yet"
     },
     "G1": {
       "status": "pass",
@@ -451,19 +450,19 @@
     },
     "G2": {
       "status": "pass",
-      "note": "T-M2.28: CI 7/7 on ddd51f4; regression 43617206392 green"
+      "note": "T-M2.28: CI 7/7 on 91f94b5 (5 full); regression 43617206392 green"
     },
     "G3": {
-      "status": "pending",
-      "note": "T-M2.28: adversarial docs-reviewer"
+      "status": "pass",
+      "note": "T-M2.28: DOCS-REVIEW PASS (adversarial; round 1 PASS WITH MINOR, confirmation PASS; 111,691 tokens)"
     },
     "G4": {
-      "status": "pending",
-      "note": "T-M2.28: merge-gate"
+      "status": "pass",
+      "note": "T-M2.28 PR #187 merged via merge-gate (a1bcf12)"
     },
     "G5": {
       "status": "n/a",
-      "note": "M2 in progress; T-M2.28 first"
+      "note": "M2 in progress; T-M2.29 first"
     }
   },
   "blockers": [],
@@ -516,7 +515,8 @@
       "DEC-171",
       "DEC-172",
       "DEC-173",
-      "DEC-174"
+      "DEC-174",
+      "DEC-175"
     ],
     "pendingPO": [
       "OQ-03",
@@ -861,6 +861,13 @@
       "status": "approved",
       "at": "2026-11-14T13:49:56Z",
       "ref": "DEC-173"
+    },
+    {
+      "what": "LC-APPROVED T-M2.28 (PR #187)",
+      "by": "LC",
+      "status": "approved",
+      "at": "2026-11-14T17:39:06Z",
+      "ref": "DEC-175"
     }
   ],
   "environment": {
