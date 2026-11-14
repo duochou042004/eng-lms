@@ -12,7 +12,13 @@ import {
   tutorPassword,
   type Credentials,
 } from '../support/auth'
-import { expectNoAxeViolations, expectNoHorizontalScroll } from '../support/checks'
+import {
+  expectFocusNotLost,
+  expectNoAxeViolations,
+  expectNoHorizontalScroll,
+  expectNoMidWordBreak,
+  expectSettledAccessible,
+} from '../support/checks'
 import { evidenceRecord, evidenceShot } from '../support/evidence'
 import { expect, test } from '../support/fixtures'
 import { openAccountSection } from '../support/shell'
@@ -28,8 +34,10 @@ const COPY = {
     loading: 'Đang tải trang',
     offlineTitle: 'Bạn đang ngoại tuyến',
     chunkTitle: 'Không tải được trang này',
-    offline: 'Bạn đang ngoại tuyến. Trang này cần kết nối mạng để tải.',
-    chunk: 'Không tải được trang này. Hãy kiểm tra kết nối mạng rồi thử lại.',
+    // T-M2.13 scope 4 (UX-6): the descriptions no longer repeat the h1; the offline Retry announces the full text.
+    offline: 'Trang này cần kết nối mạng để tải.',
+    chunk: 'Hãy kiểm tra kết nối mạng rồi thử lại.',
+    offlineAnnouncement: 'Bạn đang ngoại tuyến. Trang này cần kết nối mạng để tải.',
     retry: 'Thử lại',
     startPage: 'Về trang đầu',
     forbidden: 'Bạn không có quyền mở trang này',
@@ -40,14 +48,17 @@ const COPY = {
     change: 'Đổi mật khẩu',
     logout: 'Đăng xuất',
     metaError: 'Không tải được tên không gian dạy học',
+    metaErrorDetails: 'Xem lỗi',
+    signedOutElsewhere: 'Bạn đã đăng xuất ở một thẻ khác.',
     language: 'Tiếng Việt',
   },
   en: {
     loading: 'Loading the page',
     offlineTitle: "You're offline",
     chunkTitle: "This page couldn't load",
-    offline: "You're offline. This page needs a connection to load.",
-    chunk: "This page couldn't load. Check your connection and try again.",
+    offline: 'This page needs a connection to load.',
+    chunk: 'Check your connection and try again.',
+    offlineAnnouncement: "You're offline. This page needs a connection to load.",
     retry: 'Try again',
     startPage: 'Go to the start page',
     forbidden: "You don't have access to this page",
@@ -58,6 +69,8 @@ const COPY = {
     change: 'Change password',
     logout: 'Log out',
     metaError: "Couldn't load the workspace name",
+    metaErrorDetails: 'Show the error',
+    signedOutElsewhere: 'You were signed out in another tab.',
     language: 'English',
   },
 } as const
@@ -224,7 +237,7 @@ test.describe('AC2, AC3: a page whose code cannot load (DEC-087 F-3)', () => {
       const requests: string[] = []
       page.on('request', (request) => requests.push(request.url()))
       await page.getByRole('button', { name: c.retry }).click()
-      await expect(page.getByRole('main').getByRole('status')).toHaveText(c.offline)
+      await expect(page.getByRole('main').getByRole('status')).toHaveText(c.offlineAnnouncement)
       await page.waitForTimeout(300)
       expect(requests, 'Retry while offline sends no request').toEqual([])
       await expect(h1(page, c.offlineTitle)).toBeVisible()
@@ -323,6 +336,20 @@ async function recordHeadings(page: Page) {
   return () => page.evaluate(() => (window as unknown as { __h1: string[] }).__h1)
 }
 
+/** T-M2.13 AC2, AC6: the cross-tab sign-out notice on /login, a status above the form; never focused. */
+async function expectSignedOutNotice(page: Page, testInfo: TestInfo, lang: 'vi' | 'en') {
+  const notice = page.getByRole('status').filter({ hasText: COPY[lang].signedOutElsewhere })
+  await expect(notice).toBeVisible()
+  await expect(notice).toHaveText(COPY[lang].signedOutElsewhere)
+  const noticeBox = (await notice.boundingBox())!
+  const formBox = (await page.locator('form').boundingBox())!
+  expect(noticeBox.y + noticeBox.height, 'the notice is above the form').toBeLessThanOrEqual(formBox.y)
+  await expect(h1(page, COPY[lang].login)).toBeFocused()
+  await expectSettledAccessible(page)
+  if (lang === 'vi' && testInfo.project.name === 'phone-small') await expectNoMidWordBreak(notice)
+  await shot(page, testInfo, `cross-tab-signed-out-notice-${lang}`)
+}
+
 test.describe('AC5, AC6: cross-tab sign-in and sign-out (S4-2)', () => {
   test('log out in tab B: tab A on /tutor/today goes to /login?next=%2Ftutor%2Ftoday without user action (AC5)', async ({
     browser,
@@ -338,10 +365,88 @@ test.describe('AC5, AC6: cross-tab sign-in and sign-out (S4-2)', () => {
     await expect(a).toHaveURL(/\/login\?next=%2Ftutor%2Ftoday$/)
     await expect(h1(a, COPY.vi.login)).toBeVisible()
     await expect(a.getByRole('banner')).toHaveCount(0) // no shell (and no tutor data) left in tab A
+    // T-M2.13 AC2 (UX-4): the page says why it shows, as a status above the form; the route focus is on the h1.
+    await expectSignedOutNotice(a, testInfo, 'vi')
     await a.goBack()
     // Back after a cross-tab sign-out: the guard asks to sign in again, no cached tutor page.
     await expect(h1(a, COPY.vi.login)).toBeVisible()
     await shot(a, testInfo, 'cross-tab-signed-out-tab-a-vi')
+    await context.close()
+  })
+
+  test('[en] log out in tab B: tab A on /tutor/today shows the notice in English (T-M2.13 AC2)', async ({
+    browser,
+  }, testInfo) => {
+    const { context, a, b } = await twoTabs(browser)
+    // Tab A's language (stored for the browser; tab B keeps the vi it loaded with).
+    await chooseLanguage(a, 'en')
+    await signInWithForm(b, tutor())
+    await expect(h1(b, COPY.vi.tutorHome)).toBeVisible()
+    await a.goto('/tutor/today')
+    await expect(h1(a, COPY.en.tutorHome)).toBeVisible()
+    const dialog = await openAccountSection(b, 'tutor')
+    await dialog.getByRole('button', { name: COPY.vi.logout }).click()
+    await expect(a).toHaveURL(/\/login\?next=%2Ftutor%2Ftoday$/)
+    await expect(h1(a, COPY.en.login)).toBeVisible()
+    await expectSignedOutNotice(a, testInfo, 'en')
+    await context.close()
+  })
+
+  test('tab A on /tutor/students (its list query answers 401 during the follow): one navigation, with the notice; a sign-in submit hides it (T-M2.13 AC2, G0 D-1)', async ({
+    browser,
+    consoleGuard,
+  }, testInfo) => {
+    test.skip(testInfo.project.name !== 'laptop', 'checked at laptop')
+    const { context, a, b } = await twoTabs(browser)
+    await signInWithForm(b, tutor())
+    await expect(h1(b, COPY.vi.tutorHome)).toBeVisible()
+    await a.goto('/tutor/students')
+    await expect(h1(a, 'Học viên')).toBeVisible()
+    const unauthenticated: string[] = []
+    a.on('response', (response) => {
+      if (response.status() === 401 && !response.url().includes('/api/v1/auth/session'))
+        unauthenticated.push(response.url())
+    })
+    // Every history entry the SPA pushes from now on.
+    await a.evaluate(() => {
+      const pushed: string[] = []
+      Object.assign(window, { __pushed: pushed })
+      const push = history.pushState.bind(history)
+      history.pushState = (data, unused, url) => {
+        pushed.push(String(url))
+        push(data, unused, url)
+      }
+    })
+    const dialog = await openAccountSection(b, 'tutor')
+    await dialog.getByRole('button', { name: COPY.vi.logout }).click()
+    await expect(a).toHaveURL(/\/login\?next=%2Ftutor%2Fstudents$/)
+    await expect(h1(a, COPY.vi.login)).toBeVisible()
+    const notice = a.getByRole('status').filter({ hasText: COPY.vi.signedOutElsewhere })
+    await expect(notice).toBeVisible()
+    await a.waitForTimeout(500)
+    const pushed = await a.evaluate(() => (window as unknown as { __pushed: string[] }).__pushed)
+    expect(pushed, 'tab A navigates once').toEqual(['/login?next=%2Ftutor%2Fstudents'])
+    await evidenceRecord(testInfo, 'cross-tab-students-navigations', {
+      pushed,
+      unauthenticated,
+    })
+    await expectSettledAccessible(a)
+    await shot(a, testInfo, 'cross-tab-signed-out-students-notice-vi')
+
+    // Starting a sign-in hides it (the answer is stubbed, so the E2E tutor's throttle is not touched).
+    await a.route('**/api/v1/auth/login', (route) =>
+      route.fulfill({
+        status: 401,
+        contentType: 'application/problem+json',
+        body: '{"status":401,"code":"BAD_CREDENTIALS"}',
+      }),
+    )
+    await a.getByLabel('Tên đăng nhập (bắt buộc)').fill(TUTOR_USERNAME)
+    await a.getByLabel('Mật khẩu (bắt buộc)', { exact: true }).fill('not-the-password')
+    await a.getByRole('button', { name: COPY.vi.login, exact: true }).click()
+    await expect(a.getByRole('alert')).toBeVisible()
+    await expect(a.getByText(COPY.vi.signedOutElsewhere)).toHaveCount(0)
+    accept(consoleGuard, (e) => e.includes('status of 401'))
     await context.close()
   })
 
@@ -435,9 +540,13 @@ test.describe('AC8: the narrow top bar meta error keeps Retry beside its icon (U
         await expect(h1(page, target.title)).toBeVisible()
         const alert = page.getByRole('banner').getByRole('alert')
         await expect(alert).toContainText(COPY.vi.metaError)
-        const icon = alert.locator('span[title]').filter({ has: page.locator('svg') })
+        // T-M2.13 (e): the icon is the toggletip trigger, found by its name; its svg stays decorative.
+        const icon = alert.getByRole('button', {
+          name: COPY.vi.metaErrorDetails,
+        })
         await expect(icon).toBeVisible()
         await expect(icon).toHaveAttribute('title', COPY.vi.metaError)
+        await expect(icon.locator('svg')).toHaveAttribute('aria-hidden', 'true')
         const retry = alert.getByRole('button', { name: COPY.vi.retry })
         await expect(retry).toHaveAccessibleDescription(COPY.vi.metaError)
         const iconBox = (await icon.boundingBox())!
@@ -455,6 +564,122 @@ test.describe('AC8: the narrow top bar meta error keeps Retry beside its icon (U
         await expectNoAxeViolations(page)
         await expectNoHorizontalScroll(page)
         await shot(page, testInfo, `ux9-${target.role}-meta-error-vi`)
+        accept(consoleGuard, (e) => e.includes('status of 500') && e.includes('/api/v1/meta'))
+      })
+    })
+  }
+})
+
+test.describe('T-M2.13 AC1: the compact meta error opens its message on a tap (UX-3)', () => {
+  const CASES = [
+    {
+      role: 'tutor',
+      state: TUTOR_STATE,
+      home: '/tutor/today',
+      title: COPY.vi.tutorHome,
+      project: 'phone-small',
+      wide: 768,
+    },
+    {
+      role: 'student',
+      state: STUDENT_STATE,
+      home: '/student/home',
+      title: COPY.vi.studentHome,
+      project: 'phone-small',
+      wide: null,
+    },
+    {
+      role: 'student',
+      state: STUDENT_STATE,
+      home: '/student/home',
+      title: COPY.vi.studentHome,
+      project: 'tablet',
+      wide: 1280,
+    },
+  ] as const
+  for (const target of CASES) {
+    test.describe(() => {
+      test.use({ storageState: target.state })
+      test(`${target.role} at ${target.project}: tap opens the message, Esc and an outside tap return focus to the trigger${target.wide ? `; widening to ${target.wide} px closes it with focus on Retry` : ''}`, async ({
+        page,
+        consoleGuard,
+      }, testInfo) => {
+        test.skip(testInfo.project.name !== target.project, `checked at ${target.project}`)
+        await page.route('**/api/v1/meta', (route) =>
+          route.fulfill({
+            status: 500,
+            contentType: 'application/problem+json',
+            body: '{"status":500,"code":"INTERNAL_ERROR"}',
+          }),
+        )
+        await page.goto(target.home)
+        await expect(h1(page, target.title)).toBeVisible()
+        const alert = page.getByRole('banner').getByRole('alert')
+        const trigger = alert.getByRole('button', {
+          name: COPY.vi.metaErrorDetails,
+        })
+        const retry = alert.getByRole('button', { name: COPY.vi.retry })
+        await expect(trigger).toBeVisible()
+        const box = (await trigger.boundingBox())!
+        expect(box.width, 'trigger width').toBeGreaterThanOrEqual(44)
+        expect(box.height, 'trigger height').toBeGreaterThanOrEqual(44)
+        await expect(retry).toHaveAccessibleDescription(COPY.vi.metaError)
+
+        // Tap → the popover with the message; focus inside it.
+        await trigger.tap()
+        const tip = page.getByRole('dialog', { name: COPY.vi.metaError })
+        await expect(tip).toBeVisible()
+        await expect(tip).toHaveText(COPY.vi.metaError)
+        await expect(trigger).toHaveAttribute('aria-expanded', 'true')
+        await expect.poll(() => tip.evaluate((el) => el.contains(document.activeElement))).toBe(true)
+        await expectSettledAccessible(page)
+        await expectNoMidWordBreak(tip)
+        const tipBox = (await tip.boundingBox())!
+        const viewport = page.viewportSize()!
+        expect(tipBox.x, 'popover start gutter').toBeGreaterThanOrEqual(16)
+        expect(tipBox.x + tipBox.width, 'popover end gutter').toBeLessThanOrEqual(viewport.width - 16)
+        await shot(page, testInfo, `toggletip-${target.role}-open-vi`)
+
+        // Esc closes it, focus back on the trigger.
+        await page.keyboard.press('Escape')
+        await expect(tip).toHaveCount(0)
+        await expect(trigger).toBeFocused()
+
+        // An outside tap closes it, focus back on the trigger.
+        await trigger.tap()
+        await expect(tip).toBeVisible()
+        // At the end of the h1's row: outside the popover (which starts at the gutter) and outside any control.
+        const heading = (await h1(page, target.title).boundingBox())!
+        await page.touchscreen.tap(viewport.width - 20, heading.y + heading.height / 2)
+        await expect(tip).toHaveCount(0)
+        await expect(trigger).toBeFocused()
+
+        // In English (the account section's switcher would close it: the language comes from storage on a reload).
+        await page.evaluate(() => localStorage.setItem('englms.locale', 'en'))
+        await page.reload()
+        await expect(h1(page, target.role === 'tutor' ? COPY.en.tutorHome : COPY.en.studentHome)).toBeVisible()
+        // By attribute, not role: once hidden (below) it leaves the accessibility tree.
+        const triggerEn = alert.locator(`button[aria-label="${COPY.en.metaErrorDetails}"]`)
+        await triggerEn.tap()
+        const tipEn = page.getByRole('dialog', { name: COPY.en.metaError })
+        await expect(tipEn).toHaveText(COPY.en.metaError)
+        await expectSettledAccessible(page)
+        await shot(page, testInfo, `toggletip-${target.role}-open-en`)
+
+        if (target.wide) {
+          // A frame change (rotation): the container widens past 22rem, the trigger renders no box → closed, focus on Retry.
+          await page.setViewportSize({ width: target.wide, height: viewport.height })
+          await expect(tipEn).toHaveCount(0)
+          const retryEn = alert.getByRole('button', { name: COPY.en.retry })
+          await expect(retryEn).toBeFocused()
+          await expectFocusNotLost(page)
+          // ≥ 22rem: the message shows and the trigger is not a Tab stop.
+          await expect(alert.getByText(COPY.en.metaError, { exact: true })).toBeVisible()
+          await expect(triggerEn).toBeHidden()
+          await page.keyboard.press('Shift+Tab')
+          await expect(triggerEn).not.toBeFocused()
+          await expectSettledAccessible(page)
+        }
         accept(consoleGuard, (e) => e.includes('status of 500') && e.includes('/api/v1/meta'))
       })
     })

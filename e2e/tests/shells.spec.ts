@@ -10,7 +10,13 @@ import {
   tutorPassword,
   type Credentials,
 } from '../support/auth'
-import { expectNoAxeViolations, expectNoHorizontalScroll, expectSettledAccessible } from '../support/checks'
+import {
+  expectFocusNotLost,
+  expectNoAxeViolations,
+  expectNoHorizontalScroll,
+  expectNoMidWordBreak,
+  expectSettledAccessible,
+} from '../support/checks'
 import { evidenceRecord, evidenceShot } from '../support/evidence'
 import { expect, test } from '../support/fixtures'
 import { accountOpener, accountPlace, openAccountSection, workspaceName, type ShellRole } from '../support/shell'
@@ -61,6 +67,11 @@ function acceptStatus(consoleGuard: string[], status: number, path: string) {
   }
 }
 
+/** Removes the console entries a test provokes on purpose (e.g. a request sent offline). */
+function accept(consoleGuard: string[], matches: (entry: string) => boolean) {
+  for (let i = consoleGuard.length - 1; i >= 0; i--) if (matches(consoleGuard[i]!)) consoleGuard.splice(i, 1)
+}
+
 /** Presses Tab until `target` has focus (at most `max` presses); returns the accessible names passed on the way. */
 async function tabTo(page: Page, target: Locator, max = 12) {
   const passed: string[] = []
@@ -104,7 +115,10 @@ async function expectTwoRows(row: Locator, what: string) {
     return {
       name: { top: name!.top, bottom: name!.bottom, width: name!.width },
       switcher: { top: switcher!.top, right: switcher!.right },
-      row: { width: el.getBoundingClientRect().width, right: el.getBoundingClientRect().right },
+      row: {
+        width: el.getBoundingClientRect().width,
+        right: el.getBoundingClientRect().right,
+      },
     }
   })
   expect(boxes.switcher.top, `${what}: the switcher row is below the name row`).toBeGreaterThanOrEqual(
@@ -597,7 +611,10 @@ test.describe('AC11 (a), (j): the public frame below 768 px', () => {
           })
         if (mode === 'hold') await released
         const response = await route.fetch()
-        await route.fulfill({ response, json: { ...(await response.json()), displayName: LONG_NAME } })
+        await route.fulfill({
+          response,
+          json: { ...(await response.json()), displayName: LONG_NAME },
+        })
       })
       const toolbar = page.locator('main > div > div').first()
       const heading = h1(page, COPY.login)
@@ -608,7 +625,10 @@ test.describe('AC11 (a), (j): the public frame below 768 px', () => {
       await expect(heading).toBeVisible()
       await expect(page.getByRole('status', { name: COPY.metaLoading })).toBeVisible()
       const loadingTop = (await heading.boundingBox())!.y
-      record.loading = { h1Top: loadingTop, rows: await expectTwoRows(toolbar, 'loading') }
+      record.loading = {
+        h1Top: loadingTop,
+        rows: await expectTwoRows(toolbar, 'loading'),
+      }
       await shot(page, testInfo, `login-${width}-name-loading-vi`)
 
       // Loaded: the 60-character name, at most two lines, at least 30 characters visible.
@@ -619,7 +639,11 @@ test.describe('AC11 (a), (j): the public frame below 768 px', () => {
       await expect(name).toHaveAttribute('title', LONG_NAME)
       const shown = await visibleCharacters(name)
       const loadedTop = (await heading.boundingBox())!.y
-      record.loaded = { h1Top: loadedTop, visibleCharacters: shown, rows: await expectTwoRows(toolbar, 'loaded') }
+      record.loaded = {
+        h1Top: loadedTop,
+        visibleCharacters: shown,
+        rows: await expectTwoRows(toolbar, 'loaded'),
+      }
       expect(shown, 'characters of the 60-character name on screen').toBeGreaterThanOrEqual(30)
       await expectAccessible(page)
       await shot(page, testInfo, `login-${width}-long-name-vi`)
@@ -633,7 +657,10 @@ test.describe('AC11 (a), (j): the public frame below 768 px', () => {
       acceptStatus(consoleGuard, 500, '/api/v1/meta')
       await expect(alert.getByRole('button', { name: 'Thử lại' })).toBeVisible()
       const errorTop = (await heading.boundingBox())!.y
-      record.error = { h1Top: errorTop, rows: await expectTwoRows(toolbar, 'error') }
+      record.error = {
+        h1Top: errorTop,
+        rows: await expectTwoRows(toolbar, 'error'),
+      }
       record.errorCls = await layoutShiftTotal(page)
       await expectAccessible(page)
       await shot(page, testInfo, `login-${width}-name-error-vi`)
@@ -667,7 +694,12 @@ test.describe('AC11 (a), (j): the public frame below 768 px', () => {
       await page.evaluate(() => document.fonts.ready)
       const top = (await heading.boundingBox())!.y
       const cls = await layoutShiftTotal(page)
-      await evidenceRecord(testInfo, `ac11a-public-skeleton-${width}`, { rows, titleLine: line, h1Top: top, cls })
+      await evidenceRecord(testInfo, `ac11a-public-skeleton-${width}`, {
+        rows,
+        titleLine: line,
+        h1Top: top,
+        cls,
+      })
       expect(Math.abs(top - line), 'heading vs its skeleton line').toBeLessThanOrEqual(8)
       expect(cls.total).toBeLessThanOrEqual(0.05)
     })
@@ -773,7 +805,10 @@ test('/dev/ui (dev build): the Sheet, Popover, NavList, BottomTabs and ButtonLin
 }, testInfo) => {
   test.skip(!DEV_SERVER, 'needs the dev server: E2E_BASE_URL=http://localhost:5173 (no /dev/ui in the packaged build)')
   await page.goto('/dev/ui')
-  const navigation = page.getByRole('heading', { level: 2, name: 'Điều hướng' })
+  const navigation = page.getByRole('heading', {
+    level: 2,
+    name: 'Điều hướng',
+  })
   await navigation.scrollIntoViewIfNeeded()
   await expect(page.getByRole('navigation', { name: 'Điều hướng mẫu', exact: true })).toBeVisible()
   await expectAccessible(page)
@@ -790,4 +825,118 @@ test('/dev/ui (dev build): the Sheet, Popover, NavList, BottomTabs and ButtonLin
     await page.keyboard.press('Escape')
     await expect(page.getByRole('dialog')).toHaveCount(0)
   }
+})
+
+// T-M2.13 scope 3 (AC3, AC4; DEC-155): a failed Log out keeps the page and the session and says so in the open account
+// section; Log out stays the retry. Fresh tutor sign-ins only (T-M2.4 scope 10). The student's More sheet renders the
+// same AccountSection (component test, G0 D-3).
+test.describe('T-M2.13: Log out gives feedback when it fails', () => {
+  const FAILED = {
+    title: 'Chưa đăng xuất được',
+    failed: 'Bạn vẫn đang đăng nhập. Hãy thử lại.',
+    offline: 'Bạn đang ngoại tuyến và vẫn đang đăng nhập. Hãy đăng xuất lại khi có mạng.',
+  }
+
+  /** A second tab of the same browser that records the auth channel's messages. */
+  async function listeningTab(context: Awaited<ReturnType<typeof freshSession>>['context']) {
+    const other = await context.newPage()
+    await other.goto(HOME.tutor)
+    await expect(h1(other, COPY.tutorHome)).toBeVisible()
+    await other.evaluate(() => {
+      const received: unknown[] = []
+      Object.assign(window, { __auth: received })
+      new BroadcastChannel('englms-auth').addEventListener('message', (event) => received.push(event.data))
+    })
+    return {
+      page: other,
+      received: () => other.evaluate(() => (window as unknown as { __auth: unknown[] }).__auth),
+    }
+  }
+
+  async function expectFailure(page: Page, testInfo: TestInfo, text: string, name: string) {
+    const dialog = page.getByRole('dialog')
+    const logout = dialog.getByRole('button', { name: COPY.logout })
+    // Not busy for long: no endless spinner (O-1).
+    await expect(logout).not.toHaveAttribute('data-pending', { timeout: 1000 })
+    const alert = dialog.getByRole('alert')
+    await expect(alert).toContainText(FAILED.title)
+    await expect(alert).toContainText(text)
+    await expect(logout).toBeFocused()
+    await expectFocusNotLost(page)
+    expect(new URL(page.url()).pathname).toBe(HOME.tutor)
+    await expectAccessible(page)
+    if (testInfo.project.name === 'phone-small') {
+      // The title and the text are separate blocks (measured one by one: joined, "được" + "Bạn" reads as one word).
+      await expectNoMidWordBreak(alert.getByText(FAILED.title, { exact: true }))
+      await expectNoMidWordBreak(alert.getByText(text, { exact: true }))
+    }
+    await shot(page, testInfo, name)
+  }
+
+  test('offline: Log out stops being busy at once and says the user is still signed in; back online it signs out (AC3)', async ({
+    browser,
+    consoleGuard,
+  }, testInfo) => {
+    test.skip(
+      !['phone-small', 'laptop'].includes(testInfo.project.name),
+      'checked at phone-small (drawer) and laptop (popover)',
+    )
+    const { context, page } = await freshSession(browser, {
+      username: TUTOR_USERNAME,
+      password: tutorPassword(),
+    })
+    const other = await listeningTab(context)
+    await page.goto(HOME.tutor)
+    await expect(h1(page, COPY.tutorHome)).toBeVisible()
+    const dialog = await openAccountSection(page, 'tutor')
+    await context.setOffline(true)
+    await dialog.getByRole('button', { name: COPY.logout }).click()
+    await expectFailure(page, testInfo, FAILED.offline, `logout-failed-offline-${accountPlace(page, 'tutor')}-vi`)
+    expect(await other.received(), 'nothing posted on the channel').toEqual([])
+    expect(new URL(other.page.url()).pathname).toBe(HOME.tutor)
+
+    await context.setOffline(false)
+    await dialog.getByRole('button', { name: COPY.logout }).click()
+    await expect(dialog.getByRole('alert')).toHaveCount(0)
+    await expect(page).toHaveURL(/\/login$/)
+    await expect(h1(page, COPY.login)).toBeVisible()
+    await expect.poll(other.received).toEqual([{ type: 'signed-out' }])
+    accept(consoleGuard, (e) => /ERR_INTERNET_DISCONNECTED/.test(e))
+    await context.close()
+  })
+
+  test('a 500: the alert, the page and the session stay, nothing is posted; Log out again (204) signs out (AC4)', async ({
+    browser,
+    consoleGuard,
+  }, testInfo) => {
+    test.skip(testInfo.project.name !== 'laptop', 'checked at laptop')
+    const { context, page } = await freshSession(browser, {
+      username: TUTOR_USERNAME,
+      password: tutorPassword(),
+    })
+    const other = await listeningTab(context)
+    await page.goto(HOME.tutor)
+    await expect(h1(page, COPY.tutorHome)).toBeVisible()
+    await page.route('**/api/v1/auth/logout', (route) =>
+      route.fulfill({
+        status: 500,
+        contentType: 'application/problem+json',
+        body: '{"status":500,"code":"INTERNAL_ERROR"}',
+      }),
+    )
+    const dialog = await openAccountSection(page, 'tutor')
+    await dialog.getByRole('button', { name: COPY.logout }).click()
+    await expectFailure(page, testInfo, FAILED.failed, `logout-failed-500-${accountPlace(page, 'tutor')}-vi`)
+    expect(await other.received(), 'nothing posted on the channel').toEqual([])
+    // Still signed in on the server: a protected read answers.
+    expect((await page.request.get('/api/v1/auth/session')).status()).toBe(200)
+
+    await page.unroute('**/api/v1/auth/logout')
+    await dialog.getByRole('button', { name: COPY.logout }).click()
+    await expect(page).toHaveURL(/\/login$/)
+    await expect(h1(page, COPY.login)).toBeVisible()
+    await expect.poll(other.received).toEqual([{ type: 'signed-out' }])
+    acceptStatus(consoleGuard, 500, '/api/v1/auth/logout')
+    await context.close()
+  })
 })
