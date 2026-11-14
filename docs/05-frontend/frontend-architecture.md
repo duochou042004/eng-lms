@@ -67,14 +67,20 @@ Cross-feature needs go through `lib` or via route composition. `react-aria-compo
   DEC-118): queries of mounted pages are reset (`resetQueries`: their observers are notified and refetch for the new session), the unused
   ones removed, so a same-role user switch never leaves the previous user's data on a mounted page.
   Dropping also clears the mutation cache (T-M2.20, T-M2.15 SEC S-1), as do sign-in success (`useLogin`, its own mutation and password
-  included) and sign-out (`useLogout`, also when the call fails): no write of an earlier session (its variables and answer) stays in the
-  client. A write still pending keeps its own observers; its late answer is handled by the DEC-127 session check.
+  included) and a successful sign-out (`useLogout`): no write of an earlier session (its variables and answer) stays in the
+  client. A **failed** logout call (T-M2.13, DEC-155) clears, posts and navigates nothing: the session is still alive on the server, so the page
+  and both caches stay and the account section (or the forced change-password page) shows `LogoutFailedAlert` ("still signed in"; the offline
+  text when `isOffline()` at the failure). `useLogout` runs with `networkMode: 'always'`, so offline it fails at once instead of pausing. A write still pending keeps its own observers; its late answer is handled by the DEC-127 session check.
 - **Cross-tab sign-in/out (T-M2.12, security.md T19):** the session is no longer changed only by this tab. `features/auth/api/authChannel.ts`
   wraps one `BroadcastChannel` named `englms-auth` (post and listen share the instance, so a tab never hears itself; nothing happens where
-  `BroadcastChannel` does not exist). `useLogin` posts `{ type: 'signed-in' }` after a successful sign-in; `useLogout` (also when the call
-  failed) and `guard.login` after its must-change logout post `{ type: 'signed-out' }`: only the type, no user data. `connectAuthProblems` also
+  `BroadcastChannel` does not exist). `useLogin` posts `{ type: 'signed-in' }` after a successful sign-in; `useLogout` (after a
+  successful call) and `guard.login` after its must-change logout post `{ type: 'signed-out' }`: only the type, no user data. `connectAuthProblems` also
   listens: on a message of exactly that shape (anything else is ignored) it drops every cached query except the session, reads the session
-  again and follows it; a received message never posts. A page restored from the back/forward cache (`pageshow` with `event.persisted`,
+  again and follows it; a received message never posts. The listener receives the message type (T-M2.13): for `signed-out` the tab reads the
+  session **first** (G0 D-1) and, when it had a session, the read is anonymous and the page needs one (`/tutor/**`, `/student/**`,
+  `/change-password`), clears both caches without a reset (nothing refetches), caches the anonymous session and navigates to `/login?next=` with
+  the location state `{ signedOutElsewhere: true }` (no user data), which makes `/login` show an info notice until a sign-in submit starts; from
+  the start of that resync until its navigation settles, the 401 reaction stands down. Every other case keeps the steps above. A page restored from the back/forward cache (`pageshow` with `event.persisted`,
   AC11 (f)) missed the messages sent meanwhile, so it runs the same steps. **Following a session:** on `/login` with a signed-in session the tab navigates to `/`
   (`replace`; its guard picks the role home or `/change-password`; `?next=` is not honoured there); elsewhere `router.revalidate()`, so the
   unchanged guards redirect. The reactions run one after another (a queue), so a redirect into `/login` has finished before the next session
