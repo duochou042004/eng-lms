@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-11-14T10:23:59Z",
-  "updatedBy": "lead-coordinator (T-M2.13 implemented, gate PASS)",
+  "updatedAt": "2026-11-14T11:02:07Z",
+  "updatedBy": "lead-coordinator (T-M2.13 merged and recorded)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -30,33 +30,8 @@
     "exitCriteria": "FR-AUTH-01..10 and FR-STU-01..07 accepted; authorization-matrix and student-isolation harnesses fail on any unregistered endpoint; add-student flow E2E at 360/768/1280 within its step budget; security review of authentication passed (docs/01-product/roadmap.md)."
   },
   "currentTask": {
-    "id": "T-M2.13",
-    "title": "Auth and shell feedback follow-ups (T-M2.12 G3, DEC-118)",
-    "status": "in_progress",
-    "ownerRole": "FE",
-    "branch": "feature/T-M2.13-auth-shell-followups",
-    "packet": "docs/tasks/T-M2.13-auth-shell-followups.md",
-    "pr": "182",
-    "lastCommit": "93cb41a",
-    "startedAt": "2026-11-14T09:40:30Z",
-    "entryGate": [
-      "T-M2.27, T-M2.25, T-M2.24 merged (DEC-163) — met (90bbfe0)",
-      "PO start signal — given 2026-11-14T09:40:30Z (chat: \"Start T-M2.13\")"
-    ],
-    "nextSteps": [
-      "Push, PR, CI (Playwright 1.65 in CI installs its own browsers)",
-      "G3 tier M: one combined fresh QA+UX reviewer with QA-VERDICT (DEC-171); merge-gate; QA PR qa/T-M2.13, then records PR",
-      "PO: pnpm --dir e2e browsers (local Chromium build 1254 missing after the Playwright 1.65 bump)"
-    ],
-    "trace": [
-      "DEC-155",
-      "DEC-163",
-      "DEC-164"
-    ]
-  },
-  "nextTask": {
     "id": "T-M2.28",
-    "title": "Follow-ups from T-M2.25 and T-M2.24 before the M2 G5 regression (DEC-169, DEC-171)",
+    "title": "Follow-ups from T-M2.25, T-M2.24 and T-M2.13 before the M2 G5 regression (DEC-169, DEC-171, DEC-172)",
     "status": "draft",
     "ownerRole": "FE",
     "branch": null,
@@ -65,12 +40,31 @@
     "lastCommit": null,
     "startedAt": null,
     "nextSteps": [
-      "LC writes the packet from the backlog row (a)-(g); before the M2 G5"
+      "LC writes the packet from the backlog row (a)-(i); G0; PO start signal; before the M2 G5"
     ],
     "trace": [
       "DEC-169",
       "DEC-170",
-      "DEC-171"
+      "DEC-171",
+      "DEC-172"
+    ]
+  },
+  "nextTask": {
+    "id": "T-M2.26",
+    "title": "Switch the CI scope on (T-M2.22 U2 validation (4); DEC-158 PO-1, PO-2)",
+    "status": "draft",
+    "ownerRole": "LC",
+    "branch": null,
+    "packet": null,
+    "pr": null,
+    "lastCommit": null,
+    "startedAt": null,
+    "nextSteps": [
+      "After at least 10 shadow PRs and the two probes (backlog row)"
+    ],
+    "trace": [
+      "DEC-158",
+      "DEC-160"
     ]
   },
   "completed": [
@@ -401,6 +395,14 @@
       "mergeCommit": "90bbfe0",
       "evidence": "evidence/T-M2.24/summary.md",
       "note": "PR #178 via merge-gate (head 6f66b5a, CI 7/7 (0 fast-path)); packet PR #176 (f010cd8); gate run 1 red on one byte-identical flaky test (OQ T-M2.24-1 -> T-M2.28 (f)), run 2 PASS (13 steps, 1003 s) on 5d96ada; G3 DOCS-REVIEW PASS (80,018 tokens) + QA-VERDICT PASS (43,298 tokens); S3-1/S4-2 -> T-M2.28 (g) (DEC-171)"
+    },
+    {
+      "id": "T-M2.13",
+      "title": "Auth and shell feedback follow-ups (T-M2.12 G3, DEC-118)",
+      "completedAt": "2026-11-14T10:46:06Z",
+      "mergeCommit": "e3ce22c",
+      "evidence": "evidence/T-M2.13/summary.md",
+      "note": "PR #182 via merge-gate (head 7d843d4, CI 7/7 (5 full)); packet PR #153 (b1a542f); PO start 2026-11-14T09:40:30Z; gate PASS on 0a01995 (763 s); G3 tier M: one combined QA+UX qa-evaluator round 1 PASS WITH MINOR / APPROVED (155,246 tokens); UX-1 S3 + UX-2 S4 -> T-M2.28 (h), QA-1 -> OQ T-M2.13-1 (i); QA report PR #183 (DEC-172)"
     }
   ],
   "tests": {
@@ -431,28 +433,28 @@
   },
   "gates": {
     "G0": {
-      "status": "pass",
-      "note": "T-M2.24 packet: adversarial docs-reviewer, round 3 PASS (DEC-170); merged f010cd8"
+      "status": "pending",
+      "note": "T-M2.28 packet not written yet"
     },
     "G1": {
       "status": "pass",
-      "note": "T-M2.13: gate PASS (13 steps, 763 s) on 0a01995 (local Chromium 1248 via a temporary symlink, see summary deviation 1)"
+      "note": "T-M2.13: gate PASS (13 steps, 763 s) on 0a01995"
     },
     "G2": {
-      "status": "pending",
-      "note": "T-M2.13: CI after push"
+      "status": "pass",
+      "note": "T-M2.13: CI 7/7 on 7d843d4 (5 full)"
     },
     "G3": {
-      "status": "pending",
-      "note": "T-M2.13: combined QA+UX (tier M) with QA-VERDICT"
+      "status": "pass",
+      "note": "T-M2.13: QA-VERDICT PASS WITH MINOR + UX-REVIEW APPROVED (combined, 155,246 tokens)"
     },
     "G4": {
-      "status": "pending",
-      "note": "T-M2.13"
+      "status": "pass",
+      "note": "T-M2.13 PR #182 merged via merge-gate (e3ce22c)"
     },
     "G5": {
       "status": "n/a",
-      "note": "M2 in progress; first regression run failed (T-M2.28)"
+      "note": "M2 in progress; T-M2.28 first"
     }
   },
   "blockers": [],
@@ -492,7 +494,18 @@
       "DEC-158",
       "DEC-159",
       "DEC-160",
-      "DEC-161"
+      "DEC-161",
+      "DEC-162",
+      "DEC-163",
+      "DEC-164",
+      "DEC-165",
+      "DEC-166",
+      "DEC-167",
+      "DEC-168",
+      "DEC-169",
+      "DEC-170",
+      "DEC-171",
+      "DEC-172"
     ],
     "pendingPO": [
       "OQ-03",
@@ -842,7 +855,7 @@
     "gh": "2.103.3, authenticated as duochou042004 (keyring); git credential helper !/usr/bin/gh auth git-credential for github.com",
     "host": "Ubuntu 26.10 (kernel 7.3.0-10-generic, x86_64; Dell G15 5515), 16 cores, 22 GB RAM, 102 GB free; clone /home/linux/Projects/eng-lms; git 2.55.0; shellcheck not installed",
     "python": "3.14.8 with jsonschema 4.19.2 (scripts/check_docs.py); jq 1.8.2",
-    "playwright": "Chromium headless shell 156 (build 1248) for e2e/ (pnpm browsers); Firefox and WebKit not downloaded, host libraries not installed (PO: sudo, for G5)",
+    "playwright": "Chromium headless shell 1254 (Chrome 158.0.8127.18, Playwright 1.65; installed by the LC 2026-11-14 with PO approval) and 1248 (Playwright 1.64) for e2e/ (pnpm browsers); Firefox and WebKit not downloaded, host libraries not installed (PO: sudo, for G5)",
     "githubActionsStorage": "PO freed the account artifact storage on 2026-09-26; artifacts are kept 5 days (DEC-056).",
     "gitlab": "Private mirror gitlab.com/duochou042004/eng-lms (project 86941168), remote gitlab added 2026-11-11, glab 1.130.0 (/usr/bin/glab) authenticated as duochou042004 (keyring); git credential helper !/usr/bin/glab auth git-credential; GitLab CI paused (DEC-107). Sync: ./scripts/gitlab-sync.sh",
     "note": "Device moved 2026-11-11 (PO, handoff of 2026-10-23): development-setup §0 on Ubuntu 26.10 + rootless Podman; hooks installed (core.hooksPath scripts/hooks), .env from .env.example; check-docs PASS and scripts/tests/run-all.sh PASS; the first gate runs with T-M2.13 G1."
@@ -1557,6 +1570,11 @@
       "at": "2026-11-14T10:23:59Z",
       "actor": "lead-coordinator",
       "event": "T-M2.13 started on the PO signal; frontend-implementer done (5 commits, final 93cb41a); gate PASS on 0a01995; summary recorded."
+    },
+    {
+      "at": "2026-11-14T11:02:07Z",
+      "actor": "lead-coordinator",
+      "event": "T-M2.13 merged (PR #182, e3ce22c; QA PR #183, f6ba376); records PR docs/T-M2.13-records (DEC-172); next T-M2.28 packet."
     }
   ]
 }

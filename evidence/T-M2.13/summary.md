@@ -5,7 +5,7 @@ PO start signal 2026-11-14T09:40:30Z (chat: "Start T-M2.13"). Recorded by the LC
 ## Gate (G1)
 `ENGLMS_TASK=T-M2.13 ./scripts/gate.sh` on 0a01995: `gate: PASS (13 steps, 763s)`; web unit 69 files, 846 tests; e2e 381 passed, 60 skipped;
 changed specs ×3 (`navigation.spec.ts`, `shells.spec.ts`) 525 passed; budget student 188.7 KB, tutor 188.9 KB; contract-drift pass;
-`backend/` and `api/openapi.json` unchanged. Log: `evidence/T-M2.13/gate-20261114T100859Z.log`.
+`backend/` and `api/openapi.json` unchanged. Log: `evidence/T-M2.13/gate-20261114T100859Z.log` (trimmed by the LC to its 276 summary lines, all 32 `gate:` lines kept).
 
 ## AC → proof
 - AC1 (toggletip): `ui/Toggletip.test.tsx` (name, `aria-haspopup`, `title`, axe; tap opens a dialog named by the message; Esc and outside tap return
@@ -26,7 +26,7 @@ changed specs ×3 (`navigation.spec.ts`, `shells.spec.ts`) 525 passed; budget st
 - AC5 (chunk copy): changed kept tests (d) `RouteError.test.tsx` and `navigation.spec.ts` `COPY`; offline Retry announces `error.offlineAnnouncement`.
 - AC6: `steps-logout-*` ≤ 2 steps; axe after each new state; `expectNoMidWordBreak` at 360 vi on each new text (the logout alert's title and text
   measured separately); all new keys in vi and en.
-- AC7: gate PASS above; CI pending (after push).
+- AC7: gate PASS above; CI 7/7 on `7d843d4` (PR #182).
 
 ## Self-check (frontend-standards)
 [x] UI rules block [x] axe + mid-word checks per changed screen where the state exists (the toggletip exists only under 22rem, so no 1280 case)
@@ -60,3 +60,8 @@ popover), chunk pages (vi, en). Not shot: the student More-sheet failure and the
 ## G3 cost (DEC-131 (9))
 | Round | Reviewer | Head | Verdict | S1/S2/S3/S4 | Scope | Agent tokens | Agent min | Gate runs | Gate min |
 |---|---|---|---|---|---|---|---|---|---|
+| 1 | qa-evaluator (fresh, combined QA+UX) | `7d843d4` | PASS WITH MINOR / APPROVED | 0/0/1/2 | full | 155,246 | 20.3 | 0 (E2E changed specs + ×20 focus) | 0 |
+
+Before G3 the LC installed Chromium headless shell 1254 for Playwright 1.65 (PO-approved download), so the G3 runs used the right build.
+
+Merged `e3ce22c` (PR #182, DEC-172); verdicts `QA-VERDICT T-M2.13: PASS WITH MINOR` (`qa/report.md`, PR #183) and `UX-REVIEW T-M2.13: APPROVED` (`review/ux.md`); UX-1 (S3) and UX-2 (S4) → T-M2.28 (h), QA-1 (S4, older than this branch) → OQ T-M2.13-1, T-M2.28 (i).
