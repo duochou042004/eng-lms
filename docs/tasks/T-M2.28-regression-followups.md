@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Milestone | M2 |
-| Status | draft |
+| Status | ready (G0 PASS, DEC-173; waits for the PO start signal) |
 | Owner role | FE (frontend-implementer; E2E and scripts) |
 | Branch | `chore/T-M2.28-regression-followups` (from `develop`) |
 | Depends on | T-M2.25 (`b3cd6fd`), T-M2.24 (`90bbfe0`), T-M2.13 (`e3ce22c`): merged |

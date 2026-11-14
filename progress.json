@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-11-14T11:24:54Z",
-  "updatedBy": "lead-coordinator (T-M2.28 packet draft)",
+  "updatedAt": "2026-11-14T11:32:09Z",
+  "updatedBy": "lead-coordinator (T-M2.28 packet G0 PASS)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -32,15 +32,15 @@
   "currentTask": {
     "id": "T-M2.28",
     "title": "Regression and tooling follow-ups before the M2 G5 (DEC-169, DEC-171, DEC-173)",
-    "status": "draft",
+    "status": "ready",
     "ownerRole": "FE",
     "branch": null,
     "packet": "docs/tasks/T-M2.28-regression-followups.md",
-    "pr": null,
+    "pr": "185",
     "lastCommit": null,
     "startedAt": null,
     "nextSteps": [
-      "Packet PR docs/T-M2.28-packet: G0 adversarial docs-reviewer; merge",
+      "Packet PR #185: G0 adversarial docs-reviewer round 1 CHANGES REQUESTED (S2 ×2, S3 ×3, S4 ×4), delta PASS WITH MINOR (one S4), confirmation PASS; merge",
       "PO start signal; chore/T-M2.28-regression-followups; frontend-implementer; LC starts one regression run on the branch; G3 adversarial docs-reviewer (DOCS-REVIEW on a chore/ branch)",
       "Then T-M2.29 (UI follow-ups from T-M2.13) and the M2 G5"
     ],
@@ -436,8 +436,8 @@
   },
   "gates": {
     "G0": {
-      "status": "pending",
-      "note": "T-M2.28 packet: adversarial docs-reviewer"
+      "status": "pass",
+      "note": "T-M2.28 packet: adversarial docs-reviewer, round 1 CHANGES REQUESTED, delta + confirmation PASS (97,243 tokens)"
     },
     "G1": {
       "status": "pass",
