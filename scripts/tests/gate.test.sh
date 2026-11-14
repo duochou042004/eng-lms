@@ -166,7 +166,10 @@ w e2e/support/pkg/index.ts "export const pkg = 1"
 w e2e/support/vi.ts "export const vi = 1"
 w e2e/support/dyn.ts "export const dyn = 1"
 w e2e/support/side.ts "globalThis.side = 1"
-w e2e/support/global-setup.ts "export default async () => {}"
+w e2e/support/setup-only.ts "export const setupOnly = 1"
+w e2e/support/shared.ts "export const shared = 1"
+w e2e/support/via.ts "export { shared } from './shared'"
+w e2e/support/global-setup.ts $'import { setupOnly } from \'./setup-only\'\nimport { shared } from \'./via\'\nexport default async () => setupOnly + shared'
 w e2e/support/data.json '{"a": 1}'
 w e2e/tests/one.spec.ts "import { one } from '../support/one'"
 w e2e/tests/multi.spec.ts $'import {\n  m1,\n  m2,\n} from \'../support/multi\''
@@ -177,6 +180,7 @@ w e2e/tests/idx.spec.ts "import { pkg } from '../support/pkg'"
 w "e2e/tests/học viên.spec.ts" "import { vi } from '../support/vi'"
 w e2e/tests/dyn.spec.ts $'const { dyn } = await import(\n  "../support/dyn"\n)'
 w e2e/tests/side.spec.ts "import '../support/side'"
+w e2e/tests/shared.spec.ts "import { shared } from '../support/shared'"
 g add -A; g commit -qm support-base; g branch -f base
 all_specs=$(cd "$repo/e2e" && find tests -type f -name '*.spec.ts' | sort | paste -sd' ' -)
 # repeat_case <description> <expected specs, space-separated>: the run passes, e2e then one repeat with exactly those specs; then reset.
@@ -215,6 +219,19 @@ reset_case
 echo "export default async () => { /* changed */ }" >"$repo/e2e/support/global-setup.ts"
 repeat_case "global-setup.ts (no spec imports it)" "$all_specs"
 expect_output_contains "gate: e2e repeat: all specs: e2e/support/global-setup.ts is imported by no spec" "DEC-170: says why all specs repeat"
+reset_case
+
+# T-M2.28 (g1): a support file imported only by global-setup.ts (a support file, not a spec) is imported by no spec.
+echo "export const setupOnly = 2" >"$repo/e2e/support/setup-only.ts"
+repeat_case "a support file imported only by global-setup.ts" "$all_specs"
+expect_output_contains "gate: e2e repeat: all specs: e2e/support/setup-only.ts is imported by no spec" "T-M2.28 (g1): a non-spec importer is not a spec"
+reset_case
+
+# T-M2.28 (g2): global setup runs before every spec, so a support file that reaches global-setup.ts (here through via.ts) repeats
+# all specs, also when a spec imports it too.
+echo "export const shared = 2" >"$repo/e2e/support/shared.ts"
+repeat_case "a support file that reaches global-setup.ts and a spec" "$all_specs"
+expect_output_contains "gate: e2e repeat: all specs: e2e/support/shared.ts reaches e2e/support/global-setup.ts, which runs before every spec" "T-M2.28 (g2): names global-setup.ts"
 reset_case
 
 g rm -q e2e/support/one.ts; g commit -qm rm-support
