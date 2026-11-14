@@ -31,7 +31,7 @@ this handoff on `docs/T-M2.13-records`) · Next after it: the M2 G5 regression; 
   (a download: PO approval) before the next local E2E or gate; check `ls ~/.cache/ms-playwright/`. In the app shell `pnpm` may resolve to
   12.18 (Node 24.22.2) and refuse with a version check: run it from `e2e/` after `nvm use 24.21.0`, and never pipe it to `head` (the install stops).
 - **Gate logs:** an implementer may commit the full ~2,600-line log; trim it in the records PR, keeping every `gate:` line (T-M2.13).
-- **A `feature/` branch merges only on `QA-VERDICT <task>: PASS`** (merge-gate); a docs-reviewer's `DOCS-REVIEW` counts only on `docs/`/`chore/`.
+- **A `feature/` branch merges only on `QA-VERDICT <task>: PASS` or `PASS WITH MINOR`** (merge-gate); a docs-reviewer's `DOCS-REVIEW` counts only on `docs/`/`chore/`.
   Name the QA run in the packet's G3 (T-M2.24 needed an extra QA round at merge time, DEC-171).
 - **The e2e repeat now follows `e2e/support/` imports** (T-M2.24): a change to `e2e/support/fixtures.ts` repeats all 17 specs ×3 and
   `auth.ts` 16 (~15 min per project set); budget for it.

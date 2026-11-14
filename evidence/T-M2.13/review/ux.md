@@ -5,7 +5,7 @@ Combined QA+UX pass (qa-protocol §2a) on 7d843d4, the same app session as the Q
 
 | ID | Sev | Screen / viewport | Issue | Suggested fix | LC ruling |
 |---|---|---|---|---|---|
-| UX-1 | S3 | Tutor drawer, 740×360 sideways phone | The logout alert overflows the footer, which cannot scroll; its text cannot be reached (`ui/Sheet.module.css:89-92`) | `ui/Sheet` footer max height with `overflow-y: auto`, or a scrolling dialog | To T-M2.28 (h): touches the shared `ui/Sheet`, which this packet keeps untouched; the three mandatory viewports pass; the alert is announced in full |
+| UX-1 | S3 | Tutor drawer, 740×360 sideways phone | The logout alert overflows the footer, which cannot scroll; its text cannot be reached (`ui/Sheet.module.css:89-92`) | `ui/Sheet` footer max height with `overflow-y: auto`, or a scrolling dialog | To T-M2.28 (h): touches the shared `ui/Sheet`, which this packet keeps untouched; the three mandatory viewports pass; the alert is a `role="alert"` region (announced; no real screen reader checked) |
 | UX-2 | S4 | Forced change-password, 360×740 | The alert renders below the fold | `scrollIntoView({ block: 'nearest' })` on mount, without moving focus | To T-M2.28 (h) |
 | QA-1 | S4 (older than this branch) | Toggletip and account popover, vi | React Aria's hidden close buttons are named "Dismiss" | React Aria vi strings | Open question OQ T-M2.13-1 |
 
