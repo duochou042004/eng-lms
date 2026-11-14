@@ -36,7 +36,7 @@
     "ownerRole": "FE",
     "branch": "chore/T-M2.28-regression-followups",
     "packet": "docs/tasks/T-M2.28-regression-followups.md",
-    "pr": null,
+    "pr": "187",
     "lastCommit": "a7a1e4d",
     "startedAt": "2026-11-14T13:49:56Z",
     "nextSteps": [
