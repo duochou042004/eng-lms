@@ -49,4 +49,6 @@ Recorded by the LC from the frontend-implementer's text (L-07). Raw logs: `evide
 | Reviewer | Rounds | Tokens |
 |---|---|---|
 | frontend-implementer (not G3) | 4 hand-backs | 207,441 (last reported total) |
-| docs-reviewer (adversarial, runs specs and suites) | 1 + confirmation | 104,039 (round 1) |
+| docs-reviewer (adversarial, runs specs and suites) | 1 + confirmation | 104,039 (round 1, 670 s) + 7,652 (confirmation, 28 s) = 111,691 |
+
+Merged `a1bcf12` (PR #187 via merge-gate at `91f94b5`, CI 7/7, DEC-175); verdict `DOCS-REVIEW T-M2.28: PASS` (`review/docs.md`: round 1 PASS WITH MINOR, confirmation PASS); S4-3, S4-5 fixed, S4-1, S4-2 → T-M2.30, S4-4 recorded; (f) → T-M2.29 (j) (DEC-174).

@@ -1,36 +1,40 @@
-# Handoff — 2026-11-14T11:54Z (T-M2.13 done; T-M2.28 packet ready, held by the PO)
+# Handoff — 2026-11-14T17:40Z (T-M2.28 merged; T-M2.29 next)
 
-Phase/Milestone: P1 / M2 (in progress) · Task: **T-M2.28** (ready; the PO answered "Not yet" to the start signal) · Branch: `develop` (`3894451`;
-this handoff on `docs/T-M2.28-handoff`) · Next after it: T-M2.29, then the M2 G5 regression · Remote: https://github.com/duochou042004/eng-lms
+Phase/Milestone: P1 / M2 (in progress) · Task: **T-M2.29** (draft: packet not written) · Branch: `develop` (`a1bcf12`; this records
+PR on `docs/T-M2.28-records`) · Next after it: the M2 G5 regression; T-M2.30 (M2 polish) · Remote: https://github.com/duochou042004/eng-lms
 
 ## Where we are
-- **T-M2.13 done** (`e3ce22c`, PR #182; QA PR #183 `f6ba376`; records PR #184 `9264956`; DEC-172): `ui/Toggletip`, the `/login` cross-tab
-  notice, failed-logout feedback, chunk-page copy. G3 combined QA+UX: PASS WITH MINOR / APPROVED.
-- **T-M2.28 packet merged** (`docs/tasks/T-M2.28-regression-followups.md`, PR #185 `3894451`): (a)–(g), tier L, `chore/` branch, G3 an
-  adversarial docs-reviewer that also runs specs and suites; G0 round 1 CHANGES REQUESTED (S2 ×2), delta PASS WITH MINOR (one S4), confirmations PASS.
-  LC diagnosis from run 43444433118: (a) two test defects (substring paging prefix `phone`/`phone-small`, `tablet`/`tablet-land`; the
-  column-shares test skips only `phone-small`); (c) `NS_BINDING_ABORTED` fonts on reload; (b) WebKit CSP/render: diagnose first.
-- **Split (DEC-173):** the T-M2.13 UI follow-ups (h) UX-1/UX-2 and (i) OQ T-M2.13-1 are the new backlog row **T-M2.29** (tier M).
-- Chromium headless shell **1254** (Playwright 1.65) is installed beside 1248 (PO-approved download).
+- **T-M2.28 done** (`a1bcf12`, PR #187, DEC-175; rulings DEC-174): (a)–(g) on `chore/`, tier L. Gate PASS on `a7a1e4d` (720 s); regression
+  43617206392 green on `ddd51f4` (all 6 viewports, Firefox and WebKit smoke). G3 adversarial docs-reviewer: PASS WITH MINOR → confirmation PASS.
+- **Found on the way (DEC-174):** (b) WebKit smoke needed client-side non-Secure stored cookies (WebKit drops Secure cookies on http); the inline
+  `<style>` was Playwright's screenshot step. (f) is a **product** race: after one's own Log out the user can land on `/login?next=<page>` →
+  T-M2.29 (j). The gate's ×3 repeat exposed a `pagingSet` check-then-create race (fixed: one set per repeat index).
+- **Firefox `Page crashed`** in axe at `smoke.spec.ts:77` (run 43611629190, both attempts, unchanged test): ruled an engine crash; a G5 recurrence
+  is treated as a likely real defect: capture Firefox stderr first (DEC-174 (5)).
+- New backlog rows: T-M2.29 now (h), (i), (j); **T-M2.30** (`e2e-run.sh` refusal gaps, G3 S4-1/S4-2, tier L, M2 polish).
 
 ## In flight / uncommitted
-- This handoff PR (`docs/T-M2.28-handoff`): one docs-reviewer (text only) → `DOCS-REVIEW T-M2.28: PASS` + `LC-APPROVED T-M2.28`,
-  merge-gate, `gitlab-sync.sh`. If still open, do that first. Nothing else.
+- This records PR (`docs/T-M2.28-records`): one docs-reviewer (text only) → `DOCS-REVIEW T-M2.28: PASS` + `LC-APPROVED T-M2.28`, merge-gate,
+  `gitlab-sync.sh`. If still open, do that first. Nothing else.
 
 ## Next steps (in this order)
-1. Merge this handoff PR (above).
-2. Ask the PO again for the T-M2.28 start signal. On it: `chore/T-M2.28-regression-followups` from `develop`; frontend-implementer with the
-   packet; the LC starts `gh workflow run regression.yml --ref chore/T-M2.28-regression-followups` when the implementer asks (it does not
-   push; the LC pushes a WIP head for it), and one `regression` run on the final head before G3 (AC9), its result to the reviewer; gate once on the final head; PR; CI; G3 adversarial docs-reviewer that re-runs specs and suites;
-   merge-gate; records (part C).
-3. T-M2.29 packet (backlog row); then the M2 G5 regression; T-M2.26 after at least 10 shadow PRs and its two probes.
+1. Merge this records PR (above).
+2. T-M2.29 packet (task-packet skill) from the backlog row (h), (i), (j): tier M, combined QA+UX G3; (j) touches `useLogout`/the signed-out guard
+   (auth: consider the SEC trigger); G0; ask the PO for the start signal.
+3. Then the M2 G5 regression (`regression` workflow + the G5 `E2E_KEEP_DB=1` run); T-M2.30 in the M2 polish; T-M2.26 after at least 10 shadow PRs.
 
 ## Pending PO decisions / actions
-- The T-M2.28 start signal (asked 2026-11-14: "Not yet").
 - **Dependabot, held by the PO:** #165 (msw 3 major: `web` typecheck fails at `web/src/test/setup.ts:14`; needs a packet) and #135 (react group).
   The LC does not touch them unasked.
 
 ## Gotchas
+- **`gate.sh`'s e2e repeat runs `--repeat-each=3` under `fullyParallel`** on a fresh DB: test-data helpers that check-then-create race between
+  repeats; key shared sets by `testInfo.repeatEachIndex` (T-M2.28).
+- **WebKit locally:** host libraries are not installed; Firefox/WebKit evidence comes from `gh workflow run regression.yml --ref <branch>`
+  (~25–30 min, no inputs: repeat diagnostics go in a temporary spec block, removed before the final head).
+- **merge-gate on `docs/`/`chore/` needs the exact `DOCS-REVIEW <task>: PASS`**; a PASS WITH MINOR needs a same-reviewer confirmation after the
+  S4s are fixed or batched (T-M2.28).
+- **`e2e-run.test.sh` fails while another app holds port 8080:** don't run it beside an E2E run.
 - **A Playwright bump needs its browser build locally** (T-M2.13): after a Dependabot bump of `@playwright/test`, run `pnpm --dir e2e browsers`
   (a download: PO approval) before the next local E2E or gate; check `ls ~/.cache/ms-playwright/`. In the app shell `pnpm` may resolve to
   12.18 (Node 24.22.2) and refuse with a version check: run it from `e2e/` after `nvm use 24.21.0`, and never pipe it to `head` (the install stops).
@@ -45,7 +49,7 @@ this handoff on `docs/T-M2.28-handoff`) · Next after it: T-M2.29, then the M2 G
 - **docs-check reads `](x)` inside code spans as a link:** write regexes like `(PG)?` after `]` as `\(PG\)` or in words (T-M2.25 records).
 - **`scripts/tests/e2e-run.test.sh` can flake in CI** ("keeps the host and parameters": a stale `app2.env` race, T-M2.28 (e)): `gh run rerun <id> --failed`.
 - **Local E2E now runs on its own database** (T-M2.25): `e2e-run.sh` recreates `englms_e2e` per run with `.data/e2e/fresh/`; `E2E_KEEP_DB=1` runs against the PO's dev DB as before (G5). pgjdbc URL parameters and `.env` reassignments are guarded (DEC-168, DEC-169).
-- **The `regression` workflow** is manual (`gh workflow run regression.yml --ref develop`, ~33 min, all 6 viewports + Firefox/WebKit smoke); its first run failed 7 tests (T-M2.28).
+- **The `regression` workflow** is manual (`gh workflow run regression.yml --ref develop`, ~25–30 min, all 6 viewports + Firefox/WebKit smoke); its first run failed 7 tests (T-M2.28).
 - **T-M2.27 (DEC-166):** the dev DB now holds 1,065 active, 30 paused and 133 archived students (read-only count by QA, 2026-11-13); local E2E added rows until T-M2.25 (now only `E2E_KEEP_DB=1` runs do). `loading.spec.ts` "the loading region in English" can still fail on a very slow runner (CPU throttle ≥ 30 in the reproduction): a CI recurrence needs a new ruling (the packet forbade raising a timeout). Reproduction generators must read the old form from the pre-task commit, not `HEAD`.
 - **A QA agent can end on an API error after its verdict** (T-M2.27: Cloudflare 403 after the full report): the report already returned counts; check `git status` and `e2e/tests` for scratch files.
 - **This device (2026-11-11): agent shells run with `NoNewPrivs=1`** (inherited from the desktop app), so rootless `podman` fails with
@@ -121,5 +125,5 @@ this handoff on `docs/T-M2.28-handoff`) · Next after it: T-M2.29, then the M2 G
   `evidence/<task>/records/` (delete it) and a ~2,000-line log (trim it to ≤ 300 lines).
 
 ## Files to read first
-`CLAUDE.md` → `progress.json` → this file → DEC-173 → `docs/tasks/T-M2.28-regression-followups.md` → its trace DECs (DEC-169, DEC-170,
-DEC-171, DEC-172) → `docs/09-harness/coding-agent-rules.md`.
+`CLAUDE.md` → `progress.json` → this file → DEC-174, DEC-175 → the T-M2.29 row in `docs/tasks/backlog.md` → `evidence/T-M2.28/summary.md`
+(AC7's reading of the logout race) → `docs/09-harness/coding-agent-rules.md`.

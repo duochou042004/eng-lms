@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Milestone | M2 |
-| Status | in progress (G0 PASS, DEC-173; PO start 2026-11-14T13:49:56Z) |
+| Status | done (`a1bcf12`, DEC-175) |
 | Owner role | FE (frontend-implementer; E2E and scripts) |
 | Branch | `chore/T-M2.28-regression-followups` (from `develop`) |
 | Depends on | T-M2.25 (`b3cd6fd`), T-M2.24 (`90bbfe0`), T-M2.13 (`e3ce22c`): merged |
