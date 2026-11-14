@@ -1,0 +1,13 @@
+head f57a0d7
+== e2e-run.test.sh
+  -> 127 passed, 0 failed
+== gate.test.sh
+  -> 98 passed, 0 failed
+== run-all.sh
+script tests: PASS
+== check-docs
+docs-check: PASS (340 markdown files, progress.json valid, sources intact, prompt within limit, records consistent, handoff archived, table code spans escaped, text-only CI inputs clean)
+== fixtures.ts diff vs develop
+0
+== path ownership
+path-ownership: PASS for branch 'chore/T-M2.28-regression-followups' (28 file(s))
