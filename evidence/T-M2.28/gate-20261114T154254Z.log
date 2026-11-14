@@ -1,0 +1,51 @@
+gate: logging to evidence/T-M2.28/gate-20261114T154254Z.log
+gate: a7a1e4d 2026-11-14T15:42:54Z, steps: docs scripts backend web-install web-lint web-typecheck web-test web-build web-budget web-contrast contract-drift qa-typecheck e2e
+gate: ==> docs
+gate: <== docs OK (1s)
+gate: ==> scripts
+  -> 86 passed, 0 failed
+  -> 243 passed, 0 failed
+  -> 97 passed, 0 failed
+  -> 9 passed, 0 failed
+  -> 164 passed, 0 failed
+  -> 127 passed, 0 failed
+  -> 98 passed, 0 failed
+  -> 11 passed, 0 failed
+  -> 418 passed, 0 failed
+  -> 15 passed, 0 failed
+  -> 15 passed, 0 failed
+  -> 11 passed, 0 failed
+  -> 10 passed, 0 failed
+gate: <== scripts OK (225s)
+gate: ==> backend
+gate: backend skipped: no backend/ or api/ change (CI runs it; ENGLMS_GATE_FULL=1 forces it)
+gate: <== backend OK (0s)
+gate: ==> web-install
+gate: <== web-install OK (0s)
+gate: ==> web-lint
+gate: <== web-lint OK (4s)
+gate: ==> web-typecheck
+gate: <== web-typecheck OK (6s)
+gate: ==> web-test
+ Test Files  69 passed (69)
+      Tests  846 passed (846)
+gate: <== web-test OK (48s)
+gate: ==> web-build
+gate: <== web-build OK (6s)
+gate: ==> web-budget
+gate: <== web-budget OK (0s)
+gate: ==> web-contrast
+gate: <== web-contrast OK (0s)
+gate: ==> contract-drift
+gate: contract-drift skipped: no backend/ or api/ change (CI runs it)
+gate: <== contract-drift OK (0s)
+gate: ==> qa-typecheck
+gate: <== qa-typecheck OK (2s)
+gate: ==> e2e
+  42 skipped
+  525 passed (4.6m)
+gate: e2e repeat x3: tests/smoke.spec.ts tests/students-list.spec.ts
+  3 skipped
+  150 passed (1.8m)
+gate: <== e2e OK (428s)
+gate: PASS (13 steps, 720s)
