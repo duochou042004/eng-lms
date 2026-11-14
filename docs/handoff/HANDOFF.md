@@ -7,7 +7,7 @@ this handoff on `docs/T-M2.28-handoff`) · Next after it: T-M2.29, then the M2 G
 - **T-M2.13 done** (`e3ce22c`, PR #182; QA PR #183 `f6ba376`; records PR #184 `9264956`; DEC-172): `ui/Toggletip`, the `/login` cross-tab
   notice, failed-logout feedback, chunk-page copy. G3 combined QA+UX: PASS WITH MINOR / APPROVED.
 - **T-M2.28 packet merged** (`docs/tasks/T-M2.28-regression-followups.md`, PR #185 `3894451`): (a)–(g), tier L, `chore/` branch, G3 an
-  adversarial docs-reviewer that also runs specs and suites; G0 round 1 CHANGES REQUESTED (S2 ×2), delta and confirmations PASS.
+  adversarial docs-reviewer that also runs specs and suites; G0 round 1 CHANGES REQUESTED (S2 ×2), delta PASS WITH MINOR (one S4), confirmations PASS.
   LC diagnosis from run 43444433118: (a) two test defects (substring paging prefix `phone`/`phone-small`, `tablet`/`tablet-land`; the
   column-shares test skips only `phone-small`); (c) `NS_BINDING_ABORTED` fonts on reload; (b) WebKit CSP/render: diagnose first.
 - **Split (DEC-173):** the T-M2.13 UI follow-ups (h) UX-1/UX-2 and (i) OQ T-M2.13-1 are the new backlog row **T-M2.29** (tier M).
@@ -21,7 +21,7 @@ this handoff on `docs/T-M2.28-handoff`) · Next after it: T-M2.29, then the M2 G
 1. Merge this handoff PR (above).
 2. Ask the PO again for the T-M2.28 start signal. On it: `chore/T-M2.28-regression-followups` from `develop`; frontend-implementer with the
    packet; the LC starts `gh workflow run regression.yml --ref chore/T-M2.28-regression-followups` when the implementer asks (it does not
-   push; the LC pushes a WIP head for it); gate once on the final head; PR; CI; G3 adversarial docs-reviewer that re-runs specs and suites;
+   push; the LC pushes a WIP head for it), and one `regression` run on the final head before G3 (AC9), its result to the reviewer; gate once on the final head; PR; CI; G3 adversarial docs-reviewer that re-runs specs and suites;
    merge-gate; records (part C).
 3. T-M2.29 packet (backlog row); then the M2 G5 regression; T-M2.26 after at least 10 shadow PRs and its two probes.
 
@@ -31,8 +31,6 @@ this handoff on `docs/T-M2.28-handoff`) · Next after it: T-M2.29, then the M2 G
   The LC does not touch them unasked.
 
 ## Gotchas
-- **A G0 or records PASS token needs a reviewer's exact PASS line on the final head:** a status-only commit after a PASS (e.g. draft →
-  ready) gets a one-line confirmation from the same reviewer before posting (T-M2.28 G0).
 - **A Playwright bump needs its browser build locally** (T-M2.13): after a Dependabot bump of `@playwright/test`, run `pnpm --dir e2e browsers`
   (a download: PO approval) before the next local E2E or gate; check `ls ~/.cache/ms-playwright/`. In the app shell `pnpm` may resolve to
   12.18 (Node 24.22.2) and refuse with a version check: run it from `e2e/` after `nvm use 24.21.0`, and never pipe it to `head` (the install stops).
@@ -43,8 +41,7 @@ this handoff on `docs/T-M2.28-handoff`) · Next after it: T-M2.29, then the M2 G
   `auth.ts` 16 (~15 min per project set); budget for it.
 - **Context rule over the goal hook (PO, 2026-11-13):** at ~300k tokens finish the safe step, commit, hand off and **stop**, even if a `/goal`
   Stop hook says the goal is not met: tell the PO the two conflict. This session ran to ~370k because the LC let the hook override the rule.
-- **A DOCS-REVIEW PASS token needs a reviewer's PASS verdict line:** when the LC fixes S3/S4 after a CHANGES REQUESTED delta (PO-6), get a short
-  confirmation from the same reviewer before posting PASS (T-M2.24 G0).
+- **A DOCS-REVIEW PASS token needs a reviewer's exact PASS line on the final head:** when the LC fixes S3/S4 after a CHANGES REQUESTED delta (PO-6), or adds a status-only commit after a PASS (draft → ready), get a short confirmation from the same reviewer before posting PASS (T-M2.24 G0, T-M2.28 G0).
 - **docs-check reads `](x)` inside code spans as a link:** write regexes like `(PG)?` after `]` as `\(PG\)` or in words (T-M2.25 records).
 - **`scripts/tests/e2e-run.test.sh` can flake in CI** ("keeps the host and parameters": a stale `app2.env` race, T-M2.28 (e)): `gh run rerun <id> --failed`.
 - **Local E2E now runs on its own database** (T-M2.25): `e2e-run.sh` recreates `englms_e2e` per run with `.data/e2e/fresh/`; `E2E_KEEP_DB=1` runs against the PO's dev DB as before (G5). pgjdbc URL parameters and `.env` reassignments are guarded (DEC-168, DEC-169).
@@ -124,5 +121,5 @@ this handoff on `docs/T-M2.28-handoff`) · Next after it: T-M2.29, then the M2 G
   `evidence/<task>/records/` (delete it) and a ~2,000-line log (trim it to ≤ 300 lines).
 
 ## Files to read first
-`CLAUDE.md` → `progress.json` → this file → DEC-173 → `docs/tasks/T-M2.28-regression-followups.md` → its trace DECs (DEC-169, DEC-171,
-DEC-172) → `docs/09-harness/coding-agent-rules.md`.
+`CLAUDE.md` → `progress.json` → this file → DEC-173 → `docs/tasks/T-M2.28-regression-followups.md` → its trace DECs (DEC-169, DEC-170,
+DEC-171, DEC-172) → `docs/09-harness/coding-agent-rules.md`.
