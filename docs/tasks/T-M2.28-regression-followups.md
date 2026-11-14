@@ -93,7 +93,7 @@ the E2E run on every task; the G5 relies on `regression`. 5. **Hard-coded semant
 
 ## Acceptance criteria
 - AC1 ((a1)): with `phone-small`, `phone`, `tablet` and `tablet-land` in one run against one database, `students-list.spec.ts`
-  "AC2/AC3/AC4/AC10 …" passes on all four, also on a second run against the same database (`E2E_KEEP_DB=1` or a kept `englms_e2e`).
+  "AC2/AC3/AC4/AC10 …" passes on all four, also on a second run against the same database. Fresh mode recreates `englms_e2e` on every run (`scripts/e2e-run.sh`), so both two-run steps (this one and the old-form order below) run with `E2E_KEEP_DB=1` on the `.env` database, as the G5 run does (it adds test rows there, never a purge).
   The old form is shown failing on that setup with the order pinned (the longer-named project's set created first, e.g. a first run of
   `phone-small` and `tablet-land` only, then `phone` and `tablet`); the evidence names the commands and the "Trang 1 / 3" read. Its
   assertions are unchanged (`git diff` shows only the prefix).
