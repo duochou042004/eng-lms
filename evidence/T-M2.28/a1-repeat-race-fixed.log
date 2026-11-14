@@ -1,0 +1,4 @@
+fixed spec (pagingSet with repeatEachIndex), fresh DB
+  3 skipped
+  150 passed (1.8m)
+e2e-run: playwright exit 0

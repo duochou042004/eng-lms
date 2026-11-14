@@ -1,0 +1,6 @@
+== kept DB run 1
+  12 passed (43.8s)
+e2e-run: playwright exit 0
+== kept DB run 2
+  12 passed (25.7s)
+e2e-run: playwright exit 0

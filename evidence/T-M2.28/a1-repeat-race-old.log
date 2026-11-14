@@ -1,0 +1,13 @@
+head f2bff5d (spec as on f2bff5d)
+      9     Error: expect(locator).toBeVisible() failed
+      3     Error: strict mode violation: getByRole('link', { name: 'E2E Paging tablet: 26' }) resolved to 2 elements:
+      3     Error: strict mode violation: getByRole('link', { name: 'E2E Paging phone-small: 26' }) resolved to 2 elements:
+      3     Error: strict mode violation: getByRole('link', { name: 'E2E Paging laptop: 26' }) resolved to 2 elements:
+      1 e2e-run: playwright exit 1
+      1   ✘  148 [laptop] › tests/students-list.spec.ts:317:3 › Students list › AC2/AC3/AC4/AC10: search (diacritics), Include archived, Newest, paging, URL with Back and reload, fallbacks, layout (7.4s)
+      1   ✘  132 [laptop] › tests/students-list.spec.ts:317:3 › Students list › AC2/AC3/AC4/AC10: search (diacritics), Include archived, Newest, paging, URL with Back and reload, fallbacks, layout (7.9s)
+      1   ✘  115 [laptop] › tests/students-list.spec.ts:317:3 › Students list › AC2/AC3/AC4/AC10: search (diacritics), Include archived, Newest, paging, URL with Back and reload, fallbacks, layout (16.7s)
+      1   ✘   98 [tablet] › tests/students-list.spec.ts:317:3 › Students list › AC2/AC3/AC4/AC10: search (diacritics), Include archived, Newest, paging, URL with Back and reload, fallbacks, layout (7.9s)
+      1   ✘   81 [tablet] › tests/students-list.spec.ts:317:3 › Students list › AC2/AC3/AC4/AC10: search (diacritics), Include archived, Newest, paging, URL with Back and reload, fallbacks, layout (8.4s)
+      1   ✘   64 [tablet] › tests/students-list.spec.ts:317:3 › Students list › AC2/AC3/AC4/AC10: search (diacritics), Include archived, Newest, paging, URL with Back and reload, fallbacks, layout (17.6s)
+      1   ✘   47 [phone-small] › tests/students-list.spec.ts:317:3 › Students list › AC2/AC3/AC4/AC10: search (diacritics), Include archived, Newest, paging, URL with Back and reload, fallbacks, layout (8.2s)
