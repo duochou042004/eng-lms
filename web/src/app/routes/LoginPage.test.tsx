@@ -262,3 +262,49 @@ describe('/login (T-M2.4 scope 5)', () => {
     expect(router.state.location.pathname).toBe('/login')
   })
 })
+
+// T-M2.13 scope 2 (UX-4): after another tab's sign-out the location state carries the flag (connectAuthProblems).
+describe('/login: the signed-out-elsewhere notice (T-M2.13 AC2)', () => {
+  const NOTICE = { vi: 'Bạn đã đăng xuất ở một thẻ khác.', en: 'You were signed out in another tab.' } as const
+
+  async function openWithNotice() {
+    const result = renderRoute('/login?next=%2Ftutor%2Ftoday')
+    await screen.findByRole('heading', { level: 1, name: /^(Đăng nhập|Sign in)$/ })
+    await act(() => result.router.navigate('/login?next=%2Ftutor%2Ftoday', { state: { signedOutElsewhere: true } }))
+    return result
+  }
+
+  it.each(['vi', 'en'] as const)('[%s] shows an info status above the form, never focused; axe clean', async (lang) => {
+    await changeLocale(lang)
+    const { container } = await openWithNotice()
+    const text = await screen.findByText(NOTICE[lang])
+    const status = text.closest('[role="status"]')
+    expect(status).not.toBeNull()
+    expect(
+      status!.compareDocumentPosition(container.querySelector('form')!) & Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy()
+    expect(status).not.toContainElement(document.activeElement as HTMLElement)
+    await expectNoAxeViolations(container)
+  })
+
+  it('hides when a sign-in submit starts (also one that fails)', async () => {
+    server.use(http.post('*/api/v1/auth/login', () => problem(401, 'BAD_CREDENTIALS')))
+    await openWithNotice()
+    await screen.findByText(NOTICE.vi)
+    await fillAndSubmit()
+    await screen.findByRole('alert')
+    expect(screen.queryByText(NOTICE.vi)).not.toBeInTheDocument()
+  })
+
+  it('a direct visit shows no notice', async () => {
+    await openLogin('/login?next=%2Ftutor%2Ftoday')
+    expect(screen.queryByText(NOTICE.vi)).not.toBeInTheDocument()
+  })
+
+  it('another navigation to /login decides by its own state', async () => {
+    const { router } = await openWithNotice()
+    await screen.findByText(NOTICE.vi)
+    await act(() => router.navigate('/login'))
+    await waitFor(() => expect(screen.queryByText(NOTICE.vi)).not.toBeInTheDocument())
+  })
+})

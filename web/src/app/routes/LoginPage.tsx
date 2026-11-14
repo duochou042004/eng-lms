@@ -1,15 +1,16 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { ChevronRight } from 'lucide-react'
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
-import { useNavigate, useSearchParams } from 'react-router'
+import { useLocation, useNavigate, useSearchParams } from 'react-router'
 import { useLogin } from '../../features/auth/api/session'
 import { changePasswordPath, safeNext } from '../../features/auth/model/redirect'
 import { loginSchema, type LoginValues } from '../../features/auth/model/schemas'
 import { ApiError } from '../../lib/api'
 import { Button, Checkbox, InlineAlert, PageHeader, PasswordField, Stack, TextField } from '../../ui'
 import { PublicPage } from '../components/PublicPage'
+import type { LoginState } from '../guards'
 import { usePageTitle } from '../routeAnnouncement'
 import styles from './Page.module.css'
 
@@ -34,7 +35,8 @@ function formatWait(seconds: number, locale: string) {
  * already sent a signed-in visitor home, or logged out a session that must change its password (DEC-092). A failure
  * keeps the page and the cached (anonymous) session: one generic message for every 401 (DEC-089), the wait for a 429, a
  * retry for a network failure. After success: the forced change, a safe `?next=` of the role (T18) or the role home,
- * always through the router.
+ * always through the router. After another tab's sign-out (the location state's `signedOutElsewhere`, set by
+ * `connectAuthProblems`) a status notice says why the page shows, until a sign-in submit starts (T-M2.13 scope 2, UX-4).
  */
 export function LoginPage() {
   const { t, i18n } = useTranslation('auth')
@@ -43,6 +45,11 @@ export function LoginPage() {
   const [params] = useSearchParams()
   const login = useLogin()
   const inFlight = useRef(false)
+  const location = useLocation()
+  // The location entry whose notice a submit hid; another entry (a new navigation) decides by its own state.
+  const [noticeHiddenAt, setNoticeHiddenAt] = useState<string | null>(null)
+  const signedOutElsewhere =
+    (location.state as LoginState | null)?.signedOutElsewhere === true && noticeHiddenAt !== location.key
   const { control, handleSubmit } = useForm<LoginValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: { username: '', password: '', rememberMe: false },
@@ -73,6 +80,7 @@ export function LoginPage() {
   const send = () => {
     if (inFlight.current) return
     inFlight.current = true
+    setNoticeHiddenAt(location.key)
     void submit().finally(() => {
       inFlight.current = false
     })
@@ -83,6 +91,7 @@ export function LoginPage() {
     <PublicPage>
       <Stack gap={6}>
         <PageHeader title={t('login.title')} description={t('login.description')} />
+        {signedOutElsewhere ? <InlineAlert tone="info" title={t('login.signedOutElsewhere')} /> : null}
         {error ? <LoginError error={error} locale={i18n.language} onRetry={send} /> : null}
         <form
           noValidate

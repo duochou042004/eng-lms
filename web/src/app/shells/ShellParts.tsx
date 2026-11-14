@@ -2,6 +2,7 @@ import { CircleUser, KeyRound, LogOut } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router'
 import { useLogout, useSession } from '../../features/auth/api/session'
+import { LogoutFailedAlert } from '../../features/auth/components/LogoutFailedAlert'
 import { roleHome } from '../../features/auth/model/redirect'
 import { useMeta } from '../../features/settings/api/useMeta'
 import { Button, ButtonLink, Popover } from '../../ui'
@@ -50,7 +51,8 @@ function useAccountName() {
  * The account section (information-architecture §1, §3; FR-AUTH-04, FR-AUTH-05): who is signed in, the language
  * switcher, "Change password" and "Log out" in the same visual kind (a link and a button that look alike). The same
  * component fills the account popover, the tutor drawer's footer and the student's More sheet. `onNavigate` closes the
- * overlay that holds it before "Change password" navigates.
+ * overlay that holds it before "Change password" navigates. A failed Log out shows its alert below the actions; Log out
+ * stays the retry (T-M2.13 scope 3).
  */
 export function AccountSection({ onNavigate }: { onNavigate?: () => void }) {
   const { t } = useTranslation('shell')
@@ -70,6 +72,7 @@ export function AccountSection({ onNavigate }: { onNavigate?: () => void }) {
           {t('account.logout')}
         </Button>
       </div>
+      {logout.isError ? <LogoutFailedAlert /> : null}
     </div>
   )
 }

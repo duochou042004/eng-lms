@@ -81,15 +81,19 @@ export function useChangePassword() {
 }
 
 /**
- * Log out (FR-AUTH-04), then, also when the call failed, forget all server state (queries and mutations), tell the other tabs (`signed-out`) and
- * go to `/login`, whose loader reads the session again (and so re-primes the `XSRF-TOKEN` cookie).
+ * Log out (FR-AUTH-04). Sent also offline (`networkMode: 'always'`), so it fails at once instead of pausing with no end
+ * (T-M2.13 O-1). On success: forget all server state (queries and mutations), tell the other tabs (`signed-out`) and go
+ * to `/login`, whose loader reads the session again (and so re-primes the `XSRF-TOKEN` cookie). On a failure nothing is
+ * cleared, posted or navigated: the session is still alive on the server, so the page stays and the caller shows the
+ * error (`LogoutFailedAlert`; DEC-155, O-2). The API client's own 401/403 reactions still apply.
  */
 export function useLogout() {
   const queryClient = useQueryClient()
   const navigate = useNavigate()
   return useMutation({
     mutationFn: logout,
-    onSettled: async () => {
+    networkMode: 'always',
+    onSuccess: async () => {
       queryClient.getQueryCache().clear()
       queryClient.getMutationCache().clear()
       postAuthMessage('signed-out')

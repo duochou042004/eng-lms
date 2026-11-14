@@ -1,4 +1,4 @@
-import { screen, waitFor } from '@testing-library/react'
+import { screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { delay, http, HttpResponse } from 'msw'
 import { describe, expect, it } from 'vitest'
@@ -113,13 +113,21 @@ describe('Log out (FR-AUTH-04, scope 7)', () => {
     await waitFor(() => expect(path(router)).toBe('/login?next=%2Ftutor%2Ftoday'))
   })
 
-  it('still goes to /login when the logout call fails', async () => {
+  // T-M2.13 scope 3 (DEC-155): the session is still alive after a failed call, so nothing pretends it ended.
+  it('a failing logout call stays on the page: the account section says so, the path and the session stay', async () => {
     signedInUntilLogout(() => HttpResponse.error() as unknown as Response)
-    const { router } = renderRoute('/tutor')
+    const { router, queryClient } = renderRoute('/tutor')
     await screen.findByText('Lớp cô Lan')
-    await openAccountMenu()
+    const dialog = await openAccountMenu()
     await userEvent.click(screen.getByRole('button', { name: 'Đăng xuất' }))
-    await screen.findByRole('heading', { level: 1, name: 'Đăng nhập' })
-    expect(router.state.location.pathname).toBe('/login')
+    const alert = await within(dialog).findByRole('alert')
+    expect(alert).toHaveTextContent('Chưa đăng xuất được')
+    expect(alert).toHaveTextContent('Bạn vẫn đang đăng nhập. Hãy thử lại.')
+    expect(path(router)).toBe('/tutor/today')
+    expect(queryClient.getQueryData(SESSION_KEY)).toEqual(sessionBody('TUTOR'))
+    // The page stays under the open (modal) account popover.
+    expect(screen.getByRole('heading', { level: 1, name: 'Hôm nay', hidden: true })).toBeInTheDocument()
+    expect(within(dialog).getByRole('button', { name: 'Đăng xuất' })).toHaveFocus()
+    await expectNoAxeViolations(document.body)
   })
 })

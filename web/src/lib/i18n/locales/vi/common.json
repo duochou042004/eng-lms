@@ -21,16 +21,18 @@
     "descriptionWithRequestId": "Hãy tải lại trang. Nếu lỗi vẫn còn, hãy gửi kèm mã yêu cầu khi báo lỗi.",
     "requestId": "Mã yêu cầu: {{requestId}}",
     "reload": "Tải lại trang",
-    "offlineDescription": "Bạn đang ngoại tuyến. Trang này cần kết nối mạng để tải.",
-    "chunkDescription": "Không tải được trang này. Hãy kiểm tra kết nối mạng rồi thử lại.",
+    "offlineDescription": "Trang này cần kết nối mạng để tải.",
+    "chunkDescription": "Hãy kiểm tra kết nối mạng rồi thử lại.",
     "retry": "Thử lại",
     "offlineTitle": "Bạn đang ngoại tuyến",
-    "chunkTitle": "Không tải được trang này"
+    "chunkTitle": "Không tải được trang này",
+    "offlineAnnouncement": "Bạn đang ngoại tuyến. Trang này cần kết nối mạng để tải."
   },
   "meta": {
     "loading": "Đang tải thông tin không gian dạy học",
     "error": "Không tải được tên không gian dạy học",
-    "retry": "Thử lại"
+    "retry": "Thử lại",
+    "errorDetails": "Xem lỗi"
   },
   "status": {
     "student": {
@@ -38,5 +40,10 @@
       "PAUSED": "Tạm nghỉ",
       "ARCHIVED": "Đã lưu trữ"
     }
+  },
+  "logout": {
+    "failedTitle": "Chưa đăng xuất được",
+    "failed": "Bạn vẫn đang đăng nhập. Hãy thử lại.",
+    "offline": "Bạn đang ngoại tuyến và vẫn đang đăng nhập. Hãy đăng xuất lại khi có mạng."
   }
 }

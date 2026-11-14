@@ -73,7 +73,7 @@ export function RouteError() {
         </div>
         {chunk ? (
           <output className={styles.visuallyHidden}>
-            {offlineRetries > 0 ? <span key={offlineRetries}>{t('error.offlineDescription')}</span> : null}
+            {offlineRetries > 0 ? <span key={offlineRetries}>{t('error.offlineAnnouncement')}</span> : null}
           </output>
         ) : null}
       </Stack>

@@ -1,6 +1,6 @@
 import { hashKey, type QueryClient } from '@tanstack/react-query'
 import { redirect, type DataRouter, type LoaderFunctionArgs } from 'react-router'
-import { onAuthMessage, postAuthMessage } from '../features/auth/api/authChannel'
+import { onAuthMessage, postAuthMessage, type AuthMessage } from '../features/auth/api/authChannel'
 import { ensureSession, logout, refreshSession, SESSION_KEY, type Session } from '../features/auth/api/session'
 import { loginPath, roleHome, type Role } from '../features/auth/model/redirect'
 import { onAuthProblem } from '../lib/api'
@@ -71,6 +71,14 @@ function sessionChanged(before: Session | null | undefined, after: Session | nul
   return before.userId !== after.userId || before.role !== after.role
 }
 
+/** The pages that need a session: the shells and the password change (where a sign-out elsewhere is worth a notice). */
+const NEEDS_SESSION = /^\/(?:tutor|student)(?:\/|$)|^\/change-password$/
+
+/** The `/login` location state after another tab's sign-out (T-M2.13 scope 2): a flag, no user data. */
+export interface LoginState {
+  signedOutElsewhere?: boolean
+}
+
 /**
  * The tab follows a session that changed under it (T-M2.12): on `/login` with a signed-in session it goes to `/`
  * (whose guard picks the role home or `/change-password`); elsewhere the router revalidates, so the unchanged guards
@@ -91,7 +99,10 @@ async function followSession(router: DataRouter, session: Session | null) {
  * (concurrent 403s share the read); only when the user, role or sign-in changed does it drop every cached query but the
  * session (and every cached mutation) and follow it. A message from another tab drops every cached query but the session, reads the session and
  * follows it; so does a page restored from the back/forward cache (`pageshow` with `persisted`). Queries of mounted
- * pages are reset (they refetch for the new session), the others removed. These reactions run one after another; none
+ * pages are reset (they refetch for the new session), the others removed. A `signed-out` message reads the session
+ * first (T-M2.13 scope 2, G0 D-1): when the tab had a session, the read is anonymous and the page needs a session, it
+ * clears both caches without a reset (nothing refetches), caches the anonymous session and goes to `/login?next=` with
+ * the `signedOutElsewhere` notice; a 401 meanwhile does not navigate. These reactions run one after another; none
  * of them posts a message. Navigation goes through the router
  * only. Returns the unsubscribe (which also closes the channel).
  */
@@ -107,11 +118,13 @@ export function connectAuthProblems(router: DataRouter, queryClient: QueryClient
     queryClient.getMutationCache().clear()
   }
   let roleCheck: Promise<unknown> | null = null
+  // From the start of a `signed-out` resync until its navigation has settled: that resync navigates itself (G0 N-1).
+  let followingSignOut = false
 
   const offProblems = onAuthProblem((problem) => {
     const { pathname, search } = router.state.location
     if (problem === 'UNAUTHENTICATED') {
-      if (pathname === '/login') return
+      if (pathname === '/login' || followingSignOut) return
       queryClient.getQueryCache().clear()
       queryClient.getMutationCache().clear()
       void router.navigate(loginPath(pathname + search))
@@ -135,7 +148,34 @@ export function connectAuthProblems(router: DataRouter, queryClient: QueryClient
       dropAllButSession()
       await followSession(router, await refreshSession(queryClient))
     })
-  const offMessages = onAuthMessage(resync)
+  // Another tab signed out: read before dropping anything, so no refetch's 401 navigates first without the notice.
+  const followSignOut = () =>
+    void serially(async () => {
+      followingSignOut = true
+      let after: Session | null | undefined
+      try {
+        const before = queryClient.getQueryData<Session | null>(SESSION_KEY)
+        after = await refreshSession(queryClient)
+        const { pathname, search } = router.state.location
+        if (before && !after && NEEDS_SESSION.test(pathname)) {
+          queryClient.getQueryCache().clear()
+          queryClient.getMutationCache().clear()
+          queryClient.setQueryData(SESSION_KEY, null)
+          const state: LoginState = { signedOutElsewhere: true }
+          await router.navigate(loginPath(pathname + search), { state })
+          return
+        }
+      } catch {
+        // The read failed: today's steps below drop the cache; there is no session to follow.
+      } finally {
+        followingSignOut = false
+      }
+      dropAllButSession()
+      if (after !== undefined) await followSession(router, after)
+    })
+  const offMessages = onAuthMessage((message: AuthMessage) =>
+    message.type === 'signed-out' ? followSignOut() : resync(),
+  )
   // A page restored from the back/forward cache missed the messages sent meanwhile: the same steps (AC11 (f)).
   const onPageShow = (event: PageTransitionEvent) => {
     if (event.persisted) resync()

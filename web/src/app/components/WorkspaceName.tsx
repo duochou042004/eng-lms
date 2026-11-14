@@ -2,7 +2,8 @@ import { CircleAlert } from 'lucide-react'
 import { useId } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useMeta } from '../../features/settings/api/useMeta'
-import { Button, DelayedSkeleton, Skeleton, cx } from '../../ui'
+import { Button, DelayedSkeleton, Skeleton, Toggletip, cx } from '../../ui'
+import { useOverlay } from '../shells/useOverlay'
 import styles from './WorkspaceName.module.css'
 
 /** The loading state: busy and labelled from 0 ms, one text line tall; the skeleton appears after 150 ms. */
@@ -20,16 +21,28 @@ export function WorkspaceNameLoading() {
 /**
  * The compact (header-sized) error: the message and Retry, never inside a link. `wrap` (the public frame): below 768 px
  * the message may take two lines. In a shell top bar too narrow for the message (the `workspace-error` container, set by
- * the shell, under 22rem) only an icon shows, with Retry right beside it and the message as the icon's `title`: the
- * message stays in the alert as visually hidden text and describes Retry (AC11 (c); UX-9, T-M2.12).
+ * the shell, under 22rem) only an icon button shows, with Retry right beside it (UX-9): a `Toggletip` whose popover shows
+ * the message on a tap (UX-3, T-M2.13) and whose `title` holds it for mouse hover. The message stays in the alert as
+ * visually hidden text and describes Retry (AC11 (c)). The toggletip closes on a navigation, and when the container
+ * widens past the rule (its trigger is hidden then) focus goes to Retry.
  */
 export function WorkspaceNameError({ onRetry, wrap = false }: { onRetry: () => void; wrap?: boolean }) {
   const { t } = useTranslation()
   const messageId = useId()
+  const retryId = useId()
+  const details = useOverlay()
   return (
     <div role="alert" className={styles.error}>
-      <span className={styles.errorIcon} title={t('meta.error')}>
-        <CircleAlert aria-hidden="true" />
+      <span className={styles.errorIcon}>
+        <Toggletip
+          label={t('meta.errorDetails')}
+          message={t('meta.error')}
+          icon={<CircleAlert />}
+          tone="danger"
+          isOpen={details.isOpen}
+          onOpenChange={details.setOpen}
+          onTriggerHidden={() => document.getElementById(retryId)?.focus()}
+        />
       </span>
       <span
         id={messageId}
@@ -38,7 +51,7 @@ export function WorkspaceNameError({ onRetry, wrap = false }: { onRetry: () => v
       >
         {t('meta.error')}
       </span>
-      <Button variant="quiet" onPress={onRetry} aria-describedby={messageId}>
+      <Button id={retryId} variant="quiet" onPress={onRetry} aria-describedby={messageId}>
         {t('meta.retry')}
       </Button>
     </div>
