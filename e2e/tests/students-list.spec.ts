@@ -300,7 +300,7 @@ test.describe('Add student (F2) and the credentials card', () => {
 test.describe('Students list', () => {
   /** 26 students under a per-project prefix: reused across runs (only the missing ones are created). */
   async function pagingSet(page: Page, project: string) {
-    const prefix = `E2E Paging ${project}`
+    const prefix = `E2E Paging ${project}:`
     const found = await apiCall<{ totalItems: number; items: Array<{ fullName: string }> }>(
       page,
       'GET',
@@ -497,7 +497,7 @@ test.describe('Students table with realistic data (AC12 (t))', () => {
     page,
   }, testInfo) => {
     const project = testInfo.project.name
-    test.skip(project === 'phone-small', 'the table starts at 768 px')
+    test.skip(page.viewportSize()!.width < 768, 'the table starts at 768 px')
     const widths = project === 'laptop' ? [768, 1024, 1280] : [page.viewportSize()!.width]
     const t = token()
     await page.goto('/tutor/students')

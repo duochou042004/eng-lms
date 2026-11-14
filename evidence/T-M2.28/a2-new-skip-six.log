@@ -1,0 +1,9 @@
+  -  1 [phone] › tests/students-list.spec.ts:496:3 › Students table with realistic data (AC12 (t)) › fixed column shares at 768, 1024 and 1280 in vi and en: no horizontal scroll, every value whole
+  -  4 [phone-small] › tests/students-list.spec.ts:496:3 › Students table with realistic data (AC12 (t)) › fixed column shares at 768, 1024 and 1280 in vi and en: no horizontal scroll, every value whole
+  ✓  5 [tablet] › tests/students-list.spec.ts:496:3 › Students table with realistic data (AC12 (t)) › fixed column shares at 768, 1024 and 1280 in vi and en: no horizontal scroll, every value whole (3.5s)
+  ✓  3 [desktop] › tests/students-list.spec.ts:496:3 › Students table with realistic data (AC12 (t)) › fixed column shares at 768, 1024 and 1280 in vi and en: no horizontal scroll, every value whole (3.5s)
+  ✓  6 [tablet-land] › tests/students-list.spec.ts:496:3 › Students table with realistic data (AC12 (t)) › fixed column shares at 768, 1024 and 1280 in vi and en: no horizontal scroll, every value whole (3.6s)
+  ✓  2 [laptop] › tests/students-list.spec.ts:496:3 › Students table with realistic data (AC12 (t)) › fixed column shares at 768, 1024 and 1280 in vi and en: no horizontal scroll, every value whole (4.6s)
+  2 skipped
+  4 passed (9.2s)
+e2e-run: playwright exit 0

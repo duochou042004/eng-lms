@@ -1,0 +1,15 @@
+dist/assets/index-CAS2t75n.js                                    230.96 kB │ gzip:  72.45 kB
+dist/assets/pageTitle-B1-cXWnR.js                                323.51 kB │ gzip: 101.37 kB
+
+✓ built in 446ms
+e2e-run: started englms-0.0.1-SNAPSHOT.jar (pid 531791, log backend/target/e2e-app.log)
+e2e-run: app ready; running Playwright --project=phone-small --project=tablet-land --retries=0 -g AC2/AC3/AC4/AC10 tests/students-list.spec.ts
+
+Running 2 tests using 2 workers
+
+  ✓  1 [phone-small] › tests/students-list.spec.ts:317:3 › Students list › AC2/AC3/AC4/AC10: search (diacritics), Include archived, Newest, paging, URL with Back and reload, fallbacks, layout (7.5s)
+  ✓  2 [tablet-land] › tests/students-list.spec.ts:317:3 › Students list › AC2/AC3/AC4/AC10: search (diacritics), Include archived, Newest, paging, URL with Back and reload, fallbacks, layout (16.1s)
+
+  2 passed (19.8s)
+e2e-run: playwright exit 0
+e2e-run: app stopped (pid 531791)
