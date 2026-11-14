@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-11-13T18:03:59Z",
-  "updatedBy": "lead-coordinator (T-M2.24 merged 90bbfe0; records, DEC-171)",
+  "updatedAt": "2026-11-14T09:10:08Z",
+  "updatedBy": "lead-coordinator (handoff after the PO's Dependabot merges)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -1539,6 +1539,11 @@
       "at": "2026-11-13T18:03:59Z",
       "actor": "lead-coordinator",
       "event": "T-M2.24 merged (90bbfe0, PR #178, DEC-171); QA report PR #179; records PR; OQ T-M2.24-1 and G3 S3-1/S4-2 to T-M2.28 (f)/(g); next T-M2.13 on the PO's start signal."
+    },
+    {
+      "at": "2026-11-14T09:10:08Z",
+      "actor": "lead-coordinator",
+      "event": "The PO merged Dependabot #160-#164 and #166 (develop 1be3e45); #165 (msw 3, web typecheck fails) and #135 (react group) held by the PO. Local and GitHub in sync; handoff updated."
     }
   ]
 }

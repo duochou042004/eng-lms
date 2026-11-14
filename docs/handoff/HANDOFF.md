@@ -1,7 +1,7 @@
-# Handoff — 2026-11-13T18:04Z (T-M2.24 merged; next T-M2.13 on the PO's start signal)
+# Handoff — 2026-11-14T09:09Z (T-M2.24 merged and recorded; Dependabot batch merged by the PO; next T-M2.13 on the PO's start signal)
 
-Phase/Milestone: P1 / M2 (in progress) · Task: **T-M2.13** (ready; waits for the PO's start signal) · Branch: `develop` (`000c7a6`: T-M2.24 `90bbfe0` and its QA PR #179;
-this records PR on `docs/T-M2.24-records`) · Next after it: **T-M2.28** (draft) before the M2 G5 · Remote: https://github.com/duochou042004/eng-lms
+Phase/Milestone: P1 / M2 (in progress) · Task: **T-M2.13** (ready; waits for the PO's start signal) · Branch: `develop` (`1be3e45`: T-M2.24 records `cdec7bb`, then the PO's
+Dependabot merges; this handoff on `docs/T-M2.24-dependabot-handoff`) · Next after it: **T-M2.28** (draft) before the M2 G5 · Remote: https://github.com/duochou042004/eng-lms
 
 ## Where we are
 - **T-M2.24 merged** (`90bbfe0`, PR #178, DEC-171): `students.spec.ts` split into eight files (helpers in `e2e/support/students.ts`);
@@ -12,18 +12,27 @@ this records PR on `docs/T-M2.24-records`) · Next after it: **T-M2.28** (draft)
 - PR #153 is the T-M2.13 **packet** PR, merged 2026-11-11 (`b1a542f`): the old "gh pr update-branch 153" step was stale; nothing to update.
 
 ## In flight / uncommitted
-- QA PR #179 merged (`000c7a6`). This records PR (`docs/T-M2.24-records`): open; one
-  docs-reviewer (records check), `DOCS-REVIEW T-M2.24: PASS` + `LC-APPROVED T-M2.24`, merge-gate. Nothing else.
+- QA PR #179 (`000c7a6`) and records PR #180 (`cdec7bb`) merged. This handoff PR (`docs/T-M2.24-dependabot-handoff`): one docs-reviewer,
+  `DOCS-REVIEW T-M2.24: PASS` + `LC-APPROVED T-M2.24`, merge-gate. Nothing else.
+- **The PO merged Dependabot #160–#164 and #166 on 2026-11-14** (develop `1be3e45`): actions/setup-java 6.2.0, `@playwright/test` 1.65.0
+  (e2e, qa), the web tooling group (vite 8.3.7, `@vitejs/plugin-react` 6.3.0, oxlint 1.93.0, stylelint 18.0.0 with config-standard 41.0.0),
+  lucide-react 1.72.0, `@tanstack/react-query` 5.107.1. No `shortcut:` comment names any of them (coding-agent-rules §8). Develop's CI on
+  `1be3e45` was green except e2e-smoke, still running at 09:09Z: check it first. `docs/03-architecture/tech-stack.md` §7 still lists older
+  versions (it already did before these merges; it is not updated per bump).
 
 ## Next steps (in this order)
-1. Merge the records PR (above); `gitlab-sync.sh` after each merge.
+1. Merge this handoff PR (above); `gitlab-sync.sh` after each merge. Check develop's e2e-smoke on `1be3e45`.
 2. Ask the PO for the T-M2.13 start signal (DEC-163, DEC-164; no other PO decision pending).
 3. On the signal: `feature/T-M2.13-…` from `develop`; frontend-implementer with `docs/tasks/T-M2.13-auth-shell-followups.md`; gate; PR; CI;
    G3 with a QA run (DEC-171); merge-gate; records.
 4. T-M2.28 (a)–(g) before the M2 G5; T-M2.26 after at least 10 shadow PRs and its two probes.
 
 ## Pending PO decisions / actions
-- The T-M2.13 start signal. **Dependabot (the PO's):** PRs #135 and #160–#166 need `@dependabot rebase`.
+- The T-M2.13 start signal.
+- **Dependabot, held by the PO for develop's stability:** #165 (msw 2.15.0 → 3.0.5, a major) fails `web` typecheck at
+  `web/src/test/setup.ts:14` (`onUnhandledRequest` is not in msw 3's options), `container-build` and `e2e-smoke`: it needs a code change,
+  i.e. a packet, not a rebase. #135 (react, react-dom 19.3.1, react-aria-components 1.22.1, react-router 8.5.1) was re-run at 09:05Z
+  (`web` green, backend and e2e-smoke still running). Both remain the PO's to merge or close; the LC does not touch them unasked.
 
 ## Gotchas
 - **A `feature/` branch merges only on `QA-VERDICT <task>: PASS`** (merge-gate); a docs-reviewer's `DOCS-REVIEW` counts only on `docs/`/`chore/`.
