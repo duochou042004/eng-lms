@@ -1,29 +1,32 @@
-# Handoff — 2026-11-14T17:40Z (T-M2.28 merged; T-M2.29 next)
+# Handoff — 2026-11-14T18:14Z (T-M2.28 done and recorded; T-M2.29 packet ready, waiting for the PO)
 
-Phase/Milestone: P1 / M2 (in progress) · Task: **T-M2.29** (draft: packet not written) · Branch: `develop` (`a1bcf12`; this records
-PR on `docs/T-M2.28-records`) · Next after it: the M2 G5 regression; T-M2.30 (M2 polish) · Remote: https://github.com/duochou042004/eng-lms
+Phase/Milestone: P1 / M2 (in progress) · Task: **T-M2.29** (ready; PO start signal not yet asked) · Branch: `develop` (`bda1715`; the packet
+and this handoff on `docs/T-M2.29-packet`, PR #189) · Next after it: the M2 G5 regression; T-M2.30 (M2 polish) · Remote: https://github.com/duochou042004/eng-lms
 
 ## Where we are
-- **T-M2.28 done** (`a1bcf12`, PR #187, DEC-175; rulings DEC-174): (a)–(g) on `chore/`, tier L. Gate PASS on `a7a1e4d` (720 s); regression
-  43617206392 green on `ddd51f4` (all 6 viewports, Firefox and WebKit smoke). G3 adversarial docs-reviewer: PASS WITH MINOR → confirmation PASS.
-- **Found on the way (DEC-174):** (b) WebKit smoke needed client-side non-Secure stored cookies (WebKit drops Secure cookies on http); the inline
-  `<style>` was Playwright's screenshot step. (f) is a **product** race: after one's own Log out the user can land on `/login?next=<page>` →
-  T-M2.29 (j). The gate's ×3 repeat exposed a `pagingSet` check-then-create race (fixed: one set per repeat index).
-- **Firefox `Page crashed`** in axe at `smoke.spec.ts:77` (run 43611629190, both attempts, unchanged test): ruled an engine crash; a G5 recurrence
+- **T-M2.28 done** (`a1bcf12`, PR #187, DEC-175; rulings DEC-174; records PR #188 `bda1715`): (a)–(g) on `chore/`, tier L. Gate PASS on `a7a1e4d`;
+  regression 43617206392 green on `ddd51f4`. G3 adversarial docs-reviewer: PASS WITH MINOR → confirmation PASS.
+- **Found on the way (DEC-174):** WebKit smoke needed client-side non-Secure stored cookies (WebKit drops Secure cookies on http); the inline
+  `<style>` was Playwright's screenshot step; (f) is a **product** race (own Log out → `/login?next=<page>`) → T-M2.29 (j); the gate's ×3 repeat
+  exposed a `pagingSet` race (fixed). A Firefox `Page crashed` in axe (run 43611629190, both attempts) was ruled an engine crash; a G5 recurrence
   is treated as a likely real defect: capture Firefox stderr first (DEC-174 (5)).
-- New backlog rows: T-M2.29 now (h), (i), (j); **T-M2.30** (`e2e-run.sh` refusal gaps, G3 S4-1/S4-2, tier L, M2 polish).
+- **T-M2.29 packet ready** (`docs/tasks/T-M2.29-ui-logout-followups.md`, PR #189): (h1) `ui/Sheet` footer scroll, (h2) the logout alert scrolls into
+  view, (j) the own-logout race with four rules; (i) "Dismiss" in vi **accepted as is** (DEC-176: React Aria's only override is a crash trap).
+  Tier M, combined QA+UX G3. G0: round 1 CHANGES REQUESTED (S2-1), delta PASS WITH MINOR, N-1..N-4 fixed.
+- New backlog row **T-M2.30** (`e2e-run.sh` refusal gaps, T-M2.28 G3 S4-1/S4-2, tier L).
 
 ## In flight / uncommitted
-- This records PR (`docs/T-M2.28-records`): one docs-reviewer (text only) → `DOCS-REVIEW T-M2.28: PASS` + `LC-APPROVED T-M2.28`, merge-gate,
-  `gitlab-sync.sh`. If still open, do that first. Nothing else.
+- PR #189 (`docs/T-M2.29-packet`: the packet, DEC-176, this handoff): needs the G0 reviewer's confirmation `DOCS-REVIEW T-M2.29: PASS` on its
+  final head (if not yet given: one fresh docs-reviewer, text only), CI, `LC-APPROVED T-M2.29`, merge-gate, `gitlab-sync.sh`. Do that first.
 
 ## Next steps (in this order)
-1. Merge this records PR (above).
-2. T-M2.29 packet (task-packet skill) from the backlog row (h), (i), (j): tier M, combined QA+UX G3; (j) touches `useLogout`/the signed-out guard
-   (auth: consider the SEC trigger); G0; ask the PO for the start signal.
+1. Merge PR #189 (above).
+2. Ask the PO for the T-M2.29 start signal. On it: `feature/T-M2.29-ui-logout-followups` from `develop`; frontend-implementer with the packet;
+   gate once on the final head; PR; CI; G3 one combined QA+UX `qa-evaluator` (`QA-VERDICT` + `UX-REVIEW`); merge-gate; QA PR `qa/T-M2.29`; records.
 3. Then the M2 G5 regression (`regression` workflow + the G5 `E2E_KEEP_DB=1` run); T-M2.30 in the M2 polish; T-M2.26 after at least 10 shadow PRs.
 
 ## Pending PO decisions / actions
+- The T-M2.29 start signal (not yet asked).
 - **Dependabot, held by the PO:** #165 (msw 3 major: `web` typecheck fails at `web/src/test/setup.ts:14`; needs a packet) and #135 (react group).
   The LC does not touch them unasked.
 
