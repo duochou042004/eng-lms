@@ -31,7 +31,7 @@ PR on `docs/T-M2.28-records`) · Next after it: the M2 G5 regression; T-M2.30 (M
 - **`gate.sh`'s e2e repeat runs `--repeat-each=3` under `fullyParallel`** on a fresh DB: test-data helpers that check-then-create race between
   repeats; key shared sets by `testInfo.repeatEachIndex` (T-M2.28).
 - **WebKit locally:** host libraries are not installed; Firefox/WebKit evidence comes from `gh workflow run regression.yml --ref <branch>`
-  (~26 min, no inputs: repeat diagnostics go in a temporary spec block, removed before the final head).
+  (~25–30 min, no inputs: repeat diagnostics go in a temporary spec block, removed before the final head).
 - **merge-gate on `docs/`/`chore/` needs the exact `DOCS-REVIEW <task>: PASS`**; a PASS WITH MINOR needs a same-reviewer confirmation after the
   S4s are fixed or batched (T-M2.28).
 - **`e2e-run.test.sh` fails while another app holds port 8080:** don't run it beside an E2E run.
@@ -49,7 +49,7 @@ PR on `docs/T-M2.28-records`) · Next after it: the M2 G5 regression; T-M2.30 (M
 - **docs-check reads `](x)` inside code spans as a link:** write regexes like `(PG)?` after `]` as `\(PG\)` or in words (T-M2.25 records).
 - **`scripts/tests/e2e-run.test.sh` can flake in CI** ("keeps the host and parameters": a stale `app2.env` race, T-M2.28 (e)): `gh run rerun <id> --failed`.
 - **Local E2E now runs on its own database** (T-M2.25): `e2e-run.sh` recreates `englms_e2e` per run with `.data/e2e/fresh/`; `E2E_KEEP_DB=1` runs against the PO's dev DB as before (G5). pgjdbc URL parameters and `.env` reassignments are guarded (DEC-168, DEC-169).
-- **The `regression` workflow** is manual (`gh workflow run regression.yml --ref develop`, ~33 min, all 6 viewports + Firefox/WebKit smoke); its first run failed 7 tests (T-M2.28).
+- **The `regression` workflow** is manual (`gh workflow run regression.yml --ref develop`, ~25–30 min, all 6 viewports + Firefox/WebKit smoke); its first run failed 7 tests (T-M2.28).
 - **T-M2.27 (DEC-166):** the dev DB now holds 1,065 active, 30 paused and 133 archived students (read-only count by QA, 2026-11-13); local E2E added rows until T-M2.25 (now only `E2E_KEEP_DB=1` runs do). `loading.spec.ts` "the loading region in English" can still fail on a very slow runner (CPU throttle ≥ 30 in the reproduction): a CI recurrence needs a new ruling (the packet forbade raising a timeout). Reproduction generators must read the old form from the pre-task commit, not `HEAD`.
 - **A QA agent can end on an API error after its verdict** (T-M2.27: Cloudflare 403 after the full report): the report already returned counts; check `git status` and `e2e/tests` for scratch files.
 - **This device (2026-11-11): agent shells run with `NoNewPrivs=1`** (inherited from the desktop app), so rootless `podman` fails with

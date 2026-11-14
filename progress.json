@@ -407,7 +407,7 @@
     {
       "id": "T-M2.28",
       "title": "Regression and tooling follow-ups before the M2 G5 (DEC-169, DEC-171, DEC-173)",
-      "completedAt": "2026-11-14T17:40:39Z",
+      "completedAt": "2026-11-14T17:39:35Z",
       "mergeCommit": "a1bcf12",
       "evidence": "evidence/T-M2.28/summary.md",
       "note": "PR #187 via merge-gate (head 91f94b5, CI 7/7 (5 full)); packet PR #185 (3894451); PO start 2026-11-14T13:49:56Z; gate PASS on a7a1e4d (720 s); regression 43617206392 green on ddd51f4; G3 adversarial docs-reviewer PASS WITH MINOR -> confirmation PASS (111,691 tokens); (f) product race -> T-M2.29 (j), G3 S4-1/S4-2 -> T-M2.30 (DEC-174, DEC-175)"
@@ -1610,6 +1610,16 @@
       "at": "2026-11-14T11:54:01Z",
       "actor": "lead-coordinator",
       "event": "T-M2.28 packet merged (PR #185, 3894451); PO answered \"Not yet\" to the start signal; handoff written."
+    },
+    {
+      "at": "2026-11-14T13:49:56Z",
+      "actor": "PO",
+      "event": "T-M2.28 start signal (chat: \"Start T-M2.28\"); branch chore/T-M2.28-regression-followups"
+    },
+    {
+      "at": "2026-11-14T17:39:35Z",
+      "actor": "lead-coordinator",
+      "event": "T-M2.28 merged (PR #187, a1bcf12, head 91f94b5); records PR docs/T-M2.28-records (DEC-175); T-M2.29 next, T-M2.30 added (DEC-174)."
     }
   ]
 }
