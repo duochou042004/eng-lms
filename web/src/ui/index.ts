@@ -21,6 +21,7 @@ export { BottomTabs, type BottomTabsAction, type BottomTabsProps } from './Botto
 export { ButtonLink, type ButtonLinkProps } from './Button'
 export { NavList, type NavItem, type NavListProps } from './NavList'
 export { Popover, type PopoverProps } from './Popover'
+export { Toggletip, type ToggletipProps } from './Toggletip'
 export { Sheet, type SheetProps } from './Sheet'
 export { ConfirmDialog, type ConfirmDialogProps } from './ConfirmDialog'
 export { CopyButton, type CopyButtonProps } from './CopyButton'

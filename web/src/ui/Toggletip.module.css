@@ -1,0 +1,83 @@
+/* A quiet icon button, as IconButton: a 44 px target (responsive-standards §3.4). */
+.trigger {
+  display: inline-grid;
+  place-items: center;
+  inline-size: var(--size-control-md);
+  block-size: var(--size-control-md);
+  padding: 0;
+  border: var(--border-width) solid transparent;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  cursor: pointer;
+  transition: background-color var(--motion-duration) var(--motion-easing);
+}
+
+.muted {
+  color: var(--color-text-muted);
+}
+
+.danger {
+  color: var(--color-danger);
+}
+
+.trigger[data-hovered],
+.trigger[data-pressed],
+.trigger[aria-expanded='true'] {
+  background: var(--color-accent-subtle);
+}
+
+.trigger[data-focus-visible] {
+  outline: var(--focus-ring-width) solid var(--color-focus);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.icon {
+  display: inline-flex;
+  inline-size: var(--size-icon);
+  block-size: var(--size-icon);
+}
+
+.icon > svg {
+  inline-size: 100%;
+  block-size: 100%;
+}
+
+/* The Popover surface (Popover.module.css), as wide as its text up to the popover width and the viewport less the gutters. */
+.popover {
+  inline-size: max-content;
+  max-inline-size: min(var(--size-popover), calc(100vw - var(--space-7)));
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-overlay);
+  z-index: var(--z-overlay);
+}
+
+.popover[data-entering] {
+  animation: fade-in var(--motion-duration) var(--motion-easing);
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+.dialog {
+  padding: var(--space-3) var(--space-4);
+  border-radius: inherit;
+  outline: none;
+}
+
+.dialog:focus-visible {
+  outline: var(--focus-ring-width) solid var(--color-focus);
+  outline-offset: calc(-1 * var(--focus-ring-width));
+}
+
+/* Human language: wraps at spaces only (UI rules). */
+.message {
+  margin: 0;
+  color: var(--color-text);
+  overflow-wrap: normal;
+  white-space: normal;
+}

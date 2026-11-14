@@ -16,7 +16,8 @@
     "buttonLink": "Liên kết dạng nút",
     "students": "Thành phần cho Học viên (T-M2.5)",
     "profile": "Thành phần hồ sơ và tài khoản (T-M2.14)",
-    "tagInput": "TagInput (T-M2.17)"
+    "tagInput": "TagInput (T-M2.17)",
+    "toggletip": "Toggletip (T-M2.13)"
   },
   "sample": {
     "primary": "Lưu",
@@ -156,6 +157,8 @@
     "tagListLabel": "Thẻ chỉ đọc",
     "tagFirst": "Nghe",
     "tagSecond": "Phát âm",
-    "tagLong": "Từ vựng mô tả các hoạt động thường ngày"
+    "tagLong": "Từ vựng mô tả các hoạt động thường ngày",
+    "toggletipLabel": "Xem lỗi",
+    "toggletipMessage": "Không tải được tên không gian dạy học. Nội dung đầy đủ hiện ra khi chạm vào biểu tượng."
   }
 }

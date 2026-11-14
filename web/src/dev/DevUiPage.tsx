@@ -1,4 +1,4 @@
-import { CalendarCheck, CircleUser, Ellipsis, House, Plus, Users } from 'lucide-react'
+import { CalendarCheck, CircleAlert, CircleUser, Ellipsis, House, Plus, Users } from 'lucide-react'
 import { useEffect, useState, type ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import { LanguageSwitcher } from '../app/components/LanguageSwitcher'
@@ -35,6 +35,7 @@ import {
   TextField,
   toast,
   ToastRegion,
+  Toggletip,
   UnsavedChangesGuard,
 } from '../ui'
 import styles from './DevUiPage.module.css'
@@ -166,6 +167,22 @@ function OverlaySamples() {
         </Popover>
       ))}
     </>
+  )
+}
+
+/** Toggletip (T-M2.13): a tap target for a message a `title` alone would hide on touch screens. */
+function ToggletipSample() {
+  const { t } = useTranslation('dev')
+  const [open, setOpen] = useState(false)
+  return (
+    <Toggletip
+      label={t('sample.toggletipLabel')}
+      message={t('sample.toggletipMessage')}
+      icon={<CircleAlert />}
+      tone="danger"
+      isOpen={open}
+      onOpenChange={setOpen}
+    />
   )
 }
 
@@ -471,6 +488,9 @@ export function DevUiPage() {
         </Section>
         <Section title={t('sections.overlays')}>
           <OverlaySamples />
+        </Section>
+        <Section title={t('sections.toggletip')}>
+          <ToggletipSample />
         </Section>
         <Section title={t('sections.fields')}>
           <TextField label={t('sample.fieldLabel')} hint={t('sample.fieldHint')} />
