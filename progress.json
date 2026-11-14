@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-11-14T11:02:07Z",
-  "updatedBy": "lead-coordinator (T-M2.13 merged and recorded)",
+  "updatedAt": "2026-11-14T11:24:54Z",
+  "updatedBy": "lead-coordinator (T-M2.28 packet draft)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -31,7 +31,30 @@
   },
   "currentTask": {
     "id": "T-M2.28",
-    "title": "Follow-ups from T-M2.25, T-M2.24 and T-M2.13 before the M2 G5 regression (DEC-169, DEC-171, DEC-172)",
+    "title": "Regression and tooling follow-ups before the M2 G5 (DEC-169, DEC-171, DEC-173)",
+    "status": "draft",
+    "ownerRole": "FE",
+    "branch": null,
+    "packet": "docs/tasks/T-M2.28-regression-followups.md",
+    "pr": null,
+    "lastCommit": null,
+    "startedAt": null,
+    "nextSteps": [
+      "Packet PR docs/T-M2.28-packet: G0 adversarial docs-reviewer; merge",
+      "PO start signal; chore/T-M2.28-regression-followups; frontend-implementer; LC starts one regression run on the branch; G3 adversarial docs-reviewer (DOCS-REVIEW on a chore/ branch)",
+      "Then T-M2.29 (UI follow-ups from T-M2.13) and the M2 G5"
+    ],
+    "trace": [
+      "DEC-169",
+      "DEC-170",
+      "DEC-171",
+      "DEC-172",
+      "DEC-173"
+    ]
+  },
+  "nextTask": {
+    "id": "T-M2.29",
+    "title": "UI follow-ups from T-M2.13 (DEC-172, DEC-173)",
     "status": "draft",
     "ownerRole": "FE",
     "branch": null,
@@ -40,31 +63,11 @@
     "lastCommit": null,
     "startedAt": null,
     "nextSteps": [
-      "LC writes the packet from the backlog row (a)-(i); G0; PO start signal; before the M2 G5"
+      "LC writes the packet from the backlog row (h), (i)"
     ],
     "trace": [
-      "DEC-169",
-      "DEC-170",
-      "DEC-171",
-      "DEC-172"
-    ]
-  },
-  "nextTask": {
-    "id": "T-M2.26",
-    "title": "Switch the CI scope on (T-M2.22 U2 validation (4); DEC-158 PO-1, PO-2)",
-    "status": "draft",
-    "ownerRole": "LC",
-    "branch": null,
-    "packet": null,
-    "pr": null,
-    "lastCommit": null,
-    "startedAt": null,
-    "nextSteps": [
-      "After at least 10 shadow PRs and the two probes (backlog row)"
-    ],
-    "trace": [
-      "DEC-158",
-      "DEC-160"
+      "DEC-172",
+      "DEC-173"
     ]
   },
   "completed": [
@@ -434,7 +437,7 @@
   "gates": {
     "G0": {
       "status": "pending",
-      "note": "T-M2.28 packet not written yet"
+      "note": "T-M2.28 packet: adversarial docs-reviewer"
     },
     "G1": {
       "status": "pass",
@@ -505,7 +508,8 @@
       "DEC-169",
       "DEC-170",
       "DEC-171",
-      "DEC-172"
+      "DEC-172",
+      "DEC-173"
     ],
     "pendingPO": [
       "OQ-03",
@@ -1575,6 +1579,11 @@
       "at": "2026-11-14T11:02:07Z",
       "actor": "lead-coordinator",
       "event": "T-M2.13 merged (PR #182, e3ce22c; QA PR #183, f6ba376); records PR docs/T-M2.13-records (DEC-172); next T-M2.28 packet."
+    },
+    {
+      "at": "2026-11-14T11:24:54Z",
+      "actor": "lead-coordinator",
+      "event": "T-M2.28 packet drafted (a)-(g); (h), (i) split to T-M2.29 (DEC-173)."
     }
   ]
 }
