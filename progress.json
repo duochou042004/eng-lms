@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-11-14T11:32:09Z",
-  "updatedBy": "lead-coordinator (T-M2.28 packet G0 PASS)",
+  "updatedAt": "2026-11-14T11:54:01Z",
+  "updatedBy": "lead-coordinator (T-M2.28 held by the PO; handoff)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -40,9 +40,9 @@
     "lastCommit": null,
     "startedAt": null,
     "nextSteps": [
-      "Packet PR #185: G0 adversarial docs-reviewer round 1 CHANGES REQUESTED (S2 ×2, S3 ×3, S4 ×4), delta PASS WITH MINOR (one S4), confirmation PASS; merge",
-      "PO start signal; chore/T-M2.28-regression-followups; frontend-implementer; LC starts one regression run on the branch; G3 adversarial docs-reviewer (DOCS-REVIEW on a chore/ branch)",
-      "Then T-M2.29 (UI follow-ups from T-M2.13) and the M2 G5"
+      "Packet merged in PR #185 (3894451, G0 PASS after one CHANGES REQUESTED round)",
+      "Held by the PO (\"Not yet\", 2026-11-14): ask again for the start signal; on it chore/T-M2.28-regression-followups, frontend-implementer, LC-started regression runs on the branch, gate, PR, CI, adversarial G3 (DOCS-REVIEW), merge-gate, records",
+      "T-M2.29 (UI follow-ups from T-M2.13) and the M2 G5 after it"
     ],
     "trace": [
       "DEC-169",
@@ -50,6 +50,10 @@
       "DEC-171",
       "DEC-172",
       "DEC-173"
+    ],
+    "entryGate": [
+      "T-M2.25, T-M2.24, T-M2.13 merged — met (e3ce22c)",
+      "PO start signal — asked 2026-11-14, answered \"Not yet\" (held)"
     ]
   },
   "nextTask": {
@@ -1584,6 +1588,11 @@
       "at": "2026-11-14T11:24:54Z",
       "actor": "lead-coordinator",
       "event": "T-M2.28 packet drafted (a)-(g); (h), (i) split to T-M2.29 (DEC-173)."
+    },
+    {
+      "at": "2026-11-14T11:54:01Z",
+      "actor": "lead-coordinator",
+      "event": "T-M2.28 packet merged (PR #185, 3894451); PO answered \"Not yet\" to the start signal; handoff written."
     }
   ]
 }

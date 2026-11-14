@@ -1,32 +1,38 @@
-# Handoff — 2026-11-14T11:02Z (T-M2.13 merged and recorded; next T-M2.28 packet)
+# Handoff — 2026-11-14T11:54Z (T-M2.13 done; T-M2.28 packet ready, held by the PO)
 
-Phase/Milestone: P1 / M2 (in progress) · Task: **T-M2.28** (draft; LC writes the packet) · Branch: `develop` (`f6ba376`: T-M2.13 `e3ce22c`, QA `f6ba376`;
-this handoff on `docs/T-M2.13-records`) · Next after it: the M2 G5 regression; T-M2.26 after at least 10 shadow PRs · Remote: https://github.com/duochou042004/eng-lms
+Phase/Milestone: P1 / M2 (in progress) · Task: **T-M2.28** (ready; the PO answered "Not yet" to the start signal) · Branch: `develop` (`3894451`;
+this handoff on `docs/T-M2.28-handoff`) · Next after it: T-M2.29, then the M2 G5 regression · Remote: https://github.com/duochou042004/eng-lms
 
 ## Where we are
-- **T-M2.13 merged** (`e3ce22c`, PR #182, DEC-172): `ui/Toggletip` for the compact workspace-name error; the `/login` notice after a cross-tab
-  sign-out; a failed Log out keeps the page and says "still signed in" (`LogoutFailedAlert`); chunk pages lose their repeated sentence.
-  Gate PASS on `0a01995` (763 s); CI 7/7; G3 one combined QA+UX qa-evaluator: `QA-VERDICT T-M2.13: PASS WITH MINOR`, `UX-REVIEW T-M2.13: APPROVED`.
-- **Deferred to T-M2.28:** (h) UX-1 S3 (the `ui/Sheet` footer cannot scroll: at 740×360 the drawer's logout alert shows only its title) and
-  UX-2 S4 (change-password alert below the fold at 360×740); (i) OQ T-M2.13-1 (React Aria's hidden "Dismiss" buttons in vi, older than T-M2.13).
-- **Playwright browser:** the PO approved the download; Chromium headless shell **1254** (Chrome 158, Playwright 1.65) is installed beside 1248.
+- **T-M2.13 done** (`e3ce22c`, PR #182; QA PR #183 `f6ba376`; records PR #184 `9264956`; DEC-172): `ui/Toggletip`, the `/login` cross-tab
+  notice, failed-logout feedback, chunk-page copy. G3 combined QA+UX: PASS WITH MINOR / APPROVED.
+- **T-M2.28 packet merged** (`docs/tasks/T-M2.28-regression-followups.md`, PR #185 `3894451`): (a)–(g), tier L, `chore/` branch, G3 an
+  adversarial docs-reviewer that also runs specs and suites; G0 round 1 CHANGES REQUESTED (S2 ×2), delta and confirmations PASS.
+  LC diagnosis from run 43444433118: (a) two test defects (substring paging prefix `phone`/`phone-small`, `tablet`/`tablet-land`; the
+  column-shares test skips only `phone-small`); (c) `NS_BINDING_ABORTED` fonts on reload; (b) WebKit CSP/render: diagnose first.
+- **Split (DEC-173):** the T-M2.13 UI follow-ups (h) UX-1/UX-2 and (i) OQ T-M2.13-1 are the new backlog row **T-M2.29** (tier M).
+- Chromium headless shell **1254** (Playwright 1.65) is installed beside 1248 (PO-approved download).
 
 ## In flight / uncommitted
-- Records PR `docs/T-M2.13-records` (DEC-172, backlog, packet Status, summary, `review/ux.md`, progress.json, this handoff, the trimmed gate log):
-  text-only; one docs-reviewer (text only) → `DOCS-REVIEW T-M2.13: PASS` + `LC-APPROVED T-M2.13`, merge-gate, `gitlab-sync.sh`. If it is still open, do that first.
+- This handoff PR (`docs/T-M2.28-handoff`): one docs-reviewer (text only) → `DOCS-REVIEW T-M2.28: PASS` + `LC-APPROVED T-M2.28`,
+  merge-gate, `gitlab-sync.sh`. If still open, do that first. Nothing else.
 
 ## Next steps (in this order)
-1. Merge the records PR (above); `gitlab-sync.sh` after each merge.
-2. Write the T-M2.28 packet from the backlog row (a)–(i) (`task-packet` skill); G0 docs-reviewer; ask the PO for the start signal.
-   Its G3 names a QA run if it goes on a `feature/`/`fix/` branch (DEC-171).
-3. M2 G5 regression after T-M2.28; T-M2.26 after at least 10 shadow PRs and its two probes.
+1. Merge this handoff PR (above).
+2. Ask the PO again for the T-M2.28 start signal. On it: `chore/T-M2.28-regression-followups` from `develop`; frontend-implementer with the
+   packet; the LC starts `gh workflow run regression.yml --ref chore/T-M2.28-regression-followups` when the implementer asks (it does not
+   push; the LC pushes a WIP head for it); gate once on the final head; PR; CI; G3 adversarial docs-reviewer that re-runs specs and suites;
+   merge-gate; records (part C).
+3. T-M2.29 packet (backlog row); then the M2 G5 regression; T-M2.26 after at least 10 shadow PRs and its two probes.
 
 ## Pending PO decisions / actions
-- The T-M2.28 start signal (after its G0).
+- The T-M2.28 start signal (asked 2026-11-14: "Not yet").
 - **Dependabot, held by the PO:** #165 (msw 3 major: `web` typecheck fails at `web/src/test/setup.ts:14`; needs a packet) and #135 (react group).
   The LC does not touch them unasked.
 
 ## Gotchas
+- **A G0 or records PASS token needs a reviewer's exact PASS line on the final head:** a status-only commit after a PASS (e.g. draft →
+  ready) gets a one-line confirmation from the same reviewer before posting (T-M2.28 G0).
 - **A Playwright bump needs its browser build locally** (T-M2.13): after a Dependabot bump of `@playwright/test`, run `pnpm --dir e2e browsers`
   (a download: PO approval) before the next local E2E or gate; check `ls ~/.cache/ms-playwright/`. In the app shell `pnpm` may resolve to
   12.18 (Node 24.22.2) and refuse with a version check: run it from `e2e/` after `nvm use 24.21.0`, and never pipe it to `head` (the install stops).
@@ -118,5 +124,5 @@ this handoff on `docs/T-M2.13-records`) · Next after it: the M2 G5 regression; 
   `evidence/<task>/records/` (delete it) and a ~2,000-line log (trim it to ≤ 300 lines).
 
 ## Files to read first
-`CLAUDE.md` → `progress.json` → this file → DEC-172 → the backlog row T-M2.28 (`docs/tasks/backlog.md`) and its trace DECs (DEC-169, DEC-171,
-DEC-172) → `.claude/skills/task-packet` → `docs/09-harness/coding-agent-rules.md`.
+`CLAUDE.md` → `progress.json` → this file → DEC-173 → `docs/tasks/T-M2.28-regression-followups.md` → its trace DECs (DEC-169, DEC-171,
+DEC-172) → `docs/09-harness/coding-agent-rules.md`.
