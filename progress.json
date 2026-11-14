@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-11-14T17:40:39Z",
-  "updatedBy": "lead-coordinator (T-M2.28 merged and recorded)",
+  "updatedAt": "2026-11-14T18:04:18Z",
+  "updatedBy": "lead-coordinator (T-M2.29 packet drafted)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -31,16 +31,16 @@
   },
   "currentTask": {
     "id": "T-M2.29",
-    "title": "UI follow-ups from T-M2.13 and the logout race (DEC-172, DEC-173, DEC-174)",
+    "title": "UI follow-ups from T-M2.13 and the own-logout race (DEC-172, DEC-173, DEC-174)",
     "status": "draft",
     "ownerRole": "FE",
     "branch": null,
-    "packet": null,
+    "packet": "docs/tasks/T-M2.29-ui-logout-followups.md",
     "pr": null,
     "lastCommit": null,
     "startedAt": null,
     "nextSteps": [
-      "LC writes the packet from the backlog row (h), (i), (j); G0; PO start signal",
+      "Packet drafted on docs/T-M2.29-packet; G0 adversarial docs-reviewer; merge; ask the PO for the start signal",
       "Then the M2 G5 regression (a Firefox 'Page crashed' recurrence: capture stderr first, DEC-174 (5))"
     ],
     "trace": [
