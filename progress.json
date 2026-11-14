@@ -16,7 +16,7 @@
       }
     ]
   },
-  "updatedAt": "2026-11-14T16:13:15Z",
+  "updatedAt": "2026-11-14T17:11:11Z",
   "updatedBy": "lead-coordinator (T-M2.28 in review)",
   "phase": {
     "id": "P1",
@@ -40,7 +40,7 @@
     "lastCommit": "a7a1e4d",
     "startedAt": "2026-11-14T13:49:56Z",
     "nextSteps": [
-      "Gate PASS on a7a1e4d (13 steps, 720 s); regression 43608039387 green on f2bff5d; 43611629190 on a7a1e4d: one Firefox 'Page crashed' in an unchanged test, failed job re-run (DEC-174)",
+      "Gate PASS on a7a1e4d (13 steps, 720 s); CI 7/7 on ddd51f4; regression 43617206392 green on ddd51f4 (43611629190's Firefox crash ruled an engine crash, DEC-174 (5))",
       "PR, CI, adversarial G3 docs-reviewer (DOCS-REVIEW, re-runs specs and suites), merge-gate, records",
       "T-M2.29 (now with (j), DEC-174), then the M2 G5"
     ],
@@ -450,8 +450,8 @@
       "note": "T-M2.28: gate PASS (13 steps, 720 s) on a7a1e4d"
     },
     "G2": {
-      "status": "pending",
-      "note": "T-M2.28: CI on the PR"
+      "status": "pass",
+      "note": "T-M2.28: CI 7/7 on ddd51f4; regression 43617206392 green"
     },
     "G3": {
       "status": "pending",
