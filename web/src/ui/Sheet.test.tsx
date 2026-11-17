@@ -1,3 +1,5 @@
+/// <reference types="node" />
+import { readFileSync } from 'node:fs'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { useState } from 'react'
@@ -72,5 +74,15 @@ describe('Sheet', () => {
     expect(
       drawer.querySelector('.body')!.compareDocumentPosition(footer) & Node.DOCUMENT_POSITION_FOLLOWING,
     ).toBeTruthy()
+  })
+
+  // T-M2.29 (h1), DEC-172 UX-1: a footer taller than its share scrolls (the drawer at 740×360 showed only the logout
+  // alert's title). Vitest stubs CSS, so the rule is read from disk (cwd: web/); the layout proof is the E2E (shells.spec).
+  it('the footer takes at most half the sheet and scrolls; the body keeps its own scroll', () => {
+    const css = readFileSync('src/ui/Sheet.module.css', 'utf8')
+    const rule = (selector: string) => new RegExp(`\\${selector}\\s*\\{([^}]*)\\}`).exec(css)?.[1] ?? ''
+    expect(rule('.footer')).toMatch(/max-block-size:\s*50%;/)
+    expect(rule('.footer')).toMatch(/overflow-y:\s*auto;/)
+    expect(rule('.body')).toMatch(/overflow-y:\s*auto;/)
   })
 })
