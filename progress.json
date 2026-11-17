@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-11-17T14:07:38Z",
-  "updatedBy": "lead-coordinator (T-M2.29 merged and recorded)",
+  "updatedAt": "2026-11-17T14:44:00Z",
+  "updatedBy": "lead-coordinator (M2 regression 44099902526: Firefox crash recurrence, DEC-179; T-M2.30 packet draft)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -31,22 +31,23 @@
   },
   "currentTask": {
     "id": "T-M2.30",
-    "title": "e2e-run.sh fresh-mode refusal gaps (T-M2.28 G3 S4-1, S4-2)",
+    "title": "e2e-run.sh refusal gaps and the Firefox Page crashed recurrence (DEC-174, DEC-179)",
     "status": "draft",
     "ownerRole": "FE",
-    "branch": null,
-    "packet": null,
+    "branch": "chore/T-M2.30-tooling-firefox-crash",
+    "packet": "docs/tasks/T-M2.30-tooling-firefox-crash.md",
     "pr": null,
     "lastCommit": null,
     "startedAt": null,
     "nextSteps": [
-      "First the M2 G5-level regression run (regression workflow on develop; a Firefox Page crashed recurrence: capture stderr first, DEC-174 (5))",
-      "Then the LC writes the T-M2.30 packet (tier L; owner FE/LC per the row, the schema records FE) from the backlog row; G0; PO start signal",
-      "T-M2.31 (overlay scroll follow-ups) in the M2 polish; T-M2.26 after at least 10 shadow PRs"
+      "Regression 44099902526 on 141c763: 1059 passed, 1 failed (firefox-smoke smoke.spec.ts:77 Page crashed in axe, DEC-174 (5) recurrence) -> T-M2.30 (c) (DEC-179)",
+      "T-M2.30 packet draft (PR docs/T-M2.30-packet): G0 adversarial docs-reviewer; then the PO start signal",
+      "On start: chore/T-M2.30-tooling-firefox-crash, frontend-implementer, regression runs (artifact download = PO action), gate, PR, G3 adversarial docs-reviewer, merge-gate, records"
     ],
     "trace": [
       "DEC-174",
-      "DEC-175"
+      "DEC-175",
+      "DEC-179"
     ]
   },
   "nextTask": {
@@ -469,7 +470,7 @@
     },
     "G5": {
       "status": "n/a",
-      "note": "M2 in progress; the regression run next"
+      "note": "M2 in progress; regression 44099902526 failed 1 (Firefox crash, DEC-179 -> T-M2.30 (c))"
     }
   },
   "blockers": [],
@@ -526,7 +527,8 @@
       "DEC-175",
       "DEC-176",
       "DEC-177",
-      "DEC-178"
+      "DEC-178",
+      "DEC-179"
     ],
     "pendingPO": [
       "OQ-03",
@@ -1664,6 +1666,11 @@
       "at": "2026-11-17T14:07:38Z",
       "actor": "lead-coordinator",
       "event": "T-M2.29 merged (PR #190, 1d6ace4, head 4ae60ff; DEC-177 rulings, DEC-178); QA report PR #191 (141c763); records PR docs/T-M2.29-records; T-M2.31 added; T-M2.30 next after the M2 regression run."
+    },
+    {
+      "at": "2026-11-17T14:44:00Z",
+      "actor": "lead-coordinator",
+      "event": "T-M2.29 records merged (PR #192, 5da7c89). Regression 44099902526 on 141c763: 1059 passed, 1 failed (Firefox Page crashed recurrence) -> T-M2.30 (c) (DEC-179); T-M2.30 packet drafted."
     }
   ]
 }
