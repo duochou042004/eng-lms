@@ -41,7 +41,7 @@
     "startedAt": null,
     "nextSteps": [
       "Regression 44099902526 on 141c763: 1059 passed, 1 failed (firefox-smoke smoke.spec.ts:77 Page crashed in axe, DEC-174 (5) recurrence) -> T-M2.30 (c) (DEC-179)",
-      "T-M2.30 packet (PR #193): G0 round 1 CHANGES REQUESTED (S2-1, S2-2, S3-1..S3-6, S4-1..S4-4) fixed by the LC; delta re-check by the same reviewer; then ready and the PO start signal (plus the artifact downloads)",
+      "T-M2.30 packet ready (PR #193): G0 round 1 CHANGES REQUESTED fixed; delta PASS WITH MINOR fixed; same-reviewer confirmation; merge; then the PO start signal (plus the artifact downloads)",
       "On start: chore/T-M2.30-tooling-firefox-crash, frontend-implementer, regression runs (artifact download = PO action), gate, PR, G3 adversarial docs-reviewer, merge-gate, records"
     ],
     "trace": [

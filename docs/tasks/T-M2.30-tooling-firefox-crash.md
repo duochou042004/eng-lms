@@ -49,8 +49,11 @@ keeps what each test proves. A cause in the product is reported, not hidden.
          per process (`DEBUG_FILE` opens with `w`, so a restarted worker would truncate a shared file), or keep it in Playwright's
          per-test stderr attachment.
        - Add the folder to the artifact's `path:` list. Never redirect the step's own stderr.
-       - Add an `if: always()` step that saves the kernel's OOM lines (`sudo dmesg -T | grep -iE 'oom|killed process'`) and a background
-         memory sample (`vmstat 5`) into the same folder. A process killed for lack of memory writes nothing to stderr.
+       - Add an `if: always()` step **before the upload step** that saves the kernel's OOM lines
+         (`sudo dmesg -T | grep -iE 'oom|killed process' || true`: a grep with no match must not fail a green run) and a background memory
+         sample (`vmstat 5`) into the same folder, and also prints a short summary (the OOM line count, the peak used / minimum free memory)
+         to the job log. The upload stays `if: failure()`, so on green runs the job log is the source. A process killed for lack of memory
+         writes nothing to stderr.
        - `MOZ_CRASHREPORTER`, `MOZ_CRASHREPORTER_NO_REPORT` and `MOZ_CRASHREPORTER_SHUTDOWN` are set by Playwright and cannot be set by
          the caller.
 
@@ -110,8 +113,8 @@ keeps what each test proves. A cause in the product is reported, not hidden.
 - AC4 ((c) cause): `evidence/T-M2.30/summary.md` holds the run table (ids, attempts, runner images, memory, OOM lines), the captured
   crash text if any, and exactly one of these outcomes:
   - **Test-tooling cause:** fixed here. Proof: a throwaway commit on top of the final head adds only a temporary Firefox-only repeat
-    (×20). Its diff and run id are recorded, with 20/20 and no retry. Then the commit is reverted, and one full `regression` run on the
-    final head itself is green.
+    (×20) and is pushed to a separate scratch branch (`--ref` that branch), never to the PR branch. Its diff and run id are recorded, with
+    20/20 and no retry. One full `regression` run on the final head itself is green.
   - **Product cause:** an OQ and its own row; the LC rules before G3.
   - **Engine/runner cause:** the crash signature and an upstream link if one exists; the LC rules (DEC) how the G5 treats it.
   - **No reproduction:** no crash in the runs made within the time box (ids, attempts, images recorded). The capture is shown working
@@ -147,7 +150,7 @@ the LC rules before G3. For (a) and (b), `test.fail` is allowed only until that 
 - **The crash may not reproduce on demand** (2 of the last 4 runs): AC4's "no reproduction" outcome and the 1-day time box cover it.
 - `DEBUG=pw:browser*` output is large: it goes to files, not the job log.
 - `about:crashcontent` crashing a Playwright Firefox content process is assumed from Playwright's own crash tests. If it does not, the
-  proof uses another way to kill the content process (for example `kill -SEGV` on a content pid seen in the log), and says which.
+  proof uses another way to kill the content process (for example `kill -SEGV` on a content pid found with `pgrep -f contentproc`, or another method the implementer chooses), and records which.
 
 ## Commands (reproducible)
 ```bash
