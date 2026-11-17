@@ -3,10 +3,12 @@ import userEvent from '@testing-library/user-event'
 import { delay, http, HttpResponse } from 'msw'
 import { describe, expect, it } from 'vitest'
 import { SESSION_KEY } from '../features/auth/api/session'
+import { api } from '../lib/api'
 import { expectNoAxeViolations } from '../test/axe'
 import { renderRoute } from '../test/render'
 import { problem, server, sessionAs, sessionBody, setXsrfCookie } from '../test/server'
 import { openAccountMenu } from '../test/shell'
+import type { LoginState } from './guards'
 
 const path = (router: ReturnType<typeof renderRoute>['router']) =>
   router.state.location.pathname + router.state.location.search
@@ -129,5 +131,98 @@ describe('Log out (FR-AUTH-04, scope 7)', () => {
     expect(screen.getByRole('heading', { level: 1, name: 'Hôm nay', hidden: true })).toBeInTheDocument()
     expect(within(dialog).getByRole('button', { name: 'Đăng xuất' })).toHaveFocus()
     await expectNoAxeViolations(document.body)
+  })
+
+  // T-M2.29 (j), OQ T-M2.28-1 (DEC-174 (3)): while /login loads after one's own logout, the current page's queries can
+  // answer 401. The session read of /login's loader is held here, so the race is open for as long as the test wants.
+  function heldSignOut() {
+    let loggedOut = false
+    let release = () => {}
+    let reached = () => {}
+    const held = new Promise<void>((resolve) => (reached = resolve))
+    const gate = new Promise<void>((resolve) => (release = resolve))
+    setXsrfCookie()
+    server.use(
+      http.get('*/api/v1/auth/session', async () => {
+        if (!loggedOut) return HttpResponse.json(sessionBody('TUTOR'))
+        reached()
+        await gate
+        return problem(401, 'UNAUTHENTICATED')
+      }),
+      http.post('*/api/v1/auth/logout', () => {
+        loggedOut = true
+        return new HttpResponse(null, { status: 204 })
+      }),
+    )
+    return { held, release }
+  }
+
+  it('own logout with 401s while /login loads: exactly /login, no notice, no second clear, nothing of the earlier session cached', async () => {
+    const { held, release } = heldSignOut()
+    const { router, queryClient } = renderRoute('/tutor/today')
+    await screen.findByText('Lớp cô Lan')
+    await openAccountMenu()
+    await userEvent.click(screen.getByRole('button', { name: 'Đăng xuất' }))
+    await held
+    // Two queries of the page answer 401 before /login commits; a value cached meanwhile is not cleared by them.
+    server.use(http.get('*/api/v1/meta', () => problem(401, 'SESSION_EXPIRED')))
+    queryClient.setQueryData(['race', 'probe'], 1)
+    await api.GET('/api/v1/meta').catch(() => undefined)
+    await api.GET('/api/v1/meta').catch(() => undefined)
+    const probeAfter401s = queryClient.getQueryData(['race', 'probe'])
+    release()
+    await waitFor(() => expect(router.state.navigation.state).toBe('idle'))
+    await screen.findByRole('heading', { level: 1, name: 'Đăng nhập' })
+    expect(path(router)).toBe('/login')
+    expect((router.state.location.state as LoginState | null)?.signedOutElsewhere).toBeFalsy()
+    expect(screen.queryByText('Bạn đã đăng xuất ở một thẻ khác.')).not.toBeInTheDocument()
+    expect(probeAfter401s, 'a 401 during the own logout does not clear again').toBe(1)
+    await waitFor(
+      () =>
+        expect(
+          queryClient
+            .getQueryCache()
+            .getAll()
+            .map((q) => q.queryKey),
+        ).toEqual([SESSION_KEY, ['settings', 'meta']]), // the session and /login's own public workspace name
+    )
+  })
+
+  it('a logout answered 401 (the session had already expired) is a session loss: /login?next=<path>', async () => {
+    setXsrfCookie()
+    server.use(
+      sessionAs('TUTOR'),
+      http.post('*/api/v1/auth/logout', () => problem(401, 'UNAUTHENTICATED')),
+    )
+    const { router } = renderRoute('/tutor/today')
+    await screen.findByText('Lớp cô Lan')
+    server.use(sessionAs(null))
+    await openAccountMenu()
+    await userEvent.click(screen.getByRole('button', { name: 'Đăng xuất' }))
+    await screen.findByRole('heading', { level: 1, name: 'Đăng nhập' })
+    await waitFor(() => expect(path(router)).toBe('/login?next=%2Ftutor%2Ftoday'))
+  })
+
+  it('the signal ends with the navigation: signed in again, a later 401 goes to /login?next= as before', async () => {
+    const { held, release } = heldSignOut()
+    const { router, queryClient } = renderRoute('/tutor/today')
+    await screen.findByText('Lớp cô Lan')
+    await openAccountMenu()
+    await userEvent.click(screen.getByRole('button', { name: 'Đăng xuất' }))
+    await held
+    release()
+    await screen.findByRole('heading', { level: 1, name: 'Đăng nhập' })
+    await waitFor(() => expect(path(router)).toBe('/login'))
+    // Signed in again (as another tab would), then the session is lost on the server.
+    server.use(sessionAs('TUTOR'))
+    queryClient.setQueryData(SESSION_KEY, sessionBody('TUTOR'))
+    await router.navigate('/tutor/today')
+    await screen.findByRole('heading', { level: 1, name: 'Hôm nay' })
+    server.use(
+      sessionAs(null),
+      http.get('*/api/v1/meta', () => problem(401, 'SESSION_EXPIRED')),
+    )
+    await api.GET('/api/v1/meta').catch(() => undefined)
+    await waitFor(() => expect(path(router)).toBe('/login?next=%2Ftutor%2Ftoday'))
   })
 })

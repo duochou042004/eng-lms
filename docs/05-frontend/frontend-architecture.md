@@ -70,7 +70,14 @@ Cross-feature needs go through `lib` or via route composition. `react-aria-compo
   included) and a successful sign-out (`useLogout`): no write of an earlier session (its variables and answer) stays in the
   client. A **failed** logout call (T-M2.13, DEC-155) clears, posts and navigates nothing: the session is still alive on the server, so the page
   and both caches stay and the account section (or the forced change-password page) shows `LogoutFailedAlert` ("still signed in"; the offline
-  text when `isOffline()` at the failure). `useLogout` runs with `networkMode: 'always'`, so offline it fails at once instead of pausing. A write still pending keeps its own observers; its late answer is handled by the DEC-127 session check.
+  text when `isOffline()` at the failure; it scrolls itself into view with `scrollIntoView({ block: 'nearest' })` on mount and never takes
+  focus, T-M2.29 (h2)). `useLogout` runs with `networkMode: 'always'`, so offline it fails at once instead of pausing.
+  **Own logout in flight (T-M2.29 (j), DEC-174 (3)):** while `/login` loads after a successful logout, a query of the page being left can
+  refetch and answer 401. From `useLogout`'s `onSuccess` (before its first cache clear) until its navigation to `/login` has settled
+  (`try`/`finally`), `isOwnLogoutInFlight()` is true and the 401 reaction does nothing (no navigation, no further clear), so one's own
+  logout always ends on `/login`, never `/login?next=`; afterwards `useLogout` removes every unused query but the session (what the race
+  refetched; `/login`'s own public queries stay). A logout answered 401 never starts the signal (the session was already lost:
+  `/login?next=` as for any 401); the `FORBIDDEN_ROLE`, forced-change and cross-tab `signed-out` reactions are unchanged. A write still pending keeps its own observers; its late answer is handled by the DEC-127 session check.
 - **Cross-tab sign-in/out (T-M2.12, security.md T19):** the session is no longer changed only by this tab. `features/auth/api/authChannel.ts`
   wraps one `BroadcastChannel` named `englms-auth` (post and listen share the instance, so a tab never hears itself; nothing happens where
   `BroadcastChannel` does not exist). `useLogin` posts `{ type: 'signed-in' }` after a successful sign-in; `useLogout` (after a

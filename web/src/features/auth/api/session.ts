@@ -44,6 +44,13 @@ export function refreshSession(queryClient: QueryClient) {
   return queryClient.fetchQuery({ ...sessionQuery, staleTime: 0 })
 }
 
+let ownLogoutInFlight = false
+
+/** True from this tab's successful logout until its navigation to `/login` has settled (`useLogout`, T-M2.29 (j)). */
+export function isOwnLogoutInFlight() {
+  return ownLogoutInFlight
+}
+
 /** `POST /auth/logout`: 204 also for an expired or absent session (FR-AUTH-04). */
 export async function logout() {
   await api.POST('/api/v1/auth/logout')
@@ -85,7 +92,10 @@ export function useChangePassword() {
  * (T-M2.13 O-1). On success: forget all server state (queries and mutations), tell the other tabs (`signed-out`) and go
  * to `/login`, whose loader reads the session again (and so re-primes the `XSRF-TOKEN` cookie). On a failure nothing is
  * cleared, posted or navigated: the session is still alive on the server, so the page stays and the caller shows the
- * error (`LogoutFailedAlert`; DEC-155, O-2). The API client's own 401/403 reactions still apply.
+ * error (`LogoutFailedAlert`; DEC-155, O-2). The API client's own 401/403 reactions still apply, except one: from the
+ * successful call until the navigation to `/login` has settled, a 401 (a query of the page being left) is this logout's
+ * own and is ignored (`isOwnLogoutInFlight`, T-M2.29 (j)); the queries such refetches leave behind are removed afterwards. A
+ * logout answered 401 never starts it: that session was already lost, and `/login?next=` follows as for any 401.
  */
 export function useLogout() {
   const queryClient = useQueryClient()
@@ -94,10 +104,17 @@ export function useLogout() {
     mutationFn: logout,
     networkMode: 'always',
     onSuccess: async () => {
-      queryClient.getQueryCache().clear()
-      queryClient.getMutationCache().clear()
-      postAuthMessage('signed-out')
-      await navigate('/login')
+      ownLogoutInFlight = true
+      try {
+        queryClient.getQueryCache().clear()
+        queryClient.getMutationCache().clear()
+        postAuthMessage('signed-out')
+        await navigate('/login')
+      } finally {
+        ownLogoutInFlight = false
+        // What the race refetched for the page left behind; `/login`'s own (public) queries are in use and stay.
+        queryClient.removeQueries({ predicate: (query) => query.queryHash !== SESSION_HASH, type: 'inactive' })
+      }
     },
   })
 }

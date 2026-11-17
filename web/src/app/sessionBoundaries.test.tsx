@@ -4,6 +4,7 @@ import userEvent from '@testing-library/user-event'
 import { http, HttpResponse } from 'msw'
 import { describe, expect, it } from 'vitest'
 import { AUTH_CHANNEL } from '../features/auth/api/authChannel'
+import { api } from '../lib/api'
 import { renderRoute } from '../test/render'
 import { problem, server, sessionAs, sessionBody, setXsrfCookie } from '../test/server'
 import { openAccountMenu } from '../test/shell'
@@ -64,6 +65,44 @@ describe('the mutation cache at the session boundaries (T-M2.20 AC3)', { timeout
       expect(queryClient.getMutationCache().findAll({ mutationKey: ['students'] })).toEqual([])
     },
   )
+
+  // T-M2.29 (j): a query of the page left behind answers 401 while /login loads (its session read held open).
+  it('sign-out with a 401 during its navigation: no write and no query of the earlier session after /login loads', async () => {
+    setXsrfCookie()
+    let loggedOut = false
+    let release = () => {}
+    let reached = () => {}
+    const held = new Promise<void>((resolve) => (reached = resolve))
+    const gate = new Promise<void>((resolve) => (release = resolve))
+    server.use(
+      http.get('*/api/v1/auth/session', async () => {
+        if (!loggedOut) return HttpResponse.json(sessionBody('TUTOR'))
+        reached()
+        await gate
+        return problem(401, 'UNAUTHENTICATED')
+      }),
+      http.post('*/api/v1/auth/logout', () => {
+        loggedOut = true
+        return new HttpResponse(null, { status: 204 })
+      }),
+    )
+    const { router, queryClient } = renderRoute('/tutor')
+    await screen.findByText('Lớp cô Lan')
+    const write = await seedFinishedWrite(queryClient)
+    await openAccountMenu()
+    await userEvent.click(screen.getByRole('button', { name: 'Đăng xuất' }))
+    await held
+    // The race refetches a page query of the earlier session; its answer is a 401.
+    server.use(http.get('*/api/v1/tutor/students', () => problem(401, 'SESSION_EXPIRED')))
+    await queryClient
+      .fetchQuery({ queryKey: ['students', 'race'], queryFn: () => api.GET('/api/v1/tutor/students') })
+      .catch(() => undefined)
+    release()
+    await screen.findByRole('heading', { level: 1, name: 'Đăng nhập' })
+    expect(router.state.location.pathname + router.state.location.search).toBe('/login')
+    expect(queryClient.getMutationCache().getAll()).not.toContain(write)
+    await waitFor(() => expect(queryClient.getQueryCache().findAll({ queryKey: ['students'] })).toEqual([]))
+  })
 
   // T-M2.13 scope 3 (c), DEC-155: the session is still alive on the server, so its caches stay.
   it("a failing call keeps the session's caches: the seeded write is still there, no navigation", async () => {
