@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Milestone | M2 |
-| Status | ready (G0 PASS, DEC-176; waits for the PO start signal) |
+| Status | done (`1d6ace4`, PR #190, DEC-178; QA report PR #191; G0 PASS DEC-176; rulings DEC-177) |
 | Owner role | FE (frontend-implementer) |
 | Branch | `feature/T-M2.29-ui-logout-followups` (from `develop`) |
 | Depends on | T-M2.13 (`e3ce22c`), T-M2.28 (`a1bcf12`): merged |

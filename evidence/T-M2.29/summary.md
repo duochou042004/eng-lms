@@ -1,6 +1,6 @@
 # T-M2.29 summary: UI follow-ups from T-M2.13 and the own-logout race
 Branch feature/T-M2.29-ui-logout-followups (from `develop` 6ccd792) · (h1) `2b915f2`, (h2) `25fb339`, (j) `5284bc4`, gate log `c6837c7`;
-this summary, DEC-177 and the trimmed gate log: the next commit · trace DEC-172, DEC-173, DEC-174, DEC-176, DEC-177, FR-AUTH-04 · PO start
+this summary, DEC-177 and the trimmed gate log `4ae60ff`; merged `1d6ace4` (PR #190, DEC-178); QA report PR #191 `141c763` · trace DEC-172, DEC-173, DEC-174, DEC-176, DEC-177, FR-AUTH-04 · PO start
 2026-11-17T12:50Z · 2026-11-17. Recorded by the LC from the frontend-implementer's text (L-07).
 
 ## Gate (G1)
@@ -58,4 +58,9 @@ Real-device landscape Safari; Firefox/WebKit (not installed locally; the M2 G5 r
 ## G3 cost
 | Role | Run | Tokens | Wall clock |
 |---|---|---|---|
-| frontend-implementer | 1 | 180,391 | ~38 min agent time (~1 h 45 min reported incl. runs) |
+| frontend-implementer | 1 | 180,391 | ~38 min (agent clock) |
+| qa-evaluator (combined QA+UX) | 1 | 132,160 | ~20 min (agent clock); ~230 scenario executions |
+
+## G3 result
+`QA-VERDICT T-M2.29: PASS WITH MINOR`, `UX-REVIEW T-M2.29: PASS WITH MINOR` (`qa/report.md`, `review/ux.md`): QA-1 (S3, older than this
+task, `ui/Popover`) and UX-1 (S4) to T-M2.31 (DEC-178); DEC-177's rulings found sound. CI 7/7 on `4ae60ff`.
