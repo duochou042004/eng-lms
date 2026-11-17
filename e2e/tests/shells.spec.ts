@@ -940,3 +940,209 @@ test.describe('T-M2.13: Log out gives feedback when it fails', () => {
     await context.close()
   })
 })
+
+// T-M2.29 (h1), (h2) (DEC-172 UX-1, UX-2): the logout failure alert is reachable on a phone held sideways (the drawer's
+// footer scrolls) and is on screen on the forced change-password page (it scrolls itself into view, `nearest`); focus
+// stays on Log out and the page behind an overlay does not move. Fresh sessions only (T-M2.4 scope 10).
+test.describe('T-M2.29: the logout failure alert is on screen', () => {
+  const FAILED = {
+    vi: {
+      title: 'Chưa đăng xuất được',
+      text: 'Bạn vẫn đang đăng nhập. Hãy thử lại.',
+    },
+    en: {
+      title: "Couldn't log out",
+      text: "You're still signed in. Try again.",
+    },
+  }
+
+  async function failLogout(page: Page) {
+    await page.route('**/api/v1/auth/logout', (route) =>
+      route.fulfill({
+        status: 500,
+        contentType: 'application/problem+json',
+        body: '{"status":500,"code":"INTERNAL_ERROR"}',
+      }),
+    )
+  }
+
+  /** The page's own scroll position (behind a modal overlay it must not move). */
+  const pageScroll = (page: Page) => page.evaluate(() => document.scrollingElement?.scrollTop ?? 0)
+  // Scrolled first, so a page that can scroll has room to move both ways; the baseline is read once the overlay is open.
+  const scrollPageToEnd = (page: Page) => page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight))
+
+  /**
+   * Each target, scrolled into view, is wholly visible (the viewport and every clipping ancestor: IntersectionObserver),
+   * and the open dialog stays inside the viewport. Ratio 0.99: `nearest` can stop on a fractional offset (seen: 0.995).
+   */
+  async function expectReachable(page: Page, targets: Locator[]) {
+    for (const target of targets) {
+      await target.scrollIntoViewIfNeeded()
+      await expect(target).toBeInViewport({ ratio: 0.99 })
+    }
+    const height = page.viewportSize()!.height
+    await expect
+      .poll(
+        async () => {
+          const box = (await page.getByRole('dialog').boundingBox())!
+          return box.y >= 0 && box.y + box.height <= height + 0.5
+        },
+        { message: 'the sheet stays inside the viewport' },
+      )
+      .toBe(true)
+    await expectNoHorizontalScroll(page)
+  }
+
+  test('AC1/AC2: tutor drawer at 740×360 and 568×320, logout answered 500: title and text reachable, focus stays', async ({
+    browser,
+  }, testInfo) => {
+    test.skip(testInfo.project.name !== 'phone-small', 'a phone held sideways: phone-small emulation')
+    const { context, page } = await freshSession(browser, {
+      username: TUTOR_USERNAME,
+      password: tutorPassword(),
+    })
+    await failLogout(page)
+    for (const [width, height] of [
+      [740, 360],
+      [568, 320],
+    ] as const) {
+      await page.setViewportSize({ width, height })
+      await page.goto(HOME.tutor)
+      await expect(h1(page, COPY.tutorHome)).toBeVisible()
+      await scrollPageToEnd(page)
+      const dialog = await openAccountSection(page, 'tutor')
+      expect(accountPlace(page, 'tutor')).toBe('drawer')
+      const before = await pageScroll(page)
+      const logout = dialog.getByRole('button', { name: COPY.logout })
+      await logout.click()
+      const alert = dialog.getByRole('alert')
+      await expect(alert).toContainText(FAILED.vi.text)
+      await expect(logout).toBeFocused()
+      await expect
+        .poll(() => pageScroll(page), {
+          message: 'the page behind the drawer does not move',
+        })
+        .toBe(before)
+      await expect(alert.getByText(FAILED.vi.text, { exact: true })).toBeInViewport({ ratio: 0.99 })
+      await shot(page, testInfo, `logout-failed-drawer-${width}x${height}-vi`)
+      await expectReachable(page, [
+        alert.getByText(FAILED.vi.title, { exact: true }),
+        alert.getByText(FAILED.vi.text, { exact: true }),
+      ])
+      await expectSettledAccessible(page)
+      await expectNoMidWordBreak(alert.getByText(FAILED.vi.title, { exact: true }))
+      await expectNoMidWordBreak(alert.getByText(FAILED.vi.text, { exact: true }))
+      await expect(logout).toBeFocused()
+      await page.keyboard.press('Escape')
+      await expect(page.getByRole('dialog')).toHaveCount(0)
+    }
+    await context.close()
+  })
+
+  test('AC1/AC2: student More sheet at 568×320, logout answered 500: all of its content reachable, the page stays', async ({
+    browser,
+  }, testInfo) => {
+    test.skip(testInfo.project.name !== 'phone-small', 'a phone held sideways: phone-small emulation')
+    const credentials = await readyStudent(browser, testInfo)
+    const { context, page } = await freshSession(browser, credentials)
+    await failLogout(page)
+    await page.setViewportSize({ width: 568, height: 320 })
+    await page.goto(HOME.student)
+    await expect(h1(page, COPY.studentHome)).toBeVisible()
+    await scrollPageToEnd(page)
+    const dialog = await openAccountSection(page, 'student')
+    expect(accountPlace(page, 'student')).toBe('sheet')
+    const before = await pageScroll(page)
+    const logout = dialog.getByRole('button', { name: COPY.logout })
+    await logout.click()
+    const alert = dialog.getByRole('alert')
+    await expect(alert).toContainText(FAILED.vi.text)
+    await expect(logout).toBeFocused()
+    await expect
+      .poll(() => pageScroll(page), {
+        message: 'the page behind the sheet does not move',
+      })
+      .toBe(before)
+    // Everything laid out in the sheet (the visually hidden Dismiss buttons excepted: 1 px, clipped by design).
+    const targets: Locator[] = []
+    for (const candidate of await dialog.locator('h2, p, a, button, [role="radio"]').all()) {
+      const box = await candidate.boundingBox()
+      if (box && box.width > 1 && box.height > 1) targets.push(candidate)
+    }
+    expect(targets.length, 'the sheet has content to reach').toBeGreaterThan(5)
+    await expectReachable(page, targets)
+    await expectSettledAccessible(page)
+    await shot(page, testInfo, 'logout-failed-more-sheet-568x320-vi')
+    await context.close()
+  })
+
+  test('AC2: the account popover or drawer at this viewport: the alert does not move the page; focus stays', async ({
+    browser,
+  }, testInfo) => {
+    const { context, page } = await freshSession(browser, {
+      username: TUTOR_USERNAME,
+      password: tutorPassword(),
+    })
+    await failLogout(page)
+    await page.goto(HOME.tutor)
+    await expect(h1(page, COPY.tutorHome)).toBeVisible()
+    await scrollPageToEnd(page)
+    const dialog = await openAccountSection(page, 'tutor')
+    const before = await pageScroll(page)
+    const logout = dialog.getByRole('button', { name: COPY.logout })
+    await logout.click()
+    const alert = dialog.getByRole('alert')
+    await expect(alert).toContainText(FAILED.vi.text)
+    await expect(alert).toBeInViewport({ ratio: 0.99 })
+    await expect(logout).toBeFocused()
+    await expect
+      .poll(() => pageScroll(page), {
+        message: 'the page behind the overlay does not move',
+      })
+      .toBe(before)
+    await expectSettledAccessible(page)
+    await shot(page, testInfo, `logout-failed-${accountPlace(page, 'tutor')}-vi`)
+    await context.close()
+  })
+
+  test('AC2/AC5: forced change-password page, logout answered 500: the alert is on screen, focus stays (vi, en)', async ({
+    browser,
+  }, testInfo) => {
+    const tutorContext = await browser.newContext({
+      storageState: TUTOR_STATE,
+    })
+    const tutorPage = await tutorContext.newPage()
+    await tutorPage.goto(HOME.tutor)
+    const temporary = await createStudent(tutorPage, testInfo.project.name)
+    await tutorContext.close()
+    const { context, page } = await freshSession(browser, temporary)
+    await failLogout(page)
+    await page.goto('/change-password')
+    await expect(h1(page, COPY.change)).toBeVisible()
+    const logout = page.getByRole('main').getByRole('button', { name: COPY.logout })
+    await logout.click()
+    const alert = page.getByRole('alert').filter({ hasText: FAILED.vi.title })
+    await expect(alert).toBeInViewport({ ratio: 0.99 })
+    await expect(logout).toBeFocused()
+    await expectFocusNotLost(page)
+    await expectSettledAccessible(page)
+    if (testInfo.project.name === 'phone-small') {
+      await expectNoMidWordBreak(alert.getByText(FAILED.vi.title, { exact: true }))
+      await expectNoMidWordBreak(alert.getByText(FAILED.vi.text, { exact: true }))
+    }
+    await shot(page, testInfo, 'logout-failed-change-password-forced-vi')
+
+    // English: the same state, re-rendered by the switcher (the alert stays while the logout holds its error).
+    await page.getByRole('radio', { name: 'English' }).check()
+    const alertEn = page.getByRole('alert').filter({ hasText: FAILED.en.title })
+    await expect(alertEn).toContainText(FAILED.en.text)
+    await alertEn.scrollIntoViewIfNeeded()
+    await expectSettledAccessible(page)
+    if (testInfo.project.name === 'phone-small') {
+      await expectNoMidWordBreak(alertEn.getByText(FAILED.en.title, { exact: true }))
+      await expectNoMidWordBreak(alertEn.getByText(FAILED.en.text, { exact: true }))
+    }
+    await shot(page, testInfo, 'logout-failed-change-password-forced-en')
+    await context.close()
+  })
+})
