@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-11-14T18:14:46Z",
-  "updatedBy": "lead-coordinator (T-M2.29 packet ready; handoff)",
+  "updatedAt": "2026-11-17T13:30:17Z",
+  "updatedBy": "lead-coordinator (T-M2.29 implemented, gate PASS; PR + G3 next)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -32,27 +32,28 @@
   "currentTask": {
     "id": "T-M2.29",
     "title": "UI follow-ups from T-M2.13 and the own-logout race (DEC-172, DEC-173, DEC-174)",
-    "status": "ready",
+    "status": "in_progress",
     "ownerRole": "FE",
     "branch": "feature/T-M2.29-ui-logout-followups",
     "packet": "docs/tasks/T-M2.29-ui-logout-followups.md",
     "pr": null,
-    "lastCommit": null,
-    "startedAt": null,
+    "lastCommit": "5284bc4",
+    "startedAt": "2026-11-17T12:50:13Z",
     "nextSteps": [
-      "Packet ready (G0: CHANGES REQUESTED S2-1 -> (i) accepted as is DEC-176 -> delta PASS WITH MINOR -> confirmation); packet PR #189",
-      "Ask the PO for the start signal; on it: feature/T-M2.29-ui-logout-followups, frontend-implementer, gate, PR, CI, G3 combined QA+UX (QA-VERDICT), merge-gate, QA PR, records",
-      "Then the M2 G5 regression (a Firefox 'Page crashed' recurrence: capture stderr first, DEC-174 (5)); T-M2.30"
+      "Implemented (h1) 2b915f2, (h2) 25fb339, (j) 5284bc4; gate PASS on 5284bc4; DEC-177 rulings",
+      "PR, CI, G3 one combined QA+UX qa-evaluator (QA-VERDICT + UX-REVIEW), merge-gate, QA PR qa/T-M2.29, records",
+      "Then the M2 G5 regression (Firefox Page crashed recurrence: capture stderr first, DEC-174 (5)); T-M2.30"
     ],
     "trace": [
       "DEC-172",
       "DEC-173",
       "DEC-174",
-      "DEC-176"
+      "DEC-176",
+      "DEC-177"
     ],
     "entryGate": [
       "T-M2.13, T-M2.28 merged — met (a1bcf12)",
-      "PO start signal — not yet asked"
+      "PO start signal — given 2026-11-17T12:50Z"
     ]
   },
   "nextTask": {
