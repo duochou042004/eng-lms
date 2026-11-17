@@ -32,7 +32,7 @@
   "currentTask": {
     "id": "T-M2.30",
     "title": "e2e-run.sh refusal gaps and the Firefox Page crashed recurrence (DEC-174, DEC-179)",
-    "status": "draft",
+    "status": "ready",
     "ownerRole": "FE",
     "branch": "chore/T-M2.30-tooling-firefox-crash",
     "packet": "docs/tasks/T-M2.30-tooling-firefox-crash.md",

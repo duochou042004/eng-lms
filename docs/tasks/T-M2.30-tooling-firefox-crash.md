@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Milestone | M2 |
-| Status | draft (G0 round 1 CHANGES REQUESTED, fixed; delta re-check pending) |
+| Status | ready (G0: round 1 CHANGES REQUESTED, fixed; delta re-check PASS required before merge; waits for the PO start signal) |
 | Owner role | FE (frontend-implementer; E2E, scripts and the `regression` workflow) with the LC (backlog row FE/LC) |
 | Branch | `chore/T-M2.30-tooling-firefox-crash` (from `develop`) |
 | Depends on | T-M2.28 (`a1bcf12`), T-M2.29 (`1d6ace4`): merged |
