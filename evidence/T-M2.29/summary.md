@@ -58,8 +58,8 @@ Real-device landscape Safari; Firefox/WebKit (not installed locally; the M2 G5 r
 ## G3 cost
 | Role | Run | Tokens | Wall clock |
 |---|---|---|---|
-| frontend-implementer | 1 | 180,391 | ~38 min (agent clock) |
-| qa-evaluator (combined QA+UX) | 1 | 132,160 | ~20 min (agent clock); ~230 scenario executions |
+| frontend-implementer | 1 | 180,391 | ~1 h 45 min (reported, incl. runs; ~38 min agent time) |
+| qa-evaluator (combined QA+UX) | 1 | 132,160 | ~20 min wall clock; ~230 scenario executions |
 
 ## G3 result
 `QA-VERDICT T-M2.29: PASS WITH MINOR`, `UX-REVIEW T-M2.29: PASS WITH MINOR` (`qa/report.md`, `review/ux.md`): QA-1 (S3, older than this

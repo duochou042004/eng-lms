@@ -41,7 +41,7 @@
     "startedAt": null,
     "nextSteps": [
       "First the M2 G5-level regression run (regression workflow on develop; a Firefox Page crashed recurrence: capture stderr first, DEC-174 (5))",
-      "Then the LC writes the T-M2.30 packet (tier L) from the backlog row; G0; PO start signal",
+      "Then the LC writes the T-M2.30 packet (tier L; owner FE/LC per the row, the schema records FE) from the backlog row; G0; PO start signal",
       "T-M2.31 (overlay scroll follow-ups) in the M2 polish; T-M2.26 after at least 10 shadow PRs"
     ],
     "trace": [
@@ -878,6 +878,20 @@
       "status": "approved",
       "at": "2026-11-14T17:39:06Z",
       "ref": "DEC-175"
+    },
+    {
+      "what": "Start T-M2.29 (chat: \"Start T-M2.29 (Recommended)\")",
+      "by": "PO",
+      "status": "approved",
+      "at": "2026-11-17T12:50:13Z",
+      "ref": "DEC-176"
+    },
+    {
+      "what": "LC-APPROVED T-M2.29 (PR #190)",
+      "by": "LC",
+      "status": "approved",
+      "at": "2026-11-17T13:51:55Z",
+      "ref": "DEC-178"
     }
   ],
   "environment": {
@@ -1635,6 +1649,16 @@
       "at": "2026-11-14T18:14:46Z",
       "actor": "lead-coordinator",
       "event": "T-M2.28 records merged (PR #188, bda1715); T-M2.29 packet ready after G0 (PR #189; DEC-176: (i) accepted as is); session handoff."
+    },
+    {
+      "at": "2026-11-14T18:31:41Z",
+      "actor": "lead-coordinator",
+      "event": "T-M2.29 packet merged (PR #189, 6ccd792); gitlab-sync."
+    },
+    {
+      "at": "2026-11-17T12:50:13Z",
+      "actor": "lead-coordinator",
+      "event": "T-M2.29 start signal (chat: \"Start T-M2.29 (Recommended)\"); branch feature/T-M2.29-ui-logout-followups."
     },
     {
       "at": "2026-11-17T14:07:38Z",

@@ -21,7 +21,7 @@ Phase/Milestone: P1 / M2 (in progress) · Task: **T-M2.30** (draft; packet not y
 1. Merge the records PR (above).
 2. The M2 G5-level regression run: `gh workflow run regression.yml --ref develop` (~25–30 min, 6 viewports + Firefox/WebKit smoke). A Firefox
    `Page crashed` recurrence is treated as a likely real defect: capture Firefox stderr first (DEC-174 (5)). The G5 gate itself belongs to
-   T-M2.7 (with its `E2E_KEEP_DB=1` run against the large dev set); M2 still has open rows (T-M2.6, T-M2.7, T-M2.16, T-M2.30, T-M2.31).
+   T-M2.7 (with its `E2E_KEEP_DB=1` run against the large dev set); M2 still has open rows (T-M2.6, T-M2.7, T-M2.10, T-M2.16, T-M2.26, T-M2.30, T-M2.31).
 3. Write the T-M2.30 packet (tier L) from its row; G0; ask the PO for the start signal. T-M2.31 next; T-M2.26 after at least 10 shadow PRs.
 
 ## Pending PO decisions / actions
