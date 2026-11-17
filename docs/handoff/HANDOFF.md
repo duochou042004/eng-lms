@@ -1,32 +1,31 @@
-# Handoff — 2026-11-14T18:14Z (T-M2.28 done and recorded; T-M2.29 packet ready, waiting for the PO)
+# Handoff — 2026-11-17T14:07Z (T-M2.29 done; records PR open; the M2 regression run next)
 
-Phase/Milestone: P1 / M2 (in progress) · Task: **T-M2.29** (ready; PO start signal not yet asked) · Branch: `develop` (`bda1715`; the packet
-and this handoff on `docs/T-M2.29-packet`, PR #189) · Next after it: the M2 G5 regression; T-M2.30 (M2 polish) · Remote: https://github.com/duochou042004/eng-lms
+Phase/Milestone: P1 / M2 (in progress) · Task: **T-M2.30** (draft; packet not yet written) · Branch: `develop` (`141c763`; these records on
+`docs/T-M2.29-records`) · Next after it: T-M2.31 (M2 polish) · Remote: https://github.com/duochou042004/eng-lms
 
 ## Where we are
-- **T-M2.28 done** (`a1bcf12`, PR #187, DEC-175; rulings DEC-174; records PR #188 `bda1715`): (a)–(g) on `chore/`, tier L. Gate PASS on `a7a1e4d`;
-  regression 43617206392 green on `ddd51f4`. G3 adversarial docs-reviewer: PASS WITH MINOR → confirmation PASS.
-- **Found on the way (DEC-174):** WebKit smoke needed client-side non-Secure stored cookies (WebKit drops Secure cookies on http); the inline
-  `<style>` was Playwright's screenshot step; (f) is a **product** race (own Log out → `/login?next=<page>`) → T-M2.29 (j); the gate's ×3 repeat
-  exposed a `pagingSet` race (fixed). A Firefox `Page crashed` in axe (run 43611629190, both attempts) was ruled an engine crash; a G5 recurrence
-  is treated as a likely real defect: capture Firefox stderr first (DEC-174 (5)).
-- **T-M2.29 packet ready** (`docs/tasks/T-M2.29-ui-logout-followups.md`, PR #189): (h1) `ui/Sheet` footer scroll, (h2) the logout alert scrolls into
-  view, (j) the own-logout race with four rules; (i) "Dismiss" in vi **accepted as is** (DEC-176: React Aria's only override is a crash trap).
-  Tier M, combined QA+UX G3. G0: round 1 CHANGES REQUESTED (S2-1), delta PASS WITH MINOR, N-1..N-4 fixed.
-- New backlog row **T-M2.30** (`e2e-run.sh` refusal gaps, T-M2.28 G3 S4-1/S4-2, tier L).
+- **T-M2.29 done** (`1d6ace4`, PR #190, DEC-178; rulings DEC-177; QA report PR #191 `141c763`): (h1) the `ui/Sheet` footer scrolls within half
+  the sheet; (h2) `LogoutFailedAlert` scrolls itself into view (`nearest`, no focus move); (j) `isOwnLogoutInFlight()` (from `useLogout`'s
+  `onSuccess` until its navigation settles) makes one's own logout land on exactly `/login`; a logout answered 401 and a real session loss
+  still go to `/login?next=`. Gate PASS on `5284bc4` (854 s); "sign-out never asks" ×50 50/50; CI 7/7.
+- **G3** (one combined QA+UX `qa-evaluator`, 132,160 tokens): `QA-VERDICT` and `UX-REVIEW` PASS WITH MINOR; own logout ×120 exactly `/login`; no
+  way found to end a real session loss silently on `/login`. QA-1 (S3, older: the student account popover at 800×360 overflows the
+  scroll-locked page, `ui/Popover` has no `overflow-y`) and UX-1 (S4: drawer 568×320 clips the Log out ring) → new row **T-M2.31**.
+- DEC-177 (LC, before G3): inactive-only `removeQueries` after the logout (keeps `/login`'s public meta), the AC3 hold point, `ratio: 0.99`.
 
 ## In flight / uncommitted
-- PR #189 (`docs/T-M2.29-packet`: the packet, DEC-176, this handoff): needs the G0 reviewer's confirmation `DOCS-REVIEW T-M2.29: PASS` on its
-  final head (if not yet given: one fresh docs-reviewer, text only), CI, `LC-APPROVED T-M2.29`, merge-gate, `gitlab-sync.sh`. Do that first.
+- Records PR `docs/T-M2.29-records` (DEC-178, backlog, packet Status, `review/ux.md`, summary, progress, this handoff): needs one fresh
+  docs-reviewer (`DOCS-REVIEW T-M2.29: PASS`, text only), CI, `LC-APPROVED T-M2.29`, merge-gate, `gitlab-sync.sh`.
 
 ## Next steps (in this order)
-1. Merge PR #189 (above).
-2. Ask the PO for the T-M2.29 start signal. On it: `feature/T-M2.29-ui-logout-followups` from `develop`; frontend-implementer with the packet;
-   gate once on the final head; PR; CI; G3 one combined QA+UX `qa-evaluator` (`QA-VERDICT` + `UX-REVIEW`); merge-gate; QA PR `qa/T-M2.29`; records.
-3. Then the M2 G5 regression (`regression` workflow + the G5 `E2E_KEEP_DB=1` run); T-M2.30 in the M2 polish; T-M2.26 after at least 10 shadow PRs.
+1. Merge the records PR (above).
+2. The M2 G5-level regression run: `gh workflow run regression.yml --ref develop` (~25–30 min, 6 viewports + Firefox/WebKit smoke). A Firefox
+   `Page crashed` recurrence is treated as a likely real defect: capture Firefox stderr first (DEC-174 (5)). The G5 gate itself belongs to
+   T-M2.7 (with its `E2E_KEEP_DB=1` run against the large dev set); M2 still has open rows (T-M2.6, T-M2.7, T-M2.10, T-M2.16, T-M2.26, T-M2.30, T-M2.31).
+3. Write the T-M2.30 packet (tier L) from its row; G0; ask the PO for the start signal. T-M2.31 next; T-M2.26 after at least 10 shadow PRs.
 
 ## Pending PO decisions / actions
-- The T-M2.29 start signal (not yet asked).
+- None open for the LC's next step; the T-M2.30 start signal comes after its packet.
 - **Dependabot, held by the PO:** #165 (msw 3 major: `web` typecheck fails at `web/src/test/setup.ts:14`; needs a packet) and #135 (react group).
   The LC does not touch them unasked.
 
@@ -128,5 +127,5 @@ and this handoff on `docs/T-M2.29-packet`, PR #189) · Next after it: the M2 G5 
   `evidence/<task>/records/` (delete it) and a ~2,000-line log (trim it to ≤ 300 lines).
 
 ## Files to read first
-`CLAUDE.md` → `progress.json` → this file → DEC-174, DEC-175 → the T-M2.29 row in `docs/tasks/backlog.md` → `evidence/T-M2.28/summary.md`
-(AC7's reading of the logout race) → `docs/09-harness/coding-agent-rules.md`.
+`CLAUDE.md` → `progress.json` → this file → DEC-177, DEC-178 → the T-M2.30 and T-M2.31 rows in `docs/tasks/backlog.md` →
+`evidence/T-M2.29/summary.md` → `docs/09-harness/coding-agent-rules.md`.

@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-11-17T13:30:17Z",
-  "updatedBy": "lead-coordinator (T-M2.29 implemented, gate PASS; PR + G3 next)",
+  "updatedAt": "2026-11-17T14:07:38Z",
+  "updatedBy": "lead-coordinator (T-M2.29 merged and recorded)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -30,33 +30,6 @@
     "exitCriteria": "FR-AUTH-01..10 and FR-STU-01..07 accepted; authorization-matrix and student-isolation harnesses fail on any unregistered endpoint; add-student flow E2E at 360/768/1280 within its step budget; security review of authentication passed (docs/01-product/roadmap.md)."
   },
   "currentTask": {
-    "id": "T-M2.29",
-    "title": "UI follow-ups from T-M2.13 and the own-logout race (DEC-172, DEC-173, DEC-174)",
-    "status": "in_progress",
-    "ownerRole": "FE",
-    "branch": "feature/T-M2.29-ui-logout-followups",
-    "packet": "docs/tasks/T-M2.29-ui-logout-followups.md",
-    "pr": null,
-    "lastCommit": "5284bc4",
-    "startedAt": "2026-11-17T12:50:13Z",
-    "nextSteps": [
-      "Implemented (h1) 2b915f2, (h2) 25fb339, (j) 5284bc4; gate PASS on 5284bc4; DEC-177 rulings",
-      "PR, CI, G3 one combined QA+UX qa-evaluator (QA-VERDICT + UX-REVIEW), merge-gate, QA PR qa/T-M2.29, records",
-      "Then the M2 G5 regression (Firefox Page crashed recurrence: capture stderr first, DEC-174 (5)); T-M2.30"
-    ],
-    "trace": [
-      "DEC-172",
-      "DEC-173",
-      "DEC-174",
-      "DEC-176",
-      "DEC-177"
-    ],
-    "entryGate": [
-      "T-M2.13, T-M2.28 merged — met (a1bcf12)",
-      "PO start signal — given 2026-11-17T12:50Z"
-    ]
-  },
-  "nextTask": {
     "id": "T-M2.30",
     "title": "e2e-run.sh fresh-mode refusal gaps (T-M2.28 G3 S4-1, S4-2)",
     "status": "draft",
@@ -67,11 +40,30 @@
     "lastCommit": null,
     "startedAt": null,
     "nextSteps": [
-      "M2 polish, tier L (backlog row); T-M2.26 after at least 10 shadow PRs"
+      "First the M2 G5-level regression run (regression workflow on develop; a Firefox Page crashed recurrence: capture stderr first, DEC-174 (5))",
+      "Then the LC writes the T-M2.30 packet (tier L; owner FE/LC per the row, the schema records FE) from the backlog row; G0; PO start signal",
+      "T-M2.31 (overlay scroll follow-ups) in the M2 polish; T-M2.26 after at least 10 shadow PRs"
     ],
     "trace": [
       "DEC-174",
       "DEC-175"
+    ]
+  },
+  "nextTask": {
+    "id": "T-M2.31",
+    "title": "Overlay scroll follow-ups (T-M2.29 G3 QA-1 S3, UX-1 S4)",
+    "status": "draft",
+    "ownerRole": "FE",
+    "branch": null,
+    "packet": null,
+    "pr": null,
+    "lastCommit": null,
+    "startedAt": null,
+    "nextSteps": [
+      "M2 polish, tier M (backlog row)"
+    ],
+    "trace": [
+      "DEC-178"
     ]
   },
   "completed": [
@@ -418,11 +410,19 @@
       "mergeCommit": "a1bcf12",
       "evidence": "evidence/T-M2.28/summary.md",
       "note": "PR #187 via merge-gate (head 91f94b5, CI 7/7 (5 full)); packet PR #185 (3894451); PO start 2026-11-14T13:49:56Z; gate PASS on a7a1e4d (720 s); regression 43617206392 green on ddd51f4; G3 adversarial docs-reviewer PASS WITH MINOR -> confirmation PASS (111,691 tokens); (f) product race -> T-M2.29 (j), G3 S4-1/S4-2 -> T-M2.30 (DEC-174, DEC-175)"
+    },
+    {
+      "id": "T-M2.29",
+      "title": "UI follow-ups from T-M2.13 and the own-logout race (DEC-172, DEC-173, DEC-174)",
+      "completedAt": "2026-11-17T13:52:26Z",
+      "mergeCommit": "1d6ace4",
+      "evidence": "evidence/T-M2.29/summary.md",
+      "note": "PR #190 via merge-gate (head 4ae60ff, CI 7/7 (5 full)); packet PR #189 (6ccd792); PO start 2026-11-17T12:50Z; gate PASS on 5284bc4 (854 s); sign-out never asks x50 50/50; G3 tier M: one combined QA+UX qa-evaluator PASS WITH MINOR / PASS WITH MINOR (132,160 tokens); QA-1 S3 + UX-1 S4 -> T-M2.31; QA report PR #191 (141c763); DEC-177, DEC-178"
     }
   ],
   "tests": {
-    "lastRun": "2026-11-14T15:42:54Z",
-    "summary": "T-M2.28 head a7a1e4d: gate PASS (13 steps, 720 s); e2e 525 passed / 42 skipped; repeat x3 150 passed / 3 skipped; e2e-run.test.sh 127/127, gate.test.sh 98/98.",
+    "lastRun": "2026-11-17T13:13:54Z",
+    "summary": "T-M2.29 head 5284bc4: gate PASS (13 steps, 854 s); web-test 852/852; e2e 536 passed / 46 skipped; repeat x3 381 passed / 33 skipped.",
     "suites": [
       {
         "name": "backend (./mvnw -B verify)",
@@ -453,23 +453,23 @@
     },
     "G1": {
       "status": "pass",
-      "note": "T-M2.28: gate PASS (13 steps, 720 s) on a7a1e4d"
+      "note": "T-M2.29: gate PASS (13 steps, 854 s) on 5284bc4"
     },
     "G2": {
       "status": "pass",
-      "note": "T-M2.28: CI 7/7 on 91f94b5 (5 full); regression 43617206392 green"
+      "note": "T-M2.29: CI 7/7 on 4ae60ff (5 full)"
     },
     "G3": {
       "status": "pass",
-      "note": "T-M2.28: DOCS-REVIEW PASS (adversarial; round 1 PASS WITH MINOR, confirmation PASS; 111,691 tokens)"
+      "note": "T-M2.29: combined QA+UX qa-evaluator QA-VERDICT and UX-REVIEW PASS WITH MINOR (132,160 tokens); QA-1, UX-1 -> T-M2.31"
     },
     "G4": {
       "status": "pass",
-      "note": "T-M2.28 PR #187 merged via merge-gate (a1bcf12)"
+      "note": "T-M2.29 PR #190 merged via merge-gate (1d6ace4)"
     },
     "G5": {
       "status": "n/a",
-      "note": "M2 in progress; T-M2.29 first"
+      "note": "M2 in progress; the regression run next"
     }
   },
   "blockers": [],
@@ -524,7 +524,9 @@
       "DEC-173",
       "DEC-174",
       "DEC-175",
-      "DEC-176"
+      "DEC-176",
+      "DEC-177",
+      "DEC-178"
     ],
     "pendingPO": [
       "OQ-03",
@@ -876,6 +878,20 @@
       "status": "approved",
       "at": "2026-11-14T17:39:06Z",
       "ref": "DEC-175"
+    },
+    {
+      "what": "Start T-M2.29 (chat: \"Start T-M2.29 (Recommended)\")",
+      "by": "PO",
+      "status": "approved",
+      "at": "2026-11-17T12:50:13Z",
+      "ref": "DEC-176"
+    },
+    {
+      "what": "LC-APPROVED T-M2.29 (PR #190)",
+      "by": "LC",
+      "status": "approved",
+      "at": "2026-11-17T13:51:55Z",
+      "ref": "DEC-178"
     }
   ],
   "environment": {
@@ -1633,6 +1649,21 @@
       "at": "2026-11-14T18:14:46Z",
       "actor": "lead-coordinator",
       "event": "T-M2.28 records merged (PR #188, bda1715); T-M2.29 packet ready after G0 (PR #189; DEC-176: (i) accepted as is); session handoff."
+    },
+    {
+      "at": "2026-11-14T18:31:41Z",
+      "actor": "lead-coordinator",
+      "event": "T-M2.29 packet merged (PR #189, 6ccd792); gitlab-sync."
+    },
+    {
+      "at": "2026-11-17T12:50:13Z",
+      "actor": "lead-coordinator",
+      "event": "T-M2.29 start signal (chat: \"Start T-M2.29 (Recommended)\"); branch feature/T-M2.29-ui-logout-followups."
+    },
+    {
+      "at": "2026-11-17T14:07:38Z",
+      "actor": "lead-coordinator",
+      "event": "T-M2.29 merged (PR #190, 1d6ace4, head 4ae60ff; DEC-177 rulings, DEC-178); QA report PR #191 (141c763); records PR docs/T-M2.29-records; T-M2.31 added; T-M2.30 next after the M2 regression run."
     }
   ]
 }
