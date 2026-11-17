@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-11-17T14:52:07Z",
-  "updatedBy": "lead-coordinator (M2 regression 44099902526: Firefox crash recurrence, DEC-179; T-M2.30 packet draft)",
+  "updatedAt": "2026-11-17T15:10:57Z",
+  "updatedBy": "lead-coordinator (T-M2.30 ready; PO hold; handoff)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -40,14 +40,18 @@
     "lastCommit": null,
     "startedAt": null,
     "nextSteps": [
-      "Regression 44099902526 on 141c763: 1059 passed, 1 failed (firefox-smoke smoke.spec.ts:77 Page crashed in axe, DEC-174 (5) recurrence) -> T-M2.30 (c) (DEC-179)",
-      "T-M2.30 packet ready (PR #193): G0 round 1 CHANGES REQUESTED fixed; delta PASS WITH MINOR fixed; same-reviewer confirmation; merge; then the PO start signal (plus the artifact downloads)",
-      "On start: chore/T-M2.30-tooling-firefox-crash, frontend-implementer, regression runs (artifact download = PO action), gate, PR, G3 adversarial docs-reviewer, merge-gate, records"
+      "T-M2.30 ready (packet PR #193, 357c4c4; G0 PASS after round 1 CHANGES REQUESTED, delta PASS WITH MINOR, confirmation)",
+      "PO answered Hold to the start signal (2026-11-17); ask again at the next session start",
+      "On start: chore/T-M2.30-tooling-firefox-crash, frontend-implementer (name the x20 scratch branch chore/T-M2.30-x20-scratch, deleted after its run), regression runs, gate, PR, G3 adversarial docs-reviewer, merge-gate, records"
     ],
     "trace": [
       "DEC-174",
       "DEC-175",
       "DEC-179"
+    ],
+    "entryGate": [
+      "T-M2.28, T-M2.29 merged — met (1d6ace4)",
+      "PO start signal — asked 2026-11-17, answered Hold"
     ]
   },
   "nextTask": {
@@ -894,6 +898,20 @@
       "status": "approved",
       "at": "2026-11-17T13:51:55Z",
       "ref": "DEC-178"
+    },
+    {
+      "what": "Download the regression-run artifacts of T-M2.30 (chat: \"Allow for T-M2.30 (Recommended)\")",
+      "by": "PO",
+      "status": "approved",
+      "at": "2026-11-17T15:10:57Z",
+      "ref": "DEC-179"
+    },
+    {
+      "what": "Start T-M2.30 (asked 2026-11-17, chat: \"Hold\"; ask again)",
+      "by": "PO",
+      "status": "pending",
+      "at": "2026-11-17T15:10:57Z",
+      "ref": "DEC-179"
     }
   ],
   "environment": {
@@ -1671,6 +1689,11 @@
       "at": "2026-11-17T14:44:00Z",
       "actor": "lead-coordinator",
       "event": "T-M2.29 records merged (PR #192, 5da7c89). Regression 44099902526 on 141c763: 1059 passed, 1 failed (Firefox Page crashed recurrence) -> T-M2.30 (c) (DEC-179); T-M2.30 packet drafted."
+    },
+    {
+      "at": "2026-11-17T15:10:57Z",
+      "actor": "lead-coordinator",
+      "event": "T-M2.30 packet merged (PR #193, 357c4c4; G0 PASS). PO: start signal Hold; artifact downloads for T-M2.30 allowed. Session handoff."
     }
   ]
 }

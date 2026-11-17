@@ -1,7 +1,7 @@
-# Handoff — 2026-11-17T15:00Z (T-M2.29 done and recorded; regression: Firefox crash recurrence, DEC-179; T-M2.30 packet in G0)
+# Handoff — 2026-11-17T15:11Z (T-M2.30 ready; the PO answered Hold to its start signal)
 
-Phase/Milestone: P1 / M2 (in progress) · Task: **T-M2.30** (packet ready on `docs/T-M2.30-packet`, PR #193) · Branch: `develop` (`5da7c89`)
-· Next after it: T-M2.31 (M2 polish) · Remote: https://github.com/duochou042004/eng-lms
+Phase/Milestone: P1 / M2 (in progress) · Task: **T-M2.30** (ready, `docs/tasks/T-M2.30-tooling-firefox-crash.md`; PO: Hold) · Branch:
+`develop` (`357c4c4`; this handoff on `docs/T-M2.30-hold`) · Next after it: T-M2.31 (M2 polish) · Remote: https://github.com/duochou042004/eng-lms
 
 ## Where we are
 - **T-M2.29 done** (`1d6ace4`, PR #190, DEC-178; rulings DEC-177; QA report PR #191 `141c763`; records PR #192 `5da7c89`): (h1) the `ui/Sheet`
@@ -11,20 +11,24 @@ Phase/Milestone: P1 / M2 (in progress) · Task: **T-M2.30** (packet ready on `do
 - **Regression 44099902526** on `develop` `141c763` (30.1 min): 1059 passed, 1 failed: `[firefox-smoke] smoke.spec.ts:77` `Page crashed` in
   axe `runPartial` (`:114`), the DEC-174 (5) recurrence (2 of the last 4 runs). Ruled into **T-M2.30 as (c)** (DEC-179): capture the
   browser's stderr (and OOM lines), then the cause, before the M2 G5. The run counts neither as the G5 nor as green.
+- **T-M2.30 packet merged** (PR #193, `357c4c4`): G0 round 1 CHANGES REQUESTED (S2-1 no-reproduction outcome, S2-2 the ×20 route), delta
+  PASS WITH MINOR (the diagnostics step must never fail a green run), confirmation PASS.
 
 ## In flight / uncommitted
-- **PR #193** (`docs/T-M2.30-packet`: the packet, DEC-179, backlog, this handoff; delta PASS WITH MINOR, its S3-1 and S4s fixed): G0 round 1 CHANGES REQUESTED (S2-1 AC4 had no
-  no-reproduction outcome, S2-2 the ×20 was unrunnable; S3-1..S3-6, S4-1..S4-4), all fixed by the LC; needs the same reviewer's delta
-  `DOCS-REVIEW T-M2.30: PASS` (S2 → delta re-check), CI, `LC-APPROVED T-M2.30`, merge-gate, `gitlab-sync.sh`.
+- **This handoff PR** (`docs/T-M2.30-hold`: progress.json (the PO answers), this handoff, the next-session prompt): needs one fresh
+  docs-reviewer (`DOCS-REVIEW T-M2.30: PASS`, text only), CI, `LC-APPROVED T-M2.30`, merge-gate, `gitlab-sync.sh`.
 
 ## Next steps (in this order)
-1. Merge PR #193 (above; T-M2.30 is already `ready` in the packet, progress and backlog).
-2. Ask the PO for the T-M2.30 start signal, and once for the artifact downloads of its regression runs (~6 MB each). On it:
-   `chore/T-M2.30-tooling-firefox-crash`, frontend-implementer, its regression runs, gate, PR, CI, G3 adversarial docs-reviewer, merge-gate, records.
+1. Merge the handoff PR (above).
+2. Ask the PO again for the T-M2.30 start signal (2026-11-17: **Hold**). On it: `chore/T-M2.30-tooling-firefox-crash` from `develop`;
+   frontend-implementer with the packet (name the ×20 scratch branch `chore/T-M2.30-x20-scratch`, deleted after its run); its regression
+   runs; gate once on the final head; LC summary, progress, PR; CI; G3 one adversarial docs-reviewer that re-runs the script suites;
+   merge-gate; records.
 3. T-M2.31 (overlay scroll, tier M); T-M2.26 after at least 10 shadow PRs. M2's other open rows: T-M2.6, T-M2.7 (holds the G5), T-M2.10, T-M2.16.
 
 ## Pending PO decisions / actions
-- The T-M2.30 start signal (after G0) and the artifact-download approval for its runs.
+- The T-M2.30 start signal (answered **Hold** on 2026-11-17; ask again). The artifact downloads of T-M2.30's regression runs are
+  **approved** (2026-11-17, "Allow for T-M2.30").
 - **Dependabot, held by the PO:** #165 (msw 3 major: `web` typecheck fails at `web/src/test/setup.ts:14`; needs a packet) and #135 (react group).
   The LC does not touch them unasked.
 
