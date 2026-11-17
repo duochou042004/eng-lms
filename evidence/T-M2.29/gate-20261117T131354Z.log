@@ -1,0 +1,52 @@
+# Trimmed by the LC from 2,590 lines: every gate: line and the counts (full log in the implementer's commit c6837c7).
+gate: logging to evidence/T-M2.29/gate-20261117T131354Z.log
+gate: 5284bc4 2026-11-17T13:13:54Z, steps: docs scripts backend web-install web-lint web-typecheck web-test web-build web-budget web-contrast contract-drift qa-typecheck e2e
+gate: ==> docs
+gate: <== docs OK (1s)
+gate: ==> scripts
+  -> 86 passed, 0 failed
+  -> 243 passed, 0 failed
+  -> 97 passed, 0 failed
+  -> 9 passed, 0 failed
+  -> 164 passed, 0 failed
+  -> 127 passed, 0 failed
+  -> 98 passed, 0 failed
+  -> 11 passed, 0 failed
+  -> 418 passed, 0 failed
+  -> 15 passed, 0 failed
+  -> 15 passed, 0 failed
+  -> 11 passed, 0 failed
+  -> 10 passed, 0 failed
+gate: <== scripts OK (228s)
+gate: ==> backend
+gate: backend skipped: no backend/ or api/ change (CI runs it; ENGLMS_GATE_FULL=1 forces it)
+gate: <== backend OK (0s)
+gate: ==> web-install
+gate: <== web-install OK (0s)
+gate: ==> web-lint
+gate: <== web-lint OK (4s)
+gate: ==> web-typecheck
+gate: <== web-typecheck OK (6s)
+gate: ==> web-test
+ Test Files  70 passed (70)
+      Tests  852 passed (852)
+gate: <== web-test OK (53s)
+gate: ==> web-build
+gate: <== web-build OK (6s)
+gate: ==> web-budget
+gate: <== web-budget OK (0s)
+gate: ==> web-contrast
+gate: <== web-contrast OK (0s)
+gate: ==> contract-drift
+gate: contract-drift skipped: no backend/ or api/ change (CI runs it)
+gate: <== contract-drift OK (0s)
+gate: ==> qa-typecheck
+gate: <== qa-typecheck OK (2s)
+gate: ==> e2e
+  46 skipped
+  536 passed (4.7m)
+gate: e2e repeat x3: tests/shells.spec.ts tests/students-list.spec.ts
+  33 skipped
+  381 passed (3.8m)
+gate: <== e2e OK (554s)
+gate: PASS (13 steps, 854s)

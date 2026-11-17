@@ -85,7 +85,10 @@
   padding: var(--space-3) var(--space-4);
 }
 
+/* A footer taller than half the sheet scrolls on its own (the drawer on a phone held sideways, T-M2.29 (h1)). */
 .footer {
+  max-block-size: 50%;
+  overflow-y: auto;
   padding: var(--space-3) var(--space-4);
   border-block-start: var(--border-width) solid var(--color-border);
 }

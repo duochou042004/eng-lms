@@ -1,7 +1,14 @@
 import { hashKey, type QueryClient } from '@tanstack/react-query'
 import { redirect, type DataRouter, type LoaderFunctionArgs } from 'react-router'
 import { onAuthMessage, postAuthMessage, type AuthMessage } from '../features/auth/api/authChannel'
-import { ensureSession, logout, refreshSession, SESSION_KEY, type Session } from '../features/auth/api/session'
+import {
+  ensureSession,
+  isOwnLogoutInFlight,
+  logout,
+  refreshSession,
+  SESSION_KEY,
+  type Session,
+} from '../features/auth/api/session'
 import { loginPath, roleHome, type Role } from '../features/auth/model/redirect'
 import { onAuthProblem } from '../lib/api'
 
@@ -102,9 +109,11 @@ async function followSession(router: DataRouter, session: Session | null) {
  * pages are reset (they refetch for the new session), the others removed. A `signed-out` message reads the session
  * first (T-M2.13 scope 2, G0 D-1): when the tab had a session, the read is anonymous and the page needs a session, it
  * clears both caches without a reset (nothing refetches), caches the anonymous session and goes to `/login?next=` with
- * the `signedOutElsewhere` notice; a 401 meanwhile does not navigate. These reactions run one after another; none
- * of them posts a message. Navigation goes through the router
- * only. Returns the unsubscribe (which also closes the channel).
+ * the `signedOutElsewhere` notice; a 401 meanwhile does not navigate. Nor does a 401 during this tab's own logout
+ * (`isOwnLogoutInFlight`: from its successful call until its navigation to `/login` has settled), and it clears nothing:
+ * the user asked for `/login`, never `/login?next=` (T-M2.29 (j)); a logout answered 401 is a session loss as any 401.
+ * These reactions run one after another; none of them posts a message. Navigation goes through the router only.
+ * Returns the unsubscribe (which also closes the channel).
  */
 export function connectAuthProblems(router: DataRouter, queryClient: QueryClient) {
   let queue: Promise<unknown> = Promise.resolve()
@@ -124,7 +133,7 @@ export function connectAuthProblems(router: DataRouter, queryClient: QueryClient
   const offProblems = onAuthProblem((problem) => {
     const { pathname, search } = router.state.location
     if (problem === 'UNAUTHENTICATED') {
-      if (pathname === '/login' || followingSignOut) return
+      if (pathname === '/login' || followingSignOut || isOwnLogoutInFlight()) return
       queryClient.getQueryCache().clear()
       queryClient.getMutationCache().clear()
       void router.navigate(loginPath(pathname + search))

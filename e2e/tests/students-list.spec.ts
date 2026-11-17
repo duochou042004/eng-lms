@@ -247,6 +247,51 @@ test.describe('Add student (F2) and the credentials card', () => {
     await fresh.close()
   })
 
+  // T-M2.29 (j), OQ T-M2.28-1 (DEC-174 (3)): the race held open (as T-M2.28's held-session diagnostic). The page's
+  // username suggestion is held until the logout has answered, so the server answers it 401; /login's session read is
+  // held until that 401 has arrived, so it comes before /login commits.
+  test('T-M2.29 AC3: own Log out while a page query answers 401 before /login commits: exactly /login, no notice', async ({
+    browser,
+  }) => {
+    const fresh = await browser.newContext({ storageState: ANONYMOUS })
+    const other = await fresh.newPage()
+    await other.goto('/login')
+    expect((await apiSignIn(other, { username: TUTOR_USERNAME, password: tutorPassword() })).status).toBe(200)
+    await other.goto('/tutor/students/new')
+    let loggedOut = () => {}
+    const logoutAnswered = new Promise<void>((resolve) => (loggedOut = resolve))
+    const suggestionHeld = new Promise<void>((held) =>
+      other.route(
+        '**/api/v1/tutor/usernames/suggestion*',
+        async (route) => {
+          held()
+          await logoutAnswered
+          await route.continue()
+        },
+        { times: 1 },
+      ),
+    )
+    await fullNameField(other).fill('Chưa lưu')
+    await suggestionHeld
+    const page401 = other.waitForResponse(
+      (response) => response.status() === 401 && new URL(response.url()).pathname === '/api/v1/tutor/usernames/suggestion',
+    )
+    await other.route('**/api/v1/auth/session', async (route) => {
+      await page401
+      await route.continue()
+    })
+    const account = await openAccountSection(other, 'tutor')
+    const logout = other.waitForResponse((response) => new URL(response.url()).pathname === '/api/v1/auth/logout')
+    await account.getByRole('button', { name: 'Đăng xuất' }).click()
+    expect((await logout).status()).toBe(204)
+    loggedOut()
+    await page401
+    await expect(h1(other, 'Đăng nhập')).toBeVisible()
+    await expect(other).toHaveURL(/\/login$/)
+    await expect(other.getByText('Bạn đã đăng xuất ở một thẻ khác.')).toHaveCount(0)
+    await fresh.close()
+  })
+
   test('AC7: a refused clipboard shows the manual-copy text; the password stays selectable', async ({ page }) => {
     await page.addInitScript(() => {
       Object.defineProperty(navigator, 'clipboard', {
