@@ -907,9 +907,9 @@
       "ref": "DEC-179"
     },
     {
-      "what": "Start T-M2.30 (chat: \"Hold\")",
+      "what": "Start T-M2.30 (asked 2026-11-17, chat: \"Hold\"; ask again)",
       "by": "PO",
-      "status": "rejected",
+      "status": "pending",
       "at": "2026-11-17T15:10:57Z",
       "ref": "DEC-179"
     }

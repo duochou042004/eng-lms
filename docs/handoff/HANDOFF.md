@@ -11,12 +11,12 @@ Phase/Milestone: P1 / M2 (in progress) · Task: **T-M2.30** (ready, `docs/tasks/
 - **Regression 44099902526** on `develop` `141c763` (30.1 min): 1059 passed, 1 failed: `[firefox-smoke] smoke.spec.ts:77` `Page crashed` in
   axe `runPartial` (`:114`), the DEC-174 (5) recurrence (2 of the last 4 runs). Ruled into **T-M2.30 as (c)** (DEC-179): capture the
   browser's stderr (and OOM lines), then the cause, before the M2 G5. The run counts neither as the G5 nor as green.
+- **T-M2.30 packet merged** (PR #193, `357c4c4`): G0 round 1 CHANGES REQUESTED (S2-1 no-reproduction outcome, S2-2 the ×20 route), delta
+  PASS WITH MINOR (the diagnostics step must never fail a green run), confirmation PASS.
 
 ## In flight / uncommitted
 - **This handoff PR** (`docs/T-M2.30-hold`: progress.json (the PO answers), this handoff, the next-session prompt): needs one fresh
   docs-reviewer (`DOCS-REVIEW T-M2.30: PASS`, text only), CI, `LC-APPROVED T-M2.30`, merge-gate, `gitlab-sync.sh`.
-- **T-M2.30 packet merged** (PR #193, `357c4c4`): G0 round 1 CHANGES REQUESTED (S2-1 no-reproduction outcome, S2-2 the ×20 route), delta
-  PASS WITH MINOR (the diagnostics step must never fail a green run), confirmation PASS.
 
 ## Next steps (in this order)
 1. Merge the handoff PR (above).
