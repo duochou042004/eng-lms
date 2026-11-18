@@ -73,61 +73,75 @@ async function revealSwitcher(page: Page, target: (typeof PAGES)[number]) {
   if ('shell' in target) await openAccountSection(page, target.shell)
 }
 
-// TEMP T-M2.30 (c): Firefox-only diagnostic variants of the login flow (x20 each) and an x20 repeat of the login test; removed before the final head.
-async function tempAxe(page: Page, legacy: boolean) {
-  const builder = new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'])
-  if (legacy) builder.setLegacyMode(true)
+// TEMP T-M2.30 (c): Firefox-only diagnostic variants of the login flow (x20 each, run 3); removed before the final head.
+type TempRules = 'all' | 'contrast-only' | 'no-contrast' | 'probe'
+async function tempAxe(page: Page, rules: TempRules) {
+  if (rules === 'probe') {
+    // No axe: a layout and style read over every element, like axe's visibility and contrast checks.
+    await page.evaluate(() => {
+      for (const el of document.querySelectorAll('*')) {
+        const style = getComputedStyle(el)
+        void style.color, style.backgroundColor, style.fontFamily, style.visibility
+        const rect = el.getBoundingClientRect()
+        document.elementsFromPoint(rect.x + rect.width / 2, rect.y + rect.height / 2)
+        el.getClientRects()
+      }
+    })
+    return
+  }
+  let builder = new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'])
+  if (rules === 'contrast-only') builder = builder.withRules(['color-contrast'])
+  if (rules === 'no-contrast') builder = builder.disableRules(['color-contrast'])
   const results = await builder.analyze()
   expect(results.violations.map((v) => v.id)).toEqual([])
 }
-type TempVariant = { first: boolean; switchLang: boolean; fonts: boolean; legacy: boolean; enFirst?: boolean }
-async function tempLogin(page: Page, v: TempVariant) {
-  if (v.enFirst) await page.addInitScript(() => localStorage.setItem('englms.locale', 'en'))
+async function tempLogin(page: Page, rules: TempRules, reload: 'reload' | 'goto') {
   await page.goto('/login')
-  await expect(page.getByRole('heading', { level: 1, name: v.enFirst ? 'Sign in' : 'Đăng nhập' })).toBeVisible()
-  if (v.first) await tempAxe(page, v.legacy)
-  if (v.switchLang) {
-    await page.getByRole('radiogroup', { name: 'Ngôn ngữ' }).getByRole('radio', { name: 'English' }).click()
-    await expect(page.getByRole('heading', { level: 1, name: 'Sign in' })).toBeVisible()
-  }
-  await page.reload()
-  await expect(page.getByRole('heading', { level: 1, name: v.switchLang || v.enFirst ? 'Sign in' : 'Đăng nhập' })).toBeVisible()
-  if (v.fonts) await expect.poll(() => page.evaluate(() => document.fonts.status)).toBe('loaded')
-  await tempAxe(page, v.legacy)
+  await expect(page.getByRole('heading', { level: 1, name: 'Đăng nhập' })).toBeVisible()
+  await tempAxe(page, 'all')
+  await page.getByRole('radiogroup', { name: 'Ngôn ngữ' }).getByRole('radio', { name: 'English' }).click()
+  await expect(page.getByRole('heading', { level: 1, name: 'Sign in' })).toBeVisible()
+  if (reload === 'reload') await page.reload()
+  else await page.goto('/login')
+  await expect(page.getByRole('heading', { level: 1, name: 'Sign in' })).toBeVisible()
+  await tempAxe(page, rules)
 }
-const TEMP_VARIANTS: Record<string, TempVariant> = {
-  flow: { first: true, switchLang: true, fonts: false, legacy: false },
-  fonts: { first: true, switchLang: true, fonts: true, legacy: false },
-  legacy: { first: true, switchLang: true, fonts: false, legacy: true },
-  'no-switch': { first: true, switchLang: false, fonts: false, legacy: false },
-  'en-first-one-axe': { first: false, switchLang: false, fonts: false, legacy: false, enFirst: true },
+const TEMP_VARIANTS: Record<string, [TempRules, 'reload' | 'goto']> = {
+  flow: ['all', 'reload'],
+  'goto-twice': ['all', 'goto'],
+  'contrast-only': ['contrast-only', 'reload'],
+  'no-contrast': ['no-contrast', 'reload'],
+  probe: ['probe', 'reload'],
 }
 for (let i = 1; i <= 20; i++) {
-  for (const [name, v] of Object.entries(TEMP_VARIANTS)) {
+  for (const [name, [rules, reload]] of Object.entries(TEMP_VARIANTS)) {
     test(`TEMP T-M2.30 variant ${name} #${i}`, async ({ page, browserName }) => {
       test.skip(browserName !== 'firefox', 'TEMP T-M2.30: Firefox only')
-      await tempLogin(page, v)
+      await tempLogin(page, rules, reload)
     })
   }
-  test(`TEMP T-M2.30 variant jit-off #${i}`, async ({ playwright, browserName, baseURL }) => {
+  test(`TEMP T-M2.30 variant signon-off #${i}`, async ({ playwright, browserName, baseURL }) => {
     test.skip(browserName !== 'firefox', 'TEMP T-M2.30: Firefox only')
     const browser = await playwright.firefox.launch({
-      firefoxUserPrefs: { 'javascript.options.baselinejit': false, 'javascript.options.ion': false, 'javascript.options.wasm': false },
+      firefoxUserPrefs: {
+        'signon.rememberSignons': false,
+        'signon.autofillForms': false,
+        'signon.formlessCapture.enabled': false,
+        'browser.formfill.enable': false,
+      },
     })
     try {
       const context = await browser.newContext({ baseURL, viewport: VIEWPORTS.laptop })
-      await tempLogin(await context.newPage(), TEMP_VARIANTS.flow!)
+      await tempLogin(await context.newPage(), 'all', 'reload')
     } finally {
       await browser.close()
     }
   })
 }
-const TEMP_REPEATS = Array.from({ length: 20 }, (_, i) => ({ ...PAGES[0], repeat: i + 1 }))
-for (const target of [...PAGES, ...TEMP_REPEATS]) {
+for (const target of PAGES) {
   test.describe(() => {
     test.use({ storageState: async ({ browserName }, use) => use(stateFor(target.state, browserName)) })
-    test(`${target.name} renders in vi and en${'repeat' in target ? ` (TEMP repeat ${target.repeat})` : ''}`, async ({ page, browserName }, testInfo) => {
-      test.skip('repeat' in target && browserName !== 'firefox', 'TEMP T-M2.30: Firefox only')
+    test(`${target.name} renders in vi and en`, async ({ page }, testInfo) => {
       await page.goto(target.path)
       await expect(page.getByRole('heading', { level: 1, name: target.vi })).toBeVisible()
       await expect(page.locator('html')).toHaveAttribute('lang', 'vi')
