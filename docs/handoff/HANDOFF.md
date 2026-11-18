@@ -1,36 +1,36 @@
-# Handoff — 2026-11-18T15:37Z (T-M2.30 done; Firefox dropped from the regression matrix; T-M2.31 next)
+# Handoff — 2026-11-18T16:34Z (T-M2.31 ready; the PO answered Hold to its start signal)
 
-Phase/Milestone: P1 / M2 (in progress) · Task: **T-M2.31** (draft: packet to write) · Branch: `develop` (`6822841`; this handoff on
-`docs/T-M2.30-records`) · Next after it: the other open M2 rows, then T-M2.7 (G5) · Remote: https://github.com/duochou042004/eng-lms
+Phase/Milestone: P1 / M2 (in progress) · Task: **T-M2.31** (ready, `docs/tasks/T-M2.31-ui-overlay-scroll.md`; PO: Hold) · Branch: `develop`
+(`4bdec97`; this handoff on `docs/T-M2.31-hold`) · Next after it: T-M2.6, T-M2.10, T-M2.16, then T-M2.7 (G5) · Remote: https://github.com/duochou042004/eng-lms
 
 ## Where we are
-- **T-M2.30 done** (`6822841`, PR #195, DEC-181; packet PR #193): (a) `e2e-run.sh` fresh mode scans `env -0` and refuses datasource/Flyway/
-  config overrides in any spelling and spring-carrying JVM option variables; `java` runs from an emptied `backend/target/e2e-cwd/` without
-  `DEBUG`; (b) lower-case case + mutation; `e2e-run.test.sh` 193/193; (c) browser logs, OOM lines and a memory sample in the `regression`
-  artifact. Gate PASS on `10a5b48` (623 s); CI 7/7; G3 adversarial docs-reviewer PASS WITH MINOR → fixed → confirmation PASS (118,032 tokens).
-- **Firefox crash = engine/runner cause** (4 runs: content-process SIGSEGV on the axe run after a second `/login` load, ~half of ×20
-  repeats; 0 OOM; no test-side change helped). **PO rulings 2026-11-18 (DEC-180):** runs capped after the 4th; **Firefox dropped** from
-  `e2e/` and the `regression` workflow. The G5 matrix is the 6 Chromium viewports + WebKit smoke. NFR-COMPAT-01/A-014 keep Firefox as best effort.
-- The PO questioned the cost of the regression loop (each run ~30–40 min). Answered: it is meant for milestone sign-off only; T-M2.30's
-  runs were diagnostic repeats of the crash.
+- **T-M2.30 done** (`6822841`, PR #195, DEC-181; records PR #196 `ea365bb`). Firefox crash = engine/runner cause; **PO 2026-11-18:**
+  regression runs capped, **Firefox dropped** from the regression/G5 matrix (6 Chromium viewports + WebKit smoke, DEC-180).
+- **T-M2.31 packet merged** (PR #197, `4bdec97`): (a) `ui/Popover` `overflow-y: auto` + `scrollbar-gutter: stable` + ring scroll padding
+  (QA-1); (b) the tutor drawer at 568×320 keeps Log out and its ring visible with the alert (UX-1; measured fit 155.4 of 159 px);
+  (c) **a live Chrome bug found at G0** (DEC-182): `LogoutFailedAlert.tsx:19` returns `scrollIntoView`'s Promise from an effect, so after a
+  failed logout, Esc or a second Log out shows the error page. G0: round 1 CHANGES REQUESTED (S2-1, S2-2), delta PASS WITH MINOR, confirmation PASS.
+- **The PO answered Hold** to the T-M2.31 start signal (2026-11-18).
 
 ## In flight / uncommitted
-- **This records PR** (`docs/T-M2.30-records`: DEC-181, backlog/packet `done`, progress, `review/docs.md`, summary merge line, this handoff,
-  the next-session prompt): needs one fresh docs-reviewer (`DOCS-REVIEW T-M2.30: PASS`, text only), CI, `LC-APPROVED T-M2.30`,
-  merge-gate, `gitlab-sync.sh`.
+- **This handoff PR** (`docs/T-M2.31-hold`: progress.json, this handoff, the next-session prompt): needs one fresh docs-reviewer
+  (`DOCS-REVIEW T-M2.31: PASS`, text only), CI, `LC-APPROVED T-M2.31`, merge-gate, `gitlab-sync.sh`.
 
 ## Next steps (in this order)
-1. Merge the records PR (above).
-2. T-M2.31 (overlay scroll, tier M, FE; backlog row): write the packet (task-packet skill), G0 docs-reviewer, ask the PO for the start
-   signal; G3 one combined QA+UX qa-evaluator.
-3. M2's other open rows: T-M2.6, T-M2.10, T-M2.16; T-M2.26 after at least 10 shadow PRs; T-M2.7 holds the G5 (one `regression` run, no Firefox).
+1. Merge the handoff PR (above).
+2. Ask the PO again for the T-M2.31 start signal (2026-11-18: **Hold**). Mention (c) is a live crash after a failed logout in Chrome.
+   On it: `feature/T-M2.31-ui-overlay-scroll` from `develop`; frontend-implementer with the packet; gate once on the final head; LC summary,
+   progress, PR; CI; G3 one combined QA+UX qa-evaluator; merge-gate; records.
+3. T-M2.6, T-M2.10, T-M2.16; T-M2.26 after at least 10 shadow PRs; T-M2.7 holds the G5 (one `regression` run, no Firefox).
 
 ## Pending PO decisions / actions
-- None open for T-M2.30. The T-M2.31 start signal will be asked once its packet passes G0.
+- The T-M2.31 start signal (answered **Hold** on 2026-11-18; ask again).
 - **Dependabot, held by the PO:** #165 (msw 3 major: `web` typecheck fails at `web/src/test/setup.ts:14`; needs a packet) and #135 (react group).
   The LC does not touch them unasked.
 
 ## Gotchas
+- **Chromium 158's `scrollIntoView` returns a Promise** (DEC-182): a `useEffect` arrow that returns an expression hands it to React as the
+  cleanup, which throws on unmount. Effects that call DOM methods need a block body. Fix planned in T-M2.31 (c), on PO hold; until then the crash is live in Chrome.
 - **`gate.sh`'s e2e repeat runs `--repeat-each=3` under `fullyParallel`** on a fresh DB: test-data helpers that check-then-create race between
   repeats; key shared sets by `testInfo.repeatEachIndex` (T-M2.28).
 - **WebKit locally:** host libraries are not installed; WebKit evidence comes from `gh workflow run regression.yml --ref <branch>`
@@ -137,5 +137,4 @@ Phase/Milestone: P1 / M2 (in progress) · Task: **T-M2.31** (draft: packet to wr
   (development-setup "E2E database").
 
 ## Files to read first
-`CLAUDE.md` → `progress.json` → this file → DEC-180, DEC-181 → the T-M2.31 row in `docs/tasks/backlog.md` → `evidence/T-M2.30/summary.md` →
-`docs/09-harness/coding-agent-rules.md`.
+`CLAUDE.md` → `progress.json` → this file → DEC-180..DEC-182 → `docs/tasks/T-M2.31-ui-overlay-scroll.md` → `docs/09-harness/coding-agent-rules.md`.

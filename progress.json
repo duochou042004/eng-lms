@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-11-18T16:14:05Z",
-  "updatedBy": "lead-coordinator (T-M2.31 ready)",
+  "updatedAt": "2026-11-18T16:34:49Z",
+  "updatedBy": "lead-coordinator (T-M2.31 ready; PO hold; handoff)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -40,8 +40,9 @@
     "lastCommit": null,
     "startedAt": null,
     "nextSteps": [
-      "G0 PASS (round 1 CHANGES REQUESTED: S2-1 crash -> (c) DEC-182, S2-2 fit numbers; delta PASS WITH MINOR, S4s fixed; confirmation)",
-      "Ask the PO for the start signal; on it: frontend-implementer, gate, PR, CI, G3 one combined QA+UX qa-evaluator, merge-gate, records"
+      "T-M2.31 ready (packet PR #197, 4bdec97; G0 PASS after round 1 CHANGES REQUESTED, delta PASS WITH MINOR, confirmation)",
+      "PO answered Hold to the start signal (2026-11-18); ask again at the next session start ((c) is a live Chrome crash, DEC-182)",
+      "On start: feature/T-M2.31-ui-overlay-scroll, frontend-implementer, gate, PR, CI, G3 combined QA+UX qa-evaluator, merge-gate, records"
     ],
     "trace": [
       "DEC-178",
@@ -49,7 +50,7 @@
     ],
     "entryGate": [
       "T-M2.29, T-M2.30 merged — met (6822841)",
-      "PO start signal — to ask"
+      "PO start signal — asked 2026-11-18, answered Hold"
     ]
   },
   "nextTask": {
@@ -936,6 +937,13 @@
       "status": "approved",
       "at": "2026-11-18T14:10:00Z",
       "ref": "DEC-180"
+    },
+    {
+      "what": "Start T-M2.31 (asked 2026-11-18, chat: \"Hold\"; ask again)",
+      "by": "PO",
+      "status": "pending",
+      "at": "2026-11-18T16:34:49Z",
+      "ref": "DEC-182"
     }
   ],
   "environment": {
@@ -1723,6 +1731,11 @@
       "at": "2026-11-18T15:37:09Z",
       "actor": "lead-coordinator",
       "event": "T-M2.30 merged (PR #195, 6822841; DEC-181): e2e-run refusal gaps closed, browser-log/OOM capture; Firefox crash = engine/runner cause; PO capped the runs and dropped Firefox (DEC-180). Records PR; T-M2.31 next."
+    },
+    {
+      "at": "2026-11-18T16:34:49Z",
+      "actor": "lead-coordinator",
+      "event": "T-M2.31 packet merged (PR #197, 4bdec97; G0 PASS; (c) live Chrome crash after a failed logout, DEC-182). PO: start signal Hold. Session handoff."
     }
   ]
 }
