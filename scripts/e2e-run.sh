@@ -71,12 +71,24 @@ if [[ -f "$ROOT/.env" ]]; then
       [[ "$db_name" != "$other" ]] || refuse "it is the dev database or a system database ($other)"
     done
     # T-M2.28 (d), a Boot 4.1.2 jar run: these send the pool or Flyway past the rewritten URL (any case, any underscores, from the
-    # caller or .env); SPRING_FLYWAY_USER does not.
-    while read -r var; do
-      key=${var^^}; key=${key//_/}
-      [[ $key != SPRINGDATASOURCEHIKARIJDBCURL && $key != SPRINGFLYWAYURL && $key != SPRINGAPPLICATIONJSON ]] ||
-        refuse "$var would point the pool or Flyway at another database than $db_name; unset it"
-    done < <(compgen -e)
+    # caller or .env); SPRING_FLYWAY_USER does not. T-M2.30 (a): the whole environment (env -0 also lists names that are not shell
+    # identifiers, such as spring.flyway.url, which Boot reads), "." and "-" read like "_"; the config-location variables; every
+    # spelling of SPRING_DATASOURCE_URL but the script's own; JVM option variables that set a spring property or read a file.
+    while IFS= read -r -d '' entry; do
+      var=${entry%%=*} val=${entry#*=}
+      key=${var^^}; key=${key//[._-]/}
+      case $key in
+        SPRINGDATASOURCEHIKARIJDBCURL | SPRINGFLYWAYURL | SPRINGAPPLICATIONJSON | SPRINGCONFIGIMPORT | SPRINGCONFIGLOCATION | \
+          SPRINGCONFIGADDITIONALLOCATION | SPRINGDATASOURCEURL)
+          [[ $var == SPRING_DATASOURCE_URL ]] ||
+            refuse "$var would point the pool or Flyway at another database than $db_name; unset it" ;;
+      esac
+      case $var in
+        JAVA_TOOL_OPTIONS | JDK_JAVA_OPTIONS | _JAVA_OPTIONS)
+          [[ ${val,,} != *spring* && $val != *@* && ${val,,} != *vmoptionsfile* ]] ||
+            refuse "$var sets a spring property or reads options from a file; unset it" ;;
+      esac
+    done < <(env -0)
   fi
   "$ROOT/scripts/dev-up.sh" || exit 1
   if ((fresh)); then
@@ -131,10 +143,14 @@ jar=$(ls "$ROOT"/backend/target/englms-*.jar 2>/dev/null | grep -v '\.original$'
 [[ -n "$jar" ]] || { echo "e2e-run: no jar in backend/target (run without --no-build)" >&2; exit 1; }
 
 mkdir -p "$(dirname "$APP_LOG")"
-ENGLMS_BOOTSTRAP_TUTOR_USERNAME=e2e-tutor \
+# T-M2.30: java starts in an empty folder (Boot reads ./application.* and ./config/ of its working directory) and without DEBUG
+# (Boot reads it as its debug property; Playwright gets its own below). exec keeps the pid that cleanup stops.
+app_cwd="$ROOT/backend/target/e2e-cwd"
+rm -rf "$app_cwd" && mkdir -p "$app_cwd" || exit 1
+(cd "$app_cwd" && exec env -u DEBUG ENGLMS_BOOTSTRAP_TUTOR_USERNAME=e2e-tutor \
   ENGLMS_BOOTSTRAP_TUTOR_PASSWORD_FILE="$E2E_DATA/tutor-bootstrap-password" \
   ENGLMS_SECURITY_LOGINTHROTTLE_MAXATTEMPTS=100000 \
-  java -jar "$jar" >"$APP_LOG" 2>&1 &
+  java -jar "$jar") >"$APP_LOG" 2>&1 &
 app_pid=$!
 echo "e2e-run: started $(basename "$jar") (pid $app_pid, log ${APP_LOG#"$ROOT"/})"
 ready=0
@@ -150,7 +166,12 @@ done
 ((ready)) || { echo "e2e-run: the app was not ready within ${READY_TIMEOUT}s" >&2; tail -n 30 "$APP_LOG" >&2; exit 1; }
 echo "e2e-run: app ready; running Playwright ${args[*]:-(all projects)}"
 
-(cd "$ROOT/e2e" && pnpm install --frozen-lockfile >/dev/null && E2E_BASE_URL=http://localhost:8080 E2E_DATA_DIR="$E2E_DATA" pnpm exec playwright test "${args[@]}")
+# T-M2.30 (c): Playwright logs every browser's stdout/stderr ("[pid=N][err] …"; content processes inherit it) to
+# e2e/browser-logs/pw-<node pid>.log, one file per Node process (scripts/lib/browser-log-file.cjs); old ones are removed first.
+mkdir -p "$ROOT/e2e/browser-logs" && rm -f "$ROOT/e2e/browser-logs"/pw-*.log
+node_options="${NODE_OPTIONS:+$NODE_OPTIONS }--require \"$ROOT/scripts/lib/browser-log-file.cjs\""
+(cd "$ROOT/e2e" && pnpm install --frozen-lockfile >/dev/null && E2E_BASE_URL=http://localhost:8080 E2E_DATA_DIR="$E2E_DATA" \
+  DEBUG='pw:browser*' NODE_OPTIONS="$node_options" pnpm exec playwright test "${args[@]}")
 status=$?
 echo "e2e-run: playwright exit $status"
 exit $status

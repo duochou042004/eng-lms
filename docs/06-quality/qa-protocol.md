@@ -78,7 +78,7 @@ Verdict: PASS | PASS WITH MINOR | FAIL · Build: <commit sha> · Date: · Evalua
 
 ## 5. Milestone regression
 
-The milestone regression is the only full regression (per-task QA runs targeted specs, DEC-131 (7)). At each milestone gate the matrix is 6 viewports × Chromium plus Firefox and WebKit smoke (quality-gates G5, DEC-158 PO-3): the implementation suite runs
+The milestone regression is the only full regression (per-task QA runs targeted specs, DEC-131 (7)). At each milestone gate the matrix is 6 viewports × Chromium plus WebKit smoke (quality-gates G5, DEC-158 PO-3; Firefox dropped, DEC-180): the implementation suite runs
 through the manual `regression` workflow (ci-cd §1) and once locally with `E2E_KEEP_DB=1` on the large dev data set; QA runs `qa/regression/*.spec.ts`
 (accumulated scenarios) on the six viewports, plus a 90-minute exploratory session on the milestone's user journeys. Retention (DEC-158 PO-4, option (a)):
 an independent finding is kept as an implementation E2E test in `e2e/` through its fix AC; `qa/` is the reviewer's tooling. The report goes to `evidence/<milestone>/qa-regression.md`.

@@ -1,0 +1,21 @@
+# regression run 44309945856, attempt 1, ref chore/T-M2.30-tooling-firefox-crash a671b3f (TEMP diagnostic variants x20; the login test itself unchanged), trimmed
+Version: 20261103.629
+Image: ubuntu-24.04
+Version: 20261111.370.1
+Downloading Firefox 159.0 (playwright firefox v1572) from https://cdn.playwright
+
+## Crashes per variant (Firefox; every failure is 'frame.evaluate: Page crashed' in the axe run after the second load)
+flow: 8/20
+goto-twice: 7/20
+contrast-only: 0/20
+no-contrast: 7/20
+probe: 0/20
+signon-off: 10/20
+  ✓  2005 [firefox-smoke] › login renders in vi and en (3.8s)
+  32 failed
+  956 skipped
+  1148 passed (35.4m)
+
+## Diagnostics step (job log)
+kernel OOM lines: 0
+memory: 15983 MB total, peak used 3580 MB, minimum free 6517 MB (435 samples, every 5 s)

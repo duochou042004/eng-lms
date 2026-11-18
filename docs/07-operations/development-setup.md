@@ -103,9 +103,26 @@ two removed at the start of each run). The script refuses a name that is not `[a
 `postgres` or a template, or a `.env` URL that is not the dev container on `127.0.0.1`/`localhost`. It also refuses (T-M2.28, "… would point the
 pool or Flyway at another database than englms_e2e; unset it") `SPRING_DATASOURCE_HIKARI_JDBC_URL` / `SPRING_DATASOURCE_HIKARI_JDBCURL`,
 `SPRING_FLYWAY_URL` and `SPRING_APPLICATION_JSON` from your shell or `.env`: on Boot 4.1 these send the pool or Flyway past the rewritten URL
-(`SPRING_FLYWAY_USER` does not, and is allowed). `E2E_KEEP_DB=1` runs on the `.env` database with
+(`SPRING_FLYWAY_USER` does not, and is allowed). T-M2.30 widened the check: it reads the whole environment (`env -0`), so names that are not shell
+identifiers count too, and it ignores the case and reads `.` and `-` like `_` (`spring.flyway.url`, `spring-flyway-url` and `spring_flyway_url` are
+refused). It also refuses `SPRING_CONFIG_IMPORT`, `SPRING_CONFIG_LOCATION` and `SPRING_CONFIG_ADDITIONAL_LOCATION` (any spelling), every spelling of
+`SPRING_DATASOURCE_URL` other than that exact name (`spring.datasource.url`, `spring_datasource_url`: these would compete with the rewritten URL; the
+script refuses them, so which one Boot would bind was not checked), and `JAVA_TOOL_OPTIONS`, `JDK_JAVA_OPTIONS` or `_JAVA_OPTIONS` when the value
+holds `spring` (any case, e.g. `-Dspring.datasource.url=…`), an `@argfile` or `-XX:VMOptionsFile` ("… sets a spring property or reads options from a
+file; unset it"). `java` starts in the empty folder `backend/target/e2e-cwd/`, so no `application.*` or `config/` of your working directory is read,
+and without `DEBUG` (Boot reads it as its debug property). Remaining gaps (not refused, unverified whether they reach another database):
+`spring.datasource.hikari.data-source-class-name` with `data-source-properties.*` (Hikari uses a data source class instead of the URL when one is set),
+a `java` earlier on your `PATH` that adds its own options, JVM options with quotes inside the name (`-Dspr''ing.flyway.url=…`: the JVM strips the
+quotes, the scan reads the raw text), and a lower-case `debug` or `trace` variable, which reaches `java` (only `DEBUG` is removed) and turns on
+Boot's debug or trace output in the app log (T-M2.30 G3 S4-1, S4-2). `E2E_KEEP_DB=1` runs on the `.env` database with
 `.data/e2e/` (the G5 run on the large data set). Both variables come from your shell only; a value in `.env` is ignored. Without `.env` (CI) the
 given `SPRING_DATASOURCE_URL` is used as is.
+
+**Browser logs (T-M2.30).** Every `scripts/e2e-run.sh` run sets `DEBUG=pw:browser*` on the Playwright command only: Playwright writes each browser's
+stdout and stderr (`[pid=N][err] …` lines; the content processes inherit the browser's stderr) to `e2e/browser-logs/pw-<pid>.log`, one file per Node
+process (`scripts/lib/browser-log-file.cjs`, preloaded through `NODE_OPTIONS`). The folder is git-ignored; old `pw-*.log` files are removed at the start
+of each run. The `regression` workflow (`E2E_ENGINES=all`: the six Chromium viewports plus WebKit smoke; Firefox was dropped from the
+matrix, PO 2026-11-18) uploads it ([ci-cd.md §1](ci-cd.md)).
 
 **E2E tutor (T-M2.4).** `scripts/e2e-run.sh` starts the packaged app with its own tutor bootstrap, for that process only (it overrides `.env`):
 username `e2e-tutor`, password file `tutor-bootstrap-password` in the data folder above (generated once, owner-only), and a raised per-IP login throttle

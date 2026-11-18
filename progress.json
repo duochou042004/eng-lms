@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-11-17T15:10:57Z",
-  "updatedBy": "lead-coordinator (T-M2.30 ready; PO hold; handoff)",
+  "updatedAt": "2026-11-18T15:00:49Z",
+  "updatedBy": "lead-coordinator (T-M2.30 in review; DEC-180)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -32,26 +32,27 @@
   "currentTask": {
     "id": "T-M2.30",
     "title": "e2e-run.sh refusal gaps and the Firefox Page crashed recurrence (DEC-174, DEC-179)",
-    "status": "ready",
+    "status": "in_review",
     "ownerRole": "FE",
     "branch": "chore/T-M2.30-tooling-firefox-crash",
     "packet": "docs/tasks/T-M2.30-tooling-firefox-crash.md",
-    "pr": null,
-    "lastCommit": null,
-    "startedAt": null,
+    "pr": "195",
+    "lastCommit": "10a5b48",
+    "startedAt": "2026-11-18T11:34:59Z",
     "nextSteps": [
-      "T-M2.30 ready (packet PR #193, 357c4c4; G0 PASS after round 1 CHANGES REQUESTED, delta PASS WITH MINOR, confirmation)",
-      "PO answered Hold to the start signal (2026-11-17); ask again at the next session start",
-      "On start: chore/T-M2.30-tooling-firefox-crash, frontend-implementer (name the x20 scratch branch chore/T-M2.30-x20-scratch, deleted after its run), regression runs, gate, PR, G3 adversarial docs-reviewer, merge-gate, records"
+      "Gate PASS on 10a5b48 (13 steps, 623 s); AC4 outcome engine/runner cause; PO: runs capped after 44316580788, Firefox dropped from the regression matrix (DEC-180)",
+      "PR CI green, then G3: one fresh adversarial docs-reviewer that re-runs the script suites (DOCS-REVIEW T-M2.30: PASS), LC-APPROVED, merge-gate, gitlab-sync",
+      "Records (part C): review/docs.md, backlog row done, progress + handoff; then T-M2.31"
     ],
     "trace": [
       "DEC-174",
       "DEC-175",
-      "DEC-179"
+      "DEC-179",
+      "DEC-180"
     ],
     "entryGate": [
       "T-M2.28, T-M2.29 merged — met (1d6ace4)",
-      "PO start signal — asked 2026-11-17, answered Hold"
+      "PO start signal — given 2026-11-18"
     ]
   },
   "nextTask": {

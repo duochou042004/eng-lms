@@ -1,7 +1,7 @@
 name: regression
 
 # Manual regression run (T-M2.25, DEC-158 PO-3; ci-cd.md §1): every Playwright project (the six viewports on Chromium, plus
-# Firefox and WebKit smoke at the laptop viewport, E2E_ENGINES=all in e2e/playwright.config.ts) against the packaged app on an
+# WebKit smoke at the laptop viewport, E2E_ENGINES=all in e2e/playwright.config.ts; Firefox dropped, PO 2026-11-18, T-M2.30) against the packaged app on an
 # empty database. Started by hand only (workflow_dispatch): not a required check, no CI scope (scripts/tests/ci-scope-workflows.test.sh
 # lists it as manual-only). The steps are those of e2e-smoke.yml without its CI-scope parts.
 on:
@@ -47,11 +47,11 @@ jobs:
           node-version: "24"
       - name: Enable pnpm
         run: corepack enable
-      - name: Install e2e dependencies and the three browsers
+      - name: Install e2e dependencies and the two browsers
         working-directory: e2e
         run: |
           pnpm install --frozen-lockfile
-          pnpm exec playwright install --with-deps chromium firefox webkit
+          pnpm exec playwright install --with-deps chromium webkit
       - name: Typecheck the e2e suite
         working-directory: e2e
         run: pnpm typecheck
@@ -60,9 +60,32 @@ jobs:
         run: |
           pnpm install --frozen-lockfile
           pnpm typecheck
-      # Builds web/dist + the jar with the SPA, starts it on :8080/:8081, runs Playwright, always stops the app.
-      - name: All projects (six viewports, Firefox and WebKit smoke)
+      # T-M2.30 (c): a memory sample every 5 s during the run, read by the OOM step below (a background process lives until the job ends).
+      - name: Sample memory in the background
+        run: |
+          mkdir -p e2e/browser-logs
+          nohup vmstat -t -S M 5 >e2e/browser-logs/vmstat.log 2>&1 &
+      # Builds web/dist + the jar with the SPA, starts it on :8080/:8081, runs Playwright, always stops the app. Each browser's
+      # stdout/stderr goes to e2e/browser-logs/pw-<pid>.log (T-M2.30).
+      - name: All projects (six viewports and WebKit smoke)
         run: E2E_ENGINES=all ./scripts/e2e-run.sh
+      # T-M2.30 (c): a process the kernel kills for lack of memory writes nothing to stderr. Saves the kernel's OOM lines and prints
+      # a memory summary to this log (the upload below runs on failure only). Never fails the job.
+      - name: Save the OOM lines and print the memory summary
+        if: always()
+        run: |
+          set +e
+          d=e2e/browser-logs
+          mkdir -p "$d"
+          pkill -x vmstat
+          sudo dmesg -T | grep -iE 'oom|killed process' >"$d/oom.log"
+          echo "kernel OOM lines: $(wc -l <"$d/oom.log")"
+          head -n 20 "$d/oom.log"
+          total=$(awk '/^MemTotal:/ { print int($2 / 1024) }' /proc/meminfo)
+          # vmstat -S M columns 4-6: free, buff, cache (MB); used = total - free - buff - cache.
+          awk -v total="$total" '$1 ~ /^[0-9]+$/ { used = total - $4 - $5 - $6; if (!n++ || $4 < minfree) minfree = $4; if (used > peak) peak = used }
+            END { printf "memory: %d MB total, peak used %d MB, minimum free %d MB (%d samples, every 5 s)\n", total, peak, minfree, n }' "$d/vmstat.log"
+          exit 0
       - name: Upload the Playwright report
         id: upload-playwright-report
         if: failure()
@@ -74,6 +97,7 @@ jobs:
             e2e/playwright-report/
             e2e/test-results/
             backend/target/e2e-app.log
+            e2e/browser-logs/
           retention-days: 5
       - name: Warn when the Playwright report upload failed
         if: always() && steps.upload-playwright-report.outcome == 'failure'

@@ -1,0 +1,60 @@
+# e2e-run.test.sh with the new cases, run on develop 3dc7f77's scripts/e2e-run.sh (failing first, L-01)
+  FAIL - DEBUG does not reach java (unexpected: DEBUG=)
+  FAIL - Playwright runs with DEBUG=pw:browser* and the browser log preload
+  FAIL - e2e/browser-logs/ cleanup
+  FAIL - guard: refuses spring.flyway.url from the caller (not a shell identifier) (expected exit 1, got 0)
+  FAIL - guard: spring.flyway.url from the caller (not a shell identifier): says why (missing: e2e-run: E2E_DB_NAME=)
+  FAIL - guard: spring.flyway.url from the caller (not a shell identifier): before any engine call
+  FAIL - guard: names spring.flyway.url (missing: spring.flyway.url would point)
+  FAIL - guard: refuses spring-flyway-url from the caller (expected exit 1, got 0)
+  FAIL - guard: spring-flyway-url from the caller: says why (missing: e2e-run: E2E_DB_NAME=)
+  FAIL - guard: spring-flyway-url from the caller: before any engine call
+  FAIL - guard: names spring-flyway-url (missing: spring-flyway-url would point)
+  FAIL - guard: refuses SPRING_CONFIG_IMPORT from the caller (expected exit 1, got 0)
+  FAIL - guard: SPRING_CONFIG_IMPORT from the caller: says why (missing: e2e-run: E2E_DB_NAME=)
+  FAIL - guard: SPRING_CONFIG_IMPORT from the caller: before any engine call
+  FAIL - guard: names SPRING_CONFIG_IMPORT (missing: SPRING_CONFIG_IMPORT would point)
+  FAIL - guard: refuses SPRING_CONFIG_LOCATION from the caller (expected exit 1, got 0)
+  FAIL - guard: SPRING_CONFIG_LOCATION from the caller: says why (missing: e2e-run: E2E_DB_NAME=)
+  FAIL - guard: SPRING_CONFIG_LOCATION from the caller: before any engine call
+  FAIL - guard: names SPRING_CONFIG_LOCATION (missing: SPRING_CONFIG_LOCATION would point)
+  FAIL - guard: refuses SPRING_CONFIG_ADDITIONAL_LOCATION from the caller (expected exit 1, got 0)
+  FAIL - guard: SPRING_CONFIG_ADDITIONAL_LOCATION from the caller: says why (missing: e2e-run: E2E_DB_NAME=)
+  FAIL - guard: SPRING_CONFIG_ADDITIONAL_LOCATION from the caller: before any engine call
+  FAIL - guard: names SPRING_CONFIG_ADDITIONAL_LOCATION (missing: SPRING_CONFIG_ADDITIONAL_LOCATION would point)
+  FAIL - guard: refuses spring.config.import from the caller (expected exit 1, got 0)
+  FAIL - guard: spring.config.import from the caller: says why (missing: e2e-run: E2E_DB_NAME=)
+  FAIL - guard: spring.config.import from the caller: before any engine call
+  FAIL - guard: names spring.config.import (missing: spring.config.import would point)
+  FAIL - guard: refuses SPRING_CONFIG_IMPORT from .env (expected exit 1, got 0)
+  FAIL - guard: SPRING_CONFIG_IMPORT from .env: says why (missing: e2e-run: E2E_DB_NAME=)
+  FAIL - guard: SPRING_CONFIG_IMPORT from .env: before any engine call
+  FAIL - guard: refuses spring.datasource.url from the caller (expected exit 1, got 0)
+  FAIL - guard: spring.datasource.url from the caller: says why (missing: e2e-run: E2E_DB_NAME=)
+  FAIL - guard: spring.datasource.url from the caller: before any engine call
+  FAIL - guard: names spring.datasource.url (missing: spring.datasource.url would point)
+  FAIL - guard: refuses spring_datasource_url from the caller (expected exit 1, got 0)
+  FAIL - guard: spring_datasource_url from the caller: says why (missing: e2e-run: E2E_DB_NAME=)
+  FAIL - guard: spring_datasource_url from the caller: before any engine call
+  FAIL - guard: names spring_datasource_url (missing: spring_datasource_url would point)
+  FAIL - guard: refuses JAVA_TOOL_OPTIONS with -Dspring.datasource.url (expected exit 1, got 0)
+  FAIL - guard: JAVA_TOOL_OPTIONS with -Dspring.datasource.url: says why (missing: e2e-run: E2E_DB_NAME=)
+  FAIL - guard: JAVA_TOOL_OPTIONS with -Dspring.datasource.url: before any engine call
+  FAIL - guard: names JAVA_TOOL_OPTIONS (missing: JAVA_TOOL_OPTIONS sets a spring property or reads options from a file)
+  FAIL - guard: refuses JDK_JAVA_OPTIONS with -Dspring.flyway.url (expected exit 1, got 0)
+  FAIL - guard: JDK_JAVA_OPTIONS with -Dspring.flyway.url: says why (missing: e2e-run: E2E_DB_NAME=)
+  FAIL - guard: JDK_JAVA_OPTIONS with -Dspring.flyway.url: before any engine call
+  FAIL - guard: names JDK_JAVA_OPTIONS (missing: JDK_JAVA_OPTIONS sets a spring property)
+  FAIL - guard: refuses _JAVA_OPTIONS with an upper-case -DSPRING.DATASOURCE.HIKARI.JDBC-URL (expected exit 1, got 0)
+  FAIL - guard: _JAVA_OPTIONS with an upper-case -DSPRING.DATASOURCE.HIKARI.JDBC-URL: says why (missing: e2e-run: E2E_DB_NAME=)
+  FAIL - guard: _JAVA_OPTIONS with an upper-case -DSPRING.DATASOURCE.HIKARI.JDBC-URL: before any engine call
+  FAIL - guard: names _JAVA_OPTIONS (missing: _JAVA_OPTIONS sets a spring property)
+  FAIL - guard: refuses JDK_JAVA_OPTIONS with an @argfile (expected exit 1, got 0)
+  FAIL - guard: JDK_JAVA_OPTIONS with an @argfile: says why (missing: e2e-run: E2E_DB_NAME=)
+  FAIL - guard: JDK_JAVA_OPTIONS with an @argfile: before any engine call
+  FAIL - guard: refuses JAVA_TOOL_OPTIONS with -XX:VMOptionsFile (expected exit 1, got 0)
+  FAIL - guard: JAVA_TOOL_OPTIONS with -XX:VMOptionsFile: says why (missing: e2e-run: E2E_DB_NAME=)
+  FAIL - guard: JAVA_TOOL_OPTIONS with -XX:VMOptionsFile: before any engine call
+  FAIL - java starts in the empty backend/target/e2e-cwd/, not the caller's folder
+  FAIL - DEBUG from .env does not reach java
+  -> 135 passed, 58 failed

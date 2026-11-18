@@ -1,0 +1,38 @@
+# AC2 mutation: scripts/e2e-run.sh with the case normalisation removed
+--- e2e-run.sh.orig	2026-11-18 18:43:53.893826646 +0700
++++ scripts/e2e-run.sh	2026-11-18 18:43:53.896826593 +0700
+@@ -76,7 +76,7 @@
+     # spelling of SPRING_DATASOURCE_URL but the script's own; JVM option variables that set a spring property or read a file.
+     while IFS= read -r -d '' entry; do
+       var=${entry%%=*} val=${entry#*=}
+-      key=${var^^}; key=${key//[._-]/}
++      key=${var}; key=${key//[._-]/}
+       case $key in
+         SPRINGDATASOURCEHIKARIJDBCURL | SPRINGFLYWAYURL | SPRINGAPPLICATIONJSON | SPRINGCONFIGIMPORT | SPRINGCONFIGLOCATION | \
+           SPRINGCONFIGADDITIONALLOCATION | SPRINGDATASOURCEURL)
+
+  FAIL - guard: refuses spring.flyway.url from the caller (not a shell identifier) (expected exit 1, got 0)
+  FAIL - guard: spring.flyway.url from the caller (not a shell identifier): says why (missing: e2e-run: E2E_DB_NAME=)
+  FAIL - guard: spring.flyway.url from the caller (not a shell identifier): before any engine call
+  FAIL - guard: names spring.flyway.url (missing: spring.flyway.url would point)
+  FAIL - guard: refuses spring-flyway-url from the caller (expected exit 1, got 0)
+  FAIL - guard: spring-flyway-url from the caller: says why (missing: e2e-run: E2E_DB_NAME=)
+  FAIL - guard: spring-flyway-url from the caller: before any engine call
+  FAIL - guard: names spring-flyway-url (missing: spring-flyway-url would point)
+  FAIL - guard: refuses a lower-case spring_flyway_url from the caller (expected exit 1, got 0)
+  FAIL - guard: a lower-case spring_flyway_url from the caller: says why (missing: e2e-run: E2E_DB_NAME=)
+  FAIL - guard: a lower-case spring_flyway_url from the caller: before any engine call
+  FAIL - guard: names spring_flyway_url (missing: spring_flyway_url would point)
+  FAIL - guard: refuses spring.config.import from the caller (expected exit 1, got 0)
+  FAIL - guard: spring.config.import from the caller: says why (missing: e2e-run: E2E_DB_NAME=)
+  FAIL - guard: spring.config.import from the caller: before any engine call
+  FAIL - guard: names spring.config.import (missing: spring.config.import would point)
+  FAIL - guard: refuses spring.datasource.url from the caller (expected exit 1, got 0)
+  FAIL - guard: spring.datasource.url from the caller: says why (missing: e2e-run: E2E_DB_NAME=)
+  FAIL - guard: spring.datasource.url from the caller: before any engine call
+  FAIL - guard: names spring.datasource.url (missing: spring.datasource.url would point)
+  FAIL - guard: refuses spring_datasource_url from the caller (expected exit 1, got 0)
+  FAIL - guard: spring_datasource_url from the caller: says why (missing: e2e-run: E2E_DB_NAME=)
+  FAIL - guard: spring_datasource_url from the caller: before any engine call
+  FAIL - guard: names spring_datasource_url (missing: spring_datasource_url would point)
+  -> 169 passed, 24 failed

@@ -57,7 +57,7 @@
 | NFR-RESP-01 | Critical flows work at the reference viewports 360×740, 390×844, 768×1024, 1024×768, 1280×800 and 1440×900 | Playwright projects; screenshots stored as evidence |
 | NFR-RESP-02 | No horizontal page scroll at any reference viewport. Wide tables either reflow into lists or scroll inside their own container | E2E assertion `scrollWidth ≤ clientWidth` |
 | NFR-RESP-03 | Touch targets ≥ 44×44 px for primary controls (≥ 24×24 px minimum for all, per WCAG 2.5.8) | Automated check + UX review |
-| NFR-COMPAT-01 | Browsers per A-014 | Playwright on Chromium, Firefox and WebKit (WebKit is the stand-in for Safari) |
+| NFR-COMPAT-01 | Browsers per A-014 | Playwright on Chromium and WebKit in `e2e/` (WebKit is the stand-in for Safari); Firefox best effort, only through `qa/`'s optional `QA_ENGINES=all` (DEC-180) |
 
 ## Internationalisation
 
