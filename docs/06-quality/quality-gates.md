@@ -69,7 +69,7 @@ Review effort follows the packet's **risk tier** (set by the LC at G0, DEC-131 (
 ## G5 Milestone gate. Owners: LC + PO
 
 - [ ] Every packet in the milestone is merged, and the milestone exit criteria in roadmap.md are met.
-- [ ] Milestone regression (the only full regression; per task G3 runs targeted specs, DEC-131 (7)): full E2E on all 6 viewports × Chromium, plus smoke on Firefox and WebKit, through the manual `regression` workflow (ci-cd §1), plus one local run with
+- [ ] Milestone regression (the only full regression; per task G3 runs targeted specs, DEC-131 (7)): full E2E on all 6 viewports × Chromium, plus WebKit smoke (Firefox dropped, DEC-180), through the manual `regression` workflow (ci-cd §1), plus one local run with
   `E2E_KEEP_DB=1` against the large dev data set (development-setup §2). The QA milestone report is in `evidence/<milestone>/`.
 - [ ] Risk register, decision log and roadmap reviewed (retrospective notes in `evidence/<milestone>/retro.md`); `docs/09-harness/lessons-learned.md`
   updated; the `shortcut:` ledger reviewed (`grep -rnE '(shortcut|ponytail):'`, or `/ponytail-debt` where installed: any trigger the next milestone fires becomes a backlog item); the README roadmap row updated.
