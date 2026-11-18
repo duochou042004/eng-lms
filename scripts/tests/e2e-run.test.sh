@@ -16,11 +16,14 @@ touch "$repo/backend/target/englms-0.0.1-SNAPSHOT.jar"
 # java stub: a long-running "app" that records its pid, then its environment (a temp file moved into place); curl stub: ready
 # only once that file exists, so the cleanup trap cannot kill the stub before it is written (T-M2.28 (e), DEC-170); pnpm stub:
 # exit $PNPM_EXIT for the test run.
-printf '#!/usr/bin/env bash\necho $$ >"%s/app.pid"\nenv | grep -E "^ENGLMS_(BOOTSTRAP|SECURITY)" | sort >"%s/app.env.tmp"\nmv "%s/app.env.tmp" "%s/app.env"\nexec sleep 300\n' "$work" "$work" "$work" "$work" >"$work/bin/java"
+printf '#!/usr/bin/env bash\necho $$ >"%s/app.pid"\nenv | grep -E "^(ENGLMS_(BOOTSTRAP|SECURITY)|DEBUG=)" | sort >"%s/app.env.tmp"\nmv "%s/app.env.tmp" "%s/app.env"\nexec sleep 300\n' "$work" "$work" "$work" "$work" >"$work/bin/java"
 printf '#!/usr/bin/env bash\n[[ -s "%s/app.env" ]]\n' "$work" >"$work/bin/curl"
-printf '#!/usr/bin/env bash\necho "pnpm $*" >>"%s/pnpm.args"\n[[ "$1" == exec ]] && exit "${PNPM_EXIT:-0}"\nexit 0\n' "$work" >"$work/bin/pnpm"
+printf '#!/usr/bin/env bash\necho "pnpm $*" >>"%s/pnpm.args"\n[[ "$1" == exec ]] && { printf "DEBUG=%%s\\nNODE_OPTIONS=%%s\\n" "${DEBUG-}" "${NODE_OPTIONS-}" >"%s/pw.debug"; exit "${PNPM_EXIT:-0}"; }\nexit 0\n' "$work" "$work" >"$work/bin/pnpm"
 chmod +x "$work/bin/"*
 run() { env PATH="$work/bin:$PATH" E2E_CHECK_PORTS="${PORTS:-}" SPRING_DATASOURCE_URL=jdbc:postgresql://stub/db "$@"; }
+expect_equal() { # <actual> <expected> <description>
+  if [[ "$1" == "$2" ]]; then PASS_COUNT=$((PASS_COUNT + 1)); echo "  ok   - $3"; else FAIL_COUNT=$((FAIL_COUNT + 1)); echo "  FAIL - $3"; diff <(echo "$2") <(echo "$1") | sed 's/^/         /'; fi
+}
 app_gone() { local pid; pid=$(cat "$work/app.pid" 2>/dev/null) || return 0; ! kill -0 "$pid" 2>/dev/null; }
 
 expect_exit 0 "--help prints usage" -- run "$repo/scripts/e2e-run.sh" --help
@@ -32,6 +35,14 @@ expect_output_contains "e2e-run: app stopped" "stops the app after the run"
 LAST_OUTPUT=$(cat "$work/pnpm.args")
 expect_output_contains "pnpm exec playwright test --project=laptop tests/x.spec.ts" "passes the Playwright arguments through"
 app_gone && { PASS_COUNT=$((PASS_COUNT + 1)); echo "  ok   - no app process is left"; } || { FAIL_COUNT=$((FAIL_COUNT + 1)); echo "  FAIL - the app process is still running"; }
+
+# T-M2.30 (c): DEBUG (Spring Boot reads it as its debug property) never reaches java; Playwright alone runs with
+# DEBUG=pw:browser* and the per-process log file preload, after the caller's NODE_OPTIONS; old pw-*.log files go, others stay.
+mkdir -p "$repo/e2e/browser-logs"; touch "$repo/e2e/browser-logs/pw-1.log" "$repo/e2e/browser-logs/vmstat.log"; rm -f "$work/app.env"
+expect_exit 0 "a caller's DEBUG and NODE_OPTIONS: the run passes" -- run DEBUG=true NODE_OPTIONS=--max-old-space-size=4096 "$repo/scripts/e2e-run.sh" --no-build
+LAST_OUTPUT=$(cat "$work/app.env"); expect_output_not_contains "DEBUG=" "DEBUG does not reach java"
+expect_equal "$(cat "$work/pw.debug")" 'DEBUG=pw:browser*'$'\n'"NODE_OPTIONS=--max-old-space-size=4096 --require \"$repo/scripts/lib/browser-log-file.cjs\"" "Playwright runs with DEBUG=pw:browser* and the browser log preload"
+[[ ! -e "$repo/e2e/browser-logs/pw-1.log" && -e "$repo/e2e/browser-logs/vmstat.log" ]] && { PASS_COUNT=$((PASS_COUNT + 1)); echo "  ok   - old pw-*.log files are removed, other files in e2e/browser-logs/ stay"; } || { FAIL_COUNT=$((FAIL_COUNT + 1)); echo "  FAIL - e2e/browser-logs/ cleanup"; }
 
 LAST_OUTPUT=$(cat "$work/app.env")
 expect_output_contains "ENGLMS_BOOTSTRAP_TUTOR_USERNAME=e2e-tutor" "starts the app with the E2E tutor bootstrap"
@@ -66,15 +77,12 @@ printf '#!/usr/bin/env bash\necho dev-up >>"%s"\n' "$log" >"$repo2/scripts/dev-u
 # podman stub: one line per call, its arguments joined by "|"; exit $PODMAN_EXIT. java/pnpm stubs: log the call order and what the app sees
 # (app2.env, written like app.env above; the curl stub here is ready only once it exists).
 printf '#!/usr/bin/env bash\n(IFS="|"; echo "podman|$*") >>"%s"\nexit "${PODMAN_EXIT:-0}"\n' "$log" >"$work/bin2/podman"
-printf '#!/usr/bin/env bash\necho java >>"%s"\necho $$ >"%s/app.pid"\nenv | grep -E "^(SPRING_DATASOURCE_URL|ENGLMS_BOOTSTRAP_TUTOR_PASSWORD_FILE|E2E_DB_NAME|E2E_KEEP_DB)=" | sort >"%s/app2.env.tmp"\nmv "%s/app2.env.tmp" "%s/app2.env"\nexec sleep 300\n' "$log" "$work" "$work" "$work" "$work" >"$work/bin2/java"
+printf '#!/usr/bin/env bash\necho java >>"%s"\necho $$ >"%s/app.pid"\n{ pwd; ls -A; } >"%s/app2.cwd"\nenv | grep -E "^(SPRING_DATASOURCE_URL|ENGLMS_BOOTSTRAP_TUTOR_PASSWORD_FILE|E2E_DB_NAME|E2E_KEEP_DB|DEBUG)=" | sort >"%s/app2.env.tmp"\nmv "%s/app2.env.tmp" "%s/app2.env"\nexec sleep 300\n' "$log" "$work" "$work" "$work" "$work" "$work" >"$work/bin2/java"
 printf '#!/usr/bin/env bash\n[[ -s "%s/app2.env" ]]\n' "$work" >"$work/bin2/curl"
 printf '#!/usr/bin/env bash\n[[ "$1" == exec ]] && echo "E2E_DATA_DIR=$E2E_DATA_DIR" >"%s/pw.env"\nexit 0\n' "$work" >"$work/bin2/pnpm"
 chmod +x "$work/bin2/"* "$repo2/scripts/dev-up.sh"
 write_env() { printf 'ENGLMS_DEV_DB_USER=englms\nENGLMS_DEV_DB_PORT=5432\nSPRING_DATASOURCE_URL=%s\nSPRING_DATASOURCE_USERNAME=englms\n' "${URL:-jdbc:postgresql://127.0.0.1:5432/devdata}" >"$repo2/.env"; [[ $# -gt 0 ]] && printf '%s\n' "$@" >>"$repo2/.env"; return 0; }
 erun() { : >"$log"; rm -f "$work/app2.env" "$work/pw.env"; env -u E2E_DB_NAME -u E2E_KEEP_DB -u ENGLMS_DEV_DB_NAME -u ENGLMS_DEV_DB_USER -u ENGLMS_DEV_DB_PORT -u SPRING_DATASOURCE_URL -u DOCKER_HOST -u ENGLMS_CONTAINER_ENGINE_AUTO PATH="$work/bin2:$work/bin:$PATH" E2E_CHECK_PORTS= ENGLMS_CONTAINER_ENGINE=podman "$@" "$repo2/scripts/e2e-run.sh" --no-build; }
-expect_equal() { # <actual> <expected> <description>
-  if [[ "$1" == "$2" ]]; then PASS_COUNT=$((PASS_COUNT + 1)); echo "  ok   - $3"; else FAIL_COUNT=$((FAIL_COUNT + 1)); echo "  FAIL - $3"; diff <(echo "$2") <(echo "$1") | sed 's/^/         /'; fi
-}
 SQL="podman|exec|englms-dev-db|psql|-U|englms|-d|postgres|-v|ON_ERROR_STOP=1|-c|DROP DATABASE IF EXISTS englms_e2e WITH (FORCE)|-c|CREATE DATABASE englms_e2e OWNER englms"
 
 write_env
@@ -149,6 +157,47 @@ refused "SPRING_DATASOURCE_HIKARI_JDBCURL from the caller" SPRING_DATASOURCE_HIK
 expect_output_contains "SPRING_DATASOURCE_HIKARI_JDBCURL would point" "guard: names SPRING_DATASOURCE_HIKARI_JDBCURL"
 refused "SPRING_APPLICATION_JSON from the caller" 'SPRING_APPLICATION_JSON={"spring":{"flyway":{"url":"jdbc:postgresql://127.0.0.1:5432/devdata"}}}'
 expect_output_contains "SPRING_APPLICATION_JSON would point" "guard: names SPRING_APPLICATION_JSON"
+# T-M2.30 (a), T-M2.28 G3 S4-1/S4-2: the whole environment is scanned (env -0), so names that are not shell identifiers are seen
+# too; ".", "-" and "_" are dropped and the case is ignored.
+D=jdbc:postgresql://127.0.0.1:5432/devdata
+refused "spring.flyway.url from the caller (not a shell identifier)" "spring.flyway.url=$D"
+expect_output_contains "spring.flyway.url would point" "guard: names spring.flyway.url"
+refused "spring-flyway-url from the caller" "spring-flyway-url=$D"
+expect_output_contains "spring-flyway-url would point" "guard: names spring-flyway-url"
+# (b) "any case": fails when the case normalisation is removed (AC2 mutation).
+refused "a lower-case spring_flyway_url from the caller" "spring_flyway_url=$D"
+expect_output_contains "spring_flyway_url would point" "guard: names spring_flyway_url"
+for v in SPRING_CONFIG_IMPORT SPRING_CONFIG_LOCATION SPRING_CONFIG_ADDITIONAL_LOCATION spring.config.import; do
+  refused "$v from the caller" "$v=optional:file:$work/other.properties"
+  expect_output_contains "$v would point" "guard: names $v"
+done
+write_env SPRING_CONFIG_IMPORT=optional:file:/other.properties
+refused "SPRING_CONFIG_IMPORT from .env" E2E_DB_NAME=englms_e2e
+write_env
+# Other spellings of the rewritten SPRING_DATASOURCE_URL: every one but the script's own is refused, so which one Boot binds never matters.
+refused "spring.datasource.url from the caller" "spring.datasource.url=$D"
+expect_output_contains "spring.datasource.url would point" "guard: names spring.datasource.url"
+refused "spring_datasource_url from the caller" "spring_datasource_url=$D"
+expect_output_contains "spring_datasource_url would point" "guard: names spring_datasource_url"
+# JVM option variables (java reads these exact names): a spring property or an options file is refused, other options pass.
+refused "JAVA_TOOL_OPTIONS with -Dspring.datasource.url" "JAVA_TOOL_OPTIONS=-Xmx1g -Dspring.datasource.url=$D"
+expect_output_contains "JAVA_TOOL_OPTIONS sets a spring property or reads options from a file" "guard: names JAVA_TOOL_OPTIONS"
+refused "JDK_JAVA_OPTIONS with -Dspring.flyway.url" "JDK_JAVA_OPTIONS=-Dspring.flyway.url=$D"
+expect_output_contains "JDK_JAVA_OPTIONS sets a spring property" "guard: names JDK_JAVA_OPTIONS"
+refused "_JAVA_OPTIONS with an upper-case -DSPRING.DATASOURCE.HIKARI.JDBC-URL" "_JAVA_OPTIONS=-DSPRING.DATASOURCE.HIKARI.JDBC-URL=$D"
+expect_output_contains "_JAVA_OPTIONS sets a spring property" "guard: names _JAVA_OPTIONS"
+refused "JDK_JAVA_OPTIONS with an @argfile" "JDK_JAVA_OPTIONS=@$work/jvm.args"
+refused "JAVA_TOOL_OPTIONS with -XX:VMOptionsFile" "JAVA_TOOL_OPTIONS=-XX:VMOptionsFile=$work/jvm.options"
+expect_exit 0 "JAVA_TOOL_OPTIONS without a spring property or file is not refused" -- erun JAVA_TOOL_OPTIONS=-Xmx1g
+# Config files in the caller's working directory (Boot reads ./application.* and ./config/): java starts in an empty folder.
+mkdir -p "$work/caller/config"; touch "$work/caller/application.properties" "$work/caller/config/application.yml"
+in_dir() { local d=$1; shift; (cd "$d" && "$@"); }
+expect_exit 0 "a run from a folder with application.properties and config/ passes" -- in_dir "$work/caller" erun
+expect_equal "$(cat "$work/app2.cwd")" "$repo2/backend/target/e2e-cwd" "java starts in the empty backend/target/e2e-cwd/, not the caller's folder"
+# T-M2.30 (c): a DEBUG in .env does not reach java either.
+write_env DEBUG=true
+expect_exit 0 "DEBUG in .env: the run passes" -- erun
+expect_equal "$(cat "$work/app2.env")" "ENGLMS_BOOTSTRAP_TUTOR_PASSWORD_FILE=$repo2/.data/e2e/fresh/tutor-bootstrap-password"$'\n'"SPRING_DATASOURCE_URL=jdbc:postgresql://127.0.0.1:5432/englms_e2e" "DEBUG from .env does not reach java"
 write_env SPRING_FLYWAY_USER=other
 expect_exit 0 "SPRING_FLYWAY_USER (the rewritten URL stays) is not refused" -- erun
 expect_equal "$(cat "$log")" "dev-up"$'\n'"$SQL"$'\n'"java" "SPRING_FLYWAY_USER: a fresh run on englms_e2e"
