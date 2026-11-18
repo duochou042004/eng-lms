@@ -112,7 +112,9 @@ holds `spring` (any case, e.g. `-Dspring.datasource.url=…`), an `@argfile` or 
 file; unset it"). `java` starts in the empty folder `backend/target/e2e-cwd/`, so no `application.*` or `config/` of your working directory is read,
 and without `DEBUG` (Boot reads it as its debug property). Remaining gaps (not refused, unverified whether they reach another database):
 `spring.datasource.hikari.data-source-class-name` with `data-source-properties.*` (Hikari uses a data source class instead of the URL when one is set),
-and a `java` earlier on your `PATH` that adds its own options. `E2E_KEEP_DB=1` runs on the `.env` database with
+a `java` earlier on your `PATH` that adds its own options, JVM options with quotes inside the name (`-Dspr''ing.flyway.url=…`: the JVM strips the
+quotes, the scan reads the raw text), and a lower-case `debug` or `trace` variable, which reaches `java` (only `DEBUG` is removed) and turns on
+Boot's debug or trace output in the app log (T-M2.30 G3 S4-1, S4-2). `E2E_KEEP_DB=1` runs on the `.env` database with
 `.data/e2e/` (the G5 run on the large data set). Both variables come from your shell only; a value in `.env` is ignored. Without `.env` (CI) the
 given `SPRING_DATASOURCE_URL` is used as is.
 

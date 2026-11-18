@@ -58,4 +58,14 @@ Time per run: ~35 of ~38 min is Playwright (2,136 tests with the TEMP ones; a no
   `dataSourceClassName` finding). No new row.
 
 ## G3
-Pending: one fresh adversarial docs-reviewer that re-runs the script suites (`review/docs.md` on the records branch).
+One fresh adversarial docs-reviewer on `abdb78b`: **`DOCS-REVIEW T-M2.30: PASS WITH MINOR`** (~85k tokens; report in `review/docs.md` on the
+records branch). It re-ran `e2e-run.test.sh` 193/193 and `run-all.sh` PASS, tried datasource/Flyway/config routes past fresh mode
+(`SPRING_CONFIG_NAME` with a path is refused by Boot; config-file URLs lose to the env variable), and found "engine/runner cause" supported.
+Findings, all fixed in docs by the LC (DEC-131 cheap fixes) in the next commit:
+| ID | Finding | Ruling |
+|---|---|---|
+| S3-1 | test-strategy §2 row still lists Firefox in the regression | Fixed: "all 6 + WebKit smoke; Firefox dropped, DEC-180" |
+| S4-1 | Quotes inside a JVM option name (`-Dspr''ing.flyway.url`) pass the scan; the JVM strips them (proved in a private clone) | Recorded as a gap in development-setup "E2E database" (needs deliberate obfuscation) |
+| S4-2 | Lower-case `debug` / `trace` reaches `java` (Boot prints the conditions report) | Recorded as a gap there; the script and CI never set it |
+| S4-3 | DEC-180 said "known" issue without an upstream search | DEC-180 (unmerged) reworded: "recorded here … not reported upstream" |
+| S4-4 | NFR-COMPAT-01 Verification still says Playwright on Firefox | Fixed: Chromium and WebKit in `e2e/`; Firefox best effort via `qa/` |
