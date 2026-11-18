@@ -71,10 +71,18 @@ async function revealSwitcher(page: Page, target: (typeof PAGES)[number]) {
   if ('shell' in target) await openAccountSection(page, target.shell)
 }
 
-for (const target of PAGES) {
+// TEMP T-M2.30 (c): a Firefox-only content crash (AC3 proof) and a Firefox-only x20 repeat of the login test; removed before the final head.
+test('TEMP T-M2.30 content crash proof', async ({ page, browserName }) => {
+  test.skip(browserName !== 'firefox', 'TEMP T-M2.30: Firefox only')
+  await page.goto('/login')
+  await page.goto('about:crashcontent')
+})
+const TEMP_REPEATS = Array.from({ length: 20 }, (_, i) => ({ ...PAGES[0], repeat: i + 1 }))
+for (const target of [...PAGES, ...TEMP_REPEATS]) {
   test.describe(() => {
     test.use({ storageState: async ({ browserName }, use) => use(stateFor(target.state, browserName)) })
-    test(`${target.name} renders in vi and en`, async ({ page }, testInfo) => {
+    test(`${target.name} renders in vi and en${'repeat' in target ? ` (TEMP repeat ${target.repeat})` : ''}`, async ({ page, browserName }, testInfo) => {
+      test.skip('repeat' in target && browserName !== 'firefox', 'TEMP T-M2.30: Firefox only')
       await page.goto(target.path)
       await expect(page.getByRole('heading', { level: 1, name: target.vi })).toBeVisible()
       await expect(page.locator('html')).toHaveAttribute('lang', 'vi')
