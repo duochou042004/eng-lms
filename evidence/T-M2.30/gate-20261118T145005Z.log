@@ -1,0 +1,101 @@
+gate: logging to evidence/T-M2.30/gate-20261118T145005Z.log
+gate: 10a5b48 2026-11-18T14:50:05Z, steps: docs scripts backend web-install web-lint web-typecheck web-test web-build web-budget web-contrast contract-drift qa-typecheck e2e
+gate: ==> docs
+gate: <== docs OK (1s)
+gate: ==> scripts
+  -> 86 passed, 0 failed
+  ok   - (b1) the marker was skipped (a fast-path run): exit 0
+  ok   - (b1) the marker was skipped (a fast-path run): verdict full
+  ok   - (b1) the marker was skipped (a fast-path run): says why
+  ok   - (b1) the restored fixture passes again (the cases above failed for their own reason): exit 0
+  ok   - (b1) the restored fixture passes again (the cases above failed for their own reason): verdict fast-path
+  ok   - (b2) the first parent's newest run failed after an older success: exit 0
+  ok   - (b2) the first parent's newest run failed after an older success: verdict full
+  ok   - (b2) the first parent's newest run failed after an older success: says why
+  -> 243 passed, 0 failed
+  -> 97 passed, 0 failed
+  -> 9 passed, 0 failed
+  -> 164 passed, 0 failed
+  -> 193 passed, 0 failed
+  ok   - DEC-131: says why backend is skipped
+  -> 98 passed, 0 failed
+  -> 11 passed, 0 failed
+  ok   - AC2: QA-VERDICT FAIL blocks a chore PR even though DOCS-REVIEW passed
+  ok   - AC2: DOCS-REVIEW CHANGES REQUESTED blocks a feature PR even though QA passed
+  ok   - AC2: UX-REVIEW CHANGES REQUESTED blocks although QA and SEC passed
+  ok   - T-M2.23: a product PR with skipped markers
+  ok   - T-M2.23: a product PR with skipped markers: says why
+  ok   - T-M2.23: one skipped marker among full runs
+  ok   - T-M2.23: one skipped marker among full runs: says why
+  ok   - T-M2.23: a failed marker
+  ok   - T-M2.23: a failed marker: says why
+  ok   - T-M2.23: a Dependabot PR with skipped markers
+  ok   - T-M2.23: a Dependabot PR with skipped markers: says why
+  ok   - T-M2.23: a text-only PR with skipped markers passes
+  -> 418 passed, 0 failed
+  -> 15 passed, 0 failed
+  -> 15 passed, 0 failed
+  -> 11 passed, 0 failed
+  ok   - all real workflows warn on every failed best-effort step
+  -> 10 passed, 0 failed
+gate: <== scripts OK (227s)
+gate: ==> backend
+gate: backend skipped: no backend/ or api/ change (CI runs it; ENGLMS_GATE_FULL=1 forces it)
+gate: <== backend OK (0s)
+gate: ==> web-install
+Lockfile is up to date, resolution step is skipped
+gate: <== web-install OK (0s)
+gate: ==> web-lint
+gate: <== web-lint OK (5s)
+gate: ==> web-typecheck
+gate: <== web-typecheck OK (5s)
+gate: ==> web-test
+ Test Files  70 passed (70)
+      Tests  852 passed (852)
+gate: <== web-test OK (49s)
+gate: ==> web-build
+gate: <== web-build OK (6s)
+gate: ==> web-budget
+gate: <== web-budget OK (0s)
+gate: ==> web-contrast
+gate: <== web-contrast OK (0s)
+gate: ==> contract-drift
+gate: contract-drift skipped: no backend/ or api/ change (CI runs it)
+gate: <== contract-drift OK (0s)
+gate: ==> qa-typecheck
+Lockfile is up to date, resolution step is skipped
+gate: <== qa-typecheck OK (2s)
+gate: ==> e2e
+e2e-run: recreating the E2E database englms_e2e in englms-dev-db
+e2e-run: building web/dist and the jar with the SPA
+Lockfile is up to date, resolution step is skipped
+e2e-run: started englms-0.0.1-SNAPSHOT.jar (pid 369902, log backend/target/e2e-app.log)
+e2e-run: app ready; running Playwright --project=phone-small --project=tablet --project=laptop
+  ✓   81 [phone-small] › tests/polish.spec.ts:325:5 › AC4 [vi]: a failed lazy load on a client navigation → error page → "go to the start page" (1 step) (2.5s)
+  ✓   83 [phone-small] › tests/polish.spec.ts:325:5 › AC4 [en]: a failed lazy load on a client navigation → error page → "go to the start page" (1 step) (2.5s)
+  ✓   82 [phone-small] › tests/polish.spec.ts:394:3 › AC4 [vi]: no start-page link when the failed route is / itself (4.8s)
+  ✓   84 [phone-small] › tests/polish.spec.ts:394:3 › AC4 [en]: no start-page link when the failed route is / itself (4.7s)
+  ✓  148 [phone-small] › tests/students-focus.spec.ts:130:3 › Focus after an action removes or disables its own control (T-M2.19 AC4) › D-4: the guardians error: Try again (503 until the alert, then passed through) focuses the section heading (4.7s)
+  ✓  275 [tablet] › tests/polish.spec.ts:325:5 › AC4 [vi]: a failed lazy load on a client navigation → error page → "go to the start page" (1 step) (2.7s)
+  ✓  277 [tablet] › tests/polish.spec.ts:325:5 › AC4 [en]: a failed lazy load on a client navigation → error page → "go to the start page" (1 step) (2.6s)
+  ✓  276 [tablet] › tests/polish.spec.ts:394:3 › AC4 [vi]: no start-page link when the failed route is / itself (5.2s)
+  ✓  278 [tablet] › tests/polish.spec.ts:394:3 › AC4 [en]: no start-page link when the failed route is / itself (4.9s)
+  ✓  342 [tablet] › tests/students-focus.spec.ts:130:3 › Focus after an action removes or disables its own control (T-M2.19 AC4) › D-4: the guardians error: Try again (503 until the alert, then passed through) focuses the section heading (4.8s)
+  ✓  469 [laptop] › tests/polish.spec.ts:325:5 › AC4 [vi]: a failed lazy load on a client navigation → error page → "go to the start page" (1 step) (2.9s)
+  ✓  471 [laptop] › tests/polish.spec.ts:325:5 › AC4 [en]: a failed lazy load on a client navigation → error page → "go to the start page" (1 step) (2.9s)
+  ✓  470 [laptop] › tests/polish.spec.ts:394:3 › AC4 [vi]: no start-page link when the failed route is / itself (5.0s)
+  ✓  472 [laptop] › tests/polish.spec.ts:394:3 › AC4 [en]: no start-page link when the failed route is / itself (4.9s)
+  ✓  536 [laptop] › tests/students-focus.spec.ts:130:3 › Focus after an action removes or disables its own control (T-M2.19 AC4) › D-4: the guardians error: Try again (503 until the alert, then passed through) focuses the section heading (4.7s)
+  46 skipped
+  536 passed (4.3m)
+e2e-run: playwright exit 0
+e2e-run: app stopped (pid 369902)
+gate: e2e repeat x3: tests/smoke.spec.ts
+e2e-run: recreating the E2E database englms_e2e in englms-dev-db
+e2e-run: started englms-0.0.1-SNAPSHOT.jar (pid 400256, log backend/target/e2e-app.log)
+e2e-run: app ready; running Playwright --project=phone-small --project=tablet --project=laptop --repeat-each=3 --retries=0 tests/smoke.spec.ts
+  54 passed (28.2s)
+e2e-run: playwright exit 0
+e2e-run: app stopped (pid 400256)
+gate: <== e2e OK (328s)
+gate: PASS (13 steps, 623s)
