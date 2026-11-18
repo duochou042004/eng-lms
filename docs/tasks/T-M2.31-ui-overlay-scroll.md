@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Milestone | M2 |
-| Status | draft (G0 pending) |
+| Status | ready (G0 PASS, DEC-182; waits for the PO start signal) |
 | Owner role | FE (frontend-implementer) |
 | Branch | `feature/T-M2.31-ui-overlay-scroll` (from `develop`) |
 | Depends on | T-M2.29 (`1d6ace4`), T-M2.30 (`6822841`): merged |
@@ -33,7 +33,7 @@ closes the overlay in Chrome.
     - Measured at G0 (568×320, vi, Chromium 158): footer `clientHeight` 159 px; Log out 44 px; gap to the alert 16 px (`--space-4`); alert
       box 104.4 px (its text wraps to two lines); focus ring 4 px (2 + 2). Ring top to the alert **box** bottom = 168.4 px: does not fit.
       Ring top to the bottom of the alert **text** (the box less its 12 px bottom padding and 1 px border) ≈ 155.4 px: fits, 3.6 px spare.
-    - Fix: after the scroll, the Log out button with its focus ring and the alert's title and text are inside the footer's visible box.
+    - Fix: after the scroll, the Log out button with its focus ring and the alert's title and text are inside the footer's padding box.
       Only the alert box's own bottom padding and border may be clipped.
     - The mechanism is the implementer's choice. Examples: scroll the Log out + alert group into view `nearest`, or put a
       `scroll-margin-block-start` on the scroll target that reaches above the button. Note: with `nearest`, a margin box taller than the
@@ -103,8 +103,8 @@ added?** None. 4. **Weekly use?** The account overlays and Log out, every sessio
     844×390 (G0 measured the alert box bottom 10 px past the viewport today).
   - The tutor shell's account popover at 1280×800 does not regress (the T-M2.13 popover tests are kept).
 - **AC2 ((b)), tutor drawer at 568×320 and 740×360, logout answered 500:**
-  - The focused Log out button is fully inside the footer's visible box, including its focus ring (`--focus-ring-width` +
-    `--focus-ring-offset`). Measure with bounding boxes against the footer's box, read through a poll (L-05).
+  - The focused Log out button is fully inside the footer's padding box (`clientTop` / `clientHeight`, as the UI rules), including its
+    focus ring (`--focus-ring-width` + `--focus-ring-offset`). Measure through a poll (L-05).
   - The alert text is fully visible (ratio 0.99, as T-M2.29), focus stays on Log out, and the page does not move.
   - Seen failing first at 568×320 on today's code.
 - **AC2c ((c)):** with `scrollIntoView` returning a Promise:
@@ -114,7 +114,8 @@ added?** None. 4. **Weekly use?** The account overlays and Log out, every sessio
 - **AC3 (kept behaviour):**
   - T-M2.29's AC1/AC2 tests pass unchanged: the drawer, the More sheet, and the forced change-password page at 360×740.
   - Where the alert is already visible (the popover at 1280×800), its appearance does not scroll the page.
-- **AC4:** axe clean and no mid-word break (`expectNoMidWordBreak`) in each changed state, in vi and en.
+- **AC4:** axe clean and no mid-word break (`expectNoMidWordBreak`) in each changed state, in vi and en, including the tutor popover at
+  1280×800 with no alert (the gutter narrows it at every size).
   - Screenshots at phone-small, tablet and laptop, plus 800×360 and 568×320, kept locally and not committed.
 - **AC5:** `./scripts/gate.sh` green once on the final head and CI green; existing assertions kept.
 
@@ -147,7 +148,8 @@ added?** None. 4. **Weekly use?** The account overlays and Log out, every sessio
 
 ## Docs to update
 - `docs/05-frontend/design-system.md` §3, the `Popover` entry (≈ line 109): content taller than the available height scrolls inside the
-  popover.
+  popover; a stable scrollbar gutter is always reserved (with classic scrollbars the content box is ~15 px narrower at every size, so
+  content never moves when the scrollbar appears).
 - The backlog (LC at merge).
 
 ## Risks & assumptions

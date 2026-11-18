@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-11-18T16:03:41Z",
-  "updatedBy": "lead-coordinator (T-M2.31 packet in G0)",
+  "updatedAt": "2026-11-18T16:14:05Z",
+  "updatedBy": "lead-coordinator (T-M2.31 ready)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -31,8 +31,8 @@
   },
   "currentTask": {
     "id": "T-M2.31",
-    "title": "Overlay scroll follow-ups (T-M2.29 G3 QA-1 S3, UX-1 S4)",
-    "status": "draft",
+    "title": "Overlay scroll follow-ups and the alert effect crash (T-M2.29 G3 QA-1, UX-1; DEC-182)",
+    "status": "ready",
     "ownerRole": "FE",
     "branch": "feature/T-M2.31-ui-overlay-scroll",
     "packet": "docs/tasks/T-M2.31-ui-overlay-scroll.md",
@@ -40,11 +40,16 @@
     "lastCommit": null,
     "startedAt": null,
     "nextSteps": [
-      "Packet drafted on docs/T-M2.31-packet: G0 adversarial docs-reviewer, then ready; ask the PO for the start signal",
-      "On start: frontend-implementer, gate, PR, CI, G3 one combined QA+UX qa-evaluator, merge-gate, records"
+      "G0 PASS (round 1 CHANGES REQUESTED: S2-1 crash -> (c) DEC-182, S2-2 fit numbers; delta PASS WITH MINOR, S4s fixed; confirmation)",
+      "Ask the PO for the start signal; on it: frontend-implementer, gate, PR, CI, G3 one combined QA+UX qa-evaluator, merge-gate, records"
     ],
     "trace": [
-      "DEC-178"
+      "DEC-178",
+      "DEC-182"
+    ],
+    "entryGate": [
+      "T-M2.29, T-M2.30 merged — met (6822841)",
+      "PO start signal — to ask"
     ]
   },
   "nextTask": {
@@ -536,7 +541,8 @@
       "DEC-178",
       "DEC-179",
       "DEC-180",
-      "DEC-181"
+      "DEC-181",
+      "DEC-182"
     ],
     "pendingPO": [
       "OQ-03",
