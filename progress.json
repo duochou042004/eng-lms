@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-11-18T15:00:49Z",
-  "updatedBy": "lead-coordinator (T-M2.30 in review; DEC-180)",
+  "updatedAt": "2026-11-18T15:37:09Z",
+  "updatedBy": "lead-coordinator (T-M2.30 merged; records; handoff)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -30,32 +30,6 @@
     "exitCriteria": "FR-AUTH-01..10 and FR-STU-01..07 accepted; authorization-matrix and student-isolation harnesses fail on any unregistered endpoint; add-student flow E2E at 360/768/1280 within its step budget; security review of authentication passed (docs/01-product/roadmap.md)."
   },
   "currentTask": {
-    "id": "T-M2.30",
-    "title": "e2e-run.sh refusal gaps and the Firefox Page crashed recurrence (DEC-174, DEC-179)",
-    "status": "in_review",
-    "ownerRole": "FE",
-    "branch": "chore/T-M2.30-tooling-firefox-crash",
-    "packet": "docs/tasks/T-M2.30-tooling-firefox-crash.md",
-    "pr": "195",
-    "lastCommit": "10a5b48",
-    "startedAt": "2026-11-18T11:34:59Z",
-    "nextSteps": [
-      "Gate PASS on 10a5b48 (13 steps, 623 s); AC4 outcome engine/runner cause; PO: runs capped after 44316580788, Firefox dropped from the regression matrix (DEC-180)",
-      "PR CI green, then G3: one fresh adversarial docs-reviewer that re-runs the script suites (DOCS-REVIEW T-M2.30: PASS), LC-APPROVED, merge-gate, gitlab-sync",
-      "Records (part C): review/docs.md, backlog row done, progress + handoff; then T-M2.31"
-    ],
-    "trace": [
-      "DEC-174",
-      "DEC-175",
-      "DEC-179",
-      "DEC-180"
-    ],
-    "entryGate": [
-      "T-M2.28, T-M2.29 merged — met (1d6ace4)",
-      "PO start signal — given 2026-11-18"
-    ]
-  },
-  "nextTask": {
     "id": "T-M2.31",
     "title": "Overlay scroll follow-ups (T-M2.29 G3 QA-1 S3, UX-1 S4)",
     "status": "draft",
@@ -66,10 +40,29 @@
     "lastCommit": null,
     "startedAt": null,
     "nextSteps": [
-      "M2 polish, tier M (backlog row)"
+      "Write the packet (task-packet skill; tier M, FE): (a) ui/Popover overflow-y at 800x360, (b) drawer alert scroll margin at 568x320; G0 docs-reviewer; ask the PO for the start signal",
+      "G3: one combined QA+UX qa-evaluator"
     ],
     "trace": [
       "DEC-178"
+    ]
+  },
+  "nextTask": {
+    "id": "T-M2.7",
+    "title": "M2 G5 sign-off (milestone regression: 6 Chromium viewports + WebKit smoke, DEC-180)",
+    "status": "draft",
+    "ownerRole": "LC",
+    "branch": null,
+    "packet": null,
+    "pr": null,
+    "lastCommit": null,
+    "startedAt": null,
+    "nextSteps": [
+      "After T-M2.31 and the other open M2 rows (T-M2.6, T-M2.10, T-M2.16); T-M2.26 after at least 10 shadow PRs"
+    ],
+    "trace": [
+      "DEC-158",
+      "DEC-180"
     ]
   },
   "completed": [
@@ -424,11 +417,19 @@
       "mergeCommit": "1d6ace4",
       "evidence": "evidence/T-M2.29/summary.md",
       "note": "PR #190 via merge-gate (head 4ae60ff, CI 7/7 (5 full)); packet PR #189 (6ccd792); PO start 2026-11-17T12:50Z; gate PASS on 5284bc4 (854 s); sign-out never asks x50 50/50; G3 tier M: one combined QA+UX qa-evaluator PASS WITH MINOR / PASS WITH MINOR (132,160 tokens); QA-1 S3 + UX-1 S4 -> T-M2.31; QA report PR #191 (141c763); DEC-177, DEC-178"
+    },
+    {
+      "id": "T-M2.30",
+      "title": "e2e-run.sh refusal gaps and the Firefox Page crashed recurrence (DEC-174, DEC-179)",
+      "completedAt": "2026-11-18T15:35:56Z",
+      "mergeCommit": "6822841",
+      "evidence": "evidence/T-M2.30/summary.md",
+      "note": "PR #195 via merge-gate (head 183965a, CI 7/7 (5 full)); packet PR #193 (357c4c4); PO start 2026-11-18; gate PASS on 10a5b48 (623 s); 4 regression runs (PO cap); (c) engine/runner cause, Firefox dropped from the regression matrix (PO, DEC-180); G3 adversarial docs-reviewer PASS WITH MINOR, confirmation PASS (118,032 tokens); DEC-180, DEC-181"
     }
   ],
   "tests": {
-    "lastRun": "2026-11-17T13:13:54Z",
-    "summary": "T-M2.29 head 5284bc4: gate PASS (13 steps, 854 s); web-test 852/852; e2e 536 passed / 46 skipped; repeat x3 381 passed / 33 skipped.",
+    "lastRun": "2026-11-18T14:50:05Z",
+    "summary": "T-M2.30 head 10a5b48: gate PASS (13 steps, 623 s); e2e 536 passed / 46 skipped; repeat x3 smoke.spec.ts 54 passed; e2e-run.test.sh 193/193; run-all PASS.",
     "suites": [
       {
         "name": "backend (./mvnw -B verify)",
@@ -455,27 +456,27 @@
   "gates": {
     "G0": {
       "status": "pass",
-      "note": "T-M2.29 packet: adversarial docs-reviewer, round 1 CHANGES REQUESTED (S2-1), delta PASS WITH MINOR (N-1..N-4 fixed), confirmation"
+      "note": "T-M2.30 packet: PR #193, round 1 CHANGES REQUESTED, delta PASS WITH MINOR, confirmation"
     },
     "G1": {
       "status": "pass",
-      "note": "T-M2.29: gate PASS (13 steps, 854 s) on 5284bc4"
+      "note": "T-M2.30: gate PASS (13 steps, 623 s) on 10a5b48"
     },
     "G2": {
       "status": "pass",
-      "note": "T-M2.29: CI 7/7 on 4ae60ff (5 full)"
+      "note": "T-M2.30: CI 7/7 on 183965a (5 full)"
     },
     "G3": {
       "status": "pass",
-      "note": "T-M2.29: combined QA+UX qa-evaluator QA-VERDICT and UX-REVIEW PASS WITH MINOR (132,160 tokens); QA-1, UX-1 -> T-M2.31"
+      "note": "T-M2.30: adversarial docs-reviewer PASS WITH MINOR (S3-1, S4-1..S4-4 fixed or recorded), confirmation PASS (118,032 tokens)"
     },
     "G4": {
       "status": "pass",
-      "note": "T-M2.29 PR #190 merged via merge-gate (1d6ace4)"
+      "note": "T-M2.30 PR #195 merged via merge-gate (6822841)"
     },
     "G5": {
       "status": "n/a",
-      "note": "M2 in progress; regression 44099902526 failed 1 (Firefox crash, DEC-179 -> T-M2.30 (c))"
+      "note": "M2 in progress; matrix now 6 Chromium viewports + WebKit smoke (DEC-180); held by T-M2.7"
     }
   },
   "blockers": [],
@@ -533,7 +534,9 @@
       "DEC-176",
       "DEC-177",
       "DEC-178",
-      "DEC-179"
+      "DEC-179",
+      "DEC-180",
+      "DEC-181"
     ],
     "pendingPO": [
       "OQ-03",
@@ -908,11 +911,25 @@
       "ref": "DEC-179"
     },
     {
-      "what": "Start T-M2.30 (asked 2026-11-17, chat: \"Hold\"; ask again)",
+      "what": "Start T-M2.30 (asked 2026-11-17: \"Hold\"; asked again 2026-11-18: \"Start T-M2.30\")",
       "by": "PO",
-      "status": "pending",
-      "at": "2026-11-17T15:10:57Z",
+      "status": "approved",
+      "at": "2026-11-18T11:34:59Z",
       "ref": "DEC-179"
+    },
+    {
+      "what": "Cap T-M2.30 regression runs after run 44316580788 (chat: \"Stop after this run\")",
+      "by": "PO",
+      "status": "approved",
+      "at": "2026-11-18T14:00:00Z",
+      "ref": "DEC-180"
+    },
+    {
+      "what": "Drop Firefox from the regression / G5 matrix (chat: \"Drop Firefox\")",
+      "by": "PO",
+      "status": "approved",
+      "at": "2026-11-18T14:10:00Z",
+      "ref": "DEC-180"
     }
   ],
   "environment": {
@@ -1695,6 +1712,11 @@
       "at": "2026-11-17T15:10:57Z",
       "actor": "lead-coordinator",
       "event": "T-M2.30 packet merged (PR #193, 357c4c4; G0 PASS). PO: start signal Hold; artifact downloads for T-M2.30 allowed. Session handoff."
+    },
+    {
+      "at": "2026-11-18T15:37:09Z",
+      "actor": "lead-coordinator",
+      "event": "T-M2.30 merged (PR #195, 6822841; DEC-181): e2e-run refusal gaps closed, browser-log/OOM capture; Firefox crash = engine/runner cause; PO capped the runs and dropped Firefox (DEC-180). Records PR; T-M2.31 next."
     }
   ]
 }

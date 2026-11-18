@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Milestone | M2 |
-| Status | ready (G0 PASS, PR #193 `357c4c4`; the PO answered Hold on 2026-11-17: waits for the start signal) |
+| Status | done (`6822841`, PR #195, DEC-180, DEC-181; G0 PASS, PR #193 `357c4c4`; PO start 2026-11-18) |
 | Owner role | FE (frontend-implementer; E2E, scripts and the `regression` workflow) with the LC (backlog row FE/LC) |
 | Branch | `chore/T-M2.30-tooling-firefox-crash` (from `develop`) |
 | Depends on | T-M2.28 (`a1bcf12`), T-M2.29 (`1d6ace4`): merged |

@@ -1,6 +1,6 @@
 # T-M2.30 summary: `e2e-run.sh` refusal gaps and the Firefox `Page crashed` recurrence
-Branch `chore/T-M2.30-tooling-firefox-crash` (from `develop` `3dc7f77`) · code head `60d0ed5` · DEC-180 + G5 text `10a5b48` · this summary,
-the gate log and progress: the next commit · trace DEC-174, DEC-179, DEC-180 · PO start 2026-11-18 (~11:34Z) · 2026-11-18.
+Branch `chore/T-M2.30-tooling-firefox-crash` (from `develop` `3dc7f77`) · code head `60d0ed5` · DEC-180 + G5 text `10a5b48` · summary + gate log `5143257`;
+G3 fixes `183965a`; **merged** `6822841` (PR #195 via merge-gate at head `183965a`, CI 7/7, scope full: 5 full, 0 fast-path, 2026-11-18T15:35:56Z) · trace DEC-174, DEC-179, DEC-180 · PO start 2026-11-18 (~11:34Z) · 2026-11-18.
 Recorded by the LC from the frontend-implementer's text (L-07). Raw logs: `evidence/T-M2.30/*.log`.
 
 ## PO rulings during the task (2026-11-18)
@@ -69,3 +69,13 @@ Findings, all fixed in docs by the LC (DEC-131 cheap fixes) in the next commit:
 | S4-2 | Lower-case `debug` / `trace` reaches `java` (Boot prints the conditions report) | Recorded as a gap there; the script and CI never set it |
 | S4-3 | DEC-180 said "known" issue without an upstream search | DEC-180 (unmerged) reworded: "recorded here … not reported upstream" |
 | S4-4 | NFR-COMPAT-01 Verification still says Playwright on Firefox | Fixed: Chromium and WebKit in `e2e/`; Firefox best effort via `qa/` |
+
+Round 2 (confirmation on `183965a`): **`DOCS-REVIEW T-M2.30: PASS`**. Reports: `review/docs.md`.
+
+## G3 cost
+| Agent | Tokens | Duration |
+|---|---|---|
+| frontend-implementer (incl. 4 regression runs, resumed twice for the PO rulings) | 220,615 | 11,602 s |
+| docs-reviewer round 1 (adversarial, re-ran the suites) | 97,814 | 492 s |
+| docs-reviewer round 2 (confirmation) | 20,218 | 26 s |
+| **G3 total** | **118,032** | 518 s |

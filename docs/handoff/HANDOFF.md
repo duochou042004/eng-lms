@@ -1,42 +1,42 @@
-# Handoff — 2026-11-17T15:11Z (T-M2.30 ready; the PO answered Hold to its start signal)
+# Handoff — 2026-11-18T15:37Z (T-M2.30 done; Firefox dropped from the regression matrix; T-M2.31 next)
 
-Phase/Milestone: P1 / M2 (in progress) · Task: **T-M2.30** (ready, `docs/tasks/T-M2.30-tooling-firefox-crash.md`; PO: Hold) · Branch:
-`develop` (`357c4c4`; this handoff on `docs/T-M2.30-hold`) · Next after it: T-M2.31 (M2 polish) · Remote: https://github.com/duochou042004/eng-lms
+Phase/Milestone: P1 / M2 (in progress) · Task: **T-M2.31** (draft: packet to write) · Branch: `develop` (`6822841`; this handoff on
+`docs/T-M2.30-records`) · Next after it: the other open M2 rows, then T-M2.7 (G5) · Remote: https://github.com/duochou042004/eng-lms
 
 ## Where we are
-- **T-M2.29 done** (`1d6ace4`, PR #190, DEC-178; rulings DEC-177; QA report PR #191 `141c763`; records PR #192 `5da7c89`): (h1) the `ui/Sheet`
-  footer scrolls within half the sheet; (h2) `LogoutFailedAlert` scrolls itself into view (`nearest`, no focus move); (j)
-  `isOwnLogoutInFlight()` makes one's own logout land on exactly `/login`. G3 combined QA+UX PASS WITH MINOR; QA-1 (S3, older `ui/Popover`
-  overflow at 800×360) and UX-1 (S4) → new row **T-M2.31**.
-- **Regression 44099902526** on `develop` `141c763` (30.1 min): 1059 passed, 1 failed: `[firefox-smoke] smoke.spec.ts:77` `Page crashed` in
-  axe `runPartial` (`:114`), the DEC-174 (5) recurrence (2 of the last 4 runs). Ruled into **T-M2.30 as (c)** (DEC-179): capture the
-  browser's stderr (and OOM lines), then the cause, before the M2 G5. The run counts neither as the G5 nor as green.
-- **T-M2.30 packet merged** (PR #193, `357c4c4`): G0 round 1 CHANGES REQUESTED (S2-1 no-reproduction outcome, S2-2 the ×20 route), delta
-  PASS WITH MINOR (the diagnostics step must never fail a green run), confirmation PASS.
+- **T-M2.30 done** (`6822841`, PR #195, DEC-181; packet PR #193): (a) `e2e-run.sh` fresh mode scans `env -0` and refuses datasource/Flyway/
+  config overrides in any spelling and spring-carrying JVM option variables; `java` runs from an emptied `backend/target/e2e-cwd/` without
+  `DEBUG`; (b) lower-case case + mutation; `e2e-run.test.sh` 193/193; (c) browser logs, OOM lines and a memory sample in the `regression`
+  artifact. Gate PASS on `10a5b48` (623 s); CI 7/7; G3 adversarial docs-reviewer PASS WITH MINOR → fixed → confirmation PASS (118,032 tokens).
+- **Firefox crash = engine/runner cause** (4 runs: content-process SIGSEGV on the axe run after a second `/login` load, ~half of ×20
+  repeats; 0 OOM; no test-side change helped). **PO rulings 2026-11-18 (DEC-180):** runs capped after the 4th; **Firefox dropped** from
+  `e2e/` and the `regression` workflow. The G5 matrix is the 6 Chromium viewports + WebKit smoke. NFR-COMPAT-01/A-014 keep Firefox as best effort.
+- The PO questioned the cost of the regression loop (each run ~30–40 min). Answered: it is meant for milestone sign-off only; T-M2.30's
+  runs were diagnostic repeats of the crash.
 
 ## In flight / uncommitted
-- **This handoff PR** (`docs/T-M2.30-hold`: progress.json (the PO answers), this handoff, the next-session prompt): needs one fresh
-  docs-reviewer (`DOCS-REVIEW T-M2.30: PASS`, text only), CI, `LC-APPROVED T-M2.30`, merge-gate, `gitlab-sync.sh`.
+- **This records PR** (`docs/T-M2.30-records`: DEC-181, backlog/packet `done`, progress, `review/docs.md`, summary merge line, this handoff,
+  the next-session prompt): needs one fresh docs-reviewer (`DOCS-REVIEW T-M2.30: PASS`, text only), CI, `LC-APPROVED T-M2.30`,
+  merge-gate, `gitlab-sync.sh`.
 
 ## Next steps (in this order)
-1. Merge the handoff PR (above).
-2. Ask the PO again for the T-M2.30 start signal (2026-11-17: **Hold**). On it: `chore/T-M2.30-tooling-firefox-crash` from `develop`;
-   frontend-implementer with the packet (name the ×20 scratch branch `chore/T-M2.30-x20-scratch`, deleted after its run); its regression
-   runs; gate once on the final head; LC summary, progress, PR; CI; G3 one adversarial docs-reviewer that re-runs the script suites;
-   merge-gate; records.
-3. T-M2.31 (overlay scroll, tier M); T-M2.26 after at least 10 shadow PRs. M2's other open rows: T-M2.6, T-M2.7 (holds the G5), T-M2.10, T-M2.16.
+1. Merge the records PR (above).
+2. T-M2.31 (overlay scroll, tier M, FE; backlog row): write the packet (task-packet skill), G0 docs-reviewer, ask the PO for the start
+   signal; G3 one combined QA+UX qa-evaluator.
+3. M2's other open rows: T-M2.6, T-M2.10, T-M2.16; T-M2.26 after at least 10 shadow PRs; T-M2.7 holds the G5 (one `regression` run, no Firefox).
 
 ## Pending PO decisions / actions
-- The T-M2.30 start signal (answered **Hold** on 2026-11-17; ask again). The artifact downloads of T-M2.30's regression runs are
-  **approved** (2026-11-17, "Allow for T-M2.30").
+- None open for T-M2.30. The T-M2.31 start signal will be asked once its packet passes G0.
 - **Dependabot, held by the PO:** #165 (msw 3 major: `web` typecheck fails at `web/src/test/setup.ts:14`; needs a packet) and #135 (react group).
   The LC does not touch them unasked.
 
 ## Gotchas
 - **`gate.sh`'s e2e repeat runs `--repeat-each=3` under `fullyParallel`** on a fresh DB: test-data helpers that check-then-create race between
   repeats; key shared sets by `testInfo.repeatEachIndex` (T-M2.28).
-- **WebKit locally:** host libraries are not installed; Firefox/WebKit evidence comes from `gh workflow run regression.yml --ref <branch>`
-  (~25–30 min, no inputs: repeat diagnostics go in a temporary spec block, removed before the final head).
+- **WebKit locally:** host libraries are not installed; WebKit evidence comes from `gh workflow run regression.yml --ref <branch>`
+  (~25–30 min, nearly all of it Playwright; no inputs: repeat diagnostics go in a temporary spec block, removed before the final head).
+  **Each run costs ~30–40 min of PO time: the PO capped T-M2.30 at 4 runs (2026-11-18).** Plan diagnostic runs up front, cap them in the
+  packet, and prefer a local reproduction when the engine is installed.
 - **merge-gate on `docs/`/`chore/` needs the exact `DOCS-REVIEW <task>: PASS`**; a PASS WITH MINOR needs a same-reviewer confirmation after the
   S4s are fixed or batched (T-M2.28).
 - **`e2e-run.test.sh` fails while another app holds port 8080:** don't run it beside an E2E run.
@@ -54,7 +54,7 @@ Phase/Milestone: P1 / M2 (in progress) · Task: **T-M2.30** (ready, `docs/tasks/
 - **docs-check reads `](x)` inside code spans as a link:** write regexes like `(PG)?` after `]` as `\(PG\)` or in words (T-M2.25 records).
 - **`scripts/tests/e2e-run.test.sh` can flake in CI** ("keeps the host and parameters": a stale `app2.env` race, T-M2.28 (e)): `gh run rerun <id> --failed`.
 - **Local E2E now runs on its own database** (T-M2.25): `e2e-run.sh` recreates `englms_e2e` per run with `.data/e2e/fresh/`; `E2E_KEEP_DB=1` runs against the PO's dev DB as before (G5). pgjdbc URL parameters and `.env` reassignments are guarded (DEC-168, DEC-169).
-- **The `regression` workflow** is manual (`gh workflow run regression.yml --ref develop`, ~25–30 min, all 6 viewports + Firefox/WebKit smoke); its first run failed 7 tests (T-M2.28).
+- **The `regression` workflow** is manual (`gh workflow run regression.yml --ref develop`, ~25–30 min, all 6 Chromium viewports + WebKit smoke; Firefox dropped, DEC-180); its first run failed 7 tests (T-M2.28).
 - **T-M2.27 (DEC-166):** the dev DB now holds 1,065 active, 30 paused and 133 archived students (read-only count by QA, 2026-11-13); local E2E added rows until T-M2.25 (now only `E2E_KEEP_DB=1` runs do). `loading.spec.ts` "the loading region in English" can still fail on a very slow runner (CPU throttle ≥ 30 in the reproduction): a CI recurrence needs a new ruling (the packet forbade raising a timeout). Reproduction generators must read the old form from the pre-task commit, not `HEAD`.
 - **A QA agent can end on an API error after its verdict** (T-M2.27: Cloudflare 403 after the full report): the report already returned counts; check `git status` and `e2e/tests` for scratch files.
 - **This device (2026-11-11): agent shells run with `NoNewPrivs=1`** (inherited from the desktop app), so rootless `podman` fails with
@@ -129,6 +129,13 @@ Phase/Milestone: P1 / M2 (in progress) · Task: **T-M2.30** (ready, `docs/tasks/
   `scripts/tests/`); the harness blocks `rm -f "$VAR"/*` (write `"${VAR:?}"/*`); `gate.sh` leaves an untracked
   `evidence/<task>/records/` (delete it) and a ~2,000-line log (trim it to ≤ 300 lines).
 
+- **Firefox is out of the automated matrix (PO, DEC-180):** the tutor's users are on Chrome (Windows) and Safari (Mac). Firefox 159 crashes
+  its content process (SIGSEGV) under axe on a second `/login` load; recorded, not reported upstream. `qa/`'s optional `QA_ENGINES=all`
+  still includes it; `qa/README.md:25` still calls that run the milestone regression (QA-owned; relabel when `qa/` is next touched).
+- **`e2e-run.sh` fresh mode (T-M2.30):** `java` starts in `backend/target/e2e-cwd/` under `env -u DEBUG`; browser logs go to
+  `e2e/browser-logs/pw-<pid>.log`. Known gaps: quoted JVM option names, lower-case `debug`/`trace`, Hikari `data-source-class-name`
+  (development-setup "E2E database").
+
 ## Files to read first
-`CLAUDE.md` → `progress.json` → this file → DEC-177, DEC-178 → the T-M2.30 and T-M2.31 rows in `docs/tasks/backlog.md` →
-`evidence/T-M2.29/summary.md` → `docs/09-harness/coding-agent-rules.md`.
+`CLAUDE.md` → `progress.json` → this file → DEC-180, DEC-181 → the T-M2.31 row in `docs/tasks/backlog.md` → `evidence/T-M2.30/summary.md` →
+`docs/09-harness/coding-agent-rules.md`.
