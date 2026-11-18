@@ -38,10 +38,10 @@ export default defineConfig({
         hasTouch: viewport.width < 1024,
       },
     })),
-    // E2E_ENGINES=all (the `regression` workflow, T-M2.25; like qa/'s QA_ENGINES=all): Firefox and WebKit smoke at the laptop viewport.
+    // E2E_ENGINES=all (the `regression` workflow, T-M2.25; like qa/'s QA_ENGINES=all): WebKit smoke at the laptop viewport. Firefox was
+    // dropped from the matrix (PO, 2026-11-18, T-M2.30): the tutor's users are on Chrome and Safari.
     ...(process.env.E2E_ENGINES === 'all'
       ? [
-          { name: 'firefox-smoke', testMatch: 'smoke.spec.ts', use: { ...devices['Desktop Firefox'], viewport: VIEWPORTS.laptop } },
           { name: 'webkit-smoke', testMatch: 'smoke.spec.ts', use: { ...devices['Desktop Safari'], viewport: VIEWPORTS.laptop } },
         ]
       : []),

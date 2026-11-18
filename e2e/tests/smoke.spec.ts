@@ -45,9 +45,10 @@ const PAGES = [
 ] as const
 
 /**
- * T-M2.28 (c): Firefox logs a font download that a reload aborts (NS_BINDING_ABORTED) as a console error. The shell renders
- * only after /auth/session and fonts are requested once text that uses them renders, so wait for the h1, then until no font
- * load is in flight (`document.fonts.ready` alone can resolve before any font request has started).
+ * T-M2.28 (c): the reload starts once the h1 is shown and no font load is in flight, so a reload never aborts a font download
+ * (Firefox, no longer in the matrix since T-M2.30, logged that as a console error). The shell renders only after
+ * /auth/session and fonts are requested once text that uses them renders (`document.fonts.ready` alone can resolve before
+ * any font request has started).
  */
 async function fontsSettled(page: Page, heading: string) {
   await expect(page.getByRole('heading', { level: 1, name: heading })).toBeVisible()
@@ -58,7 +59,7 @@ type StoredState = Exclude<BrowserContextOptions['storageState'], string | undef
 /**
  * T-M2.28 (b), DEC-174: WebKit neither sends nor keeps a Secure cookie on http://localhost (development-setup "Cookies on
  * http://localhost"), so on WebKit a stored session is loaded with its cookies marked not Secure, on the client side only.
- * The server still sets them Secure (NFR-SEC-04); Chromium and Firefox use the stored state as it is.
+ * The server still sets them Secure (NFR-SEC-04); Chromium uses the stored state as it is.
  */
 function stateFor(state: string | StoredState, browserName: string): string | StoredState {
   if (browserName !== 'webkit' || typeof state !== 'string') return state

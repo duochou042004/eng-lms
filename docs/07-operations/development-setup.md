@@ -119,7 +119,8 @@ given `SPRING_DATASOURCE_URL` is used as is.
 **Browser logs (T-M2.30).** Every `scripts/e2e-run.sh` run sets `DEBUG=pw:browser*` on the Playwright command only: Playwright writes each browser's
 stdout and stderr (`[pid=N][err] …` lines; the content processes inherit the browser's stderr) to `e2e/browser-logs/pw-<pid>.log`, one file per Node
 process (`scripts/lib/browser-log-file.cjs`, preloaded through `NODE_OPTIONS`). The folder is git-ignored; old `pw-*.log` files are removed at the start
-of each run. The `regression` workflow uploads it ([ci-cd.md §1](ci-cd.md)).
+of each run. The `regression` workflow (`E2E_ENGINES=all`: the six Chromium viewports plus WebKit smoke; Firefox was dropped from the
+matrix, PO 2026-11-18) uploads it ([ci-cd.md §1](ci-cd.md)).
 
 **E2E tutor (T-M2.4).** `scripts/e2e-run.sh` starts the packaged app with its own tutor bootstrap, for that process only (it overrides `.env`):
 username `e2e-tutor`, password file `tutor-bootstrap-password` in the data folder above (generated once, owner-only), and a raised per-IP login throttle
