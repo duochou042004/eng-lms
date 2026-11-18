@@ -30,7 +30,7 @@ Phase/Milestone: P1 / M2 (in progress) · Task: **T-M2.31** (ready, `docs/tasks/
 
 ## Gotchas
 - **Chromium 158's `scrollIntoView` returns a Promise** (DEC-182): a `useEffect` arrow that returns an expression hands it to React as the
-  cleanup, which throws on unmount. Effects that call DOM methods need a block body. Fix in flight for `LogoutFailedAlert` (T-M2.31 (c)).
+  cleanup, which throws on unmount. Effects that call DOM methods need a block body. Fix planned in T-M2.31 (c), on PO hold; until then the crash is live in Chrome.
 - **`gate.sh`'s e2e repeat runs `--repeat-each=3` under `fullyParallel`** on a fresh DB: test-data helpers that check-then-create race between
   repeats; key shared sets by `testInfo.repeatEachIndex` (T-M2.28).
 - **WebKit locally:** host libraries are not installed; WebKit evidence comes from `gh workflow run regression.yml --ref <branch>`
