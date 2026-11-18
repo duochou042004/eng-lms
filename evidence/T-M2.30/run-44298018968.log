@@ -1,0 +1,93 @@
+# regression run 44298018968, attempt 1, ref chore/T-M2.30-tooling-firefox-crash c7e4959 (TEMP crash proof + x20 login repeat), trimmed
+Version: 20261103.629
+Image: ubuntu-24.04
+Version: 20261111.370.1
+Downloading Firefox 159.0 (playwright firefox v1572) from https://cdn.playwright
+
+## Firefox results (list reporter)
+  ✘  1291 [firefox-smoke] › TEMP T-M2.30 content crash proof (2.7s)
+  ✓  1292 [firefox-smoke] › login renders in vi and en (4.2s)
+  ✓  1293 [firefox-smoke] › tutor renders in vi and en (4.6s)
+  ✓  1294 [firefox-smoke] › student renders in vi and en (3.5s)
+  ✓  1295 [firefox-smoke] › not-found renders in vi and en (2.4s)
+  ✓  1296 [firefox-smoke] › login renders in vi and en (TEMP repeat 1) (3.3s)
+  ✘  1297 [firefox-smoke] › login renders in vi and en (TEMP repeat 2) (3.6s)
+  ✘  1298 [firefox-smoke] › login renders in vi and en (TEMP repeat 3) (3.4s)
+  ✓  1299 [firefox-smoke] › login renders in vi and en (TEMP repeat 4) (4.1s)
+  ✓  1300 [firefox-smoke] › login renders in vi and en (TEMP repeat 5) (4.7s)
+  ✘  1301 [firefox-smoke] › login renders in vi and en (TEMP repeat 6) (3.4s)
+  ✘  1302 [firefox-smoke] › login renders in vi and en (TEMP repeat 7) (3.0s)
+  ✘  1303 [firefox-smoke] › login renders in vi and en (TEMP repeat 8) (4.5s)
+  ✘  1304 [firefox-smoke] › login renders in vi and en (TEMP repeat 9) (4.3s)
+  ✓  1305 [firefox-smoke] › login renders in vi and en (TEMP repeat 10) (4.2s)
+  ✘  1306 [firefox-smoke] › login renders in vi and en (TEMP repeat 11) (4.6s)
+  ✓  1307 [firefox-smoke] › login renders in vi and en (TEMP repeat 12) (2.8s)
+  ✓  1308 [firefox-smoke] › login renders in vi and en (TEMP repeat 14) (3.5s)
+  ✓  1309 [firefox-smoke] › login renders in vi and en (TEMP repeat 13) (4.1s)
+  ✘  1310 [firefox-smoke] › login renders in vi and en (TEMP repeat 15) (3.3s)
+  ✘  1311 [firefox-smoke] › login renders in vi and en (TEMP repeat 16) (3.3s)
+  ✘  1312 [firefox-smoke] › login renders in vi and en (TEMP repeat 17) (4.7s)
+  ✓  1313 [firefox-smoke] › login renders in vi and en (TEMP repeat 18) (4.2s)
+  ✓  1315 [firefox-smoke] › login renders in vi and en (TEMP repeat 20) (3.2s)
+  ✓  1316 [firefox-smoke] › a deep link survives a reload: /tutor (same-origin SPA fallback) (1.5s)
+  ✘  1314 [firefox-smoke] › login renders in vi and en (TEMP repeat 19) (4.7s)
+  ✓  1317 [firefox-smoke] › a deep link survives a reload: /student/home (same-origin SPA fallback) (1.4s)
+
+## Failures
+  1) [firefox-smoke] › tests/smoke.spec.ts:75:1 › TEMP T-M2.30 content crash proof
+    Error: page.goto: Page crashed
+        at /home/runner/work/eng-lms/eng-lms/e2e/tests/smoke.spec.ts:78:14
+  2) [firefox-smoke] › tests/smoke.spec.ts:84:5 › login renders in vi and en (TEMP repeat 2)
+    Error: frame.evaluate: Page crashed
+        at /home/runner/work/eng-lms/eng-lms/e2e/tests/smoke.spec.ts:122:7
+  3) [firefox-smoke] › tests/smoke.spec.ts:84:5 › login renders in vi and en (TEMP repeat 3)
+    Error: frame.evaluate: Page crashed
+        at /home/runner/work/eng-lms/eng-lms/e2e/tests/smoke.spec.ts:122:7
+  4) [firefox-smoke] › tests/smoke.spec.ts:84:5 › login renders in vi and en (TEMP repeat 6)
+    Error: frame.evaluate: Page crashed
+        at /home/runner/work/eng-lms/eng-lms/e2e/tests/smoke.spec.ts:122:7
+  5) [firefox-smoke] › tests/smoke.spec.ts:84:5 › login renders in vi and en (TEMP repeat 7)
+    Error: frame.evaluate: Page crashed
+        at /home/runner/work/eng-lms/eng-lms/e2e/tests/smoke.spec.ts:122:7
+  6) [firefox-smoke] › tests/smoke.spec.ts:84:5 › login renders in vi and en (TEMP repeat 8)
+    Error: frame.evaluate: Page crashed
+        at /home/runner/work/eng-lms/eng-lms/e2e/tests/smoke.spec.ts:122:7
+  7) [firefox-smoke] › tests/smoke.spec.ts:84:5 › login renders in vi and en (TEMP repeat 9)
+    Error: frame.evaluate: Page crashed
+        at /home/runner/work/eng-lms/eng-lms/e2e/tests/smoke.spec.ts:122:7
+  8) [firefox-smoke] › tests/smoke.spec.ts:84:5 › login renders in vi and en (TEMP repeat 11)
+    Error: frame.evaluate: Page crashed
+        at /home/runner/work/eng-lms/eng-lms/e2e/tests/smoke.spec.ts:122:7
+  9) [firefox-smoke] › tests/smoke.spec.ts:84:5 › login renders in vi and en (TEMP repeat 15)
+    Error: frame.evaluate: Page crashed
+        at /home/runner/work/eng-lms/eng-lms/e2e/tests/smoke.spec.ts:122:7
+  10) [firefox-smoke] › tests/smoke.spec.ts:84:5 › login renders in vi and en (TEMP repeat 16)
+    Error: frame.evaluate: Page crashed
+        at /home/runner/work/eng-lms/eng-lms/e2e/tests/smoke.spec.ts:122:7
+  11) [firefox-smoke] › tests/smoke.spec.ts:84:5 › login renders in vi and en (TEMP repeat 17)
+    Error: frame.evaluate: Page crashed
+        at /home/runner/work/eng-lms/eng-lms/e2e/tests/smoke.spec.ts:122:7
+  12) [firefox-smoke] › tests/smoke.spec.ts:84:5 › login renders in vi and en (TEMP repeat 19)
+    Error: frame.evaluate: Page crashed
+        at /home/runner/work/eng-lms/eng-lms/e2e/tests/smoke.spec.ts:122:7
+  12 failed
+  263 skipped
+  1069 passed (28.3m)
+
+## Diagnostics step (job log)
+kernel OOM lines: 0
+memory: 15983 MB total, peak used 3565 MB, minimum free 6896 MB (349 samples, every 5 s)
+
+## Crash lines in e2e/browser-logs/ (artifact)
+pw-57516.log:  pw:browser [pid=57529][err] [Parent 57529, IPC I/O Parent] WARNING: process 57657 exited on signal 11: file ipc/chromium/src/chrome/common/process_watcher_posix_sigchld.cc:161
+pw-57676.log:  pw:browser [pid=57704][err] [Parent 57704, IPC I/O Parent] WARNING: process 58550 exited on signal 11: file ipc/chromium/src/chrome/common/process_watcher_posix_sigchld.cc:161
+pw-57920.log:  pw:browser [pid=57979][err] [Parent 57979, IPC I/O Parent] WARNING: process 58474 exited on signal 11: file ipc/chromium/src/chrome/common/process_watcher_posix_sigchld.cc:161
+pw-58656.log:  pw:browser [pid=58670][err] [Parent 58670, IPC I/O Parent] WARNING: process 59142 exited on signal 11: file ipc/chromium/src/chrome/common/process_watcher_posix_sigchld.cc:161
+pw-58832.log:  pw:browser [pid=58854][err] [Parent 58854, IPC I/O Parent] WARNING: process 59246 exited on signal 11: file ipc/chromium/src/chrome/common/process_watcher_posix_sigchld.cc:161
+pw-59338.log:  pw:browser [pid=59350][err] [Parent 59350, IPC I/O Parent] WARNING: process 59508 exited on signal 11: file ipc/chromium/src/chrome/common/process_watcher_posix_sigchld.cc:161
+pw-59537.log:  pw:browser [pid=59567][err] [Parent 59567, IPC I/O Parent] WARNING: process 59729 exited on signal 11: file ipc/chromium/src/chrome/common/process_watcher_posix_sigchld.cc:161
+pw-59857.log:  pw:browser [pid=59877][err] [Parent 59877, IPC I/O Parent] WARNING: process 60802 exited on signal 11: file ipc/chromium/src/chrome/common/process_watcher_posix_sigchld.cc:161
+pw-60053.log:  pw:browser [pid=60084][err] [Parent 60084, IPC I/O Parent] WARNING: process 60259 exited on signal 11: file ipc/chromium/src/chrome/common/process_watcher_posix_sigchld.cc:161
+pw-60479.log:  pw:browser [pid=60520][err] [Parent 60520, IPC I/O Parent] WARNING: process 60876 exited on signal 11: file ipc/chromium/src/chrome/common/process_watcher_posix_sigchld.cc:161
+pw-60970.log:  pw:browser [pid=60994][err] [Parent 60994, IPC I/O Parent] WARNING: process 61134 exited on signal 11: file ipc/chromium/src/chrome/common/process_watcher_posix_sigchld.cc:161
+pw-61506.log:  pw:browser [pid=61519][err] [Parent 61519, IPC I/O Parent] WARNING: process 61670 exited on signal 11: file ipc/chromium/src/chrome/common/process_watcher_posix_sigchld.cc:161

@@ -1,0 +1,64 @@
+# regression run 44316580788, attempt 1, ref chore/T-M2.30-tooling-firefox-crash 616224e (TEMP axe rule bisection x15; the login test itself unchanged), trimmed
+Version: 20261103.629
+Image: ubuntu-24.04
+Version: 20261111.127.1
+Downloading Firefox 159.0 (playwright firefox v1572) from https://cdn.playwright
+
+## Crashes per rule set (the full-tag first axe, the switch, the reload, then axe withRules(<set>))
+Rule sets (axe-core 4.14.0, the 69 rules of the five tags other than color-contrast, alphabetical):
+g1: area-alt, aria-allowed-attr, aria-braille-equivalent, aria-command-name, aria-conditional-attr, aria-deprecated-role, aria-hidden-body, aria-hidden-focus, aria-input-field-name
+g2: aria-meter-name, aria-progressbar-name, aria-prohibited-attr, aria-required-attr, aria-required-children, aria-required-parent, aria-roledescription, aria-roles, aria-tab-name
+g3: aria-toggle-field-name, aria-tooltip-name, aria-valid-attr-value, aria-valid-attr, audio-caption, autocomplete-valid, avoid-inline-spacing, blink, button-name
+g4: bypass, css-orientation-lock, definition-list, dlitem, document-title, duplicate-id-aria, form-field-multiple-labels, frame-focusable-content, frame-title-unique
+g5: frame-title, html-has-lang, html-lang-valid, html-xml-lang-mismatch, image-alt, input-button-name, input-image-alt, label-content-name-mismatch, label
+g6: link-in-text-block, link-name, list, listitem, marquee, meta-refresh, meta-viewport, nested-interactive, no-autoplay-audio
+g7: object-alt, p-as-heading, role-img-alt, scrollable-region-focusable, select-name, server-side-image-map, summary-name, svg-img-alt, table-fake-caption
+g8: target-size, td-has-header, td-headers-attr, th-has-data-cells, valid-lang, video-caption
+only-label-content-name-mismatch: label-content-name-mismatch
+only-css-orientation-lock: css-orientation-lock
+only-target-size: target-size
+
+Crashes:
+g1: 0/15
+g2: 0/15
+g3: 0/15
+g4: 0/15
+g5: 7/15
+g6: 0/15
+g7: 0/15
+g8: 0/15
+only-label-content-name-mismatch: 0/15
+only-css-orientation-lock: 0/15
+only-target-size: 0/15
+  ✓  2320 [firefox-smoke] › login renders in vi and en (2.8s)
+  7 failed
+  1271 skipped
+  1218 passed (33.1m)
+
+## Diagnostics step (job log)
+kernel OOM lines: 0
+memory: 15701 MB total, peak used 3762 MB, minimum free 6182 MB (404 samples, every 5 s)
+
+## Crash lines with the line before each (e2e/browser-logs/, artifact)
+pw-84251.log-  pw:browser [pid=84263][err] JavaScript error: resource://gre/actors/FormHandlerChild.sys.mjs, line 103: InvalidStateError: JSWindowActorChild.document getter: Cannot access property 'document' after actor 'FormHandler' has been destroyed
+pw-84251.log:  pw:browser [pid=84263][err] [Parent 84263, IPC I/O Parent] WARNING: process 85123 exited on signal 11: file ipc/chromium/src/chrome/common/process_watcher_posix_sigchld.cc:161
+
+pw-83240.log-  pw:browser [pid=83252][err] JavaScript error: resource://gre/actors/FormHandlerChild.sys.mjs, line 103: InvalidStateError: JSWindowActorChild.document getter: Cannot access property 'document' after actor 'FormHandler' has been destroyed
+pw-83240.log:  pw:browser [pid=83252][err] [Parent 83252, IPC I/O Parent] WARNING: process 84092 exited on signal 11: file ipc/chromium/src/chrome/common/process_watcher_posix_sigchld.cc:161
+
+pw-80391.log-  pw:browser [pid=80403][err] JavaScript error: resource://gre/actors/FormHandlerChild.sys.mjs, line 103: InvalidStateError: JSWindowActorChild.document getter: Cannot access property 'document' after actor 'FormHandler' has been destroyed
+pw-80391.log:  pw:browser [pid=80403][err] [Parent 80403, IPC I/O Parent] WARNING: process 83049 exited on signal 11: file ipc/chromium/src/chrome/common/process_watcher_posix_sigchld.cc:161
+
+pw-71029.log-  pw:browser [pid=71043][err] JavaScript error: resource://gre/actors/FormHandlerChild.sys.mjs, line 103: InvalidStateError: JSWindowActorChild.document getter: Cannot access property 'document' after actor 'FormHandler' has been destroyed
+pw-71029.log:  pw:browser [pid=71043][err] [Parent 71043, IPC I/O Parent] WARNING: process 71682 exited on signal 11: file ipc/chromium/src/chrome/common/process_watcher_posix_sigchld.cc:161
+
+pw-71858.log-  pw:browser [pid=71896][err] JavaScript error: resource://gre/actors/FormHandlerChild.sys.mjs, line 103: InvalidStateError: JSWindowActorChild.document getter: Cannot access property 'document' after actor 'FormHandler' has been destroyed
+pw-71858.log:  pw:browser [pid=71896][err] [Parent 71896, IPC I/O Parent] WARNING: process 74497 exited on signal 11: file ipc/chromium/src/chrome/common/process_watcher_posix_sigchld.cc:161
+
+pw-74667.log-  pw:browser [pid=74679][err] JavaScript error: resource://gre/actors/FormHandlerChild.sys.mjs, line 103: InvalidStateError: JSWindowActorChild.document getter: Cannot access property 'document' after actor 'FormHandler' has been destroyed
+pw-74667.log:  pw:browser [pid=74679][err] [Parent 74679, IPC I/O Parent] WARNING: process 75537 exited on signal 11: file ipc/chromium/src/chrome/common/process_watcher_posix_sigchld.cc:161
+
+pw-71179.log-  pw:browser [pid=71219][err] JavaScript error: resource://gre/actors/FormHandlerChild.sys.mjs, line 103: InvalidStateError: JSWindowActorChild.document getter: Cannot access property 'document' after actor 'FormHandler' has been destroyed
+pw-71179.log:  pw:browser [pid=71219][err] [Parent 71219, IPC I/O Parent] WARNING: process 80222 exited on signal 11: file ipc/chromium/src/chrome/common/process_watcher_posix_sigchld.cc:161
+
+FormHandlerChild lines in all logs: 166

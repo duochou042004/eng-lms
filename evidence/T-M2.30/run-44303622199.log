@@ -1,0 +1,31 @@
+# regression run 44303622199, attempt 1, ref chore/T-M2.30-tooling-firefox-crash 65f712a (TEMP diagnostic variants x20 + x20 login repeat; the login test itself unchanged), trimmed
+Version: 20261103.629
+Image: ubuntu-24.04
+Version: 20261111.370.1
+Downloading Firefox 159.0 (playwright firefox v1572) from https://cdn.playwright
+
+## Crashes per variant (Firefox; every failure is 'Page crashed')
+flow: 8/20
+fonts: 13/20
+legacy: 6/20
+no-switch: 10/20
+en-first-one-axe: 4/20
+jit-off: 8/20
+x20 login repeat: 10/20
+the unchanged login test: 1/1 crashed
+
+## Crash sites (spec line, count): 80/96 = the axe run after the reload (tempAxe), 167 = the unchanged test's second axe; the first axe (line 88) never
+     54     Error: frame.evaluate: Page crashed
+      6     Error: page.evaluate: Page crashed
+     41 smoke.spec.ts:109
+      8 smoke.spec.ts:119
+     11 smoke.spec.ts:167
+     49 smoke.spec.ts:80
+     49 smoke.spec.ts:96
+  60 failed
+  1096 skipped
+  1140 passed (35.1m)
+
+## Diagnostics step (job log)
+kernel OOM lines: 0
+memory: 15983 MB total, peak used 3491 MB, minimum free 6065 MB (433 samples, every 5 s)
