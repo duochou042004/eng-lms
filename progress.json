@@ -49,9 +49,9 @@
   },
   "nextTask": {
     "id": "T-M2.7",
-    "title": "M2 G5 sign-off (milestone regression: 6 Chromium viewports + WebKit smoke, DEC-180)",
+    "title": "Student Home v0 + Account page; M2 regression + milestone gate (G5 matrix: 6 Chromium viewports + WebKit smoke, DEC-180)",
     "status": "draft",
-    "ownerRole": "LC",
+    "ownerRole": "FE",
     "branch": null,
     "packet": null,
     "pr": null,
@@ -918,14 +918,14 @@
       "ref": "DEC-179"
     },
     {
-      "what": "Cap T-M2.30 regression runs after run 44316580788 (chat: \"Stop after this run\")",
+      "what": "Cap T-M2.30 regression runs after run 44316580788 (chat: \"Stop after this run\") (approx. time)",
       "by": "PO",
       "status": "approved",
       "at": "2026-11-18T14:00:00Z",
       "ref": "DEC-180"
     },
     {
-      "what": "Drop Firefox from the regression / G5 matrix (chat: \"Drop Firefox\")",
+      "what": "Drop Firefox from the regression / G5 matrix (chat: \"Drop Firefox\") (approx. time)",
       "by": "PO",
       "status": "approved",
       "at": "2026-11-18T14:10:00Z",

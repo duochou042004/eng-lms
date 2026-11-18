@@ -58,7 +58,7 @@ Time per run: ~35 of ~38 min is Playwright (2,136 tests with the TEMP ones; a no
   `dataSourceClassName` finding). No new row.
 
 ## G3
-One fresh adversarial docs-reviewer on `abdb78b`: **`DOCS-REVIEW T-M2.30: PASS WITH MINOR`** (~85k tokens; report in `review/docs.md` on the
+One fresh adversarial docs-reviewer on `abdb78b`: **`DOCS-REVIEW T-M2.30: PASS WITH MINOR`** (97,814 tokens; report in `review/docs.md` on the
 records branch). It re-ran `e2e-run.test.sh` 193/193 and `run-all.sh` PASS, tried datasource/Flyway/config routes past fresh mode
 (`SPRING_CONFIG_NAME` with a path is refused by Boot; config-file URLs lose to the env variable), and found "engine/runner cause" supported.
 Findings, all fixed in docs by the LC (DEC-131 cheap fixes) in the next commit:
@@ -72,10 +72,10 @@ Findings, all fixed in docs by the LC (DEC-131 cheap fixes) in the next commit:
 
 Round 2 (confirmation on `183965a`): **`DOCS-REVIEW T-M2.30: PASS`**. Reports: `review/docs.md`.
 
-## G3 cost
+## Cost
 | Agent | Tokens | Duration |
 |---|---|---|
 | frontend-implementer (incl. 4 regression runs, resumed twice for the PO rulings) | 220,615 | 11,602 s |
 | docs-reviewer round 1 (adversarial, re-ran the suites) | 97,814 | 492 s |
 | docs-reviewer round 2 (confirmation) | 20,218 | 26 s |
-| **G3 total** | **118,032** | 518 s |
+| **G3 total (docs-reviewer rounds 1+2)** | **118,032** | 518 s |
