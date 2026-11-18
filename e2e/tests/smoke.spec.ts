@@ -1,5 +1,7 @@
 import { readFileSync } from 'node:fs'
+import AxeBuilder from '@axe-core/playwright'
 import type { BrowserContextOptions, Page } from '@playwright/test'
+import { VIEWPORTS } from '../playwright.config'
 import { ANONYMOUS, STUDENT_STATE, TUTOR_STATE } from '../support/auth'
 import { expectNoAxeViolations, expectNoHorizontalScroll } from '../support/checks'
 import { evidenceShot } from '../support/evidence'
@@ -71,12 +73,55 @@ async function revealSwitcher(page: Page, target: (typeof PAGES)[number]) {
   if ('shell' in target) await openAccountSection(page, target.shell)
 }
 
-// TEMP T-M2.30 (c): a Firefox-only content crash (AC3 proof) and a Firefox-only x20 repeat of the login test; removed before the final head.
-test('TEMP T-M2.30 content crash proof', async ({ page, browserName }) => {
-  test.skip(browserName !== 'firefox', 'TEMP T-M2.30: Firefox only')
+// TEMP T-M2.30 (c): Firefox-only diagnostic variants of the login flow (x20 each) and an x20 repeat of the login test; removed before the final head.
+async function tempAxe(page: Page, legacy: boolean) {
+  const builder = new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'])
+  if (legacy) builder.setLegacyMode(true)
+  const results = await builder.analyze()
+  expect(results.violations.map((v) => v.id)).toEqual([])
+}
+type TempVariant = { first: boolean; switchLang: boolean; fonts: boolean; legacy: boolean; enFirst?: boolean }
+async function tempLogin(page: Page, v: TempVariant) {
+  if (v.enFirst) await page.addInitScript(() => localStorage.setItem('englms.locale', 'en'))
   await page.goto('/login')
-  await page.goto('about:crashcontent')
-})
+  await expect(page.getByRole('heading', { level: 1, name: v.enFirst ? 'Sign in' : 'Đăng nhập' })).toBeVisible()
+  if (v.first) await tempAxe(page, v.legacy)
+  if (v.switchLang) {
+    await page.getByRole('radiogroup', { name: 'Ngôn ngữ' }).getByRole('radio', { name: 'English' }).click()
+    await expect(page.getByRole('heading', { level: 1, name: 'Sign in' })).toBeVisible()
+  }
+  await page.reload()
+  await expect(page.getByRole('heading', { level: 1, name: v.switchLang || v.enFirst ? 'Sign in' : 'Đăng nhập' })).toBeVisible()
+  if (v.fonts) await expect.poll(() => page.evaluate(() => document.fonts.status)).toBe('loaded')
+  await tempAxe(page, v.legacy)
+}
+const TEMP_VARIANTS: Record<string, TempVariant> = {
+  flow: { first: true, switchLang: true, fonts: false, legacy: false },
+  fonts: { first: true, switchLang: true, fonts: true, legacy: false },
+  legacy: { first: true, switchLang: true, fonts: false, legacy: true },
+  'no-switch': { first: true, switchLang: false, fonts: false, legacy: false },
+  'en-first-one-axe': { first: false, switchLang: false, fonts: false, legacy: false, enFirst: true },
+}
+for (let i = 1; i <= 20; i++) {
+  for (const [name, v] of Object.entries(TEMP_VARIANTS)) {
+    test(`TEMP T-M2.30 variant ${name} #${i}`, async ({ page, browserName }) => {
+      test.skip(browserName !== 'firefox', 'TEMP T-M2.30: Firefox only')
+      await tempLogin(page, v)
+    })
+  }
+  test(`TEMP T-M2.30 variant jit-off #${i}`, async ({ playwright, browserName, baseURL }) => {
+    test.skip(browserName !== 'firefox', 'TEMP T-M2.30: Firefox only')
+    const browser = await playwright.firefox.launch({
+      firefoxUserPrefs: { 'javascript.options.baselinejit': false, 'javascript.options.ion': false, 'javascript.options.wasm': false },
+    })
+    try {
+      const context = await browser.newContext({ baseURL, viewport: VIEWPORTS.laptop })
+      await tempLogin(await context.newPage(), TEMP_VARIANTS.flow!)
+    } finally {
+      await browser.close()
+    }
+  })
+}
 const TEMP_REPEATS = Array.from({ length: 20 }, (_, i) => ({ ...PAGES[0], repeat: i + 1 }))
 for (const target of [...PAGES, ...TEMP_REPEATS]) {
   test.describe(() => {
