@@ -1,36 +1,69 @@
-# Handoff — 2026-11-18T16:34Z (T-M2.31 ready; the PO answered Hold to its start signal)
+# Handoff — 2026-11-19T13:51Z (T-M2.31 merged; the next session runs on a NEW DEVICE)
 
-Phase/Milestone: P1 / M2 (in progress) · Task: **T-M2.31** (ready, `docs/tasks/T-M2.31-ui-overlay-scroll.md`; PO: Hold) · Branch: `develop`
-(`4bdec97`; this handoff on `docs/T-M2.31-hold`) · Next after it: T-M2.6, T-M2.10, T-M2.16, then T-M2.7 (G5) · Remote: https://github.com/duochou042004/eng-lms
+Phase/Milestone: P1 / M2 (in progress) · Last task: **T-M2.31 done** (`000640e`, PR #199, DEC-184) · Branch: `develop` (this handoff on
+`docs/T-M2.31-records`) · Next: T-M2.10 → T-M2.16 → T-M2.6 → T-M2.32 → T-M2.7 (G5) · Remote: https://github.com/duochou042004/eng-lms (mirror: gitlab.com/duochou042004/eng-lms)
 
 ## Where we are
-- **T-M2.30 done** (`6822841`, PR #195, DEC-181; records PR #196 `ea365bb`). Firefox crash = engine/runner cause; **PO 2026-11-18:**
-  regression runs capped, **Firefox dropped** from the regression/G5 matrix (6 Chromium viewports + WebKit smoke, DEC-180).
-- **T-M2.31 packet merged** (PR #197, `4bdec97`): (a) `ui/Popover` `overflow-y: auto` + `scrollbar-gutter: stable` + ring scroll padding
-  (QA-1); (b) the tutor drawer at 568×320 keeps Log out and its ring visible with the alert (UX-1; measured fit 155.4 of 159 px);
-  (c) **a live Chrome bug found at G0** (DEC-182): `LogoutFailedAlert.tsx:19` returns `scrollIntoView`'s Promise from an effect, so after a
-  failed logout, Esc or a second Log out shows the error page. G0: round 1 CHANGES REQUESTED (S2-1, S2-2), delta PASS WITH MINOR, confirmation PASS.
-- **The PO answered Hold** to the T-M2.31 start signal (2026-11-18).
+- **T-M2.31 done** (`000640e`, PR #199 via merge-gate at `02d3503`, CI 7/7 (5 full); DEC-184). PO start 2026-11-19. (a) `ui/Popover` scrolls
+  inside itself (`overflow-y: auto`, stable gutter, ring scroll padding); (b) the tutor drawer keeps Log out and its ring with the alert, and the
+  text wins where both cannot fit (AC2o); (c) **the live Chrome crash after a failed logout is fixed** (block-body effect, DEC-182).
+- Gate PASS on `cc3d04d` (13 steps, 787 s). G3 one combined QA+UX qa-evaluator: round 1 PASS WITH MINOR / APPROVED (QA-1 S3 → AC2o, QA-2 S4,
+  UX-1 S4; DEC-183), delta PASS / APPROVED. QA report PR #200 (`qa/T-M2.31`).
+- **New row T-M2.32** (before T-M2.7): the `consoleGuard` gap in the other specs (may reveal hidden errors), an optional effect lint rule, and two
+  S4s (740×360 offline ring 1–2 px; the gutter inset).
+- **Firefox is out of the matrix** (DEC-180); G5 = 6 Chromium viewports + WebKit smoke, one `regression` run in T-M2.7.
 
 ## In flight / uncommitted
-- **This handoff PR** (`docs/T-M2.31-hold`: progress.json, this handoff, the next-session prompt): needs one fresh docs-reviewer
-  (`DOCS-REVIEW T-M2.31: PASS`, text only), CI, `LC-APPROVED T-M2.31`, merge-gate, `gitlab-sync.sh`.
+- **This records PR** (`docs/T-M2.31-records`): needs one fresh docs-reviewer (`DOCS-REVIEW T-M2.31: PASS`, text only), CI, `LC-APPROVED T-M2.31`,
+  merge-gate, `gitlab-sync.sh`. If it is still open on the new device, finish it first (step 2 below).
+- Nothing else: no open feature branch; Dependabot #165 and #135 stay open and held by the PO.
+
+## Moving to a new device (read before anything else)
+- **What moves with the repo:** everything durable is in git (progress.json, this handoff, packets, DECs, evidence summaries, QA reports).
+  GitHub is the source of truth; GitLab is a mirror pushed by `scripts/gitlab-sync.sh` after every merge (GitLab CI paused, DEC-107).
+- **What does NOT move** (git-ignored, local to the old device): `.env` (recreate: `cp .env.example .env`, dev-only values, DEC-094), `.data/**`
+  (E2E users are recreated by global setup), **the PO's dev database** (1,065 active / 30 paused / 133 archived students on the old device,
+  T-M2.27; the new device starts empty after `dev-up.sh`: tests must not depend on that data), local screenshots (`evidence/**/impl/*.png`),
+  `.claude/scratch/lc-records/` (reviewer copies; all recorded text is already in the repo), and Playwright browser builds (`~/.cache/ms-playwright/`).
+- **Set-up order:** `docs/07-operations/development-setup.md` §0 (new machine checklist, steps 1–8) from start to end. The agent stops and asks the PO
+  for `sudo`, accounts and credentials (gh and glab auth as `duochou042004`, the git credential helpers). Downloads need PO approval
+  (`pnpm browsers` for Playwright 1.65 / Chromium 1254). Then `./scripts/check-docs.sh`, `scripts/tests/run-all.sh` and one `./scripts/gate.sh`
+  as the verification; record OS, engine, tool versions in `progress.json` `environment` and `project.repoLocal` (the clone path).
+- **This device's quirks may not apply there:** `CONTAINER_HOST=unix:///run/user/1000/podman/podman.sock` was needed because agent shells here run
+  with `NoNewPrivs=1` (rootless podman's newuidmap fails). On the new device test `podman ps` plainly first; use the socket only if it fails the
+  same way. Docker or Docker Desktop also works (§0); macOS needs Homebrew bash ≥ 4.4; Windows only through WSL2.
+- **Paths:** this device's clone is `/home/linux/Projects/eng-lms`; update the next-session prompt's path and `project.repoLocal` on the new one.
+- Last state on this device: `develop` = GitHub = GitLab after the records merge; `git status` clean.
 
 ## Next steps (in this order)
-1. Merge the handoff PR (above).
-2. Ask the PO again for the T-M2.31 start signal (2026-11-18: **Hold**). Mention (c) is a live crash after a failed logout in Chrome.
-   On it: `feature/T-M2.31-ui-overlay-scroll` from `develop`; frontend-implementer with the packet; gate once on the final head; LC summary,
-   progress, PR; CI; G3 one combined QA+UX qa-evaluator; merge-gate; records.
-3. T-M2.6, T-M2.10, T-M2.16; T-M2.26 after at least 10 shadow PRs; T-M2.7 holds the G5 (one `regression` run, no Firefox).
+1. On the new device: set-up and verification (above).
+2. If the T-M2.31 records PR is still open: one fresh docs-reviewer (text only) → `DOCS-REVIEW T-M2.31: PASS` on its final head, CI green,
+   `LC-APPROVED T-M2.31`, merge-gate, `gitlab-sync.sh`.
+3. **T-M2.10** (BE; the backlog row says it runs before the next backend task): write its packet (skill `task-packet`), G0 by a fresh
+   docs-reviewer, ask the PO for the start signal. Then **T-M2.16** (BE), **T-M2.6** (Settings v1, BE+FE), **T-M2.32** (FE/E2E, before T-M2.7).
+   The PO's goal listed T-M2.6 first; the LC proposes T-M2.10 first because of the row's note. Confirm the order with the PO at the first start-signal ask.
+4. **T-M2.26** (CI scope on) only after at least 10 PRs under T-M2.23 shadow mode, with its shadow report.
+5. **T-M2.7** holds the M2 G5: one `regression` run (no Firefox), the milestone retro, risk review, PO sign-off.
 
 ## Pending PO decisions / actions
-- The T-M2.31 start signal (answered **Hold** on 2026-11-18; ask again).
+- The order of the remaining M2 rows (step 3); each task's start signal.
 - **Dependabot, held by the PO:** #165 (msw 3 major: `web` typecheck fails at `web/src/test/setup.ts:14`; needs a packet) and #135 (react group).
-  The LC does not touch them unasked.
+  The LC does not touch them unasked. A React bump touches T-M2.31's (c) mechanism: re-run its unit test and E2E.
+- On the new device: credentials, `sudo` steps and browser downloads (§0).
 
 ## Gotchas
 - **Chromium 158's `scrollIntoView` returns a Promise** (DEC-182): a `useEffect` arrow that returns an expression hands it to React as the
-  cleanup, which throws on unmount. Effects that call DOM methods need a block body. Fix planned in T-M2.31 (c), on PO hold; until then the crash is live in Chrome.
+  cleanup, which throws on unmount. Effects that call DOM methods need a block body. Fixed in T-M2.31 (c) (`000640e`); six `focus()`/`setAttribute`
+  effects keep the expression shape (safe today, `undefined`): T-M2.32 (b).
+- **`consoleGuard` covers only the test's own context** (T-M2.31, DEC-184): pages opened in a `browser.newContext()` (e.g. `freshSession`) are
+  unguarded, so a crash there can pass unseen when a later navigation replaces the error page. `shells.spec.ts` has a local `guardContext`;
+  the other specs are T-M2.32 (a). Until then, a new E2E that signs in through a fresh context must pass the guard itself.
+- **Subagent types on a session started elsewhere:** when the desktop session's folder is not the repo, `.claude/agents/*` are not registered as
+  subagent types; run a `general-purpose` agent told to read and follow `.claude/agents/<role>.md` (T-M2.31 did this). Its report arrives as a
+  hand-back message; extract it from the agent's output transcript (a `tool_use` input) into `.claude/scratch/lc-records/` at once.
+- **A QA delta round needs the QA verdict as its own comment:** merge-gate reads only a comment's first line, so post `QA-VERDICT`, `UX-REVIEW`
+  and `LC-APPROVED` as three comments (T-M2.31 PR #199).
+- **`container-build` can fail on a Maven wrapper download** inside the image build (`Downloader.main`, T-M2.31 PR #200): `gh run rerun <id> --failed`.
 - **`gate.sh`'s e2e repeat runs `--repeat-each=3` under `fullyParallel`** on a fresh DB: test-data helpers that check-then-create race between
   repeats; key shared sets by `testInfo.repeatEachIndex` (T-M2.28).
 - **WebKit locally:** host libraries are not installed; WebKit evidence comes from `gh workflow run regression.yml --ref <branch>`
@@ -136,5 +169,7 @@ Phase/Milestone: P1 / M2 (in progress) · Task: **T-M2.31** (ready, `docs/tasks/
   `e2e/browser-logs/pw-<pid>.log`. Known gaps: quoted JVM option names, lower-case `debug`/`trace`, Hikari `data-source-class-name`
   (development-setup "E2E database").
 
+
 ## Files to read first
-`CLAUDE.md` → `progress.json` → this file → DEC-180..DEC-182 → `docs/tasks/T-M2.31-ui-overlay-scroll.md` → `docs/09-harness/coding-agent-rules.md`.
+`CLAUDE.md` → `progress.json` → this file → `docs/07-operations/development-setup.md` §0 (new device) → DEC-182..DEC-184 → the backlog rows
+T-M2.10, T-M2.16, T-M2.6, T-M2.32, T-M2.7 → `docs/09-harness/coding-agent-rules.md`.
