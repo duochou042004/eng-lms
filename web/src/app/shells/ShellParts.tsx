@@ -52,7 +52,7 @@ function useAccountName() {
  * switcher, "Change password" and "Log out" in the same visual kind (a link and a button that look alike). The same
  * component fills the account popover, the tutor drawer's footer and the student's More sheet. `onNavigate` closes the
  * overlay that holds it before "Change password" navigates. A failed Log out shows its alert below the actions; Log out
- * stays the retry (T-M2.13 scope 3).
+ * stays the retry (T-M2.13 scope 3). The alert's mount scroll keeps Log out and its focus ring in view (T-M2.31 (b)).
  */
 export function AccountSection({ onNavigate }: { onNavigate?: () => void }) {
   const { t } = useTranslation('shell')
@@ -72,7 +72,7 @@ export function AccountSection({ onNavigate }: { onNavigate?: () => void }) {
           {t('account.logout')}
         </Button>
       </div>
-      {logout.isError ? <LogoutFailedAlert /> : null}
+      {logout.isError ? <LogoutFailedAlert className={styles.logoutAlert} /> : null}
     </div>
   )
 }
