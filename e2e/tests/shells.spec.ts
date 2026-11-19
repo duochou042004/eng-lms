@@ -1238,6 +1238,25 @@ test.describe('T-M2.31: the account overlays scroll the logout alert into place'
     }
   }
 
+  /**
+   * The block size Log out with its focus ring and the alert text need together (ring top to the text's bottom) and the
+   * footer's `clientHeight`: when `needed` exceeds `available` they cannot both show and the text wins (AC2o).
+   */
+  const span = async (logout: Locator, text: Locator) =>
+    text.evaluate(
+      (el, button) => {
+        const root = getComputedStyle(document.documentElement)
+        const ring =
+          parseFloat(root.getPropertyValue('--focus-ring-width')) +
+          parseFloat(root.getPropertyValue('--focus-ring-offset'))
+        let port = el.parentElement
+        while (port && !/(auto|scroll)/.test(getComputedStyle(port).overflowY)) port = port.parentElement
+        const needed = el.getBoundingClientRect().bottom - (button!.getBoundingClientRect().top - ring)
+        return { needed, available: port!.clientHeight }
+      },
+      await logout.elementHandle(),
+    )
+
   /** Laid-out points just below the popover's box that hit something inside it (content painted outside the box). */
   const paintedBelow = (dialog: Locator) =>
     dialog.evaluate((d) => {
@@ -1292,7 +1311,7 @@ test.describe('T-M2.31: the account overlays scroll the logout alert into place'
         await expect(text).toBeInViewport({ ratio: 0.99 })
         await expect
           .poll(inset(text, { box: popoverOf(dialog) }), { message: 'the text inside the popover' })
-          .toBeGreaterThanOrEqual(-0.5)
+          .toBeGreaterThanOrEqual(0)
         await expect(logout).toBeInViewport({ ratio: 0.99 })
         await expect.poll(() => paintedBelow(dialog), { message: 'nothing paints below the popover' }).toBe(0)
         await expect
@@ -1359,9 +1378,9 @@ test.describe('T-M2.31: the account overlays scroll the logout alert into place'
         await expect(logout).toBeFocused()
         await expect
           .poll(inset(logout, { ring: true }), { message: 'Log out with its focus ring inside the footer' })
-          .toBeGreaterThanOrEqual(-0.5)
-        await expect.poll(inset(title), { message: 'the alert title inside the footer' }).toBeGreaterThanOrEqual(-0.5)
-        await expect.poll(inset(text), { message: 'the alert text inside the footer' }).toBeGreaterThanOrEqual(-0.5)
+          .toBeGreaterThanOrEqual(0)
+        await expect.poll(inset(title), { message: 'the alert title inside the footer' }).toBeGreaterThanOrEqual(0)
+        await expect.poll(inset(text), { message: 'the alert text inside the footer' }).toBeGreaterThanOrEqual(0)
         await expect(text).toBeInViewport({ ratio: 0.99 })
         await expect.poll(() => pageScroll(page), { message: 'the page behind the drawer does not move' }).toBe(before)
         await expectSettledAccessible(page)
@@ -1375,6 +1394,78 @@ test.describe('T-M2.31: the account overlays scroll the logout alert into place'
       }
     }
     acceptStatus(consoleGuard, 500, '/api/v1/auth/logout')
+    await context.close()
+  })
+
+  // AC2o (G3 QA-1, DEC-183): the offline copy is three lines. At 568×320 Log out with its ring and the alert text cannot
+  // both fit in the footer, so the text wins; at 740×360 both fit and AC2 holds.
+  test('AC2o: tutor drawer at 568×320 and 740×360, logout offline: the alert text wins where both cannot fit (vi, en)', async ({
+    browser,
+    consoleGuard,
+  }, testInfo) => {
+    test.skip(testInfo.project.name !== 'phone-small', 'a phone held sideways: phone-small emulation')
+    const OFFLINE = {
+      vi: 'Bạn đang ngoại tuyến và vẫn đang đăng nhập. Hãy đăng xuất lại khi có mạng.',
+      en: "You're offline and still signed in. Log out again when you're back online.",
+    }
+    const { context, page } = await freshSession(
+      browser,
+      { username: TUTOR_USERNAME, password: tutorPassword() },
+      consoleGuard,
+    )
+    for (const locale of ['vi', 'en'] as const) {
+      for (const [width, height] of [
+        [568, 320],
+        [740, 360],
+      ] as const) {
+        await page.setViewportSize({ width, height })
+        await page.goto(HOME.tutor)
+        await expect(page.getByRole('heading', { level: 1 })).toBeVisible()
+        await scrollPageToEnd(page)
+        const dialog = await openAccountSection(page, 'tutor')
+        expect(accountPlace(page, 'tutor')).toBe('drawer')
+        if (locale === 'en') await chooseLocale(dialog, 'en')
+        const copy = FAILED[locale]
+        const before = await pageScroll(page)
+        const logout = dialog.getByRole('button', { name: copy.logout })
+        await context.setOffline(true)
+        await logout.click()
+        const alert = dialog.getByRole('alert')
+        const title = alert.getByText(copy.title, { exact: true })
+        const text = alert.getByText(OFFLINE[locale], { exact: true })
+        await expect(alert).toContainText(OFFLINE[locale])
+        await expect(logout).toBeFocused()
+        await expect(text).toBeInViewport({ ratio: 0.99 })
+        await expect.poll(inset(text), { message: 'the alert text inside the footer' }).toBeGreaterThanOrEqual(0)
+        const room = await span(logout, text)
+        if (room.needed <= room.available) {
+          // Both fit: AC2 holds (Log out with its ring, the title and the text inside the footer).
+          await expect
+            .poll(inset(logout, { ring: true }), { message: 'Log out with its focus ring inside the footer' })
+            .toBeGreaterThanOrEqual(0)
+          await expect.poll(inset(title), { message: 'the alert title inside the footer' }).toBeGreaterThanOrEqual(0)
+        } else {
+          // The text wins: only the top of Log out's ring is cut, and by no more than the shortfall (whole-pixel scroll).
+          await expect
+            .poll(inset(logout, { ring: true }), { message: 'Log out is cut by no more than the shortfall' })
+            .toBeGreaterThanOrEqual(-Math.ceil(room.needed - room.available))
+        }
+        testInfo.annotations.push({
+          type: 'AC2o',
+          description: `${width}×${height} ${locale}: needed ${room.needed.toFixed(1)} px, footer ${room.available} px`,
+        })
+        await expect.poll(() => pageScroll(page), { message: 'the page behind the drawer does not move' }).toBe(before)
+        await expectSettledAccessible(page)
+        await expectNoMidWordBreak(text)
+        await shot(page, testInfo, `logout-offline-drawer-${width}x${height}-${locale}`)
+        await expect(logout).toBeFocused()
+        await context.setOffline(false)
+        await page.keyboard.press('Escape')
+        await expect(page.getByRole('dialog')).toHaveCount(0)
+        await expect(h1(page, ROUTE_ERROR)).toHaveCount(0)
+      }
+    }
+    accept(consoleGuard, (e) => /ERR_INTERNET_DISCONNECTED/.test(e))
     await context.close()
   })
 
