@@ -107,6 +107,11 @@ added?** None. 4. **Weekly use?** The account overlays and Log out, every sessio
     focus ring (`--focus-ring-width` + `--focus-ring-offset`). Measure through a poll (L-05).
   - The alert text is fully visible (ratio 0.99, as T-M2.29), focus stays on Log out, and the page does not move.
   - Seen failing first at 568×320 on today's code.
+- **AC2o (G3 QA-1, DEC-183), tutor drawer at 568×320, logout while offline:** where Log out with its ring and the alert text cannot both fit
+  (the offline copy is 3 lines, ≈ 180 px against the 159 px footer), the alert text wins, as the UI rules say: the alert text is fully visible
+  (ratio 0.99) after the mount scroll, focus stays on Log out and the page does not move. Where both fit (500 at 568×320 and 740×360, offline
+  at 740×360) AC2 holds unchanged. Seen failing first on `2bf2c32` (QA: text ratio 0.739). G3 QA-2 (S4): the ring 0.2 px past the padding-box
+  top at 568×320 is fixed here only if the same change removes it; otherwise it goes to the milestone polish row (DEC-131 (5)).
 - **AC2c ((c)):** with `scrollIntoView` returning a Promise:
   - a unit test (a `scrollIntoView` mock that returns a Promise, then unmount) fails on today's effect and passes on the fix;
   - E2E (Chromium): after a failed logout, Esc keeps the shell (no error page, focus returns to the opener), and Log out again with a second
