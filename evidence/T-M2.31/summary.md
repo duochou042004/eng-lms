@@ -1,6 +1,6 @@
 # T-M2.31 summary: overlay scroll follow-ups and the logout alert effect crash
 Branch `feature/T-M2.31-ui-overlay-scroll` (from `develop` `c4c4d7a`) · code head `cc3d04d` (round 0 `ed57e1e`) · final head `02d3503`; **merged** `000640e`
-(PR #199 via merge-gate at head `02d3503`, CI 7/7, scope full: 5 full, 0 fast-path, 2026-11-19T13:30:48Z) · trace DEC-178, DEC-182, DEC-183, DEC-184, FR-AUTH-04 ·
+(PR #199 via merge-gate at head `02d3503`, CI 7/7, scope full: 5 full, 0 fast-path, 2026-11-19T13:30:45Z (GitHub `mergedAt`)) · trace DEC-178, DEC-182, DEC-183, DEC-184, FR-AUTH-04 ·
 PO start 2026-11-19 (~12:02Z; answered Hold on 2026-11-18).
 Recorded by the LC from the frontend-implementer's text (L-07). Failing-first and untrimmed logs: `.claude/scratch/lc-records/T-M2.31/` (local, git-ignored).
 

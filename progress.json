@@ -16,7 +16,7 @@
       }
     ]
   },
-  "updatedAt": "2026-11-19T13:51:09Z",
+  "updatedAt": "2026-11-19T13:56:48Z",
   "updatedBy": "lead-coordinator (T-M2.31 merged; records; device handover)",
   "phase": {
     "id": "P1",
@@ -65,7 +65,7 @@
     "lastCommit": null,
     "startedAt": null,
     "nextSteps": [
-      "After T-M2.31 and the other open M2 rows (T-M2.6, T-M2.10, T-M2.16); T-M2.26 after at least 10 shadow PRs"
+      "After T-M2.10, T-M2.16, T-M2.6 and T-M2.32 (order: PO decision); T-M2.26 after at least 10 shadow PRs"
     ],
     "trace": [
       "DEC-158",
@@ -436,7 +436,7 @@
     {
       "id": "T-M2.31",
       "title": "Overlay scroll follow-ups and the logout alert effect crash (DEC-178, DEC-182)",
-      "completedAt": "2026-11-19T13:30:48Z",
+      "completedAt": "2026-11-19T13:30:45Z",
       "mergeCommit": "000640e",
       "evidence": "evidence/T-M2.31/summary.md",
       "note": "PR #199 via merge-gate (head 02d3503, CI 7/7 (5 full)); packet PR #197 (4bdec97); PO start 2026-11-19 (Hold on 2026-11-18); gate PASS on cc3d04d (787 s); G3 combined QA+UX: round 1 PASS WITH MINOR / APPROVED (QA-1 S3 fixed as AC2o, DEC-183), delta PASS / APPROVED (193,294 tokens); QA report PR #200; follow-ups T-M2.32; DEC-183, DEC-184"
@@ -552,7 +552,9 @@
       "DEC-179",
       "DEC-180",
       "DEC-181",
-      "DEC-182"
+      "DEC-182",
+      "DEC-183",
+      "DEC-184"
     ],
     "pendingPO": [
       "OQ-03",

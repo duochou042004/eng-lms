@@ -1,7 +1,7 @@
 # Handoff — 2026-11-19T13:51Z (T-M2.31 merged; the next session runs on a NEW DEVICE)
 
-Phase/Milestone: P1 / M2 (in progress) · Last task: **T-M2.31 done** (`000640e`, PR #199, DEC-184) · Branch: `develop` (this handoff on
-`docs/T-M2.31-records`) · Next: T-M2.10 → T-M2.16 → T-M2.6 → T-M2.32 → T-M2.7 (G5) · Remote: https://github.com/duochou042004/eng-lms (mirror: gitlab.com/duochou042004/eng-lms)
+Phase/Milestone: P1 / M2 (in progress) · Last task: **T-M2.31 done** (`000640e`, PR #199, DEC-184) · Last commit: `594cc92` on `develop`
+(this handoff on `docs/T-M2.31-records`; `develop` moves to its merge commit) · Next: T-M2.10 → T-M2.16 → T-M2.6 → T-M2.32 → T-M2.7 (G5) · Remote: https://github.com/duochou042004/eng-lms (mirror: gitlab.com/duochou042004/eng-lms)
 
 ## Where we are
 - **T-M2.31 done** (`000640e`, PR #199 via merge-gate at `02d3503`, CI 7/7 (5 full); DEC-184). PO start 2026-11-19. (a) `ui/Popover` scrolls
@@ -27,8 +27,8 @@ Phase/Milestone: P1 / M2 (in progress) · Last task: **T-M2.31 done** (`000640e`
   `.claude/scratch/lc-records/` (reviewer copies; all recorded text is already in the repo), and Playwright browser builds (`~/.cache/ms-playwright/`).
 - **Set-up order:** `docs/07-operations/development-setup.md` §0 (new machine checklist, steps 1–8) from start to end. The agent stops and asks the PO
   for `sudo`, accounts and credentials (gh and glab auth as `duochou042004`, the git credential helpers). Downloads need PO approval
-  (`pnpm browsers` for Playwright 1.65 / Chromium 1254). Then `./scripts/check-docs.sh`, `scripts/tests/run-all.sh` and one `./scripts/gate.sh`
-  as the verification; record OS, engine, tool versions in `progress.json` `environment` and `project.repoLocal` (the clone path).
+  (`pnpm browsers` for Playwright 1.65 / Chromium 1254). Then `./scripts/check-docs.sh`, `scripts/tests/run-all.sh`, one `./scripts/gate.sh` and
+  `./scripts/gitlab-sync.sh` (mirror reachable; the first use of the new glab credentials) as the verification (§0 step 8); record OS, engine, tool versions in `progress.json` `environment` and `project.repoLocal` (the clone path).
 - **This device's quirks may not apply there:** `CONTAINER_HOST=unix:///run/user/1000/podman/podman.sock` was needed because agent shells here run
   with `NoNewPrivs=1` (rootless podman's newuidmap fails). On the new device test `podman ps` plainly first; use the socket only if it fails the
   same way. Docker or Docker Desktop also works (§0); macOS needs Homebrew bash ≥ 4.4; Windows only through WSL2.
@@ -90,11 +90,11 @@ Phase/Milestone: P1 / M2 (in progress) · Last task: **T-M2.31 done** (`000640e`
 - **The `regression` workflow** is manual (`gh workflow run regression.yml --ref develop`, ~25–30 min, all 6 Chromium viewports + WebKit smoke; Firefox dropped, DEC-180); its first run failed 7 tests (T-M2.28).
 - **T-M2.27 (DEC-166):** the dev DB now holds 1,065 active, 30 paused and 133 archived students (read-only count by QA, 2026-11-13); local E2E added rows until T-M2.25 (now only `E2E_KEEP_DB=1` runs do). `loading.spec.ts` "the loading region in English" can still fail on a very slow runner (CPU throttle ≥ 30 in the reproduction): a CI recurrence needs a new ruling (the packet forbade raising a timeout). Reproduction generators must read the old form from the pre-task commit, not `HEAD`.
 - **A QA agent can end on an API error after its verdict** (T-M2.27: Cloudflare 403 after the full report): the report already returned counts; check `git status` and `e2e/tests` for scratch files.
-- **This device (2026-11-11): agent shells run with `NoNewPrivs=1`** (inherited from the desktop app), so rootless `podman` fails with
+- **Old device only (Ubuntu 26.10, `/home/linux/Projects/eng-lms`; check on a new one, see "Moving to a new device"): agent shells ran with `NoNewPrivs=1`** (inherited from the desktop app), so rootless `podman` fails with
   "newuidmap: write to uid_map failed". `export CONTAINER_HOST=unix:///run/user/1000/podman/podman.sock` in every agent shell (podman remote
   mode through the systemd user socket, enabled 2026-11-11) before `dev-up`, `gate.sh`, `e2e-run.sh`; Testcontainers uses `DOCKER_HOST` from
-  `scripts/env.sh`. Brief every implementer and reviewer subagent with this.
-- **Node on this device:** the app-inherited PATH starts on Node 24.22.2; `nvm use` in the repo picks 24.21.0 (`.nvmrc`). corepack is
+  `scripts/env.sh`. There, every implementer and reviewer subagent was briefed with this.
+- **Node on the old device:** the app-inherited PATH started on Node 24.22.2; `nvm use` in the repo picks 24.21.0 (`.nvmrc`). corepack is
   enabled on both, so `pnpm` 12.6.0 works either way.
 - **T-M2.13 D-1 (G0):** the cross-tab `signed-out` follow must read the session **before** dropping caches, then clear without a reset; a
   reset refetches mounted queries whose 401 wins without the notice flag. The packet's scope 2 steps (i)–(iii) are the rule.
@@ -125,7 +125,7 @@ Phase/Milestone: P1 / M2 (in progress) · Last task: **T-M2.31 done** (`000640e`
 - Running `gate.sh` or `e2e-run.sh` rewrites `evidence/<task>/` records (PNGs are git-ignored since DEC-131): reviewers restore tracked records with
   `git checkout -- evidence/<task>`. The gate skips `backend`/`contract-drift` for a web-only diff against `origin/develop` (fetch first; `ENGLMS_GATE_FULL=1` forces them). E2E signs in as `e2e-tutor` (`.data/e2e/`); never `dev-down.sh --purge` the PO's dev database without asking.
 - **One checkout, no worktrees** (DEC-094): subagents one at a time on the task branch; only the LC switches branches, never while a subagent runs.
-- Paths in older docs/evidence name `/home/kali/App_sources/eng-lms` and `/home/kali/App_projects/eng-lms` (earlier machines); this device clones to `/home/linux/Projects/eng-lms`.
+- Paths in older docs/evidence name `/home/kali/App_sources/eng-lms` and `/home/kali/App_projects/eng-lms` (earlier machines); the old device (to 2026-11-19) cloned to `/home/linux/Projects/eng-lms`; the new device's path is in `progress.json` `project.repoLocal` once set.
 - **Keep LC copies of reviewer reports outside the scratchpad** (`.claude/scratch/lc-records/`, git-ignored): reviewers clean the shared scratchpad with globs (DEC-101), and an API-limit pause can empty `/tmp` (T-M2.12 QA round 2 lost its scratch files). Copy each report and its screenshots as soon as it returns.
 - Reviewer evidence (`evidence/*/review/**`) never on feature/fix branches; QA reports on `qa/<task>`; move any review/QA file an agent writes there off the
   feature branch before committing. `./scripts/check-path-ownership.sh <branch>` before pushing.
