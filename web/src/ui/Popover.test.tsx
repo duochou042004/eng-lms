@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { CircleUser } from 'lucide-react'
@@ -82,5 +83,20 @@ describe('Popover', () => {
     await user.pointer({ keys: '[MouseLeft>]', target: trigger })
     expect(trigger).toHaveAttribute('data-pressed')
     await user.pointer({ keys: '[/MouseLeft]', target: trigger })
+  })
+
+  // T-M2.31 (a), DEC-178 QA-1: at 800×360 a failed logout's content ran past React Aria's inline max-height while the page
+  // was scroll-locked. Content taller than the cap scrolls inside the popover; the gutter keeps the fixed width when a
+  // classic scrollbar appears; the scroll padding keeps an inner control's outward ring clear of the edge. Vitest stubs CSS,
+  // so the rule is read from disk (cwd: web/); the layout proof is the E2E (shells.spec).
+  it('scrolls content taller than its cap inside itself, with a stable gutter and room for a focus ring', () => {
+    const css = readFileSync('src/ui/Popover.module.css', 'utf8')
+    const rule = (selector: string) => new RegExp(`\\${selector}\\s*\\{([^}]*)\\}`).exec(css)?.[1] ?? ''
+    expect(rule('.popover')).toMatch(/overflow-y:\s*auto;/)
+    expect(rule('.popover')).toMatch(/scrollbar-gutter:\s*stable;/)
+    expect(rule('.popover')).toMatch(
+      /scroll-padding-block:\s*calc\(var\(--focus-ring-width\) \+ var\(--focus-ring-offset\)\);/,
+    )
+    expect(rule('.popover')).toMatch(/inline-size:\s*var\(--size-popover\);/)
   })
 })
