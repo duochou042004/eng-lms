@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-11-19T13:13:48Z",
-  "updatedBy": "lead-coordinator (T-M2.31 fix round 1; PR #199)",
+  "updatedAt": "2026-11-19T13:56:48Z",
+  "updatedBy": "lead-coordinator (T-M2.31 merged; records; device handover)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -30,27 +30,28 @@
     "exitCriteria": "FR-AUTH-01..10 and FR-STU-01..07 accepted; authorization-matrix and student-isolation harnesses fail on any unregistered endpoint; add-student flow E2E at 360/768/1280 within its step budget; security review of authentication passed (docs/01-product/roadmap.md)."
   },
   "currentTask": {
-    "id": "T-M2.31",
-    "title": "Overlay scroll follow-ups and the alert effect crash (T-M2.29 G3 QA-1, UX-1; DEC-182)",
-    "status": "in_progress",
-    "ownerRole": "FE",
-    "branch": "feature/T-M2.31-ui-overlay-scroll",
-    "packet": "docs/tasks/T-M2.31-ui-overlay-scroll.md",
-    "pr": "199",
-    "lastCommit": "c2f9cb0",
-    "startedAt": "2026-11-19T12:02:55Z",
+    "id": "T-M2.10",
+    "title": "Strict JSON number binding (T-M2.9 QA F3) and the AuthApiIntegrationTest wall-clock flake (DEC-144 (3))",
+    "status": "draft",
+    "ownerRole": "BE",
+    "branch": null,
+    "packet": null,
+    "pr": null,
+    "lastCommit": null,
+    "startedAt": null,
     "nextSteps": [
-      "Gate PASS on cc3d04d (fix round 1, DEC-183: AC2o; QA-2 fixed where both fit; OQ-1 accepted, M2 polish)",
-      "CI on the final head, then a QA delta re-check (same qa-evaluator scope: AC2o, QA-2, the changed files)",
-      "merge-gate, records (part C), device handover"
+      "Next device: run development-setup §0 (new machine checklist) and record the environment first (handoff 'Moving to a new device')",
+      "Write the T-M2.10 packet (backlog: runs before the next backend task), G0 by a fresh docs-reviewer, then ask the PO for the start signal",
+      "Then T-M2.16, T-M2.6, T-M2.32 (E2E guard gap, before T-M2.7); T-M2.26 after at least 10 shadow PRs; T-M2.7 holds the G5 (one regression run, no Firefox)"
     ],
     "trace": [
-      "DEC-178",
-      "DEC-182"
+      "DEC-105",
+      "DEC-144"
     ],
     "entryGate": [
-      "T-M2.29, T-M2.30 merged — met (6822841)",
-      "PO start signal — given 2026-11-19 (answered Hold on 2026-11-18)"
+      "T-M2.31 merged — met (000640e)",
+      "Packet + G0 — not started",
+      "PO start signal — not asked"
     ]
   },
   "nextTask": {
@@ -64,7 +65,7 @@
     "lastCommit": null,
     "startedAt": null,
     "nextSteps": [
-      "After T-M2.31 and the other open M2 rows (T-M2.6, T-M2.10, T-M2.16); T-M2.26 after at least 10 shadow PRs"
+      "After T-M2.10, T-M2.16, T-M2.6 and T-M2.32 (order: PO decision); T-M2.26 after at least 10 shadow PRs"
     ],
     "trace": [
       "DEC-158",
@@ -431,11 +432,19 @@
       "mergeCommit": "6822841",
       "evidence": "evidence/T-M2.30/summary.md",
       "note": "PR #195 via merge-gate (head 183965a, CI 7/7 (5 full)); packet PR #193 (357c4c4); PO start 2026-11-18; gate PASS on 10a5b48 (623 s); 4 regression runs (PO cap); (c) engine/runner cause, Firefox dropped from the regression matrix (PO, DEC-180); G3 adversarial docs-reviewer PASS WITH MINOR, confirmation PASS (118,032 tokens); DEC-180, DEC-181"
+    },
+    {
+      "id": "T-M2.31",
+      "title": "Overlay scroll follow-ups and the logout alert effect crash (DEC-178, DEC-182)",
+      "completedAt": "2026-11-19T13:30:45Z",
+      "mergeCommit": "000640e",
+      "evidence": "evidence/T-M2.31/summary.md",
+      "note": "PR #199 via merge-gate (head 02d3503, CI 7/7 (5 full)); packet PR #197 (4bdec97); PO start 2026-11-19 (Hold on 2026-11-18); gate PASS on cc3d04d (787 s); G3 combined QA+UX: round 1 PASS WITH MINOR / APPROVED (QA-1 S3 fixed as AC2o, DEC-183), delta PASS / APPROVED (193,294 tokens); QA report PR #200; follow-ups T-M2.32; DEC-183, DEC-184"
     }
   ],
   "tests": {
-    "lastRun": "2026-11-18T14:50:05Z",
-    "summary": "T-M2.30 head 10a5b48: gate PASS (13 steps, 623 s); e2e 536 passed / 46 skipped; repeat x3 smoke.spec.ts 54 passed; e2e-run.test.sh 193/193; run-all PASS.",
+    "lastRun": "2026-11-19T12:58:54Z",
+    "summary": "T-M2.31 head cc3d04d: gate PASS (13 steps, 787 s); backend/contract-drift skipped (web-only diff); e2e 482 s incl. shells.spec.ts x3 on phone-small, tablet, laptop; shells.spec.ts 100 passed, 26 skipped.",
     "suites": [
       {
         "name": "backend (./mvnw -B verify)",
@@ -462,23 +471,23 @@
   "gates": {
     "G0": {
       "status": "pass",
-      "note": "T-M2.30 packet: PR #193, round 1 CHANGES REQUESTED, delta PASS WITH MINOR, confirmation"
+      "note": "T-M2.31 packet: PR #197, round 1 CHANGES REQUESTED, delta PASS WITH MINOR, confirmation (DEC-182)"
     },
     "G1": {
       "status": "pass",
-      "note": "T-M2.30: gate PASS (13 steps, 623 s) on 10a5b48"
+      "note": "T-M2.31: gate PASS (13 steps, 787 s) on cc3d04d"
     },
     "G2": {
       "status": "pass",
-      "note": "T-M2.30: CI 7/7 on 183965a (5 full)"
+      "note": "T-M2.31: CI 7/7 on 02d3503 (5 full)"
     },
     "G3": {
       "status": "pass",
-      "note": "T-M2.30: adversarial docs-reviewer PASS WITH MINOR (S3-1, S4-1..S4-4 fixed or recorded), confirmation PASS (118,032 tokens)"
+      "note": "T-M2.31: combined QA+UX qa-evaluator round 1 PASS WITH MINOR / APPROVED (DEC-183), delta PASS / APPROVED"
     },
     "G4": {
       "status": "pass",
-      "note": "T-M2.30 PR #195 merged via merge-gate (6822841)"
+      "note": "T-M2.31 PR #199 merged via merge-gate (000640e); QA report PR #200"
     },
     "G5": {
       "status": "n/a",
@@ -543,7 +552,9 @@
       "DEC-179",
       "DEC-180",
       "DEC-181",
-      "DEC-182"
+      "DEC-182",
+      "DEC-183",
+      "DEC-184"
     ],
     "pendingPO": [
       "OQ-03",
@@ -939,10 +950,10 @@
       "ref": "DEC-180"
     },
     {
-      "what": "Start T-M2.31 (asked 2026-11-18, chat: \"Hold\"; ask again)",
+      "what": "Start T-M2.31 (asked 2026-11-18, chat: \"Hold\"; asked again 2026-11-19: \"Start\")",
       "by": "PO",
-      "status": "pending",
-      "at": "2026-11-18T16:34:49Z",
+      "status": "approved",
+      "at": "2026-11-19T12:02:00Z",
       "ref": "DEC-182"
     }
   ],
@@ -1736,6 +1747,11 @@
       "at": "2026-11-18T16:34:49Z",
       "actor": "lead-coordinator",
       "event": "T-M2.31 packet merged (PR #197, 4bdec97; G0 PASS; (c) live Chrome crash after a failed logout, DEC-182). PO: start signal Hold. Session handoff."
+    },
+    {
+      "at": "2026-11-19T13:51:09Z",
+      "actor": "lead-coordinator",
+      "event": "T-M2.31 merged (PR #199, 000640e; DEC-184): PO start 2026-11-19; gate PASS on cc3d04d; G3 combined QA+UX round 1 PASS WITH MINOR (QA-1 fixed as AC2o, DEC-183), delta PASS; QA report PR #200; T-M2.32 added. Device handover: the next session runs on a new device."
     }
   ]
 }

@@ -1,5 +1,6 @@
 # T-M2.31 summary: overlay scroll follow-ups and the logout alert effect crash
-Branch `feature/T-M2.31-ui-overlay-scroll` (from `develop` `c4c4d7a`) · code head `ed57e1e` · gate log `4dfd63f` · trace DEC-178, DEC-182, FR-AUTH-04 ·
+Branch `feature/T-M2.31-ui-overlay-scroll` (from `develop` `c4c4d7a`) · code head `cc3d04d` (round 0 `ed57e1e`) · final head `02d3503`; **merged** `000640e`
+(PR #199 via merge-gate at head `02d3503`, CI 7/7, scope full: 5 full, 0 fast-path, 2026-11-19T13:30:45Z (GitHub `mergedAt`)) · trace DEC-178, DEC-182, DEC-183, DEC-184, FR-AUTH-04 ·
 PO start 2026-11-19 (~12:02Z; answered Hold on 2026-11-18).
 Recorded by the LC from the frontend-implementer's text (L-07). Failing-first and untrimmed logs: `.claude/scratch/lc-records/T-M2.31/` (local, git-ignored).
 
@@ -76,13 +77,16 @@ phone-small: `logout-failed-popover-800x360-{vi,en}`, `-844x390-vi`, `-915x412-v
 2. The guard helper lives in `shells.spec.ts`, not `e2e/support/fixtures.ts` (packet file list; avoids the all-specs ×3 gate repeat); ~10 lines duplicate the fixture's listener logic.
 3. AC2c covers the drawer at 740×360 (phone-small) and the student popover at 1280×800 (laptop), the sizes where G0 saw the crash.
 
-## Open questions → LC
+## Open questions → LC (both are T-M2.32 (a), (b), DEC-184)
 - **OQ T-M2.31-1:** the same unguarded-context gap exists in other specs using `browser.newContext()`: `route-focus.spec.ts`, `students-list.spec.ts`,
   `auth.spec.ts`, `students-account.spec.ts`, `navigation.spec.ts`, `e2e/support/students.ts:71,82`. Suggestion: export `guardContext` from
   `fixtures.ts` for every fresh context (repeats all specs ×3 in the gate). Not checked whether those specs hide errors today.
 - **OQ T-M2.31-2 (optional):** a lint rule against expression-bodied effect arrows; the six `focus()`/`setAttribute` effects would need block bodies first.
 
 ## G3
+Round 2 (delta re-check, qa-protocol §2b) on the final head `02d3503`: **`QA-VERDICT T-M2.31: PASS`**, **`UX-REVIEW T-M2.31: APPROVED`**: QA-1 and
+QA-2 closed, OQ-1 as ruled and not worse (740×360 offline: text 1.0, ring ratio 0.977), 29 scenarios green, no new findings.
+
 Round 1: one fresh combined QA+UX `qa-evaluator` on `2bf2c32` (report on `qa/T-M2.31`): **`QA-VERDICT T-M2.31: PASS WITH MINOR`**,
 **`UX-REVIEW T-M2.31: APPROVED`**. Production build on a fresh `englms_e2e` DB, Chromium 158 (WebKit not installed locally); 14 axe states 0
 violations vi/en; keyboard-only, wheel, keyboard and touch scrolling inside the popover; Esc, Log out again, language switch, navigation and
@@ -98,3 +102,6 @@ fail-then-succeed never showed the error page; isolation (student → tutor API 
 | impl | frontend-implementer | `ed57e1e` | gate PASS | — | — | 199,373 | 28.2 |
 | G3 r1 | qa-evaluator (QA+UX) | `2bf2c32` | PASS WITH MINOR / APPROVED | 1 S3, 2 S4 | full | 166,299 | 16.2 |
 | fix r1 | frontend-implementer (resumed) | `cc3d04d` | gate PASS | QA-1, QA-2 | — | 30,532 (delta) | 21.9 |
+| G3 delta | qa-evaluator (QA+UX, resumed) | `02d3503` | PASS / APPROVED | QA-1, QA-2 closed; none new | delta | 26,995 (delta) | 10.0 |
+
+G3 total: 2 qa-evaluator rounds, 193,294 tokens, 26.2 min; implementer 229,905 tokens, 50.1 min; gate runs 2 (785 s, 787 s). The QA report is on `qa/T-M2.31` (PR #200), the UX record in `review/ux.md`.

@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Milestone | M2 |
-| Status | ready (G0 PASS, DEC-182; waits for the PO start signal) |
+| Status | done (`000640e`, DEC-184; G0 PASS DEC-182; G3 rulings DEC-183) |
 | Owner role | FE (frontend-implementer) |
 | Branch | `feature/T-M2.31-ui-overlay-scroll` (from `develop`) |
 | Depends on | T-M2.29 (`1d6ace4`), T-M2.30 (`6822841`): merged |
