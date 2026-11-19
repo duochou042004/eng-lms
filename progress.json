@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-11-18T16:34:49Z",
-  "updatedBy": "lead-coordinator (T-M2.31 ready; PO hold; handoff)",
+  "updatedAt": "2026-11-19T12:32:38Z",
+  "updatedBy": "lead-coordinator (T-M2.31 implemented; PR)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -32,17 +32,17 @@
   "currentTask": {
     "id": "T-M2.31",
     "title": "Overlay scroll follow-ups and the alert effect crash (T-M2.29 G3 QA-1, UX-1; DEC-182)",
-    "status": "ready",
+    "status": "in_progress",
     "ownerRole": "FE",
     "branch": "feature/T-M2.31-ui-overlay-scroll",
     "packet": "docs/tasks/T-M2.31-ui-overlay-scroll.md",
     "pr": null,
-    "lastCommit": null,
-    "startedAt": null,
+    "lastCommit": "4dfd63f",
+    "startedAt": "2026-11-19T12:02:55Z",
     "nextSteps": [
-      "T-M2.31 ready (packet PR #197, 4bdec97; G0 PASS after round 1 CHANGES REQUESTED, delta PASS WITH MINOR, confirmation)",
-      "PO answered Hold to the start signal (2026-11-18); ask again at the next session start ((c) is a live Chrome crash, DEC-182)",
-      "On start: feature/T-M2.31-ui-overlay-scroll, frontend-implementer, gate, PR, CI, G3 combined QA+UX qa-evaluator, merge-gate, records"
+      "Implementation done (82b8cba, f555f47, ed57e1e; gate PASS 13 steps 785s on ed57e1e, log 4dfd63f)",
+      "PR + CI, then G3: one combined QA+UX qa-evaluator on the final head",
+      "merge-gate, records (part C), device handover"
     ],
     "trace": [
       "DEC-178",
@@ -50,7 +50,7 @@
     ],
     "entryGate": [
       "T-M2.29, T-M2.30 merged — met (6822841)",
-      "PO start signal — asked 2026-11-18, answered Hold"
+      "PO start signal — given 2026-11-19 (answered Hold on 2026-11-18)"
     ]
   },
   "nextTask": {
