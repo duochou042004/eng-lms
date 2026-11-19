@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-11-19T12:32:38Z",
-  "updatedBy": "lead-coordinator (T-M2.31 implemented; PR)",
+  "updatedAt": "2026-11-19T13:13:48Z",
+  "updatedBy": "lead-coordinator (T-M2.31 fix round 1; PR #199)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -36,12 +36,12 @@
     "ownerRole": "FE",
     "branch": "feature/T-M2.31-ui-overlay-scroll",
     "packet": "docs/tasks/T-M2.31-ui-overlay-scroll.md",
-    "pr": null,
-    "lastCommit": "4dfd63f",
+    "pr": "199",
+    "lastCommit": "c2f9cb0",
     "startedAt": "2026-11-19T12:02:55Z",
     "nextSteps": [
-      "Implementation done (82b8cba, f555f47, ed57e1e; gate PASS 13 steps 785s on ed57e1e, log 4dfd63f)",
-      "PR + CI, then G3: one combined QA+UX qa-evaluator on the final head",
+      "Gate PASS on cc3d04d (fix round 1, DEC-183: AC2o; QA-2 fixed where both fit; OQ-1 accepted, M2 polish)",
+      "CI on the final head, then a QA delta re-check (same qa-evaluator scope: AC2o, QA-2, the changed files)",
       "merge-gate, records (part C), device handover"
     ],
     "trace": [
