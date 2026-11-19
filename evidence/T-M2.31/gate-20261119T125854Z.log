@@ -1,0 +1,154 @@
+gate: logging to evidence/T-M2.31/gate-20261119T125854Z.log
+engine: podman (DOCKER_HOST=unix:///run/user/1000/podman/podman.sock)
+env.sh: DOCKER_HOST=unix:///run/user/1000/podman/podman.sock TESTCONTAINERS_RYUK_DISABLED=true
+gate: cc3d04d 2026-11-19T12:58:54Z, steps: docs scripts backend web-install web-lint web-typecheck web-test web-build web-budget web-contrast contract-drift qa-typecheck e2e
+gate: ==> docs
+docs-check: PASS (412 markdown files, progress.json valid, sources intact, prompt within limit, records consistent, handoff archived, table code spans escaped, text-only CI inputs clean)
+gate: <== docs OK (2s)
+gate: ==> scripts
+check-docs.sh (records, handoff archive, table code spans)
+  ok   - clean tree passes (HEAD = base, as on develop; '**done**: …' and 'done (…)' Status forms)
+  ok   - completed task whose backlog row has no **done** fails
+  ok   - names the task and the backlog
+  ok   - row without done: no other failure
+  ok   - **Done** (capital) does not count as **done**
+  ok   - **done** inside the row's prose (not starting a cell) does not count
+  ok   - T-M1.1 with no row fails: the T-M1.1x rows do not match it
+  ok   - names T-M1.1
+  ok   - ID prefix: no other failure
+  ok   - completed task with no backlog row fails
+  ok   - names the missing row
+  ok   - missing row: no other failure
+  ok   - completed task whose packet Status reads ready fails
+  ok   - names the packet and its Status
+  ok   - ready Status: no other failure
+  ok   - completed task whose packet has no Status row fails
+  ok   - names the packet
+  ok   - no Status row: no other failure
+  ok   - a done Status row in a fenced block before the real one does not count
+  ok   - uncommitted HANDOFF.md change without an archive file fails
+  ok   - names the handoff and the base
+  ok   - uncommitted handoff: no other failure
+  ok   - committed HANDOFF.md change without an archive file fails
+  ok   - with an untracked new archive file it passes
+  ok   - with a committed new archive file it passes
+  ok   - an archive file committed, then deleted in the working tree, does not count
+  ok   - deleting an old archive file is not archiving
+  ok   - a git-ignored file in the archive folder (.DS_Store) is not an archive file
+  ok   - git mv to the archive plus a new HANDOFF.md passes
+  ok   - an unknown ENGLMS_DOCS_BASE fails closed
+  ok   - names the ref and the variable
+[… 55 lines trimmed …]
+  -> 86 passed, 0 failed
+[… 249 lines trimmed …]
+  -> 243 passed, 0 failed
+[… 98 lines trimmed …]
+  -> 97 passed, 0 failed
+[… 10 lines trimmed …]
+  -> 9 passed, 0 failed
+[… 168 lines trimmed …]
+  -> 164 passed, 0 failed
+[… 194 lines trimmed …]
+  -> 193 passed, 0 failed
+[… 99 lines trimmed …]
+  -> 98 passed, 0 failed
+[… 12 lines trimmed …]
+  -> 11 passed, 0 failed
+[… 419 lines trimmed …]
+  -> 418 passed, 0 failed
+[… 16 lines trimmed …]
+  -> 15 passed, 0 failed
+[… 16 lines trimmed …]
+  -> 15 passed, 0 failed
+[… 13 lines trimmed …]
+  -> 11 passed, 0 failed
+[… 11 lines trimmed …]
+  -> 10 passed, 0 failed
+[… 1 lines trimmed …]
+gate: <== scripts OK (235s)
+gate: ==> backend
+gate: backend skipped: no backend/ or api/ change (CI runs it; ENGLMS_GATE_FULL=1 forces it)
+gate: <== backend OK (0s)
+gate: ==> web-install
+[… 1 lines trimmed …]
+Lockfile is up to date, resolution step is skipped
+[… 1 lines trimmed …]
+gate: <== web-install OK (0s)
+gate: ==> web-lint
+[… 3 lines trimmed …]
+gate: <== web-lint OK (4s)
+gate: ==> web-typecheck
+[… 1 lines trimmed …]
+gate: <== web-typecheck OK (6s)
+gate: ==> web-test
+[… 26 lines trimmed …]
+ Test Files  70 passed (70)
+      Tests  855 passed (855)
+[… 6 lines trimmed …]
+gate: <== web-test OK (50s)
+gate: ==> web-build
+[… 49 lines trimmed …]
+gate: <== web-build OK (6s)
+gate: ==> web-budget
+[… 4 lines trimmed …]
+gate: <== web-budget OK (0s)
+gate: ==> web-contrast
+[… 34 lines trimmed …]
+gate: <== web-contrast OK (0s)
+gate: ==> contract-drift
+gate: contract-drift skipped: no backend/ or api/ change (CI runs it)
+gate: <== contract-drift OK (0s)
+gate: ==> qa-typecheck
+[… 1 lines trimmed …]
+Lockfile is up to date, resolution step is skipped
+[… 5 lines trimmed …]
+gate: <== qa-typecheck OK (2s)
+gate: ==> e2e
+[… 9 lines trimmed …]
+Lockfile is up to date, resolution step is skipped
+[… 662 lines trimmed …]
+  62 skipped
+  544 passed (4.6m)
+[… 2 lines trimmed …]
+gate: e2e repeat x3: tests/shells.spec.ts
+[… 358 lines trimmed …]
+  ✓  344 [laptop] › tests/shells.spec.ts:305:5 › student shell › AC2/AC3/AC4/AC9: the account section in its student place: modal, focus, Esc and Close, axe (3.2s)
+  ✓  347 [laptop] › tests/shells.spec.ts:464:5 › student shell › AC7: no horizontal scroll for the student shell at 320–1280 px, overlays closed and open (2.9s)
+  ✓  353 [laptop] › tests/shells.spec.ts:700:5 › AC11 (a), (j): the public frame below 768 px › at 320 px: the loading skeleton draws the same two rows; the h1 appears where its line was (1.6s)
+  ✓  356 [laptop] › tests/shells.spec.ts:700:5 › AC11 (a), (j): the public frame below 768 px › at 360 px: the loading skeleton draws the same two rows; the h1 appears where its line was (1.5s)
+  ✓  354 [laptop] › tests/shells.spec.ts:532:3 › workspace name on the public pages (AC5) › /login shows the workspace name above the h1 in its toolbar row (one row at 360 px, vi and en); session first (2.2s)
+  ✓  349 [laptop] › tests/shells.spec.ts:484:5 › Log out from any shell page in ≤ 2 steps (fresh sessions) › AC4/AC9: tutor: pointer (open the account section, Log out) and keyboard (4.1s)
+  ✓  358 [laptop] › tests/shells.spec.ts:700:5 › AC11 (a), (j): the public frame below 768 px › at 568 px: the loading skeleton draws the same two rows; the h1 appears where its line was (1.6s)
+  ✓  360 [laptop] › tests/shells.spec.ts:700:5 › AC11 (a), (j): the public frame below 768 px › at 740 px: the loading skeleton draws the same two rows; the h1 appears where its line was (1.5s)
+  ✓  351 [laptop] › tests/shells.spec.ts:571:3 › workspace name on the public pages (AC5) › the public frame: loading state, compact error with Retry beside nothing interactive, Retry recovers (5.3s)
+  ✓  350 [laptop] › tests/shells.spec.ts:484:5 › Log out from any shell page in ≤ 2 steps (fresh sessions) › AC4/AC9: student: pointer (open the account section, Log out) and keyboard (6.3s)
+  ✓  362 [laptop] › tests/shells.spec.ts:788:7 › reduced motion (AC9) › the tutor drawer slides in, and does not move with reduced motion (1.6s)
+  -  364 [laptop] › tests/shells.spec.ts:828:1 › /dev/ui (dev build): the Sheet, Popover, NavList, BottomTabs and ButtonLink entries, accessible
+  ✓  363 [laptop] › tests/shells.spec.ts:788:7 › reduced motion (AC9) › the student More sheet slides in, and does not move with reduced motion (1.5s)
+  -  367 [laptop] › tests/shells.spec.ts:1030:3 › T-M2.29: the logout failure alert is on screen › AC1/AC2: tutor drawer at 740×360 and 568×320, logout answered 500: title and text reachable, focus stays
+  -  368 [laptop] › tests/shells.spec.ts:1082:3 › T-M2.29: the logout failure alert is on screen › AC1/AC2: student More sheet at 568×320, logout answered 500: all of its content reachable, the page stays
+  ✓  352 [laptop] › tests/shells.spec.ts:622:5 › AC11 (a), (j): the public frame below 768 px › at 320 px: two rows in every state, a 60-character name shows ≥ 30 characters, the h1 never moves (CLS ≤ 0.05) (7.2s)
+  ✓  355 [laptop] › tests/shells.spec.ts:622:5 › AC11 (a), (j): the public frame below 768 px › at 360 px: two rows in every state, a 60-character name shows ≥ 30 characters, the h1 never moves (CLS ≤ 0.05) (7.2s)
+  -  371 [laptop] › tests/shells.spec.ts:1284:5 › T-M2.31: the account overlays scroll the logout alert into place › AC1/AC4: student account popover at 800×360, logout answered 500: it scrolls inside itself (vi, en)
+  -  372 [laptop] › tests/shells.spec.ts:1284:5 › T-M2.31: the account overlays scroll the logout alert into place › AC1/AC4: student account popover at 844×390, logout answered 500: it scrolls inside itself (vi)
+  -  373 [laptop] › tests/shells.spec.ts:1284:5 › T-M2.31: the account overlays scroll the logout alert into place › AC1/AC4: student account popover at 915×412, logout answered 500: it scrolls inside itself (vi)
+  -  374 [laptop] › tests/shells.spec.ts:1347:3 › T-M2.31: the account overlays scroll the logout alert into place › AC2/AC4: tutor drawer at 568×320 and 740×360, logout answered 500: Log out and its focus ring stay in the footer (vi, en)
+  -  375 [laptop] › tests/shells.spec.ts:1402:3 › T-M2.31: the account overlays scroll the logout alert into place › AC2o: tutor drawer at 568×320 and 740×360, logout offline: the alert text wins where both cannot fit (vi, en)
+  -  376 [laptop] › tests/shells.spec.ts:1474:5 › T-M2.31: the account overlays scroll the logout alert into place › AC2c: tutor drawer at 740×360, logout answered 500: Esc keeps the shell; Log out again shows the alert again
+  ✓  357 [laptop] › tests/shells.spec.ts:622:5 › AC11 (a), (j): the public frame below 768 px › at 568 px: two rows in every state, a 60-character name shows ≥ 30 characters, the h1 never moves (CLS ≤ 0.05) (7.4s)
+  ✓  369 [laptop] › tests/shells.spec.ts:1121:3 › T-M2.29: the logout failure alert is on screen › AC2: the account popover or drawer at this viewport: the alert does not move the page; focus stays (2.6s)
+  ✓  365 [laptop] › tests/shells.spec.ts:901:3 › T-M2.13: Log out gives feedback when it fails › offline: Log out stops being busy at once and says the user is still signed in; back online it signs out (AC3) (3.1s)
+  ✓  366 [laptop] › tests/shells.spec.ts:937:3 › T-M2.13: Log out gives feedback when it fails › a 500: the alert, the page and the session stay, nothing is posted; Log out again (204) signs out (AC4) (3.1s)
+  ✓  359 [laptop] › tests/shells.spec.ts:622:5 › AC11 (a), (j): the public frame below 768 px › at 740 px: two rows in every state, a 60-character name shows ≥ 30 characters, the h1 never moves (CLS ≤ 0.05) (7.0s)
+  ✓  361 [laptop] › tests/shells.spec.ts:737:3 › workspace name in the shell: loading and error (AC5) › the home link is there while loading (named "Eng-LMS"); after an error the Retry sits beside it (6.2s)
+  ✓  370 [laptop] › tests/shells.spec.ts:1156:3 › T-M2.29: the logout failure alert is on screen › AC2/AC5: forced change-password page, logout answered 500: the alert is on screen, focus stays (vi, en) (3.7s)
+  ✓  377 [laptop] › tests/shells.spec.ts:1474:5 › T-M2.31: the account overlays scroll the logout alert into place › AC2c: student popover at 1280×800, logout answered 500: Esc keeps the shell; Log out again shows the alert again (3.9s)
+  ✓  378 [laptop] › tests/shells.spec.ts:1520:3 › T-M2.31: the account overlays scroll the logout alert into place › AC3/AC4: tutor account popover at 1280×800: no alert and with the alert (vi, en), accessible; the page stays (4.0s)
+
+  78 skipped
+  300 passed (2.6m)
+e2e-run: playwright exit 0
+e2e-run: app stopped (pid 309973)
+gate: <== e2e OK (482s)
+gate: PASS (13 steps, 787s)
+
