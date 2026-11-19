@@ -70,9 +70,15 @@
   transform: rotate(180deg);
 }
 
+/* Content taller than React Aria's inline max-height scrolls inside (T-M2.31 (a), DEC-178 QA-1: a failed logout at 800×360
+   ran past the scroll-locked page). The stable gutter keeps the fixed content width when a classic scrollbar appears; the
+   scroll padding keeps an inner control's outward focus ring clear of the edge when focus scrolls it into view. */
 .popover {
   inline-size: var(--size-popover);
   max-inline-size: calc(100vw - var(--space-6));
+  overflow-y: auto;
+  scrollbar-gutter: stable;
+  scroll-padding-block: calc(var(--focus-ring-width) + var(--focus-ring-offset));
   border: var(--border-width) solid var(--color-border);
   border-radius: var(--radius-md);
   background: var(--color-surface);

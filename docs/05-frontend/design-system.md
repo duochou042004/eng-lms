@@ -109,7 +109,12 @@ Decorative: `aria-hidden="true"`, never focusable; its owner announces the state
 - `Popover`: a button (`aria-haspopup="dialog"`, `aria-expanded`; the label truncates with a full-text `title`, the button is
   `--size-account-button` wide so a skeleton can take its shape) opening a dialog-type popover (not an ARIA `menu`, so it may hold any
   control, e.g. the language `SegmentedControl`). Modal: focus in and contained, Esc and an outside click close it, focus returns. Fixed width
-  (`--size-popover`), so a language change never moves its content. Controlled (`isOpen`, `onOpenChange`).
+  (`--size-popover`), so a language change never moves its content. Controlled (`isOpen`, `onOpenChange`). Content taller than the available
+  height (React Aria's inline `max-height`) scrolls inside the popover (`overflow-y: auto`), so on a phone held sideways (800×360) the logout
+  failure alert stays reachable while the page is scroll-locked (T-M2.31 (a), DEC-178 QA-1). A stable scrollbar gutter is always reserved
+  (`scrollbar-gutter: stable`): with classic scrollbars the content box is ~15 px narrower at every size, so content never moves when the
+  scrollbar appears; `scroll-padding-block` (the focus ring's width + offset) keeps an inner control's ring clear of the edge when focus
+  scrolls it into view.
 - `Toggletip` (T-M2.13, UX-3): a quiet icon button (`--size-control-md`, ≥ 44 px; required accessible name; `aria-haspopup="dialog"`,
   `aria-expanded`; the message as its `title` for mouse hover) that opens a small dialog-type popover holding the message, named by it, with
   the `Popover` surface, at most `--size-popover` wide and never wider than the viewport less the 16 px gutters. It behaves as `Popover` (focus

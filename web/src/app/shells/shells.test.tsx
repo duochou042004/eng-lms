@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs'
 import { act, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { http, HttpResponse } from 'msw'
@@ -637,6 +638,46 @@ describe('T-M2.13 scope 3: a failed Log out in each account overlay', () => {
     await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument())
     await openAccountMenu()
     expect(within(screen.getByRole('dialog')).queryByRole('alert')).not.toBeInTheDocument()
+  })
+})
+
+// T-M2.31 (b), DEC-178 UX-1: in the drawer at 568×320 the alert's `nearest` mount scroll aligned the alert's bottom edge and
+// clipped the focused Log out's ring at the footer's top. The scroll target's margin reaches over the gap and Log out with
+// its ring, so `nearest` keeps them in view (a margin box taller than the footer aligns its start edge). jsdom has no
+// layout: the rule is read from disk (cwd: web/); the layout proof is the E2E (shells.spec).
+describe('T-M2.31 (b): the alert scroll keeps Log out and its focus ring in view', () => {
+  it('the account section scrolls the alert with a start margin over the gap, Log out and its ring', async () => {
+    const scroll = vi.fn()
+    Element.prototype.scrollIntoView = scroll
+    try {
+      setViewportWidth(360)
+      setXsrfCookie()
+      server.use(
+        sessionAs('TUTOR'),
+        http.post('*/api/v1/auth/logout', () => problem(500, 'INTERNAL_ERROR')),
+      )
+      renderRoute('/tutor/today')
+      await h1(TUTOR_HOME)
+      await userEvent.click(await screen.findByRole('button', { name: 'Mở điều hướng' }))
+      const dialog = await screen.findByRole('dialog')
+      const logout = within(dialog).getByRole('button', { name: 'Đăng xuất' })
+      await userEvent.click(logout)
+      const alert = await within(dialog).findByRole('alert')
+      expect(scroll).toHaveBeenCalledWith({ block: 'nearest' })
+      const target = (scroll.mock.contexts as Element[]).find((el) => el.contains(alert))
+      expect(target).toHaveClass('logoutAlert')
+      expect(target!.previousElementSibling).toContainElement(logout)
+      expect(logout).toHaveFocus()
+      const css = readFileSync('src/app/shells/Shell.module.css', 'utf8')
+      const rule = (selector: string) => new RegExp(`\\${selector}\\s*\\{([^}]*)\\}`).exec(css)?.[1] ?? ''
+      // The gap between the actions and the alert, Log out's height (ui/Button: --size-control-md) and its outward ring.
+      expect(rule('.account')).toMatch(/gap:\s*var\(--space-4\);/)
+      expect(rule('.logoutAlert')).toMatch(
+        /scroll-margin-block-start:\s*calc\(\s*var\(--space-4\) \+ var\(--size-control-md\) \+ var\(--focus-ring-width\) \+\s*var\(--focus-ring-offset\)\s*\);/,
+      )
+    } finally {
+      delete (Element.prototype as Partial<Element>).scrollIntoView
+    }
   })
 })
 

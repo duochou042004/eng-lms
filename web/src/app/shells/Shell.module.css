@@ -127,6 +127,16 @@
   overflow-wrap: anywhere;
 }
 
+/* The logout failure alert scrolls itself into view, `nearest` (LogoutFailedAlert). Its start margin reaches over the gap
+   above it, Log out (ui/Button: --size-control-md) and Log out's outward focus ring, so the focused button stays in view
+   with the alert: a margin box taller than the scrollport (the drawer's footer at 568×320) aligns its start edge, a
+   shorter one its end edge (T-M2.31 (b), DEC-178 UX-1). */
+.logoutAlert {
+  scroll-margin-block-start: calc(
+    var(--space-4) + var(--size-control-md) + var(--focus-ring-width) + var(--focus-ring-offset)
+  );
+}
+
 .accountActions {
   display: flex;
   flex-direction: column;
