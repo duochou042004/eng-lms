@@ -1,4 +1,4 @@
-import type { Browser, Locator, Page, TestInfo } from '@playwright/test'
+import type { Browser, BrowserContext, Locator, Page, TestInfo } from '@playwright/test'
 import {
   ANONYMOUS,
   apiChangePassword,
@@ -18,7 +18,7 @@ import {
   expectSettledAccessible,
 } from '../support/checks'
 import { evidenceRecord, evidenceShot } from '../support/evidence'
-import { expect, test } from '../support/fixtures'
+import { expect, isAnonymousSessionProbe, test } from '../support/fixtures'
 import { accountOpener, accountPlace, openAccountSection, workspaceName, type ShellRole } from '../support/shell'
 import { StepCounter } from '../support/steps'
 
@@ -153,9 +153,34 @@ async function layoutShiftTotal(page: Page) {
   )
 }
 
-/** A page signed in through the API in a fresh context: the stored sessions stay untouched. */
-async function freshSession(browser: Browser, credentials: Credentials) {
+/**
+ * The console guard (support/fixtures.ts) listens on the test's own `context` only: a page in a context made here with
+ * `browser.newContext()` was not guarded, so T-M2.13's "a 500 … Log out again" stayed green while the logout alert's effect
+ * crashed the page (T-M2.31 (c), DEC-182). This feeds the same list from such a context, with the same rules: console
+ * errors (except the anonymous session probe), uncaught page errors and CSP violations.
+ */
+async function guardContext(context: BrowserContext, problems: string[]) {
+  context.on('console', (message) => {
+    if (message.type() !== 'error' || isAnonymousSessionProbe(message.text(), message.location().url)) return
+    const text = message.text()
+    const url = message.location().url
+    problems.push(`console.error: ${text}${text.startsWith('Failed to load resource') && url ? ` [${url}]` : ''}`)
+  })
+  context.on('weberror', (webError) => problems.push(`pageerror: ${webError.error().message}`))
+  await context.addInitScript(() => {
+    document.addEventListener('securitypolicyviolation', (event) => {
+      console.error(`CSP violation: ${event.violatedDirective} blocked ${event.blockedURI || 'inline'}`)
+    })
+  })
+}
+
+/**
+ * A page signed in through the API in a fresh context: the stored sessions stay untouched. With `guard` (the test's
+ * `consoleGuard`) the fresh context is guarded too.
+ */
+async function freshSession(browser: Browser, credentials: Credentials, guard?: string[]) {
   const context = await browser.newContext({ storageState: ANONYMOUS })
+  if (guard) await guardContext(context, guard)
   const page = await context.newPage()
   await page.goto('/login')
   expect((await apiSignIn(page, credentials)).status).toBe(200)
@@ -881,10 +906,14 @@ test.describe('T-M2.13: Log out gives feedback when it fails', () => {
       !['phone-small', 'laptop'].includes(testInfo.project.name),
       'checked at phone-small (drawer) and laptop (popover)',
     )
-    const { context, page } = await freshSession(browser, {
-      username: TUTOR_USERNAME,
-      password: tutorPassword(),
-    })
+    const { context, page } = await freshSession(
+      browser,
+      {
+        username: TUTOR_USERNAME,
+        password: tutorPassword(),
+      },
+      consoleGuard,
+    )
     const other = await listeningTab(context)
     await page.goto(HOME.tutor)
     await expect(h1(page, COPY.tutorHome)).toBeVisible()
@@ -910,10 +939,14 @@ test.describe('T-M2.13: Log out gives feedback when it fails', () => {
     consoleGuard,
   }, testInfo) => {
     test.skip(testInfo.project.name !== 'laptop', 'checked at laptop')
-    const { context, page } = await freshSession(browser, {
-      username: TUTOR_USERNAME,
-      password: tutorPassword(),
-    })
+    const { context, page } = await freshSession(
+      browser,
+      {
+        username: TUTOR_USERNAME,
+        password: tutorPassword(),
+      },
+      consoleGuard,
+    )
     const other = await listeningTab(context)
     await page.goto(HOME.tutor)
     await expect(h1(page, COPY.tutorHome)).toBeVisible()
@@ -941,6 +974,22 @@ test.describe('T-M2.13: Log out gives feedback when it fails', () => {
   })
 })
 
+/** Answers every Log out with a 500 (T-M2.29, T-M2.31). */
+async function failLogout(page: Page) {
+  await page.route('**/api/v1/auth/logout', (route) =>
+    route.fulfill({
+      status: 500,
+      contentType: 'application/problem+json',
+      body: '{"status":500,"code":"INTERNAL_ERROR"}',
+    }),
+  )
+}
+
+/** The page's own scroll position (behind a modal overlay it must not move). */
+const pageScroll = (page: Page) => page.evaluate(() => document.scrollingElement?.scrollTop ?? 0)
+// Scrolled first, so a page that can scroll has room to move both ways; the baseline is read once the overlay is open.
+const scrollPageToEnd = (page: Page) => page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight))
+
 // T-M2.29 (h1), (h2) (DEC-172 UX-1, UX-2): the logout failure alert is reachable on a phone held sideways (the drawer's
 // footer scrolls) and is on screen on the forced change-password page (it scrolls itself into view, `nearest`); focus
 // stays on Log out and the page behind an overlay does not move. Fresh sessions only (T-M2.4 scope 10).
@@ -955,21 +1004,6 @@ test.describe('T-M2.29: the logout failure alert is on screen', () => {
       text: "You're still signed in. Try again.",
     },
   }
-
-  async function failLogout(page: Page) {
-    await page.route('**/api/v1/auth/logout', (route) =>
-      route.fulfill({
-        status: 500,
-        contentType: 'application/problem+json',
-        body: '{"status":500,"code":"INTERNAL_ERROR"}',
-      }),
-    )
-  }
-
-  /** The page's own scroll position (behind a modal overlay it must not move). */
-  const pageScroll = (page: Page) => page.evaluate(() => document.scrollingElement?.scrollTop ?? 0)
-  // Scrolled first, so a page that can scroll has room to move both ways; the baseline is read once the overlay is open.
-  const scrollPageToEnd = (page: Page) => page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight))
 
   /**
    * Each target, scrolled into view, is wholly visible (the viewport and every clipping ancestor: IntersectionObserver),
@@ -995,12 +1029,17 @@ test.describe('T-M2.29: the logout failure alert is on screen', () => {
 
   test('AC1/AC2: tutor drawer at 740×360 and 568×320, logout answered 500: title and text reachable, focus stays', async ({
     browser,
+    consoleGuard,
   }, testInfo) => {
     test.skip(testInfo.project.name !== 'phone-small', 'a phone held sideways: phone-small emulation')
-    const { context, page } = await freshSession(browser, {
-      username: TUTOR_USERNAME,
-      password: tutorPassword(),
-    })
+    const { context, page } = await freshSession(
+      browser,
+      {
+        username: TUTOR_USERNAME,
+        password: tutorPassword(),
+      },
+      consoleGuard,
+    )
     await failLogout(page)
     for (const [width, height] of [
       [740, 360],
@@ -1036,15 +1075,17 @@ test.describe('T-M2.29: the logout failure alert is on screen', () => {
       await page.keyboard.press('Escape')
       await expect(page.getByRole('dialog')).toHaveCount(0)
     }
+    acceptStatus(consoleGuard, 500, '/api/v1/auth/logout')
     await context.close()
   })
 
   test('AC1/AC2: student More sheet at 568×320, logout answered 500: all of its content reachable, the page stays', async ({
     browser,
+    consoleGuard,
   }, testInfo) => {
     test.skip(testInfo.project.name !== 'phone-small', 'a phone held sideways: phone-small emulation')
     const credentials = await readyStudent(browser, testInfo)
-    const { context, page } = await freshSession(browser, credentials)
+    const { context, page } = await freshSession(browser, credentials, consoleGuard)
     await failLogout(page)
     await page.setViewportSize({ width: 568, height: 320 })
     await page.goto(HOME.student)
@@ -1073,16 +1114,22 @@ test.describe('T-M2.29: the logout failure alert is on screen', () => {
     await expectReachable(page, targets)
     await expectSettledAccessible(page)
     await shot(page, testInfo, 'logout-failed-more-sheet-568x320-vi')
+    acceptStatus(consoleGuard, 500, '/api/v1/auth/logout')
     await context.close()
   })
 
   test('AC2: the account popover or drawer at this viewport: the alert does not move the page; focus stays', async ({
     browser,
+    consoleGuard,
   }, testInfo) => {
-    const { context, page } = await freshSession(browser, {
-      username: TUTOR_USERNAME,
-      password: tutorPassword(),
-    })
+    const { context, page } = await freshSession(
+      browser,
+      {
+        username: TUTOR_USERNAME,
+        password: tutorPassword(),
+      },
+      consoleGuard,
+    )
     await failLogout(page)
     await page.goto(HOME.tutor)
     await expect(h1(page, COPY.tutorHome)).toBeVisible()
@@ -1102,11 +1149,13 @@ test.describe('T-M2.29: the logout failure alert is on screen', () => {
       .toBe(before)
     await expectSettledAccessible(page)
     await shot(page, testInfo, `logout-failed-${accountPlace(page, 'tutor')}-vi`)
+    acceptStatus(consoleGuard, 500, '/api/v1/auth/logout')
     await context.close()
   })
 
   test('AC2/AC5: forced change-password page, logout answered 500: the alert is on screen, focus stays (vi, en)', async ({
     browser,
+    consoleGuard,
   }, testInfo) => {
     const tutorContext = await browser.newContext({
       storageState: TUTOR_STATE,
@@ -1115,7 +1164,7 @@ test.describe('T-M2.29: the logout failure alert is on screen', () => {
     await tutorPage.goto(HOME.tutor)
     const temporary = await createStudent(tutorPage, testInfo.project.name)
     await tutorContext.close()
-    const { context, page } = await freshSession(browser, temporary)
+    const { context, page } = await freshSession(browser, temporary, consoleGuard)
     await failLogout(page)
     await page.goto('/change-password')
     await expect(h1(page, COPY.change)).toBeVisible()
@@ -1143,6 +1192,284 @@ test.describe('T-M2.29: the logout failure alert is on screen', () => {
       await expectNoMidWordBreak(alertEn.getByText(FAILED.en.text, { exact: true }))
     }
     await shot(page, testInfo, 'logout-failed-change-password-forced-en')
+    acceptStatus(consoleGuard, 500, '/api/v1/auth/logout')
+    await context.close()
+  })
+})
+
+// T-M2.31 (DEC-178 QA-1, UX-1; DEC-182): the account popover scrolls inside itself on a phone held sideways (a); in the
+// tutor drawer the focused Log out keeps its focus ring inside the footer when the alert appears (b); a failed logout
+// never turns into the route error page on Esc or a second Log out (c). Fresh, guarded sessions only (T-M2.4 scope 10).
+test.describe('T-M2.31: the account overlays scroll the logout alert into place', () => {
+  const FAILED = {
+    vi: { title: 'Chưa đăng xuất được', text: 'Bạn vẫn đang đăng nhập. Hãy thử lại.', logout: COPY.logout },
+    en: { title: "Couldn't log out", text: "You're still signed in. Try again.", logout: 'Log out' },
+  }
+  const ROUTE_ERROR = 'Không hiển thị được trang này'
+  type Locale = keyof typeof FAILED
+
+  /** The open dialog's popover (React Aria renders the dialog as its only child). */
+  const popoverOf = (dialog: Locator) => dialog.locator('xpath=..')
+
+  /**
+   * How far `target` (with its outward focus ring when `ring`) sits inside the padding box (`clientTop` / `clientHeight`)
+   * of `box`, or of its nearest scrolling ancestor: the smaller of the top and bottom distances; negative when clipped.
+   */
+  function inset(target: Locator, { box, ring = false }: { box?: Locator; ring?: boolean } = {}) {
+    return async () => {
+      const container = box ? await box.elementHandle() : null
+      return target.evaluate(
+        (el, { container, ring }) => {
+          let port = container as HTMLElement | null
+          for (let p = el.parentElement; !port && p; p = p.parentElement)
+            if (/(auto|scroll)/.test(getComputedStyle(p).overflowY)) port = p
+          const root = getComputedStyle(document.documentElement)
+          const outset = ring
+            ? parseFloat(root.getPropertyValue('--focus-ring-width')) +
+              parseFloat(root.getPropertyValue('--focus-ring-offset'))
+            : 0
+          const r = el.getBoundingClientRect()
+          const top = port!.getBoundingClientRect().top + port!.clientTop
+          const bottom = top + port!.clientHeight
+          return Math.min(r.top - outset - top, bottom - (r.bottom + outset))
+        },
+        { container, ring },
+      )
+    }
+  }
+
+  /** Laid-out points just below the popover's box that hit something inside it (content painted outside the box). */
+  const paintedBelow = (dialog: Locator) =>
+    dialog.evaluate((d) => {
+      const popover = d.parentElement!
+      const box = popover.getBoundingClientRect()
+      let hits = 0
+      for (let y = Math.ceil(box.bottom) + 1; y < innerHeight; y += 4)
+        for (let x = box.left + 4; x < box.right - 4; x += 16) {
+          const el = document.elementFromPoint(x, y)
+          if (el && popover.contains(el)) hits++
+        }
+      return hits
+    })
+
+  async function chooseLocale(dialog: Locator, locale: Locale) {
+    if (locale === 'en') await dialog.getByRole('radio', { name: 'English' }).click()
+    await expect(dialog.getByRole('button', { name: FAILED[locale].logout })).toBeVisible()
+  }
+
+  for (const [width, height, locales] of [
+    [800, 360, ['vi', 'en']],
+    [844, 390, ['vi']],
+    [915, 412, ['vi']],
+  ] as const) {
+    test(`AC1/AC4: student account popover at ${width}×${height}, logout answered 500: it scrolls inside itself (${locales.join(', ')})`, async ({
+      browser,
+      consoleGuard,
+    }, testInfo) => {
+      test.skip(testInfo.project.name !== 'phone-small', 'a phone held sideways: phone-small emulation')
+      const credentials = await readyStudent(browser, testInfo)
+      const { context, page } = await freshSession(browser, credentials, consoleGuard)
+      await failLogout(page)
+      for (const locale of locales) {
+        await page.setViewportSize({ width, height })
+        await page.goto(HOME.student)
+        await expect(h1(page, COPY.studentHome)).toBeVisible()
+        await scrollPageToEnd(page)
+        const dialog = await openAccountSection(page, 'student')
+        expect(accountPlace(page, 'student')).toBe('popover')
+        await chooseLocale(dialog, locale)
+        const copy = FAILED[locale]
+        const before = await pageScroll(page)
+        const contentWidth = await dialog.evaluate((d) => d.getBoundingClientRect().width)
+        const logout = dialog.getByRole('button', { name: copy.logout })
+        await logout.click()
+        const alert = dialog.getByRole('alert')
+        const title = alert.getByText(copy.title, { exact: true })
+        const text = alert.getByText(copy.text, { exact: true })
+        await expect(alert).toContainText(copy.text)
+        await expect(logout).toBeFocused()
+        // No user action: the mount scroll brings the text into view inside the popover's box.
+        await expect(text).toBeInViewport({ ratio: 0.99 })
+        await expect
+          .poll(inset(text, { box: popoverOf(dialog) }), { message: 'the text inside the popover' })
+          .toBeGreaterThanOrEqual(-0.5)
+        await expect(logout).toBeInViewport({ ratio: 0.99 })
+        await expect.poll(() => paintedBelow(dialog), { message: 'nothing paints below the popover' }).toBe(0)
+        await expect
+          .poll(() => dialog.evaluate((d) => d.getBoundingClientRect().width), { message: 'the content width stays' })
+          .toBe(contentWidth)
+        await expect.poll(() => pageScroll(page), { message: 'the page behind the popover does not move' }).toBe(before)
+        await expectNoHorizontalScroll(page)
+        if (width === 800) {
+          // The wheel scrolls inside the popover: up to its start, then back down to the title and the text.
+          const box = (await popoverOf(dialog).boundingBox())!
+          await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2)
+          await page.mouse.wheel(0, -600)
+          await expect.poll(() => popoverOf(dialog).evaluate((p) => p.scrollTop), { message: 'wheel up' }).toBe(0)
+          await page.mouse.wheel(0, 600)
+          await expect(title).toBeInViewport({ ratio: 0.99 })
+          await expect(text).toBeInViewport({ ratio: 0.99 })
+          await expect.poll(() => pageScroll(page), { message: 'the wheel does not move the page' }).toBe(before)
+          await expect(logout).toBeFocused()
+        }
+        await expectSettledAccessible(page)
+        await expectNoMidWordBreak(title)
+        await expectNoMidWordBreak(text)
+        await shot(page, testInfo, `logout-failed-popover-${width}x${height}-${locale}`)
+        await page.keyboard.press('Escape')
+        await expect(page.getByRole('dialog')).toHaveCount(0)
+        await expect(h1(page, ROUTE_ERROR)).toHaveCount(0)
+      }
+      acceptStatus(consoleGuard, 500, '/api/v1/auth/logout')
+      await context.close()
+    })
+  }
+
+  test('AC2/AC4: tutor drawer at 568×320 and 740×360, logout answered 500: Log out and its focus ring stay in the footer (vi, en)', async ({
+    browser,
+    consoleGuard,
+  }, testInfo) => {
+    test.skip(testInfo.project.name !== 'phone-small', 'a phone held sideways: phone-small emulation')
+    const { context, page } = await freshSession(
+      browser,
+      { username: TUTOR_USERNAME, password: tutorPassword() },
+      consoleGuard,
+    )
+    await failLogout(page)
+    for (const locale of ['vi', 'en'] as const) {
+      for (const [width, height] of [
+        [568, 320],
+        [740, 360],
+      ] as const) {
+        await page.setViewportSize({ width, height })
+        await page.goto(HOME.tutor)
+        await expect(page.getByRole('heading', { level: 1 })).toBeVisible()
+        await scrollPageToEnd(page)
+        const dialog = await openAccountSection(page, 'tutor')
+        expect(accountPlace(page, 'tutor')).toBe('drawer')
+        if (locale === 'en') await chooseLocale(dialog, 'en')
+        const copy = FAILED[locale]
+        const before = await pageScroll(page)
+        const logout = dialog.getByRole('button', { name: copy.logout })
+        await logout.click()
+        const alert = dialog.getByRole('alert')
+        const title = alert.getByText(copy.title, { exact: true })
+        const text = alert.getByText(copy.text, { exact: true })
+        await expect(alert).toContainText(copy.text)
+        await expect(logout).toBeFocused()
+        await expect
+          .poll(inset(logout, { ring: true }), { message: 'Log out with its focus ring inside the footer' })
+          .toBeGreaterThanOrEqual(-0.5)
+        await expect.poll(inset(title), { message: 'the alert title inside the footer' }).toBeGreaterThanOrEqual(-0.5)
+        await expect.poll(inset(text), { message: 'the alert text inside the footer' }).toBeGreaterThanOrEqual(-0.5)
+        await expect(text).toBeInViewport({ ratio: 0.99 })
+        await expect.poll(() => pageScroll(page), { message: 'the page behind the drawer does not move' }).toBe(before)
+        await expectSettledAccessible(page)
+        await expectNoMidWordBreak(title)
+        await expectNoMidWordBreak(text)
+        await shot(page, testInfo, `logout-failed-drawer-ring-${width}x${height}-${locale}`)
+        await expect(logout).toBeFocused()
+        await page.keyboard.press('Escape')
+        await expect(page.getByRole('dialog')).toHaveCount(0)
+        await expect(h1(page, ROUTE_ERROR)).toHaveCount(0)
+      }
+    }
+    acceptStatus(consoleGuard, 500, '/api/v1/auth/logout')
+    await context.close()
+  })
+
+  for (const role of ['tutor', 'student'] as const) {
+    const where = role === 'tutor' ? 'drawer at 740×360' : 'popover at 1280×800'
+    test(`AC2c: ${role} ${where}, logout answered 500: Esc keeps the shell; Log out again shows the alert again`, async ({
+      browser,
+      consoleGuard,
+    }, testInfo) => {
+      test.skip(
+        testInfo.project.name !== (role === 'tutor' ? 'phone-small' : 'laptop'),
+        role === 'tutor' ? 'the drawer: phone-small held sideways' : 'the popover: laptop',
+      )
+      const credentials =
+        role === 'tutor'
+          ? { username: TUTOR_USERNAME, password: tutorPassword() }
+          : await readyStudent(browser, testInfo)
+      const { context, page } = await freshSession(browser, credentials, consoleGuard)
+      await failLogout(page)
+      if (role === 'tutor') await page.setViewportSize({ width: 740, height: 360 })
+      await page.goto(HOME[role])
+      await expect(h1(page, TITLE[role])).toBeVisible()
+      expect(accountPlace(page, role)).toBe(role === 'tutor' ? 'drawer' : 'popover')
+
+      // A failed logout, then Esc: the overlay closes, the shell stays, focus returns to the opener.
+      let dialog = await openAccountSection(page, role)
+      await dialog.getByRole('button', { name: COPY.logout }).click()
+      await expect(dialog.getByRole('alert')).toContainText(FAILED.vi.text)
+      await page.keyboard.press('Escape')
+      await expect(page.getByRole('dialog')).toHaveCount(0)
+      await expect(h1(page, ROUTE_ERROR)).toHaveCount(0)
+      await expect(h1(page, TITLE[role])).toBeVisible()
+      await expect(accountOpener(page, role)).toBeFocused()
+
+      // A failed logout, then Log out again (a second 500): the alert comes back, the shell stays.
+      dialog = await openAccountSection(page, role)
+      const logout = dialog.getByRole('button', { name: COPY.logout })
+      await logout.click()
+      await expect(dialog.getByRole('alert')).toContainText(FAILED.vi.text)
+      await logout.click()
+      await expect(logout).not.toHaveAttribute('data-pending')
+      await expect(dialog.getByRole('alert')).toContainText(FAILED.vi.text)
+      await expect(h1(page, ROUTE_ERROR)).toHaveCount(0)
+      await expect(h1(page, TITLE[role])).toBeVisible()
+      await expect(logout).toBeFocused()
+      await shot(page, testInfo, `logout-failed-again-${role}-vi`)
+      acceptStatus(consoleGuard, 500, '/api/v1/auth/logout')
+      await context.close()
+    })
+  }
+
+  test('AC3/AC4: tutor account popover at 1280×800: no alert and with the alert (vi, en), accessible; the page stays', async ({
+    browser,
+    consoleGuard,
+  }, testInfo) => {
+    test.skip(testInfo.project.name !== 'laptop', 'the tutor popover: laptop')
+    const { context, page } = await freshSession(
+      browser,
+      { username: TUTOR_USERNAME, password: tutorPassword() },
+      consoleGuard,
+    )
+    await failLogout(page)
+    await page.goto(HOME.tutor)
+    await expect(h1(page, COPY.tutorHome)).toBeVisible()
+    await scrollPageToEnd(page)
+    const dialog = await openAccountSection(page, 'tutor')
+    expect(accountPlace(page, 'tutor')).toBe('popover')
+    const before = await pageScroll(page)
+    // No alert, vi then en: the narrower content box (the gutter) still breaks no word.
+    for (const locale of ['vi', 'en'] as const) {
+      await chooseLocale(dialog, locale)
+      await expectSettledAccessible(page)
+      await expectNoMidWordBreak(dialog.locator('p').first())
+      for (const button of await dialog.getByRole('button').all()) await expectNoMidWordBreak(button)
+      await shot(page, testInfo, `account-popover-1280x800-${locale}`)
+    }
+    // With the alert (Log out in en), then re-rendered in vi by the switcher (the alert stays while the error holds).
+    const logout = dialog.getByRole('button', { name: FAILED.en.logout })
+    await logout.click()
+    const alert = dialog.getByRole('alert')
+    await expect(alert).toContainText(FAILED.en.text)
+    await expect(alert).toBeInViewport({ ratio: 0.99 })
+    await expect(logout).toBeFocused()
+    await expect.poll(() => popoverOf(dialog).evaluate((p) => p.scrollTop), { message: 'no scroll inside' }).toBe(0)
+    await expect.poll(() => pageScroll(page), { message: 'the page behind the popover does not move' }).toBe(before)
+    for (const locale of ['en', 'vi'] as const) {
+      if (locale === 'vi') await dialog.getByRole('radio', { name: 'Tiếng Việt' }).click()
+      const copy = FAILED[locale]
+      await expect(alert).toContainText(copy.text)
+      await expectSettledAccessible(page)
+      await expectNoMidWordBreak(alert.getByText(copy.title, { exact: true }))
+      await expectNoMidWordBreak(alert.getByText(copy.text, { exact: true }))
+      await shot(page, testInfo, `logout-failed-popover-1280x800-${locale}`)
+    }
+    acceptStatus(consoleGuard, 500, '/api/v1/auth/logout')
     await context.close()
   })
 })
