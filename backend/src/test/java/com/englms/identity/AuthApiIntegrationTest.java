@@ -2,14 +2,32 @@ package com.englms.identity;
 
 import static com.englms.identity.IdentityFixtures.PASSWORD;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doAnswer;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Queue;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.BooleanSupplier;
 
+import javax.sql.DataSource;
+
+import com.zaxxer.hikari.HikariDataSource;
+import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -24,6 +42,9 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 /**
  * T-M2.1 AC2–AC9 over HTTP on the real Tomcat port (cookies, CSRF, the filter chain). The per-IP throttle is raised
@@ -43,6 +64,13 @@ class AuthApiIntegrationTest {
 
 	@Autowired
 	AccountApi accounts;
+
+	@Autowired
+	DataSource dataSource;
+
+	/** {@code SecurityConfiguration}'s encoder, wrapped so that the S2-1 burst test can park it (real calls otherwise). */
+	@MockitoSpyBean
+	PasswordEncoder encoder;
 
 	UUID tutorId;
 
@@ -208,48 +236,129 @@ class AuthApiIntegrationTest {
 		assertThat(existing).as("existing %d ms vs unknown %d ms", existing, unknown).isLessThan(unknown * 3 / 2 + 300);
 	}
 
+	/** The burst's wrong password: only these {@code matches()} calls park, never the unrelated sign-in's. */
+	static final String BURST_PASSWORD = "wrong-password-1";
+
+	static final int BURST = 30;
+
+	/** Detects a hang only; no check compares an elapsed time (coding-agent-rules §4.6, DEC-185). */
+	static final Duration HANG = Duration.ofSeconds(30);
+
 	/**
-	 * SEC review S2-1: a burst on one username holds no locks or connections that another user's sign-in needs. With the
-	 * lock held across bcrypt each queued attempt kept a pooled connection while it waited, so an unrelated login waited
-	 * for the whole serialised burst (6.4 s). Compared with the same burst on unknown usernames (same CPU load, no row to
-	 * lock), so the bound holds on a slow CI runner too, where 30 bcrypts alone take seconds.
+	 * How long a parked call waits if the latch is never released; well above the checks' waits together, so that a
+	 * parked call cannot give its connection back while (a) still waits for one. The {@code finally} releases it first.
+	 */
+	static final Duration PARK_LIMIT = Duration.ofMinutes(5);
+
+	/**
+	 * SEC review S2-1 (DEC-092, DEC-093; T-M2.10 AC6, no clock): a burst on one username holds no row lock, transaction or
+	 * pooled connection across bcrypt, so it holds nothing another user's sign-in needs. The 30 wrong-password attempts on
+	 * {@code tutor.one} park inside {@code PasswordEncoder.matches()} on a latch; with them parked: (0) all 30 reached the
+	 * hash at once (a row lock or the pool, smaller than the burst, would serialise them); (c) no transaction is active on
+	 * a parked thread; (d) the pool has no active connection; (b) a separate connection can lock the account row with
+	 * {@code NOWAIT}; (a) an unrelated user signs in. Each check is reported by name; the latch is always released. Before
+	 * T-M2.10 this compared the unrelated sign-in's time with a burst on unknown names, which failed once on the 2-core CI
+	 * runner (DEC-144 (3)).
 	 */
 	@Test
-	void anUnrelatedLoginStaysFastDuringABurstOnOneUsername() throws Exception {
+	void anUnrelatedLoginSucceedsWhileABurstOnOneUsernameIsParkedInTheHash() throws Exception {
+		HikariDataSource hikari = dataSource.unwrap(HikariDataSource.class);
+		assertThat(hikari.getMaximumPoolSize()).as("the pool must be smaller than the burst, or (0) and (a) prove nothing")
+			.isLessThan(BURST);
 		student("student.c", false);
-		long unknownBurst = unrelatedLoginMillisDuringBurstOn(null);
-		long existingBurst = unrelatedLoginMillisDuringBurstOn("tutor.one");
-
-		assertThat(existingBurst).as("unrelated login %d ms during a burst on tutor.one, %d ms during one on unknown names",
-				existingBurst, unknownBurst)
-			.isLessThan(unknownBurst * 3 / 2 + 1000);
-	}
-
-	/** An unrelated user's sign-in time while 30 wrong-password logins run on {@code target} (null: 30 unknown names). */
-	long unrelatedLoginMillisDuringBurstOn(String target) throws Exception {
 		Browser unrelated = browser();
 		unrelated.get("/api/v1/auth/session");
 		List<Browser> attackers = new ArrayList<>();
-		for (int i = 0; i < 30; i++) {
+		for (int i = 0; i < BURST; i++) {
 			Browser attacker = browser();
 			attacker.get("/api/v1/auth/session");
 			attackers.add(attacker);
 		}
+		AtomicInteger parked = new AtomicInteger();
+		Queue<Boolean> transactionActive = new ConcurrentLinkedQueue<>();
+		CountDownLatch release = new CountDownLatch(1);
+		doAnswer(invocation -> {
+			if (BURST_PASSWORD.contentEquals((CharSequence) invocation.getArgument(0))) {
+				transactionActive.add(TransactionSynchronizationManager.isActualTransactionActive());
+				parked.incrementAndGet();
+				release.await(PARK_LIMIT.toSeconds(), TimeUnit.SECONDS);
+			}
+			return invocation.callRealMethod();
+		}).when(encoder).matches(any(), any());
+
+		SoftAssertions softly = new SoftAssertions();
 		try (ExecutorService pool = Executors.newVirtualThreadPerTaskExecutor()) {
 			List<Future<Response>> burst = new ArrayList<>();
 			for (Browser attacker : attackers) {
-				String username = target != null ? target : "nobody." + UUID.randomUUID();
-				burst.add(pool.submit(() -> attacker.login(username, "wrong-password-1", false)));
+				burst.add(pool.submit(() -> attacker.login("tutor.one", BURST_PASSWORD, false)));
 			}
-			Thread.sleep(100);
-			long start = System.nanoTime();
-			assertThat(unrelated.login("student.c", PASSWORD, false).status()).isEqualTo(200);
-			long during = (System.nanoTime() - start) / 1_000_000;
+			try {
+				pollUntil(() -> parked.get() == BURST, HANG);
+				softly.assertThat(parked.get())
+					.as("(0) %d of %d attempts reached the hash: serialised by a lock or the pool", parked.get(), BURST)
+					.isEqualTo(BURST);
+				softly.assertThat(transactionActive)
+					.as("(c) a transaction was active inside a parked matches() call")
+					.isNotEmpty()
+					.containsOnly(false);
+				pollUntil(() -> hikari.getHikariPoolMXBean().getActiveConnections() == 0, HANG);
+				softly.assertThat(hikari.getHikariPoolMXBean().getActiveConnections())
+					.as("(d) pooled connections held while the burst is parked in the hash")
+					.isZero();
+				softly.assertThat(accountRowLockable(hikari))
+					.as("(b) a separate connection locks the account row with NOWAIT while the burst is parked")
+					.isEqualTo("locked");
+				Future<Response> unrelatedLogin = pool.submit(() -> unrelated.login("student.c", PASSWORD, false));
+				softly.assertThat(statusOf(unrelatedLogin))
+					.as("(a) the unrelated user signs in while the burst is parked")
+					.isEqualTo("200");
+			}
+			finally {
+				release.countDown();
+			}
 			for (Future<Response> attempt : burst) {
-				assertThat(attempt.get().status()).isEqualTo(401);
+				softly.assertThat(statusOf(attempt)).as("a burst attempt after the release").isEqualTo("401");
 			}
-			unrelated.post("/api/v1/auth/logout", "");
-			return during;
+		}
+		softly.assertAll();
+	}
+
+	/** Polls (L-05) until {@code condition} holds or {@code bound} passes; the caller's assertions report the outcome. */
+	static void pollUntil(BooleanSupplier condition, Duration bound) throws InterruptedException {
+		long deadline = System.nanoTime() + bound.toNanos();
+		while (!condition.getAsBoolean() && System.nanoTime() < deadline) {
+			Thread.sleep(10);
+		}
+	}
+
+	/** The response status, or why there is none, so a hang or an error is reported in the named check. */
+	static String statusOf(Future<Response> response) {
+		try {
+			return Integer.toString(response.get(HANG.toSeconds(), TimeUnit.SECONDS).status());
+		}
+		catch (Exception ex) {
+			return "no response: " + ex;
+		}
+	}
+
+	/** {@code SELECT … FOR UPDATE NOWAIT} on {@code tutor.one}'s row from a connection outside the pool. */
+	String accountRowLockable(HikariDataSource hikari) {
+		try (Connection connection = DriverManager.getConnection(hikari.getJdbcUrl(), hikari.getUsername(),
+				hikari.getPassword())) {
+			connection.setAutoCommit(false);
+			try (PreparedStatement select = connection
+				.prepareStatement("SELECT 1 FROM app.user_account WHERE id = ? FOR UPDATE NOWAIT")) {
+				select.setObject(1, tutorId);
+				try (ResultSet row = select.executeQuery()) {
+					return row.next() ? "locked" : "no row";
+				}
+			}
+			finally {
+				connection.rollback();
+			}
+		}
+		catch (SQLException ex) {
+			return "refused: SQLState " + ex.getSQLState();
 		}
 	}
 
