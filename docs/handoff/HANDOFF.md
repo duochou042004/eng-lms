@@ -1,7 +1,7 @@
-# Handoff — 2026-11-20T15:13Z (T-M2.10 merged on the new device; next: T-M2.16 packet)
+# Handoff — 2026-11-20T15:32Z (T-M2.10 merged on the new device; next: T-M2.16 packet)
 
-Phase/Milestone: P1 / M2 (in progress) · Last task: **T-M2.10 done** (`6cca511`, PR #211, DEC-186) · Last commit on `develop`: `6cca511`
-(QA report PR #212 merged `fb425e7`; this handoff on `docs/T-M2.10-records`) · Next: T-M2.16 → T-M2.6 → T-M2.32 → T-M2.7 (G5); T-M2.33 order: ask the PO ·
+Phase/Milestone: P1 / M2 (in progress) · Last task: **T-M2.10 done** (`6cca511`, PR #211, DEC-186) · Last commit on `develop`: `fb425e7`
+(QA report PR #212; T-M2.10 merge `6cca511`; this handoff on `docs/T-M2.10-records`) · Next: T-M2.16 → T-M2.6 → T-M2.32 → T-M2.7 (G5); T-M2.33 order: ask the PO ·
 Remote: https://github.com/duochou042004/eng-lms (mirror: gitlab.com/duochou042004/eng-lms) · Clone: `/home/deb/App_sources/eng-lms`
 
 ## Where we are
@@ -17,7 +17,7 @@ Remote: https://github.com/duochou042004/eng-lms (mirror: gitlab.com/duochou0420
 ## In flight / uncommitted
 - QA report PR #212 merged (`fb425e7`). **This records PR** (`docs/T-M2.10-records`):
   one fresh docs-reviewer (`DOCS-REVIEW T-M2.10: PASS`, text only), CI, `LC-APPROVED T-M2.10`, merge-gate, gitlab-sync. Finish it first if open.
-- Nothing else: no open feature branch. Dependabot #165/#209 (msw 3), #135 (react group) held by the PO; #203, #204, #207, #208 open, untriaged
+- Nothing else: no open feature branch. Dependabot #209 (msw 3; supersedes the closed #165) and #135 (react group) held by the PO; #203, #204, #207, #208 open, untriaged
   (Dependabot hygiene is the PO's, DEC-158 PO-8).
 
 ## Next steps (in this order)
@@ -29,7 +29,7 @@ Remote: https://github.com/duochou042004/eng-lms (mirror: gitlab.com/duochou0420
 
 ## Pending PO decisions / actions
 - Each task's start signal; T-M2.33's place in the order.
-- Dependabot #165/#209 and #135 held; a React bump touches T-M2.31 (c): re-run its unit test and E2E.
+- Dependabot #209 (msw 3; supersedes the closed #165: `web` typecheck fails at `web/src/test/setup.ts:14`, seen on #165; needs a packet) and #135 held; a React bump touches T-M2.31 (c): re-run its unit test and E2E.
 - WebKit host libraries (sudo) only if a local WebKit run is ever needed; G5 uses the `regression` workflow.
 
 ## Gotchas
@@ -124,8 +124,8 @@ Remote: https://github.com/duochou042004/eng-lms (mirror: gitlab.com/duochou0420
   agent's final text from its `tasks/<id>.output` transcript rather than retyping it.
 - `gitlab-sync.sh` may fail authentication transiently: retry once. GitLab CI is **paused** (DEC-107; the sync pushes with `-o ci.skip`; to resume:
   the GitLab project variable `ENGLMS_GITLAB_CI=on` and `ENGLMS_GITLAB_CI=on ./scripts/gitlab-sync.sh`, ci-cd §1.1); the sync still runs after every merge.
-- Wall-clock bounds in tests flake on the 2-core CI runner (DEC-093); none remains in a security test: T-M2.10 (DEC-186) replaced
-  the burst test with a parked-hash latch test. The sibling `parallelFailedLoginsTakeSimilarTimeForUnknownAndExistingUsernames` keeps a time
+- Wall-clock bounds in tests flake on the 2-core CI runner (DEC-093); no wall-clock bound remains in a security test except one named
+  exception: T-M2.10 (DEC-186) replaced the burst test with a parked-hash latch test; the sibling `parallelFailedLoginsTakeSimilarTimeForUnknownAndExistingUsernames` keeps a time
   comparison as a named coding-agent-rules §4.6 exception (DEC-185 (3)); a failure there is a new row.
 - `git merge` is denied: `gh pr update-branch` (DEC-090).
 - **LC habits from T-M2.22 (free, from now):** batch fixes before pushing to a text-only PR (16 of 32 docs-head runs were cancelled by a

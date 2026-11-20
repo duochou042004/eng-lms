@@ -16,7 +16,7 @@
       }
     ]
   },
-  "updatedAt": "2026-11-20T15:13:37Z",
+  "updatedAt": "2026-11-20T15:32:02Z",
   "updatedBy": "lead-coordinator (T-M2.10 merged; records)",
   "phase": {
     "id": "P1",
@@ -66,7 +66,7 @@
     "lastCommit": null,
     "startedAt": null,
     "nextSteps": [
-      "After T-M2.10, T-M2.16, T-M2.6 and T-M2.32 (PO order, DEC-185); T-M2.26 after at least 10 shadow PRs"
+      "After T-M2.16, T-M2.6 and T-M2.32 (PO order, DEC-185), and T-M2.33 if the PO places it in M2; T-M2.26 after at least 10 shadow PRs"
     ],
     "trace": [
       "DEC-158",
@@ -1781,6 +1781,11 @@
       "at": "2026-11-20T15:13:37Z",
       "actor": "lead-coordinator",
       "event": "T-M2.10 merged (PR #211, 6cca511; DEC-186): gate PASS on c106861; SEC APPROVED, QA PASS; QA report PR #212; T-M2.33 added (OQ T-M2.10-1). Next: T-M2.16 packet."
+    },
+    {
+      "at": "2026-11-20T15:32:02Z",
+      "actor": "lead-coordinator",
+      "event": "T-M2.10 QA report PR #212 merged (fb425e7); records PR #213 docs review round 1 CHANGES REQUESTED (S3-1, S3-2, S4s) fixed."
     }
   ]
 }
