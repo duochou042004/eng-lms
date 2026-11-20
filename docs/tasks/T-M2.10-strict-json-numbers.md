@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Milestone | M2 |
-| Status | in_progress (G0 PASS, packet PR #210 `028fa59`; PO start 2026-11-20) |
+| Status | done (`6cca511`, DEC-186; G0 PASS and packet decisions DEC-185) |
 | Owner role | BE (backend-implementer; SEC + QA at G3) |
 | Branch | `fix/T-M2.10-strict-json-numbers` (from `develop`) |
 | Depends on | T-M2.9 (merged, `37e8ce0`, DEC-105) |

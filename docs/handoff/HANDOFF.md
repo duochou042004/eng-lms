@@ -1,57 +1,45 @@
-# Handoff — 2026-11-19T13:51Z (T-M2.31 merged; the next session runs on a NEW DEVICE)
+# Handoff — 2026-11-20T15:32Z (T-M2.10 merged on the new device; next: T-M2.16 packet)
 
-Phase/Milestone: P1 / M2 (in progress) · Last task: **T-M2.31 done** (`000640e`, PR #199, DEC-184) · Last commit: `594cc92` on `develop`
-(this handoff on `docs/T-M2.31-records`; `develop` moves to its merge commit) · Next: T-M2.10 → T-M2.16 → T-M2.6 → T-M2.32 → T-M2.7 (G5) · Remote: https://github.com/duochou042004/eng-lms (mirror: gitlab.com/duochou042004/eng-lms)
+Phase/Milestone: P1 / M2 (in progress) · Last task: **T-M2.10 done** (`6cca511`, PR #211, DEC-186) · Last commit on `develop`: `fb425e7`
+(QA report PR #212; T-M2.10 merge `6cca511`; this handoff on `docs/T-M2.10-records`) · Next: T-M2.16 → T-M2.6 → T-M2.32 → T-M2.7 (G5); T-M2.33 order: ask the PO ·
+Remote: https://github.com/duochou042004/eng-lms (mirror: gitlab.com/duochou042004/eng-lms) · Clone: `/home/deb/App_sources/eng-lms`
 
 ## Where we are
-- **T-M2.31 done** (`000640e`, PR #199 via merge-gate at `02d3503`, CI 7/7 (5 full); DEC-184). PO start 2026-11-19. (a) `ui/Popover` scrolls
-  inside itself (`overflow-y: auto`, stable gutter, ring scroll padding); (b) the tutor drawer keeps Log out and its ring with the alert, and the
-  text wins where both cannot fit (AC2o); (c) **the live Chrome crash after a failed logout is fixed** (block-body effect, DEC-182).
-- Gate PASS on `cc3d04d` (13 steps, 787 s). G3 one combined QA+UX qa-evaluator: round 1 PASS WITH MINOR / APPROVED (QA-1 S3 → AC2o, QA-2 S4,
-  UX-1 S4; DEC-183), delta PASS / APPROVED. QA report PR #200 (`qa/T-M2.31`).
-- **New row T-M2.32** (before T-M2.7): the `consoleGuard` gap in the other specs (may reveal hidden errors), an optional effect lint rule, and two
-  S4s (740×360 offline ring 1–2 px; the gutter inset).
-- **Firefox is out of the matrix** (DEC-180); G5 = 6 Chromium viewports + WebKit smoke, one `regression` run in T-M2.7.
+- **New device set up and verified** (DEC-185): Debian 13, rootless Podman 5.4.2, JDK 25.0.5.1, Node 24.22.3 (PO-accepted deviations from the
+  patch pins and §0's Podman 5.7+); check-docs, `scripts/tests/run-all.sh`, gate PASS on `develop` `6432d6a` (556 s), `gitlab-sync` OK. The dev
+  DB is empty. The T-M2.31 records PR #201 had already merged (DOCS-REVIEW + LC-APPROVED on it).
+- **PO order** (2026-11-20): T-M2.10 → T-M2.16 → T-M2.6 → T-M2.32, then T-M2.7.
+- **T-M2.10 done** (`6cca511`): integer JSON fields take JSON integers only (400 `MALFORMED_REQUEST`, nothing written; T-M2.9 QA F3 closed);
+  the S2-1 burst test proves no lock/transaction/pooled connection across bcrypt with a parked-hash latch, no clock; both mutations red. Gate PASS
+  on `c106861` (860 s, backend 524). G3 tier H: SEC APPROVED (3 S4 noted), QA PASS. **New row T-M2.33** (OQ T-M2.10-1: other scalar coercions,
+  e.g. `fullName: 123`, `rememberMe: 1`): order the PO's.
 
 ## In flight / uncommitted
-- **This records PR** (`docs/T-M2.31-records`): needs one fresh docs-reviewer (`DOCS-REVIEW T-M2.31: PASS`, text only), CI, `LC-APPROVED T-M2.31`,
-  merge-gate, `gitlab-sync.sh`. If it is still open on the new device, finish it first (step 2 below).
-- Nothing else: no open feature branch; Dependabot #165 and #135 stay open and held by the PO.
-
-## Moving to a new device (read before anything else)
-- **What moves with the repo:** everything durable is in git (progress.json, this handoff, packets, DECs, evidence summaries, QA reports).
-  GitHub is the source of truth; GitLab is a mirror pushed by `scripts/gitlab-sync.sh` after every merge (GitLab CI paused, DEC-107).
-- **What does NOT move** (git-ignored, local to the old device): `.env` (recreate: `cp .env.example .env`, dev-only values, DEC-094), `.data/**`
-  (E2E users are recreated by global setup), **the PO's dev database** (1,065 active / 30 paused / 133 archived students on the old device,
-  T-M2.27; the new device starts empty after `dev-up.sh`: tests must not depend on that data), local screenshots (`evidence/**/impl/*.png`),
-  `.claude/scratch/lc-records/` (reviewer copies; all recorded text is already in the repo), and Playwright browser builds (`~/.cache/ms-playwright/`).
-- **Set-up order:** `docs/07-operations/development-setup.md` §0 (new machine checklist, steps 1–8) from start to end. The agent stops and asks the PO
-  for `sudo`, accounts and credentials (gh and glab auth as `duochou042004`, the git credential helpers). Downloads need PO approval
-  (`pnpm browsers` for Playwright 1.65 / Chromium 1254). Then `./scripts/check-docs.sh`, `scripts/tests/run-all.sh`, one `./scripts/gate.sh` and
-  `./scripts/gitlab-sync.sh` (mirror reachable; the first use of the new glab credentials) as the verification (§0 step 8); record OS, engine, tool versions in `progress.json` `environment` and `project.repoLocal` (the clone path).
-- **This device's quirks may not apply there:** `CONTAINER_HOST=unix:///run/user/1000/podman/podman.sock` was needed because agent shells here run
-  with `NoNewPrivs=1` (rootless podman's newuidmap fails). On the new device test `podman ps` plainly first; use the socket only if it fails the
-  same way. Docker or Docker Desktop also works (§0); macOS needs Homebrew bash ≥ 4.4; Windows only through WSL2.
-- **Paths:** this device's clone is `/home/linux/Projects/eng-lms`; update the next-session prompt's path and `project.repoLocal` on the new one.
-- Last state on this device: `develop` = GitHub = GitLab after the records merge; `git status` clean.
+- QA report PR #212 merged (`fb425e7`). **This records PR** (`docs/T-M2.10-records`):
+  one fresh docs-reviewer (`DOCS-REVIEW T-M2.10: PASS`, text only), CI, `LC-APPROVED T-M2.10`, merge-gate, gitlab-sync. Finish it first if open.
+- Nothing else: no open feature branch. Dependabot #209 (msw 3; supersedes the closed #165) and #135 (react group) held by the PO; #203, #204, #207, #208 open, untriaged
+  (Dependabot hygiene is the PO's, DEC-158 PO-8).
 
 ## Next steps (in this order)
-1. On the new device: set-up and verification (above).
-2. If the T-M2.31 records PR is still open: one fresh docs-reviewer (text only) → `DOCS-REVIEW T-M2.31: PASS` on its final head, CI green,
-   `LC-APPROVED T-M2.31`, merge-gate, `gitlab-sync.sh`.
-3. **T-M2.10** (BE; the backlog row says it runs before the next backend task): write its packet (skill `task-packet`), G0 by a fresh
-   docs-reviewer, ask the PO for the start signal. Then **T-M2.16** (BE), **T-M2.6** (Settings v1, BE+FE), **T-M2.32** (FE/E2E, before T-M2.7).
-   The PO's goal listed T-M2.6 first; the LC proposes T-M2.10 first because of the row's note. Confirm the order with the PO at the first start-signal ask.
-4. **T-M2.26** (CI scope on) only after at least 10 PRs under T-M2.23 shadow mode, with its shadow report.
-5. **T-M2.7** holds the M2 G5: one `regression` run (no Firefox), the milestone retro, risk review, PO sign-off.
+1. Close the records PR (above).
+2. **T-M2.16** (BE; username-only PATCH bumps `version`, DEC-124): packet (task-packet skill), G0 by a fresh docs-reviewer, PO start signal,
+   backend-implementer, gate once on the final head, PR, CI, G3 (identity/students: likely tier H → SEC + QA), merge-gate, records (part C).
+3. **T-M2.6** (Settings v1, BE+FE), then **T-M2.32** (FE/E2E guard gap, before T-M2.7). Ask the PO where T-M2.33 goes.
+4. **T-M2.26** only after at least 10 PRs under T-M2.23 shadow mode. **T-M2.7** holds the M2 G5: one `regression` run (no Firefox; ask first).
 
 ## Pending PO decisions / actions
-- The order of the remaining M2 rows (step 3); each task's start signal.
-- **Dependabot, held by the PO:** #165 (msw 3 major: `web` typecheck fails at `web/src/test/setup.ts:14`; needs a packet) and #135 (react group).
-  The LC does not touch them unasked. A React bump touches T-M2.31's (c) mechanism: re-run its unit test and E2E.
-- On the new device: credentials, `sudo` steps and browser downloads (§0).
+- Each task's start signal; T-M2.33's place in the order.
+- Dependabot #209 (msw 3; supersedes the closed #165: `web` typecheck fails at `web/src/test/setup.ts:14`, seen on #165; needs a packet) and #135 held; a React bump touches T-M2.31 (c): re-run its unit test and E2E.
+- WebKit host libraries (sudo) only if a local WebKit run is ever needed; G5 uses the `regression` workflow.
 
 ## Gotchas
+- **This device (Debian 13, `/home/deb/App_sources/eng-lms`, DEC-185):** plain rootless Podman 5.4.2 works (`NoNewPrivs` 0, no
+  `CONTAINER_HOST`); `podman.socket` is enabled for Testcontainers (`source scripts/env.sh`). JDK 25.0.5.1 and Node 24.22.3 are used instead of the
+  `.sdkmanrc`/`.nvmrc` patch pins (PO); `nvm use` would fail (24.21.0 not installed): don't call it. Playwright Chromium 1255 installed; WebKit
+  and its host libraries are not (G5 WebKit smoke runs in the `regression` workflow). `python3-jsonschema` from apt.
+- **merge-gate refuses outside `develop`:** `git switch develop && git pull --ff-only` first (T-M2.10 PR #210).
+- **`check-path-ownership.sh` needs the branch:** `./scripts/check-path-ownership.sh <branch> origin/develop`; bare it prints usage, and a
+  piped `| tail` hides the failure (2026-11-20 the packet branch was pushed before the check; it passed when re-run).
 - **Chromium 158's `scrollIntoView` returns a Promise** (DEC-182): a `useEffect` arrow that returns an expression hands it to React as the
   cleanup, which throws on unmount. Effects that call DOM methods need a block body. Fixed in T-M2.31 (c) (`000640e`); six `focus()`/`setAttribute`
   effects keep the expression shape (safe today, `undefined`): T-M2.32 (b).
@@ -136,8 +124,9 @@ Phase/Milestone: P1 / M2 (in progress) · Last task: **T-M2.31 done** (`000640e`
   agent's final text from its `tasks/<id>.output` transcript rather than retyping it.
 - `gitlab-sync.sh` may fail authentication transiently: retry once. GitLab CI is **paused** (DEC-107; the sync pushes with `-o ci.skip`; to resume:
   the GitLab project variable `ENGLMS_GITLAB_CI=on` and `ENGLMS_GITLAB_CI=on ./scripts/gitlab-sync.sh`, ci-cd §1.1); the sync still runs after every merge.
-- Wall-clock bounds in tests flake on the 2-core CI runner (DEC-093); one remains: `AuthApiIntegrationTest.anUnrelatedLoginStaysFastDuringABurstOnOneUsername`
-  (failed at 3355 ms on PR #125's docs-only head, run 39567176119; rerun) — now in the BE row T-M2.10 (DEC-144 (3)).
+- Wall-clock bounds in tests flake on the 2-core CI runner (DEC-093); no wall-clock bound remains in a security test except one named
+  exception: T-M2.10 (DEC-186) replaced the burst test with a parked-hash latch test; the sibling `parallelFailedLoginsTakeSimilarTimeForUnknownAndExistingUsernames` keeps a time
+  comparison as a named coding-agent-rules §4.6 exception (DEC-185 (3)); a failure there is a new row.
 - `git merge` is denied: `gh pr update-branch` (DEC-090).
 - **LC habits from T-M2.22 (free, from now):** batch fixes before pushing to a text-only PR (16 of 32 docs-head runs were cancelled by a
   later push); open the records PR after the `qa/` PR has merged.
@@ -171,5 +160,5 @@ Phase/Milestone: P1 / M2 (in progress) · Last task: **T-M2.31 done** (`000640e`
 
 
 ## Files to read first
-`CLAUDE.md` → `progress.json` → this file → `docs/07-operations/development-setup.md` §0 (new device) → DEC-182..DEC-184 → the backlog rows
-T-M2.10, T-M2.16, T-M2.6, T-M2.32, T-M2.7 → `docs/09-harness/coding-agent-rules.md`.
+`CLAUDE.md` → `progress.json` → this file → DEC-185, DEC-186 → the backlog rows T-M2.16, T-M2.6, T-M2.32, T-M2.33, T-M2.7 →
+`docs/09-harness/coding-agent-rules.md` → `docs/09-harness/lessons-learned.md` (before the packet).

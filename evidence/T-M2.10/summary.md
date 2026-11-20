@@ -105,3 +105,7 @@ answer 401. No elapsed-time assertion. The old helper and the unknown-username c
 |---|---|---|---|---|---|---|---|---|---|
 | G0 | docs-reviewer | `245d01c` | PASS | 0/0/2/9 | packet | 81,389 | 5.7 | 0 | 0 |
 | impl | backend-implementer | `c106861` | gate PASS | — | — | 191,935 | 51.5 | 1 | 14.3 |
+| G3 SEC | security-reviewer | `b146ae3` | APPROVED | 0/0/0/3 | full | 53,309 | 4.4 | 0 | 0 |
+| G3 QA | qa-evaluator | `b146ae3` | PASS | 0/0/0/0 | full | 90,979 | 12.4 | 0 | 0 |
+
+Reviews: `review/security.md` (SEC APPROVED), `qa/report.md` (QA PASS, PR #212). QA minutes from the Agent result (743,744 ms); the agent's own wall-clock estimate was about 25 min.
