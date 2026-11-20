@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Milestone | M2 |
-| Status | draft (G0 pending) |
+| Status | ready (G0 PASS 2026-11-20, findings fixed; PO start signal pending) |
 | Owner role | BE (backend-implementer; SEC + QA at G3) |
 | Branch | `fix/T-M2.10-strict-json-numbers` (from `develop`) |
 | Depends on | T-M2.9 (merged, `37e8ce0`, DEC-105) |
@@ -32,15 +32,17 @@ time bound.
      refused `version` values and a positive control (an integer `version` → the existing success answer).
   3. **The burst test without a wall-clock bound**: `AuthApiIntegrationTest.anUnrelatedLoginStaysFastDuringABurstOnOneUsername` is replaced by a
      deterministic test of the S2-1 property (Design notes, AC6), proven red by a mutation (AC7).
-- Out of scope (explicit):
-  - Coercion of other scalar types (a number for a `String` field, `"true"` for a `Boolean`, enums from integers). api-conventions covers them in
-    words too, but the row and QA F3 name integer fields only; if the implementer finds such a coercion on a write endpoint it is an OQ (L-10),
-    not code.
-  - Query parameters (`page`, `size`): Spring's conversion service binds them, not Jackson; `size=0.7` already fails conversion. Not changed.
-  - Integers outside the `long` range and negative `version` values: whatever they answer today is not changed here (QA records it; a 500 would be an OQ).
-  - The sibling timing test `parallelFailedLoginsTakeSimilarTimeForUnknownAndExistingUsernames`: it guards the username timing oracle (DEC-093),
-    a property that is itself a time comparison of two equal workloads; it has not failed on CI. Kept as is; a failure would be a new row.
-  - Response DTOs and the OpenAPI contract: the schemas already say `integer` / `int64`, so `contract-drift` must stay green with no spec change.
+
+## Out of scope (explicit)
+- Coercion of other scalar types (a number for a `String` field, `"true"` for a `Boolean`, enums from integers). api-conventions covers them in
+  words too, but the row and QA F3 name integer fields only; if the implementer finds such a coercion on a write endpoint it is an OQ (L-10),
+  not code.
+- Query parameters (`page`, `size`): Spring's conversion service binds them, not Jackson; `size=0.7` already fails conversion. Not changed.
+- Integers outside the `long` range and negative `version` values: whatever they answer today is not changed here (QA records it; a 500 would be an OQ).
+- The sibling timing test `parallelFailedLoginsTakeSimilarTimeForUnknownAndExistingUsernames`: it guards the username timing oracle (DEC-093),
+  a property that is itself a time comparison of two equal workloads; it has not failed on CI. Kept as is, as a **named exception to
+  coding-agent-rules §4.6** (no wall-clock bounds) recorded by DEC-185 (3); a failure would be a new row.
+- Response DTOs and the OpenAPI contract: the schemas already say `integer` / `int64`, so `contract-drift` must stay green with no spec change.
 
 ## Guardrail answers (scope.md §6)
 1. Trace: api-conventions (wrong type → 400), validation-rules (`version` integer), T-M2.9 QA F3, DEC-105, DEC-144 (3). 2. Drift toward excluded
@@ -58,18 +60,25 @@ scope: no. 3. Mandatory set-up: none. 4. Weekly use: every edit the tutor saves 
   mapper; a stored-JSON reader that does must still read every value already written (the existing tests cover it; the summary names them).
 - **The web client** sends `version` as the number it received (`web/src/features/students/api`), never a string (grep at G0: no
   string `version` in `web/src`, `e2e/`, `qa/` or backend tests), so no kept assertion changes.
-- **Burst test design (S2-1 without a clock):** wrap the `PasswordEncoder` bean in the test (e.g. `@MockitoSpyBean` or a test configuration) so
-  that the 30 wrong-password attempts on `tutor.one` park inside `matches()` on a latch. While all 30 are parked (wait until 30 have entered, with
-  a polling wait, L-05): (a) the unrelated user `student.c` signs in and gets 200; (b) from a separate JDBC connection,
-  `SELECT 1 FROM app.user_account WHERE username = 'tutor.one' FOR UPDATE NOWAIT` succeeds (no row lock is held across the hash); (c) inside
-  each parked `matches()` call, no transaction is active on that thread (`TransactionSynchronizationManager.isActualTransactionActive()` is
-  false). Then release the latch; all 30 answer 401. A bounded await (e.g. 30 s) only detects a hang, it is not a speed bound, and the failure
-  message says which of (a)–(c) failed. The unknown-username comparison burst is no longer needed.
+- **Burst test design (S2-1 without a clock):** wrap the `PasswordEncoder` bean in the test (e.g. `@MockitoSpyBean`; it is the
+  `DelegatingPasswordEncoder` of `SecurityConfiguration`, injected by constructor) so that the 30 wrong-password attempts on `tutor.one` park inside
+  `matches()` on a latch (park by the burst's password, never the unrelated login's). Guard first: assert the Hikari pool's maximum size is below 30,
+  so a later pool increase cannot make the test vacuous. Then wait (bounded, polling, L-05) for all 30 to enter `matches()`, and **whether or not
+  that wait completed**, evaluate every named check with AssertJ `SoftAssertions`, so each failing check is reported by name:
+  (0) **all 30 attempts reached the hash concurrently** (message: "N of 30 attempts reached the hash: serialised by a lock or the pool");
+  (c) inside each parked `matches()` call no transaction was active on that thread
+  (`TransactionSynchronizationManager.isActualTransactionActive()` false, recorded by the spy);
+  (d) the Hikari pool's active connections are 0 while the burst is parked (`HikariPoolMXBean`; security.md's "no pooled connection held");
+  (b) from a separate JDBC connection, `SELECT 1 FROM app.user_account WHERE username = 'tutor.one' FOR UPDATE NOWAIT` succeeds (no row lock is
+  held across the hash);
+  (a) the unrelated user `student.c` signs in and gets 200 while the burst is parked.
+  The latch is released in `finally`; then all 30 answer 401. A bounded await (e.g. 30 s) only detects a hang, it is not a speed bound. The
+  unknown-username comparison burst is no longer needed.
 - **Contradiction scan (L-03):** api-conventions and validation-rules agree with the change; no kept test sends a fractional or string integer;
   `security.md` §6 (1 MB limit) uses the factory customizer, untouched. The old burst test's comparison and its DEC-093 mutation record are
   replaced by AC7's mutation, recorded in the summary.
-- **Shortcut ledger:** `LoginThrottle` (`ponytail:`) is in the login path but its trigger (multi-instance) does not fire. No other marker in the
-  touched area.
+- **Shortcut ledger:** in `identity`, `LoginThrottle` (`ponytail:`, trigger: multi-instance) and `AccountStatusFilter.java:35` (`ponytail:`,
+  trigger: it shows in profiles) are in the request path; neither trigger fires. No marker in `shared/web` or the students web layer.
 - **A real defect found by a new check** outside this scope (L-10): reported at once as an OQ, `test.fail`-style disabling only until the LC
   rules, and the LC rules before G3.
 
@@ -81,26 +90,29 @@ scope: no. 3. Mandatory set-up: none. 4. Weekly use: every edit the tutor saves 
 - Audience: tutor endpoints only in the tests; the binding rule also applies to `/api/v1/student/**` and `/api/v1/auth/**` bodies (one mapper).
 
 ## Acceptance criteria
-- AC1 (api-conventions, QA F3): `PATCH /api/v1/tutor/students/{sid}` with `version` `0.7`, `3.9`, `1.0`, `1e0`, `"1"`, `""` or `true` answers 400
-  `MALFORMED_REQUEST` with the standard problem body; the student row and its `version` are unchanged (read back).
-- AC2: the same table on `PATCH /api/v1/tutor/guardians/{gid}`: 400 `MALFORMED_REQUEST`, guardian unchanged.
+- AC1 (api-conventions, QA F3): `PATCH /api/v1/tutor/students/{sid}` with `version` `0.7`, `3.9`, `1.0`, `1e0`, `"1"`, `""` or `" "` answers 400
+  `MALFORMED_REQUEST` with the standard problem body; the student row and its `version` are unchanged (read back). `true` is already 400 today (Jackson does not coerce a boolean to
+  `Long`) and stays in the table as a regression row.
+- AC2: the same table (regression row included) on `PATCH /api/v1/tutor/guardians/{gid}`: 400 `MALFORMED_REQUEST`, guardian unchanged.
 - AC3: the same table on `PUT /api/v1/tutor/students/{sid}/learning-profile` with an existing profile and on a first creation; `null` and an absent
   `version` still create the first profile (DEC-103).
 - AC4 (positive controls): on each of the three endpoints an integer `version` equal to the current one succeeds as before, and a stale integer still
   answers 409 `STALE_VERSION`.
-- AC5 (one mechanism): the rule lives in one configuration in `shared/web`; a unit test on the Spring-managed `JsonMapper` shows a record with an
+- AC5 (one mechanism): the rule lives in one configuration in `shared/web`; a test that loads the real configuration (`@SpringBootTest`, or
+  `@JsonTest` + `@Import` of the new configuration) shows on the Spring-managed `JsonMapper` a record with an
   `int`, a `long` and a `Long` component refusing `0.7` and `"1"` and accepting `1` and (for `Long`) `null`. Proven red: the same test fails with the
-  customizer removed (summary records the run, §4.5).
+  customizer bean removed (not the import; summary records the run, §4.5).
 - AC6 (S2-1, no clock): `anUnrelatedLoginStaysFastDuringABurstOnOneUsername` (renamed if the implementer likes, the javadoc keeps the S2-1 reference)
-  checks (a)–(c) of the Design notes while the burst is parked, with no assertion on elapsed time.
-- AC7 (mutation, L-01): with bcrypt moved back under the row lock or inside the login transaction (a local, uncommitted change), AC6 fails; the
-  summary records the mutation and the failing output.
+  checks (0), (a)–(d) of the Design notes with `SoftAssertions` after the pool-size guard, with no assertion on elapsed time.
+- AC7 (mutations, L-01): **both** local, uncommitted mutations make AC6 fail: (i) bcrypt moved back under the row lock (`findForUpdateById` before
+  `matches()`), and (ii) bcrypt moved inside the login transaction without the lock. The summary records, for each, the diff and which named checks
+  failed (expected: (i) trips (0), (b), (c); (ii) trips (0), (c), (d) and the pool wait).
 - AC8: `./scripts/gate.sh` green once on the final head and CI green; existing assertions kept; `contract-drift` green with no OpenAPI change.
 
 ## Test plan
 - Implementation: AC5 unit test; AC1–AC4 integration tests (Testcontainers, table-driven); AC6 in `AuthApiIntegrationTest`; AC6 run ×20 locally
   (it replaces a flake; summary records 20/20) and the AC7 mutation.
-- Independent QA focus (black-box, after SEC): probe the three endpoints and also `POST /api/v1/tutor/students`, the status `PATCH`, the guardian
+- Independent QA focus (black-box, after SEC): probe the three endpoints and also `POST /api/v1/tutor/students`, the status `POST /api/v1/tutor/students/{sid}/status`, the guardian
   `POST`, and the sign-in body (`rememberMe` is `Boolean`: out of scope, note what it does) with fractions, exponents, strings, empty strings,
   booleans, `null` and huge integers; confirm no row changed after a refusal and the problem body leaks no input; repeat AC6 ×20.
 - SEC focus: the AC6 test still proves S2-1 (no lock, no transaction, no pooled connection the unrelated login needs across the hash); the global
@@ -128,6 +140,7 @@ scope: no. 3. Mandatory set-up: none. 4. Weekly use: every edit the tutor saves 
 ```bash
 source ~/.sdkman/bin/sdkman-init.sh; source ~/.nvm/nvm.sh; source scripts/env.sh
 (cd backend && ./mvnw -q test -Dtest='AuthApiIntegrationTest')
-(cd backend && for i in $(seq 20); do ./mvnw -q test -Dtest='AuthApiIntegrationTest#anUnrelatedLogin*' || break; done)
+# adjust the filter to the final method name
+(cd backend && for i in $(seq 20); do ./mvnw -q test -Dtest='AuthApiIntegrationTest#anUnrelatedLogin*' || { echo "run $i failed"; exit 1; }; done)
 ./scripts/gate.sh
 ```

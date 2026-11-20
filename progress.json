@@ -16,7 +16,7 @@
       }
     ]
   },
-  "updatedAt": "2026-11-20T13:36:17Z",
+  "updatedAt": "2026-11-20T13:43:40Z",
   "updatedBy": "lead-coordinator (new device set-up; T-M2.10 packet)",
   "phase": {
     "id": "P1",
@@ -32,16 +32,17 @@
   "currentTask": {
     "id": "T-M2.10",
     "title": "Strict JSON number binding (T-M2.9 QA F3) and the AuthApiIntegrationTest wall-clock flake (DEC-144 (3))",
-    "status": "draft",
+    "status": "ready",
     "ownerRole": "BE",
     "branch": "docs/T-M2.10-packet",
     "packet": "docs/tasks/T-M2.10-strict-json-numbers.md",
-    "pr": null,
+    "pr": "210",
     "lastCommit": null,
     "startedAt": null,
     "nextSteps": [
-      "G0 by a fresh docs-reviewer on the packet PR (docs/T-M2.10-packet)",
-      "Ask the PO for the start signal; implementer on fix/T-M2.10-strict-json-numbers; SEC then QA at G3 (tier H)",
+      "Merge the packet PR #210 (LC-APPROVED, merge-gate, gitlab-sync)",
+      "Ask the PO for the start signal; backend-implementer on fix/T-M2.10-strict-json-numbers; SEC then QA at G3 (tier H)",
+      "Merge records: also update the handoff wall-clock gotcha line (G0 S4-9)",
       "Then T-M2.16, T-M2.6, T-M2.32 (PO order, DEC-185); T-M2.26 after at least 10 shadow PRs; T-M2.7 holds the G5"
     ],
     "trace": [
@@ -51,7 +52,7 @@
     ],
     "entryGate": [
       "T-M2.31 merged — met (000640e)",
-      "Packet + G0 — packet written, G0 pending",
+      "Packet + G0 — met (DOCS-REVIEW PASS on 245d01c, findings fixed; DEC-185)",
       "PO start signal — not asked"
     ]
   },
@@ -1758,6 +1759,11 @@
       "at": "2026-11-20T13:36:17Z",
       "actor": "lead-coordinator",
       "event": "New device set up (Debian 13, rootless Podman 5.4.2; DEC-185): gate PASS on develop 6432d6a, gitlab-sync OK. PO order T-M2.10 -> T-M2.16 -> T-M2.6 -> T-M2.32. T-M2.10 packet written (tier H). Next: G0 docs review."
+    },
+    {
+      "at": "2026-11-20T13:43:40Z",
+      "actor": "lead-coordinator",
+      "event": "T-M2.10 G0: DOCS-REVIEW T-M2.10-packet PASS on 245d01c (S3-1, S3-2, S4s fixed); packet ready; PR #210."
     }
   ]
 }
