@@ -3,7 +3,7 @@
   "project": {
     "name": "Eng-LMS",
     "description": "Private 1:1 teaching workspace for a single English tutor and their students (flexible LMS; not a school/centre LMS, SaaS, marketplace, booking, payment, chat, conferencing, Drive clone or AI tutor).",
-    "repoLocal": "/home/linux/Projects/eng-lms",
+    "repoLocal": "/home/deb/App_sources/eng-lms",
     "repoRemote": "https://github.com/duochou042004/eng-lms",
     "sources": [
       {
@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-11-19T13:56:48Z",
-  "updatedBy": "lead-coordinator (T-M2.31 merged; records; device handover)",
+  "updatedAt": "2026-11-20T13:36:17Z",
+  "updatedBy": "lead-coordinator (new device set-up; T-M2.10 packet)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -34,23 +34,24 @@
     "title": "Strict JSON number binding (T-M2.9 QA F3) and the AuthApiIntegrationTest wall-clock flake (DEC-144 (3))",
     "status": "draft",
     "ownerRole": "BE",
-    "branch": null,
-    "packet": null,
+    "branch": "docs/T-M2.10-packet",
+    "packet": "docs/tasks/T-M2.10-strict-json-numbers.md",
     "pr": null,
     "lastCommit": null,
     "startedAt": null,
     "nextSteps": [
-      "Next device: run development-setup §0 (new machine checklist) and record the environment first (handoff 'Moving to a new device')",
-      "Write the T-M2.10 packet (backlog: runs before the next backend task), G0 by a fresh docs-reviewer, then ask the PO for the start signal",
-      "Then T-M2.16, T-M2.6, T-M2.32 (E2E guard gap, before T-M2.7); T-M2.26 after at least 10 shadow PRs; T-M2.7 holds the G5 (one regression run, no Firefox)"
+      "G0 by a fresh docs-reviewer on the packet PR (docs/T-M2.10-packet)",
+      "Ask the PO for the start signal; implementer on fix/T-M2.10-strict-json-numbers; SEC then QA at G3 (tier H)",
+      "Then T-M2.16, T-M2.6, T-M2.32 (PO order, DEC-185); T-M2.26 after at least 10 shadow PRs; T-M2.7 holds the G5"
     ],
     "trace": [
       "DEC-105",
-      "DEC-144"
+      "DEC-144",
+      "DEC-185"
     ],
     "entryGate": [
       "T-M2.31 merged — met (000640e)",
-      "Packet + G0 — not started",
+      "Packet + G0 — packet written, G0 pending",
       "PO start signal — not asked"
     ]
   },
@@ -65,7 +66,7 @@
     "lastCommit": null,
     "startedAt": null,
     "nextSteps": [
-      "After T-M2.10, T-M2.16, T-M2.6 and T-M2.32 (order: PO decision); T-M2.26 after at least 10 shadow PRs"
+      "After T-M2.10, T-M2.16, T-M2.6 and T-M2.32 (PO order, DEC-185); T-M2.26 after at least 10 shadow PRs"
     ],
     "trace": [
       "DEC-158",
@@ -958,19 +959,19 @@
     }
   ],
   "environment": {
-    "jdk": "Temurin 25.0.4 (SDKMAN; sdk env install from .sdkmanrc, sdk default set; 25.0.5-tem also installed); source ~/.sdkman/bin/sdkman-init.sh",
-    "springBootCli": "4.1.0 (sdk default set)",
+    "jdk": "Temurin 25.0.5.1 (SDKMAN, the only JDK installed; .sdkmanrc pins 25.0.4-tem: patch difference accepted by the PO, DEC-185); source ~/.sdkman/bin/sdkman-init.sh",
+    "springBootCli": "not installed (no script uses it; DEC-185)",
     "buildTool": "Maven Wrapper (Maven 3.10.0; no global mvn/gradle installed)",
-    "node": "24.21.0 via nvm (.nvmrc, nvm alias default 24.21.0; source ~/.nvm/nvm.sh, then nvm use); the app-inherited PATH starts on 24.22.2, corepack enabled on both",
-    "pnpm": "12.6.0 in the projects via packageManager (corepack 0.36.0)",
-    "containerEngine": "Rootless Podman 5.8.6 + podman-compose 1.6.0; the user podman.socket enabled 2026-11-11 (DEC-044, development-setup §0 step 4); no docker CLI. Agent shells run with NoNewPrivs=1 (inherited from the desktop app), so the setuid newuidmap fails and direct podman calls error (\"newuidmap: write to uid_map failed\"): export CONTAINER_HOST=unix:///run/user/1000/podman/podman.sock (podman remote mode through the systemd socket) in every agent shell before dev-up/gate/e2e. scripts/env.sh -> engine: podman (socket /run/user/1000/podman/podman.sock), DOCKER_HOST set, TESTCONTAINERS_RYUK_DISABLED=true. bash 5.3.9, zsh 5.9",
-    "gh": "2.103.3, authenticated as duochou042004 (keyring); git credential helper !/usr/bin/gh auth git-credential for github.com",
-    "host": "Ubuntu 26.10 (kernel 7.3.0-10-generic, x86_64; Dell G15 5515), 16 cores, 22 GB RAM, 102 GB free; clone /home/linux/Projects/eng-lms; git 2.55.0; shellcheck not installed",
-    "python": "3.14.8 with jsonschema 4.19.2 (scripts/check_docs.py); jq 1.8.2",
-    "playwright": "Chromium headless shell 1254 (Chrome 158.0.8127.18, Playwright 1.65; installed by the LC 2026-11-14 with PO approval) and 1248 (Playwright 1.64) for e2e/ (pnpm browsers); Firefox and WebKit not downloaded, host libraries not installed (PO: sudo, for G5)",
+    "node": "24.22.3 via nvm (nvm default; .nvmrc pins 24.21.0: patch difference accepted by the PO, DEC-185; engines >=24 <25); source ~/.nvm/nvm.sh; corepack enabled",
+    "pnpm": "12.6.0 in the projects via packageManager (corepack)",
+    "containerEngine": "Rootless Podman 5.4.2 + podman-compose 1.3.0 (Debian 13 packages; below development-setup §0 5.7+, PO: try it and record, DEC-185); plain podman works (NoNewPrivs=0, no CONTAINER_HOST needed); the user podman.socket enabled 2026-11-20 for Testcontainers. scripts/env.sh -> engine: podman (socket /run/user/1000/podman/podman.sock), DOCKER_HOST set, TESTCONTAINERS_RYUK_DISABLED=true. bash 5.2.37, zsh. No docker CLI",
+    "gh": "2.105.0, authenticated as duochou042004 (keyring; scopes repo, workflow, gist, read:org); git credential helper !/usr/bin/gh auth git-credential",
+    "host": "Debian GNU/Linux 13 (trixie), kernel 6.12.117+deb13-amd64, x86_64, 16 cores, 22 GB RAM, 114 GB free; clone /home/deb/App_sources/eng-lms; shellcheck not installed",
+    "python": "python3 (Debian 13) with python3-jsonschema 4.19.2 (apt, PO); jq present",
+    "playwright": "Chromium headless shell 1255 (Chrome 159.0.8154.6) for e2e/ (pnpm browsers, PO approval 2026-11-20); Firefox and WebKit not downloaded (Firefox out of the matrix, DEC-180; WebKit smoke for G5 needs PO sudo for host libraries)",
     "githubActionsStorage": "PO freed the account artifact storage on 2026-09-26; artifacts are kept 5 days (DEC-056).",
-    "gitlab": "Private mirror gitlab.com/duochou042004/eng-lms (project 86941168), remote gitlab added 2026-11-11, glab 1.130.0 (/usr/bin/glab) authenticated as duochou042004 (keyring); git credential helper !/usr/bin/glab auth git-credential; GitLab CI paused (DEC-107). Sync: ./scripts/gitlab-sync.sh",
-    "note": "Device moved 2026-11-11 (PO, handoff of 2026-10-23): development-setup §0 on Ubuntu 26.10 + rootless Podman; hooks installed (core.hooksPath scripts/hooks), .env from .env.example; check-docs PASS and scripts/tests/run-all.sh PASS; the first gate runs with T-M2.13 G1."
+    "gitlab": "Private mirror gitlab.com/duochou042004/eng-lms (project 86941168), remote gitlab added 2026-11-20, glab /usr/bin/glab authenticated as duochou042004 (keyring); git credential helper !/usr/bin/glab auth git-credential; GitLab CI paused (DEC-107). Sync: ./scripts/gitlab-sync.sh",
+    "note": "Device moved 2026-11-20 (DEC-185): development-setup §0 steps 1-6 and 8 (step 7 optional, skipped); hooks installed, .env from .env.example, dev DB empty; check-docs PASS, scripts/tests/run-all.sh PASS, gate PASS on develop 6432d6a (13 steps, 556 s), gitlab-sync OK."
   },
   "history": [
     {
@@ -1752,6 +1753,11 @@
       "at": "2026-11-19T13:51:09Z",
       "actor": "lead-coordinator",
       "event": "T-M2.31 merged (PR #199, 000640e; DEC-184): PO start 2026-11-19; gate PASS on cc3d04d; G3 combined QA+UX round 1 PASS WITH MINOR (QA-1 fixed as AC2o, DEC-183), delta PASS; QA report PR #200; T-M2.32 added. Device handover: the next session runs on a new device."
+    },
+    {
+      "at": "2026-11-20T13:36:17Z",
+      "actor": "lead-coordinator",
+      "event": "New device set up (Debian 13, rootless Podman 5.4.2; DEC-185): gate PASS on develop 6432d6a, gitlab-sync OK. PO order T-M2.10 -> T-M2.16 -> T-M2.6 -> T-M2.32. T-M2.10 packet written (tier H). Next: G0 docs review."
     }
   ]
 }
