@@ -17,7 +17,7 @@
 | Phone | 6–20 characters from `[0-9 +().-]` |
 | Label/value lists (custom fields, contact handles, metadata) | label 1–60, value 0–500, ≤ 30 entries |
 | Position lists (`order` PUT) | the full set of current child IDs, no duplicates |
-| `version` | required on update, integer ≥ 0. Exception (DEC-103, T-M2.9): the learning-profile `PUT` takes `version` `null` or absent as "first creation" (409 `STALE_VERSION` once a profile exists) |
+| `version` | required on update, a JSON integer ≥ 0 (a fraction or string is 400 `MALFORMED_REQUEST`, T-M2.10). Exception (DEC-103, T-M2.9): the learning-profile `PUT` takes `version` `null` or absent as "first creation" (409 `STALE_VERSION` once a profile exists) |
 
 ## identity / students
 
