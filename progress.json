@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-11-20T14:00:34Z",
-  "updatedBy": "lead-coordinator (new device set-up; T-M2.10 packet)",
+  "updatedAt": "2026-11-20T15:13:37Z",
+  "updatedBy": "lead-coordinator (T-M2.10 merged; records)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -30,30 +30,29 @@
     "exitCriteria": "FR-AUTH-01..10 and FR-STU-01..07 accepted; authorization-matrix and student-isolation harnesses fail on any unregistered endpoint; add-student flow E2E at 360/768/1280 within its step budget; security review of authentication passed (docs/01-product/roadmap.md)."
   },
   "currentTask": {
-    "id": "T-M2.10",
-    "title": "Strict JSON number binding (T-M2.9 QA F3) and the AuthApiIntegrationTest wall-clock flake (DEC-144 (3))",
-    "status": "in_progress",
+    "id": "T-M2.16",
+    "title": "Username-only student PATCH bumps the student version (concurrent edits; T-M2.14 docs review D-6, DEC-124)",
+    "status": "draft",
     "ownerRole": "BE",
-    "branch": "fix/T-M2.10-strict-json-numbers",
-    "packet": "docs/tasks/T-M2.10-strict-json-numbers.md",
+    "branch": null,
+    "packet": null,
     "pr": null,
     "lastCommit": null,
-    "startedAt": "2026-11-20T14:00:34Z",
+    "startedAt": null,
     "nextSteps": [
-      "backend-implementer on fix/T-M2.10-strict-json-numbers (AC1-AC8)",
-      "Gate once on the final head, PR, CI; G3 tier H: SEC then QA",
-      "Merge records: also update the handoff wall-clock gotcha line (G0 S4-9)",
-      "Then T-M2.16, T-M2.6, T-M2.32 (PO order, DEC-185)"
+      "If open: QA report PR #212 (qa/T-M2.10), then the records PR (docs/T-M2.10-records): docs-reviewer, CI, LC-APPROVED, merge-gate, gitlab-sync",
+      "Write the T-M2.16 packet (task-packet skill), G0 by a fresh docs-reviewer, ask the PO for the start signal",
+      "Then T-M2.6, T-M2.32 (PO order, DEC-185); T-M2.33 order: ask the PO; T-M2.26 after at least 10 shadow PRs; T-M2.7 holds the G5 (one regression run, no Firefox)"
     ],
     "trace": [
-      "DEC-105",
-      "DEC-144",
+      "FR-STU-03",
+      "DEC-124",
       "DEC-185"
     ],
     "entryGate": [
-      "T-M2.31 merged — met (000640e)",
-      "Packet + G0 — met (PR #210, 028fa59; DEC-185)",
-      "PO start signal — given 2026-11-20 (chat: \"Start\")"
+      "T-M2.10 merged — met (6cca511)",
+      "Packet + G0 — not started",
+      "PO start signal — not asked"
     ]
   },
   "nextTask": {
@@ -442,21 +441,29 @@
       "mergeCommit": "000640e",
       "evidence": "evidence/T-M2.31/summary.md",
       "note": "PR #199 via merge-gate (head 02d3503, CI 7/7 (5 full)); packet PR #197 (4bdec97); PO start 2026-11-19 (Hold on 2026-11-18); gate PASS on cc3d04d (787 s); G3 combined QA+UX: round 1 PASS WITH MINOR / APPROVED (QA-1 S3 fixed as AC2o, DEC-183), delta PASS / APPROVED (193,294 tokens); QA report PR #200; follow-ups T-M2.32; DEC-183, DEC-184"
+    },
+    {
+      "id": "T-M2.10",
+      "title": "Strict JSON number binding (T-M2.9 QA F3) and the AuthApiIntegrationTest wall-clock flake (DEC-144 (3))",
+      "completedAt": "2026-11-20T15:12:00Z",
+      "mergeCommit": "6cca511",
+      "evidence": "evidence/T-M2.10/summary.md",
+      "note": "PR #211 via merge-gate (head b146ae3, CI 7/7 (5 full)); packet PR #210 (028fa59); PO start 2026-11-20; gate PASS on c106861 (860 s); G3 tier H: SEC APPROVED (3 S4 noted), QA PASS; QA report PR #212; OQ T-M2.10-1 -> T-M2.33; DEC-185, DEC-186"
     }
   ],
   "tests": {
-    "lastRun": "2026-11-19T12:58:54Z",
-    "summary": "T-M2.31 head cc3d04d: gate PASS (13 steps, 787 s); backend/contract-drift skipped (web-only diff); e2e 482 s incl. shells.spec.ts x3 on phone-small, tablet, laptop; shells.spec.ts 100 passed, 26 skipped.",
+    "lastRun": "2026-11-20T14:34:55Z",
+    "summary": "T-M2.10 head c106861: gate PASS (13 steps, 860 s); backend 524 tests; web 855; e2e 544 passed, 62 skipped (no changed spec).",
     "suites": [
       {
         "name": "backend (./mvnw -B verify)",
         "result": "pass",
-        "details": "466 tests at T-M2.12 (gate on c4c9e02); JaCoCo report in target/site/jacoco"
+        "details": "524 tests at T-M2.10 (gate on c106861); JaCoCo report in target/site/jacoco"
       },
       {
         "name": "web (pnpm test --run)",
         "result": "pass",
-        "details": "818 tests in 68 files at T-M2.20 (9095577)"
+        "details": "855 tests at T-M2.10 (gate on c106861)"
       },
       {
         "name": "governance scripts (scripts/tests/run-all.sh)",
@@ -473,23 +480,23 @@
   "gates": {
     "G0": {
       "status": "pass",
-      "note": "T-M2.31 packet: PR #197, round 1 CHANGES REQUESTED, delta PASS WITH MINOR, confirmation (DEC-182)"
+      "note": "T-M2.10 packet: PR #210, DOCS-REVIEW PASS on 245d01c, findings fixed (DEC-185)"
     },
     "G1": {
       "status": "pass",
-      "note": "T-M2.31: gate PASS (13 steps, 787 s) on cc3d04d"
+      "note": "T-M2.10: gate PASS (13 steps, 860 s) on c106861"
     },
     "G2": {
       "status": "pass",
-      "note": "T-M2.31: CI 7/7 on 02d3503 (5 full)"
+      "note": "T-M2.10: CI 7/7 on b146ae3 (5 full)"
     },
     "G3": {
       "status": "pass",
-      "note": "T-M2.31: combined QA+UX qa-evaluator round 1 PASS WITH MINOR / APPROVED (DEC-183), delta PASS / APPROVED"
+      "note": "T-M2.10 tier H: SEC APPROVED, QA PASS (DEC-186)"
     },
     "G4": {
       "status": "pass",
-      "note": "T-M2.31 PR #199 merged via merge-gate (000640e); QA report PR #200"
+      "note": "T-M2.10 PR #211 merged via merge-gate (6cca511); QA report PR #212"
     },
     "G5": {
       "status": "n/a",
@@ -1769,6 +1776,11 @@
       "at": "2026-11-20T14:00:34Z",
       "actor": "lead-coordinator",
       "event": "T-M2.10 packet merged (PR #210, 028fa59); PO start signal 2026-11-20; implementation started on fix/T-M2.10-strict-json-numbers."
+    },
+    {
+      "at": "2026-11-20T15:13:37Z",
+      "actor": "lead-coordinator",
+      "event": "T-M2.10 merged (PR #211, 6cca511; DEC-186): gate PASS on c106861; SEC APPROVED, QA PASS; QA report PR #212; T-M2.33 added (OQ T-M2.10-1). Next: T-M2.16 packet."
     }
   ]
 }
