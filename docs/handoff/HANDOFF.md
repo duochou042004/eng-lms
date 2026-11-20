@@ -1,7 +1,7 @@
 # Handoff — 2026-11-20T15:13Z (T-M2.10 merged on the new device; next: T-M2.16 packet)
 
 Phase/Milestone: P1 / M2 (in progress) · Last task: **T-M2.10 done** (`6cca511`, PR #211, DEC-186) · Last commit on `develop`: `6cca511`
-(QA report PR #212 `qa/T-M2.10`; this handoff on `docs/T-M2.10-records`) · Next: T-M2.16 → T-M2.6 → T-M2.32 → T-M2.7 (G5); T-M2.33 order: ask the PO ·
+(QA report PR #212 merged `fb425e7`; this handoff on `docs/T-M2.10-records`) · Next: T-M2.16 → T-M2.6 → T-M2.32 → T-M2.7 (G5); T-M2.33 order: ask the PO ·
 Remote: https://github.com/duochou042004/eng-lms (mirror: gitlab.com/duochou042004/eng-lms) · Clone: `/home/deb/App_sources/eng-lms`
 
 ## Where we are
@@ -15,13 +15,13 @@ Remote: https://github.com/duochou042004/eng-lms (mirror: gitlab.com/duochou0420
   e.g. `fullName: 123`, `rememberMe: 1`): order the PO's.
 
 ## In flight / uncommitted
-- **QA report PR #212** (`qa/T-M2.10`): CI, `LC-APPROVED T-M2.10`, merge-gate, gitlab-sync. Then **this records PR** (`docs/T-M2.10-records`):
-  one fresh docs-reviewer (`DOCS-REVIEW T-M2.10: PASS`, text only), CI, `LC-APPROVED T-M2.10`, merge-gate, gitlab-sync. Finish both first if open.
+- QA report PR #212 merged (`fb425e7`). **This records PR** (`docs/T-M2.10-records`):
+  one fresh docs-reviewer (`DOCS-REVIEW T-M2.10: PASS`, text only), CI, `LC-APPROVED T-M2.10`, merge-gate, gitlab-sync. Finish it first if open.
 - Nothing else: no open feature branch. Dependabot #165/#209 (msw 3), #135 (react group) held by the PO; #203, #204, #207, #208 open, untriaged
   (Dependabot hygiene is the PO's, DEC-158 PO-8).
 
 ## Next steps (in this order)
-1. Close #212 and the records PR (above).
+1. Close the records PR (above).
 2. **T-M2.16** (BE; username-only PATCH bumps `version`, DEC-124): packet (task-packet skill), G0 by a fresh docs-reviewer, PO start signal,
    backend-implementer, gate once on the final head, PR, CI, G3 (identity/students: likely tier H → SEC + QA), merge-gate, records (part C).
 3. **T-M2.6** (Settings v1, BE+FE), then **T-M2.32** (FE/E2E guard gap, before T-M2.7). Ask the PO where T-M2.33 goes.

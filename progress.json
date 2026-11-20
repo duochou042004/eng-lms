@@ -40,7 +40,7 @@
     "lastCommit": null,
     "startedAt": null,
     "nextSteps": [
-      "If open: QA report PR #212 (qa/T-M2.10), then the records PR (docs/T-M2.10-records): docs-reviewer, CI, LC-APPROVED, merge-gate, gitlab-sync",
+      "If open: the records PR (docs/T-M2.10-records): docs-reviewer, CI, LC-APPROVED, merge-gate, gitlab-sync (QA report PR #212 merged, fb425e7)",
       "Write the T-M2.16 packet (task-packet skill), G0 by a fresh docs-reviewer, ask the PO for the start signal",
       "Then T-M2.6, T-M2.32 (PO order, DEC-185); T-M2.33 order: ask the PO; T-M2.26 after at least 10 shadow PRs; T-M2.7 holds the G5 (one regression run, no Firefox)"
     ],
@@ -448,7 +448,7 @@
       "completedAt": "2026-11-20T15:12:00Z",
       "mergeCommit": "6cca511",
       "evidence": "evidence/T-M2.10/summary.md",
-      "note": "PR #211 via merge-gate (head b146ae3, CI 7/7 (5 full)); packet PR #210 (028fa59); PO start 2026-11-20; gate PASS on c106861 (860 s); G3 tier H: SEC APPROVED (3 S4 noted), QA PASS; QA report PR #212; OQ T-M2.10-1 -> T-M2.33; DEC-185, DEC-186"
+      "note": "PR #211 via merge-gate (head b146ae3, CI 7/7 (5 full)); packet PR #210 (028fa59); PO start 2026-11-20; gate PASS on c106861 (860 s); G3 tier H: SEC APPROVED (3 S4 noted), QA PASS; QA report PR #212 (fb425e7); OQ T-M2.10-1 -> T-M2.33; DEC-185, DEC-186"
     }
   ],
   "tests": {
@@ -496,7 +496,7 @@
     },
     "G4": {
       "status": "pass",
-      "note": "T-M2.10 PR #211 merged via merge-gate (6cca511); QA report PR #212"
+      "note": "T-M2.10 PR #211 merged via merge-gate (6cca511); QA report PR #212 (fb425e7)"
     },
     "G5": {
       "status": "n/a",
