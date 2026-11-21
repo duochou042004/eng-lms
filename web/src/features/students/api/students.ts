@@ -97,8 +97,8 @@ export function useCreateStudent() {
 
 /**
  * A write's answer is the latest student (T-M2.14 "version bookkeeping"): it replaces the detail entry, so the next write
- * sends its `version` (never `+1`: a username-only PATCH keeps it), and the list is invalidated. Only while the tutor's
- * session is cached (scope 8): an answer that outlived the session is dropped.
+ * sends its `version` (never `+1`: the server decides, a no-op PATCH keeps it), and the list is invalidated. Only while
+ * the tutor's session is cached (scope 8): an answer that outlived the session is dropped.
  */
 function useStoreStudent(sid: string) {
   const queryClient = useQueryClient()

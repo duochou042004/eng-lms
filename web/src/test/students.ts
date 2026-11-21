@@ -93,12 +93,13 @@ export interface WorkspaceCalls {
 
 /**
  * The workspace page's API (T-M2.14) as a small server: GET answers the current student; PATCH applies the body and
- * bumps `version` (not for a username-only change, api-catalog); a status change sets the status and bumps it; a reset
- * answers `RESET_CREDENTIALS`. Stale versions answer 409 `STALE_VERSION`. `taken` usernames are unavailable. The
- * guardians (T-M2.15): GET lists them in order; POST appends (an 11th answers 422 `TOO_MANY`); PATCH applies the body
- * and bumps the guardian's `version` (409 when stale, 404 when gone); DELETE removes (404 when gone). The learning
- * profile (T-M2.17): GET answers it; PUT follows the server's transitions (`version` `null` creates it, 409 when it
- * exists; a number must match; equal values keep the version; a first save with values answers version 1).
+ * bumps `version` for any field besides `version`, a username change included (api-catalog; the server's no-op is
+ * not modelled); a status change sets the status and bumps it; a reset answers `RESET_CREDENTIALS`. Stale versions
+ * answer 409 `STALE_VERSION`. `taken` usernames are unavailable. The guardians (T-M2.15): GET lists them in order;
+ * POST appends (an 11th answers 422 `TOO_MANY`); PATCH applies the body and bumps the guardian's `version` (409 when
+ * stale, 404 when gone); DELETE removes (404 when gone). The learning profile (T-M2.17): GET answers it; PUT follows
+ * the server's transitions (`version` `null` creates it, 409 when it exists; a number must match; equal values keep
+ * the version; a first save with values answers version 1).
  */
 export function workspaceApi(
   initial: Record<string, unknown> = {},
@@ -150,8 +151,8 @@ export function workspaceApi(
       calls.patch.push({ version, ...changes })
       const conflict = stale(version)
       if (conflict) return conflict
-      const usernameOnly = Object.keys(changes).every((k) => k === 'username')
-      current = { ...current, ...changes, version: usernameOnly ? current.version : Number(current.version) + 1 }
+      const changing = Object.keys(changes).length > 0
+      current = { ...current, ...changes, version: changing ? Number(current.version) + 1 : current.version }
       return HttpResponse.json(current)
     }),
     http.post('*/api/v1/tutor/students/:sid/status', async ({ request }) => {

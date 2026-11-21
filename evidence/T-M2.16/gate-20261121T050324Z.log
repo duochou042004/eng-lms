@@ -1,0 +1,58 @@
+gate: full log local (scratchpad gate.log, 5408 lines); trimmed to the gate:, summary and result lines (evidence-protocol §1)
+engine: podman (DOCKER_HOST=unix:///run/user/1000/podman/podman.sock)
+env.sh: DOCKER_HOST=unix:///run/user/1000/podman/podman.sock TESTCONTAINERS_RYUK_DISABLED=true
+gate: 2c71ec3 2026-11-21T05:03:24Z, steps: docs scripts backend web-install web-lint web-typecheck web-test web-build web-budget web-contrast contract-drift qa-typecheck e2e
+gate: ==> docs
+docs-check: PASS (350 markdown files, progress.json valid, sources intact, prompt within limit, records consistent, handoff archived, table code spans escaped, text-only CI inputs clean)
+gate: <== docs OK (2s)
+gate: ==> scripts
+  -> 86 passed, 0 failed
+  -> 243 passed, 0 failed
+  -> 97 passed, 0 failed
+  -> 9 passed, 0 failed
+  -> 164 passed, 0 failed
+  -> 193 passed, 0 failed
+  -> 98 passed, 0 failed
+  -> 11 passed, 0 failed
+  -> 418 passed, 0 failed
+  -> 15 passed, 0 failed
+  -> 15 passed, 0 failed
+  -> 11 passed, 0 failed
+  -> 10 passed, 0 failed
+script tests: PASS
+gate: <== scripts OK (186s)
+gate: ==> backend
+[INFO] Tests run: 531, Failures: 0, Errors: 0, Skipped: 0
+[INFO] BUILD SUCCESS
+gate: <== backend OK (265s)
+gate: ==> web-install
+gate: <== web-install OK (0s)
+gate: ==> web-lint
+gate: <== web-lint OK (4s)
+gate: ==> web-typecheck
+gate: <== web-typecheck OK (5s)
+gate: ==> web-test
+ Test Files  70 passed (70)
+      Tests  855 passed (855)
+gate: <== web-test OK (47s)
+gate: ==> web-build
+gate: <== web-build OK (6s)
+gate: ==> web-budget
+budget: PASS
+gate: <== web-budget OK (0s)
+gate: ==> web-contrast
+contrast: PASS (32 pairs)
+gate: <== web-contrast OK (0s)
+gate: ==> contract-drift
+contract-drift: OK (api/openapi.json and web/src/lib/api/schema.d.ts match the code)
+gate: <== contract-drift OK (23s)
+gate: ==> qa-typecheck
+gate: <== qa-typecheck OK (2s)
+gate: ==> e2e
+engine: podman (DOCKER_HOST=unix:///run/user/1000/podman/podman.sock)
+engine: podman (DOCKER_HOST=unix:///run/user/1000/podman/podman.sock)
+  62 skipped
+  544 passed (4.3m)
+gate: e2e repeat: no new or changed spec
+gate: <== e2e OK (292s)
+gate: PASS (13 steps, 832s)

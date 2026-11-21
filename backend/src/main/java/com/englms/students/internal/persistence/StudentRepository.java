@@ -11,7 +11,8 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 
-public interface StudentRepository extends JpaRepository<Student, UUID>, JpaSpecificationExecutor<Student> {
+public interface StudentRepository
+		extends JpaRepository<Student, UUID>, JpaSpecificationExecutor<Student>, StudentVersionIncrement {
 
 	@Query("select s.id from Student s where s.userId = :userId")
 	Optional<UUID> findIdByUserId(UUID userId);

@@ -256,9 +256,12 @@ class StudentsApiIntegrationTest {
 		assertThat(output.getAll()).doesNotContain("SECRET-NUL-VALUE").doesNotContain("Unhandled exception");
 	}
 
-	/** T-M2.3 G3 QA-S3-2 / SEC-S4-4: only a change of the row moves updatedAt and version (clock moving). */
+	/**
+	 * T-M2.3 G3 QA-S3-2 / SEC-S4-4: only a change of the row moves updatedAt (clock moving); a username change bumps
+	 * version and keeps updatedAt, a no-op PATCH keeps both (DEC-187).
+	 */
 	@Test
-	void aUsernameOnlyOrNoOpPatchKeepsVersionAndUpdatedAt() {
+	void aUsernameChangeBumpsVersionAndANoOpPatchKeepsIt() {
 		String sid = sid(create("{\"fullName\":\"Stable Row\",\"username\":\"stable.row\",\"note\":\"n\","
 				+ "\"contactHandles\":[{\"label\":\"Zalo\",\"value\":\"0909\"}]}").json());
 		String created = tutor.get(STUDENTS + "/" + sid).json().path("updatedAt").asString();
@@ -266,18 +269,88 @@ class StudentsApiIntegrationTest {
 		clock.advance(Duration.ofHours(1));
 		Response renamed = patch(sid, "{\"version\":0,\"username\":\"stable.renamed\"}");
 		clock.advance(Duration.ofHours(1));
-		Response same = patch(sid, "{\"version\":0,\"fullName\":\" Stable Row \",\"note\":\"n\","
+		Response same = patch(sid, "{\"version\":1,\"fullName\":\" Stable Row \",\"note\":\"n\","
 				+ "\"contactHandles\":[{\"label\":\"Zalo\",\"value\":\"0909\"}]}");
 
 		assertThat(List.of(renamed, same)).allSatisfy(response -> {
 			assertThat(response.status()).isEqualTo(200);
-			assertThat(response.json().path("version").asLong()).isZero();
+			assertThat(response.json().path("version").asLong()).isEqualTo(1);
 			assertThat(response.json().path("updatedAt").asString()).isEqualTo(created);
 		});
 		assertThat(renamed.json().path("username").asString()).isEqualTo("stable.renamed");
-		Response changed = patch(sid, "{\"version\":0,\"note\":\"m\"}");
-		assertThat(changed.json().path("version").asLong()).isEqualTo(1);
+		Response changed = patch(sid, "{\"version\":1,\"note\":\"m\"}");
+		assertThat(changed.json().path("version").asLong()).isEqualTo(2);
 		assertThat(Instant.parse(changed.json().path("updatedAt").asString())).isEqualTo(NOW.plus(Duration.ofHours(2)));
+	}
+
+	/** T-M2.16 AC1: at the create's clock instant, a username-only change bumps version; the stale second tab is a 409. */
+	@Test
+	void aUsernameOnlyChangeBumpsVersionSoTheSecondTabIsStale() {
+		String sid = sid(createStudent("Two Tabs", "two.tabs"));
+		String created = tutor.get(STUDENTS + "/" + sid).json().path("updatedAt").asString();
+
+		Response first = patch(sid, "{\"version\":0,\"username\":\"a.new\"}");
+		Response second = patch(sid, "{\"version\":0,\"username\":\"b.new\"}");
+
+		assertThat(first.status()).isEqualTo(200);
+		assertThat(first.json().path("version").asLong()).isEqualTo(1);
+		assertThat(first.json().path("updatedAt").asString()).isEqualTo(created);
+		assertThat(second.status()).isEqualTo(409);
+		assertThat(second.code()).isEqualTo("STALE_VERSION");
+		assertThat(tutor.get(STUDENTS + "/" + sid).json().path("username").asString()).isEqualTo("a.new");
+		assertThat(count("SELECT count(*) FROM audit_event WHERE action = 'USERNAME_CHANGED' AND subject_id = ?",
+				UUID.fromString(sid))).isOne();
+	}
+
+	record PatchRow(String name, String username, String body, int status, String code, long version,
+			String finalUsername, int audits) {
+	}
+
+	/**
+	 * T-M2.16 AC2/AC3 (L-04): the Domain-rules rows of one PATCH on a fresh student at version 0, at the create's clock
+	 * instant (no advance), so only a forced increment can move version. {@code %s} in a body is the student's username.
+	 */
+	@Test
+	void patchTransitionsOfAUsernameChangeAtAnUnchangedInstant() {
+		createStudent("Taken One", "taken.one");
+		List<PatchRow> rows = List.of(
+				new PatchRow("rename", "row.rename", "{\"version\":0,\"username\":\"row.renamed\"}", 200, null, 1,
+						"row.renamed", 1),
+				new PatchRow("rename + profile (one bump)", "row.both",
+						"{\"version\":0,\"note\":\"x\",\"username\":\"c.new\"}", 200, null, 1, "c.new", 1),
+				new PatchRow("case-only rename", "row.case", "{\"version\":0,\"username\":\"Row.Case\"}", 200, null, 1,
+						"Row.Case", 1),
+				new PatchRow("same username after strip", "row.same", "{\"version\":0,\"username\":\"  %s  \"}", 200,
+						null, 0, "row.same", 0),
+				new PatchRow("equal values", "row.equal", "{\"version\":0,\"fullName\":\" Row Student \",\"username\":\"%s\"}",
+						200, null, 0, "row.equal", 0),
+				new PatchRow("stale", "row.stale", "{\"version\":1,\"username\":\"row.late\"}", 409, "STALE_VERSION", 0,
+						"row.stale", 0),
+				new PatchRow("taken", "row.taken", "{\"version\":0,\"username\":\"TAKEN.one\"}", 409, "USERNAME_TAKEN", 0,
+						"row.taken", 0),
+				new PatchRow("invalid", "row.invalid", "{\"version\":0,\"note\":\"y\",\"username\":\"bad name\"}", 422,
+						"VALIDATION_FAILED", 0, "row.invalid", 0));
+
+		for (PatchRow row : rows) {
+			String sid = sid(createStudent("Row Student", row.username()));
+			String created = tutor.get(STUDENTS + "/" + sid).json().path("updatedAt").asString();
+
+			Response response = patch(sid, row.body().formatted(row.username()));
+
+			assertThat(response.status()).as(row.name()).isEqualTo(row.status());
+			if (row.code() != null) {
+				assertThat(response.code()).as(row.name()).isEqualTo(row.code());
+			}
+			JsonNode after = tutor.get(STUDENTS + "/" + sid).json();
+			assertThat(after.path("version").asLong()).as(row.name()).isEqualTo(row.version());
+			assertThat(after.path("updatedAt").asString()).as(row.name()).isEqualTo(created);
+			assertThat(after.path("username").asString()).as(row.name()).isEqualTo(row.finalUsername());
+			if (row.status() == 200) {
+				assertThat(response.json().path("version").asLong()).as(row.name()).isEqualTo(row.version());
+			}
+			assertThat(count("SELECT count(*) FROM audit_event WHERE action = 'USERNAME_CHANGED' AND subject_id = ?",
+					UUID.fromString(sid))).as(row.name()).isEqualTo(row.audits());
+		}
 	}
 
 	@Test
@@ -505,10 +578,10 @@ class StudentsApiIntegrationTest {
 		assertThat(session.json().path("username").asString()).isEqualTo("renamed.student");
 		assertThat(count("SELECT count(*) FROM audit_event WHERE action = 'USERNAME_CHANGED' AND subject_id = ? "
 				+ "AND actor_user_id = ?", UUID.fromString(sid), tutorId)).isOne();
-		// The username lives on the account: the student row and its version are unchanged.
-		assertThat(renamed.json().path("version").asLong()).isZero();
+		// A username change bumps the version like any other change (DEC-187).
+		assertThat(renamed.json().path("version").asLong()).isEqualTo(1);
 		// Same username again: no change, no event.
-		assertThat(patch(sid, "{\"version\":0,\"username\":\"renamed.student\"}").status()).isEqualTo(200);
+		assertThat(patch(sid, "{\"version\":1,\"username\":\"renamed.student\"}").status()).isEqualTo(200);
 		assertThat(count("SELECT count(*) FROM audit_event WHERE action = 'USERNAME_CHANGED'")).isOne();
 	}
 
