@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Milestone | M2 |
-| Status | draft |
+| Status | ready (G0: `DOCS-REVIEW T-M2.16-packet`, DEC-187) |
 | Owner role | BE (backend-implementer; QA at G3) |
 | Branch | `fix/T-M2.16-username-version` (from `develop`) |
 | Depends on | T-M2.14 (merged, `6073e71`, DEC-127); T-M2.10 (merged, `6cca511`, DEC-186) |
@@ -116,7 +116,8 @@ client's existing "This was changed elsewhere" dialog (T-M2.14) shows.
 - AC4 (concurrent, L-04): two username-only PATCHes from the same `version` with different usernames, released together (latch or barrier, no
   sleeps, no wall-clock bound, L-05), on fresh students without advancing the clock, repeated ≥ 20 times in the test: each round exactly one 200 and one 409 `STALE_VERSION`; the final username is
   the 200's; one `USERNAME_CHANGED` audit row per round; the student's `version` is v+1.
-- AC5 (proven red, L-01): with the forced increment removed locally (uncommitted), AC1 and AC4 fail; the summary records the run.
+- AC5 (proven red, L-01): two local, uncommitted mutations: (i) the forced increment removed → AC1 and AC4 fail; (ii) the increment forced
+  unconditionally (the `apply` result ignored) → AC3 fails with v+2; the summary records both runs.
 - AC6 (kept behaviour): a taken username still answers 409 `USERNAME_TAKEN` with nothing written; the renamed student's existing session still
   works and shows the new username (existing test kept).
 - AC7 (records): the kept assertions and the api-catalog row change exactly as listed in Design notes; the web fake bumps `version` for every
@@ -148,8 +149,9 @@ client's existing "This was changed elsewhere" dialog (T-M2.14) shows.
 ## Risks & assumptions
 - Assumption: no client depends on a username-only PATCH keeping `version`; the web client stores every answer (grep at G0: only the fake server and
   one comment state the old rule).
-- Risk: the optimistic-lock failure surfaces outside `ProblemDetailsAdvice` (e.g. thrown at commit, after the controller) and becomes a 500; AC4 would
-  show it. The explicit `students.flush()` inside the service keeps it inside the transaction body; the implementer keeps that flush.
+- Risk: the stale-version failure surfaces as something `ProblemDetailsAdvice` does not map and becomes a 500: a raw
+  `jakarta.persistence.OptimisticLockException` from a direct `EntityManager` call, or a failure at commit (`OPTIMISTIC_FORCE_INCREMENT`). The
+  Design notes' mechanism rules both out; AC4 shows it if not.
 - Risk: AC4 flakes on the 2-core runner; it must assert outcomes only, never timing.
 
 ## Commands (reproducible)

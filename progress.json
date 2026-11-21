@@ -16,7 +16,7 @@
       }
     ]
   },
-  "updatedAt": "2026-11-21T04:23:14Z",
+  "updatedAt": "2026-11-21T04:29:34Z",
   "updatedBy": "lead-coordinator (T-M2.16 packet)",
   "phase": {
     "id": "P1",
@@ -32,11 +32,11 @@
   "currentTask": {
     "id": "T-M2.16",
     "title": "Username-only student PATCH bumps the student version (concurrent edits; T-M2.14 docs review D-6, DEC-124)",
-    "status": "draft",
+    "status": "ready",
     "ownerRole": "BE",
     "branch": "docs/T-M2.16-packet",
     "packet": "docs/tasks/T-M2.16-username-version.md",
-    "pr": null,
+    "pr": "214",
     "lastCommit": null,
     "startedAt": null,
     "nextSteps": [
@@ -52,7 +52,7 @@
     ],
     "entryGate": [
       "T-M2.10 merged — met (6cca511)",
-      "Packet + G0 — packet drafted, G0 pending",
+      "Packet + G0 — ready (DOCS-REVIEW PASS on PR #214)",
       "PO start signal — not asked"
     ]
   },
@@ -1795,6 +1795,11 @@
       "at": "2026-11-21T04:23:14Z",
       "actor": "lead-coordinator",
       "event": "Records PR #213 merged (e187dd3), mirror in sync. PO order (DEC-187): T-M2.16 -> CI ubuntu-26.04 chore -> T-M2.6 -> T-M2.32 -> T-M2.33 -> T-M2.7. T-M2.16 packet drafted (tier M)."
+    },
+    {
+      "at": "2026-11-21T04:29:34Z",
+      "actor": "lead-coordinator",
+      "event": "T-M2.16 G0: round 1 CHANGES REQUESTED (S2-1 forced increment, S3-2 case-only rename) fixed; delta PASS WITH MINOR, S4s fixed; packet ready (PR #214)."
     }
   ]
 }
