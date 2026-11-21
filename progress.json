@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-11-21T15:40:37Z",
-  "updatedBy": "lead-coordinator (T-M2.6 G3 done, awaiting approval)",
+  "updatedAt": "2026-11-21T16:22:45Z",
+  "updatedBy": "lead-coordinator (T-M2.6 merged, records)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -30,29 +30,23 @@
     "exitCriteria": "FR-AUTH-01..10 and FR-STU-01..07 accepted; authorization-matrix and student-isolation harnesses fail on any unregistered endpoint; add-student flow E2E at 360/768/1280 within its step budget; security review of authentication passed (docs/01-product/roadmap.md)."
   },
   "currentTask": {
-    "id": "T-M2.6",
-    "title": "Account preferences and Settings › Account (FR-SET-02; split from Settings v1, workspace part = T-M2.35)",
-    "status": "awaiting_approval",
+    "id": "T-M2.35",
+    "title": "Workspace settings v1 (FR-SET-01 first section; split from T-M2.6)",
+    "status": "draft",
     "ownerRole": "BE+FE",
-    "branch": "feature/T-M2.6-account-preferences",
-    "packet": "docs/tasks/T-M2.6-account-preferences.md",
-    "pr": "222",
-    "lastCommit": "d6d70ba",
-    "startedAt": "2026-11-21T11:53:04Z",
+    "branch": null,
+    "packet": null,
+    "pr": null,
+    "lastCommit": null,
+    "startedAt": null,
     "nextSteps": [
-      "CI green on the final head; post SEC-REVIEW, QA-VERDICT, UX-REVIEW, LC-APPROVED as separate comments; merge-gate; gitlab-sync",
-      "Records PR: merge DEC, backlog T-M2.6 done + S4 batch (T-M2.32 QA-4/UX-1r, T-M2.33 QA-6/SEC S4-1, T-M2.35 UX-3), packet done + QA-5 wording, qa/ reports; then the T-M2.35 packet"
+      "Write the T-M2.35 packet (task-packet skill; read lessons-learned first), G0 docs review on a docs/T-M2.35-packet PR, then the PO start signal"
     ],
     "trace": [
       "DEC-187",
       "DEC-190",
       "DEC-191",
-      "FR-SET-02"
-    ],
-    "entryGate": [
-      "T-M2.34 merged — met (c5ae729)",
-      "Packet + G0 — met (PR #221, c92928f, DEC-190)",
-      "PO start signal — met 2026-11-21 (split kept)"
+      "FR-SET-01"
     ]
   },
   "nextTask": {
@@ -66,7 +60,7 @@
     "lastCommit": null,
     "startedAt": null,
     "nextSteps": [
-      "After T-M2.6, T-M2.35, T-M2.32 and T-M2.33 (PO order, DEC-187); the regression workflow already ran green on ubuntu-26.04 (T-M2.34, DEC-189); T-M2.26 after at least 10 shadow PRs"
+      "After T-M2.35, T-M2.32 and T-M2.33 (PO order, DEC-187, DEC-190); G5: one regression run, no Firefox (DEC-180), ask the PO first; T-M2.26 after at least 10 shadow PRs"
     ],
     "trace": [
       "DEC-158",
@@ -465,11 +459,19 @@
       "mergeCommit": "c5ae729",
       "evidence": "evidence/T-M2.34/summary.md",
       "note": "PR #219 via merge-gate (head 1137ab0, CI 7/7 (5 full)); packet PR #218 (8c7691c); PO start 2026-11-21, regression choice (a): run 44888854717 success (1062 passed, webkit-smoke 6/6); all jobs Image ubuntu-26.04 20261111.635; gate PASS on b44f424 (557 s); G3 tier L: DOCS-REVIEW PASS; DEC-189"
+    },
+    {
+      "id": "T-M2.6",
+      "title": "Account preferences and Settings › Account (FR-SET-02; split from Settings v1, workspace part = T-M2.35)",
+      "completedAt": "2026-11-21T16:01:56Z",
+      "mergeCommit": "160df23",
+      "evidence": "evidence/T-M2.6/summary.md",
+      "note": "PR #222 via merge-gate (head 2896fb8, CI 7/7 (5 full)); QA PR #223 (f5974bb); packet PR #221 (c92928f); gate PASS on 5514abb (1712 s); G3 tier H: SEC APPROVED, QA PASS WITH MINOR, UX APPROVED, AC11 fix round + delta re-check; DEC-190, DEC-191, DEC-192"
     }
   ],
   "tests": {
-    "lastRun": "2026-11-21T13:12:53Z",
-    "summary": "T-M2.6 head ec082d2: gate PASS (13 steps, 1469 s); backend 565; web 891; e2e 575 passed, 64 skipped; x3 repeat 1725 passed, 0 failed.",
+    "lastRun": "2026-11-21T15:26:03Z",
+    "summary": "T-M2.6 head 5514abb: gate PASS (13 steps, 1712 s); backend 565; web 896; e2e 590 passed, 64 skipped; x3 repeat 1770 passed, 0 failed.",
     "suites": [
       {
         "name": "backend (./mvnw -B verify)",
@@ -496,23 +498,23 @@
   "gates": {
     "G0": {
       "status": "pass",
-      "note": "T-M2.34 packet: PR #218, DOCS-REVIEW PASS WITH MINOR fixed, confirmed PASS on b624169 (DEC-189)"
+      "note": "T-M2.6 packet: PR #221 (c92928f), DEC-190"
     },
     "G1": {
       "status": "pass",
-      "note": "T-M2.34: gate PASS (13 steps, 557 s) on b44f424"
+      "note": "T-M2.6: gate PASS (13 steps, 1712 s) on 5514abb"
     },
     "G2": {
       "status": "pass",
-      "note": "T-M2.34: CI 7/7 on 1137ab0 (5 full), all jobs on ubuntu-26.04"
+      "note": "T-M2.6: CI 7/7 on 2896fb8 (5 full)"
     },
     "G3": {
       "status": "pass",
-      "note": "T-M2.34 tier L: DOCS-REVIEW PASS on 1137ab0 (DEC-189)"
+      "note": "T-M2.6 tier H: SEC APPROVED, QA PASS WITH MINOR, UX APPROVED (DEC-191; delta re-check on d6d70ba)"
     },
     "G4": {
       "status": "pass",
-      "note": "T-M2.34 PR #219 merged via merge-gate (c5ae729)"
+      "note": "T-M2.6 PR #222 merged via merge-gate (160df23); QA PR #223 (f5974bb)"
     },
     "G5": {
       "status": "n/a",
@@ -1867,6 +1869,11 @@
       "at": "2026-11-21T13:12:53Z",
       "actor": "lead-coordinator",
       "event": "T-M2.6 implemented (BE ad5a8a4, FE 4c40d01..ec082d2); gate PASS on ec082d2; L-10 rulings recorded; PR opened; G3 next session (context limit)."
+    },
+    {
+      "at": "2026-11-21T16:22:45Z",
+      "actor": "lead-coordinator",
+      "event": "T-M2.6 G3 (SEC APPROVED; QA PASS WITH MINOR, UX APPROVED; AC11 fix round 759585c..5514abb; delta re-check), merged 160df23 (PR #222), QA PR #223, records (DEC-191, DEC-192). Next: T-M2.35 packet."
     }
   ]
 }

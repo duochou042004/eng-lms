@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Milestone | M2 |
-| Status | in_review (G0: round 1 CHANGES REQUESTED, S2-1/S2-2 and all S3/S4 fixed; DEC-190; G3 round 1: AC11 added, DEC-191) |
+| Status | done (`160df23`, DEC-192; G0 DEC-190; G3 round 1: AC11 added, DEC-191) |
 | Owner role | BE (endpoint) then FE (pages, switcher, `ui/ComboBox`, time helpers); one implementer at a time |
 | Branch | `feature/T-M2.6-account-preferences` (from `develop`) |
 | Depends on | T-M2.4, T-M2.11 (merged); T-M2.34 (merged, `c5ae729`) |
@@ -57,7 +57,7 @@ accounts, the Workspace tab) is the new backlog row **T-M2.35**, next in the PO 
      engine does not list must still show and save unchanged).
   7. **The language switcher saves the account locale** (resolves the comment at `LanguageSwitcher.tsx:6-7`): the device choice (`localStorage`
      `englms.locale`) stays the UI's source, as today; when a session exists and `mustChangePassword` is false, a switch also sends
-     `PATCH /auth/preferences {locale}` (best effort: a failure leaves the device choice and shows nothing; the Account page shows the saved value). On a
+     `PATCH /auth/preferences {locale}` (best effort: a failure leaves the device choice and shows nothing; the Account page's Language row is the switcher, so it shows the device choice; the saved account value applies on a device without a stored choice, DEC-191 QA-5). On a
      device **without** a stored choice, the session's `locale` is applied once the session loads (and stored). A stored choice is never overridden by
      the session (keeps the kept E2E that set `englms.locale` before signing in, Design notes).
   7a. **E2E isolation of the shared accounts** (G0 S2-1): `e2e/support/global-setup.ts` writes `englms.locale = 'vi'` into both storage states
