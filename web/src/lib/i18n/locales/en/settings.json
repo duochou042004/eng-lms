@@ -13,6 +13,8 @@
     "timeZone": "Time zone",
     "timeZoneHint": "Dates and times are shown in this zone. Type a city or region to search.",
     "timeZoneEmpty": "No time zone matches. Try a city such as Ho Chi Minh.",
+    "timeZoneShow": "Show time zones",
+    "timeZoneList": "Time zones",
     "save": "Save",
     "saving": "Saving…",
     "saved": "Saved",

@@ -1,4 +1,4 @@
-import { focusManager } from '@tanstack/react-query'
+import { focusManager, onlineManager } from '@tanstack/react-query'
 import { screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { http, HttpResponse } from 'msw'
@@ -219,6 +219,79 @@ describe('T-M2.6 AC6: the Account page', () => {
     await screen.findByText('Đã lưu')
     expect(sent).toEqual([{ displayName: 'Lan' }])
     expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+  })
+
+  // AC11 (b) (G3 QA-2): what is typed while the save is pending is kept, still unsaved, and the guard protects it.
+  it('text typed while saving stays after the answer, Save stays enabled, and leaving asks first', async () => {
+    const sent = tutorAccount()
+    let release!: () => void
+    server.use(
+      http.patch('*/api/v1/auth/preferences', async ({ request }) => {
+        sent.push((await request.json()) as Record<string, unknown>)
+        await new Promise<void>((resolve) => (release = resolve))
+        return HttpResponse.json({ ...sessionBody('TUTOR'), displayName: 'Lan' })
+      }),
+    )
+    const { router } = await openPage()
+    await userEvent.type(displayName(), 'Lan')
+    await userEvent.click(save())
+    await waitFor(() => expect(save()).toHaveTextContent('Đang lưu…'))
+    await userEvent.type(displayName(), ' Anh')
+    release()
+    await screen.findByText('Đã lưu')
+    expect(sent).toEqual([{ displayName: 'Lan' }])
+    expect(displayName()).toHaveValue('Lan Anh')
+    await waitFor(() => expect(save()).toHaveTextContent(/^Lưu$/))
+    expect(save()).not.toHaveAttribute('aria-disabled')
+    void router.navigate('/tutor/today')
+    expect(await screen.findByRole('alertdialog', { name: 'Bỏ các thay đổi?' })).toBeInTheDocument()
+  })
+
+  // AC11 (c) (G3 QA-3): offline, the save is sent at once (fails: the network alert) and is never replayed later.
+  it('offline: Save shows the network alert at once, and nothing is sent again when the connection returns', async () => {
+    const sent = tutorAccount()
+    let tried = 0
+    server.use(
+      http.patch(
+        '*/api/v1/auth/preferences',
+        () => {
+          tried++
+          return HttpResponse.error()
+        },
+        { once: true },
+      ),
+    )
+    const { queryClient } = await openPage()
+    await userEvent.type(displayName(), 'Lan')
+    onlineManager.setOnline(false)
+    try {
+      await userEvent.click(save())
+      const alert = await screen.findByRole('alert')
+      expect(alert).toHaveTextContent('Chưa lưu được: có vẻ bạn đang ngoại tuyến. Hãy thử lại khi có mạng.')
+      expect(tried).toBe(1)
+      expect(save()).toHaveTextContent(/^Lưu$/)
+      // Nothing waits for the connection (a paused mutation would replay when it returns).
+      expect(
+        queryClient
+          .getMutationCache()
+          .getAll()
+          .filter((m) => m.state.isPaused),
+      ).toEqual([])
+    } finally {
+      onlineManager.setOnline(true)
+    }
+    expect(sent).toEqual([])
+    expect(screen.queryByText('Đã lưu')).not.toBeInTheDocument()
+  })
+
+  // AC11 (d) (G3 UX-1): the time-zone button and list are named in Vietnamese.
+  it('the time-zone button and list have Vietnamese names', async () => {
+    tutorAccount()
+    await openPage()
+    const button = screen.getByRole('button', { name: /^Hiện các múi giờ/ })
+    expect(button).toHaveAttribute('aria-label', 'Hiện các múi giờ')
+    await userEvent.click(button)
+    expect(await screen.findByRole('listbox', { name: /Các múi giờ/ })).toHaveAttribute('aria-label', 'Các múi giờ')
   })
 
   it('a failed read of the session keeps the cached values under a warning with Try again', async () => {

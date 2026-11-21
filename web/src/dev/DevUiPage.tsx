@@ -470,7 +470,12 @@ function ComboBoxSamples() {
   )
   const [zone, setZone] = useState('Asia/Bangkok')
   const [current, setCurrent] = useState('Asia/Ho_Chi_Minh')
-  const common = { emptyMessage: t('sample.comboEmpty'), onChange: () => {} }
+  const common = {
+    emptyMessage: t('sample.comboEmpty'),
+    buttonLabel: t('sample.comboShow'),
+    listLabel: t('sample.comboList'),
+    onChange: () => {},
+  }
   return (
     <Stack gap={5}>
       <ComboBox

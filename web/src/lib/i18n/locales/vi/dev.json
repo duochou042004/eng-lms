@@ -164,6 +164,8 @@
     "comboLabel": "Múi giờ",
     "comboHint": "Gõ tên thành phố để tìm múi giờ.",
     "comboEmpty": "Không có múi giờ nào khớp.",
+    "comboShow": "Hiện các múi giờ",
+    "comboList": "Các múi giờ",
     "comboInvalidLabel": "Múi giờ (không hợp lệ)",
     "comboError": "Hãy chọn một múi giờ trong danh sách.",
     "comboDisabledLabel": "Múi giờ (không khả dụng)",

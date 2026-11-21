@@ -94,6 +94,9 @@ export function useUpdatePreferences() {
       const { data } = await api.PATCH('/api/v1/auth/preferences', { body })
       return data as Session
     },
+    // Sent also offline, as logout: it fails at once (the page's network alert; the switcher shows nothing) and never
+    // replays later (AC11 (c)).
+    networkMode: 'always',
     onSuccess: (session) => {
       if (queryClient.getQueryData<Session | null>(SESSION_KEY)?.userId === session.userId)
         queryClient.setQueryData(SESSION_KEY, session)

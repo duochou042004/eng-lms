@@ -1,3 +1,4 @@
+import { onlineManager } from '@tanstack/react-query'
 import { screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { http, HttpResponse } from 'msw'
@@ -43,6 +44,43 @@ describe('LanguageSwitcher and the account locale', () => {
     await userEvent.click(english(await openAccountMenu()))
     await waitFor(() => expect(sent).toHaveLength(1))
     await screen.findByRole('heading', { level: 1, name: 'Today', hidden: true })
+    expect(i18n.language).toBe('en')
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+    expect(consoleError).not.toHaveBeenCalled()
+  })
+
+  // AC11 (c): offline the save is tried at once and fails quietly; it is never replayed when the connection returns.
+  it('offline: the switch tries the save once, shows nothing, and does not send it again once online', async () => {
+    const consoleError = vi.spyOn(console, 'error')
+    server.use(sessionAs('TUTOR'))
+    const sent = recordPreferences(() => HttpResponse.error())
+    const { queryClient } = renderRoute('/tutor/today')
+    await screen.findByRole('heading', { level: 1, name: 'Hôm nay' })
+    const menu = await openAccountMenu()
+    onlineManager.setOnline(false)
+    try {
+      await userEvent.click(english(menu))
+      await waitFor(() => expect(sent).toHaveLength(1))
+      // Nothing waits for the connection (a paused mutation would replay when it returns).
+      await waitFor(() =>
+        expect(
+          queryClient
+            .getMutationCache()
+            .getAll()
+            .filter((m) => m.state.status === 'pending'),
+        ).toEqual([]),
+      )
+      expect(
+        queryClient
+          .getMutationCache()
+          .getAll()
+          .filter((m) => m.state.isPaused),
+      ).toEqual([])
+    } finally {
+      onlineManager.setOnline(true)
+    }
+    await screen.findByRole('heading', { level: 1, name: 'Today', hidden: true })
+    expect(sent).toHaveLength(1)
     expect(i18n.language).toBe('en')
     expect(screen.queryByRole('alert')).not.toBeInTheDocument()
     expect(consoleError).not.toHaveBeenCalled()

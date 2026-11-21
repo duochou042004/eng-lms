@@ -164,6 +164,8 @@
     "comboLabel": "Time zone",
     "comboHint": "Type a city to search the time zones.",
     "comboEmpty": "No time zone matches.",
+    "comboShow": "Show time zones",
+    "comboList": "Time zones",
     "comboInvalidLabel": "Time zone (invalid)",
     "comboError": "Choose a time zone from the list.",
     "comboDisabledLabel": "Time zone (disabled)",

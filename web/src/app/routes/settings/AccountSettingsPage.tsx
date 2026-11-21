@@ -76,7 +76,7 @@ function AccountForm({
   const [formError, setFormError] = useState<string | null>(null)
   const saved = useMemo(() => accountValues(session), [session])
   const options = useMemo(() => timeZoneOptions(saved.timeZone), [saved.timeZone])
-  const { control, handleSubmit, setError, reset, formState } = useForm<AccountValues>({
+  const { control, handleSubmit, setError, reset, getValues, setValue, formState } = useForm<AccountValues>({
     resolver: zodResolver(accountSchema),
     defaultValues: saved,
     mode: 'onSubmit',
@@ -97,37 +97,46 @@ function AccountForm({
           ...(unknownError ? [{ message: t('account.errors.server') }] : []),
         ]
       : []
-  // Focus the summary once per failed submit (interaction-states §2.3; UI rules: after a 422).
+  // Focus the summary once per failed submit (interaction-states §2.3; UI rules: after a 422), on the first render that
+  // shows it: a client failure's count can render before its errors (AC11 (a)). A later re-show while typing never moves focus.
+  const failed = () => setSummaryShown((n) => n + 1)
+  const summaryRendered = summaryItems.length > 0
+  const focusedFor = useRef(0)
   useEffect(() => {
-    if (summaryShown > 0) summaryRef.current?.focus()
-  }, [summaryShown])
+    if (summaryShown === 0) focusedFor.current = 0
+    else if (summaryRendered && summaryShown > focusedFor.current) {
+      focusedFor.current = summaryShown
+      summaryRef.current?.focus()
+    }
+  }, [summaryShown, summaryRendered])
 
-  const submit = handleSubmit(
-    async (form) => {
-      const body = toPreferencesRequest(saved, form)
-      if (!body) return
-      setFormError(null)
-      setUnknownError(false)
-      try {
-        const answer = await save.mutateAsync(body)
-        reset(accountValues(answer))
-        setSummaryShown(0)
-        toast.success(t('account.saved'))
-      } catch (error) {
-        if (error instanceof ApiError && error.status === 422) {
-          const mapped = mapPreferencesErrors(error.fieldErrors)
-          for (const { path, message } of mapped.fields) setError(path, { type: 'server', message })
-          setUnknownError(mapped.unknown || mapped.fields.length === 0)
-          setSummaryShown((n) => n + 1)
-        } else if (error instanceof ApiError && error.status !== 0) {
-          setFormError(t('account.serverError'))
-        } else {
-          setFormError(t('account.networkError'))
-        }
+  const submit = handleSubmit(async (form) => {
+    const body = toPreferencesRequest(saved, form)
+    if (!body) return
+    setFormError(null)
+    setUnknownError(false)
+    try {
+      const answer = await save.mutateAsync(body)
+      // What was typed while saving stays, and dirty (AC11 (b)); the fields sent show the answer.
+      const current = getValues()
+      reset(accountValues(answer))
+      for (const field of ['displayName', 'timeZone'] as const)
+        if (current[field] !== form[field]) setValue(field, current[field], { shouldDirty: true })
+      setSummaryShown(0)
+      toast.success(t('account.saved'))
+    } catch (error) {
+      if (error instanceof ApiError && error.status === 422) {
+        const mapped = mapPreferencesErrors(error.fieldErrors)
+        for (const { path, message } of mapped.fields) setError(path, { type: 'server', message })
+        setUnknownError(mapped.unknown || mapped.fields.length === 0)
+        failed()
+      } else if (error instanceof ApiError && error.status !== 0) {
+        setFormError(t('account.serverError'))
+      } else {
+        setFormError(t('account.networkError'))
       }
-    },
-    () => setSummaryShown((n) => n + 1),
-  )
+    }
+  }, failed)
   // No double submit: a second click or Enter waits for the first to settle.
   const send = () => {
     if (inFlight.current || !changed) return
@@ -195,6 +204,8 @@ function AccountForm({
               value={field.value}
               onChange={field.onChange}
               emptyMessage={t('account.timeZoneEmpty')}
+              buttonLabel={t('account.timeZoneShow')}
+              listLabel={t('account.timeZoneList')}
               isInvalid={fieldState.invalid}
               errorMessage={fieldState.error?.message ? t(fieldState.error.message) : undefined}
             />

@@ -37,6 +37,8 @@ function Harness({
           onChange(id)
         }}
         emptyMessage="Không có múi giờ nào khớp."
+        buttonLabel="Hiện các múi giờ"
+        listLabel="Các múi giờ"
       />
       <output data-testid="value">{value}</output>
     </>
@@ -135,6 +137,18 @@ describe('ComboBox', () => {
     expect(optionNames()).toEqual(['Zone/59', ...Array.from({ length: 10 }, (_, i) => `Zone/${590 + i}`)])
   })
 
+  // AC11 (d) (G3 UX-1): the button and the list take the caller's (translated) names, never React Aria's en-US ones.
+  it('the button and the list are named by the caller, not "Show suggestions" / "Suggestions"', async () => {
+    render(<Harness />)
+    const button = screen.getByRole('button', { name: /^Hiện các múi giờ/ })
+    expect(button.getAttribute('aria-label')).toBe('Hiện các múi giờ')
+    await userEvent.click(button)
+    const list = await screen.findByRole('listbox', { name: /Các múi giờ/ })
+    expect(list.getAttribute('aria-label')).toBe('Các múi giờ')
+    for (const named of document.querySelectorAll('[aria-label]'))
+      expect(named.getAttribute('aria-label')).not.toMatch(/suggestions/i)
+  })
+
   it('shows its error and can be disabled', () => {
     const { rerender } = render(
       <ComboBox
@@ -145,12 +159,23 @@ describe('ComboBox', () => {
         isInvalid
         errorMessage="Hãy chọn một múi giờ."
         emptyMessage="-"
+        buttonLabel="Hiện các múi giờ"
+        listLabel="Các múi giờ"
       />,
     )
     expect(box()).toHaveAttribute('aria-invalid', 'true')
     expect(box()).toHaveAccessibleDescription('Hãy chọn một múi giờ.')
     rerender(
-      <ComboBox label="Múi giờ" options={ZONES} value="Asia/Bangkok" onChange={() => {}} isDisabled emptyMessage="-" />,
+      <ComboBox
+        label="Múi giờ"
+        options={ZONES}
+        value="Asia/Bangkok"
+        onChange={() => {}}
+        isDisabled
+        emptyMessage="-"
+        buttonLabel="Hiện các múi giờ"
+        listLabel="Các múi giờ"
+      />,
     )
     expect(box()).toBeDisabled()
   })

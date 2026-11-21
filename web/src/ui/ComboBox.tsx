@@ -35,6 +35,9 @@ export interface ComboBoxProps {
   onChange: (id: string) => void
   /** Shown in the open list when nothing matches the typed text. */
   emptyMessage: string
+  /** The accessible names of the button that opens the list and of the list (translated: no React Aria en-US default). */
+  buttonLabel: string
+  listLabel: string
   id?: string
 }
 
@@ -67,6 +70,8 @@ export function ComboBox({
   value,
   onChange,
   emptyMessage,
+  buttonLabel,
+  listLabel,
   id,
 }: ComboBoxProps) {
   // A cleared input reports null: the selection stays, and leaving the field shows its text again.
@@ -86,7 +91,7 @@ export function ComboBox({
       <FieldLabel>{label}</FieldLabel>
       <div className={styles.control}>
         <Input className={cx(fieldStyles.input, styles.input)} />
-        <Button className={styles.button}>
+        <Button aria-label={buttonLabel} className={styles.button}>
           <ChevronDown aria-hidden="true" className={styles.icon} />
         </Button>
       </div>
@@ -95,6 +100,7 @@ export function ComboBox({
       <Popover className={styles.popover} offset={4}>
         <Virtualizer layout={ListLayout} layoutOptions={{ estimatedRowHeight: 44 }}>
           <ListBox<ComboBoxOption>
+            aria-label={listLabel}
             className={styles.list}
             renderEmptyState={() => <p className={styles.empty}>{emptyMessage}</p>}
           >

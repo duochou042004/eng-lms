@@ -13,6 +13,8 @@
     "timeZone": "Múi giờ",
     "timeZoneHint": "Ngày giờ được hiển thị theo múi giờ này. Gõ tên thành phố hoặc khu vực để tìm.",
     "timeZoneEmpty": "Không có múi giờ nào khớp. Thử gõ tên thành phố, ví dụ Ho Chi Minh.",
+    "timeZoneShow": "Hiện các múi giờ",
+    "timeZoneList": "Các múi giờ",
     "save": "Lưu",
     "saving": "Đang lưu…",
     "saved": "Đã lưu",
