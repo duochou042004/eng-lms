@@ -131,7 +131,10 @@ public class StudentService implements StudentDirectory, StudentPrincipals {
 		return view(load(studentId));
 	}
 
-	/** FR-STU-03: present fields only; a username change keeps the student's sessions. */
+	/**
+	 * FR-STU-03: present fields only; a username change keeps the student's sessions and bumps {@code version} like any
+	 * other change (DEC-187), so a second tab renaming from the same version gets 409 {@code STALE_VERSION}.
+	 */
 	@Transactional
 	public StudentView update(UUID studentId, StudentCommands.Update command, UUID tutorId) {
 		if (command.version() == null || command.version() < 0) {
@@ -160,10 +163,15 @@ public class StudentService implements StudentDirectory, StudentPrincipals {
 		if (!problems.isEmpty()) {
 			throw ProblemException.validation(problems);
 		}
-		student.apply(new StudentProfile(fullName, email, phone, handles, note), tutorId, StudentFields.now(clock));
+		boolean changed = student.apply(new StudentProfile(fullName, email, phone, handles, note), tutorId,
+				StudentFields.now(clock));
 		String currentUsername = username(student);
 		if (username != null && !username.strip().equals(currentUsername)) {
 			accounts.changeUsername(student.userId(), username);
+			if (!changed) {
+				// After the account lock (as changeStatus); once per PATCH: a changed row bumps version itself (DEC-187).
+				students.forceVersionIncrement(student);
+			}
 			currentUsername = username.strip();
 			events.publishEvent(new StudentUsernameChanged(student.id(), student.userId(), tutorId));
 		}

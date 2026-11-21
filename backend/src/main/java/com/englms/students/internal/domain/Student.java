@@ -78,11 +78,13 @@ public class Student {
 
 	/**
 	 * Replaces the profile and contacts, unless they equal the current ones: then nothing is touched, so a PATCH that
-	 * only renames the account (or changes nothing) keeps {@code updatedAt} and {@code version}.
+	 * changes nothing keeps {@code updatedAt} and {@code version}. A username-only PATCH leaves the row's profile as it
+	 * is too; the service then forces the {@code version} increment (DEC-187).
+	 * @return whether the row changed
 	 */
-	public void apply(StudentProfile profile, UUID actor, Instant now) {
+	public boolean apply(StudentProfile profile, UUID actor, Instant now) {
 		if (fullName != null && profile.equals(profile())) {
-			return; // nothing in the row changes: keep updatedAt and version (T-M2.3 G3 QA-S3-2)
+			return false; // nothing in the row changes: keep updatedAt and version (T-M2.3 G3 QA-S3-2)
 		}
 		fullName = profile.fullName();
 		email = profile.email();
@@ -92,6 +94,7 @@ public class Student {
 		searchText = searchText(profile);
 		updatedAt = now;
 		updatedBy = actor;
+		return true;
 	}
 
 	/** @return the previous status */
