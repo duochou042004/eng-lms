@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-11-21T04:29:34Z",
-  "updatedBy": "lead-coordinator (T-M2.16 packet)",
+  "updatedAt": "2026-11-21T05:39:25Z",
+  "updatedBy": "lead-coordinator (T-M2.16 G3 passed)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -32,16 +32,15 @@
   "currentTask": {
     "id": "T-M2.16",
     "title": "Username-only student PATCH bumps the student version (concurrent edits; T-M2.14 docs review D-6, DEC-124)",
-    "status": "ready",
+    "status": "awaiting_approval",
     "ownerRole": "BE",
-    "branch": "docs/T-M2.16-packet",
+    "branch": "fix/T-M2.16-username-version",
     "packet": "docs/tasks/T-M2.16-username-version.md",
-    "pr": "214",
-    "lastCommit": null,
-    "startedAt": null,
+    "pr": "215",
+    "lastCommit": "2b4a914",
+    "startedAt": "2026-11-21T04:47:02Z",
     "nextSteps": [
-      "G0: one fresh docs-reviewer on the packet PR (docs/T-M2.16-packet); fix, set ready, merge-gate",
-      "Ask the PO for the T-M2.16 start signal; backend-implementer on fix/T-M2.16-username-version",
+      "merge-gate PR #215, gitlab-sync; QA report via qa/T-M2.16; records PR (evidence-and-handoff part C)",
       "Then the CI ubuntu-26.04 chore packet, T-M2.6, T-M2.32, T-M2.33, T-M2.7 (PO order, DEC-187)"
     ],
     "trace": [
@@ -52,8 +51,8 @@
     ],
     "entryGate": [
       "T-M2.10 merged — met (6cca511)",
-      "Packet + G0 — ready (DOCS-REVIEW PASS on PR #214)",
-      "PO start signal — not asked"
+      "Packet + G0 — met (PR #214, 38fa45d)",
+      "PO start signal — given 2026-11-21"
     ]
   },
   "nextTask": {
@@ -1800,6 +1799,11 @@
       "at": "2026-11-21T04:29:34Z",
       "actor": "lead-coordinator",
       "event": "T-M2.16 G0: round 1 CHANGES REQUESTED (S2-1 forced increment, S3-2 case-only rename) fixed; delta PASS WITH MINOR, S4s fixed; packet ready (PR #214)."
+    },
+    {
+      "at": "2026-11-21T05:39:25Z",
+      "actor": "lead-coordinator",
+      "event": "T-M2.16 PR #215: gate PASS on 2c71ec3 (832 s), CI 7/7, QA PASS (no findings); LC rulings before G3 (repository-fragment EntityManager.lock, AC5 (ii) by unit test)."
     }
   ]
 }
