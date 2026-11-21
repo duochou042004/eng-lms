@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-11-21T11:24:27Z",
-  "updatedBy": "lead-coordinator (T-M2.6 packet)",
+  "updatedAt": "2026-11-21T11:29:36Z",
+  "updatedBy": "lead-coordinator (T-M2.6 G0 fixes)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -32,24 +32,25 @@
   "currentTask": {
     "id": "T-M2.6",
     "title": "Account preferences and Settings › Account (FR-SET-02; split from Settings v1, workspace part = T-M2.35)",
-    "status": "draft",
+    "status": "ready",
     "ownerRole": "BE+FE",
     "branch": "docs/T-M2.6-packet",
     "packet": "docs/tasks/T-M2.6-account-preferences.md",
-    "pr": null,
+    "pr": "221",
     "lastCommit": null,
     "startedAt": null,
     "nextSteps": [
-      "G0: one fresh docs-reviewer on the T-M2.6 packet PR; then the PO start signal (and the PO's view of the T-M2.35 split)",
-      "Then T-M2.35, T-M2.32, T-M2.33, T-M2.7 (PO order, DEC-187; T-M2.35 in T-M2.6's slot)"
+      "Merge the packet PR #221 after the reviewer's PASS; then the PO start signal (tell the PO about the T-M2.35 split, DEC-190)",
+      "Then T-M2.35, T-M2.32, T-M2.33, T-M2.7 (PO order, DEC-187)"
     ],
     "trace": [
       "DEC-187",
+      "DEC-190",
       "FR-SET-02"
     ],
     "entryGate": [
       "T-M2.34 merged — met (c5ae729)",
-      "Packet + G0 — packet drafted, G0 pending",
+      "Packet + G0 — round 1 CHANGES REQUESTED fixed (DEC-190), delta check pending",
       "PO start signal — not asked"
     ]
   },
@@ -582,7 +583,8 @@
       "DEC-186",
       "DEC-187",
       "DEC-188",
-      "DEC-189"
+      "DEC-189",
+      "DEC-190"
     ],
     "pendingPO": [
       "OQ-03",

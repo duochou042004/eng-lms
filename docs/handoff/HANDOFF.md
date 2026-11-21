@@ -1,7 +1,7 @@
 # Handoff — 2026-11-21T10:05Z (T-M2.34 merged; next: T-M2.6 packet)
 
 Phase/Milestone: P1 / M2 (in progress) · Last task: **T-M2.34 done** (`c5ae729`, PR #219, DEC-189) · Last commit on `develop`: `c5ae729`
-(this handoff on `docs/T-M2.34-records`) · Next: **T-M2.6** (Settings v1) → T-M2.32 → T-M2.33 → T-M2.7 (G5) ·
+(this handoff on `docs/T-M2.34-records`) · Next: **T-M2.6** (account preferences) → T-M2.35 → T-M2.32 → T-M2.33 → T-M2.7 (G5) ·
 Remote: https://github.com/duochou042004/eng-lms (mirror: gitlab.com/duochou042004/eng-lms) · Clone: `/home/deb/App_sources/eng-lms`
 
 ## Where we are
@@ -21,8 +21,8 @@ Remote: https://github.com/duochou042004/eng-lms (mirror: gitlab.com/duochou0420
 
 ## Next steps (in this order)
 1. Close the records PR (above).
-2. **T-M2.6** (Settings v1: workspace name, time zone, language; account preferences; FR-SET-01, 02; BE+FE): packet (task-packet skill), G0 by a
-   fresh docs-reviewer, PO start signal; implementer subagents one at a time; tier per quality-gates (UI → UX review).
+2. **T-M2.6** (account preferences and Settings › Account, FR-SET-02; tier H): packet PR #221 (G0, DEC-190: Settings v1 split, the workspace
+   part is **T-M2.35**, next after it), PO start signal; implementers one at a time (BE, then FE); SEC + QA with the UX checklist.
 3. **T-M2.32** (E2E guard gap), **T-M2.33** (scalar coercions, tier H: SEC + QA), then **T-M2.7** (G5: one `regression` run, no Firefox; ask
    first). **T-M2.26** only after at least 10 PRs under T-M2.23 shadow mode.
 
