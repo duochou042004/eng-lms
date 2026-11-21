@@ -22,13 +22,24 @@ work sits in the **Student workspace** (SPEC §6). A top-level "Learning Plans" 
 Assignment, Assessment, Material, Question). The account menu (language, password, logout) sits top right on desktop and in the drawer footer on mobile.
 
 Implemented in T-M2.11 (DEC-112): the tutor shell (`app/shells/TutorShell.tsx`) takes its items from one list (label key, icon, route) and lists
-only routes that exist (no dead items): **Today** and **Students** (T-M2.5: icon `Users`, `/tutor/students`, current on every students page);
-Settings (T-M2.6) and the rest add a row with their task. At ≥ 1024 px
+only routes that exist (no dead items): **Today**, **Students** (T-M2.5: icon `Users`, `/tutor/students`, current on every students page)
+and **Settings** (T-M2.6: icon `Settings`, `/tutor/settings`, current on every `/tutor/settings/*` page); the rest add a row with their task. At ≥ 1024 px
 (`lg`) a persistent sidebar (`NavList`) under a top bar with the workspace name (the home link) and the account menu button top right; below
 1024 px the top bar has a menu button that opens the navigation drawer (a start-edge `Sheet`) with the items and, in its footer, the account
 section. The account section (`AccountSection`: who is signed in, the language switcher, "Change password", "Log out" in the same visual kind) is
 one component for the account popover, the drawer footer and the student's More sheet. The command palette and "+ New" arrive with their first
 targets. Unknown paths under `/tutor/…` show the 404 inside the shell.
+
+**Settings as built (T-M2.6, FR-SET-02):** `/tutor/settings` redirects to `/tutor/settings/account` (the only tab now; T-M2.35 adds Workspace
+and moves the redirect). The layout (`app/routes/settings/SettingsLayout.tsx`) is the `h1` "Settings" over a tab list of the existing tabs: a
+horizontal `NavList` named "Settings sections" (router links, the current tab `aria-current="page"`), in a wrapper that scrolls sideways if it
+ever outgrows the column; a task adds a tab by adding a row. **Account** (`AccountSettingsPage.tsx`, one column of at most 40rem): an `h2`
+"Account", the Language row (the shell's `LanguageSwitcher` itself: it saves at once), then a form with **Display name** (`TextField`; empty
+clears it and the shell shows the username) and **Time zone** (`ComboBox` over `Intl.supportedValuesOf('timeZone')` plus the current zone when
+the engine does not list it) and **Save** (focusable but `aria-disabled` while nothing changed; it sends only the changed properties; success:
+toast "Saved", focus stays on Save), and a "Change password" link to `/change-password`. The page reads the session again on arrival and on
+window focus (another tab's change shows; the fields being edited are kept); a failed read shows a warning `InlineAlert` with Try again over
+the cached values.
 
 ## 2. Student workspace (tutor view): `/tutor/students/:studentId/*`
 
