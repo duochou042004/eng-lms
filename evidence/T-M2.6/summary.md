@@ -1,7 +1,7 @@
 # T-M2.6 summary: account preferences and Settings › Account (FR-SET-02)
 
 Branch `feature/T-M2.6-account-preferences` (from `develop` @ `c92928f`). Packet: [T-M2.6](../../docs/tasks/T-M2.6-account-preferences.md),
-DEC-190. PO start signal 2026-11-21 (split kept). Risk tier **H**: SEC agent, then QA with the UX checklist (G3 pending).
+DEC-190. PO start signal 2026-11-21 (split kept). Risk tier **H**: SEC agent, then QA with the UX checklist (G3 done: SEC APPROVED, QA PASS WITH MINOR, UX APPROVED; DEC-191).
 
 ## Commits
 - `8ed479c` chore(progress): T-M2.6 in progress (LC)
@@ -9,6 +9,12 @@ DEC-190. PO start signal 2026-11-21 (split kept). Risk tier **H**: SEC agent, th
 - `4c40d01` feat(settings): Settings › Account, ui/ComboBox, the switcher saving the account locale, dates in the account zone (FE implementer)
 - `ec54e39` test(e2e): settings-account spec; shared accounts isolated from the preferences save
 - `ec082d2` docs(frontend): Settings as built, ComboBox, language and time-zone sources; lib/time shortcut retired
+- `d5426b5` docs(evidence): summary, gate log, L-10 rulings; handoff (LC)
+- `1b286cc` docs(tasks): AC11 from G3 round 1; DEC-191 rulings (LC)
+- `759585c` fix(settings): AC11 (a)-(d) summary focus, edits kept while saving, offline save, ComboBox names (FE implementer)
+- `46abb3f` test(e2e): AC11 client-error focus; open-list axe with the DEC-191 exception
+- `5514abb` docs(frontend): ComboBox buttonLabel and listLabel; the DEC-191 axe exception
+- `d6d70ba` docs(evidence): gate log on 5514abb
 
 ## AC → proof (from the implementers' reports; verified by G3)
 | AC | Proof |
@@ -22,11 +28,13 @@ DEC-190. PO start signal 2026-11-21 (split kept). Risk tier **H**: SEC agent, th
 | AC7 | `ComboBox.test` (keyboard, accent/case filter, `aria-activedescendant`, Escape, ≤ 50 of 600 rendered, axe), DevUiPage story; E2E Chromium phone-small long-task record `[]` while typing "ho" (observer first proven on a 250 ms task) |
 | AC8 | `LanguageSwitcher.test` (PATCH only with a non-must-change session; a 500 keeps the device language, no `console.error`; no stored choice → session locale; stored choice wins) + E2E (fresh student real save, must-change sends nothing, the in-place helper's self-test) |
 | AC9 | `lib/time` and `credentialsMessage` tests (Kiritimati, Honolulu, Ho Chi Minh, UTC); E2E "Ngày thêm" 22/11/2026 (Kiritimati) vs 21/11/2026 (Honolulu) on 3 projects |
-| AC10 | `expectSettledAccessible` + `expectNoHorizontalScroll` at 360/768/1280 (default, 422, combobox open, long name); gate PASS; CI: pending on the PR |
+| AC10 | `expectSettledAccessible` + `expectNoHorizontalScroll` at 360/768/1280 (default, 422, long name; combobox open with the AC11 (e) exception); gate PASS; CI green on the final head |
+| AC11 | (a) `settings-account.spec.ts:191` client-error focus on 3 projects; (b) `AccountSettingsPage.test.tsx:224`; (c) `:250` and `LanguageSwitcher.test.tsx:52`; (d) `:287` and `ComboBox.test.tsx:140`; (e) `settings-account.spec.ts:322-324` and `checks.spec.ts:175-200` (only the named rule off); each seen red first; QA delta re-check FIXED |
 
 ## Results
-- Gate on `ec082d2`: `gate: PASS (13 steps, 1469s)`; backend 565 tests; E2E 575 passed, 64 skipped; the ×3 repeat (fixture change) 1725 passed,
-  192 skipped, 0 failed. Log: [gate.log](gate.log) (110 lines, every `gate:` line).
+- Gate on `5514abb` (the last code commit): `gate: PASS (13 steps, 1712s)`; backend 565 tests; web 896 (74 files); E2E 590 passed, 64 skipped;
+  the ×3 repeat (all specs, `checks.ts` changed) 1770 passed, 192 skipped, 0 failed. Log: [gate.log](gate.log) (117 lines, every `gate:` line).
+  Earlier: PASS on `ec082d2` (1469 s).
 - Web unit: 891 passed (74 files), also under `TZ=UTC` and `TZ=Pacific/Kiritimati`.
 - Bundle: the student's first visit 193.9 KB gz (budget 200 KB); `ComboBox` is imported from `ui/ComboBox`, not the barrel (225.6 KB with it).
 
@@ -51,12 +59,24 @@ in place by default (opt-in `realPreferences`); fresh-context helper `answerPref
 - FE OQ-2 (the Language row has only the switcher's `aria-label`, no visible label): for the UX checklist at G3.
 - QA note: Chromium's `Intl.supportedValuesOf('timeZone')` lists `Asia/Saigon`, not `Asia/Ho_Chi_Minh` or `UTC`; the current value is always an option.
 
-## Not verified yet
-CI, WebKit (CI smoke), screen readers, real two-tab editing against the server. G3 reviews and their cost table follow.
+## G3 (tier H, DEC-191)
+- SEC (fresh agent, `d5426b5`): APPROVED; S4-1 display-name bidi/zero-width characters → T-M2.33.
+- QA with the UX checklist (fresh agent, `d5426b5`): PASS WITH MINOR / APPROVED; S3 QA-1, QA-2, QA-3, UX-1 fixed as AC11; UX-2 a recorded
+  axe exception (`aria-hidden-focus` with the list open, React Aria); S4 QA-4 → T-M2.32, QA-5 packet wording, QA-6 → T-M2.33, UX-3 (FE OQ-2,
+  WCAG 3.3.2/2.5.3 pass) → a visible label with T-M2.35, UX-4 no change. FE OQ-1 did not recur.
+- Delta re-check (same QA agent, `d6d70ba`): all fixed; PASS WITH MINOR / APPROVED; UX-1r (React Aria's own English "Dismiss" and
+  "N options available.") → T-M2.32 with the drawer's "Dismiss". FE fix (b) deviation accepted (trimmed answer shown).
+- Reports: `evidence/T-M2.6/review/security.md`, `evidence/T-M2.6/qa/report.md` (`qa/` branch).
+
+## Not verified
+WebKit beyond the CI smoke, screen readers (no manual pass).
 
 ## G3 cost
 | Round | Reviewer | Head | Verdict | Findings | Tokens | Duration |
 |---|---|---|---|---|---|---|
-| (pending) | | | | | | |
+| 1 | SEC (fresh) | `d5426b5` | APPROVED | S4 ×1 | 55,162 | 152 s |
+| 1 | QA + UX (fresh) | `d5426b5` | PASS WITH MINOR / APPROVED | S3 ×5, S4 ×5 | 167,016 | 1,391 s |
+| fix | FE implementer (fresh) | `5514abb` | gate PASS | AC11 (a)–(e) | 123,693 | 2,594 s |
+| delta | QA + UX (resumed) | `d6d70ba` | PASS WITH MINOR / APPROVED | UX-1r (S3 → batch) | 28,669 | 744 s |
 
 Implementers: BE 104,372 tokens / 603 s; FE 368,520 tokens / 4,061 s (from the Agent results).
