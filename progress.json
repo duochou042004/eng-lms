@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-11-21T06:42:03Z",
-  "updatedBy": "lead-coordinator (T-M2.34 packet)",
+  "updatedAt": "2026-11-21T08:38:42Z",
+  "updatedBy": "lead-coordinator (T-M2.34 G0)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -32,15 +32,15 @@
   "currentTask": {
     "id": "T-M2.34",
     "title": "CI runners ubuntu-24.04 -> ubuntu-26.04 (all 8 workflows; PO-approved 2026-11-20, DEC-187)",
-    "status": "draft",
+    "status": "ready",
     "ownerRole": "LC",
     "branch": "docs/T-M2.34-packet",
     "packet": "docs/tasks/T-M2.34-ci-ubuntu-2604.md",
-    "pr": null,
+    "pr": "218",
     "lastCommit": null,
     "startedAt": null,
     "nextSteps": [
-      "G0: one fresh docs-reviewer on the T-M2.34 packet PR; then the PO start signal with the regression-run choice (a) one run or (b) none (packet Design notes)",
+      "PO start signal with the regression-run choice (a) one run or (b) none (packet Design notes); then the change on chore/T-M2.34-ci-ubuntu-2604",
       "Then T-M2.6, T-M2.32, T-M2.33, T-M2.7 (PO order, DEC-187)"
     ],
     "trace": [
@@ -48,7 +48,7 @@
     ],
     "entryGate": [
       "T-M2.16 merged — met (edaa7bb)",
-      "Packet + G0 — packet drafted, G0 pending",
+      "Packet + G0 — met (DOCS-REVIEW PASS WITH MINOR, S3/S4 fixed, PR #218)",
       "PO start signal — not asked"
     ]
   },
