@@ -68,6 +68,9 @@ in place by default (opt-in `realPreferences`); fresh-context helper `answerPref
   "N options available.") → T-M2.32 with the drawer's "Dismiss". FE fix (b) deviation accepted (trimmed answer shown).
 - Reports: `evidence/T-M2.6/review/security.md`, `evidence/T-M2.6/qa/report.md` (`qa/` branch).
 
+## Merge
+merge-gate on PR #222 (head `2896fb8`): `merge-gate: scope full; checks: 5 full, 0 fast-path`, merged `160df23` (DEC-192).
+
 ## Not verified
 WebKit beyond the CI smoke, screen readers (no manual pass).
 

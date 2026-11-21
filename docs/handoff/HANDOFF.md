@@ -11,7 +11,8 @@ Remote: https://github.com/duochou042004/eng-lms (mirror gitlab, synced after ea
 - Reports: `evidence/T-M2.6/review/security.md`, `evidence/T-M2.6/qa/report.md`; LC copies in `.claude/scratch/lc-records/T-M2.6/`.
 
 ## In flight / uncommitted
-- Nothing in flight after the records PR merges. Local screenshots and E2E records in `evidence/T-M2.6/{impl,records,screenshots}/` stay untracked (DEC-131).
+- Nothing in flight after the records PR merges. Local screenshots in `evidence/T-M2.6/{impl,screenshots}/` stay untracked (DEC-131); the untracked
+  `evidence/T-M2.6/records/` is gate noise (see the gate gotcha) and may be deleted.
 
 ## Next steps (in this order)
 1. **T-M2.35 packet** (task-packet skill; lessons-learned first; contradiction scan L-03; Domain rules L-04: one `workspace` document with a

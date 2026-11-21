@@ -1,6 +1,6 @@
 You are resuming the Eng-LMS project (private 1:1 teaching workspace for ONE English tutor; no hard-coded curricula) as Lead Coordinator. Clone: /home/deb/App_sources/eng-lms (Debian 13, DEC-185).
 Read in order: CLAUDE.md, progress.json, docs/handoff/HANDOFF.md, DEC-187, DEC-190, DEC-191 and DEC-192 in docs/10-governance/decision-log.md, the backlog rows T-M2.35, T-M2.32, T-M2.33, T-M2.7, docs/09-harness/coding-agent-rules.md, docs/09-harness/lessons-learned.md, the task-packet skill.
-State: P1/M2. T-M2.6 done (160df23, DEC-192; G3 rulings DEC-191). Current: T-M2.35 workspace settings v1 (FR-SET-01, draft, no packet). PO order (DEC-187, DEC-190): T-M2.35 -> T-M2.32 -> T-M2.33 -> T-M2.7 (G5). Firefox is out of the G5 matrix (DEC-180).
+State: P1/M2. T-M2.6 done (160df23, DEC-192; G3 rulings DEC-191); develop tip: the T-M2.6 records PR merge after f5974bb. Current: T-M2.35 workspace settings v1 (FR-SET-01, draft, no packet). PO order (DEC-187, DEC-190): T-M2.35 -> T-M2.32 -> T-M2.33 -> T-M2.7 (G5). Firefox is out of the G5 matrix (DEC-180).
 Do next:
 1. T-M2.35 packet (task-packet skill; Domain rules with a version and 409 STALE_VERSION; the visible Language label from T-M2.6 UX-3), G0 docs review on docs/T-M2.35-packet, merge; then ask the PO for the start signal.
 2. Then T-M2.35 implementation and G3 (tier H: SEC + QA with the UX checklist), T-M2.32, T-M2.33 (tier H), T-M2.7 (G5: one regression run, no Firefox; ask first). T-M2.26 after at least 10 shadow PRs.

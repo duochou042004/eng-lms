@@ -1,7 +1,6 @@
 # T-M2.6 security review (G3, tier H)
 
-Fresh security-reviewer agent; the LC recorded its returned text (DEC-131). Rulings: DEC-191.
-
+Fresh security-reviewer agent, head `d5426b5`, 2026-11-21; the LC recorded its returned text (DEC-131). Rulings: DEC-191.
 
 Cost: 55,162 tokens, 12 tool uses, 152 s.
 

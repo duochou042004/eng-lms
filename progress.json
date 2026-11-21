@@ -45,6 +45,7 @@
     "trace": [
       "DEC-187",
       "DEC-190",
+      "DEC-191",
       "FR-SET-01"
     ]
   },
@@ -462,14 +463,14 @@
     {
       "id": "T-M2.6",
       "title": "Account preferences and Settings › Account (FR-SET-02; split from Settings v1, workspace part = T-M2.35)",
-      "completedAt": "2026-11-21T16:22:45Z",
+      "completedAt": "2026-11-21T16:01:56Z",
       "mergeCommit": "160df23",
       "evidence": "evidence/T-M2.6/summary.md",
       "note": "PR #222 via merge-gate (head 2896fb8, CI 7/7 (5 full)); QA PR #223 (f5974bb); packet PR #221 (c92928f); gate PASS on 5514abb (1712 s); G3 tier H: SEC APPROVED, QA PASS WITH MINOR, UX APPROVED, AC11 fix round + delta re-check; DEC-190, DEC-191, DEC-192"
     }
   ],
   "tests": {
-    "lastRun": "2026-11-21T16:22:45Z",
+    "lastRun": "2026-11-21T15:26:03Z",
     "summary": "T-M2.6 head 5514abb: gate PASS (13 steps, 1712 s); backend 565; web 896; e2e 590 passed, 64 skipped; x3 repeat 1770 passed, 0 failed.",
     "suites": [
       {
