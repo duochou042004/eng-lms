@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-11-21T11:53:04Z",
-  "updatedBy": "lead-coordinator (T-M2.6 start)",
+  "updatedAt": "2026-11-21T13:12:53Z",
+  "updatedBy": "lead-coordinator (T-M2.6 in review, handoff)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -32,16 +32,16 @@
   "currentTask": {
     "id": "T-M2.6",
     "title": "Account preferences and Settings › Account (FR-SET-02; split from Settings v1, workspace part = T-M2.35)",
-    "status": "in_progress",
+    "status": "in_review",
     "ownerRole": "BE+FE",
     "branch": "feature/T-M2.6-account-preferences",
     "packet": "docs/tasks/T-M2.6-account-preferences.md",
     "pr": null,
-    "lastCommit": null,
+    "lastCommit": "ec082d2",
     "startedAt": "2026-11-21T11:53:04Z",
     "nextSteps": [
-      "BE implementer (scope 1-3), then FE implementer (scope 4-9, 7a), one at a time; gate; PR; CI",
-      "G3 tier H: SEC agent, then QA with the UX checklist; merge-gate; records"
+      "CI green on the PR's final head; G3 tier H: one fresh SEC agent (security-review skill), then one fresh QA agent with the UX checklist (qa-evaluation + ux-review; FE OQ-2 Language label is for UX); verdicts as separate PR comments after CI is green",
+      "LC-APPROVED, merge-gate, gitlab-sync, records (merge DEC with the L-10 rulings in evidence/T-M2.6/summary.md); then T-M2.35"
     ],
     "trace": [
       "DEC-187",
@@ -467,8 +467,8 @@
     }
   ],
   "tests": {
-    "lastRun": "2026-11-21T09:43:46Z",
-    "summary": "T-M2.34: gate PASS on b44f424 (13 steps, 557 s; backend skipped locally, CI ran it on 26.04); regression run 44888854717 on ubuntu-26.04: 1062 passed, 156 skipped, webkit-smoke 6/6.",
+    "lastRun": "2026-11-21T13:12:53Z",
+    "summary": "T-M2.6 head ec082d2: gate PASS (13 steps, 1469 s); backend 565; web 891; e2e 575 passed, 64 skipped; x3 repeat 1725 passed, 0 failed.",
     "suites": [
       {
         "name": "backend (./mvnw -B verify)",
@@ -1861,6 +1861,11 @@
       "at": "2026-11-21T11:53:04Z",
       "actor": "lead-coordinator",
       "event": "Packet PR #221 merged (c92928f, DEC-190). PO start signal for T-M2.6; split kept (T-M2.35 next)."
+    },
+    {
+      "at": "2026-11-21T13:12:53Z",
+      "actor": "lead-coordinator",
+      "event": "T-M2.6 implemented (BE ad5a8a4, FE 4c40d01..ec082d2); gate PASS on ec082d2; L-10 rulings recorded; PR opened; G3 next session (context limit)."
     }
   ]
 }

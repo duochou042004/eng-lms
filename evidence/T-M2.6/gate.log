@@ -1,0 +1,110 @@
+# gate.sh on ec082d2, trimmed from 7585 lines: every gate: line, then the last 60 lines
+gate: ec082d2 2026-11-21T12:46:11Z, steps: docs scripts backend web-install web-lint web-typecheck web-test web-build web-budget web-contrast contract-drift qa-typecheck e2e
+gate: ==> docs
+gate: <== docs OK (1s)
+gate: ==> scripts
+gate: <== scripts OK (151s)
+gate: ==> backend
+gate: <== backend OK (210s)
+gate: ==> web-install
+gate: <== web-install OK (0s)
+gate: ==> web-lint
+gate: <== web-lint OK (3s)
+gate: ==> web-typecheck
+gate: <== web-typecheck OK (5s)
+gate: ==> web-test
+gate: <== web-test OK (43s)
+gate: ==> web-build
+gate: <== web-build OK (5s)
+gate: ==> web-budget
+gate: <== web-budget OK (0s)
+gate: ==> web-contrast
+gate: <== web-contrast OK (0s)
+gate: ==> contract-drift
+gate: <== contract-drift OK (20s)
+gate: ==> qa-typecheck
+gate: <== qa-typecheck OK (1s)
+gate: ==> e2e
+gate: e2e repeat: tests/auth.spec.ts imports e2e/support/fixtures.ts
+gate: e2e repeat: tests/checks.spec.ts imports e2e/support/fixtures.ts
+gate: e2e repeat: tests/guards.spec.ts imports e2e/support/fixtures.ts
+gate: e2e repeat: tests/loading.spec.ts imports e2e/support/fixtures.ts
+gate: e2e repeat: tests/navigation.spec.ts imports e2e/support/fixtures.ts
+gate: e2e repeat: tests/polish.spec.ts imports e2e/support/fixtures.ts
+gate: e2e repeat: tests/route-focus.spec.ts imports e2e/support/fixtures.ts
+gate: e2e repeat: tests/settings-account.spec.ts imports e2e/support/fixtures.ts
+gate: e2e repeat: tests/shells.spec.ts imports e2e/support/fixtures.ts
+gate: e2e repeat: tests/smoke.spec.ts imports e2e/support/fixtures.ts
+gate: e2e repeat: tests/students-account.spec.ts imports e2e/support/fixtures.ts
+gate: e2e repeat: tests/students-focus.spec.ts imports e2e/support/fixtures.ts
+gate: e2e repeat: tests/students-guardians.spec.ts imports e2e/support/fixtures.ts
+gate: e2e repeat: tests/students-learning-profile.spec.ts imports e2e/support/fixtures.ts
+gate: e2e repeat: tests/students-list.spec.ts imports e2e/support/fixtures.ts
+gate: e2e repeat: tests/students-polish.spec.ts imports e2e/support/fixtures.ts
+gate: e2e repeat: tests/students-profile.spec.ts imports e2e/support/fixtures.ts
+gate: e2e repeat: tests/students-ui-checks.spec.ts imports e2e/support/fixtures.ts
+gate: e2e repeat: all specs: e2e/support/global-setup.ts is imported by no spec
+gate: e2e repeat x3: tests/auth.spec.ts tests/checks.spec.ts tests/guards.spec.ts tests/loading.spec.ts tests/navigation.spec.ts tests/polish.spec.ts tests/route-focus.spec.ts tests/settings-account.spec.ts tests/shells.spec.ts tests/smoke.spec.ts tests/students-account.spec.ts tests/students-focus.spec.ts tests/students-guardians.spec.ts tests/students-learning-profile.spec.ts tests/students-list.spec.ts tests/students-polish.spec.ts tests/students-profile.spec.ts tests/students-ui-checks.spec.ts
+gate: <== e2e OK (1030s)
+gate: PASS (13 steps, 1469s)
+# --- tail ---
+  ✓  1864 [laptop] › tests/students-focus.spec.ts:35:3 › Focus after an action removes or disables its own control (T-M2.19 AC4) › the list error: Try again: focus to the h1 (4.4s)
+  ✓  1863 [laptop] › tests/students-account.spec.ts:438:3 › English UI (T-M2.14 AC10) › the Profile view, the edit form with errors, the conflict dialog, the Account section, the toast, the reset dialog and card in English (7.2s)
+  ✓  1869 [laptop] › tests/students-focus.spec.ts:91:3 › Focus after an action removes or disables its own control (T-M2.19 AC4) › the workspace error: Try again: focus to the h1 (4.7s)
+  ✓  1874 [laptop] › tests/students-guardians.spec.ts:139:3 › Guardians (T-M2.15) › AC1/AC9: ten guardians, a 120-character name and a 2,000-character note: no Add, the limit text, no horizontal scroll (2.8s)
+  ✓  1871 [laptop] › tests/students-focus.spec.ts:130:3 › Focus after an action removes or disables its own control (T-M2.19 AC4) › D-4: the guardians error: Try again (503 until the alert, then passed through) focuses the section heading (4.8s)
+  ✓  1875 [laptop] › tests/students-guardians.spec.ts:172:3 › Guardians (T-M2.15) › AC3/AC9: edit opens with the saved values; errors focus the summary; only the changed fields are sent (3.0s)
+  ✓  1872 [laptop] › tests/students-focus.spec.ts:147:3 › Focus after an action removes or disables its own control (T-M2.19 AC4) › Add student: guardian-row Remove of the last, a middle and the first row; the 10th Add guardian; contact handles (6.2s)
+  ✓  1870 [laptop] › tests/students-focus.spec.ts:106:3 › Focus after an action removes or disables its own control (T-M2.19 AC4) › the workspace error: a Try again that fails again keeps focus on the h1; the next one shows the student (AC9 (a)) (8.1s)
+  ✓  1877 [laptop] › tests/students-guardians.spec.ts:289:3 › Guardians (T-M2.15) › AC2: two pages: another page's 10th guardian → the 10-guardians alert and the refetched list (3.7s)
+  ✓  1856 [laptop] › tests/students-account.spec.ts:62:3 › Account section (T-M2.14) › AC5/AC9: Archive: persistent toast, sign-in refused, Reactivate clear of the toast; F6, Tab, Enter on Undo (16.0s)
+  ✓  1878 [laptop] › tests/students-guardians.spec.ts:316:3 › Guardians (T-M2.15) › AC5: Remove asks first; Cancel keeps it; a 5xx keeps the dialog with its alert; confirm toasts and focuses the heading (3.4s)
+  ✓  1879 [laptop] › tests/students-guardians.spec.ts:373:3 › Guardians (T-M2.15) › AC6: one form at a time (hints); a dirty guardian form asks on navigation and on Cancel (2.2s)
+  ✓  1876 [laptop] › tests/students-guardians.spec.ts:231:3 › Guardians (T-M2.15) › AC4: two pages: a stale save opens the conflict dialog (Copy my notes, Cancel, Reload); a removed guardian shows the alert (4.5s)
+  ✓  1881 [laptop] › tests/students-guardians.spec.ts:461:3 › Guardians (T-M2.15) › AC7: a student without guardians: the request has no guardians (2.4s)
+  ✓  1873 [laptop] › tests/students-guardians.spec.ts:50:3 › Guardians (T-M2.15) › AC1/AC2/AC9: none yet, F11 add in ≤ 3 steps, then a second with all fields; layout rules; axe (9.6s)
+  ✓  1882 [laptop] › tests/students-guardians.spec.ts:479:3 › Guardians (T-M2.15) › AC9: keyboard-only add, edit and remove (Tab, typing, Enter) (3.1s)
+  ✓  1880 [laptop] › tests/students-guardians.spec.ts:408:3 › Guardians (T-M2.15) › AC7/AC9: Add student with guardian rows: the name error opens the section; the filled rows are sent and listed (4.6s)
+  ✓  1884 [laptop] › tests/students-guardians.spec.ts:612:3 › English UI (T-M2.15 AC9) › the conflict dialog with Copy my notes and the removed-elsewhere alert in English (4.5s)
+  ✓  1888 [laptop] › tests/students-learning-profile.spec.ts:310:3 › Learning profile (T-M2.17) › AC10 (a): a mouse click on Save straight from a cleared Label of a row with a value: the summary; the fix clears while typing; one press saves (2.2s)
+  ✓  1887 [laptop] › tests/students-learning-profile.spec.ts:243:3 › Learning profile (T-M2.17) › AC3/AC4/AC8: client errors focus the summary; a refused tag keeps its text; the last chip → the input; a 500 keeps the input (3.5s)
+  ✓  1890 [laptop] › tests/students-learning-profile.spec.ts:400:3 › Learning profile (T-M2.17) › AC6: one form at a time (hints); a form with only uncommitted tag text asks on navigation and on Cancel (2.7s)
+  ✓  1891 [laptop] › tests/students-learning-profile.spec.ts:441:3 › Learning profile (T-M2.17) › AC8: keyboard-only edit, tag add and remove, field add and remove, save (Tab, typing, Enter) (2.6s)
+  ✓  1889 [laptop] › tests/students-learning-profile.spec.ts:341:3 › Learning profile (T-M2.17) › AC5: two pages: a first save after the other page created the profile, then an older version: the conflict dialog (4.3s)
+  ✓  1883 [laptop] › tests/students-guardians.spec.ts:538:3 › English UI (T-M2.15 AC9) › the Guardians section (0, 2, 10), the form with errors, the remove dialog and the add form rows with an error (9.1s)
+  ✓  1886 [laptop] › tests/students-learning-profile.spec.ts:157:3 › Learning profile (T-M2.17) › AC1/AC2/AC8: 30 tags per list and 30 custom fields as text; the form at 30; the remove focus targets; discard (8.7s)
+  ✓  1894 [laptop] › tests/students-list.spec.ts:29:3 › Add student (F2) and the credentials card › AC9/AC7/AC5: F2 from the Students list in ≤ 6 steps; the card; Back shows an empty form; nothing stored (3.6s)
+  ✓  1885 [laptop] › tests/students-learning-profile.spec.ts:73:3 › Learning profile (T-M2.17) › AC1/AC3/AC8: never saved: four rows "Not added"; F12 in ≤ 3 steps; layout; toast; unchanged Save and clean Cancel (9.7s)
+  ✓  1892 [laptop] › tests/students-learning-profile.spec.ts:510:3 › Learning profile (T-M2.17) › the learning-profile error: Try again (503 until the alert) focuses the section heading; the rest of the page works (5.7s)
+  ✓  1896 [laptop] › tests/students-list.spec.ts:175:3 › Add student (F2) and the credentials card › AC6: a username taken in another tab (409) shows on Username with focus; client errors focus the summary (3.9s)
+  ✓  1898 [laptop] › tests/students-list.spec.ts:253:3 › Add student (F2) and the credentials card › T-M2.29 AC3: own Log out while a page query answers 401 before /login commits: exactly /login, no notice (1.9s)
+  ✓  1899 [laptop] › tests/students-list.spec.ts:295:3 › Add student (F2) and the credentials card › AC7: a refused clipboard shows the manual-copy text; the password stays selectable (3.0s)
+  ✓  1895 [laptop] › tests/students-list.spec.ts:121:3 › Add student (F2) and the credentials card › AC5/AC8: Contact (email, phone, two handles) and a Note are sent and shown on the workspace page (5.5s)
+  ✓  1902 [laptop] › tests/students-list.spec.ts:528:3 › Students list › AC4/AC10: first use (no student in any status): the empty state with one Add student (1.7s)
+  ✓  1893 [laptop] › tests/students-learning-profile.spec.ts:538:3 › English UI (T-M2.17 AC8) › the Learning profile section (empty, 30 tags and fields), the form with errors, the discard and conflict dialogs (7.4s)
+  ✓  1897 [laptop] › tests/students-list.spec.ts:207:3 › Add student (F2) and the credentials card › AC6: leaving a dirty form asks (navigation, home link); a clean or created form leaves; sign-out never asks (3.9s)
+  ✓  1900 [laptop] › tests/students-list.spec.ts:311:3 › Add student (F2) and the credentials card › AC10: keyboard-only F2 (Tab and Enter only) (3.3s)
+  ✓  1906 [laptop] › tests/students-polish.spec.ts:45:5 › M2 polish (T-M2.20) › AC1/AC2: a 2,001-character note shows the limit with grouped digits (vi) in an h3 summary (3.0s)
+  ✓  1904 [laptop] › tests/students-list.spec.ts:657:3 › Workspace page › AC8: refused contact values are text with a copy button (no link); unknown and malformed ids show not-found (3.6s)
+  ✓  1907 [laptop] › tests/students-polish.spec.ts:45:5 › M2 polish (T-M2.20) › AC1/AC2: a 2,001-character note shows the limit with grouped digits (en) in an h3 summary (3.0s)
+  ✓  1903 [laptop] › tests/students-list.spec.ts:544:3 › Students table with realistic data (AC12 (t)) › fixed column shares at 768, 1024 and 1280 in vi and en: no horizontal scroll, every value whole (5.0s)
+  ✓  1909 [laptop] › tests/students-polish.spec.ts:95:3 › M2 polish (T-M2.20) › AC10: text filled in one input event (a comma inside), then Save: the field shows both reasons (vi) (2.8s)
+  ✓  1908 [laptop] › tests/students-polish.spec.ts:67:3 › M2 polish (T-M2.20) › AC8: a pasted tag list refused for two reasons shows both messages; Save shows both in the summary (vi) (3.6s)
+  ✓  1913 [laptop] › tests/students-profile.spec.ts:241:3 › Edit profile (T-M2.14) › AC10: keyboard-only edit (Tab, typing, Enter) (2.3s)
+  ✓  1914 [laptop] › tests/students-ui-checks.spec.ts:32:5 › Motion tokens as rendered (T-M2.19 AC5) › the Skeleton pulses in 1.4 s and the Spinner turns in 800 ms (2.2s)
+  ✓  1905 [laptop] › tests/students-list.spec.ts:713:3 › English UI (AC10) › the list, the form with errors, the card and the workspace are axe clean in English (6.1s)
+  ✓  1915 [laptop] › tests/students-ui-checks.spec.ts:32:5 › Motion tokens as rendered (T-M2.19 AC5) › the Skeleton pulses in 1.4 s and the Spinner turns in 800 ms; with reduced motion neither moves (2.1s)
+  ✓  1912 [laptop] › tests/students-profile.spec.ts:192:3 › Edit profile (T-M2.14) › AC4: another tab saved first: Save shows "This was changed elsewhere"; Copy my note, Cancel, Reload; a stale status too (4.1s)
+  ✓  1911 [laptop] › tests/students-profile.spec.ts:161:3 › Edit profile (T-M2.14) › AC3: a username change; the student signs in with it and a session open before still works (4.7s)
+  ✓  1910 [laptop] › tests/students-profile.spec.ts:53:3 › Edit profile (T-M2.14) › AC1/AC10: Edit profile layout, errors, save of only the changed fields, toast, list; axe; the guard asks (9.2s)
+  ✓  1917 [laptop] › tests/students-ui-checks.spec.ts:80:5 › Long data (T-M2.19) › [en] the list, the Profile view with a guardian, Edit profile, the guardian form and Add student: settled, accessible, no word broken (7.2s)
+  ✓  1901 [laptop] › tests/students-list.spec.ts:365:3 › Students list › AC2/AC3/AC4/AC10: search (diacritics), Include archived, Newest, paging, URL with Back and reload, fallbacks, layout (15.0s)
+  ✓  1916 [laptop] › tests/students-ui-checks.spec.ts:80:5 › Long data (T-M2.19) › [vi] the list, the Profile view with a guardian, Edit profile, the guardian form and Add student: settled, accessible, no word broken (7.2s)
+
+  192 skipped
+  1725 passed (12.3m)
+e2e-run: playwright exit 0
+e2e-run: app stopped (pid 624870)
+gate: <== e2e OK (1030s)
+gate: PASS (13 steps, 1469s)
+gate exit=0
