@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-11-21T10:04:37Z",
-  "updatedBy": "lead-coordinator (T-M2.34 records)",
+  "updatedAt": "2026-11-21T11:29:36Z",
+  "updatedBy": "lead-coordinator (T-M2.6 G0 fixes)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -31,26 +31,26 @@
   },
   "currentTask": {
     "id": "T-M2.6",
-    "title": "Settings v1 (workspace name, time zone, language; account preferences)",
-    "status": "draft",
+    "title": "Account preferences and Settings › Account (FR-SET-02; split from Settings v1, workspace part = T-M2.35)",
+    "status": "ready",
     "ownerRole": "BE+FE",
-    "branch": null,
-    "packet": null,
-    "pr": null,
+    "branch": "docs/T-M2.6-packet",
+    "packet": "docs/tasks/T-M2.6-account-preferences.md",
+    "pr": "221",
     "lastCommit": null,
     "startedAt": null,
     "nextSteps": [
-      "Packet (task-packet skill) on docs/T-M2.6-packet: FR-SET-01, 02; G0 by a fresh docs-reviewer; then the PO start signal",
-      "Then T-M2.32, T-M2.33, T-M2.7 (PO order, DEC-187)"
+      "Merge the packet PR #221 after the reviewer's PASS; then the PO start signal (tell the PO about the T-M2.35 split, DEC-190)",
+      "Then T-M2.35, T-M2.32, T-M2.33, T-M2.7 (PO order, DEC-187)"
     ],
     "trace": [
       "DEC-187",
-      "FR-SET-01",
+      "DEC-190",
       "FR-SET-02"
     ],
     "entryGate": [
       "T-M2.34 merged — met (c5ae729)",
-      "Packet + G0 — not started",
+      "Packet + G0 — round 1 CHANGES REQUESTED fixed (DEC-190), delta check pending",
       "PO start signal — not asked"
     ]
   },
@@ -65,7 +65,7 @@
     "lastCommit": null,
     "startedAt": null,
     "nextSteps": [
-      "After T-M2.6, T-M2.32 and T-M2.33 (PO order, DEC-187); the regression workflow already ran green on ubuntu-26.04 (T-M2.34, DEC-189); T-M2.26 after at least 10 shadow PRs"
+      "After T-M2.6, T-M2.35, T-M2.32 and T-M2.33 (PO order, DEC-187); the regression workflow already ran green on ubuntu-26.04 (T-M2.34, DEC-189); T-M2.26 after at least 10 shadow PRs"
     ],
     "trace": [
       "DEC-158",
@@ -583,7 +583,8 @@
       "DEC-186",
       "DEC-187",
       "DEC-188",
-      "DEC-189"
+      "DEC-189",
+      "DEC-190"
     ],
     "pendingPO": [
       "OQ-03",
@@ -1843,6 +1844,11 @@
       "at": "2026-11-21T10:04:37Z",
       "actor": "lead-coordinator",
       "event": "T-M2.34 merged (PR #219, c5ae729, DEC-189): all 8 workflows on ubuntu-26.04; one regression run green. Packet PR #218 (8c7691c). Next: T-M2.6 packet."
+    },
+    {
+      "at": "2026-11-21T11:24:27Z",
+      "actor": "lead-coordinator",
+      "event": "Records PR #220 merged (8353ea1). T-M2.6 packet drafted (account preferences, tier H); Settings v1 split: workspace part = new row T-M2.35."
     }
   ]
 }
