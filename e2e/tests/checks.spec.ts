@@ -171,3 +171,30 @@ test.describe('expectSettledAccessible', () => {
     await expect(expectSettledAccessible(page, SHORT)).rejects.toThrow(/horizontal scroll/)
   })
 })
+
+// T-M2.6 AC11 (e): `disableRules` turns off only the rules named; the default runs every rule.
+test.describe('expectNoAxeViolations disableRules', () => {
+  // A focusable control inside aria-hidden content (the `aria-hidden-focus` rule).
+  const hiddenFocus = '<div aria-hidden="true"><button type="button">Ẩn</button></div>'
+
+  test('fails on aria-hidden-focus by default', async ({ page }) => {
+    await fixture(page, hiddenFocus)
+    await expect(expectNoAxeViolations(page)).rejects.toThrow(/aria-hidden-focus/)
+  })
+
+  test('passes on aria-hidden-focus alone with that rule disabled', async ({ page }) => {
+    await fixture(page, hiddenFocus)
+    await expectNoAxeViolations(page, { disableRules: ['aria-hidden-focus'] })
+  })
+
+  test('still fails on another violation with aria-hidden-focus disabled', async ({ page }) => {
+    await fixture(page, `${hiddenFocus}<p style="color: #aaa; background: #fff">Low contrast</p>`)
+    await expect(expectNoAxeViolations(page, { disableRules: ['aria-hidden-focus'] })).rejects.toThrow(/color-contrast/)
+  })
+
+  test('expectSettledAccessible passes the option on', async ({ page }) => {
+    await fixture(page, hiddenFocus)
+    await expect(expectSettledAccessible(page, SHORT)).rejects.toThrow(/aria-hidden-focus/)
+    await expectSettledAccessible(page, { ...SHORT, disableRules: ['aria-hidden-focus'] })
+  })
+})

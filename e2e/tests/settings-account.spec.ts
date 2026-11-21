@@ -188,6 +188,25 @@ test.describe('AC6, AC10: the Account page', () => {
     }
   })
 
+  // AC11 (a) (G3 QA-1): the client's own failure focuses the summary in a real browser too, by a click and by Enter.
+  test('a client error (121 characters): Save, clicked or by Enter, moves focus to the summary; nothing is sent', async ({
+    page,
+  }, testInfo) => {
+    const sent = recordPreferences(page)
+    await openAccount(page)
+    await displayName(page).fill('a'.repeat(121))
+    await save(page).click()
+    const summary = page.getByRole('alert').filter({ hasText: 'Chưa lưu được cài đặt' })
+    await expect(summary).toBeFocused()
+    await expect(summary.getByRole('link')).toHaveText(['Tên hiển thị tối đa 120 ký tự.'])
+    await expectSettledAccessible(page)
+    await shot(page, testInfo, 'settings-account-client-error')
+    await displayName(page).press('Enter')
+    await expect(summary).toBeFocused()
+    await expect(displayName(page)).toHaveAttribute('aria-invalid', 'true')
+    expect(sent).toEqual([])
+  })
+
   test('a 422 shows each field problem in the summary (focused) and on the fields; leaving asks first', async ({
     page,
     consoleGuard,
@@ -300,6 +319,9 @@ test.describe('AC7: the time-zone ComboBox', () => {
     )
     await expectNoHorizontalScroll(page)
     await shot(page, testInfo, 'settings-account-combobox-open')
+    // AC11 (e): axe with the list open. DEC-191: only aria-hidden-focus is off (React Aria hides the page outside the popover).
+    await expectSettledAccessible(page, { disableRules: ['aria-hidden-focus'] })
+    await expect(page.getByRole('listbox', { name: 'Các múi giờ' })).toBeVisible()
 
     // Narrow to one zone, arrow to it, Enter.
     await page.keyboard.type('nolulu')

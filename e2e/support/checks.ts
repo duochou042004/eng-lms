@@ -1,10 +1,14 @@
 import AxeBuilder from '@axe-core/playwright'
 import { expect, type Locator, type Page } from '@playwright/test'
 
-/** WCAG 2.2 AA (accessibility.md): no axe violations on the current page. */
-export async function expectNoAxeViolations(page: Page) {
+/**
+ * WCAG 2.2 AA (accessibility.md): no axe violations on the current page. `disableRules` only for a recorded exception
+ * (a decision naming the rule and the state, e.g. DEC-191); every other rule still runs.
+ */
+export async function expectNoAxeViolations(page: Page, { disableRules = [] }: { disableRules?: string[] } = {}) {
   const results = await new AxeBuilder({ page })
     .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'])
+    .disableRules(disableRules)
     .analyze()
   expect(
     results.violations.map((v) => `${v.id} (${v.impact}): ${v.help} [${v.nodes.map((n) => n.target.join(' ')).join(', ')}]`),
@@ -96,8 +100,11 @@ export async function expectFocusNotLost(page: Page, { timeout = 5_000 }: { time
 }
 
 /** Once no element is entering or exiting (a fade measured mid-way fails contrast): no axe violation and no horizontal scroll. */
-export async function expectSettledAccessible(page: Page, { timeout }: { timeout?: number } = {}) {
+export async function expectSettledAccessible(
+  page: Page,
+  { timeout, disableRules }: { timeout?: number; disableRules?: string[] } = {},
+) {
   await expect(page.locator('[data-entering], [data-exiting]'), 'transitions settled').toHaveCount(0, { timeout })
-  await expectNoAxeViolations(page)
+  await expectNoAxeViolations(page, { disableRules })
   await expectNoHorizontalScroll(page)
 }
