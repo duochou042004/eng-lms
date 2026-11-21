@@ -61,9 +61,11 @@ accounts, the Workspace tab) is the new backlog row **T-M2.35**, next in the PO 
      device **without** a stored choice, the session's `locale` is applied once the session loads (and stored). A stored choice is never overridden by
      the session (keeps the kept E2E that set `englms.locale` before signing in, Design notes).
   7a. **E2E isolation of the shared accounts** (G0 S2-1): `e2e/support/global-setup.ts` writes `englms.locale = 'vi'` into both storage states
-     (tutor, shared student) and resets both accounts' preferences (`vi`, `Asia/Ho_Chi_Minh`, `displayName` `null`) through the new endpoint; the
-     shared `test` fixture (`e2e/support/fixtures.ts`) aborts `PATCH /api/v1/auth/preferences` by default (the product's best-effort path), with an
-     opt-in option for the specs that need the real call; a spec that clicks the switcher in its own `browser.newContext()` applies the same helper
+     (tutor, shared student) and resets the tutor's preferences (`vi`, `Asia/Ho_Chi_Minh`, `displayName` `null`) through the new endpoint (the shared
+     student is created fresh each run with the column defaults); the shared `test` fixture (`e2e/support/fixtures.ts`) **answers**
+     `PATCH /api/v1/auth/preferences` in place by default (200 with the current session body and the requested values; the server is not called),
+     with an opt-in option for the specs that need the real call. Not an abort: an aborted fetch logs `net::ERR_FAILED`, which the console guard
+     (`fixtures.ts:38-60`) fails on (G0 S3-9); the product code never `console.error`s on the best-effort failure; a spec that clicks the switcher in its own `browser.newContext()` applies the same helper
      (the implementer greps and lists them; today `shells.spec.ts` fresh-context sign-ins).
   8. **Dates in the account's time zone** (retires `lib/time/index.ts:4`'s shortcut, L-12): `formatDate` / `formatDateTime` take a `timeZone` argument;
      their callers (`CredentialsCard`, `ProfileForm`, `StudentWorkspacePage`, `credentialsMessage`) pass the session's `timeZone`; without a session
@@ -95,7 +97,7 @@ accounts, the Workspace tab) is the new backlog row **T-M2.35**, next in the PO 
   - **Kept-test impact (G0 S2-1):** the storage states of `global-setup.ts:71,81` hold no `englms.locale` and the suite is `fullyParallel`; kept
     specs click the switcher while signed in as the shared tutor or student (`shells.spec.ts:407,560,1185,1275`, `route-focus.spec.ts:192`,
     `smoke.spec.ts:92`). Without scope 7a each click would save `en` on a shared account and flip every parallel spec without a stored choice to
-    English. Scope 7a (stored `vi` in both states, the reset, the default abort of the PATCH) keeps them; fresh-sign-in specs (`ANONYMOUS`, e.g.
+    English. Scope 7a (stored `vi` in both states, the reset, the PATCH answered in place by default) keeps them; fresh-sign-in specs (`ANONYMOUS`, e.g.
     `shells.spec.ts:489,912`) then sign in to accounts whose locale stays `vi`.
   - Page titles `… · Eng-LMS` use the app name, not the workspace or account name: unaffected.
   - Date assertions: no kept E2E asserts a formatted date (`grep` for `formatDate`, `expiresAt`, `dd/mm` patterns in `e2e/`: none); the unit tests of
@@ -104,7 +106,7 @@ accounts, the Workspace tab) is the new backlog row **T-M2.35**, next in the PO 
   - interaction-states §3–4 (field errors, toasts), DEC-112 (shell items), DEC-113 (switcher stays in the account section): kept.
   - security.md T19 (stale session across tabs): a preference saved in one tab reaches another on its next session refetch (window focus); no
     cross-tab message is added.
-- **Shortcut ledger:** this packet retires the two markers above and adds none expected; any new one follows the `shortcut:` form.
+- **Shortcut ledger:** this packet retires the `lib/time` `shortcut:` marker, resolves the `LanguageSwitcher` comment and adds none expected; any new one follows the `shortcut:` form.
 - **A new check that finds a real defect outside this scope** (L-10): the implementer reports it at once as an OQ, uses `test.fail` only until the LC
   rules, and the LC rules before G3.
 - **E2E data hygiene:** `settings-account.spec.ts` runs `mode: 'serial'` and restores every value in `afterEach`, but that protects only its own
