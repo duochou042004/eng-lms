@@ -11,14 +11,20 @@ export interface CredentialsMessageInput {
 
 /**
  * The ready-to-paste message of the credentials card (T-M2.5 scope 5): one `students` string with interpolation, in the
- * UI language (`t` is bound to it), plain text; a neutral greeting without the name (AC12 (f)). Built only when copied; never stored.
+ * UI language (`t` is bound to it) and the account's time zone, plain text; a neutral greeting without the name (AC12 (f)).
+ * Built only when copied; never stored.
  */
-export function credentialsMessage(t: TFunction<'students'>, locale: string, input: CredentialsMessageInput) {
+export function credentialsMessage(
+  t: TFunction<'students'>,
+  locale: string,
+  timeZone: string | undefined,
+  input: CredentialsMessageInput,
+) {
   return t('card.message', {
     workspace: input.workspace,
     url: input.loginUrl,
     username: input.username,
     password: input.temporaryPassword,
-    expiry: formatDateTime(input.expiresAt, locale),
+    expiry: formatDateTime(input.expiresAt, locale, timeZone),
   })
 }

@@ -1,4 +1,4 @@
-import { CalendarCheck, Menu, NotebookPen, Users } from 'lucide-react'
+import { CalendarCheck, Menu, NotebookPen, Settings, Users } from 'lucide-react'
 import { useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Outlet } from 'react-router'
@@ -25,6 +25,7 @@ export { ShellNotFound } from './ShellParts'
 const NAV = [
   { id: 'today', labelKey: 'nav.today', icon: <CalendarCheck />, to: '/tutor/today' },
   { id: 'students', labelKey: 'nav.students', icon: <Users />, to: '/tutor/students' },
+  { id: 'settings', labelKey: 'nav.settings', icon: <Settings />, to: '/tutor/settings' },
 ] as const
 
 /**

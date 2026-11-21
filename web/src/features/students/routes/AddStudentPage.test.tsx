@@ -458,7 +458,9 @@ describe('Add student: the credentials card (AC7)', { timeout: 20_000 }, () => {
     const card = heading.closest('section')!
     expect(card).toHaveTextContent('nguyenvanan')
     expect(within(card).getByText(CREDENTIALS.temporaryPassword).tagName).toBe('SPAN')
-    expect(card).toHaveTextContent(formatDateTime(CREDENTIALS.expiresAt, 'vi'))
+    // T-M2.6 AC9: in the session's time zone (test/server: Asia/Ho_Chi_Minh), not the browser's.
+    expect(card).toHaveTextContent(formatDateTime(CREDENTIALS.expiresAt, 'vi', 'Asia/Ho_Chi_Minh'))
+    expect(card).toHaveTextContent('10:00, 23/10/2026')
     expect(card).toHaveTextContent(`${window.location.origin}/login`)
     expect(card).toHaveTextContent('Mật khẩu này chỉ hiện một lần.')
     expect(container.querySelector('input[type="password"], input[autocomplete]')).toBeNull()

@@ -41,7 +41,9 @@ describe('/tutor/students/:studentId', { timeout: 20_000 }, () => {
         .map((t) => t.textContent),
       // T-M2.14 AC11: the Status row moved to the Account section (scope 1).
     ).toEqual(['Họ tên', 'Tên đăng nhập', 'Ngày thêm'])
-    expect(personal).toHaveTextContent(formatDate(student().createdAt, 'vi'))
+    // T-M2.6 AC9: in the session's time zone (test/server: Asia/Ho_Chi_Minh), not the browser's.
+    expect(personal).toHaveTextContent(formatDate(student().createdAt, 'vi', 'Asia/Ho_Chi_Minh'))
+    expect(personal).toHaveTextContent('01/10/2026')
     expect(personal).toHaveTextContent(/\d\d\/\d\d\/2026/)
     const note = within(screen.getByRole('region', { name: 'Ghi chú' })).getByText(/Dòng một/)
     expect(note.textContent).toBe('Dòng một\nDòng hai')
