@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Milestone | M2 |
-| Status | ready (G0: DOCS-REVIEW PASS WITH MINOR, S3/S4 fixed 2026-11-21; start on the PO signal) |
+| Status | done (`c5ae729`, DEC-189) |
 | Owner role | LC (chore; the LC edits, a fresh docs-reviewer at G3) |
 | Branch | `chore/T-M2.34-ci-ubuntu-2604` (from `develop`) |
 | Depends on | T-M2.16 (merged, `edaa7bb`, DEC-188) |

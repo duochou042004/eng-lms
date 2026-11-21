@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-11-21T09:44:31Z",
-  "updatedBy": "lead-coordinator (T-M2.34 evidence)",
+  "updatedAt": "2026-11-21T10:04:37Z",
+  "updatedBy": "lead-coordinator (T-M2.34 records)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -30,26 +30,28 @@
     "exitCriteria": "FR-AUTH-01..10 and FR-STU-01..07 accepted; authorization-matrix and student-isolation harnesses fail on any unregistered endpoint; add-student flow E2E at 360/768/1280 within its step budget; security review of authentication passed (docs/01-product/roadmap.md)."
   },
   "currentTask": {
-    "id": "T-M2.34",
-    "title": "CI runners ubuntu-24.04 -> ubuntu-26.04 (all 8 workflows; PO-approved 2026-11-20, DEC-187)",
-    "status": "in_progress",
-    "ownerRole": "LC",
-    "branch": "chore/T-M2.34-ci-ubuntu-2604",
-    "packet": "docs/tasks/T-M2.34-ci-ubuntu-2604.md",
-    "pr": "219",
+    "id": "T-M2.6",
+    "title": "Settings v1 (workspace name, time zone, language; account preferences)",
+    "status": "draft",
+    "ownerRole": "BE+FE",
+    "branch": null,
+    "packet": null,
+    "pr": null,
     "lastCommit": null,
-    "startedAt": "2026-11-21T08:55:24Z",
+    "startedAt": null,
     "nextSteps": [
-      "G3: one fresh docs-reviewer on PR #219 (DOCS-REVIEW T-M2.34: PASS), CI green on the final head, LC-APPROVED, merge-gate, gitlab-sync, records PR",
-      "Then T-M2.6, T-M2.32, T-M2.33, T-M2.7 (PO order, DEC-187)"
+      "Packet (task-packet skill) on docs/T-M2.6-packet: FR-SET-01, 02; G0 by a fresh docs-reviewer; then the PO start signal",
+      "Then T-M2.32, T-M2.33, T-M2.7 (PO order, DEC-187)"
     ],
     "trace": [
-      "DEC-187"
+      "DEC-187",
+      "FR-SET-01",
+      "FR-SET-02"
     ],
     "entryGate": [
-      "T-M2.16 merged — met (edaa7bb)",
-      "Packet + G0 — met (PR #218, 8c7691c)",
-      "PO start signal — met 2026-11-21, regression choice (a) one run"
+      "T-M2.34 merged — met (c5ae729)",
+      "Packet + G0 — not started",
+      "PO start signal — not asked"
     ]
   },
   "nextTask": {
@@ -63,7 +65,7 @@
     "lastCommit": null,
     "startedAt": null,
     "nextSteps": [
-      "After T-M2.34, T-M2.6, T-M2.32 and T-M2.33 (PO order, DEC-187); T-M2.26 after at least 10 shadow PRs"
+      "After T-M2.6, T-M2.32 and T-M2.33 (PO order, DEC-187); the regression workflow already ran green on ubuntu-26.04 (T-M2.34, DEC-189); T-M2.26 after at least 10 shadow PRs"
     ],
     "trace": [
       "DEC-158",
@@ -454,11 +456,19 @@
       "mergeCommit": "edaa7bb",
       "evidence": "evidence/T-M2.16/summary.md",
       "note": "PR #215 via merge-gate (head 34f9162, CI 7/7 (5 full)); packet PR #214 (38fa45d); PO start 2026-11-21; gate PASS on 2c71ec3 (832 s); G3 tier M: QA PASS (no findings); QA report PR #216 (22ceb1e); DEC-187, DEC-188"
+    },
+    {
+      "id": "T-M2.34",
+      "title": "CI runners ubuntu-24.04 -> ubuntu-26.04 (all 8 workflows; PO-approved 2026-11-20, DEC-187)",
+      "completedAt": "2026-11-21T10:03:06Z",
+      "mergeCommit": "c5ae729",
+      "evidence": "evidence/T-M2.34/summary.md",
+      "note": "PR #219 via merge-gate (head 1137ab0, CI 7/7 (5 full)); packet PR #218 (8c7691c); PO start 2026-11-21, regression choice (a): run 44888854717 success (1062 passed, webkit-smoke 6/6); all jobs Image ubuntu-26.04 20261111.635; gate PASS on b44f424 (557 s); G3 tier L: DOCS-REVIEW PASS; DEC-189"
     }
   ],
   "tests": {
-    "lastRun": "2026-11-21T05:03:24Z",
-    "summary": "T-M2.16 head 2c71ec3: gate PASS (13 steps, 832 s); backend 531 tests; web 855; e2e 544 passed, 62 skipped.",
+    "lastRun": "2026-11-21T09:43:46Z",
+    "summary": "T-M2.34: gate PASS on b44f424 (13 steps, 557 s; backend skipped locally, CI ran it on 26.04); regression run 44888854717 on ubuntu-26.04: 1062 passed, 156 skipped, webkit-smoke 6/6.",
     "suites": [
       {
         "name": "backend (./mvnw -B verify)",
@@ -485,23 +495,23 @@
   "gates": {
     "G0": {
       "status": "pass",
-      "note": "T-M2.16 packet: PR #214, DOCS-REVIEW PASS on 44e4c17 after round 1 CHANGES REQUESTED (S2-1) (DEC-187)"
+      "note": "T-M2.34 packet: PR #218, DOCS-REVIEW PASS WITH MINOR fixed, confirmed PASS on b624169 (DEC-189)"
     },
     "G1": {
       "status": "pass",
-      "note": "T-M2.16: gate PASS (13 steps, 832 s) on 2c71ec3"
+      "note": "T-M2.34: gate PASS (13 steps, 557 s) on b44f424"
     },
     "G2": {
       "status": "pass",
-      "note": "T-M2.16: CI 7/7 on 34f9162 (5 full)"
+      "note": "T-M2.34: CI 7/7 on 1137ab0 (5 full), all jobs on ubuntu-26.04"
     },
     "G3": {
       "status": "pass",
-      "note": "T-M2.16 tier M: QA PASS, no findings (DEC-188)"
+      "note": "T-M2.34 tier L: DOCS-REVIEW PASS on 1137ab0 (DEC-189)"
     },
     "G4": {
       "status": "pass",
-      "note": "T-M2.16 PR #215 merged via merge-gate (edaa7bb); QA report PR #216 (22ceb1e)"
+      "note": "T-M2.34 PR #219 merged via merge-gate (c5ae729)"
     },
     "G5": {
       "status": "n/a",
@@ -572,7 +582,8 @@
       "DEC-185",
       "DEC-186",
       "DEC-187",
-      "DEC-188"
+      "DEC-188",
+      "DEC-189"
     ],
     "pendingPO": [
       "OQ-03",
@@ -973,6 +984,13 @@
       "status": "approved",
       "at": "2026-11-19T12:02:00Z",
       "ref": "DEC-182"
+    },
+    {
+      "what": "Start T-M2.34 with regression choice (a) one run (chat: \"Start, (a) one run\") (approx. time)",
+      "by": "PO",
+      "status": "approved",
+      "at": "2026-11-21T08:58:00Z",
+      "ref": "DEC-189"
     }
   ],
   "environment": {
@@ -1820,6 +1838,11 @@
       "at": "2026-11-21T06:42:03Z",
       "actor": "lead-coordinator",
       "event": "Records PR #217 merged (d41926a). T-M2.34 packet drafted (tier L; Testcontainers 2.0.5 supports Docker 29; regression-run choice for the PO)."
+    },
+    {
+      "at": "2026-11-21T10:04:37Z",
+      "actor": "lead-coordinator",
+      "event": "T-M2.34 merged (PR #219, c5ae729, DEC-189): all 8 workflows on ubuntu-26.04; one regression run green. Packet PR #218 (8c7691c). Next: T-M2.6 packet."
     }
   ]
 }

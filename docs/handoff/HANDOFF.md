@@ -1,43 +1,42 @@
-# Handoff — 2026-11-21T06:10Z (T-M2.16 merged; next: T-M2.34 CI runner chore)
+# Handoff — 2026-11-21T10:05Z (T-M2.34 merged; next: T-M2.6 packet)
 
-Phase/Milestone: P1 / M2 (in progress) · Last task: **T-M2.16 done** (`edaa7bb`, PR #215, DEC-188) · Last commit on `develop`: `22ceb1e` (QA report PR #216
-merge; this handoff on `docs/T-M2.16-records`) · Next: **T-M2.34** (CI `ubuntu-26.04`) → T-M2.6 → T-M2.32 → T-M2.33 → T-M2.7 (G5) ·
+Phase/Milestone: P1 / M2 (in progress) · Last task: **T-M2.34 done** (`c5ae729`, PR #219, DEC-189) · Last commit on `develop`: `c5ae729`
+(this handoff on `docs/T-M2.34-records`) · Next: **T-M2.6** (Settings v1) → T-M2.32 → T-M2.33 → T-M2.7 (G5) ·
 Remote: https://github.com/duochou042004/eng-lms (mirror: gitlab.com/duochou042004/eng-lms) · Clone: `/home/deb/App_sources/eng-lms`
 
 ## Where we are
-- **T-M2.10 records PR #213** had already merged (`e187dd3`, DOCS-REVIEW + LC-APPROVED); mirror in sync.
-- **PO order (2026-11-21, DEC-187):** T-M2.16 → the CI runner chore (**T-M2.34**, all 8 workflows `ubuntu-24.04` → `ubuntu-26.04`, PO-approved
-  2026-11-20) → T-M2.6 → T-M2.32 → **T-M2.33** (after T-M2.32, before T-M2.7: in M2) → T-M2.7 (G5).
-- **GitHub runner notice** (read 2026-11-21, summary in DEC-187 and `.claude/scratch/lc-records/ci-ubuntu-2604-runner-notice.md`): 26.04 GA since
-  2026-09-17 (actions/runner-images#14747), `ubuntu-latest` moved to it 2026-10-19..11-19 (#14748), no 24.04 removal date. Risks for T-M2.34:
-  Docker 29.x with the containerd image store (Testcontainers in `backend`; user report #15330/#15332), AppArmor user-namespace limits (Chromium
-  sandbox in `e2e-smoke`/`regression`; user report). Rollback: pin `ubuntu-24.04` again.
-- **T-M2.16 done** (`edaa7bb`): a committed username change forces the student `version` +1 (repository fragment `StudentVersionIncrement`,
-  `EntityManager.lock(PESSIMISTIC_FORCE_INCREMENT)`), so the second of two tabs gets 409 `STALE_VERSION`. G0 took one S2 round (a bump through
-  `updatedAt` dirty checking does nothing at an unchanged clock). Gate PASS on `2c71ec3` (832 s, backend 531). G3 tier M: QA PASS, no findings.
-- **Dependabot (PO, 2026-11-20):** #135, #203, #204, #209 closed by the PO (they failed CI; not security updates). #207 (`@hookform/resolvers` 7)
-  and #208 (`react-hook-form` 7.92) are kept for the PO to merge. #209's msw 3 typecheck break (`web/src/test/setup.ts:14`) still needs a packet
-  if msw 3 comes back.
+- **T-M2.16 records PR #217** merged (`d41926a`) before this session; mirror in sync.
+- **T-M2.34 done** (`c5ae729`, DEC-189): all 8 workflows run on `ubuntu-26.04` (`Image: ubuntu-26.04`, `Version: 20261111.635` in every job).
+  Packet PR #218 (`8c7691c`, G0 PASS WITH MINOR fixed and confirmed). The packet's risks did not show: Docker 29 / Testcontainers and the
+  Chromium sandbox needed no change. PO choice (a): one `regression` run on the branch, run 44888854717: success, 1062 passed, 156 skipped,
+  WebKit smoke 6/6, OOM 0. `e2e-smoke` 16m58s vs 14m55s on 24.04 (one run each). No rollback. G3 tier L: DOCS-REVIEW PASS on `1137ab0`.
+- **PO order (DEC-187):** T-M2.6 → T-M2.32 → T-M2.33 → T-M2.7 (G5). Firefox is out of the G5 matrix (DEC-180).
+- **Dependabot (PO, 2026-11-20):** #207 (`@hookform/resolvers` 7) and #208 (`react-hook-form` 7.92) are the PO's to merge. #209's msw 3
+  typecheck break (`web/src/test/setup.ts:14`) still needs a packet if msw 3 comes back.
 
 ## In flight / uncommitted
-- **This records PR** (`docs/T-M2.16-records`: DEC-188, backlog/packet `done`, T-M2.34 row, summary G3 table, progress.json, this handoff): one
-  fresh docs-reviewer (`DOCS-REVIEW T-M2.16: PASS`, text only), CI, `LC-APPROVED T-M2.16`, merge-gate, gitlab-sync. Finish it first if open.
+- **This records PR** (`docs/T-M2.34-records`: DEC-189, backlog/packet `done`, review records, G3 cost table, progress.json, this handoff): one
+  fresh docs-reviewer (`DOCS-REVIEW T-M2.34: PASS`, text only), CI, `LC-APPROVED T-M2.34`, merge-gate, gitlab-sync. Finish it first if open.
 - No open feature branch.
 
 ## Next steps (in this order)
 1. Close the records PR (above).
-2. **T-M2.34** (LC chore, tier L): packet (task-packet skill; the 8 `runs-on` lines; the risks above; cap regression runs at 1 and ask the PO
-   first), G0 by a fresh docs-reviewer, PO start signal, change, CI green on 26.04 (check each job's "Set up job" image line), docs review,
-   merge-gate, records.
-3. **T-M2.6** (Settings v1, BE+FE), **T-M2.32** (E2E guard gap), **T-M2.33** (scalar coercions, tier H: SEC + QA), then **T-M2.7** (G5: one
-   `regression` run, no Firefox; ask first). **T-M2.26** only after at least 10 PRs under T-M2.23 shadow mode.
+2. **T-M2.6** (Settings v1: workspace name, time zone, language; account preferences; FR-SET-01, 02; BE+FE): packet (task-packet skill), G0 by a
+   fresh docs-reviewer, PO start signal; implementer subagents one at a time; tier per quality-gates (UI → UX review).
+3. **T-M2.32** (E2E guard gap), **T-M2.33** (scalar coercions, tier H: SEC + QA), then **T-M2.7** (G5: one `regression` run, no Firefox; ask
+   first). **T-M2.26** only after at least 10 PRs under T-M2.23 shadow mode.
 
 ## Pending PO decisions / actions
-- Each task's start signal (T-M2.34 next).
+- Each task's start signal (T-M2.6 next, after its packet's G0).
 - Dependabot #207, #208: the PO's to merge. A React bump touches T-M2.31 (c): re-run its unit test and E2E.
 - WebKit host libraries (sudo) only if a local WebKit run is ever needed; G5 uses the `regression` workflow.
 
 ## Gotchas
+- **CI runs on `ubuntu-26.04`** (T-M2.34, DEC-189): a runner-caused failure → pin that workflow back to `ubuntu-24.04` (no removal date
+  announced), report it to the PO and record it in a DEC. `ci-scope-workflows.test.sh` fixtures name the literal `runs-on` line: a runner
+  change must update them too (a stale one fails as "mutation not applied").
+- **Resumed reviewers for a PASS confirmation are cheap** (T-M2.34: 1.5k–9.6k tokens, ≤ 20 s): confirm with the same agent via SendMessage
+  instead of a new round.
 - **merge-gate needs `progress.json` changed in the PR itself** ("progress.json not updated in this PR", T-M2.16 PR #215): commit the
   status update on the feature branch before asking for the final CI; re-post `QA-VERDICT` and `LC-APPROVED` after CI is green on that head.
 - **Hibernate 7.4: a `@Lock(PESSIMISTIC_FORCE_INCREMENT)` finder does not bump an already-managed entity** (only `select … for no key update`);
