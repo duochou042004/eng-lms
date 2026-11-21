@@ -46,4 +46,15 @@ One run, as capped (PO choice (a)).
   contract-drift skipped locally (no `backend/` or `api/` change; CI ran both on 26.04). Log: [gate.log](gate.log) (93 lines, every `gate:` line).
 
 ## G3 cost (tier L, docs review)
-The docs review cost (tokens, duration) is recorded in the T-M2.34 records PR, so the reviewed head stays final.
+Added in the records PR (the reviewed head stayed final). Tokens and durations from the Agent results; a resumed reviewer reports cumulative
+tokens, so a confirmation round's cost is the delta.
+
+| Round | Reviewer | Head | Verdict | Findings | Scope | Tokens | Duration | Gate runs |
+|---|---|---|---|---|---|---|---|---|
+| G0 round 1 | docs-reviewer (fresh) | `0e6217a` | PASS WITH MINOR | S3 ×2, S4 ×7 | full | 44,061 | 93 s | 0 |
+| G0 confirmation | same | `b624169` | PASS | none | delta | 9,581 (53,642 cumulative) | 20 s | 0 |
+| G3 round 1 | docs-reviewer (fresh) | `1137ab0` | PASS WITH MINOR | S4 ×2 | full | 32,628 | 106 s | 0 |
+| G3 confirmation | same | `1137ab0` | PASS | none | delta | 1,496 (34,124 cumulative) | 14 s | 0 |
+
+LC gate: 1 run (557 s, `b44f424`). Regression: 1 run (26m27s, PO choice (a)). Merge: PR #219 → `c5ae729` (merge-gate: scope full; checks: 5 full,
+0 fast-path), DEC-189. Review records: [g0-docs.md](review/g0-docs.md), [g3-docs.md](review/g3-docs.md).
