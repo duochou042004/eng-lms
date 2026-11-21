@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Milestone | M2 |
-| Status | ready (G0: `DOCS-REVIEW T-M2.16-packet`, DEC-187) |
+| Status | done (`edaa7bb`, DEC-188; G0 PASS and packet decisions DEC-187) |
 | Owner role | BE (backend-implementer; QA at G3) |
 | Branch | `fix/T-M2.16-username-version` (from `develop`) |
 | Depends on | T-M2.14 (merged, `6073e71`, DEC-127); T-M2.10 (merged, `6cca511`, DEC-186) |

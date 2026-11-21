@@ -84,4 +84,6 @@ None (no L-10 defect). Accepted, untested: the same-username race (200 + 200).
 |---|---|---|---|---|---|
 | G0 | docs-reviewer (3 passes) | `a3155a6` → `44e4c17` | CHANGES REQUESTED → PASS WITH MINOR → PASS | 66,998 (cumulative) | 285 s |
 | impl | backend-implementer | `2c71ec3` | gate PASS | 157,948 | 1,862 s |
-| G3 | qa-evaluator | | | | |
+| G3 | qa-evaluator (full, round 1) | `2c71ec3` / `2b4a914` | PASS (no findings) | 82,549 | 1,113 s |
+
+Gate runs: one complete (832 s, implementer). QA report: `evidence/T-M2.16/qa/report.md` (PR #216). Merge: `edaa7bb` (PR #215 at `34f9162`, CI 7/7, 5 full, 0 fast-path; DEC-188).
