@@ -1,7 +1,7 @@
 # Handoff — 2026-11-21T06:10Z (T-M2.16 merged; next: T-M2.34 CI runner chore)
 
-Phase/Milestone: P1 / M2 (in progress) · Last task: **T-M2.16 done** (`edaa7bb`, PR #215, DEC-188) · Last commit on `develop`: the QA report PR #216
-merge (after `edaa7bb`; this handoff on `docs/T-M2.16-records`) · Next: **T-M2.34** (CI `ubuntu-26.04`) → T-M2.6 → T-M2.32 → T-M2.33 → T-M2.7 (G5) ·
+Phase/Milestone: P1 / M2 (in progress) · Last task: **T-M2.16 done** (`edaa7bb`, PR #215, DEC-188) · Last commit on `develop`: `22ceb1e` (QA report PR #216
+merge; this handoff on `docs/T-M2.16-records`) · Next: **T-M2.34** (CI `ubuntu-26.04`) → T-M2.6 → T-M2.32 → T-M2.33 → T-M2.7 (G5) ·
 Remote: https://github.com/duochou042004/eng-lms (mirror: gitlab.com/duochou042004/eng-lms) · Clone: `/home/deb/App_sources/eng-lms`
 
 ## Where we are

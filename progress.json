@@ -40,7 +40,7 @@
     "lastCommit": null,
     "startedAt": null,
     "nextSteps": [
-      "Add the backlog row and write the chore packet (task-packet skill; risks: Docker 29 containerd image store for Testcontainers, AppArmor user-namespace limits for the Chromium sandbox; GitHub notice in DEC-187); G0 by a fresh docs-reviewer; ask the PO for the start signal; no regression run without asking",
+      "Write the chore packet for backlog row T-M2.34 (task-packet skill; risks: Docker 29 containerd image store for Testcontainers, AppArmor user-namespace limits for the Chromium sandbox; GitHub notice in DEC-187); G0 by a fresh docs-reviewer; ask the PO for the start signal; cap regression runs at 1 and ask the PO first",
       "Then T-M2.6, T-M2.32, T-M2.33, T-M2.7 (PO order, DEC-187)"
     ],
     "trace": [
@@ -63,7 +63,7 @@
     "lastCommit": null,
     "startedAt": null,
     "nextSteps": [
-      "After T-M2.16, the CI ubuntu-26.04 chore, T-M2.6, T-M2.32 and T-M2.33 (PO order, DEC-187); T-M2.26 after at least 10 shadow PRs"
+      "After T-M2.34, T-M2.6, T-M2.32 and T-M2.33 (PO order, DEC-187); T-M2.26 after at least 10 shadow PRs"
     ],
     "trace": [
       "DEC-158",
@@ -453,7 +453,7 @@
       "completedAt": "2026-11-21T06:03:49Z",
       "mergeCommit": "edaa7bb",
       "evidence": "evidence/T-M2.16/summary.md",
-      "note": "PR #215 via merge-gate (head 34f9162, CI 7/7 (5 full)); packet PR #214 (38fa45d); PO start 2026-11-21; gate PASS on 2c71ec3 (832 s); G3 tier M: QA PASS (no findings); QA report PR #216; DEC-187, DEC-188"
+      "note": "PR #215 via merge-gate (head 34f9162, CI 7/7 (5 full)); packet PR #214 (38fa45d); PO start 2026-11-21; gate PASS on 2c71ec3 (832 s); G3 tier M: QA PASS (no findings); QA report PR #216 (22ceb1e); DEC-187, DEC-188"
     }
   ],
   "tests": {
@@ -501,7 +501,7 @@
     },
     "G4": {
       "status": "pass",
-      "note": "T-M2.16 PR #215 merged via merge-gate (edaa7bb); QA report PR #216"
+      "note": "T-M2.16 PR #215 merged via merge-gate (edaa7bb); QA report PR #216 (22ceb1e)"
     },
     "G5": {
       "status": "n/a",
