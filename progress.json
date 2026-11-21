@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-11-21T16:22:45Z",
-  "updatedBy": "lead-coordinator (T-M2.6 merged, records)",
+  "updatedAt": "2026-11-21T16:46:59Z",
+  "updatedBy": "lead-coordinator (T-M2.35 packet draft, G0)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -35,12 +35,13 @@
     "status": "draft",
     "ownerRole": "BE+FE",
     "branch": null,
-    "packet": null,
+    "packet": "docs/tasks/T-M2.35-workspace-settings.md",
     "pr": null,
     "lastCommit": null,
     "startedAt": null,
     "nextSteps": [
-      "Write the T-M2.35 packet (task-packet skill; read lessons-learned first), G0 docs review on a docs/T-M2.35-packet PR, then the PO start signal"
+      "G0 docs review of the packet on docs/T-M2.35-packet (PR); fix, confirm, merge; status ready",
+      "PO start signal, then BE then FE implementer; G3 tier H (SEC, then QA with the UX checklist)"
     ],
     "trace": [
       "DEC-187",
@@ -1874,6 +1875,11 @@
       "at": "2026-11-21T16:22:45Z",
       "actor": "lead-coordinator",
       "event": "T-M2.6 G3 (SEC APPROVED; QA PASS WITH MINOR, UX APPROVED; AC11 fix round 759585c..5514abb; delta re-check), merged 160df23 (PR #222), QA PR #223, records (DEC-191, DEC-192). Next: T-M2.35 packet."
+    },
+    {
+      "at": "2026-11-21T16:46:59Z",
+      "actor": "lead-coordinator",
+      "event": "T-M2.35 packet drafted (docs/tasks/T-M2.35-workspace-settings.md); G0 review next."
     }
   ]
 }
