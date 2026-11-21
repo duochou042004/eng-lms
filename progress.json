@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-11-21T16:46:59Z",
-  "updatedBy": "lead-coordinator (T-M2.35 packet draft, G0)",
+  "updatedAt": "2026-11-21T16:53:30Z",
+  "updatedBy": "lead-coordinator (T-M2.35 packet ready, G0)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -32,22 +32,28 @@
   "currentTask": {
     "id": "T-M2.35",
     "title": "Workspace settings v1 (FR-SET-01 first section; split from T-M2.6)",
-    "status": "draft",
+    "status": "ready",
     "ownerRole": "BE+FE",
-    "branch": null,
+    "branch": "feature/T-M2.35-workspace-settings",
     "packet": "docs/tasks/T-M2.35-workspace-settings.md",
     "pr": null,
     "lastCommit": null,
     "startedAt": null,
     "nextSteps": [
-      "G0 docs review of the packet on docs/T-M2.35-packet (PR); fix, confirm, merge; status ready",
-      "PO start signal, then BE then FE implementer; G3 tier H (SEC, then QA with the UX checklist)"
+      "Ask the PO for the start signal",
+      "Then BE implementer, then FE implementer (one at a time); gate; PR; G3 tier H (SEC, then QA with the UX checklist)"
     ],
     "trace": [
       "DEC-187",
       "DEC-190",
       "DEC-191",
+      "DEC-193",
       "FR-SET-01"
+    ],
+    "entryGate": [
+      "T-M2.6 merged — met (160df23)",
+      "Packet + G0 — met (PR #225, DEC-193)",
+      "PO start signal — pending"
     ]
   },
   "nextTask": {
@@ -499,7 +505,7 @@
   "gates": {
     "G0": {
       "status": "pass",
-      "note": "T-M2.6 packet: PR #221 (c92928f), DEC-190"
+      "note": "T-M2.35 packet: PR #225, DOCS-REVIEW round 1 CHANGES REQUESTED, delta PASS WITH MINOR, S4 fixed (DEC-193)"
     },
     "G1": {
       "status": "pass",
@@ -1880,6 +1886,11 @@
       "at": "2026-11-21T16:46:59Z",
       "actor": "lead-coordinator",
       "event": "T-M2.35 packet drafted (docs/tasks/T-M2.35-workspace-settings.md); G0 review next."
+    },
+    {
+      "at": "2026-11-21T16:53:30Z",
+      "actor": "lead-coordinator",
+      "event": "T-M2.35 packet G0: round 1 CHANGES REQUESTED (6 S3, 7 S4) fixed; delta PASS WITH MINOR; status ready; PO start signal pending."
     }
   ]
 }

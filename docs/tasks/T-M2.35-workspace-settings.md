@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Milestone | M2 |
-| Status | draft (G0 round 1: CHANGES REQUESTED, S3-1..S3-6 and S4-1..S4-7 fixed; DEC-193) |
+| Status | ready (G0: round 1 CHANGES REQUESTED, all findings fixed; delta PASS WITH MINOR, S4 fixed; DEC-193) |
 | Owner role | BE (store, endpoints, `/meta`, student defaults) then FE (Workspace tab, redirect, the Account tab's Language label); one implementer at a time |
 | Branch | `feature/T-M2.35-workspace-settings` (from `develop`) |
 | Depends on | T-M2.6 (merged, `160df23`, DEC-192) |
@@ -195,7 +195,7 @@ page; the defaults at every new student. 5. Hard-coded semantics: none.
 - `docs/04-backend/api-catalog.md` (`/tutor/settings` rows **Live**, `/meta` displayName source), `docs/04-backend/validation-rules.md` (the
   workspace rows).
 - `docs/05-frontend/information-architecture.md` (Settings as built: tabs, redirect), `docs/05-frontend/ux-flows.md` only if a step budget is added.
-- `docs/02-requirements/traceability-matrix.md` (if it has a SPEC §41 / FR-SET-01 row: Settings › Workspace live).
+- `docs/02-requirements/traceability-matrix.md` row 41: Settings › Workspace live (T-M2.35).
 
 ## Risks & assumptions
 - Risk: parallel E2E and the shared workspace row (scope 9). Risk: a mis-seeded row breaks every student create: the migration test and the AC5
