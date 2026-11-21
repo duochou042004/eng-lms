@@ -11,6 +11,11 @@
   max-inline-size: var(--size-reading-max);
 }
 
+/* The switcher at its own width, as in the account section (not stretched to the column). */
+.language {
+  display: flex;
+}
+
 .heading {
   font-size: var(--font-size-lg);
 }

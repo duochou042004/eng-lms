@@ -1,4 +1,4 @@
-import { test as base, expect } from '@playwright/test'
+import { test as base, expect, type BrowserContext } from '@playwright/test'
 
 /**
  * How long the console guard keeps listening after the test body ends (T-M1.6 QA F3, DEC-058): an error raised up to
@@ -31,7 +31,39 @@ export function isAnonymousSessionProbe(text: string, url: string) {
   )
 }
 
-export const test = base.extend<{ consoleGuard: string[] }>({
+/**
+ * Answers `PATCH /api/v1/auth/preferences` in `context` without calling the server (T-M2.6 scope 7a, DEC-190 (4)): 200
+ * with the current session body plus the sent values. The language switcher saves the account's locale on every switch,
+ * and the suite runs in parallel on shared accounts: a real save of `en` would flip every spec signed in on a device
+ * without a stored choice. Answered, not aborted: an aborted request logs `net::ERR_FAILED`, which the console guard
+ * fails on. The `test` fixture applies it to its own context; a spec that switches the language in its own
+ * `browser.newContext()` calls it too.
+ */
+export async function answerPreferencesInPlace(context: BrowserContext) {
+  await context.route('**/api/v1/auth/preferences', async (route) => {
+    if (route.request().method() !== 'PATCH') return route.fallback()
+    const url = new URL('/api/v1/auth/session', route.request().url()).href
+    try {
+      const session = await route.fetch({ url, method: 'GET', postData: '' })
+      if (session.status() !== 200) return await route.fulfill({ response: session })
+      await route.fulfill({ json: { ...(await session.json()), ...route.request().postDataJSON() } })
+    } catch (error) {
+      // A test that closes its page or context right after a switch ends this best-effort save midway: nothing to answer.
+      if (!route.request().frame().page().isClosed() && !/disposed|closed|ended/i.test(String(error))) throw error
+    }
+  })
+}
+
+export const test = base.extend<{ consoleGuard: string[]; realPreferences: boolean; preferencesInPlace: void }>({
+  /** `test.use({ realPreferences: true })`: the preferences PATCH reaches the server (settings-account.spec.ts only). */
+  realPreferences: [false, { option: true }],
+  preferencesInPlace: [
+    async ({ context, realPreferences }, use) => {
+      if (!realPreferences) await answerPreferencesInPlace(context)
+      await use()
+    },
+    { auto: true },
+  ],
   consoleGuard: [
     async ({ context }, use) => {
       const problems: string[] = []

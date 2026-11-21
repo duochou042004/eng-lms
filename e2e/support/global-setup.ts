@@ -15,6 +15,9 @@ import {
   TUTOR_USERNAME,
 } from './auth'
 
+/** The device's language choice (`LOCALE_STORAGE_KEY` in web/src/lib/i18n). */
+const LOCALE_KEY = 'englms.locale'
+
 function writeSecret(file: string, value: string) {
   mkdirSync(dirname(file), { recursive: true, mode: 0o700 })
   writeFileSync(file, `${value}\n`, { mode: 0o600 })
@@ -67,6 +70,15 @@ export default async function globalSetup(config: FullConfig) {
     } else if (password === bootstrap) {
       writeSecret(TUTOR_PASSWORD_FILE, password)
     }
+    // T-M2.6 scope 7a: the shared tutor's preferences back to the defaults (a failed earlier run may have left others),
+    // and a stored device language in both states, so no session locale ever applies to the shared contexts.
+    const reset = await apiCall(tutor, 'PATCH', '/api/v1/auth/preferences', {
+      locale: 'vi',
+      timeZone: 'Asia/Ho_Chi_Minh',
+      displayName: null,
+    })
+    if (reset.status !== 200) throw new Error(`E2E sign-in: the tutor's preferences reset answered ${reset.status}`)
+    await tutor.evaluate((key) => localStorage.setItem(key, 'vi'), LOCALE_KEY)
     mkdirSync(dirname(TUTOR_STATE), { recursive: true, mode: 0o700 })
     await tutorContext.storageState({ path: TUTOR_STATE })
 
@@ -78,6 +90,7 @@ export default async function globalSetup(config: FullConfig) {
     if (signedIn.status !== 200)
       throw new Error(`E2E sign-in: the shared student's sign-in answered ${signedIn.status}`)
     await apiChangePassword(student, temporary)
+    await student.evaluate((key) => localStorage.setItem(key, 'vi'), LOCALE_KEY)
     await studentContext.storageState({ path: STUDENT_STATE })
   } finally {
     await browser.close()

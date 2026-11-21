@@ -1,7 +1,7 @@
 import type { Locator, Page } from '@playwright/test'
 import { ANONYMOUS, STUDENT_STATE, TUTOR_STATE } from '../support/auth'
 import { evidenceRecord, evidenceShot } from '../support/evidence'
-import { expect, test } from '../support/fixtures'
+import { answerPreferencesInPlace, expect, test } from '../support/fixtures'
 import { openAccountSection, workspaceName } from '../support/shell'
 import { StepCounter } from '../support/steps'
 
@@ -184,6 +184,8 @@ test.describe('UX step budgets (T-M1.9 design notes)', () => {
       ['/student', STUDENT_STATE, 'student'],
     ] as const) {
       const context = await browser.newContext({ storageState })
+      // The switch below would save `en` on the shared account: answered in place (T-M2.6 scope 7a).
+      await answerPreferencesInPlace(context)
       const page = await context.newPage()
       await page.goto(path)
       await expect(page.getByRole('heading', { level: 1 })).toBeVisible()
