@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-11-21T16:53:30Z",
-  "updatedBy": "lead-coordinator (T-M2.35 packet ready, G0)",
+  "updatedAt": "2026-11-21T17:12:01Z",
+  "updatedBy": "lead-coordinator (handoff: T-M2.35 ready, PO start pending)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -1891,6 +1891,11 @@
       "at": "2026-11-21T16:53:30Z",
       "actor": "lead-coordinator",
       "event": "T-M2.35 packet G0: round 1 CHANGES REQUESTED (6 S3, 7 S4) fixed; delta PASS WITH MINOR; status ready; PO start signal pending."
+    },
+    {
+      "at": "2026-11-21T17:12:01Z",
+      "actor": "lead-coordinator",
+      "event": "T-M2.35 packet merged (PR #225, 2960919); handoff written; PO start signal asked."
     }
   ]
 }
