@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-11-21T08:38:42Z",
-  "updatedBy": "lead-coordinator (T-M2.34 G0)",
+  "updatedAt": "2026-11-21T08:55:24Z",
+  "updatedBy": "lead-coordinator (T-M2.34 start)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -32,15 +32,15 @@
   "currentTask": {
     "id": "T-M2.34",
     "title": "CI runners ubuntu-24.04 -> ubuntu-26.04 (all 8 workflows; PO-approved 2026-11-20, DEC-187)",
-    "status": "ready",
+    "status": "in_progress",
     "ownerRole": "LC",
-    "branch": "docs/T-M2.34-packet",
+    "branch": "chore/T-M2.34-ci-ubuntu-2604",
     "packet": "docs/tasks/T-M2.34-ci-ubuntu-2604.md",
-    "pr": "218",
+    "pr": null,
     "lastCommit": null,
-    "startedAt": null,
+    "startedAt": "2026-11-21T08:55:24Z",
     "nextSteps": [
-      "PO start signal with the regression-run choice (a) one run or (b) none (packet Design notes); then the change on chore/T-M2.34-ci-ubuntu-2604",
+      "Gate once, PR, CI green on ubuntu-26.04 (image lines, AC3); one regression run on the branch (PO chose (a), 2026-11-21, AC4); docs review, merge-gate, records",
       "Then T-M2.6, T-M2.32, T-M2.33, T-M2.7 (PO order, DEC-187)"
     ],
     "trace": [
@@ -48,8 +48,8 @@
     ],
     "entryGate": [
       "T-M2.16 merged — met (edaa7bb)",
-      "Packet + G0 — met (DOCS-REVIEW PASS WITH MINOR, S3/S4 fixed, PR #218)",
-      "PO start signal — not asked"
+      "Packet + G0 — met (PR #218, 8c7691c)",
+      "PO start signal — met 2026-11-21, regression choice (a) one run"
     ]
   },
   "nextTask": {

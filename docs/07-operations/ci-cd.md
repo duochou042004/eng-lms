@@ -6,6 +6,8 @@
 
 ## 1. Workflows and required checks
 
+Every job runs on the GitHub-hosted `ubuntu-26.04` runner (`runs-on: ubuntu-26.04`, DEC-187, T-M2.34).
+
 | Workflow (job name = required check) | Trigger | Steps | Required on |
 |---|---|---|---|
 | `docs-check` | PR, push to develop/master | `scripts/check-docs.sh` (progress.json schema, relative links, ID references, source checksums, prompt ≤ 4,000 chars, records: completed tasks `**done**` in the backlog and packet Status, `HANDOFF.md` archived against the PR's base (`ENGLMS_DOCS_BASE`), no unescaped pipe in a table-row code span, text-only CI inputs clean (§1.2)) + `scripts/tests/run-all.sh` (governance script tests) + `check-path-ownership.sh` on PRs | develop, master |
