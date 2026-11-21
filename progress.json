@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-11-21T06:14:31Z",
-  "updatedBy": "lead-coordinator (T-M2.16 merged; records)",
+  "updatedAt": "2026-11-21T06:42:03Z",
+  "updatedBy": "lead-coordinator (T-M2.34 packet)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -34,13 +34,13 @@
     "title": "CI runners ubuntu-24.04 -> ubuntu-26.04 (all 8 workflows; PO-approved 2026-11-20, DEC-187)",
     "status": "draft",
     "ownerRole": "LC",
-    "branch": null,
-    "packet": null,
+    "branch": "docs/T-M2.34-packet",
+    "packet": "docs/tasks/T-M2.34-ci-ubuntu-2604.md",
     "pr": null,
     "lastCommit": null,
     "startedAt": null,
     "nextSteps": [
-      "Write the chore packet for backlog row T-M2.34 (task-packet skill; risks: Docker 29 containerd image store for Testcontainers, AppArmor user-namespace limits for the Chromium sandbox; GitHub notice in DEC-187); G0 by a fresh docs-reviewer; ask the PO for the start signal; cap regression runs at 1 and ask the PO first",
+      "G0: one fresh docs-reviewer on the T-M2.34 packet PR; then the PO start signal with the regression-run choice (a) one run or (b) none (packet Design notes)",
       "Then T-M2.6, T-M2.32, T-M2.33, T-M2.7 (PO order, DEC-187)"
     ],
     "trace": [
@@ -48,7 +48,7 @@
     ],
     "entryGate": [
       "T-M2.16 merged — met (edaa7bb)",
-      "Packet + G0 — not started",
+      "Packet + G0 — packet drafted, G0 pending",
       "PO start signal — not asked"
     ]
   },
@@ -1815,6 +1815,11 @@
       "at": "2026-11-21T06:14:31Z",
       "actor": "lead-coordinator",
       "event": "T-M2.16 merged (PR #215, edaa7bb; DEC-188): forced version increment on a username change; gate PASS on 2c71ec3; QA PASS; QA report PR #216. Next: CI ubuntu-26.04 chore (T-M2.34)."
+    },
+    {
+      "at": "2026-11-21T06:42:03Z",
+      "actor": "lead-coordinator",
+      "event": "Records PR #217 merged (d41926a). T-M2.34 packet drafted (tier L; Testcontainers 2.0.5 supports Docker 29; regression-run choice for the PO)."
     }
   ]
 }
