@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-11-21T08:55:24Z",
-  "updatedBy": "lead-coordinator (T-M2.34 start)",
+  "updatedAt": "2026-11-21T09:44:31Z",
+  "updatedBy": "lead-coordinator (T-M2.34 evidence)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -36,11 +36,11 @@
     "ownerRole": "LC",
     "branch": "chore/T-M2.34-ci-ubuntu-2604",
     "packet": "docs/tasks/T-M2.34-ci-ubuntu-2604.md",
-    "pr": null,
+    "pr": "219",
     "lastCommit": null,
     "startedAt": "2026-11-21T08:55:24Z",
     "nextSteps": [
-      "Gate once, PR, CI green on ubuntu-26.04 (image lines, AC3); one regression run on the branch (PO chose (a), 2026-11-21, AC4); docs review, merge-gate, records",
+      "G3: one fresh docs-reviewer on PR #219 (DOCS-REVIEW T-M2.34: PASS), CI green on the final head, LC-APPROVED, merge-gate, gitlab-sync, records PR",
       "Then T-M2.6, T-M2.32, T-M2.33, T-M2.7 (PO order, DEC-187)"
     ],
     "trace": [
