@@ -15,7 +15,7 @@
 | POST | `/auth/login` | P | `{username, password, rememberMe}` → 200 with the session body; rotates the session ID; `rememberMe` sets the 30-day `ENGLMS_REMEMBER_ME` cookie. One generic 401 `UNAUTHENTICATED` for every failure (also while locked, DEC-089 (6)); 429 `RATE_LIMITED` + `Retry-After` past the per-IP throttle; no redirect target (T18). CSRF required. **Live** (T-M2.1) | FR-AUTH-03 | M2 |
 | POST | `/auth/logout` | P | 204; ends this session and this device's remember-me token, expires both cookies; idempotent for anonymous callers. CSRF required; passes the must-change gate. **Live** (T-M2.1) | FR-AUTH-04 | M2 |
 | POST | `/auth/password` | A (handler: 401 otherwise) | `{currentPassword, newPassword}` → 204; rotates the session ID, ends every other session and remember-me token. 422 `VALIDATION_FAILED` with `errors[]` field codes (`CURRENT_PASSWORD_INCORRECT`, `PASSWORD_TOO_SHORT`, `PASSWORD_TOO_LONG`, `PASSWORD_TOO_COMMON`, `PASSWORD_EQUALS_USERNAME`, `PASSWORD_UNCHANGED`). CSRF required; passes the must-change gate. **Live** (T-M2.1) | FR-AUTH-05, 06 | M2 |
-| PATCH | `/auth/preferences` | A | `{locale, timeZone, displayName?}` | FR-SET-02 | M2 |
+| PATCH | `/auth/preferences` | A (handler: 401 otherwise) | `{locale?, timeZone?, displayName?}`, absent = unchanged (validation-rules "account"); at least one property, else 422 `REQUIRED` on `locale`; a student's `displayName` → 422 `INVALID_VALUE`. 200 with the `/auth/session` body. CSRF required; behind the must-change gate (403 `PASSWORD_CHANGE_REQUIRED`). No `version`: last write wins per property (DEC-190, api-conventions §6). No event, no audit entry. **Live** (T-M2.6) | FR-SET-02 | M2 |
 
 ## tutor: students, goals, plans
 

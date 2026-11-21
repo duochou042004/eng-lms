@@ -21,7 +21,8 @@
   outline-offset: var(--focus-ring-offset);
 }
 
-.button[data-disabled] {
+.button[data-disabled],
+.button[aria-disabled='true']:not([data-pending]) {
   cursor: not-allowed;
   opacity: 0.55;
 }

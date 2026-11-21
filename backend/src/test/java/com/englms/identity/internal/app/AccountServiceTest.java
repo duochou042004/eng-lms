@@ -14,6 +14,7 @@ import java.security.SecureRandom;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneOffset;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.UUID;
@@ -46,7 +47,7 @@ class AccountServiceTest {
 		when(encoder.encode(anyString())).thenReturn("{bcrypt}hash");
 		Clock clock = Clock.fixed(NOW, ZoneOffset.UTC);
 		return new AccountService(accounts, sessions, encoder, new TemporaryPasswordGenerator(new SecureRandom()),
-				new PasswordPolicy(), mock(ApplicationEventPublisher.class), new Ids(clock), clock);
+				new PasswordPolicy(), mock(ApplicationEventPublisher.class), new Ids(clock), clock, List.of("vi", "en"));
 	}
 
 	@Test

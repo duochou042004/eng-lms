@@ -36,6 +36,10 @@
   `passwordProblems`, `usernames(userIds)` (one query) and `studentUserIdsWithUsernameContaining(fragment)` (escaped `LIKE`); the record
   `AccountApi.TemporaryCredentials {userId, username, temporaryPassword, expiresAt}` (its `toString` omits the password). `internal.security.AccountStatusFilter`
   re-reads the account status on every authenticated `/api/**` request (SEC S4-1, security.md §4).
+- **As built (T-M2.6):** `internal.web.AuthController` serves `PATCH /api/v1/auth/preferences` (FR-SET-02) through
+  `internal.app.AccountService.updatePreferences(userId, PreferencesCommand)` (validation-rules "account"; the row lock orders concurrent writes, no
+  version, DEC-190) and `UserAccount.changePreferences(locale, timeZone, displayName, now)` (no write when nothing changed). The allowed locales are read
+  from the `englms.meta.locales` property (no `settings` dependency); no event, no audit entry. Not in the public API: only identity's own controller calls it.
 
 ## students
 - **Owns:** `student`, `student_guardian`, `student_learning_profile`.

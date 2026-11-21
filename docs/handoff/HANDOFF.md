@@ -1,37 +1,41 @@
-# Handoff — 2026-11-21T10:05Z (T-M2.34 merged; next: T-M2.6 packet)
+# Handoff — 2026-11-21 (T-M2.6 implemented, in review; next: CI + G3)
 
-Phase/Milestone: P1 / M2 (in progress) · Last task: **T-M2.34 done** (`c5ae729`, PR #219, DEC-189) · Last commit on `develop`: `c5ae729`
-(this handoff on `docs/T-M2.34-records`) · Next: **T-M2.6** (account preferences) → T-M2.35 → T-M2.32 → T-M2.33 → T-M2.7 (G5) ·
-Remote: https://github.com/duochou042004/eng-lms (mirror: gitlab.com/duochou042004/eng-lms) · Clone: `/home/deb/App_sources/eng-lms`
+Phase/Milestone: P1 / M2 (in progress) · Current task: **T-M2.6** account preferences (FR-SET-02, tier H, DEC-190), `in_review` on
+`feature/T-M2.6-account-preferences` (head after this handoff; code head `ec082d2`) · Last commit on `develop`: `c92928f` (packet PR #221) ·
+Next: T-M2.6 G3 → T-M2.35 → T-M2.32 → T-M2.33 → T-M2.7 (G5) · Remote: https://github.com/duochou042004/eng-lms (mirror gitlab, in sync at `c92928f`)
 
 ## Where we are
-- **T-M2.16 records PR #217** merged (`d41926a`) before this session; mirror in sync.
-- **T-M2.34 done** (`c5ae729`, DEC-189): all 8 workflows run on `ubuntu-26.04` (`Image: ubuntu-26.04`, `Version: 20261111.635` in every job).
-  Packet PR #218 (`8c7691c`, G0 PASS WITH MINOR fixed and confirmed). The packet's risks did not show: Docker 29 / Testcontainers and the
-  Chromium sandbox needed no change. PO choice (a): one `regression` run on the branch, run 44888854717: success, 1062 passed, 156 skipped,
-  WebKit smoke 6/6, OOM 0. `e2e-smoke` 16m58s vs 14m55s on 24.04 (one run each). No rollback. G3 tier L: DOCS-REVIEW PASS on `1137ab0`.
-- **PO order (DEC-187):** T-M2.6 → T-M2.32 → T-M2.33 → T-M2.7 (G5). Firefox is out of the G5 matrix (DEC-180).
-- **Dependabot (PO, 2026-11-20):** #207 (`@hookform/resolvers` 7) and #208 (`react-hook-form` 7.92) are the PO's to merge. #209's msw 3
-  typecheck break (`web/src/test/setup.ts:14`) still needs a packet if msw 3 comes back.
+- **T-M2.34 done** (`c5ae729`, DEC-189; records PR #220 `8353ea1`): CI on `ubuntu-26.04`, one regression run green.
+- **T-M2.6 packet** merged (PR #221, `c92928f`) after 3 G0 rounds; DEC-190: Settings v1 split (workspace part = **T-M2.35**, next after
+  T-M2.6), no version on preferences, device language wins, E2E shared accounts isolated. PO start 2026-11-21, split kept.
+- **T-M2.6 implemented:** BE `ad5a8a4` (PATCH /auth/preferences, 565 backend tests), FE `4c40d01`, `ec54e39`, `ec082d2` (Settings › Account,
+  `ui/ComboBox`, switcher saves the account locale, dates in the account zone, E2E isolation 7a, `settings-account.spec.ts`). Gate PASS on
+  `ec082d2` (13 steps, 1469 s; ×3 repeat 1725 passed, 0 failed). LC L-10 rulings and accepted deviations: `evidence/T-M2.6/summary.md`.
+  Implementer reports: `.claude/scratch/lc-records/T-M2.6/{be-impl,fe-impl}.md`.
 
 ## In flight / uncommitted
-- **This records PR** (`docs/T-M2.34-records`: DEC-189, backlog/packet `done`, review records, G3 cost table, progress.json, this handoff): one
-  fresh docs-reviewer (`DOCS-REVIEW T-M2.34: PASS`, text only), CI, `LC-APPROVED T-M2.34`, merge-gate, gitlab-sync. Finish it first if open.
-- No open feature branch.
+- **The T-M2.6 PR** (opened with this handoff): wait for CI (one background `gh pr checks <n> --watch`); a Maven Central or e2e flake → `gh run
+  rerun <id> --failed` once. Local screenshots and E2E records in `evidence/T-M2.6/{impl,records,screenshots}/` are untracked on purpose (DEC-131).
 
 ## Next steps (in this order)
-1. Close the records PR (above).
-2. **T-M2.6** (account preferences and Settings › Account, FR-SET-02; tier H): packet PR #221 (G0, DEC-190: Settings v1 split, the workspace
-   part is **T-M2.35**, next after it), PO start signal; implementers one at a time (BE, then FE); SEC + QA with the UX checklist.
-3. **T-M2.32** (E2E guard gap), **T-M2.33** (scalar coercions, tier H: SEC + QA), then **T-M2.7** (G5: one `regression` run, no Firefox; ask
-   first). **T-M2.26** only after at least 10 PRs under T-M2.23 shadow mode.
+1. CI green on the T-M2.6 PR head.
+2. G3 tier H: one fresh **SEC** agent (security-review skill; SEC focus in the packet), then one fresh **QA** agent with the UX checklist
+   (qa-evaluation + ux-review; FE OQ-2: the Language row has no visible label; FE OQ-1: `shells.spec.ts:1032` login 403 once). Reviewers return
+   text only; the LC records `evidence/T-M2.6/review/security.md` and `qa/report.md` and posts `SEC-REVIEW`, `QA-VERDICT`, `UX-REVIEW` as separate
+   comments after CI is green on the final head; fill the G3 cost table.
+3. `LC-APPROVED T-M2.6`, merge-gate (progress.json changed in the PR), gitlab-sync, records (the merge DEC with the L-10 rulings; backlog/packet done).
+4. **T-M2.35** packet (workspace settings v1), then T-M2.32, T-M2.33 (tier H), T-M2.7 (G5: one regression run; ask first).
 
 ## Pending PO decisions / actions
-- Each task's start signal (T-M2.6 next, after its packet's G0).
-- Dependabot #207, #208: the PO's to merge. A React bump touches T-M2.31 (c): re-run its unit test and E2E.
-- WebKit host libraries (sudo) only if a local WebKit run is ever needed; G5 uses the `regression` workflow.
+- T-M2.35's start signal (after its packet's G0). Dependabot #207, #208: the PO's to merge.
 
 ## Gotchas
+- **`e2e-run.sh … -- tests/x.spec.ts` runs the whole suite**; drop the `--` to run one spec (T-M2.6 FE).
+- **The preferences PATCH in E2E is answered in place by default** (`e2e/support/fixtures.ts`, opt-in `realPreferences`); a spec that switches the
+  language in its own `browser.newContext()` uses `answerPreferencesInPlace` (T-M2.6, DEC-190). Never `route.abort()` it: the console guard fails on
+  `net::ERR_FAILED`.
+- **`ui/ComboBox` is outside the `ui` barrel** (bundle budget: with it the student's first visit was 225.6 KB gz > 200 KB): import `ui/ComboBox`.
+- **Chromium's `Intl.supportedValuesOf('timeZone')` lists `Asia/Saigon`, not `Asia/Ho_Chi_Minh` or `UTC`**: the current value is always an option.
 - **CI runs on `ubuntu-26.04`** (T-M2.34, DEC-189): a runner-caused failure → pin that workflow back to `ubuntu-24.04` (no removal date
   announced), report it to the PO and record it in a DEC. `ci-scope-workflows.test.sh` fixtures name the literal `runs-on` line: a runner
   change must update them too (a stale one fails as "mutation not applied").

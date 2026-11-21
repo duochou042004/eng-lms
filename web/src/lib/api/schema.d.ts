@@ -55,6 +55,23 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  '/api/v1/auth/preferences': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    /** Save the own language, time zone and (tutor only) display name; absent properties stay; last write wins per property, no version (DEC-190) */
+    patch: operations['updatePreferences']
+    trace?: never
+  }
   '/api/v1/auth/session': {
     parameters: {
       query?: never
@@ -348,6 +365,14 @@ export interface components {
       /** Format: int32 */
       totalPages: number
     }
+    PreferencesRequest: {
+      /** @description Tutor only; empty or null clears it */
+      displayName?: string | null
+      /** @description One of GET /meta locales */
+      locale?: string
+      /** @description A time-zone ID the server's java.time knows, exact (aliases accepted as given) */
+      timeZone?: string
+    }
     /** @description RFC 9457 Problem Details (api-conventions.md §5) */
     Problem: {
       code: components['schemas']['ProblemCode']
@@ -597,6 +622,57 @@ export interface operations {
         }
       }
       /** @description VALIDATION_FAILED with errors[] (CURRENT_PASSWORD_INCORRECT, PASSWORD_TOO_SHORT, PASSWORD_TOO_LONG, PASSWORD_TOO_COMMON, PASSWORD_EQUALS_USERNAME, PASSWORD_UNCHANGED) */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/problem+json': components['schemas']['Problem']
+        }
+      }
+    }
+  }
+  updatePreferences: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['PreferencesRequest']
+      }
+    }
+    responses: {
+      /** @description The session body with the saved values */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['SessionResponse']
+        }
+      }
+      /** @description UNAUTHENTICATED or SESSION_EXPIRED */
+      401: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/problem+json': components['schemas']['Problem']
+        }
+      }
+      /** @description CSRF_INVALID or PASSWORD_CHANGE_REQUIRED */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/problem+json': components['schemas']['Problem']
+        }
+      }
+      /** @description VALIDATION_FAILED with field codes (REQUIRED, INVALID_VALUE, TOO_LONG, INVALID_FORMAT); an empty body is REQUIRED on locale */
       422: {
         headers: {
           [name: string]: unknown

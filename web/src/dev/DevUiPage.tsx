@@ -1,5 +1,5 @@
 import { CalendarCheck, CircleAlert, CircleUser, Ellipsis, House, Plus, Users } from 'lucide-react'
-import { useEffect, useState, type ReactNode } from 'react'
+import { useEffect, useMemo, useState, type ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import { LanguageSwitcher } from '../app/components/LanguageSwitcher'
 import { usePageTitle } from '../app/routeAnnouncement'
@@ -38,6 +38,7 @@ import {
   Toggletip,
   UnsavedChangesGuard,
 } from '../ui'
+import { ComboBox } from '../ui/ComboBox'
 import styles from './DevUiPage.module.css'
 import { registerDevNamespace } from './i18n'
 
@@ -455,6 +456,51 @@ function TagSamples() {
   )
 }
 
+/** The T-M2.6 ComboBox over the engine's time zones (several hundred: a virtualised list), and its states. */
+function ComboBoxSamples() {
+  const { t } = useTranslation('dev')
+  const zones = useMemo(() => Intl.supportedValuesOf('timeZone').map((id) => ({ id, label: id })), [])
+  // The account page's rule: the current value is an option even when the engine lists only its alias (Chromium: Asia/Saigon).
+  const withCurrent = useMemo(
+    () =>
+      zones.some((z) => z.id === 'Asia/Ho_Chi_Minh')
+        ? zones
+        : [{ id: 'Asia/Ho_Chi_Minh', label: 'Asia/Ho_Chi_Minh' }, ...zones],
+    [zones],
+  )
+  const [zone, setZone] = useState('Asia/Bangkok')
+  const [current, setCurrent] = useState('Asia/Ho_Chi_Minh')
+  const common = { emptyMessage: t('sample.comboEmpty'), onChange: () => {} }
+  return (
+    <Stack gap={5}>
+      <ComboBox
+        {...common}
+        label={t('sample.comboLabel')}
+        description={t('sample.comboHint')}
+        options={zones}
+        value={zone}
+        onChange={setZone}
+      />
+      <ComboBox
+        {...common}
+        label={t('sample.comboAliasLabel')}
+        options={withCurrent}
+        value={current}
+        onChange={setCurrent}
+      />
+      <ComboBox
+        {...common}
+        label={t('sample.comboInvalidLabel')}
+        options={zones}
+        value="Europe/London"
+        isInvalid
+        errorMessage={t('sample.comboError')}
+      />
+      <ComboBox {...common} label={t('sample.comboDisabledLabel')} options={zones} value="Asia/Tokyo" isDisabled />
+    </Stack>
+  )
+}
+
 /** Component gallery (`/dev/ui`, development builds only): every ui/ primitive in each of its states. */
 export function DevUiPage() {
   const { t } = useTranslation('dev')
@@ -571,6 +617,9 @@ export function DevUiPage() {
         </Section>
         <Section title={t('sections.tagInput')}>
           <TagSamples />
+        </Section>
+        <Section title={t('sections.comboBox')}>
+          <ComboBoxSamples />
         </Section>
         <Section title={t('sections.empty')}>
           <EmptyState

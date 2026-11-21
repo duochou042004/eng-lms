@@ -1,0 +1,130 @@
+.field {
+  min-inline-size: 0;
+}
+
+.control {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+/* Room for the open button; 16 px text, so iOS does not zoom (responsive-standards §3.4). */
+.input {
+  flex: 1 1 auto;
+  min-inline-size: 0;
+  padding-inline-end: var(--size-control-md);
+  font-size: var(--font-size-md);
+}
+
+.button {
+  position: absolute;
+  inset-inline-end: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: var(--size-control-md);
+  block-size: var(--size-control-md);
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--color-text-muted);
+  cursor: pointer;
+}
+
+.button[data-hovered] {
+  color: var(--color-text);
+}
+
+.button[data-focus-visible] {
+  outline: var(--focus-ring-width) solid var(--color-focus);
+  outline-offset: calc(-1 * var(--focus-ring-width));
+}
+
+.button[data-disabled] {
+  cursor: not-allowed;
+}
+
+.icon {
+  inline-size: var(--size-icon);
+  block-size: var(--size-icon);
+  transition: transform var(--motion-duration) var(--motion-easing);
+}
+
+.field[data-open] .icon {
+  transform: rotate(180deg);
+}
+
+/* The field's width at every size (the trigger is the whole field); below it, flipping above when there is no room.
+   Above sheets and the drawer (same layer, opened later), toasts stay under it (--z-toast < --z-overlay). */
+.popover {
+  display: flex;
+  flex-direction: column;
+  inline-size: var(--trigger-width);
+  max-inline-size: calc(100vw - var(--space-4));
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-overlay);
+  z-index: var(--z-overlay);
+}
+
+.list {
+  max-block-size: 50vh;
+  overflow-y: auto;
+  padding: var(--space-1);
+  outline: none;
+}
+
+.option {
+  display: flex;
+  align-items: center;
+  min-block-size: var(--size-control-md);
+  padding-inline: var(--space-3);
+  border-radius: var(--radius-sm);
+  color: var(--color-text);
+  cursor: pointer;
+}
+
+.option[data-focused],
+.option[data-hovered] {
+  background: var(--color-surface-sunken);
+}
+
+.option[data-focus-visible] {
+  outline: var(--focus-ring-width) solid var(--color-focus);
+  outline-offset: calc(-1 * var(--focus-ring-width));
+}
+
+/* Selected: accent background, semibold text and an inline-start bar (not colour alone). */
+.option[data-selected] {
+  position: relative;
+  background: var(--color-accent-subtle);
+  color: var(--color-accent-strong);
+  font-weight: var(--font-weight-semibold);
+}
+
+.option[data-selected]::before {
+  content: '';
+  position: absolute;
+  inset-block: var(--space-2);
+  inset-inline-start: 0;
+  inline-size: var(--size-marker);
+  border-radius: var(--radius-full);
+  background: var(--color-accent);
+}
+
+/* One line per option, never broken inside an ID; the full text is the option's accessible name. */
+.optionText {
+  min-inline-size: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.empty {
+  margin: 0;
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}

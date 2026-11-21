@@ -17,10 +17,11 @@ describe('credentialsMessage', () => {
   it.each(['vi', 'en'] as const)(
     'builds the %s message with the workspace, URL, username, password and expiry',
     (lng) => {
-      const message = credentialsMessage(i18n.getFixedT(lng, 'students'), lng, input)
+      const message = credentialsMessage(i18n.getFixedT(lng, 'students'), lng, 'Asia/Ho_Chi_Minh', input)
       for (const value of [input.workspace, input.loginUrl, input.username, input.temporaryPassword])
         expect(message).toContain(value)
-      expect(message).toContain(formatDateTime(input.expiresAt, lng))
+      expect(message).toContain(formatDateTime(input.expiresAt, lng, 'Asia/Ho_Chi_Minh'))
+      expect(message).toContain('10:00, 23/10/2026')
       expect(message).toMatch(/\d\d:\d\d, \d\d\/\d\d\/2026/)
       // A neutral greeting (AC12 (f)): no name, no "em" form.
       expect(message.split('\n')[0]).toBe(lng === 'vi' ? 'Xin chào,' : 'Hello,')
@@ -31,4 +32,11 @@ describe('credentialsMessage', () => {
       expect(message).not.toMatch(/[<>]|\{\{/)
     },
   )
+
+  // T-M2.6 AC9: the expiry in the account's time zone (03:00Z is 17:00 the day before in Honolulu, UTC−10).
+  it('formats the expiry in the given time zone', () => {
+    const t = i18n.getFixedT('vi', 'students')
+    expect(credentialsMessage(t, 'vi', 'Pacific/Honolulu', input)).toContain('17:00, 22/10/2026')
+    expect(credentialsMessage(t, 'vi', 'Pacific/Kiritimati', input)).toContain('17:00, 23/10/2026')
+  })
 })

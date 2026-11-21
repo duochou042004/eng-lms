@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-11-21T11:29:36Z",
-  "updatedBy": "lead-coordinator (T-M2.6 G0 fixes)",
+  "updatedAt": "2026-11-21T13:12:53Z",
+  "updatedBy": "lead-coordinator (T-M2.6 in review, handoff)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -32,16 +32,16 @@
   "currentTask": {
     "id": "T-M2.6",
     "title": "Account preferences and Settings › Account (FR-SET-02; split from Settings v1, workspace part = T-M2.35)",
-    "status": "ready",
+    "status": "in_review",
     "ownerRole": "BE+FE",
-    "branch": "docs/T-M2.6-packet",
+    "branch": "feature/T-M2.6-account-preferences",
     "packet": "docs/tasks/T-M2.6-account-preferences.md",
-    "pr": "221",
-    "lastCommit": null,
-    "startedAt": null,
+    "pr": null,
+    "lastCommit": "ec082d2",
+    "startedAt": "2026-11-21T11:53:04Z",
     "nextSteps": [
-      "Merge the packet PR #221 after the reviewer's PASS; then the PO start signal (tell the PO about the T-M2.35 split, DEC-190)",
-      "Then T-M2.35, T-M2.32, T-M2.33, T-M2.7 (PO order, DEC-187)"
+      "CI green on the PR's final head; G3 tier H: one fresh SEC agent (security-review skill), then one fresh QA agent with the UX checklist (qa-evaluation + ux-review; FE OQ-2 Language label is for UX); verdicts as separate PR comments after CI is green",
+      "LC-APPROVED, merge-gate, gitlab-sync, records (merge DEC with the L-10 rulings in evidence/T-M2.6/summary.md); then T-M2.35"
     ],
     "trace": [
       "DEC-187",
@@ -50,8 +50,8 @@
     ],
     "entryGate": [
       "T-M2.34 merged — met (c5ae729)",
-      "Packet + G0 — round 1 CHANGES REQUESTED fixed (DEC-190), delta check pending",
-      "PO start signal — not asked"
+      "Packet + G0 — met (PR #221, c92928f, DEC-190)",
+      "PO start signal — met 2026-11-21 (split kept)"
     ]
   },
   "nextTask": {
@@ -467,8 +467,8 @@
     }
   ],
   "tests": {
-    "lastRun": "2026-11-21T09:43:46Z",
-    "summary": "T-M2.34: gate PASS on b44f424 (13 steps, 557 s; backend skipped locally, CI ran it on 26.04); regression run 44888854717 on ubuntu-26.04: 1062 passed, 156 skipped, webkit-smoke 6/6.",
+    "lastRun": "2026-11-21T13:12:53Z",
+    "summary": "T-M2.6 head ec082d2: gate PASS (13 steps, 1469 s); backend 565; web 891; e2e 575 passed, 64 skipped; x3 repeat 1725 passed, 0 failed.",
     "suites": [
       {
         "name": "backend (./mvnw -B verify)",
@@ -992,6 +992,13 @@
       "status": "approved",
       "at": "2026-11-21T08:58:00Z",
       "ref": "DEC-189"
+    },
+    {
+      "what": "Start T-M2.6 and keep the Settings v1 split (chat: \"Start, keep split\") (approx. time)",
+      "by": "PO",
+      "status": "approved",
+      "at": "2026-11-21T11:53:04Z",
+      "ref": "DEC-190"
     }
   ],
   "environment": {
@@ -1849,6 +1856,16 @@
       "at": "2026-11-21T11:24:27Z",
       "actor": "lead-coordinator",
       "event": "Records PR #220 merged (8353ea1). T-M2.6 packet drafted (account preferences, tier H); Settings v1 split: workspace part = new row T-M2.35."
+    },
+    {
+      "at": "2026-11-21T11:53:04Z",
+      "actor": "lead-coordinator",
+      "event": "Packet PR #221 merged (c92928f, DEC-190). PO start signal for T-M2.6; split kept (T-M2.35 next)."
+    },
+    {
+      "at": "2026-11-21T13:12:53Z",
+      "actor": "lead-coordinator",
+      "event": "T-M2.6 implemented (BE ad5a8a4, FE 4c40d01..ec082d2); gate PASS on ec082d2; L-10 rulings recorded; PR opened; G3 next session (context limit)."
     }
   ]
 }

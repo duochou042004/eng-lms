@@ -39,3 +39,5 @@ export { ToastRegion, type ToastRegionProps } from './Toast'
 export { TOAST_STACK_VAR, TOAST_TIMEOUT_MS, toast, type ToastAction } from './toastQueue'
 export { UnsavedChangesGuard, type UnsavedChangesGuardProps } from './UnsavedChangesGuard'
 export { blocksNavigation } from './blocksNavigation'
+// Not in this barrel, so its React Aria ComboBox and Virtualizer stay in the lazy chunks of its users (the student's first
+// visit budget, NFR-PERF-03): `ComboBox` is imported from './ComboBox' (T-M2.6).

@@ -36,6 +36,16 @@
 | strengths / weaknesses | the Tag rule (1–40, no commas and no control character of any kind, tab/LF/CR, DEL and C1 included; empty → `REQUIRED`, comma or control character → `INVALID_FORMAT`), deduplicated case-insensitively keeping the first spelling, then ≤ 30 each (`TOO_MANY`); a list of more than 120 entries → one `TOO_MANY` before deduplication (T-M2.9 SEC S4-2) |
 | learningProfile.customFields | the label/value list rule (label 1–60, value 0–500, ≤ 30) |
 
+## account (identity, `PATCH /auth/preferences`, T-M2.6)
+
+Absent = unchanged. An empty body (none of the three) → 422 `REQUIRED` on `locale`. Every property's problem is reported in one 422.
+
+| Field | Rule |
+|---|---|
+| locale | one of `englms.meta.locales` (`vi`, `en`), exact and not trimmed (`EN`, `""` → `INVALID_VALUE`); `null` → `REQUIRED` |
+| timeZone | an ID in `java.time.ZoneId.getAvailableZoneIds()` of the running JDK, exact and case-sensitive, not trimmed; aliases (`Asia/Saigon`) are kept as given → else `INVALID_VALUE`; `null` → `REQUIRED` |
+| displayName (account) | tutor only; the fullName rule: trimmed, 1–120 code points, a C0 control character other than tab/LF/CR → `INVALID_FORMAT`, longer → `TOO_LONG`; empty after trim or `null` clears it. From a student account, any present `displayName` (also `null`) → `INVALID_VALUE` (FR-STU-03: the name is the tutor's `fullName`) |
+
 ## goals
 
 | Field | Rule |
