@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Milestone | M2 |
-| Status | ready (G0: round 1 CHANGES REQUESTED, S2-1/S2-2 and all S3/S4 fixed; DEC-190) |
+| Status | in_review (G0: round 1 CHANGES REQUESTED, S2-1/S2-2 and all S3/S4 fixed; DEC-190; G3 round 1: AC11 added, DEC-191) |
 | Owner role | BE (endpoint) then FE (pages, switcher, `ui/ComboBox`, time helpers); one implementer at a time |
 | Branch | `feature/T-M2.6-account-preferences` (from `develop`) |
 | Depends on | T-M2.4, T-M2.11 (merged); T-M2.34 (merged, `c5ae729`) |
@@ -167,6 +167,13 @@ accounts, the Workspace tab) is the new backlog row **T-M2.35**, next in the PO 
   always 24 h apart) for the same instant, values restored after).
 - AC10: viewports 360/768/1280 at the Account page (open ComboBox included), no horizontal scroll, WCAG 2.2 AA checks; `./scripts/gate.sh` green;
   CI green on the final head.
+- AC11 (G3 round 1 fixes, DEC-191): (a) QA-1: a client-side validation failure (e.g. 121 characters, then Save) moves focus to the `ErrorSummary` in
+  a real browser, as a server 422 does (an E2E proves it on the 3 projects); (b) QA-2: text typed while a save is pending is kept and stays dirty
+  after the answer (`keepDirtyValues`), so the unsaved-changes guard still protects it; (c) QA-3: saving offline shows the page's `InlineAlert`
+  network error at once and never replays later (`networkMode: 'always'`, as logout); (d) UX-1: the `ui/ComboBox` button and listbox take
+  translated accessible names (vi + en), no React Aria en-US fallback in the vi UI; (e) UX-2: an axe check with the list open at 360/768/1280 that
+  disables only `aria-hidden-focus` (the recorded exception: React Aria hides content outside the open popover while it stays focusable; Tab
+  closes the list); every other rule stays on. Unit tests for (b)–(d); no kept test weakened.
 
 ## Test plan
 - BE: `AuthApiIntegrationTest` (or a new `PreferencesApiIntegrationTest`) with the Domain-rules table, the two-account isolation test and the
