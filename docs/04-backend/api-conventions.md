@@ -93,6 +93,9 @@ Application code throws `shared.ProblemException` (status, code, field errors, `
 ## 6. Concurrency and idempotency
 
 - Aggregates expose `version`. Updates must send it (in the body for PUT/PATCH). A mismatch → 409 `STALE_VERSION`, and the UI offers reload or merge.
+  **Exception (DEC-190, T-M2.6):** `PATCH /auth/preferences` has no `version`: last write wins per property. One owner per account and a PATCH carries
+  only the properties it changes, so two tabs editing different properties both keep their change; for the same property the later one wins. The
+  server orders the two writes with a short row lock; a repeated identical PATCH is a no-op with the same 200 body.
 - Composite or retry-prone commands (`/lessons/{id}/wrap-up`, `/tutor/students` create, `/attempts/{id}/submit`, uploads) accept the header
   `Idempotency-Key: <uuid>`. The same key and body within 24 h return the stored response. The same key with a different body → 422 `IDEMPOTENCY_KEY_REUSED`.
   `/tutor/students` create gets it with the idempotency store (T-M5.4; until then a retried create answers 409 `USERNAME_TAKEN` and the tutor resets the

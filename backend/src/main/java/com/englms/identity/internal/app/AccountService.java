@@ -3,13 +3,17 @@ package com.englms.identity.internal.app;
 import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.Predicate;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import com.englms.identity.AccountApi;
@@ -27,6 +31,7 @@ import com.englms.shared.Like;
 import com.englms.shared.ProblemCodes;
 import com.englms.shared.ProblemException;
 import com.englms.shared.ProblemException.FieldProblem;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -44,6 +49,11 @@ public class AccountService implements AccountApi {
 	/** A-021 as extended by DEC-089 (8), confirmed DEC-091. */
 	static final Duration TEMPORARY_PASSWORD_VALIDITY = Duration.ofDays(7);
 
+	static final int DISPLAY_NAME_MAX = 120;
+
+	/** C0 control characters other than tab, line feed and carriage return (validation-rules, the students rule). */
+	private static final Pattern CONTROL = Pattern.compile("[\\x00-\\x08\\x0B\\x0C\\x0E-\\x1F]");
+
 	private final UserAccountRepository accounts;
 
 	private final SessionTerminator sessions;
@@ -60,9 +70,11 @@ public class AccountService implements AccountApi {
 
 	private final Clock clock;
 
+	private final List<String> locales;
+
 	AccountService(UserAccountRepository accounts, SessionTerminator sessions, PasswordEncoder encoder,
 			TemporaryPasswordGenerator generator, PasswordPolicy policy, ApplicationEventPublisher events, Ids ids,
-			Clock clock) {
+			Clock clock, @Value("${englms.meta.locales}") List<String> locales) {
 		this.accounts = accounts;
 		this.sessions = sessions;
 		this.encoder = encoder;
@@ -71,6 +83,7 @@ public class AccountService implements AccountApi {
 		this.events = events;
 		this.ids = ids;
 		this.clock = clock;
+		this.locales = List.copyOf(locales);
 	}
 
 	@Override
@@ -163,6 +176,77 @@ public class AccountService implements AccountApi {
 	@Transactional(readOnly = true)
 	public Set<UUID> studentUserIdsWithUsernameContaining(String fragment) {
 		return accounts.findStudentIdsByUsernameNormalizedLike(Like.contains(fragment));
+	}
+
+	/**
+	 * FR-SET-02, the own account's preferences (validation-rules "account"): absent properties stay, the others are
+	 * checked and saved together. Last write wins per property (DEC-190): no version; the row lock only orders two
+	 * concurrent writes, so neither loses a property the other did not send.
+	 * @return the account after the change; empty when it no longer exists
+	 */
+	@Transactional
+	public Optional<AccountView> updatePreferences(UUID userId, PreferencesCommand command) {
+		if (command.isEmpty()) {
+			throw ProblemException.validation(List.of(new FieldProblem("locale", ProblemCodes.REQUIRED,
+					"Send at least one of locale, timeZone, displayName")));
+		}
+		Optional<UserAccount> found = accounts.findForUpdateById(userId);
+		if (found.isEmpty()) {
+			return Optional.empty();
+		}
+		UserAccount account = found.get();
+		List<FieldProblem> problems = new ArrayList<>();
+		String locale = choice(command.locale(), account.locale(), "locale", locales::contains, problems);
+		String timeZone = choice(command.timeZone(), account.timeZone(), "timeZone", ZoneId.getAvailableZoneIds()::contains,
+				problems);
+		String displayName = account.displayName();
+		if (command.displayName() != null) {
+			displayName = displayName(command.displayName().orElse(null), account.role(), problems);
+		}
+		if (!problems.isEmpty()) {
+			throw ProblemException.validation(problems);
+		}
+		account.changePreferences(locale, timeZone, displayName, clock.instant());
+		return Optional.of(AccountView.of(account));
+	}
+
+	/** Absent → the current value; {@code null} → {@code REQUIRED}; a value outside the allowed set (exact) → {@code INVALID_VALUE}. */
+	private static String choice(Optional<String> value, String current, String field, Predicate<String> allowed,
+			List<FieldProblem> problems) {
+		if (value == null) {
+			return current;
+		}
+		if (value.isEmpty()) {
+			problems.add(new FieldProblem(field, ProblemCodes.REQUIRED, "Required"));
+		}
+		else if (!allowed.test(value.get())) {
+			problems.add(new FieldProblem(field, ProblemCodes.INVALID_VALUE, "Not an allowed value"));
+		}
+		else {
+			return value.get();
+		}
+		return current;
+	}
+
+	/** The fullName rule (trimmed, 1–120 code points, no C0 control other than tab/LF/CR); empty or {@code null} clears it; tutors only. */
+	private static String displayName(String raw, Role role, List<FieldProblem> problems) {
+		if (role != Role.TUTOR) {
+			// A student's name is the tutor's fullName (FR-STU-03).
+			problems.add(new FieldProblem("displayName", ProblemCodes.INVALID_VALUE, "Students cannot set a display name"));
+			return null;
+		}
+		if (raw == null) {
+			return null;
+		}
+		if (CONTROL.matcher(raw).find()) {
+			problems.add(new FieldProblem("displayName", ProblemCodes.INVALID_FORMAT, "Control characters are not allowed"));
+			return null;
+		}
+		String value = raw.strip();
+		if (value.codePointCount(0, value.length()) > DISPLAY_NAME_MAX) {
+			problems.add(new FieldProblem("displayName", ProblemCodes.TOO_LONG, "At most " + DISPLAY_NAME_MAX + " characters"));
+		}
+		return value.isEmpty() ? null : value;
 	}
 
 	/**

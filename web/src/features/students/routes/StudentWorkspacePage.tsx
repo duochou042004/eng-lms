@@ -9,6 +9,7 @@ import { hasClientNavigated } from '../../../lib/navigation'
 import { formatDate } from '../../../lib/time'
 import { Button, DelayedSkeleton, DescriptionList, InlineAlert, PageHeader, Skeleton, Stack, toast } from '../../../ui'
 import { useStudent, type Student } from '../api/students'
+import { useSessionTimeZone } from '../api/tutorSession'
 import { AccountSection } from '../components/AccountSection'
 import { ContactValue } from '../components/ContactValue'
 import type { CardCredentials } from '../components/CredentialsCard'
@@ -115,6 +116,7 @@ interface WorkspaceProps {
 
 function Workspace({ student, onRefetch, onNotFound }: WorkspaceProps) {
   const { t, i18n } = useTranslation('students')
+  const timeZone = useSessionTimeZone()
   // One form at a time (T-M2.15 scope 6, T-M2.17 scope 6): the profile form, the add-guardian form, one guardian's edit
   // form or the learning-profile form.
   const [openForm, setOpenForm] = useState<OpenForm>(null)
@@ -195,7 +197,7 @@ function Workspace({ student, onRefetch, onNotFound }: WorkspaceProps) {
               {
                 id: 'addedOn',
                 term: t('workspace.addedOn'),
-                description: formatDate(student.createdAt, i18n.language),
+                description: formatDate(student.createdAt, i18n.language, timeZone),
               },
             ]}
           />

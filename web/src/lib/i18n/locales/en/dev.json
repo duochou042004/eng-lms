@@ -17,7 +17,8 @@
     "students": "Students components (T-M2.5)",
     "profile": "Profile and account components (T-M2.14)",
     "tagInput": "TagInput (T-M2.17)",
-    "toggletip": "Toggletip (T-M2.13)"
+    "toggletip": "Toggletip (T-M2.13)",
+    "comboBox": "ComboBox (T-M2.6)"
   },
   "sample": {
     "primary": "Save",
@@ -159,6 +160,15 @@
     "tagSecond": "Pronunciation",
     "tagLong": "Vocabulary for describing everyday routines",
     "toggletipLabel": "Show the error",
-    "toggletipMessage": "Couldn't load the workspace name. The full text shows when you tap the icon."
+    "toggletipMessage": "Couldn't load the workspace name. The full text shows when you tap the icon.",
+    "comboLabel": "Time zone",
+    "comboHint": "Type a city to search the time zones.",
+    "comboEmpty": "No time zone matches.",
+    "comboShow": "Show time zones",
+    "comboList": "Time zones",
+    "comboInvalidLabel": "Time zone (invalid)",
+    "comboError": "Choose a time zone from the list.",
+    "comboDisabledLabel": "Time zone (disabled)",
+    "comboAliasLabel": "Time zone (the current value, an option even when the browser does not list it)"
   }
 }

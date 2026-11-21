@@ -15,7 +15,7 @@ import {
   type ErrorSummaryItem,
 } from '../../../ui'
 import { useUpdateStudent, type Student } from '../api/students'
-import { isTutorSession } from '../api/tutorSession'
+import { isTutorSession, useSessionTimeZone } from '../api/tutorSession'
 import { editStudentSchema, toEditValues, toPatchRequest, type EditStudentValues } from '../model/editSchema'
 import { mapServerErrors, type StudentFieldPath } from '../model/serverErrors'
 import { fieldId, summaryOf } from '../model/studentFields'
@@ -43,6 +43,7 @@ export interface ProfileFormProps {
  */
 export function ProfileForm({ student, onClose, onReload, onNotFound }: ProfileFormProps) {
   const { t, i18n } = useTranslation('students')
+  const timeZone = useSessionTimeZone()
   const queryClient = useQueryClient()
   const update = useUpdateStudent(student.id)
   const inFlight = useRef(false)
@@ -136,7 +137,11 @@ export function ProfileForm({ student, onClose, onReload, onNotFound }: ProfileF
         <DescriptionList
           emptyLabel={t('workspace.notAdded')}
           items={[
-            { id: 'addedOn', term: t('workspace.addedOn'), description: formatDate(student.createdAt, i18n.language) },
+            {
+              id: 'addedOn',
+              term: t('workspace.addedOn'),
+              description: formatDate(student.createdAt, i18n.language, timeZone),
+            },
           ]}
         />
         <FullNameField control={control} />

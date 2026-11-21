@@ -26,14 +26,26 @@ export function isLocale(value: unknown): value is Locale {
   return typeof value === 'string' && (LOCALES as readonly string[]).includes(value)
 }
 
-/** The stored choice until account preferences exist (M2, PATCH /auth/preferences); otherwise Vietnamese. */
-export function initialLocale(): Locale {
+function storedLocale(): Locale | null {
   try {
     const stored = globalThis.localStorage?.getItem(LOCALE_STORAGE_KEY)
-    return isLocale(stored) ? stored : DEFAULT_LOCALE
+    return isLocale(stored) ? stored : null
   } catch {
-    return DEFAULT_LOCALE
+    return null
   }
+}
+
+/** The device's stored choice (the UI's source, DEC-190 (3)); otherwise Vietnamese until a session says more. */
+export function initialLocale(): Locale {
+  return storedLocale() ?? DEFAULT_LOCALE
+}
+
+/**
+ * The account's locale (FR-SET-02), applied and stored only on a device without a stored choice: a stored choice is
+ * never overridden by a session (DEC-190 (3)).
+ */
+export function applyAccountLocale(locale: string) {
+  if (storedLocale() === null && isLocale(locale)) void changeLocale(locale)
 }
 
 export function changeLocale(locale: Locale) {

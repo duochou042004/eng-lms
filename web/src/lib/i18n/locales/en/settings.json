@@ -1,0 +1,45 @@
+{
+  "title": "Settings",
+  "tabsLabel": "Settings sections",
+  "tabs": {
+    "account": "Account"
+  },
+  "account": {
+    "pageTitle": "Account settings",
+    "heading": "Account",
+    "formLabel": "Account details",
+    "displayName": "Display name",
+    "displayNameHint": "Shown in the app instead of your username. Leave it empty to show the username.",
+    "timeZone": "Time zone",
+    "timeZoneHint": "Dates and times are shown in this zone. Type a city or region to search.",
+    "timeZoneEmpty": "No time zone matches. Try a city such as Ho Chi Minh.",
+    "timeZoneShow": "Show time zones",
+    "timeZoneList": "Time zones",
+    "save": "Save",
+    "saving": "Saving…",
+    "saved": "Saved",
+    "summaryTitle": "Your settings were not saved",
+    "networkError": "Couldn't save: you seem to be offline. Try again when you're back online.",
+    "serverError": "Couldn't save your settings. Try again.",
+    "loadError": "Couldn't load your latest account settings; the values shown may be out of date.",
+    "retry": "Try again",
+    "passwordHint": "Your password is changed on its own page.",
+    "changePassword": "Change password",
+    "discardTitle": "Discard your changes?",
+    "discardDescription": "Your changes to the account settings haven't been saved.",
+    "discard": "Discard changes",
+    "keepEditing": "Keep editing",
+    "errors": {
+      "displayName": {
+        "TOO_LONG": "Use at most 120 characters for the display name.",
+        "INVALID_FORMAT": "Remove the control characters from the display name.",
+        "INVALID_VALUE": "This display name was not accepted."
+      },
+      "timeZone": {
+        "REQUIRED": "Choose a time zone.",
+        "INVALID_VALUE": "Choose a time zone from the list."
+      },
+      "server": "A value was not accepted. Check the form and try again."
+    }
+  }
+}

@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { formatDateTime } from '../../../lib/time'
 import { CopyButton, DescriptionList, InlineAlert } from '../../../ui'
 import { useWorkspaceDisplayName } from '../api/students'
+import { useSessionTimeZone } from '../api/tutorSession'
 import { credentialsMessage } from '../model/credentialsMessage'
 import styles from './Students.module.css'
 
@@ -31,12 +32,13 @@ export interface CredentialsCardProps {
  */
 export function CredentialsCard({ credentials, title, intro, actions }: CredentialsCardProps) {
   const { t, i18n } = useTranslation('students')
+  const timeZone = useSessionTimeZone()
   const workspace = useWorkspaceName()
   const titleId = useId()
   const titleRef = useRef<HTMLHeadingElement>(null)
   useEffect(() => titleRef.current?.focus(), [])
   const loginUrl = `${window.location.origin}/login`
-  const message = credentialsMessage(t, i18n.language, {
+  const message = credentialsMessage(t, i18n.language, timeZone, {
     workspace,
     loginUrl,
     username: credentials.username,
@@ -59,7 +61,11 @@ export function CredentialsCard({ credentials, title, intro, actions }: Credenti
             term: t('card.password'),
             description: <span className={styles.secret}>{credentials.temporaryPassword}</span>,
           },
-          { id: 'expires', term: t('card.expires'), description: formatDateTime(credentials.expiresAt, i18n.language) },
+          {
+            id: 'expires',
+            term: t('card.expires'),
+            description: formatDateTime(credentials.expiresAt, i18n.language, timeZone),
+          },
           { id: 'url', term: t('card.loginUrl'), description: loginUrl },
         ]}
       />

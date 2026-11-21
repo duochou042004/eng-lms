@@ -37,7 +37,8 @@ fails otherwise), `components/` (the form, the credentials card, contact values,
 `gcTime: 0` and is reset once its result is in the page's state; the username suggestion and availability are queries keyed by the debounced
 value, so a stale answer can never write the field), `model/` (URL list params and their fallbacks, the Zod schema, `contactHref`, the 422
 mapping, the credentials message; unit-tested). The page title hook moved to `lib/i18n/pageTitle.ts` (`app/routeAnnouncement.ts` re-exports
-it) and dates go through `lib/time` (`Intl.DateTimeFormat`, browser time zone), both so feature pages need nothing from `app/`.
+it) and dates go through `lib/time` (`Intl.DateTimeFormat`; since T-M2.6 in the account's time zone, `session.timeZone`, which the students
+pages read with `useSessionTimeZone()` from the session cache by key), both so feature pages need nothing from `app/`.
 **T-M2.14** adds to `features/students/`: `components/ProfileForm.tsx`, `AccountSection.tsx`, `ConflictDialog.tsx`, the field parts both
 forms share (`StudentFields.tsx`, `useUsernameCheck.ts`), `model/editSchema.ts` (`toPatchRequest`), `model/studentFields.ts` (field ids, the
 error summary), `model/useSummaryFocus.ts`; `api/students.ts` gains `useUpdateStudent`, `useChangeStatus`, `useResetPassword` (each write
@@ -153,6 +154,13 @@ its URL is unchanged (`shouldRevalidate` returns `false` when `currentUrl.href =
 `i18n-completeness` (the vi and en key sets must be equal). Pluralisation uses i18next plural rules. Dates and numbers are always formatted through
 `lib/time` and `Intl.NumberFormat` with the user's locale and time zone. The server stores UTC.
 
+**Language and time zone sources (T-M2.6, DEC-190 (3)):** the UI language is the device's stored choice (`localStorage`
+`englms.locale`), else Vietnamese. On a device without a stored choice the session's `locale` is applied (and stored) when the session loads
+or a sign-in answers (`applyAccountLocale` in `lib/i18n`, called by `features/auth/api/session.ts`); a stored choice is never overridden. The
+`LanguageSwitcher` changes the device choice and, with a session that is not forced to change its password, also sends `PATCH
+/auth/preferences {locale}` (best effort: a failure shows nothing and logs nothing). `lib/time`'s `formatDate` / `formatDateTime` take a
+`timeZone` (the account's `session.timeZone`; the browser's zone only without one).
+
 **Where namespaces are registered:** `lib/i18n/index.ts` loads the production namespaces (`common`, `shell`, …) at start-up. The development-only
 `dev` namespace (the `/dev/ui` gallery) is **not** there: `src/dev/i18n.ts` registers it with `i18n.addResourceBundle` when the lazily imported
 `/dev/ui` module is evaluated, and that route exists only when `import.meta.env.DEV` is true, so no `dev` string reaches `dist/` (T-M1.9 AC7). The
@@ -160,6 +168,7 @@ its URL is unchanged (`shouldRevalidate` returns `false` when `currentUrl.href =
 The `students` namespace (T-M2.5) follows the same pattern for production: `features/students/i18n.ts` registers it when a Students page
 module is evaluated, so its strings travel with the lazy tutor pages and never reach a student's first visit; the completeness test imports
 `studentsResources` too. Student status labels are in `common` (`status.student.*`) and `nav.students` in `shell`.
+The `settings` namespace (T-M2.6) does the same from `app/routes/settings/i18n.ts` (the Settings pages' chunk); `nav.settings` is in `shell`.
 
 ## 5. Extensions (frontend registry)
 

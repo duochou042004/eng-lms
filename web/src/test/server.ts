@@ -42,8 +42,24 @@ export function sessionAs(role: TestRole | null, mustChangePassword = false) {
   })
 }
 
-// Default: anonymous visitor; public metadata.
-export const handlers = [sessionAs(null), http.get('*/api/v1/meta', () => HttpResponse.json(META))]
+/**
+ * `PATCH /auth/preferences` answering 200 with the session body of `role` plus the sent values (T-M2.6); `seen` collects
+ * the request bodies.
+ */
+export function preferencesAs(role: TestRole, seen: unknown[] = []) {
+  return http.patch('*/api/v1/auth/preferences', async ({ request }) => {
+    const body = (await request.json()) as Record<string, unknown>
+    seen.push(body)
+    return HttpResponse.json({ ...sessionBody(role), ...body })
+  })
+}
+
+// Default: anonymous visitor; public metadata; a preferences save answered as the tutor's (the language switcher's best-effort call).
+export const handlers = [
+  sessionAs(null),
+  http.get('*/api/v1/meta', () => HttpResponse.json(META)),
+  preferencesAs('TUTOR'),
+]
 
 /** Mock API for component tests (MSW). */
 export const server = setupServer(...handlers)

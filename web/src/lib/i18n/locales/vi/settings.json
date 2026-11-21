@@ -1,0 +1,45 @@
+{
+  "title": "Cài đặt",
+  "tabsLabel": "Các mục cài đặt",
+  "tabs": {
+    "account": "Tài khoản"
+  },
+  "account": {
+    "pageTitle": "Cài đặt tài khoản",
+    "heading": "Tài khoản",
+    "formLabel": "Thông tin tài khoản",
+    "displayName": "Tên hiển thị",
+    "displayNameHint": "Hiện trong ứng dụng thay cho tên đăng nhập. Để trống thì hiện tên đăng nhập.",
+    "timeZone": "Múi giờ",
+    "timeZoneHint": "Ngày giờ được hiển thị theo múi giờ này. Gõ tên thành phố hoặc khu vực để tìm.",
+    "timeZoneEmpty": "Không có múi giờ nào khớp. Thử gõ tên thành phố, ví dụ Ho Chi Minh.",
+    "timeZoneShow": "Hiện các múi giờ",
+    "timeZoneList": "Các múi giờ",
+    "save": "Lưu",
+    "saving": "Đang lưu…",
+    "saved": "Đã lưu",
+    "summaryTitle": "Chưa lưu được cài đặt",
+    "networkError": "Chưa lưu được: có vẻ bạn đang ngoại tuyến. Hãy thử lại khi có mạng.",
+    "serverError": "Chưa lưu được cài đặt. Hãy thử lại.",
+    "loadError": "Chưa tải được cài đặt tài khoản mới nhất; giá trị đang hiện có thể đã cũ.",
+    "retry": "Thử lại",
+    "passwordHint": "Mật khẩu được đổi ở trang riêng.",
+    "changePassword": "Đổi mật khẩu",
+    "discardTitle": "Bỏ các thay đổi?",
+    "discardDescription": "Các thay đổi trong cài đặt tài khoản chưa được lưu.",
+    "discard": "Bỏ thay đổi",
+    "keepEditing": "Tiếp tục sửa",
+    "errors": {
+      "displayName": {
+        "TOO_LONG": "Tên hiển thị tối đa 120 ký tự.",
+        "INVALID_FORMAT": "Hãy xoá các ký tự điều khiển khỏi tên hiển thị.",
+        "INVALID_VALUE": "Tên hiển thị này không được chấp nhận."
+      },
+      "timeZone": {
+        "REQUIRED": "Hãy chọn múi giờ.",
+        "INVALID_VALUE": "Hãy chọn một múi giờ trong danh sách."
+      },
+      "server": "Có giá trị không được chấp nhận. Hãy kiểm tra biểu mẫu rồi thử lại."
+    }
+  }
+}

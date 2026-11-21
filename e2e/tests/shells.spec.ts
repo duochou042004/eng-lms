@@ -18,7 +18,7 @@ import {
   expectSettledAccessible,
 } from '../support/checks'
 import { evidenceRecord, evidenceShot } from '../support/evidence'
-import { expect, isAnonymousSessionProbe, test } from '../support/fixtures'
+import { answerPreferencesInPlace, expect, isAnonymousSessionProbe, test } from '../support/fixtures'
 import { accountOpener, accountPlace, openAccountSection, workspaceName, type ShellRole } from '../support/shell'
 import { StepCounter } from '../support/steps'
 
@@ -180,6 +180,8 @@ async function guardContext(context: BrowserContext, problems: string[]) {
  */
 async function freshSession(browser: Browser, credentials: Credentials, guard?: string[]) {
   const context = await browser.newContext({ storageState: ANONYMOUS })
+  // Its tests switch the language: answered in place, as in the `test` fixture's own context (T-M2.6 scope 7a).
+  await answerPreferencesInPlace(context)
   if (guard) await guardContext(context, guard)
   const page = await context.newPage()
   await page.goto('/login')

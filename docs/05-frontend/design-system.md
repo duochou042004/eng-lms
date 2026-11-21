@@ -197,6 +197,25 @@ Enter never submits the form. Removing a chip focuses the next chip's button, el
 chips (`gap: var(--space-2)`); a long tag wraps inside its chip (`overflow-wrap: anywhere`). `TagList` shows the same chips read-only.
 States: default, hover, focus-visible, invalid, disabled.
 
+**`ComboBox`** (T-M2.6; test, axe and a `/dev/ui` entry): React Aria `ComboBox` (the WAI-ARIA combobox pattern: `aria-expanded`,
+`aria-activedescendant`, arrows, Enter, Escape) with a visible label, an optional description and an error like `TextField`, and a ≥ 44 px open
+button inside the field's end. Typing filters the options by "contains", ignoring case, accents and `_`/spaces ("hồ chí" finds
+`Asia/Ho_Chi_Minh`); the button opens the whole list. Only an option can be chosen: leaving the field (or Escape, which closes the list and
+keeps focus on the input) restores the selected option's text; a cleared input keeps the selection. The list is **virtualised** (React Aria
+`Virtualizer` + `ListLayout`): only the rows in view are rendered, so ~420 time zones stay smooth on a phone (T-M2.6 AC7: under 50 rendered
+options, no long task over 200 ms while typing). Options are one line (ellipsis), the full text being the option's accessible name; the
+selected option has the accent background, a semibold label and an inline-start bar (not colour alone). The popover is the field's width,
+below it, flipping above when there is no room; the list is at most 50 vh tall; `--z-overlay`, so it sits above sheets and the drawer and
+toasts stay under it. Props: `label`, `description`, `errorMessage`, `isInvalid`, `isDisabled`, `options` (`id`, `label`; memoised),
+`value`, `onChange`, `emptyMessage` (the open list when nothing matches), `buttonLabel` and `listLabel` (the translated accessible names of
+the open button and the list, so no React Aria en-US default shows; T-M2.6 AC11 (d)). With the list open, axe's `aria-hidden-focus` is a
+recorded exception (DEC-191). The value must be one of `options`: the caller adds a current value
+the list lacks (the time-zone options add the account's zone when the engine lists only its alias). **Not in the `ui/index.ts` barrel**:
+it is imported from `ui/ComboBox` so React Aria's combobox and virtualizer stay in its users' lazy chunks (the student first visit is 193.9 of
+200 KB gz with it out of the barrel, 225.6 with it in).
+`Button` (T-M2.6): `aria-disabled="true"` (outside a pending state) looks disabled but stays focusable, for a Save that is disabled while
+nothing changed and must keep focus after a save; the owner ignores its presses.
+
 ## 4. Status vocabulary (one mapping, used everywhere)
 
 | Domain status | Label (en / vi) | Tone | Icon |

@@ -82,7 +82,7 @@ Not M1 exit criteria and not part of M1's G5 (T-M1.10: PO, DEC-083; T-M1.17: DEC
 |---|---|---|---|---|
 | T-M3.1 | Lessons backend (computes lesson dates in the account's `time_zone` and exposes it to the client, lessons-learned L-12): sessions, transitions (state machine), range queries, overlap warning, student lessons API + isolation; also the student list's next-lesson signal and the "next lesson" sort, which becomes the default (FR-STU-02, DEC-097) | BE | FR-LES-02..05, 07, 08, FR-STU-02 | M2 |
 | T-M3.2 | Notes backend: teacher notes, lesson-linked endpoint, secret-scan fixtures | BE | FR-NOTE-01..03 | T-M3.1 |
-| T-M3.3 | Schedule UI (resolves the `lib/time` browser-time-zone `shortcut:`: renders in the account's `time_zone`; L-12): week agenda, month overview, create/edit lesson (F3), lesson detail, transitions | FE | FR-LES-02..05 | T-M3.1 |
+| T-M3.3 | Schedule UI (renders in the account's `time_zone` through `lib/time`, whose browser-time-zone `shortcut:` T-M2.6 resolved; L-12): week agenda, month overview, create/edit lesson (F3), lesson detail, transitions | FE | FR-LES-02..05 | T-M3.1 |
 | T-M3.4 | Today v1: schedule, upcoming, quick actions (composition + UI) | BE+FE | FR-DASH-01 | T-M3.3 |
 | T-M3.5 | Workspace Lessons and Notes tabs; student Lessons pages | FE | FR-LES-07, 08, FR-NOTE-02 | T-M3.2, T-M3.3 |
 | T-M3.6 | *(conditional on OQ-13)* Duplicate lesson to next week | BE+FE | OQ-13 | T-M3.3 |

@@ -142,6 +142,65 @@
         "tags" : [ "auth" ]
       }
     },
+    "/api/v1/auth/preferences" : {
+      "patch" : {
+        "operationId" : "updatePreferences",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/PreferencesRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/SessionResponse"
+                }
+              }
+            },
+            "description" : "The session body with the saved values"
+          },
+          "401" : {
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description" : "UNAUTHENTICATED or SESSION_EXPIRED"
+          },
+          "403" : {
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description" : "CSRF_INVALID or PASSWORD_CHANGE_REQUIRED"
+          },
+          "422" : {
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description" : "VALIDATION_FAILED with field codes (REQUIRED, INVALID_VALUE, TOO_LONG, INVALID_FORMAT); an empty body is REQUIRED on locale"
+          }
+        },
+        "summary" : "Save the own language, time zone and (tutor only) display name; absent properties stay; last write wins per property, no version (DEC-190)",
+        "tags" : [ "auth" ]
+      }
+    },
     "/api/v1/auth/session" : {
       "get" : {
         "operationId" : "session",
@@ -1171,6 +1230,23 @@
           }
         },
         "required" : [ "items", "page", "size", "totalItems", "totalPages" ]
+      },
+      "PreferencesRequest" : {
+        "type" : "object",
+        "properties" : {
+          "displayName" : {
+            "type" : [ "string", "null" ],
+            "description" : "Tutor only; empty or null clears it"
+          },
+          "locale" : {
+            "type" : "string",
+            "description" : "One of GET /meta locales"
+          },
+          "timeZone" : {
+            "type" : "string",
+            "description" : "A time-zone ID the server's java.time knows, exact (aliases accepted as given)"
+          }
+        }
       },
       "Problem" : {
         "type" : "object",

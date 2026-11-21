@@ -1,11 +1,13 @@
 import { hashKey, queryOptions, useMutation, useQuery, useQueryClient, type QueryClient } from '@tanstack/react-query'
 import { useNavigate } from 'react-router'
 import { api, ApiError, type components } from '../../../lib/api'
+import { applyAccountLocale } from '../../../lib/i18n'
 import { postAuthMessage } from './authChannel'
 
 export type Session = components['schemas']['SessionResponse']
 type LoginRequest = components['schemas']['LoginRequest']
 type ChangePasswordRequest = components['schemas']['ChangePasswordRequest']
+export type PreferencesRequest = components['schemas']['PreferencesRequest']
 
 export const SESSION_KEY = ['auth', 'session'] as const
 const SESSION_HASH = hashKey(SESSION_KEY)
@@ -14,13 +16,15 @@ const SESSION_HASH = hashKey(SESSION_KEY)
  * `GET /auth/session`: the signed-in user, or `null` when anonymous (401). It also primes the `XSRF-TOKEN` cookie. The
  * root route resolves it before anything else renders (DEC-092: no parallel first requests, so a remember-me rotation
  * cannot race). It changes by sign-in, password change and logout, which update it explicitly, and is read again after
- * another tab's sign-in or sign-out and after a 403 `FORBIDDEN_ROLE` (T-M2.12, `connectAuthProblems`).
+ * another tab's sign-in or sign-out and after a 403 `FORBIDDEN_ROLE` (T-M2.12, `connectAuthProblems`). The account's
+ * locale is applied where the device has no stored choice (T-M2.6 scope 7).
  */
 export const sessionQuery = queryOptions({
   queryKey: SESSION_KEY,
   queryFn: async (): Promise<Session | null> => {
     try {
       const { data } = await api.GET('/api/v1/auth/session')
+      applyAccountLocale((data as Session).locale)
       return data as Session
     } catch (error) {
       if (error instanceof ApiError && error.status === 401) return null
@@ -73,7 +77,29 @@ export function useLogin() {
       // Nor a write's variables and answer, this sign-in's own password included (T-M2.15 SEC S-1, DEC-144 (2)).
       queryClient.getMutationCache().clear()
       queryClient.setQueryData(SESSION_KEY, session)
+      applyAccountLocale(session.locale)
       postAuthMessage('signed-in')
+    },
+  })
+}
+
+/**
+ * `PATCH /auth/preferences` (FR-SET-02): only the properties sent change; the answer is the session body, which replaces
+ * the cached session while it is still the same user's (an answer that outlived a sign-out lands nowhere, DEC-127).
+ */
+export function useUpdatePreferences() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async (body: PreferencesRequest): Promise<Session> => {
+      const { data } = await api.PATCH('/api/v1/auth/preferences', { body })
+      return data as Session
+    },
+    // Sent also offline, as logout: it fails at once (the page's network alert; the switcher shows nothing) and never
+    // replays later (AC11 (c)).
+    networkMode: 'always',
+    onSuccess: (session) => {
+      if (queryClient.getQueryData<Session | null>(SESSION_KEY)?.userId === session.userId)
+        queryClient.setQueryData(SESSION_KEY, session)
     },
   })
 }
