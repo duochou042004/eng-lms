@@ -1,27 +1,29 @@
-# Handoff — 2026-11-21 (T-M2.6 merged; next: T-M2.35 packet)
+# Handoff — 2026-11-21T17:12Z (T-M2.6 merged; T-M2.35 packet ready; waiting for the PO start signal)
 
-Phase/Milestone: P1 / M2 (in progress) · Current task: **T-M2.35** workspace settings v1 (FR-SET-01, `draft`: no packet yet) · Last merge on
-`develop`: `160df23` (T-M2.6, PR #222), then `f5974bb` (QA PR #223) and the T-M2.6 records PR · Next: T-M2.35 → T-M2.32 → T-M2.33 → T-M2.7 (G5) ·
-Remote: https://github.com/duochou042004/eng-lms (mirror gitlab, synced after each merge)
+Phase/Milestone: P1 / M2 (in progress) · Current task: **T-M2.35** workspace settings v1 (FR-SET-01, `ready`, packet
+`docs/tasks/T-M2.35-workspace-settings.md`, DEC-193) · Last merge on `develop`: `2960919` (packet PR #225) · Next: the PO start signal for T-M2.35 →
+T-M2.32 → T-M2.33 → T-M2.7 (G5) · Remote: https://github.com/duochou042004/eng-lms (mirror gitlab, synced after each merge)
 
 ## Where we are
-- **T-M2.6 done** (`160df23`, DEC-192): `PATCH /auth/preferences`, Settings › Account, `ui/ComboBox`, the switcher saving the account locale,
-  dates in the account zone. G3 tier H: SEC APPROVED; QA PASS WITH MINOR, UX APPROVED; five S3 fixed as AC11 (DEC-191), UX-2 a recorded axe
-  exception (`aria-hidden-focus` with the list open: React Aria), S4s batched into T-M2.32 (e)–(f), T-M2.33 and T-M2.35. Gate PASS on `5514abb`.
-- Reports: `evidence/T-M2.6/review/security.md`, `evidence/T-M2.6/qa/report.md`; LC copies in `.claude/scratch/lc-records/T-M2.6/`.
+- **T-M2.6 done** (`160df23`, DEC-192; G3 rulings DEC-191; QA PR #223, records PR #224). Reports: `evidence/T-M2.6/review/security.md`,
+  `evidence/T-M2.6/qa/report.md`.
+- **T-M2.35 packet merged** (PR #225, `2960919`): G0 round 1 CHANGES REQUESTED (6 S3, 7 S4: order of checks and no-op PATCH, global-setup must
+  never write the workspace name, the 409 dialog on `ui/ConfirmDialog`, "Workspace name" label, the kept redirect tests, the meta cache), all
+  fixed; delta PASS WITH MINOR, confirmed PASS. Decisions: DEC-193. Tier H; no regression run (cap 0).
 
 ## In flight / uncommitted
-- Nothing in flight after the records PR merges. Local screenshots in `evidence/T-M2.6/{impl,screenshots}/` stay untracked (DEC-131); the untracked
-  `evidence/T-M2.6/records/` is gate noise (see the gate gotcha) and may be deleted.
+- Nothing. Untracked `evidence/T-M2.6/records/` is gate noise and may be deleted.
 
 ## Next steps (in this order)
-1. **T-M2.35 packet** (task-packet skill; lessons-learned first; contradiction scan L-03; Domain rules L-04: one `workspace` document with a
-   version → 409 `STALE_VERSION`; UI rules; the Language label from T-M2.6 UX-3), G0 docs review on `docs/T-M2.35-packet`, then the **PO start signal**.
-2. T-M2.32 (now with (e) QA-4 switcher ordering, (f) React Aria vi strings), T-M2.33 (tier H; now also the display-name character rule),
-   T-M2.7 (G5: one regression run, no Firefox; ask first). T-M2.26 after at least 10 shadow PRs.
+1. **PO start signal for T-M2.35** (asked 2026-11-21). Then `git switch -c feature/T-M2.35-workspace-settings` from develop, a commit setting
+   `in_progress` in progress.json and the packet, the **BE implementer** (store, endpoints, `/meta`, student defaults), then the **FE implementer**
+   (Workspace tab, redirect, Account Language label), one at a time; gate; PR; G3 tier H: one fresh SEC agent, then one fresh QA agent with the
+   UX checklist; verdicts as separate comments after CI is green on the final head; merge-gate; `qa/` PR; records PR.
+2. T-M2.32 (now with (e) QA-4, (f) React Aria vi strings), T-M2.33 (tier H; also the display-name character rule), T-M2.7 (G5: one regression
+   run, no Firefox; ask first). T-M2.26 after at least 10 shadow PRs.
 
 ## Pending PO decisions / actions
-- T-M2.35's start signal (after its packet's G0). Dependabot #207, #208: the PO's to merge.
+- T-M2.35's start signal. Dependabot #207, #208: the PO's to merge.
 
 ## Gotchas
 - **`ui/ComboBox` needs `buttonLabel` and `listLabel`** (T-M2.6 AC11, DEC-191): ui/ components take translated labels as props; React Aria's own
@@ -175,5 +177,5 @@ Remote: https://github.com/duochou042004/eng-lms (mirror gitlab, synced after ea
 
 
 ## Files to read first
-`CLAUDE.md` → `progress.json` → this file → DEC-187, DEC-190, DEC-191, DEC-192 → the backlog rows T-M2.35, T-M2.32, T-M2.33, T-M2.7 →
+`CLAUDE.md` → `progress.json` → this file → `docs/tasks/T-M2.35-workspace-settings.md` → DEC-187, DEC-191, DEC-192, DEC-193 → the backlog rows T-M2.35, T-M2.32, T-M2.33, T-M2.7 →
 `docs/09-harness/coding-agent-rules.md` → `docs/09-harness/lessons-learned.md` (before the packet).
