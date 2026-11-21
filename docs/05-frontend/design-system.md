@@ -207,7 +207,9 @@ options, no long task over 200 ms while typing). Options are one line (ellipsis)
 selected option has the accent background, a semibold label and an inline-start bar (not colour alone). The popover is the field's width,
 below it, flipping above when there is no room; the list is at most 50 vh tall; `--z-overlay`, so it sits above sheets and the drawer and
 toasts stay under it. Props: `label`, `description`, `errorMessage`, `isInvalid`, `isDisabled`, `options` (`id`, `label`; memoised),
-`value`, `onChange`, `emptyMessage` (the open list when nothing matches). The value must be one of `options`: the caller adds a current value
+`value`, `onChange`, `emptyMessage` (the open list when nothing matches), `buttonLabel` and `listLabel` (the translated accessible names of
+the open button and the list, so no React Aria en-US default shows; T-M2.6 AC11 (d)). With the list open, axe's `aria-hidden-focus` is a
+recorded exception (DEC-191). The value must be one of `options`: the caller adds a current value
 the list lacks (the time-zone options add the account's zone when the engine lists only its alias). **Not in the `ui/index.ts` barrel**:
 it is imported from `ui/ComboBox` so React Aria's combobox and virtualizer stay in its users' lazy chunks (the student first visit is 193.9 of
 200 KB gz with it out of the barrel, 225.6 with it in).
