@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-11-21T11:29:36Z",
-  "updatedBy": "lead-coordinator (T-M2.6 G0 fixes)",
+  "updatedAt": "2026-11-21T11:53:04Z",
+  "updatedBy": "lead-coordinator (T-M2.6 start)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -32,16 +32,16 @@
   "currentTask": {
     "id": "T-M2.6",
     "title": "Account preferences and Settings › Account (FR-SET-02; split from Settings v1, workspace part = T-M2.35)",
-    "status": "ready",
+    "status": "in_progress",
     "ownerRole": "BE+FE",
-    "branch": "docs/T-M2.6-packet",
+    "branch": "feature/T-M2.6-account-preferences",
     "packet": "docs/tasks/T-M2.6-account-preferences.md",
-    "pr": "221",
+    "pr": null,
     "lastCommit": null,
-    "startedAt": null,
+    "startedAt": "2026-11-21T11:53:04Z",
     "nextSteps": [
-      "Merge the packet PR #221 after the reviewer's PASS; then the PO start signal (tell the PO about the T-M2.35 split, DEC-190)",
-      "Then T-M2.35, T-M2.32, T-M2.33, T-M2.7 (PO order, DEC-187)"
+      "BE implementer (scope 1-3), then FE implementer (scope 4-9, 7a), one at a time; gate; PR; CI",
+      "G3 tier H: SEC agent, then QA with the UX checklist; merge-gate; records"
     ],
     "trace": [
       "DEC-187",
@@ -50,8 +50,8 @@
     ],
     "entryGate": [
       "T-M2.34 merged — met (c5ae729)",
-      "Packet + G0 — round 1 CHANGES REQUESTED fixed (DEC-190), delta check pending",
-      "PO start signal — not asked"
+      "Packet + G0 — met (PR #221, c92928f, DEC-190)",
+      "PO start signal — met 2026-11-21 (split kept)"
     ]
   },
   "nextTask": {
@@ -992,6 +992,13 @@
       "status": "approved",
       "at": "2026-11-21T08:58:00Z",
       "ref": "DEC-189"
+    },
+    {
+      "what": "Start T-M2.6 and keep the Settings v1 split (chat: \"Start, keep split\") (approx. time)",
+      "by": "PO",
+      "status": "approved",
+      "at": "2026-11-21T11:53:04Z",
+      "ref": "DEC-190"
     }
   ],
   "environment": {
@@ -1849,6 +1856,11 @@
       "at": "2026-11-21T11:24:27Z",
       "actor": "lead-coordinator",
       "event": "Records PR #220 merged (8353ea1). T-M2.6 packet drafted (account preferences, tier H); Settings v1 split: workspace part = new row T-M2.35."
+    },
+    {
+      "at": "2026-11-21T11:53:04Z",
+      "actor": "lead-coordinator",
+      "event": "Packet PR #221 merged (c92928f, DEC-190). PO start signal for T-M2.6; split kept (T-M2.35 next)."
     }
   ]
 }
