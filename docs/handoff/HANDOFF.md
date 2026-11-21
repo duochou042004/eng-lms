@@ -1,4 +1,4 @@
-# Handoff — 2026-11-22 (T-M2.6 merged; T-M2.35 packet ready; waiting for the PO start signal)
+# Handoff — 2026-11-21T17:12Z (T-M2.6 merged; T-M2.35 packet ready; waiting for the PO start signal)
 
 Phase/Milestone: P1 / M2 (in progress) · Current task: **T-M2.35** workspace settings v1 (FR-SET-01, `ready`, packet
 `docs/tasks/T-M2.35-workspace-settings.md`, DEC-193) · Last merge on `develop`: `2960919` (packet PR #225) · Next: the PO start signal for T-M2.35 →
@@ -15,7 +15,7 @@ T-M2.32 → T-M2.33 → T-M2.7 (G5) · Remote: https://github.com/duochou042004/
 - Nothing. Untracked `evidence/T-M2.6/records/` is gate noise and may be deleted.
 
 ## Next steps (in this order)
-1. **PO start signal for T-M2.35** (asked 2026-11-22). Then `git switch -c feature/T-M2.35-workspace-settings` from develop, a commit setting
+1. **PO start signal for T-M2.35** (asked 2026-11-21). Then `git switch -c feature/T-M2.35-workspace-settings` from develop, a commit setting
    `in_progress` in progress.json and the packet, the **BE implementer** (store, endpoints, `/meta`, student defaults), then the **FE implementer**
    (Workspace tab, redirect, Account Language label), one at a time; gate; PR; G3 tier H: one fresh SEC agent, then one fresh QA agent with the
    UX checklist; verdicts as separate comments after CI is green on the final head; merge-gate; `qa/` PR; records PR.
@@ -177,5 +177,5 @@ T-M2.32 → T-M2.33 → T-M2.7 (G5) · Remote: https://github.com/duochou042004/
 
 
 ## Files to read first
-`CLAUDE.md` → `progress.json` → this file → DEC-187, DEC-190, DEC-191, DEC-192 → the backlog rows T-M2.35, T-M2.32, T-M2.33, T-M2.7 →
+`CLAUDE.md` → `progress.json` → this file → `docs/tasks/T-M2.35-workspace-settings.md` → DEC-187, DEC-191, DEC-192, DEC-193 → the backlog rows T-M2.35, T-M2.32, T-M2.33, T-M2.7 →
 `docs/09-harness/coding-agent-rules.md` → `docs/09-harness/lessons-learned.md` (before the packet).
