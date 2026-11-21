@@ -1,38 +1,50 @@
-# Handoff — 2026-11-20T15:32Z (T-M2.10 merged on the new device; next: T-M2.16 packet)
+# Handoff — 2026-11-21T06:10Z (T-M2.16 merged; next: T-M2.34 CI runner chore)
 
-Phase/Milestone: P1 / M2 (in progress) · Last task: **T-M2.10 done** (`6cca511`, PR #211, DEC-186) · Last commit on `develop`: `fb425e7`
-(QA report PR #212; T-M2.10 merge `6cca511`; this handoff on `docs/T-M2.10-records`) · Next: T-M2.16 → T-M2.6 → T-M2.32 → T-M2.7 (G5); T-M2.33 order: ask the PO ·
+Phase/Milestone: P1 / M2 (in progress) · Last task: **T-M2.16 done** (`edaa7bb`, PR #215, DEC-188) · Last commit on `develop`: `22ceb1e` (QA report PR #216
+merge; this handoff on `docs/T-M2.16-records`) · Next: **T-M2.34** (CI `ubuntu-26.04`) → T-M2.6 → T-M2.32 → T-M2.33 → T-M2.7 (G5) ·
 Remote: https://github.com/duochou042004/eng-lms (mirror: gitlab.com/duochou042004/eng-lms) · Clone: `/home/deb/App_sources/eng-lms`
 
 ## Where we are
-- **New device set up and verified** (DEC-185): Debian 13, rootless Podman 5.4.2, JDK 25.0.5.1, Node 24.22.3 (PO-accepted deviations from the
-  patch pins and §0's Podman 5.7+); check-docs, `scripts/tests/run-all.sh`, gate PASS on `develop` `6432d6a` (556 s), `gitlab-sync` OK. The dev
-  DB is empty. The T-M2.31 records PR #201 had already merged (DOCS-REVIEW + LC-APPROVED on it).
-- **PO order** (2026-11-20): T-M2.10 → T-M2.16 → T-M2.6 → T-M2.32, then T-M2.7.
-- **T-M2.10 done** (`6cca511`): integer JSON fields take JSON integers only (400 `MALFORMED_REQUEST`, nothing written; T-M2.9 QA F3 closed);
-  the S2-1 burst test proves no lock/transaction/pooled connection across bcrypt with a parked-hash latch, no clock; both mutations red. Gate PASS
-  on `c106861` (860 s, backend 524). G3 tier H: SEC APPROVED (3 S4 noted), QA PASS. **New row T-M2.33** (OQ T-M2.10-1: other scalar coercions,
-  e.g. `fullName: 123`, `rememberMe: 1`): order the PO's.
+- **T-M2.10 records PR #213** had already merged (`e187dd3`, DOCS-REVIEW + LC-APPROVED); mirror in sync.
+- **PO order (2026-11-21, DEC-187):** T-M2.16 → the CI runner chore (**T-M2.34**, all 8 workflows `ubuntu-24.04` → `ubuntu-26.04`, PO-approved
+  2026-11-20) → T-M2.6 → T-M2.32 → **T-M2.33** (after T-M2.32, before T-M2.7: in M2) → T-M2.7 (G5).
+- **GitHub runner notice** (read 2026-11-21, summary in DEC-187 and `.claude/scratch/lc-records/ci-ubuntu-2604-runner-notice.md`): 26.04 GA since
+  2026-09-17 (actions/runner-images#14747), `ubuntu-latest` moved to it 2026-10-19..11-19 (#14748), no 24.04 removal date. Risks for T-M2.34:
+  Docker 29.x with the containerd image store (Testcontainers in `backend`; user report #15330/#15332), AppArmor user-namespace limits (Chromium
+  sandbox in `e2e-smoke`/`regression`; user report). Rollback: pin `ubuntu-24.04` again.
+- **T-M2.16 done** (`edaa7bb`): a committed username change forces the student `version` +1 (repository fragment `StudentVersionIncrement`,
+  `EntityManager.lock(PESSIMISTIC_FORCE_INCREMENT)`), so the second of two tabs gets 409 `STALE_VERSION`. G0 took one S2 round (a bump through
+  `updatedAt` dirty checking does nothing at an unchanged clock). Gate PASS on `2c71ec3` (832 s, backend 531). G3 tier M: QA PASS, no findings.
+- **Dependabot (PO, 2026-11-20):** #135, #203, #204, #209 closed by the PO (they failed CI; not security updates). #207 (`@hookform/resolvers` 7)
+  and #208 (`react-hook-form` 7.92) are kept for the PO to merge. #209's msw 3 typecheck break (`web/src/test/setup.ts:14`) still needs a packet
+  if msw 3 comes back.
 
 ## In flight / uncommitted
-- QA report PR #212 merged (`fb425e7`). **This records PR** (`docs/T-M2.10-records`):
-  one fresh docs-reviewer (`DOCS-REVIEW T-M2.10: PASS`, text only), CI, `LC-APPROVED T-M2.10`, merge-gate, gitlab-sync. Finish it first if open.
-- Nothing else: no open feature branch. Dependabot #209 (msw 3; supersedes the closed #165) and #135 (react group) held by the PO; #203, #204, #207, #208 open, untriaged
-  (Dependabot hygiene is the PO's, DEC-158 PO-8).
+- **This records PR** (`docs/T-M2.16-records`: DEC-188, backlog/packet `done`, T-M2.34 row, summary G3 table, progress.json, this handoff): one
+  fresh docs-reviewer (`DOCS-REVIEW T-M2.16: PASS`, text only), CI, `LC-APPROVED T-M2.16`, merge-gate, gitlab-sync. Finish it first if open.
+- No open feature branch.
 
 ## Next steps (in this order)
 1. Close the records PR (above).
-2. **T-M2.16** (BE; username-only PATCH bumps `version`, DEC-124): packet (task-packet skill), G0 by a fresh docs-reviewer, PO start signal,
-   backend-implementer, gate once on the final head, PR, CI, G3 (identity/students: likely tier H → SEC + QA), merge-gate, records (part C).
-3. **T-M2.6** (Settings v1, BE+FE), then **T-M2.32** (FE/E2E guard gap, before T-M2.7). Ask the PO where T-M2.33 goes.
-4. **T-M2.26** only after at least 10 PRs under T-M2.23 shadow mode. **T-M2.7** holds the M2 G5: one `regression` run (no Firefox; ask first).
+2. **T-M2.34** (LC chore, tier L): packet (task-packet skill; the 8 `runs-on` lines; the risks above; cap regression runs at 1 and ask the PO
+   first), G0 by a fresh docs-reviewer, PO start signal, change, CI green on 26.04 (check each job's "Set up job" image line), docs review,
+   merge-gate, records.
+3. **T-M2.6** (Settings v1, BE+FE), **T-M2.32** (E2E guard gap), **T-M2.33** (scalar coercions, tier H: SEC + QA), then **T-M2.7** (G5: one
+   `regression` run, no Firefox; ask first). **T-M2.26** only after at least 10 PRs under T-M2.23 shadow mode.
 
 ## Pending PO decisions / actions
-- Each task's start signal; T-M2.33's place in the order.
-- Dependabot #209 (msw 3; supersedes the closed #165: `web` typecheck fails at `web/src/test/setup.ts:14`, seen on #165; needs a packet) and #135 held; a React bump touches T-M2.31 (c): re-run its unit test and E2E.
+- Each task's start signal (T-M2.34 next).
+- Dependabot #207, #208: the PO's to merge. A React bump touches T-M2.31 (c): re-run its unit test and E2E.
 - WebKit host libraries (sudo) only if a local WebKit run is ever needed; G5 uses the `regression` workflow.
 
 ## Gotchas
+- **merge-gate needs `progress.json` changed in the PR itself** ("progress.json not updated in this PR", T-M2.16 PR #215): commit the
+  status update on the feature branch before asking for the final CI; re-post `QA-VERDICT` and `LC-APPROVED` after CI is green on that head.
+- **Hibernate 7.4: a `@Lock(PESSIMISTIC_FORCE_INCREMENT)` finder does not bump an already-managed entity** (only `select … for no key update`);
+  `EntityManager.lock` from a repository fragment does, and the repository proxy translates a stale version to Spring's exception (T-M2.16, DEC-188).
+  A version bump through a timestamp field depends on the clock moving (G0 S2-1).
+- **`pnpm --dir web test` from the repo root fails** with corepack `ERR_PNPM_BAD_PM_VERSION`; run `cd web && pnpm test --run` (the gate's form).
+- **CI `e2e-smoke` can fail resolving a Maven plugin from Central** (`maven-jar-plugin:3.5.1` not found, PR #215): `gh run rerun <id> --failed`.
 - **This device (Debian 13, `/home/deb/App_sources/eng-lms`, DEC-185):** plain rootless Podman 5.4.2 works (`NoNewPrivs` 0, no
   `CONTAINER_HOST`); `podman.socket` is enabled for Testcontainers (`source scripts/env.sh`). JDK 25.0.5.1 and Node 24.22.3 are used instead of the
   `.sdkmanrc`/`.nvmrc` patch pins (PO); `nvm use` would fail (24.21.0 not installed): don't call it. Playwright Chromium 1255 installed; WebKit
@@ -160,5 +172,5 @@ Remote: https://github.com/duochou042004/eng-lms (mirror: gitlab.com/duochou0420
 
 
 ## Files to read first
-`CLAUDE.md` → `progress.json` → this file → DEC-185, DEC-186 → the backlog rows T-M2.16, T-M2.6, T-M2.32, T-M2.33, T-M2.7 →
+`CLAUDE.md` → `progress.json` → this file → DEC-187, DEC-188 → the backlog rows T-M2.34, T-M2.6, T-M2.32, T-M2.33, T-M2.7 →
 `docs/09-harness/coding-agent-rules.md` → `docs/09-harness/lessons-learned.md` (before the packet).
