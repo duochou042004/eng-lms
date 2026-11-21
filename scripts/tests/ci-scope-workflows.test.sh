@@ -126,9 +126,9 @@ mutate() {
 }
 C="steps.scope.outputs.scope != 'fast-path'"
 mutate web.yml 't.replace("on:\n  pull_request:\n", "on:\n  pull_request:\n    paths: [web/**]\n")' "a paths filter" "constraint 1: a paths filter"
-mutate web.yml 't.replace("    runs-on: ubuntu-24.04\n", "    runs-on: ubuntu-24.04\n    if: github.event_name == \"push\"\n")' "job-level 'if' is not allowed" "constraint 1: a job-level if:"
-mutate web.yml 't.replace("    runs-on: ubuntu-24.04\n", "    runs-on: ubuntu-24.04\n    strategy:\n      matrix:\n        n: [1, 2]\n")' "job-level 'strategy' is not allowed" "a matrix"
-mutate web.yml 't + "  second:\n    runs-on: ubuntu-24.04\n    steps:\n      - run: true\n"' "exactly one job expected, found 2" "a second job without the wiring"
+mutate web.yml 't.replace("    runs-on: ubuntu-26.04\n", "    runs-on: ubuntu-26.04\n    if: github.event_name == \"push\"\n")' "job-level 'if' is not allowed" "constraint 1: a job-level if:"
+mutate web.yml 't.replace("    runs-on: ubuntu-26.04\n", "    runs-on: ubuntu-26.04\n    strategy:\n      matrix:\n        n: [1, 2]\n")' "job-level 'strategy' is not allowed" "a matrix"
+mutate web.yml 't + "  second:\n    runs-on: ubuntu-26.04\n    steps:\n      - run: true\n"' "exactly one job expected, found 2" "a second job without the wiring"
 mutate backend.yml 't.replace("  actions: read", "  issues: read")' "permissions lacks 'actions: read'" "constraint 8: no actions: read"
 mutate e2e-smoke.yml 't.replace("github.event_name == '"'push'"' && github.sha || github.ref", "github.ref")' "the concurrency group must hold github.sha" "constraint 5: a group without the SHA for pushes"
 mutate e2e-smoke.yml 't.replace("          fetch-depth: 2", "          fetch-depth: 1")' "checkout needs fetch-depth: 2" "constraint 8: fetch-depth 1"
@@ -156,7 +156,7 @@ mutate web.yml 't.replace("          GH_TOKEN: ", "          CI_SCOPE_MODE_FILE:
 mutate web.yml 't.replace("          GH_TOKEN: ", "          CI_SCOPE_ALLOW_FILE: web/allow\n          GH_TOKEN: ")' "a test override of ci-scope.sh" "CI_SCOPE_ALLOW_FILE set on the scope step"
 mutate web.yml 't.replace("permissions:\n", "env:\n  GH_BIN: /bin/true\npermissions:\n")' "a test override of ci-scope.sh" "GH_BIN set at workflow level"
 mutate web.yml 't.replace("        working-directory: web\n", "        working-directory: web\n        shell: \"true {0}\"\n")' "a shell: override is not allowed" "a job default shell that runs nothing"
-mutate web.yml 't.replace("    runs-on: ubuntu-24.04\n", "    runs-on: ubuntu-24.04\n    \"if\": false\n")' "job-level 'if' is not allowed" "a quoted job-level if"
+mutate web.yml 't.replace("    runs-on: ubuntu-26.04\n", "    runs-on: ubuntu-26.04\n    \"if\": false\n")' "job-level 'if' is not allowed" "a quoted job-level if"
 # G3 round 2 (N-2): five edits the reworked scanner still let through
 mutate backend.yml 't.replace("        if: '"$C"'\n        run: ./mvnw -B -ntp verify", "        if: failure()\n        run: echo \"::warning::v\" \u0026\u0026 ./mvnw -B -ntp verify")' "a failure-only if: is allowed only on an upload-artifact step" "a heavy command chained after a ::warning echo behind if: failure()"
 mutate web.yml 't.replace("permissions:\n", "defaults: {run: {shell: \"true {0}\"}}\npermissions:\n")' "a shell: override is not allowed" "a flow-style default shell"
