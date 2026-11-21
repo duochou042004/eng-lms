@@ -1,35 +1,34 @@
-# Handoff — 2026-11-21 (T-M2.6 implemented, in review; next: CI + G3)
+# Handoff — 2026-11-21 (T-M2.6 merged; next: T-M2.35 packet)
 
-Phase/Milestone: P1 / M2 (in progress) · Current task: **T-M2.6** account preferences (FR-SET-02, tier H, DEC-190), `in_review` on
-`feature/T-M2.6-account-preferences` (head after this handoff; code head `ec082d2`) · Last commit on `develop`: `c92928f` (packet PR #221) ·
-Next: T-M2.6 G3 → T-M2.35 → T-M2.32 → T-M2.33 → T-M2.7 (G5) · Remote: https://github.com/duochou042004/eng-lms (mirror gitlab, in sync at `c92928f`)
+Phase/Milestone: P1 / M2 (in progress) · Current task: **T-M2.35** workspace settings v1 (FR-SET-01, `draft`: no packet yet) · Last merge on
+`develop`: `160df23` (T-M2.6, PR #222), then `f5974bb` (QA PR #223) and the T-M2.6 records PR · Next: T-M2.35 → T-M2.32 → T-M2.33 → T-M2.7 (G5) ·
+Remote: https://github.com/duochou042004/eng-lms (mirror gitlab, synced after each merge)
 
 ## Where we are
-- **T-M2.34 done** (`c5ae729`, DEC-189; records PR #220 `8353ea1`): CI on `ubuntu-26.04`, one regression run green.
-- **T-M2.6 packet** merged (PR #221, `c92928f`) after 3 G0 rounds; DEC-190: Settings v1 split (workspace part = **T-M2.35**, next after
-  T-M2.6), no version on preferences, device language wins, E2E shared accounts isolated. PO start 2026-11-21, split kept.
-- **T-M2.6 implemented:** BE `ad5a8a4` (PATCH /auth/preferences, 565 backend tests), FE `4c40d01`, `ec54e39`, `ec082d2` (Settings › Account,
-  `ui/ComboBox`, switcher saves the account locale, dates in the account zone, E2E isolation 7a, `settings-account.spec.ts`). Gate PASS on
-  `ec082d2` (13 steps, 1469 s; ×3 repeat 1725 passed, 0 failed). LC L-10 rulings and accepted deviations: `evidence/T-M2.6/summary.md`.
-  Implementer reports: `.claude/scratch/lc-records/T-M2.6/{be-impl,fe-impl}.md`.
+- **T-M2.6 done** (`160df23`, DEC-192): `PATCH /auth/preferences`, Settings › Account, `ui/ComboBox`, the switcher saving the account locale,
+  dates in the account zone. G3 tier H: SEC APPROVED; QA PASS WITH MINOR, UX APPROVED; five S3 fixed as AC11 (DEC-191), UX-2 a recorded axe
+  exception (`aria-hidden-focus` with the list open: React Aria), S4s batched into T-M2.32 (e)–(f), T-M2.33 and T-M2.35. Gate PASS on `5514abb`.
+- Reports: `evidence/T-M2.6/review/security.md`, `evidence/T-M2.6/qa/report.md`; LC copies in `.claude/scratch/lc-records/T-M2.6/`.
 
 ## In flight / uncommitted
-- **The T-M2.6 PR** (opened with this handoff): wait for CI (one background `gh pr checks <n> --watch`); a Maven Central or e2e flake → `gh run
-  rerun <id> --failed` once. Local screenshots and E2E records in `evidence/T-M2.6/{impl,records,screenshots}/` are untracked on purpose (DEC-131).
+- Nothing in flight after the records PR merges. Local screenshots and E2E records in `evidence/T-M2.6/{impl,records,screenshots}/` stay untracked (DEC-131).
 
 ## Next steps (in this order)
-1. CI green on the T-M2.6 PR head.
-2. G3 tier H: one fresh **SEC** agent (security-review skill; SEC focus in the packet), then one fresh **QA** agent with the UX checklist
-   (qa-evaluation + ux-review; FE OQ-2: the Language row has no visible label; FE OQ-1: `shells.spec.ts:1032` login 403 once). Reviewers return
-   text only; the LC records `evidence/T-M2.6/review/security.md` and `qa/report.md` and posts `SEC-REVIEW`, `QA-VERDICT`, `UX-REVIEW` as separate
-   comments after CI is green on the final head; fill the G3 cost table.
-3. `LC-APPROVED T-M2.6`, merge-gate (progress.json changed in the PR), gitlab-sync, records (the merge DEC with the L-10 rulings; backlog/packet done).
-4. **T-M2.35** packet (workspace settings v1), then T-M2.32, T-M2.33 (tier H), T-M2.7 (G5: one regression run; ask first).
+1. **T-M2.35 packet** (task-packet skill; lessons-learned first; contradiction scan L-03; Domain rules L-04: one `workspace` document with a
+   version → 409 `STALE_VERSION`; UI rules; the Language label from T-M2.6 UX-3), G0 docs review on `docs/T-M2.35-packet`, then the **PO start signal**.
+2. T-M2.32 (now with (e) QA-4 switcher ordering, (f) React Aria vi strings), T-M2.33 (tier H; now also the display-name character rule),
+   T-M2.7 (G5: one regression run, no Firefox; ask first). T-M2.26 after at least 10 shadow PRs.
 
 ## Pending PO decisions / actions
 - T-M2.35's start signal (after its packet's G0). Dependabot #207, #208: the PO's to merge.
 
 ## Gotchas
+- **`ui/ComboBox` needs `buttonLabel` and `listLabel`** (T-M2.6 AC11, DEC-191): ui/ components take translated labels as props; React Aria's own
+  strings ("Dismiss", "N options available.") stay English in vi until T-M2.32 (f). An open-list axe check disables only `aria-hidden-focus`
+  (`expectSettledAccessible(page, { disableRules: [...] })`, DEC-191); never widen that list without a DEC.
+- **A react-hook-form summary focus effect must wait for the summary to render** (T-M2.6 QA-1): `onInvalid` runs before errors reach form state;
+  a jsdom unit test passed while a real browser failed: prove focus in an E2E.
+- **Mutations a user waits on use `networkMode: 'always'`** (T-M2.6 QA-3; logout, preferences): the default pauses offline and replays silently.
 - **`e2e-run.sh … -- tests/x.spec.ts` runs the whole suite**; drop the `--` to run one spec (T-M2.6 FE).
 - **The preferences PATCH in E2E is answered in place by default** (`e2e/support/fixtures.ts`, opt-in `realPreferences`); a spec that switches the
   language in its own `browser.newContext()` uses `answerPreferencesInPlace` (T-M2.6, DEC-190). Never `route.abort()` it: the console guard fails on
@@ -175,5 +174,5 @@ Next: T-M2.6 G3 → T-M2.35 → T-M2.32 → T-M2.33 → T-M2.7 (G5) · Remote: h
 
 
 ## Files to read first
-`CLAUDE.md` → `progress.json` → this file → DEC-187, DEC-188 → the backlog rows T-M2.34, T-M2.6, T-M2.32, T-M2.33, T-M2.7 →
+`CLAUDE.md` → `progress.json` → this file → DEC-187, DEC-190, DEC-191, DEC-192 → the backlog rows T-M2.35, T-M2.32, T-M2.33, T-M2.7 →
 `docs/09-harness/coding-agent-rules.md` → `docs/09-harness/lessons-learned.md` (before the packet).
