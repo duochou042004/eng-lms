@@ -69,6 +69,9 @@ public final class PolicyRegistry {
 			Policy.of("POST", "/api/v1/auth/logout", null, 204, 204, 204, NA, 204),
 			// Correct current password, a too-short new one: 422 without any session or lockout side effect.
 			Policy.of("POST", "/api/v1/auth/password", PolicyRegistry::tooShortNewPassword, 401, 422, 422, NA, 422),
+			// T-M2.6: the own account's preferences (both roles); behind the must-change gate.
+			Policy.of("PATCH", "/api/v1/auth/preferences", account -> "{\"locale\":\"en\",\"timeZone\":\"Asia/Saigon\"}",
+					401, 200, 200, NA, 403),
 			Policy.of("GET", "/api/v1/meta", null, 200, 200, 200, NA, 200),
 			// T-M2.3, tutor: students. Tutor-only; B-on-A does not apply ({sid} = student A's student ID).
 			Policy.of("POST", "/api/v1/tutor/students", PolicyRegistry::newStudent, 401, 201, 403, NA, 403),

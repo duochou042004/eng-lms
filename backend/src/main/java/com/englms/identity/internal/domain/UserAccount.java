@@ -2,6 +2,7 @@ package com.englms.identity.internal.domain;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Objects;
 import java.util.UUID;
 
 import jakarta.persistence.Column;
@@ -162,6 +163,20 @@ public class UserAccount {
 		tempPasswordExpiresAt = expiresAt;
 		failedLoginCount = 0;
 		lockedUntil = null;
+		updatedAt = now;
+	}
+
+	/**
+	 * FR-SET-02: the already validated preferences (the service's checks, validation-rules "account"); a repeat of the
+	 * stored values changes nothing, so it writes nothing.
+	 */
+	public void changePreferences(String newLocale, String newTimeZone, String newDisplayName, Instant now) {
+		if (newLocale.equals(locale) && newTimeZone.equals(timeZone) && Objects.equals(newDisplayName, displayName)) {
+			return;
+		}
+		locale = newLocale;
+		timeZone = newTimeZone;
+		displayName = newDisplayName;
 		updatedAt = now;
 	}
 

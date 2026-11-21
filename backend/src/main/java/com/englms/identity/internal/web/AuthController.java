@@ -3,6 +3,7 @@ package com.englms.identity.internal.web;
 import static com.englms.shared.web.Audience.Kind.AUTHENTICATED;
 import static com.englms.shared.web.Audience.Kind.PUBLIC;
 
+import java.util.Optional;
 import java.util.UUID;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -18,9 +19,11 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import com.englms.identity.CurrentUser;
 import com.englms.identity.Role;
 import com.englms.identity.events.ClientInfo;
+import com.englms.identity.internal.app.AccountService;
 import com.englms.identity.internal.app.AccountView;
 import com.englms.identity.internal.app.AuthenticationService;
 import com.englms.identity.internal.app.AuthenticationService.PasswordChangeRejected;
+import com.englms.identity.internal.app.PreferencesCommand;
 import com.englms.identity.internal.security.AuthProblems;
 import com.englms.shared.web.Audience;
 import org.springframework.http.HttpHeaders;
@@ -29,13 +32,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * Sign-in, session, logout and own-password change (api-catalog.md "auth"; FR-AUTH-03..06). {@code /api/v1/auth/**}
+ * Sign-in, session, logout, own-password change and own preferences (api-catalog.md "auth"; FR-AUTH-03..06,
+ * FR-SET-02). {@code /api/v1/auth/**}
  * is open at the URL gate: each handler decides. Login neither accepts nor returns a redirect target (T18).
  */
 @RestController
@@ -49,9 +54,12 @@ class AuthController {
 
 	private final AuthSessions sessions;
 
-	AuthController(AuthenticationService authentication, AuthSessions sessions) {
+	private final AccountService accounts;
+
+	AuthController(AuthenticationService authentication, AuthSessions sessions, AccountService accounts) {
 		this.authentication = authentication;
 		this.sessions = sessions;
+		this.accounts = accounts;
 	}
 
 	@GetMapping("/session")
@@ -129,6 +137,28 @@ class AuthController {
 		return ResponseEntity.noContent().build();
 	}
 
+	@Audience(AUTHENTICATED)
+	@PatchMapping(path = "/preferences", consumes = MediaType.APPLICATION_JSON_VALUE)
+	@Operation(summary = "Save the own language, time zone and (tutor only) display name; absent properties stay; "
+			+ "last write wins per property, no version (DEC-190)")
+	@ApiResponse(responseCode = "200", description = "The session body with the saved values")
+	@ApiResponse(responseCode = "401", description = "UNAUTHENTICATED or SESSION_EXPIRED",
+			content = @Content(mediaType = "application/problem+json", schema = @Schema(ref = PROBLEM)))
+	@ApiResponse(responseCode = "403", description = "CSRF_INVALID or PASSWORD_CHANGE_REQUIRED",
+			content = @Content(mediaType = "application/problem+json", schema = @Schema(ref = PROBLEM)))
+	@ApiResponse(responseCode = "422", description = "VALIDATION_FAILED with field codes (REQUIRED, INVALID_VALUE, "
+			+ "TOO_LONG, INVALID_FORMAT); an empty body is REQUIRED on locale",
+			content = @Content(mediaType = "application/problem+json", schema = @Schema(ref = PROBLEM)))
+	SessionResponse updatePreferences(@AuthenticationPrincipal CurrentUser me, @RequestBody PreferencesRequest body,
+			HttpServletRequest request) {
+		if (me == null) {
+			throw AuthProblems.unauthenticated(request);
+		}
+		return accounts.updatePreferences(me.userId(), body.command())
+			.map(SessionResponse::of)
+			.orElseThrow(() -> AuthProblems.unauthenticated(request));
+	}
+
 	private static ClientInfo client(HttpServletRequest request) {
 		String userAgent = request.getHeader(HttpHeaders.USER_AGENT);
 		return new ClientInfo(request.getRemoteAddr(),
@@ -151,6 +181,61 @@ class AuthController {
 		@Override
 		public String toString() {
 			return "ChangePasswordRequest[]";
+		}
+
+	}
+
+	/**
+	 * PATCH (api-conventions §3) with the setter pattern of {@code TutorStudentDtos.UpdateStudentRequest}: Jackson calls
+	 * a setter only for a present property, so a field is {@code null} while absent and an {@link Optional} once
+	 * present. Only these three properties are read; unknown ones are ignored.
+	 */
+	static final class PreferencesRequest {
+
+		private Optional<String> locale;
+
+		private Optional<String> timeZone;
+
+		private Optional<String> displayName;
+
+		@Schema(description = "One of GET /meta locales")
+		public String getLocale() {
+			return value(locale);
+		}
+
+		public void setLocale(String locale) {
+			this.locale = Optional.ofNullable(locale);
+		}
+
+		@Schema(description = "A time-zone ID the server's java.time knows, exact (aliases accepted as given)")
+		public String getTimeZone() {
+			return value(timeZone);
+		}
+
+		public void setTimeZone(String timeZone) {
+			this.timeZone = Optional.ofNullable(timeZone);
+		}
+
+		@Schema(types = { "string", "null" }, description = "Tutor only; empty or null clears it")
+		public String getDisplayName() {
+			return value(displayName);
+		}
+
+		public void setDisplayName(String displayName) {
+			this.displayName = Optional.ofNullable(displayName);
+		}
+
+		PreferencesCommand command() {
+			return new PreferencesCommand(locale, timeZone, displayName);
+		}
+
+		private static String value(Optional<String> field) {
+			return (field != null) ? field.orElse(null) : null;
+		}
+
+		@Override
+		public String toString() {
+			return "PreferencesRequest[]";
 		}
 
 	}
