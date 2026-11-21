@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-11-20T15:32:02Z",
-  "updatedBy": "lead-coordinator (T-M2.10 merged; records)",
+  "updatedAt": "2026-11-21T04:23:14Z",
+  "updatedBy": "lead-coordinator (T-M2.16 packet)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -34,24 +34,25 @@
     "title": "Username-only student PATCH bumps the student version (concurrent edits; T-M2.14 docs review D-6, DEC-124)",
     "status": "draft",
     "ownerRole": "BE",
-    "branch": null,
-    "packet": null,
+    "branch": "docs/T-M2.16-packet",
+    "packet": "docs/tasks/T-M2.16-username-version.md",
     "pr": null,
     "lastCommit": null,
     "startedAt": null,
     "nextSteps": [
-      "If open: the records PR (docs/T-M2.10-records): docs-reviewer, CI, LC-APPROVED, merge-gate, gitlab-sync (QA report PR #212 merged, fb425e7)",
-      "Write the T-M2.16 packet (task-packet skill), G0 by a fresh docs-reviewer, ask the PO for the start signal",
-      "Then T-M2.6, T-M2.32 (PO order, DEC-185); T-M2.33 order: ask the PO; T-M2.26 after at least 10 shadow PRs; T-M2.7 holds the G5 (one regression run, no Firefox)"
+      "G0: one fresh docs-reviewer on the packet PR (docs/T-M2.16-packet); fix, set ready, merge-gate",
+      "Ask the PO for the T-M2.16 start signal; backend-implementer on fix/T-M2.16-username-version",
+      "Then the CI ubuntu-26.04 chore packet, T-M2.6, T-M2.32, T-M2.33, T-M2.7 (PO order, DEC-187)"
     ],
     "trace": [
       "FR-STU-03",
       "DEC-124",
-      "DEC-185"
+      "DEC-185",
+      "DEC-187"
     ],
     "entryGate": [
       "T-M2.10 merged — met (6cca511)",
-      "Packet + G0 — not started",
+      "Packet + G0 — packet drafted, G0 pending",
       "PO start signal — not asked"
     ]
   },
@@ -66,7 +67,7 @@
     "lastCommit": null,
     "startedAt": null,
     "nextSteps": [
-      "After T-M2.16, T-M2.6 and T-M2.32 (PO order, DEC-185), and T-M2.33 if the PO places it in M2; T-M2.26 after at least 10 shadow PRs"
+      "After T-M2.16, the CI ubuntu-26.04 chore, T-M2.6, T-M2.32 and T-M2.33 (PO order, DEC-187); T-M2.26 after at least 10 shadow PRs"
     ],
     "trace": [
       "DEC-158",
@@ -563,7 +564,10 @@
       "DEC-181",
       "DEC-182",
       "DEC-183",
-      "DEC-184"
+      "DEC-184",
+      "DEC-185",
+      "DEC-186",
+      "DEC-187"
     ],
     "pendingPO": [
       "OQ-03",
@@ -1786,6 +1790,11 @@
       "at": "2026-11-20T15:32:02Z",
       "actor": "lead-coordinator",
       "event": "T-M2.10 QA report PR #212 merged (fb425e7); records PR #213 docs review round 1 CHANGES REQUESTED (S3-1, S3-2, S4s) fixed."
+    },
+    {
+      "at": "2026-11-21T04:23:14Z",
+      "actor": "lead-coordinator",
+      "event": "Records PR #213 merged (e187dd3), mirror in sync. PO order (DEC-187): T-M2.16 -> CI ubuntu-26.04 chore -> T-M2.6 -> T-M2.32 -> T-M2.33 -> T-M2.7. T-M2.16 packet drafted (tier M)."
     }
   ]
 }
