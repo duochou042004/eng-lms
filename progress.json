@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-11-25T16:53:37Z",
-  "updatedBy": "lead-coordinator (T-M2.32 records)",
+  "updatedAt": "2026-11-25T17:13:20Z",
+  "updatedBy": "lead-coordinator (T-M2.33 packet)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -35,18 +35,19 @@
     "status": "draft",
     "ownerRole": "BE",
     "branch": null,
-    "packet": null,
+    "packet": "docs/tasks/T-M2.33-strict-scalars-names.md",
     "pr": null,
     "lastCommit": null,
     "startedAt": null,
     "nextSteps": [
-      "T-M2.33 packet (task-packet skill, LC) on docs/T-M2.33-packet; tier H (SEC + QA); G0 by a fresh docs-reviewer; then the PO start signal"
+      "G0 by a fresh docs-reviewer on PR (docs/T-M2.33-packet); merge; then the PO start signal"
     ],
     "trace": [
       "DEC-186",
       "DEC-187",
       "DEC-191",
-      "DEC-194"
+      "DEC-194",
+      "DEC-200"
     ],
     "entryGate": [
       "T-M2.32 merged — met (a43b17b, DEC-199)",
@@ -1965,6 +1966,11 @@
       "at": "2026-11-25T16:53:37Z",
       "actor": "lead-coordinator",
       "event": "T-M2.32 merged (a43b17b, PR #231; QA PR #232 7273fd7; DEC-199); gitlab-sync; records PR; current task T-M2.33 (packet next)."
+    },
+    {
+      "at": "2026-11-25T17:13:20Z",
+      "actor": "lead-coordinator",
+      "event": "T-M2.32 records PR #233 merged (0a00361, DOCS-REVIEW PASS). T-M2.33 packet drafted (DEC-200), G0 next."
     }
   ]
 }
