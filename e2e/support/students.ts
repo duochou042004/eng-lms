@@ -4,7 +4,7 @@ import type { Browser, Locator, Page, TestInfo } from '@playwright/test'
 import { ANONYMOUS, apiCall, apiChangePassword, apiSignIn } from './auth'
 import { expectNoHorizontalScroll } from './checks'
 import { evidenceShot } from './evidence'
-import { expect } from './fixtures'
+import { acceptStatus, expect, guardContext } from './fixtures'
 import { openAccountSection } from './shell'
 
 export const h1 = (page: Page, name: string | RegExp) => page.getByRole('heading', { level: 1, name })
@@ -25,17 +25,8 @@ export async function apiStudent(page: Page, body: Record<string, unknown>) {
   return created.body
 }
 
-/** Removes the console entries of a response a test provokes on purpose (only that status from that API path). */
-export function acceptStatus(consoleGuard: string[], status: number, path: string | RegExp) {
-  const prefix = `console.error: Failed to load resource: the server responded with a status of ${status} `
-  for (let i = consoleGuard.length - 1; i >= 0; i--) {
-    const entry = consoleGuard[i]!
-    const url = /\[([^\]]+)\]$/.exec(entry)?.[1]
-    const pathname = url ? new URL(url).pathname : ''
-    if (entry.startsWith(prefix) && (typeof path === 'string' ? pathname === path : path.test(pathname)))
-      consoleGuard.splice(i, 1)
-  }
-}
+// The guard's filters live beside `guardContext` (T-M2.32 (a)); re-exported for the students-*.spec.ts imports.
+export { acceptStatus } from './fixtures'
 
 export const wide = (page: Page) => page.viewportSize()!.width >= 768
 
@@ -66,9 +57,13 @@ export async function profileStudent(page: Page, label: string, extra: Record<st
   })
 }
 
-/** Signs the student in on a fresh context and does the forced change: an open student session with a known password. */
-export async function studentSession(browser: Browser, created: Created) {
+/**
+ * Signs the student in on a fresh context and does the forced change: an open student session with a known password.
+ * The context is guarded with `guard` (the test's `consoleGuard`).
+ */
+export async function studentSession(browser: Browser, created: Created, guard: string[]) {
   const context = await browser.newContext({ storageState: ANONYMOUS })
+  await guardContext(context, guard)
   const page = await context.newPage()
   await page.goto('/login')
   const first = { username: created.credentials.username, password: created.credentials.temporaryPassword }
@@ -77,12 +72,25 @@ export async function studentSession(browser: Browser, created: Created) {
   return { context, page, credentials }
 }
 
-/** A sign-in attempt on a fresh context (its own cookies), closed afterwards. */
-export async function trySignIn(browser: Browser, credentials: { username: string; password: string }) {
+/**
+ * A sign-in attempt on a fresh context (its own cookies), closed afterwards; guarded with `guard` (the test's
+ * `consoleGuard`). A refused attempt's 401 (Chromium logs it) is the one entry accepted: that status from the login path.
+ */
+export async function trySignIn(
+  browser: Browser,
+  credentials: { username: string; password: string },
+  guard: string[],
+) {
   const context = await browser.newContext({ storageState: ANONYMOUS })
+  await guardContext(context, guard)
   const page = await context.newPage()
   await page.goto('/login')
   const status = (await apiSignIn(page, credentials)).status
+  if (status === 401) {
+    const refused = (entry: string) => entry.includes('status of 401') && entry.includes('/api/v1/auth/login]')
+    await expect.poll(() => guard.some(refused), 'the refused sign-in is logged').toBe(true)
+    acceptStatus(guard, 401, '/api/v1/auth/login')
+  }
   await context.close()
   return status
 }

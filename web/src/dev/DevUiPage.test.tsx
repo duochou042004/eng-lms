@@ -4,6 +4,7 @@ import { describe, expect, it } from 'vitest'
 import { i18n } from '../lib/i18n'
 import { expectNoAxeViolations } from '../test/axe'
 import { renderRoute } from '../test/render'
+import { visibleClose } from '../test/shell'
 
 // The gallery grows with every ui/ component (T-M2.5 added eight): axe over the whole page takes seconds on a busy runner.
 describe('/dev/ui (development builds only)', { timeout: 20_000 }, () => {
@@ -49,8 +50,7 @@ describe('/dev/ui (development builds only)', { timeout: 20_000 }, () => {
     await expectNoAxeViolations(document.body)
     await userEvent.keyboard('{Escape}')
     await userEvent.click(screen.getByRole('button', { name: 'Mở ngăn điều hướng' }))
-    expect(await screen.findByRole('dialog', { name: 'Điều hướng' })).toBeInTheDocument()
-    await userEvent.click(screen.getByRole('button', { name: 'Đóng' }))
+    await userEvent.click(visibleClose(await screen.findByRole('dialog', { name: 'Điều hướng' })))
     await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument())
 
     const long = screen.getByRole('button', { name: 'Nguyễn Thị Phương Lan Anh (tên rất dài)' })

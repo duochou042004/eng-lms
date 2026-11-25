@@ -3,12 +3,15 @@ import { cleanup } from '@testing-library/react'
 import { afterAll, afterEach, beforeAll, beforeEach } from 'vitest'
 import { changeLocale, DEFAULT_LOCALE } from '../lib/i18n'
 import { resetClientNavigation } from '../lib/navigation'
+import { installAriaStrings } from '../ui/ariaStrings'
 import { FakeBroadcastChannel } from './broadcast'
 import { disconnectAll } from './render'
 import { clearXsrfCookie, server } from './server'
 import { DEFAULT_VIEWPORT_WIDTH, installMatchMedia, setViewportWidth } from './viewport'
 
 installMatchMedia()
+// As main.tsx does: React Aria's own strings in vi (T-M2.32 (f)).
+installAriaStrings()
 globalThis.BroadcastChannel = FakeBroadcastChannel as unknown as typeof BroadcastChannel
 
 beforeAll(() => server.listen({ onUnhandledRequest: 'error' }))

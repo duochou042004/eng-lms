@@ -7,7 +7,7 @@ import {
   expectSettledAccessible,
 } from '../support/checks'
 import { evidenceRecord } from '../support/evidence'
-import { answerPreferencesInPlace, expect, test } from '../support/fixtures'
+import { answerPreferencesInPlace, expect, guardContext, test } from '../support/fixtures'
 import { longData } from '../support/longData'
 import { openAccountSection } from '../support/shell'
 import { acceptStatus, apiStudent, h1, navItem, profileStudent, shot, studentSession, token } from '../support/students'
@@ -372,9 +372,14 @@ test.describe('AC8: the switcher and the account locale', () => {
     expect(session.body.locale, 'the shared account keeps vi').toBe('vi')
   })
 
-  test('must change the password: the switch on /change-password sends nothing', async ({ page, browser }) => {
+  test('must change the password: the switch on /change-password sends nothing', async ({
+    page,
+    browser,
+    consoleGuard,
+  }) => {
     const created = await profileStudent(page, 'Ngôn Ngữ Đổi')
     const context = await browser.newContext({ storageState: ANONYMOUS })
+    await guardContext(context, consoleGuard)
     const sent = recordPreferences(context)
     const student = await context.newPage()
     await student.goto('/login')
@@ -395,11 +400,12 @@ test.describe('AC8: the switcher and the account locale', () => {
   })
 
   test('a fresh student whose locale is en: English on a device without a choice; a stored choice wins', async ({
+    consoleGuard,
     page,
     browser,
   }) => {
     const created = await profileStudent(page, 'Ngôn Ngữ Anh')
-    const { context, page: student, credentials } = await studentSession(browser, created)
+    const { context, page: student, credentials } = await studentSession(browser, created, consoleGuard)
     // The real endpoint: the locale and a time zone saved, the session body back, a new read the same.
     const saved = await apiCall<{ locale: string; timeZone: string }>(student, 'PATCH', PREFERENCES, {
       locale: 'en',
@@ -422,6 +428,7 @@ test.describe('AC8: the switcher and the account locale', () => {
         origins: [{ origin, localStorage: [{ name: 'englms.locale', value: 'vi' }] }],
       },
     })
+    await guardContext(stored, consoleGuard)
     const again = await stored.newPage()
     await again.goto('/login')
     expect((await apiSignIn(again, credentials)).status).toBe(200)
@@ -432,6 +439,7 @@ test.describe('AC8: the switcher and the account locale', () => {
   })
 
   test('the suite helper answers the PATCH in place (the server keeps vi); without it the save is real', async ({
+    consoleGuard,
     page,
     browser,
   }) => {
@@ -450,11 +458,12 @@ test.describe('AC8: the switcher and the account locale', () => {
       await student.evaluate(() => localStorage.setItem('englms.locale', 'vi'))
       return session.body.locale
     }
-    const first = await studentSession(browser, created)
+    const first = await studentSession(browser, created, consoleGuard)
     expect(await locale(first.context, true), 'answered in place').toBe('vi')
     await first.context.close()
     // A second device of the same student without the helper: the save reaches the server.
     const second = await browser.newContext({ storageState: ANONYMOUS })
+    await guardContext(second, consoleGuard)
     const page2 = await second.newPage()
     await page2.goto('/login')
     expect((await apiSignIn(page2, first.credentials)).status).toBe(200)

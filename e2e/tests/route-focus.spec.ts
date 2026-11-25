@@ -1,7 +1,7 @@
 import type { Locator, Page } from '@playwright/test'
 import { ANONYMOUS, STUDENT_STATE, TUTOR_STATE } from '../support/auth'
 import { evidenceRecord, evidenceShot } from '../support/evidence'
-import { answerPreferencesInPlace, expect, test } from '../support/fixtures'
+import { answerPreferencesInPlace, expect, guardContext, test } from '../support/fixtures'
 import { openAccountSection, workspaceName } from '../support/shell'
 import { StepCounter } from '../support/steps'
 
@@ -175,6 +175,7 @@ test.describe(() => {
 
 test.describe('UX step budgets (T-M1.9 design notes)', () => {
   test('switch the language: 1 step on the public pages, at most 2 from a shell page (pointer), 1 step (keyboard)', async ({
+    consoleGuard,
     browser,
   }, testInfo) => {
     const record: Record<string, number> = {}
@@ -184,6 +185,7 @@ test.describe('UX step budgets (T-M1.9 design notes)', () => {
       ['/student', STUDENT_STATE, 'student'],
     ] as const) {
       const context = await browser.newContext({ storageState })
+      await guardContext(context, consoleGuard)
       // The switch below would save `en` on the shared account: answered in place (T-M2.6 scope 7a).
       await answerPreferencesInPlace(context)
       const page = await context.newPage()
@@ -201,6 +203,7 @@ test.describe('UX step budgets (T-M1.9 design notes)', () => {
     // lazy and a first load moves no focus: wait for its h1 before the first Tab, or Tab can run on the loading region
     // (DEC-082).
     const context = await browser.newContext({ storageState: ANONYMOUS })
+    await guardContext(context, consoleGuard)
     const page = await context.newPage()
     await page.goto('/login')
     await expect(h1(page, COPY.vi.login)).toBeVisible()
@@ -225,6 +228,7 @@ test.describe('UX step budgets (T-M1.9 design notes)', () => {
   })
 
   test('reach the main content: 1 step on a fresh shell load, 0 on sign-in/404, 0 after a client-side navigation', async ({
+    consoleGuard,
     browser,
   }, testInfo) => {
     const record: Record<string, number> = {}
@@ -233,6 +237,7 @@ test.describe('UX step budgets (T-M1.9 design notes)', () => {
       ['/student', STUDENT_STATE],
     ] as const) {
       const context = await browser.newContext({ storageState })
+      await guardContext(context, consoleGuard)
       const page = await context.newPage()
       await page.goto(path)
       await expect(page.getByRole('main')).toBeVisible()
@@ -248,6 +253,7 @@ test.describe('UX step budgets (T-M1.9 design notes)', () => {
       await context.close()
     }
     const anonymous = await browser.newContext({ storageState: ANONYMOUS })
+    await guardContext(anonymous, consoleGuard)
     for (const path of ['/login', '/does-not-exist']) {
       const page = await anonymous.newPage()
       await page.goto(path)
@@ -263,6 +269,7 @@ test.describe('UX step budgets (T-M1.9 design notes)', () => {
     // Keyboard-only, signed in as the tutor: on the 404 page, Tab to the start-page link, Enter (`/` → the tutor home).
     // Focus lands on the new page's h1 (0 further steps).
     const context = await browser.newContext({ storageState: TUTOR_STATE })
+    await guardContext(context, consoleGuard)
     const page = await context.newPage()
     await page.goto('/does-not-exist')
     await expect(h1(page, COPY.vi.notFound)).toBeVisible()

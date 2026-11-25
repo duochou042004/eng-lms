@@ -47,6 +47,9 @@
 - Test names: `should<Behaviour>_when<Condition>` (Java). `it('shows … when …')` (TS).
 - One behaviour per test. Table-driven tests for handlers and rules (`@ParameterizedTest` with a readable source).
 - No sleeping. Use `Clock`, Awaitility, or Playwright auto-wait.
+- E2E console guard (`e2e/support/fixtures.ts`): every spec's `test` fails on a console error (except the anonymous session probe), an uncaught
+  page error or a CSP violation, also up to 500 ms after the body; every fresh `browser.newContext()` in a spec is guarded too with
+  `guardContext(context, consoleGuard)`, and a provoked error is filtered exactly (`acceptStatus`, `accept`), never the whole guard (T-M2.32, DEC-196).
 - Flaky test policy: a flaky test is quarantined only with a DEC entry and a task to fix it within 1 milestone. Never silently retried.
 - Forbidden: disabling tests to get green builds, asserting on implementation details (private fields, SQL strings), snapshot-testing whole JSON
   payloads without purpose, or mocking the database for repository logic.

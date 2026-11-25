@@ -2,7 +2,7 @@ import type { Locator } from '@playwright/test'
 import { ANONYMOUS, apiCall, signInWithForm, TUTOR_STATE } from '../support/auth'
 import { expectFocusNotLost, expectSettledAccessible } from '../support/checks'
 import { evidenceRecord } from '../support/evidence'
-import { expect, test } from '../support/fixtures'
+import { expect, guardContext, test } from '../support/fixtures'
 import { StepCounter } from '../support/steps'
 import {
   acceptStatus,
@@ -65,7 +65,7 @@ test.describe('Account section (T-M2.14)', () => {
     consoleGuard,
   }, testInfo) => {
     const created = await profileStudent(page, 'Lưu Trữ Hoàn Tác')
-    const student = await studentSession(browser, created)
+    const student = await studentSession(browser, created, consoleGuard)
     await student.context.close()
     const account = accountRegion(page)
     await page.goto(`/tutor/students/${created.student.id}`)
@@ -77,7 +77,7 @@ test.describe('Account section (T-M2.14)', () => {
     const archivedToast = toastRegion(page).getByRole('alertdialog').filter({ hasText: 'Đã lưu trữ' })
     await expect(archivedToast).toBeVisible()
     await expect(account).toContainText('Kích hoạt lại học viên để đặt lại mật khẩu.')
-    expect(await trySignIn(browser, student.credentials)).toBe(401)
+    expect(await trySignIn(browser, student.credentials, consoleGuard)).toBe(401)
     // AC12 (f): the icon sits on the message's first line.
     const align = await archivedToast.evaluate((toast) => {
       const icon = toast.querySelector('svg')!.getBoundingClientRect()
@@ -118,7 +118,7 @@ test.describe('Account section (T-M2.14)', () => {
     await expect(toastRegion(page)).toContainText('Đã hoàn tác lưu trữ')
     await expect(page.getByRole('heading', { level: 2, name: 'Tài khoản' })).toBeFocused()
     await expectFocusNotLost(page)
-    expect(await trySignIn(browser, student.credentials)).toBe(200)
+    expect(await trySignIn(browser, student.credentials, consoleGuard)).toBe(200)
     acceptStatus(consoleGuard, 401, '/api/v1/auth/login')
   })
 
@@ -128,7 +128,7 @@ test.describe('Account section (T-M2.14)', () => {
     consoleGuard,
   }, testInfo) => {
     const created = await profileStudent(page, 'Kích Hoạt Lại')
-    const student = await studentSession(browser, created)
+    const student = await studentSession(browser, created, consoleGuard)
     await student.context.close()
     const account = accountRegion(page)
     await page.goto(`/tutor/students/${created.student.id}`)
@@ -137,12 +137,12 @@ test.describe('Account section (T-M2.14)', () => {
     await account.getByRole('button', { name: 'Lưu trữ' }).click()
     await expect(archivedToast).toBeVisible()
     await shot(page, testInfo, 'account-archived-vi')
-    expect(await trySignIn(browser, student.credentials)).toBe(401)
+    expect(await trySignIn(browser, student.credentials, consoleGuard)).toBe(401)
     await account.getByRole('button', { name: 'Kích hoạt lại' }).click()
     await expect(archivedToast).toHaveCount(0)
     await expect(toastRegion(page)).toContainText(`Đã kích hoạt lại ${created.student.fullName}`)
     expect(await toastRegion(page).getByRole('alertdialog').count()).toBeLessThanOrEqual(3)
-    expect(await trySignIn(browser, student.credentials)).toBe(200)
+    expect(await trySignIn(browser, student.credentials, consoleGuard)).toBe(200)
     await account.getByRole('button', { name: 'Lưu trữ' }).click()
     await expect(archivedToast).toBeVisible()
     await page.getByRole('link', { name: 'Về danh sách học viên' }).click()
@@ -328,13 +328,14 @@ test.describe('Account section (T-M2.14)', () => {
 
 test.describe('Reset password (F10, T-M2.14)', () => {
   test('AC6/AC7/AC10: ≤ 3 steps; the card; nothing kept; the student is signed out and must change the password', async ({
+    consoleGuard,
     page,
     context,
     browser,
   }, testInfo) => {
     await context.grantPermissions(['clipboard-read', 'clipboard-write'])
     const created = await profileStudent(page, 'Đặt Lại')
-    const student = await studentSession(browser, created)
+    const student = await studentSession(browser, created, consoleGuard)
     const account = accountRegion(page)
     await page.goto(`/tutor/students/${created.student.id}`)
     await expect(h1(page, created.student.fullName)).toBeVisible()
@@ -396,8 +397,9 @@ test.describe('Reset password (F10, T-M2.14)', () => {
     // The student's open session ended; the old password fails; the temporary one signs in to the forced change.
     expect((await apiCall(student.page, 'GET', '/api/v1/auth/session')).status).toBe(401)
     await student.context.close()
-    expect(await trySignIn(browser, student.credentials)).toBe(401)
+    expect(await trySignIn(browser, student.credentials, consoleGuard)).toBe(401)
     const fresh = await browser.newContext({ storageState: ANONYMOUS })
+    await guardContext(fresh, consoleGuard)
     const signIn = await fresh.newPage()
     await signIn.goto('/login')
     await signInWithForm(signIn, { username: created.student.username, password })

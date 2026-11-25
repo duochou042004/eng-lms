@@ -236,7 +236,9 @@ export function GuardianForm({
     reValidateMode: 'onChange',
   })
 
-  useEffect(() => document.getElementById(guardianFieldId('name'))?.focus(), [])
+  useEffect(() => {
+    document.getElementById(guardianFieldId('name'))?.focus()
+  }, [])
   const tooManyRef = useRef<HTMLDivElement>(null)
   useEffect(() => {
     if (tooMany > 0) tooManyRef.current?.focus()

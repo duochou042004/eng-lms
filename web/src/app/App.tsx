@@ -11,7 +11,9 @@ export function App() {
   const [queryClient] = useState(createQueryClient)
   const [router] = useState(() => createAppRouter(queryClient))
   const { i18n } = useTranslation()
-  useEffect(() => connectAuthProblems(router, queryClient), [router, queryClient])
+  useEffect(() => {
+    return connectAuthProblems(router, queryClient)
+  }, [router, queryClient])
   return (
     <QueryClientProvider client={queryClient}>
       <UiProvider locale={i18n.language}>

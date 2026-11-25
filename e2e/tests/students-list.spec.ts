@@ -2,7 +2,7 @@ import type { Locator, Page } from '@playwright/test'
 import { ANONYMOUS, apiCall, apiSignIn, TUTOR_STATE, TUTOR_USERNAME, tutorPassword } from '../support/auth'
 import { expectFocusNotLost, expectNoHorizontalScroll, expectSettledAccessible, lineCount } from '../support/checks'
 import { evidenceRecord } from '../support/evidence'
-import { expect, test } from '../support/fixtures'
+import { expect, guardContext, test } from '../support/fixtures'
 import { openAccountSection } from '../support/shell'
 import { StepCounter } from '../support/steps'
 import {
@@ -205,6 +205,7 @@ test.describe('Add student (F2) and the credentials card', () => {
   })
 
   test('AC6: leaving a dirty form asks (navigation, home link); a clean or created form leaves; sign-out never asks', async ({
+    consoleGuard,
     page,
     browser,
   }, testInfo) => {
@@ -235,6 +236,7 @@ test.describe('Add student (F2) and the credentials card', () => {
 
     // A fresh sign-in (the stored session stays): Log out from a dirty form lands on /login without a dialog.
     const fresh = await browser.newContext({ storageState: ANONYMOUS })
+    await guardContext(fresh, consoleGuard)
     const other = await fresh.newPage()
     await other.goto('/login')
     expect((await apiSignIn(other, { username: TUTOR_USERNAME, password: tutorPassword() })).status).toBe(200)
@@ -245,15 +247,20 @@ test.describe('Add student (F2) and the credentials card', () => {
     await expect(other).toHaveURL(/\/login$/)
     await expect(other.getByRole('alertdialog')).toHaveCount(0)
     await fresh.close()
+    // OQ T-M2.32-1 (temporary, until the LC rules; L-10): the debounced username suggestion can race Log out and answer
+    // 401 (seen at phone-small); the page still lands on /login without a dialog. Exactly that status and path.
+    acceptStatus(consoleGuard, 401, '/api/v1/tutor/usernames/suggestion')
   })
 
   // T-M2.29 (j), OQ T-M2.28-1 (DEC-174 (3)): the race held open (as T-M2.28's held-session diagnostic). The page's
   // username suggestion is held until the logout has answered, so the server answers it 401; /login's session read is
   // held until that 401 has arrived, so it comes before /login commits.
   test('T-M2.29 AC3: own Log out while a page query answers 401 before /login commits: exactly /login, no notice', async ({
+    consoleGuard,
     browser,
   }) => {
     const fresh = await browser.newContext({ storageState: ANONYMOUS })
+    await guardContext(fresh, consoleGuard)
     const other = await fresh.newPage()
     await other.goto('/login')
     expect((await apiSignIn(other, { username: TUTOR_USERNAME, password: tutorPassword() })).status).toBe(200)
@@ -274,7 +281,8 @@ test.describe('Add student (F2) and the credentials card', () => {
     await fullNameField(other).fill('Chưa lưu')
     await suggestionHeld
     const page401 = other.waitForResponse(
-      (response) => response.status() === 401 && new URL(response.url()).pathname === '/api/v1/tutor/usernames/suggestion',
+      (response) =>
+        response.status() === 401 && new URL(response.url()).pathname === '/api/v1/tutor/usernames/suggestion',
     )
     await other.route('**/api/v1/auth/session', async (route) => {
       await page401
@@ -289,6 +297,11 @@ test.describe('Add student (F2) and the credentials card', () => {
     await expect(h1(other, 'Đăng nhập')).toBeVisible()
     await expect(other).toHaveURL(/\/login$/)
     await expect(other.getByText('Bạn đã đăng xuất ở một thẻ khác.')).toHaveCount(0)
+    // The suggestion's 401 is provoked on purpose (held until the logout answered): exactly that entry is accepted.
+    const provoked = (entry: string) =>
+      entry.includes('status of 401') && entry.includes('/api/v1/tutor/usernames/suggestion')
+    await expect.poll(() => consoleGuard.some(provoked), 'the provoked 401 is logged').toBe(true)
+    acceptStatus(consoleGuard, 401, '/api/v1/tutor/usernames/suggestion')
     await fresh.close()
   })
 

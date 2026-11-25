@@ -1,29 +1,36 @@
-# Handoff — 2026-11-25T13:58Z (T-M2.35 merged; next: the T-M2.32 packet)
+# Handoff — 2026-11-25T16:09Z (T-M2.32 reviewed, awaiting merge; context limit reached)
 
-Phase/Milestone: P1 / M2 (in progress) · Current task: **T-M2.32** E2E console-guard gap and T-M2.31 polish (`draft`, no packet yet) ·
-Last merge on `develop`: `100e114` (QA PR #228; T-M2.35 PR #227 `9ad116b`) · Next: T-M2.32 packet → T-M2.33 → T-M2.7 (G5) ·
-Remote: https://github.com/duochou042004/eng-lms (mirror gitlab, synced after each merge)
+Phase/Milestone: P1 / M2 (in progress) · Current task: **T-M2.32** (`awaiting_approval`, PR #231, branch `feature/T-M2.32-guard-and-polish`,
+final head: the branch tip, the handoff commit) · Last merge on `develop`: `a84c753` (T-M2.32 packet PR #230) · Next: merge T-M2.32 → T-M2.33 → T-M2.7 (G5)
 
 ## Where we are
-- **T-M2.35 done** (`9ad116b`, DEC-195; G3 rulings DEC-194; QA PR #228, records PR `docs/T-M2.35-records`). Workspace settings v1:
-  `workspace_setting` store, `GET`/`PATCH /tutor/settings`, `/meta` name from the store, new students take the defaults, Settings › Workspace.
-  Reports: `evidence/T-M2.35/review/security.md`, `evidence/T-M2.35/qa/report.md`. PO start signal was the `/goal` of 2026-11-25.
-- S4s batched: T-M2.32 (g) `ui/SegmentedControl` arrow keys do not select; T-M2.33 one character rule for both names (workspace and account
-  `displayName`: `\p{Cf}`, U+2028/U+2029, word joiner, …) and a findable invisible-character error.
+- **T-M2.35 done** (`9ad116b`, DEC-195; G3 DEC-194; QA PR #228; records PR #229).
+- **T-M2.32**: packet merged (PR #230, DEC-196); implemented (FE, gate PASS on `ad3acc8`: run 1 stopped at web-test on the pre-existing
+  `DevUiPage.test.tsx:12` flake, run 2 `--from web-test` PASS, 7 steps, 1239 s); L-10 rulings DEC-197; G3 tier M on `d589168`:
+  `QA-VERDICT T-M2.32: PASS WITH MINOR`, `UX-REVIEW T-M2.32: APPROVED` (DEC-198; S4s to the T-M2.7 row). Summary: `evidence/T-M2.32/summary.md`.
+- CI 7/7 was green on `d589168`. The last LC records commit `9841455` (G3 rulings, progress `awaiting_approval`) reached `origin` but GitHub
+  had not attached it to PR #231 at 2026-11-25T16:09Z (an API incident: 502s on GraphQL; the PR was created by a retry loop).
 
 ## In flight / uncommitted
-- Nothing besides this records PR. Untracked `evidence/T-M2.6/records/` and `evidence/T-M2.35/records/` are gate noise (the harness refused an
-  `rm -rf` of the first; leave them, never stage them).
+- This handoff commit on the feature branch. The QA report text for the `qa/` PR is in the old device's `.claude/scratch/lc-records/T-M2.32/qa-report.md`
+  (lost on a device move): it is summarised in DEC-198 and the summary; on a new device ask the PO or record the summary as the report.
+- Untracked `evidence/*/records/` dirs are gate noise; never stage them.
 
 ## Next steps (in this order)
-1. **T-M2.32 packet** (`task-packet` skill, LC) on `docs/T-M2.32-packet`: the backlog row (a)–(g); tier M (one fresh QA agent); G0 by a fresh
-   docs-reviewer; then the PO start signal; FE implementer; gate (all specs ×3: `fixtures.ts` changes); PR; G3; merge; `qa/` PR; records PR.
-2. **T-M2.33 packet** (tier H: SEC + QA): strict scalar binding + the shared name character rule (DEC-191, DEC-194).
-3. **T-M2.7** (G5: one regression run, no Firefox; **ask the PO first**). T-M2.26 after at least 10 shadow PRs.
-4. **Device move:** the PO continues on a new device after these tasks; see "Moving to a new device" below and refresh the device facts.
+1. Check PR #231's head is the branch tip (`gh api repos/duochou042004/eng-lms/pulls/231 -q .head.sha`); if it is stuck, push the next commit
+   (never force). Wait for CI 7/7 on the final head; then post `QA-VERDICT T-M2.32: PASS WITH MINOR`, `UX-REVIEW T-M2.32: APPROVED` and
+   `LC-APPROVED T-M2.32` as three comments (DEC-198 has the details); `git switch develop && git pull --ff-only`; `./scripts/merge-gate.sh 231`;
+   `./scripts/gitlab-sync.sh`.
+2. `qa/T-M2.32` PR with `evidence/T-M2.32/qa/report.md` (write invisible characters as U+XXXX); then the records PR `docs/T-M2.32-records`
+   (merge DEC, backlog/packet `done`, progress, handoff archive) with a fresh docs-reviewer (exact `DOCS-REVIEW T-M2.32: PASS`).
+3. **T-M2.33 packet** (tier H: SEC + QA): strict scalar binding (DEC-186) + one name character rule for workspace and account names (DEC-194).
+4. **T-M2.7** (G5: one regression run, no Firefox; **ask the PO first**); its row now also holds the `DevUiPage` flake (DEC-197) and the
+   T-M2.32 S4s (DEC-198). T-M2.26 after at least 10 shadow PRs.
+5. **Device move** after these tasks (PO, DEC-195): "Moving to a new device" below.
 
 ## Pending PO decisions / actions
-- Each start signal (T-M2.32, T-M2.33, T-M2.7) and the T-M2.7 regression run.
+- Start signals for T-M2.33 and T-M2.7; the T-M2.7 regression run. This session stopped at the ~300k context rule while the `/goal` hook still
+  had T-M2.32's merge, T-M2.33 and T-M2.7 open.
 
 ## Moving to a new device (PO, 2026-11-25: after T-M2.32, T-M2.33 and T-M2.7 the work continues on a new device)
 - Follow development-setup §0 for its platform. Clone `https://github.com/duochou042004/eng-lms`, `git fetch` (check-docs fails closed without
@@ -43,6 +50,8 @@ Remote: https://github.com/duochou042004/eng-lms (mirror gitlab, synced after ea
   `shortcut:` ledger, fallback `grep -rnE '(shortcut|ponytail):'`; the `/goal` Stop hook): reinstall or note them there.
 
 ## Gotchas
+- **GitHub API incident (2026-11-25):** `gh pr create` failed with GraphQL errors and 502; a background retry loop created PR #231; a push
+  reached `origin` but not the PR's head. Check `gh api …/pulls/<n> -q .head.sha` against `git ls-remote` before posting verdicts.
 - **Reviewer reports can carry raw invisible characters** (T-M2.35: the agents quoted U+202E, U+200B, U+2028 inside the report): write them
   as `U+XXXX` before committing a record (Trojan-source scanners, docs tables). The LC did it with a `unicodedata` category filter.
 - **The workspace row is shared test state** (T-M2.35): `global-setup.ts` resets only the two defaults (never the name); matrix/isolation worlds
@@ -198,5 +207,5 @@ Remote: https://github.com/duochou042004/eng-lms (mirror gitlab, synced after ea
 
 
 ## Files to read first
-`CLAUDE.md` → `progress.json` → this file → DEC-187, DEC-191, DEC-194, DEC-195 → the backlog rows T-M2.32, T-M2.33, T-M2.7 →
+`CLAUDE.md` → `progress.json` → this file → DEC-187, DEC-194, DEC-196, DEC-197, DEC-198 → the T-M2.32 packet → the backlog rows T-M2.33, T-M2.7 →
 `docs/09-harness/coding-agent-rules.md` → `docs/09-harness/lessons-learned.md` (before the packet).

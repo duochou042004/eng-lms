@@ -15,7 +15,7 @@ import {
 } from '../support/auth'
 import { expectNoAxeViolations, expectNoHorizontalScroll } from '../support/checks'
 import { evidenceRecord, evidenceShot } from '../support/evidence'
-import { expect, test } from '../support/fixtures'
+import { acceptStatus, expect, guardContext, test } from '../support/fixtures'
 import { openAccountSection } from '../support/shell'
 import { StepCounter } from '../support/steps'
 
@@ -51,22 +51,10 @@ async function expectAccessible(page: Page) {
   await expectNoHorizontalScroll(page)
 }
 
-/**
- * Removes the console entries of the responses a test provokes on purpose (Chromium logs every 4xx resource as an
- * error): only that status from that API path (G3 QA F2); any other entry still fails the test.
- */
-function acceptStatus(consoleGuard: string[], status: number, path: string) {
-  const prefix = `console.error: Failed to load resource: the server responded with a status of ${status} `
-  for (let i = consoleGuard.length - 1; i >= 0; i--) {
-    const entry = consoleGuard[i]!
-    const url = /\[([^\]]+)\]$/.exec(entry)?.[1]
-    if (entry.startsWith(prefix) && url && new URL(url).pathname === path) consoleGuard.splice(i, 1)
-  }
-}
-
 /** A page on the app's origin signed in as the E2E tutor (its stored session), for API set-up calls. */
-async function tutorApi(browser: Browser) {
+async function tutorApi(browser: Browser, guard: string[]) {
   const context = await browser.newContext({ storageState: TUTOR_STATE })
+  await guardContext(context, guard)
   const page = await context.newPage()
   await page.goto('/tutor')
   await expect(h1(page, TUTOR_HOME)).toBeVisible()
@@ -74,17 +62,18 @@ async function tutorApi(browser: Browser) {
 }
 
 /** A new student with a temporary password (must change). */
-async function newStudent(browser: Browser, testInfo: TestInfo) {
-  const { context, page } = await tutorApi(browser)
+async function newStudent(browser: Browser, testInfo: TestInfo, guard: string[]) {
+  const { context, page } = await tutorApi(browser, guard)
   const credentials = await createStudent(page, testInfo.project.name)
   await context.close()
   return credentials
 }
 
 /** A new student past the forced change (changed through the API in a throwaway context). */
-async function readyStudent(browser: Browser, testInfo: TestInfo) {
-  const temporary = await newStudent(browser, testInfo)
+async function readyStudent(browser: Browser, testInfo: TestInfo, guard: string[]) {
+  const temporary = await newStudent(browser, testInfo, guard)
   const context = await browser.newContext({ storageState: ANONYMOUS })
+  await guardContext(context, guard)
   const page = await context.newPage()
   await page.goto('/login')
   expect((await apiSignIn(page, temporary)).status).toBe(200)
@@ -220,8 +209,9 @@ test.describe('anonymous', () => {
   test('AC4: the forced change cannot be bypassed; /login logs out first; the change lands on /student/home', async ({
     page,
     browser,
+    consoleGuard,
   }, testInfo) => {
-    const temporary = await newStudent(browser, testInfo)
+    const temporary = await newStudent(browser, testInfo, consoleGuard)
     await page.goto('/login')
     await signInWithForm(page, temporary)
     await expect(page).toHaveURL(/\/change-password$/)
@@ -264,9 +254,10 @@ test.describe('anonymous', () => {
     browser,
     consoleGuard,
   }, testInfo) => {
-    const student = await readyStudent(browser, testInfo)
+    const student = await readyStudent(browser, testInfo, consoleGuard)
     // Another device of the same student: signed out by the change.
     const other = await browser.newContext({ storageState: ANONYMOUS })
+    await guardContext(other, consoleGuard)
     const otherPage = await other.newPage()
     await otherPage.goto('/login')
     expect((await apiSignIn(otherPage, student)).status).toBe(200)
@@ -325,8 +316,8 @@ test.describe('anonymous', () => {
     await other.close()
   })
 
-  test('AC9: keyboard-only password change', async ({ page, browser }, testInfo) => {
-    const student = await readyStudent(browser, testInfo)
+  test('AC9: keyboard-only password change', async ({ page, browser, consoleGuard }, testInfo) => {
+    const student = await readyStudent(browser, testInfo, consoleGuard)
     await page.goto('/login')
     await signInWithForm(page, student)
     await expect(h1(page, STUDENT_HOME)).toBeVisible()
@@ -347,8 +338,9 @@ test.describe('anonymous', () => {
     page,
     context,
     browser,
+    consoleGuard,
   }, testInfo) => {
-    const student = await readyStudent(browser, testInfo)
+    const student = await readyStudent(browser, testInfo, consoleGuard)
     await page.goto('/login')
     await signInWithForm(page, student)
     await expect(h1(page, STUDENT_HOME)).toBeVisible()
@@ -395,11 +387,12 @@ test.describe('anonymous', () => {
   })
 
   test('AC8: remember-me sets the 30-day cookie only when ticked; a new browser holding it opens as that user; after Log out another user signs in', async ({
+    consoleGuard,
     page,
     context,
     browser,
   }, testInfo) => {
-    const student = await readyStudent(browser, testInfo)
+    const student = await readyStudent(browser, testInfo, consoleGuard)
     await page.goto('/login')
     await signInWithForm(page, student)
     await expect(h1(page, STUDENT_HOME)).toBeVisible()
@@ -425,6 +418,7 @@ test.describe('anonymous', () => {
 
     // A "browser restart": a new context holding only the remember-me cookie opens as the student.
     const restarted = await browser.newContext({ storageState: { cookies: [remember!], origins: [] } })
+    await guardContext(restarted, consoleGuard)
     const shared = await restarted.newPage()
     const forbiddenAnswers: string[] = []
     shared.on('response', (response) => {

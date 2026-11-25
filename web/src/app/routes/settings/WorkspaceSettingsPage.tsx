@@ -130,7 +130,9 @@ function WorkspaceForm({
     mode: 'onSubmit',
     reValidateMode: 'onChange',
   })
-  useEffect(() => reset(saved, { keepDirtyValues: true }), [saved, reset])
+  useEffect(() => {
+    reset(saved, { keepDirtyValues: true })
+  }, [saved, reset])
   const values = useWatch({ control }) as WorkspaceValues
   const changed = toWorkspaceRequest(saved, values, settings.version) !== null
 

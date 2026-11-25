@@ -10,7 +10,7 @@ import { renderRoute } from '../../test/render'
 import { AUTH_CHANNEL } from '../../features/auth/api/authChannel'
 import { SESSION_KEY } from '../../features/auth/api/session'
 import { META, problem, server, sessionAs, sessionBody, setXsrfCookie } from '../../test/server'
-import { openAccountMenu } from '../../test/shell'
+import { openAccountMenu, visibleClose } from '../../test/shell'
 import { setViewportWidth } from '../../test/viewport'
 
 // T-M2.11 (app shells). jsdom has no layout: the breakpoints come from the matchMedia stub (test/viewport.ts).
@@ -165,7 +165,7 @@ describe('AC2: the tutor shell', () => {
       await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument())
       await waitFor(() => expect(menu).toHaveFocus())
       await userEvent.click(menu)
-      await userEvent.click(await screen.findByRole('button', { name: 'Đóng' }))
+      await userEvent.click(visibleClose(await screen.findByRole('dialog')))
       await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument())
       await waitFor(() => expect(menu).toHaveFocus())
     },
@@ -225,7 +225,7 @@ describe('AC3: the student shell', () => {
     expect(within(sheet).getByRole('link', { name: 'Đổi mật khẩu' })).toBeInTheDocument()
     expect(within(sheet).getByRole('button', { name: 'Đăng xuất' })).toBeInTheDocument()
     await expectNoAxeViolations(document.body)
-    await userEvent.click(within(sheet).getByRole('button', { name: 'Đóng' }))
+    await userEvent.click(visibleClose(sheet))
     await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument())
     await waitFor(() => expect(more).toHaveFocus())
   })
@@ -671,9 +671,12 @@ describe('T-M2.31 (b): the alert scroll keeps Log out and its focus ring in view
       const css = readFileSync('src/app/shells/Shell.module.css', 'utf8')
       const rule = (selector: string) => new RegExp(`\\${selector}\\s*\\{([^}]*)\\}`).exec(css)?.[1] ?? ''
       // The gap between the actions and the alert, Log out's height (ui/Button: --size-control-md) and its outward ring.
-      expect(rule('.account')).toMatch(/gap:\s*var\(--space-4\);/)
+      // One custom property for the gap and the margin; the drawer's footer lowers it (T-M2.32 (c)).
+      expect(rule('.account')).toMatch(/--account-gap:\s*var\(--space-4\);[^}]*gap:\s*var\(--account-gap\);/)
+      expect(rule('.drawerAccount .account')).toMatch(/--account-gap:\s*var\(--space-3\);/)
+      expect(target!.closest('.drawerAccount')).not.toBeNull()
       expect(rule('.logoutAlert')).toMatch(
-        /scroll-margin-block-start:\s*calc\(\s*var\(--space-4\) \+ var\(--size-control-md\) \+ var\(--focus-ring-width\) \+\s*var\(--focus-ring-offset\)\s*\);/,
+        /scroll-margin-block-start:\s*calc\(\s*var\(--account-gap\) \+ var\(--size-control-md\) \+ var\(--focus-ring-width\) \+\s*var\(--focus-ring-offset\)\s*\);/,
       )
     } finally {
       delete (Element.prototype as Partial<Element>).scrollIntoView

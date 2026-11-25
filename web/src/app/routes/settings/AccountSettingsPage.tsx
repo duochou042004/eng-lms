@@ -83,7 +83,9 @@ function AccountForm({
     reValidateMode: 'onChange',
   })
   // Another tab's save (read on arrival or on focus) updates only the fields not being edited.
-  useEffect(() => reset(saved, { keepDirtyValues: true }), [saved, reset])
+  useEffect(() => {
+    reset(saved, { keepDirtyValues: true })
+  }, [saved, reset])
   const values = useWatch({ control }) as AccountValues
   const changed = toPreferencesRequest(saved, values) !== null
 

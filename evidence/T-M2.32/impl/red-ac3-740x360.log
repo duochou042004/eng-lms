@@ -1,0 +1,83 @@
+engine: podman (DOCKER_HOST=unix:///run/user/1000/podman/podman.sock)
+[4m>>>> Executing external compose provider "/usr/bin/podman-compose". Please see podman-compose(1) for how to disable this message. <<<<
+
+[0mError: creating container storage: the container name "englms-dev-db" is already in use by 43b8311377ce27ada1244e20608489cc4258e8fca28e0dae958c9bf46c4ee308. You have to remove that container to be able to reuse that name: that name is already in use, or use --replace to instruct Podman to do so.
+englms-dev-db
+dev-up: englms-dev-db is healthy on 127.0.0.1:5432
+engine: podman (DOCKER_HOST=unix:///run/user/1000/podman/podman.sock)
+e2e-run: recreating the E2E database englms_e2e in englms-dev-db
+DROP DATABASE
+CREATE DATABASE
+e2e-run: started englms-0.0.1-SNAPSHOT.jar (pid 528430, log backend/target/e2e-app.log)
+e2e-run: app ready; running Playwright --project=phone-small tests/shells.spec.ts -g AC2o
+
+Running 1 test using 1 worker
+
+  ✘  1 [phone-small] › tests/shells.spec.ts:1377:3 › T-M2.31: the account overlays scroll the logout alert into place › AC2o: tutor drawer at 568×320 and 740×360, logout offline: the alert text wins where both cannot fit (vi, en) (7.8s)
+
+
+  1) [phone-small] › tests/shells.spec.ts:1377:3 › T-M2.31: the account overlays scroll the logout alert into place › AC2o: tutor drawer at 568×320 and 740×360, logout offline: the alert text wins where both cannot fit (vi, en) 
+
+    Error: 740×360 vi: Log out, its ring and the text fit the footer (T-M2.32 AC3)
+
+    740×360 vi: Log out, its ring and the text fit the footer (T-M2.32 AC3)
+
+    expect(received).toBeGreaterThanOrEqual(expected)
+
+    Expected: >= 0
+    Received:    -1.1875
+
+    Call Log:
+    - Timeout 5000ms exceeded while waiting on the predicate
+
+      1422 |               { message: `${width}×${height} ${locale}: Log out, its ring and the text fit the footer (T-M2.32 AC3)` },
+      1423 |             )
+    > 1424 |             .toBeGreaterThanOrEqual(0)
+           |              ^
+      1425 |         const room = await span(logout, text)
+      1426 |         if (room.needed <= room.available) {
+      1427 |           // Both fit: AC2 holds (Log out with its ring, the title and the text inside the footer).
+        at /home/deb/App_sources/eng-lms/e2e/tests/shells.spec.ts:1424:14
+
+    Error: console errors, page errors or CSP violations
+
+    expect(received).toEqual(expected) // deep equality
+
+    - Expected  - 1
+    + Received  + 4
+
+    - Array []
+    + Array [
+    +   "console.error: Failed to load resource: net::ERR_INTERNET_DISCONNECTED [http://localhost:8080/api/v1/auth/logout]",
+    +   "console.error: Failed to load resource: net::ERR_INTERNET_DISCONNECTED [http://localhost:8080/api/v1/auth/logout]",
+    + ]
+
+       at ../support/fixtures.ts:122
+
+      120 |         await new Promise((resolve) => setTimeout(resolve, LATE_ERROR_SETTLE_MS))
+      121 |       }
+    > 122 |       expect(problems, 'console errors, page errors or CSP violations').toEqual([])
+          |                                                                         ^
+      123 |     },
+      124 |     { auto: true },
+      125 |   ],
+        at Object.base.extend.consoleGuard.auto (/home/deb/App_sources/eng-lms/e2e/support/fixtures.ts:122:73)
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/shells-T-M2-31-the-account-f98f1-here-both-cannot-fit-vi-en--phone-small/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/shells-T-M2-31-the-account-f98f1-here-both-cannot-fit-vi-en--phone-small/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/shells-T-M2-31-the-account-f98f1-here-both-cannot-fit-vi-en--phone-small/trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace test-results/shells-T-M2-31-the-account-f98f1-here-both-cannot-fit-vi-en--phone-small/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [phone-small] › tests/shells.spec.ts:1377:3 › T-M2.31: the account overlays scroll the logout alert into place › AC2o: tutor drawer at 568×320 and 740×360, logout offline: the alert text wins where both cannot fit (vi, en) 
+e2e-run: playwright exit 1
+e2e-run: app stopped (pid 528430)

@@ -7,12 +7,13 @@ import { SegmentedControl } from '../../ui'
  * vi / en switch (a `SegmentedControl`; each endonym keeps its own `lang`). The device choice (localStorage) is the UI's
  * source; signed in and not forced to change the password, a switch also saves the account's locale (FR-SET-02,
  * DEC-190 (3)), best effort: a failure keeps the device choice and shows nothing. `labelVisible` shows "Language" above it
- * (Settings › Account, T-M2.35 scope 8).
+ * (Settings › Account, T-M2.35 scope 8). The saves of every mounted switcher share one mutation scope, so the server
+ * receives them one at a time in click order and keeps the last choice (T-M2.32 (e)); a failed one does not stop the next.
  */
 export function LanguageSwitcher({ labelVisible = false }: { labelVisible?: boolean }) {
   const { t, i18n } = useTranslation()
   const session = useSession().data
-  const save = useUpdatePreferences()
+  const save = useUpdatePreferences({ scope: { id: 'account-locale' } })
   const current = isLocale(i18n.language) ? i18n.language : LOCALES[0]
   return (
     <SegmentedControl

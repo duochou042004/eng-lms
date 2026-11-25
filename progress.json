@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-11-25T14:26:30Z",
-  "updatedBy": "lead-coordinator (T-M2.32 packet ready)",
+  "updatedAt": "2026-11-25T16:09:05Z",
+  "updatedBy": "lead-coordinator (handoff: T-M2.32 awaiting merge; context limit)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -32,28 +32,31 @@
   "currentTask": {
     "id": "T-M2.32",
     "title": "E2E console guard for fresh contexts and the T-M2.31 / T-M2.6 / T-M2.35 polish",
-    "status": "ready",
+    "status": "awaiting_approval",
     "ownerRole": "FE",
     "branch": "feature/T-M2.32-guard-and-polish",
     "packet": "docs/tasks/T-M2.32-guard-and-polish.md",
-    "pr": null,
-    "lastCommit": null,
-    "startedAt": null,
+    "pr": "231",
+    "lastCommit": "d589168",
+    "startedAt": "2026-11-25T14:47:58Z",
     "nextSteps": [
-      "PO start signal (the 2026-11-25 /goal lists T-M2.32 next)",
-      "FE implementer; gate (all specs x3); PR; G3 tier M (one combined QA+UX reviewer)"
+      "Confirm PR #231 head = the branch tip (GitHub incident) and CI 7/7 there; post QA-VERDICT, UX-REVIEW, LC-APPROVED",
+      "merge-gate; gitlab-sync; qa/ PR; records PR (merge DEC)",
+      "Then T-M2.33 packet, T-M2.7 (ask the PO)"
     ],
     "trace": [
       "DEC-183",
       "DEC-184",
       "DEC-191",
       "DEC-194",
-      "DEC-196"
+      "DEC-196",
+      "DEC-197",
+      "DEC-198"
     ],
     "entryGate": [
       "T-M2.31, T-M2.6, T-M2.35 merged — met",
       "Packet + G0 — met (PR #230, DEC-196)",
-      "PO start signal — pending"
+      "PO start signal — met (/goal, 2026-11-25)"
     ]
   },
   "nextTask": {
@@ -1934,6 +1937,26 @@
       "at": "2026-11-25T14:26:30Z",
       "actor": "lead-coordinator",
       "event": "T-M2.32 packet G0: round 1 CHANGES REQUESTED, all fixed; delta PASS WITH MINOR; ready."
+    },
+    {
+      "at": "2026-11-25T14:47:58Z",
+      "actor": "lead-coordinator",
+      "event": "T-M2.32 started on the PO start signal (the /goal of 2026-11-25)."
+    },
+    {
+      "at": "2026-11-25T15:44:52Z",
+      "actor": "lead-coordinator",
+      "event": "T-M2.32 in review; gate PASS on ad3acc8 (run 2 from web-test); L-10 rulings DEC-197."
+    },
+    {
+      "at": "2026-11-25T16:04:22Z",
+      "actor": "lead-coordinator",
+      "event": "T-M2.32 G3 done (QA PASS WITH MINOR, UX APPROVED); rulings DEC-198."
+    },
+    {
+      "at": "2026-11-25T16:09:05Z",
+      "actor": "lead-coordinator",
+      "event": "Handoff at the ~300k context rule: T-M2.32 reviewed (DEC-198), awaiting CI on 9841455 and merge."
     }
   ]
 }

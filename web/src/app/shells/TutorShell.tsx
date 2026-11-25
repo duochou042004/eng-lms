@@ -74,7 +74,11 @@ export function TutorShell() {
           onOpenChange={drawer.setOpen}
           title={t('nav.drawerTitle')}
           closeLabel={t('close')}
-          footer={<AccountSection onNavigate={drawer.close} />}
+          footer={
+            <div className={styles.drawerAccount}>
+              <AccountSection onNavigate={drawer.close} />
+            </div>
+          }
         >
           <NavList label={t('tutor.navLabel')} items={items} onNavigate={drawer.close} />
         </Sheet>
