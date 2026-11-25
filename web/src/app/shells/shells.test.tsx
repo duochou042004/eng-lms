@@ -10,7 +10,7 @@ import { renderRoute } from '../../test/render'
 import { AUTH_CHANNEL } from '../../features/auth/api/authChannel'
 import { SESSION_KEY } from '../../features/auth/api/session'
 import { META, problem, server, sessionAs, sessionBody, setXsrfCookie } from '../../test/server'
-import { openAccountMenu } from '../../test/shell'
+import { openAccountMenu, visibleClose } from '../../test/shell'
 import { setViewportWidth } from '../../test/viewport'
 
 // T-M2.11 (app shells). jsdom has no layout: the breakpoints come from the matchMedia stub (test/viewport.ts).
@@ -165,7 +165,7 @@ describe('AC2: the tutor shell', () => {
       await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument())
       await waitFor(() => expect(menu).toHaveFocus())
       await userEvent.click(menu)
-      await userEvent.click(await screen.findByRole('button', { name: 'Đóng' }))
+      await userEvent.click(visibleClose(await screen.findByRole('dialog')))
       await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument())
       await waitFor(() => expect(menu).toHaveFocus())
     },
@@ -225,7 +225,7 @@ describe('AC3: the student shell', () => {
     expect(within(sheet).getByRole('link', { name: 'Đổi mật khẩu' })).toBeInTheDocument()
     expect(within(sheet).getByRole('button', { name: 'Đăng xuất' })).toBeInTheDocument()
     await expectNoAxeViolations(document.body)
-    await userEvent.click(within(sheet).getByRole('button', { name: 'Đóng' }))
+    await userEvent.click(visibleClose(sheet))
     await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument())
     await waitFor(() => expect(more).toHaveFocus())
   })

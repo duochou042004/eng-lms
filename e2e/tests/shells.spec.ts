@@ -375,7 +375,12 @@ for (const role of ['tutor', 'student'] as const) {
       if (place !== 'popover') {
         // The visible Close button closes too.
         await opener.click()
-        await page.getByRole('dialog').getByRole('button', { name: 'Đóng' }).click()
+        // React Aria's visually hidden dismiss buttons are named "Đóng" too (T-M2.32 (f)): the visible one has the X icon.
+        await page
+          .getByRole('dialog')
+          .getByRole('button', { name: 'Đóng' })
+          .filter({ has: page.locator('svg') })
+          .click()
         await expect(page.getByRole('dialog')).toHaveCount(0)
         await expect(opener).toBeFocused()
       }
