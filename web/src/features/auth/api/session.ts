@@ -86,10 +86,12 @@ export function useLogin() {
 /**
  * `PATCH /auth/preferences` (FR-SET-02): only the properties sent change; the answer is the session body, which replaces
  * the cached session while it is still the same user's (an answer that outlived a sign-out lands nowhere, DEC-127).
+ * `scope`: saves sharing a scope id run one at a time in call order (the language switcher's, T-M2.32 (e)).
  */
-export function useUpdatePreferences() {
+export function useUpdatePreferences({ scope }: { scope?: { id: string } } = {}) {
   const queryClient = useQueryClient()
   return useMutation({
+    scope,
     mutationFn: async (body: PreferencesRequest): Promise<Session> => {
       const { data } = await api.PATCH('/api/v1/auth/preferences', { body })
       return data as Session

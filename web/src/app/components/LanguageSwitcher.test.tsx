@@ -21,6 +21,42 @@ function recordPreferences(answer: () => Response | Promise<Response> = () => Ht
 
 const english = (scope: HTMLElement) => within(scope).getByRole('radio', { name: 'English' })
 
+/**
+ * Holds each PATCH on arrival (in arrival order) until `release(i)`; then the server stores its locale, as the real one
+ * does, or answers 500 (`'fail'`).
+ */
+function heldPreferences() {
+  const sent: Record<string, unknown>[] = []
+  const releases: Array<(outcome: 'ok' | 'fail') => void> = []
+  let stored: unknown = 'vi'
+  server.use(
+    http.patch('*/api/v1/auth/preferences', async ({ request }) => {
+      const body = (await request.json()) as Record<string, unknown>
+      sent.push(body)
+      const outcome = await new Promise<'ok' | 'fail'>((resolve) => releases.push(resolve))
+      if (outcome === 'fail') return problem(500, 'INTERNAL_ERROR')
+      if (body.locale) stored = body.locale
+      return HttpResponse.json({ ...sessionBody('TUTOR'), ...body })
+    }),
+  )
+  return {
+    sent,
+    stored: () => stored,
+    release: async (i: number, outcome: 'ok' | 'fail' = 'ok') => {
+      await waitFor(() => expect(releases[i]).toBeDefined())
+      releases[i]!(outcome)
+    },
+  }
+}
+
+/** Nothing more is sent for a while (the queue holds the next PATCH). */
+async function expectStillSent(sent: unknown[], count: number) {
+  await new Promise((resolve) => setTimeout(resolve, 100))
+  expect(sent).toHaveLength(count)
+}
+
+const vietnamese = (scope: HTMLElement) => within(scope).getByRole('radio', { name: 'Tiếng Việt' })
+
 // T-M2.6 scope 7, AC8, DEC-190 (3): the device choice is the UI's source; a signed-in switch also saves the account's.
 describe('LanguageSwitcher and the account locale', () => {
   it('signed in: a switch changes the device language and sends PATCH {locale}', async () => {
@@ -125,5 +161,76 @@ describe('LanguageSwitcher and the account locale', () => {
     renderRoute('/student/home')
     expect(await screen.findByRole('heading', { level: 1, name: 'Trang chủ' })).toBeInTheDocument()
     expect(localStorage.getItem(LOCALE_STORAGE_KEY)).toBe('vi')
+  })
+})
+
+// T-M2.32 (e), AC4, Domain rules: the switcher's locale PATCHes run one at a time in click order (mutation scope
+// `account-locale`), across every mounted switcher; a failure does not stop the next one; the display-name save is not queued.
+describe('LanguageSwitcher: locale saves in click order', () => {
+  it('two switches with the first answer late: the second is sent after the first settles; the last choice is stored', async () => {
+    server.use(sessionAs('TUTOR'))
+    const held = heldPreferences()
+    renderRoute('/tutor/today')
+    await screen.findByRole('heading', { level: 1, name: 'Hôm nay' })
+    const menu = await openAccountMenu()
+    await userEvent.click(english(menu))
+    await waitFor(() => expect(held.sent).toEqual([{ locale: 'en' }]))
+    await userEvent.click(vietnamese(menu))
+    expect(i18n.language).toBe('vi')
+    await expectStillSent(held.sent, 1)
+    await held.release(0)
+    await waitFor(() => expect(held.sent).toEqual([{ locale: 'en' }, { locale: 'vi' }]))
+    await held.release(1)
+    await waitFor(() => expect(held.stored()).toBe('vi'))
+    expect(i18n.language).toBe('vi')
+  })
+
+  it('the same across the two switchers of Settings › Account', async () => {
+    server.use(sessionAs('TUTOR'))
+    const held = heldPreferences()
+    renderRoute('/tutor/settings/account')
+    await screen.findByRole('textbox', { name: 'Tên hiển thị' })
+    await userEvent.click(english(document.body))
+    await waitFor(() => expect(held.sent).toEqual([{ locale: 'en' }]))
+    await userEvent.click(vietnamese(await openAccountMenu()))
+    await expectStillSent(held.sent, 1)
+    await held.release(0)
+    await waitFor(() => expect(held.sent).toEqual([{ locale: 'en' }, { locale: 'vi' }]))
+    await held.release(1)
+    await waitFor(() => expect(held.stored()).toBe('vi'))
+  })
+
+  it('a failed first PATCH does not stop the second', async () => {
+    const consoleError = vi.spyOn(console, 'error')
+    server.use(sessionAs('TUTOR'))
+    const held = heldPreferences()
+    renderRoute('/tutor/today')
+    await screen.findByRole('heading', { level: 1, name: 'Hôm nay' })
+    const menu = await openAccountMenu()
+    await userEvent.click(english(menu))
+    await userEvent.click(vietnamese(menu))
+    await expectStillSent(held.sent, 1)
+    await held.release(0, 'fail')
+    await waitFor(() => expect(held.sent).toEqual([{ locale: 'en' }, { locale: 'vi' }]))
+    await held.release(1)
+    await waitFor(() => expect(held.stored()).toBe('vi'))
+    expect(i18n.language).toBe('vi')
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+    expect(consoleError).not.toHaveBeenCalled()
+  })
+
+  it('a display-name save is not queued behind a pending locale save', async () => {
+    server.use(sessionAs('TUTOR'))
+    const held = heldPreferences()
+    renderRoute('/tutor/settings/account')
+    const name = await screen.findByRole('textbox', { name: 'Tên hiển thị' })
+    await userEvent.click(english(document.body))
+    await waitFor(() => expect(held.sent).toEqual([{ locale: 'en' }]))
+    await userEvent.type(name, 'Lan')
+    await userEvent.click(screen.getByRole('button', { name: 'Save' }))
+    await waitFor(() => expect(held.sent).toEqual([{ locale: 'en' }, { displayName: 'Lan' }]))
+    await held.release(1)
+    await held.release(0)
+    await waitFor(() => expect(held.stored()).toBe('en'))
   })
 })
