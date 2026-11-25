@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Milestone | M2 |
-| Status | draft (G0 pending) |
+| Status | ready (G0: round 1 CHANGES REQUESTED (S2-1, S3-1..S3-4, S4-1..S4-4), all fixed; delta PASS WITH MINOR, S4-5 fixed, S4-6 already in place; DEC-196) |
 | Owner role | FE (one implementer) |
 | Branch | `feature/T-M2.32-guard-and-polish` (from `develop`) |
 | Depends on | T-M2.31 (`000640e`), T-M2.6 (`160df23`), T-M2.35 (`9ad116b`): all merged |
@@ -25,7 +25,8 @@ an effect's return value by accident, and clear the small UI items left from T-M
      `freshSession`). The `students.ts` helpers (`studentSession`, `trySignIn`) take the guard list, so their callers change too:
      `students-account.spec.ts`, `students-profile.spec.ts`, `settings-account.spec.ts`. `global-setup.ts` is not a test and stays as is.
      A context that expects an error on purpose (a provoked 4xx/5xx the page logs, e.g. `trySignIn`'s 401 through `apiCall`) filters exactly
-     that message, as the fixture's own `acceptStatus` rule does, never the whole guard. **Late errors:** the fixture's 500 ms settle
+     that message, as `shells.spec.ts`'s local `accept`/`acceptStatus` helpers (`:61`, `:71`) do, never the whole guard; those helpers may move
+     into `fixtures.ts` beside `guardContext` so every spec and `students.ts` uses the same filter (the fixture's own rule stays `isAnonymousSessionProbe`). **Late errors:** the fixture's 500 ms settle
      (`fixtures.ts:84-86`, DEC-058) also runs when a guarded fresh context still has an open page at teardown (`guardContext` registers the
      context with the test's guard, so the fixture checks its pages too).
   2. **(b) No expression-bodied effects.** Give block bodies to the effects whose arrow returns a value React would take as the cleanup:
