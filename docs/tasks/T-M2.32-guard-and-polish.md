@@ -9,7 +9,7 @@
 | Depends on | T-M2.31 (`000640e`), T-M2.6 (`160df23`), T-M2.35 (`9ad116b`): all merged |
 | Estimate | ≤ 1.5 agent-days |
 | Risk tier | **M**: test harness, UI behaviour and one lint check; no endpoint, migration, identity or authz change (quality-gates G3) → one combined QA+UX reviewer |
-| Trace | DEC-183 (T-M2.31 OQ-1), DEC-184 (T-M2.31 follow-ups (a), (b)), DEC-176 (1) (React Aria "Dismiss" in vi, reopened), DEC-191 (T-M2.6 QA-4, UX-1r), DEC-194 (T-M2.35 QA-2), DEC-187 (PO order), DEC-196 (packet decisions); NFR-A11Y-01, NFR-I18N-01, NFR-PERF-03 (bundle budget); lessons L-01, L-03, L-05, L-10 |
+| Trace | DEC-183 (T-M2.31 OQ-1), DEC-184 (T-M2.31 follow-ups (a), (b)), DEC-176 (1) (React Aria "Dismiss" in vi, reopened), DEC-191 (T-M2.6 QA-4, UX-1r), DEC-194 (T-M2.35 QA-2), DEC-187 (PO order), DEC-196 (packet decisions); FR-SET-02 (the account locale save, (e)), NFR-A11Y-01, NFR-I18N-01, NFR-PERF-03 (bundle budget); lessons L-01, L-03, L-04, L-05, L-10 |
 
 ## Goal
 Close the gap that let a page crash pass unseen in E2E (pages in a `browser.newContext()` are not guarded), stop React from receiving
@@ -22,29 +22,40 @@ an effect's return value by accident, and clear the small UI items left from T-M
      the fixture too) and remove the local copy in `shells.spec.ts:162`. Apply it, with the test's `consoleGuard` list, to every
      `browser.newContext()` in `e2e/tests/` and `e2e/support/students.ts:71,82`: `route-focus.spec.ts`, `students-list.spec.ts`, `auth.spec.ts`,
      `students-account.spec.ts`, `navigation.spec.ts`, `settings-account.spec.ts`, `shells.spec.ts` (all its fresh contexts, not only
-     `freshSession`). `global-setup.ts` is not a test and stays as is. A context that expects an error on purpose (a provoked 4xx/5xx the page logs)
-     filters exactly that message, as the fixture's own rule does, never the whole guard.
+     `freshSession`). The `students.ts` helpers (`studentSession`, `trySignIn`) take the guard list, so their callers change too:
+     `students-account.spec.ts`, `students-profile.spec.ts`, `settings-account.spec.ts`. `global-setup.ts` is not a test and stays as is.
+     A context that expects an error on purpose (a provoked 4xx/5xx the page logs, e.g. `trySignIn`'s 401 through `apiCall`) filters exactly
+     that message, as the fixture's own `acceptStatus` rule does, never the whole guard. **Late errors:** the fixture's 500 ms settle
+     (`fixtures.ts:84-86`, DEC-058) also runs when a guarded fresh context still has an open page at teardown (`guardContext` registers the
+     context with the test's guard, so the fixture checks its pages too).
   2. **(b) No expression-bodied effects.** Give block bodies to the effects whose arrow returns a value React would take as the cleanup:
      `ProfileForm.tsx:71`, `GuardianForm.tsx:239`, `LearningProfileForm.tsx:120`, `CredentialsCard.tsx:39`, `ui/ConfirmDialog.tsx:92`,
      `ui/Toggletip.tsx:55`, `WorkspaceSettingsPage.tsx:133`, `AccountSettingsPage.tsx:86`; `App.tsx:14` returns its cleanup explicitly
-     (`{ return connectAuthProblems(…) }`). Add a check to `pnpm lint` (a script beside `web/scripts/no-lint-directives.sh`, as oxlint has no
-     selector rule) that fails on `useEffect(() => <expression>` unless the expression is itself an arrow function (a cleanup, as
-     `AccountSection.tsx:85`), with a fixture test that shows it red on a violating file and green on the allowed form (L-01).
+     (`{ return connectAuthProblems(…) }`). Add a check to `pnpm lint` that fails on a `useEffect` or `useLayoutEffect` whose arrow has an
+     expression body, unless that expression is itself an arrow function (a cleanup, as `AccountSection.tsx:85` and the wrapped
+     `ui/Button.tsx:61-62`), one-line and wrapped forms alike (Prettier `printWidth` 120 wraps them). Either a script beside
+     `web/scripts/no-lint-directives.sh` that parses the source (not a line grep) or an oxlint `jsPlugins` rule; the implementer names the choice
+     (no new dependency either way). A fixture test shows it red on each violating form and green on each allowed one (L-01).
   3. **(c) Tutor drawer at 740×360, logout offline:** Log out with its focus ring and the whole alert text fit in the footer (180.2 px needed,
      179 px today, DEC-183 OQ-1), e.g. a smaller gap in that footer only; 568×320 keeps the AC2o rule (the alert text wins where both cannot fit).
+     The stale comment at `shells.spec.ts:1403` ("at 740×360 both fit") is corrected.
   4. **(e) Language switches in order:** the account-locale save of `LanguageSwitcher` (`LanguageSwitcher.tsx:25`) runs its PATCHes one after
-     another in click order (TanStack Query's mutation `scope`, or only the latest switch's PATCH sent once the previous one settles), so the
-     stored locale is the last one chosen even on a slow network. The device choice still wins on that device (DEC-190 (3)).
+     another in click order, so the stored locale is the last one chosen even on a slow network: a TanStack Query mutation `scope`
+     (`{ id: 'account-locale' }`) set on the switcher's locale save only (Domain rules). The device choice still wins on that device (DEC-190 (3)).
   5. **(f) React Aria's own strings in vi:** the hidden "Dismiss" buttons of `ui/Popover`, `ui/Sheet`, `ui/Toggletip`, and the `ui/ComboBox`
      announcements ("N options available." and its other strings) are Vietnamese in the vi UI and React Aria's own English in en, switching with
-     the UI language without a reload. Mechanism (DEC-196 (2)): one vi dictionary in `ui/` built as React Aria's full `en-US` dictionary
-     (`react-aria-components/i18n`) with our vi strings for the packages we show, so no package is ever missing (the DEC-176 crash trap); a test
-     renders every `ui/` component that uses React Aria strings (`Toast` included) in vi and en without a throw. If React Aria reads the global
-     dictionary once and cannot follow a runtime switch, the implementer stops and reports an OQ (no reload hack).
+     the UI language without a reload. Mechanism (DEC-196 (2)): `@internationalized/string` reads the global dictionary
+     (`window[Symbol.for('react-aria.i18n.strings')]`) **once** and serves it for every locale, so it is installed once, from module code before
+     the first render (`main.tsx`, before `createRoot`), and is **one dictionary for both locales**: React Aria's full `en-US` dictionary
+     (`react-aria-components/i18n`), so no package is ever missing (the DEC-176 crash trap), where each key we translate is a function
+     `(variables, formatter) => formatter.locale.startsWith('vi') ? <vi> : <the en-US value, called if it is a function>`; the formatter's locale
+     follows `I18nProvider` (`ui/UiProvider.tsx`). `LocalizedStringProvider` / `getLocalizationScript` are not used (an inline script the CSP
+     blocks). A test renders every `ui/` component that uses React Aria strings (`Toast` included) in vi and en without a throw. Only an
+     unforeseen failure of this mechanism stops the implementer with an OQ (no reload hack).
 - Decided without code (DEC-196):
   6. **(g) `ui/SegmentedControl` keyboard** (T-M2.35 QA-2): kept. Arrow keys move focus, Space/Enter select (React Aria's toolbar model, the
-     design-system §3 decision of T-M1.9): selecting on arrow would save the account locale on every arrow press (scope 4). design-system §3
-     names the reason.
+     design-system §3 decision of T-M1.9): selecting on arrow would save the account locale on every arrow press (scope 4). design-system §3's
+     existing "Why" (every arrow press would redraw the UI) gains the account-locale save.
   7. **(d) the popover's classic-scrollbar inset** (DEC-183 UX-1): accepted as is; no PO request for `stable both-edges`.
 
 ## Out of scope (explicit)
@@ -81,23 +92,37 @@ an effect's return value by accident, and clear the small UI items left from T-M
   announcements and labels in natural Vietnamese, reviewed by QA; en stays React Aria's own.
 - (e) no visible change: the switcher shows the clicked language at once, as today.
 
+## Domain rules (scope 4 writes the account locale; fixed at G0, L-04)
+- Invariant: the stored account locale is the last language chosen with a signed-in, non-must-change session (FR-SET-02, DEC-190).
+- Ordering: the switcher's `mutate` carries `scope: { id: 'account-locale' }`, so TanStack Query's `MutationCache` runs those PATCHes one at a
+  time in call order **across every mounted switcher** (two on Settings › Account: `ShellParts.tsx:64` and `AccountSettingsPage.tsx:166`);
+  per-component state would not. The scope is set on the switcher's call, not in `useUpdatePreferences` (`session.ts:90-104`), so the Account
+  form's display-name save never queues behind locale PATCHes.
+- Failure in the queue: a failed PATCH does not stop the next ones (each runs; best effort as today, DEC-190 (3)); the device keeps the chosen
+  language, the server keeps the last PATCH that succeeded. No retry, no replay (`networkMode: 'always'` kept).
+- Concurrency with other tabs: last write wins per property (DEC-190 (2)); no version. Audit: none. Audience: the account's own session.
+
 ## Acceptance criteria
 - AC1 (a): `guardContext` is exported from `fixtures.ts` and used by the fixture and every fresh context listed in scope 1 (a grep in the summary
-  shows no unguarded `browser.newContext(` in `e2e/tests/` or `e2e/support/students.ts`); a self-test in `checks.spec.ts` proves a page error in
-  a fresh guarded context fails the test (seen red); every revealed error is an OQ ruled before G3.
-- AC2 (b): the listed effects have block bodies; the lint check fails on a fixture with `useEffect(() => el.focus(), [])` and passes on
-  `useEffect(() => () => close(), [])` and a block body; `pnpm lint` green.
-- AC3 (c): E2E at 740×360 offline (vi, en): Log out and its ring inside the footer and the alert text unclipped; 568×320 AC2o unchanged.
-- AC4 (e): a unit test with two switches (first PATCH answered late) shows the PATCHes sent in click order and the last choice stored; the kept
-  switcher tests pass.
+  shows no unguarded `browser.newContext(` in `e2e/tests/` or `e2e/support/students.ts`); self-tests in `guards.spec.ts`, written as expected
+  failures like its teardown case (`guards.spec.ts:100-104`), prove that a page error in a fresh guarded context and a late error (300 ms after
+  the body) in a fresh guarded context each fail the test; every revealed error is an OQ ruled before G3.
+- AC2 (b): the listed effects have block bodies; the lint check fails on fixtures `useEffect(() => el.focus(), [])`, the wrapped
+  `useEffect(\n  () => el.focus(),\n  [],\n)` and the same with `useLayoutEffect`, and passes on `useEffect(() => () => close(), [])`, the wrapped
+  cleanup form of `ui/Button.tsx:61-62` and a block body; `pnpm lint` green on the tree.
+- AC3 (c): E2E at 740×360 offline (vi, en) asserts explicitly that the room needed (Log out, its ring, the alert text) ≤ the room available,
+  seen red before the CSS change (the kept AC2o test adapts to the space it finds, so it passes either way); 568×320 AC2o unchanged.
+- AC4 (e): unit tests: two switches with the first PATCH answered late → the second is sent only after the first settles, the last choice is
+  stored; the same across two mounted switchers; a failed first PATCH → the second still runs; a display-name save is not queued behind them;
+  the kept switcher tests pass.
 - AC5 (f): in vi, the hidden dismiss buttons of Popover, Sheet and Toggletip are named "Đóng" and the ComboBox count announcement is Vietnamese;
   in en React Aria's English; a vi → en → vi switch without reload follows; every React Aria `ui/` component renders in both locales without a
   throw; the bundle budget holds.
-- AC6: design-system §3 records the SegmentedControl keyboard reason (g); no SegmentedControl code change.
+- AC6: design-system §3's SegmentedControl "Why" adds the account-locale save (g); no SegmentedControl code change.
 - AC7: `./scripts/gate.sh` green (all specs ×3); CI green on the final head; axe clean where (c) and (f) change the DOM, at 360/768/1280.
 
 ## Test plan
-- E2E: the `guardContext` self-test (`checks.spec.ts`); all specs with guarded fresh contexts; the 740×360 offline drawer case (`shells.spec.ts`).
+- E2E: the `guardContext` self-tests (`guards.spec.ts`: page error and late error in a fresh context); all specs with guarded fresh contexts; the 740×360 offline drawer case (`shells.spec.ts`).
 - Unit: the lint fixture test; `LanguageSwitcher.test.tsx` ordering case; a `ui/` i18n test (each React Aria component in vi and en; the
   dismiss names; the ComboBox announcement text; the runtime switch).
 - **Independent QA focus:** a screen reader-style check of the vi names (accessible names in the a11y tree) for the drawer, account popover,
@@ -112,13 +137,14 @@ an effect's return value by accident, and clear the small UI items left from T-M
 - G3 (tier M): `evidence/T-M2.32/qa/report.md` (one combined QA+UX reviewer).
 
 ## Docs to update
-- `docs/05-frontend/design-system.md` (§3 SegmentedControl keyboard reason; the React Aria vi dictionary in `ui/`).
+- `docs/05-frontend/design-system.md` (§3 SegmentedControl "Why" gains the locale save; the React Aria vi dictionary in `ui/`).
 - `docs/06-quality/test-strategy.md`: one line on the E2E console guard covering fresh contexts (no doc describes the guard today; `fixtures.ts`'s comment is updated too).
 - `docs/05-frontend/frontend-architecture.md` only if the vi dictionary changes a chunk.
 
 ## Risks & assumptions
 - Risk: (a) reveals several real errors and grows the task; each is an OQ, and a large set splits into its own row (LC rules).
-- Risk: (f) React Aria's global dictionary may not follow a runtime switch; then OQ and the LC rules (DEC-176 stays).
+- Risk: (f) relies on `@internationalized/string` calling function strings with the formatter (`LocalizedStringFormatter`); a React Aria bump
+  that changes this breaks the vi strings: the dictionary module carries a `shortcut:` comment naming that trigger.
 - No regression run in this packet (cap 0; T-M2.7's G5 covers it).
 
 ## Commands (reproducible)
