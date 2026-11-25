@@ -85,10 +85,16 @@ public class UserAccount {
 		this.updatedAt = now;
 	}
 
-	/** A student account created by the tutor (FR-STU-01): its temporary password expires like a reset one (A-021, DEC-097). */
-	public static UserAccount newStudent(UUID id, String username, String temporaryHash, Instant expiresAt, Instant now) {
+	/**
+	 * A student account created by the tutor (FR-STU-01): its temporary password expires like a reset one (A-021,
+	 * DEC-097); it starts with the workspace's default language and time zone (FR-SET-01, T-M2.35).
+	 */
+	public static UserAccount newStudent(UUID id, String username, String temporaryHash, Instant expiresAt,
+			String locale, String timeZone, Instant now) {
 		UserAccount account = new UserAccount(id, username, temporaryHash, Role.STUDENT, now);
 		account.tempPasswordExpiresAt = expiresAt;
+		account.locale = locale;
+		account.timeZone = timeZone;
 		return account;
 	}
 

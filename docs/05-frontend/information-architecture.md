@@ -30,8 +30,8 @@ section. The account section (`AccountSection`: who is signed in, the language s
 one component for the account popover, the drawer footer and the student's More sheet. The command palette and "+ New" arrive with their first
 targets. Unknown paths under `/tutor/…` show the 404 inside the shell.
 
-**Settings as built (T-M2.6, FR-SET-02):** `/tutor/settings` redirects to `/tutor/settings/account` (the only tab now; T-M2.35 adds Workspace
-and moves the redirect). The layout (`app/routes/settings/SettingsLayout.tsx`) is the `h1` "Settings" over a tab list of the existing tabs: a
+**Settings as built (T-M2.6, T-M2.35; FR-SET-01, FR-SET-02):** `/tutor/settings` redirects to `/tutor/settings/workspace` (the first tab;
+tabs **Workspace**, **Account**). The layout (`app/routes/settings/SettingsLayout.tsx`) is the `h1` "Settings" over a tab list of the existing tabs: a
 horizontal `NavList` named "Settings sections" (router links, the current tab `aria-current="page"`), in a wrapper that scrolls sideways if it
 ever outgrows the column; a task adds a tab by adding a row. **Account** (`AccountSettingsPage.tsx`, one column of at most 40rem): an `h2`
 "Account", the Language row (the shell's `LanguageSwitcher` itself: it saves at once), then a form with **Display name** (`TextField`; empty
@@ -40,6 +40,15 @@ the engine does not list it) and **Save** (focusable but `aria-disabled` while n
 toast "Saved", focus stays on Save), and a "Change password" link to `/change-password`. The page reads the session again on arrival and on
 window focus (another tab's change shows; the fields being edited are kept); a failed read shows a warning `InlineAlert` with Try again over
 the cached values.
+The Account tab's Language row has a visible "Language" label naming the switcher group (`SegmentedControl` `labelVisible`, T-M2.35 scope 8).
+**Workspace** (`WorkspaceSettingsPage.tsx`, T-M2.35, the same column): an `h2` "Workspace", then one form with **Workspace name** (required;
+hint: shown on the sign-in page and in the menus; the brand in `GET /meta` and the shells), **Default language** (a `SegmentedControl` with a
+visible label, options from `GET /meta` `locales`) and **Default time zone** (the Account tab's `ComboBox` options rule), a hint that the two
+defaults apply to students added from now on, and **Save** (`aria-disabled` while unchanged; sends `version` and only the changed properties).
+Success: the settings query takes the answer and the `/meta` cache only its `displayName` (the shells show the new name at once), toast
+"Saved", focus stays on Save. A 422 marks the fields and focuses the `ErrorSummary`; a 409 `STALE_VERSION` opens the conflict dialog
+(`ConfirmDialog`, `settings` strings: **Reload** focuses Save afterwards, **Keep editing** the field last edited); other failures and offline
+show an `InlineAlert` with Try again (never replayed). Loading: a skeleton; a failed read: an `InlineAlert` with Try again.
 
 ## 2. Student workspace (tutor view): `/tutor/students/:studentId/*`
 

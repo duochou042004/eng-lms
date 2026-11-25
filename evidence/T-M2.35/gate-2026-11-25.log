@@ -1,0 +1,102 @@
+# ./scripts/gate.sh on e97ff85 (T-M2.35 FE), trimmed: every gate: line plus the step summaries
+gate: e97ff85 2026-11-25T12:25:40Z, steps: docs scripts backend web-install web-lint web-typecheck web-test web-build web-budget web-contrast contract-drift qa-typecheck e2e
+gate: ==> docs
+docs-check: PASS (380 markdown files, progress.json valid, sources intact, prompt within limit, records consistent, handoff archived, table code spans escaped, text-only CI inputs clean)
+gate: <== docs OK (2s)
+gate: ==> scripts
+  -> 86 passed, 0 failed
+  -> 243 passed, 0 failed
+  -> 97 passed, 0 failed
+  -> 9 passed, 0 failed
+  -> 164 passed, 0 failed
+  -> 193 passed, 0 failed
+  -> 98 passed, 0 failed
+  -> 11 passed, 0 failed
+  -> 418 passed, 0 failed
+  -> 15 passed, 0 failed
+  -> 15 passed, 0 failed
+  -> 11 passed, 0 failed
+  -> 10 passed, 0 failed
+gate: <== scripts OK (190s)
+gate: ==> backend
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 3.288 s -- in com.englms.ModularityTests
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 13.88 s -- in com.englms.contract.OpenApiContractTest
+[INFO] Tests run: 90, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 28.65 s -- in com.englms.security.AuthzMatrixTest
+[INFO] Tests run: 23, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 8.080 s -- in com.englms.security.IsolationTest
+[INFO] Tests run: 21, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 8.811 s -- in com.englms.security.HarnessDetectionTest
+[INFO] Tests run: 12, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 3.013 s -- in com.englms.persistence.FlywayMigrationTest
+[INFO] Tests run: 38, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 3.156 s -- in com.englms.ApplicationIntegrationTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.117 s -- in com.englms.architecture.ModularityViolationTest
+[INFO] Tests run: 17, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.128 s -- in com.englms.architecture.ForbiddenIdentifiersTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.739 s -- in com.englms.architecture.StudentIsolationRulesTest
+[INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 5.359 s -- in com.englms.identity.CredentialStampTest
+[INFO] Tests run: 59, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 47.63 s -- in com.englms.identity.AuthApiIntegrationTest
+[INFO] Tests run: 11, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 15.16 s -- in com.englms.identity.StartupScenariosTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 5.502 s -- in com.englms.identity.internal.cli.ResetTutorPasswordCliTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.508 s -- in com.englms.identity.internal.app.AuthenticationServiceTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.126 s -- in com.englms.identity.internal.app.AccountServiceTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 3.203 s -- in com.englms.identity.internal.security.TruncatingBCryptPasswordEncoderTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.010 s -- in com.englms.identity.internal.security.LoginThrottleTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.002 s -- in com.englms.identity.internal.domain.UserAccountTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.028 s -- in com.englms.identity.internal.domain.TemporaryPasswordGeneratorTest
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.014 s -- in com.englms.identity.internal.domain.PasswordPolicyTest
+[INFO] Tests run: 15, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.023 s -- in com.englms.identity.UsernamesTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 3.546 s -- in com.englms.identity.LoginThrottleApiTest
+[INFO] Tests run: 29, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 10.42 s -- in com.englms.identity.PreferencesApiIntegrationTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.004 s -- in com.englms.identity.CurrentUserTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.343 s -- in com.englms.audit.internal.AuditIntegrationTest
+[INFO] Tests run: 29, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 36.82 s -- in com.englms.students.StudentsApiIntegrationTest
+[INFO] Tests run: 17, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 10.38 s -- in com.englms.students.GuardiansAndLearningProfileApiTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.930 s -- in com.englms.students.LearningProfileFirstPutRaceTest
+[INFO] Tests run: 48, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 29.92 s -- in com.englms.students.StrictJsonIntegersApiTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 7.599 s -- in com.englms.students.StudentUsernameRaceTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.980 s -- in com.englms.students.GuardianCapRaceTest
+[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.004 s -- in com.englms.students.internal.app.StudentFieldsTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.424 s -- in com.englms.students.internal.app.StudentServiceVersionTest
+[INFO] Tests run: 13, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.008 s -- in com.englms.students.internal.domain.StudentDomainTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.449 s -- in com.englms.students.StudentCreateRaceTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.001 s -- in com.englms.shared.LikeTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.001 s -- in com.englms.shared.IdsTest
+[INFO] Tests run: 10, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.127 s -- in com.englms.shared.web.StrictJsonIntegersConfigurationTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.004 s -- in com.englms.shared.web.ProblemDetailsAdviceTest
+[INFO] Tests run: 36, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.386 s -- in com.englms.shared.web.AudienceVerifierTest
+[INFO] Tests run: 25, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.953 s -- in com.englms.shared.web.SpaServingTest
+[INFO] Tests run: 44, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 18.50 s -- in com.englms.settings.WorkspaceSettingsApiIntegrationTest
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.568 s -- in com.englms.settings.internal.web.MetaControllerTest
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.363 s -- in com.englms.architecture.ArchitectureRulesTest
+[INFO] Tests run: 621, Failures: 0, Errors: 0, Skipped: 0
+[INFO] BUILD SUCCESS
+gate: <== backend OK (290s)
+gate: ==> web-install
+gate: <== web-install OK (1s)
+gate: ==> web-lint
+gate: <== web-lint OK (4s)
+gate: ==> web-typecheck
+gate: <== web-typecheck OK (5s)
+gate: ==> web-test
+ Test Files  76 passed (76)
+      Tests  933 passed (933)
+gate: <== web-test OK (50s)
+gate: ==> web-build
+gate: <== web-build OK (7s)
+gate: ==> web-budget
+$ node scripts/bundle-budget.mjs
+budget: PASS
+gate: <== web-budget OK (0s)
+gate: ==> web-contrast
+gate: <== web-contrast OK (0s)
+gate: ==> contract-drift
+contract-drift: OK (api/openapi.json and web/src/lib/api/schema.d.ts match the code)
+gate: <== contract-drift OK (23s)
+gate: ==> qa-typecheck
+gate: <== qa-typecheck OK (2s)
+gate: ==> e2e
+  64 skipped
+  608 passed (4.7m)
+gate: e2e repeat: all specs: e2e/support/global-setup.ts is imported by no spec
+gate: e2e repeat x3: tests/auth.spec.ts tests/checks.spec.ts tests/guards.spec.ts tests/loading.spec.ts tests/navigation.spec.ts tests/polish.spec.ts tests/route-focus.spec.ts tests/settings-account.spec.ts tests/settings-workspace.spec.ts tests/shells.spec.ts tests/smoke.spec.ts tests/students-account.spec.ts tests/students-focus.spec.ts tests/students-guardians.spec.ts tests/students-learning-profile.spec.ts tests/students-list.spec.ts tests/students-polish.spec.ts tests/students-profile.spec.ts tests/students-ui-checks.spec.ts
+  192 skipped
+  1824 passed (13.8m)
+gate: <== e2e OK (1158s)
+gate: PASS (13 steps, 1732s)
+gate exit 0

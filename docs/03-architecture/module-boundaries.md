@@ -29,7 +29,7 @@
   the seven above; `PasswordReset` carries the actor (`OPERATOR` or `TUTOR`). Internal packages: `internal.domain` (`UserAccount`, `PasswordPolicy`,
   `TemporaryPasswordGenerator`), `internal.persistence`, `internal.app` (`AuthenticationService`, `AccountService`), `internal.security` (Spring Security
   configuration, remember-me, throttle, must-change gate), `internal.web` (`AuthController`), `internal.bootstrap` (`TutorBootstrap`), `internal.cli`
-  (`ResetTutorPasswordCommand`). Allowed dependencies as built: `shared` only (no `settings` use yet). **Identity never calls `audit`.**
+  (`ResetTutorPasswordCommand`). Allowed dependencies as built: `shared` only until T-M2.35, then `shared, settings`. **Identity never calls `audit`.**
 - **As built (T-M2.3):** `AccountApi` gains `createStudentAccount(username, password?)` (joins the caller's transaction; `STUDENT`, `ACTIVE`, must change,
   temporary password valid 7 days; a generated password when absent; 409 `USERNAME_TAKEN` also from the unique index), `changeUsername(userId, username)`,
   `resetPasswordByTutor(userId, tutorUserId)` (publishes `PasswordReset(TUTOR, tutorUserId)`), `checkUsername` (`AVAILABLE`/`INVALID`/`TAKEN`),
@@ -40,6 +40,9 @@
   `internal.app.AccountService.updatePreferences(userId, PreferencesCommand)` (validation-rules "account"; the row lock orders concurrent writes, no
   version, DEC-190) and `UserAccount.changePreferences(locale, timeZone, displayName, now)` (no write when nothing changed). The allowed locales are read
   from the `englms.meta.locales` property (no `settings` dependency); no event, no audit entry. Not in the public API: only identity's own controller calls it.
+- **As built (T-M2.35):** `AccountService.createStudentAccount` reads `SettingsApi.accountDefaults()` in its transaction and
+  `UserAccount.newStudent(…, locale, timeZone, now)` takes the two values: a new student account starts with the workspace's default language and
+  time zone; existing accounts and the tutor's are never changed by a workspace change. `allowedDependencies = {"shared", "settings"}` (Modulith-verified).
 
 ## students
 - **Owns:** `student`, `student_guardian`, `student_learning_profile`.
@@ -128,6 +131,11 @@
 - **Owns:** `workspace_setting` (typed key/value), `extension_state`.
 - **API:** `SettingsApi.get(Key<T>)`, `ExtensionStateApi.isEnabled(extensionId)`.
 - **Depends on:** shared.
+- **As built (T-M2.35):** public API `SettingsApi.accountDefaults()` → `AccountDefaults {locale, timeZone}` (the generic `get(Key<T>)` is not
+  built: one caller, YAGNI). `internal`: `WorkspaceSetting` (entity of `workspace_setting`), `WorkspaceSettingRepository`, `WorkspaceDocument`,
+  `WorkspaceSettingsService` (implements `SettingsApi`; read, validate, version check, write), `MetaProperties`; `internal.web`: `MetaController`
+  (`GET /meta`, `displayName` from the store) and `TutorSettingsController` (`GET/PATCH /tutor/settings`). Never reads `identity` (the tutor's user
+  ID comes from the request principal's name). `extension_state` and `ExtensionStateApi`: M6.
 
 ## audit
 - **Owns:** `audit_event` (append-only).
@@ -172,7 +180,7 @@ goals     → students
 notes     → students
 library   → files, students
 students  → identity          (as built in T-M2.3)
-identity  → settings          (as built in T-M2.1: shared only)
+identity  → settings          (as built in T-M2.35: SettingsApi.accountDefaults)
 audit     → (events only)     (as built: identity :: events, students :: events)
 all       → shared
 ```

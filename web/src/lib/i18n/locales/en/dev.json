@@ -49,6 +49,7 @@
     "segmentedMonth": "Month",
     "segmentedDisabledLabel": "View (unavailable)",
     "segmentedPartialLabel": "View (one option unavailable)",
+    "segmentedVisibleLabel": "View (visible label)",
     "passwordLabel": "Password",
     "passwordReveal": "Show password",
     "passwordHint": "10 to 128 characters.",

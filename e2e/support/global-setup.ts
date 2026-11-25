@@ -78,6 +78,18 @@ export default async function globalSetup(config: FullConfig) {
       displayName: null,
     })
     if (reset.status !== 200) throw new Error(`E2E sign-in: the tutor's preferences reset answered ${reset.status}`)
+    // T-M2.35 scope 9: the workspace defaults back to the seeded ones before the shared student is created (fresh
+    // students are expected in vi). Never the name: a PATCH cannot clear it, so a kept DB would lose its own name.
+    const workspace = await apiCall<{ version: number }>(tutor, 'GET', '/api/v1/tutor/settings')
+    if (workspace.status !== 200)
+      throw new Error(`E2E sign-in: the workspace settings read answered ${workspace.status}`)
+    const defaults = await apiCall(tutor, 'PATCH', '/api/v1/tutor/settings', {
+      version: workspace.body.version,
+      defaultLocale: 'vi',
+      defaultTimeZone: 'Asia/Ho_Chi_Minh',
+    })
+    if (defaults.status !== 200)
+      throw new Error(`E2E sign-in: the workspace defaults reset answered ${defaults.status}`)
     await tutor.evaluate((key) => localStorage.setItem(key, 'vi'), LOCALE_KEY)
     mkdirSync(dirname(TUTOR_STATE), { recursive: true, mode: 0o700 })
     await tutorContext.storageState({ path: TUTOR_STATE })

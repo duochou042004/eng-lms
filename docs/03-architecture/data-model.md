@@ -217,12 +217,19 @@ grade_audit ( id uuid PK, attempt_id, item_key uuid NULL, field text, old_value 
 
 ### settings, audit, platform
 ```sql
-workspace_setting ( key text PK, value jsonb NOT NULL, updated_at, updated_by )
+workspace_setting ( key text PK, value jsonb NOT NULL, version bigint NOT NULL DEFAULT 0, updated_at timestamptz NOT NULL,
+  updated_by uuid NULL )   -- T-M2.35: one structural row per key, never inserted or deleted by the app
 extension_state ( extension_id text PK, enabled boolean NOT NULL, updated_at )
 audit_event ( id uuid PK, occurred_at timestamptz NOT NULL, actor_user_id uuid NULL, action text NOT NULL, subject_type text NULL,
   subject_id uuid NULL, ip inet NULL, user_agent text NULL, details jsonb NOT NULL DEFAULT '{}' )  ix (occurred_at DESC), ix (action)
 event_publication (Spring Modulith JDBC registry; schema as shipped)
 ```
+
+As built (T-M2.35, FR-SET-01): `workspace_setting` is owned by `settings` (JPA entity `settings.internal.WorkspaceSetting`, `@Version` on
+`version`, `updated_by` = the tutor's user ID). The one row `key = 'workspace'` holds `{"displayName"?: text, "defaultLocale": text,
+"defaultTimeZone": text}` (validation-rules "workspace"); no `displayName` property means the configured `englms.meta.display-name`. The
+migration seeds it with `{"defaultLocale": "vi", "defaultTimeZone": "Asia/Ho_Chi_Minh"}` (the `user_account` column defaults); a missing row is
+a server fault (500), never re-created. `extension_state` arrives with M6.
 
 ## 3. Security-sensitive fields
 
@@ -252,6 +259,8 @@ event_publication (Spring Modulith JDBC registry; schema as shipped)
 - T-M2.3 (**applied**): `V202610070001__students_student.sql`: `app.student` as in §2 (as built note there). No seed data.
 - T-M2.9: `V202610090001__students_guardians_learning_profile.sql` (`app.student_guardian`, `app.student_learning_profile`, §2 as-built note; no
   backfill, no seed data) and `V202610090002__identity_credential_stamp.sql` (`user_account.credential_stamp bigint NOT NULL DEFAULT 0`; existing rows 0).
+- T-M2.35: `V202611250001__settings_workspace.sql` (`app.workspace_setting`, `pk_workspace_setting`, §2 as-built note) with its one structural
+  row `workspace` (not domain content, coding-agent-rules §7).
 - **No domain seed data** in migrations: no folders, no metrics, no tags. Dev/test fixtures live in `backend/src/test/resources/fixtures` and `scripts/seed-dev`.
 - Applied migrations are never edited. Destructive changes use expand → migrate → contract across two releases.
 - A snapshot schema change bumps `snapshot_schema_version`. Readers must support every version ever written (with an upcaster in `activities.internal.domain.snapshot`).

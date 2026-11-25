@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-11-21T17:12:01Z",
-  "updatedBy": "lead-coordinator (handoff: T-M2.35 ready, PO start pending)",
+  "updatedAt": "2026-11-25T15:10:00Z",
+  "updatedBy": "lead-coordinator (T-M2.35 G3 done, DEC-194)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -32,28 +32,29 @@
   "currentTask": {
     "id": "T-M2.35",
     "title": "Workspace settings v1 (FR-SET-01 first section; split from T-M2.6)",
-    "status": "ready",
+    "status": "awaiting_approval",
     "ownerRole": "BE+FE",
     "branch": "feature/T-M2.35-workspace-settings",
     "packet": "docs/tasks/T-M2.35-workspace-settings.md",
-    "pr": null,
-    "lastCommit": null,
-    "startedAt": null,
+    "pr": "227",
+    "lastCommit": "010c16f",
+    "startedAt": "2026-11-25T11:43:20Z",
     "nextSteps": [
-      "Ask the PO for the start signal",
-      "Then BE implementer, then FE implementer (one at a time); gate; PR; G3 tier H (SEC, then QA with the UX checklist)"
+      "CI green on the final head; post SEC-REVIEW, QA-VERDICT, UX-REVIEW, LC-APPROVED",
+      "merge-gate; gitlab-sync; qa/ PR; records PR (merge DEC)"
     ],
     "trace": [
       "DEC-187",
       "DEC-190",
       "DEC-191",
       "DEC-193",
+      "DEC-194",
       "FR-SET-01"
     ],
     "entryGate": [
       "T-M2.6 merged — met (160df23)",
       "Packet + G0 — met (PR #225, DEC-193)",
-      "PO start signal — pending"
+      "PO start signal — met (/goal, 2026-11-25)"
     ]
   },
   "nextTask": {

@@ -97,7 +97,12 @@ public final class PolicyRegistry {
 			Policy.of("DELETE", "/api/v1/tutor/guardians/{gid}", null, 401, 204, 403, NA, 403),
 			Policy.of("GET", "/api/v1/tutor/students/{sid}/learning-profile", null, 401, 200, 403, NA, 403),
 			Policy.of("PUT", "/api/v1/tutor/students/{sid}/learning-profile",
-					account -> "{\"version\":0,\"currentLevel\":\"B1\"}", 401, 200, 403, NA, 403));
+					account -> "{\"version\":0,\"currentLevel\":\"B1\"}", 401, 200, 403, NA, 403),
+			// T-M2.35, tutor: workspace settings (each world starts from the seeded row, version 0; the sample is a
+			// same-values PATCH, so the shared row is not changed for the next test class).
+			Policy.of("GET", "/api/v1/tutor/settings", null, 401, 200, 403, NA, 403),
+			Policy.of("PATCH", "/api/v1/tutor/settings", account -> "{\"version\":0,\"defaultLocale\":\"vi\"}", 401,
+					200, 403, NA, 403));
 
 	private PolicyRegistry() {
 	}

@@ -43,7 +43,7 @@ class FlywayMigrationTest {
 				SELECT version FROM app.flyway_schema_history WHERE success AND version IS NOT NULL ORDER BY installed_rank""",
 				String.class))
 			.containsExactly("202609250001", "202610040001", "202610040002", "202610070001", "202610090001",
-					"202610090002");
+					"202610090002", "202611250001");
 	}
 
 	@Test
@@ -71,10 +71,10 @@ class FlywayMigrationTest {
 				"SELECT table_name FROM information_schema.tables WHERE table_schema = 'app' ORDER BY table_name",
 				String.class))
 			.as("V1: platform tables only; T-M2.1: identity, Spring Session, remember-me and audit (data-model.md §4, DEC-036); "
-					+ "T-M2.3: student; T-M2.9: student_guardian, student_learning_profile")
+					+ "T-M2.3: student; T-M2.9: student_guardian, student_learning_profile; T-M2.35: workspace_setting")
 			.containsExactly("audit_event", "event_publication", "flyway_schema_history", "persistent_logins",
 					"spring_session", "spring_session_attributes", "student", "student_guardian",
-					"student_learning_profile", "user_account");
+					"student_learning_profile", "user_account", "workspace_setting");
 	}
 
 	@Test
@@ -118,8 +118,8 @@ class FlywayMigrationTest {
 		assertThat(m1.migrate().migrationsExecuted).isOne();
 		Flyway latest = Flyway.configure().dataSource(jdbcUrl, user, password).schemas("app").defaultSchema("app").load();
 
-		assertThat(latest.migrate().migrationsExecuted).isEqualTo(5);
-		assertThat(latest.info().current().getVersion().getVersion()).isEqualTo("202610090002");
+		assertThat(latest.migrate().migrationsExecuted).isEqualTo(6);
+		assertThat(latest.info().current().getVersion().getVersion()).isEqualTo("202611250001");
 	}
 
 	/** T-M2.3: one student per account, a known status, and an account with a student cannot be deleted. */
@@ -182,6 +182,18 @@ class FlywayMigrationTest {
 			jdbc.update("DELETE FROM app.student");
 			jdbc.update("DELETE FROM app.user_account");
 		}
+	}
+
+	/** T-M2.35: exactly one seeded workspace document, version 0, no displayName (the configured name applies). */
+	@Test
+	void seedsTheWorkspaceSettingsRow() {
+		assertThat(jdbc.queryForList("SELECT key FROM app.workspace_setting", String.class)).containsExactly("workspace");
+		assertThat(jdbc.queryForMap("""
+				SELECT value = '{"defaultLocale": "vi", "defaultTimeZone": "Asia/Ho_Chi_Minh"}'::jsonb AS seeded,
+				    value ? 'displayName' AS named, version, updated_by FROM app.workspace_setting""")).containsEntry("seeded", true)
+			.containsEntry("named", false)
+			.containsEntry("version", 0L)
+			.containsEntry("updated_by", null);
 	}
 
 	private UUID insertGuardian(UUID studentId, int position) {

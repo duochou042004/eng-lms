@@ -121,4 +121,20 @@ describe('SegmentedControl', () => {
     expect(radio('Tháng')).toHaveAttribute('data-pressed')
     await user.pointer({ keys: '[/MouseLeft]', target: radio('Tháng') })
   })
+
+  it('labelVisible: the label is shown above the group and names it (aria-labelledby, not aria-label)', async () => {
+    const { container, rerender } = render(
+      <SegmentedControl label="Chế độ xem" labelVisible options={OPTIONS} selected="list" onChange={() => {}} />,
+    )
+    const group = screen.getByRole('radiogroup', { name: 'Chế độ xem' })
+    const label = screen.getByText('Chế độ xem')
+    expect(label).toBeVisible()
+    expect(group).toHaveAttribute('aria-labelledby', label.id)
+    expect(group).not.toHaveAttribute('aria-label')
+    await expectNoAxeViolations(container)
+    // Without it the name stays hidden (aria-label only).
+    rerender(<SegmentedControl label="Chế độ xem" options={OPTIONS} selected="list" onChange={() => {}} />)
+    expect(screen.queryByText('Chế độ xem')).not.toBeInTheDocument()
+    expect(screen.getByRole('radiogroup', { name: 'Chế độ xem' })).toHaveAttribute('aria-label', 'Chế độ xem')
+  })
 })

@@ -163,7 +163,7 @@ function AccountForm({
         />
       ) : null}
       <div className={styles.language}>
-        <LanguageSwitcher />
+        <LanguageSwitcher labelVisible />
       </div>
       <form
         noValidate

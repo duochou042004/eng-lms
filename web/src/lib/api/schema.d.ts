@@ -120,6 +120,24 @@ export interface paths {
     options?: never
     head?: never
     /** Update a guardian; version required */
+    patch: operations['update_2']
+    trace?: never
+  }
+  '/api/v1/tutor/settings': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** The workspace settings, with their version; displayName is the effective name */
+    get: operations['get_2']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    /** Change the workspace name and the defaults for new students; absent properties stay; version required */
     patch: operations['update_1']
     trace?: never
   }
@@ -431,6 +449,25 @@ export interface components {
       /** Format: uuid */
       userId: string
       username: string
+    }
+    SettingsRequest: {
+      /** @description One of GET /meta locales */
+      defaultLocale?: string
+      /** @description A time-zone ID the server's java.time knows, exact (aliases accepted as given) */
+      defaultTimeZone?: string
+      /** @description The workspace name: 1-120 characters, no control, bidirectional or zero-width character; cannot be cleared */
+      displayName?: string
+      /** Format: int64 */
+      version: number
+    }
+    SettingsResponse: {
+      defaultLocale: string
+      defaultTimeZone: string
+      displayName: string
+      /** Format: date-time */
+      updatedAt: string
+      /** Format: int64 */
+      version: number
     }
     StatusRequest: {
       /** @enum {string} */
@@ -761,7 +798,7 @@ export interface operations {
       }
     }
   }
-  update_1: {
+  update_2: {
     parameters: {
       query?: never
       header?: never
@@ -804,6 +841,68 @@ export interface operations {
         }
       }
       /** @description VALIDATION_FAILED with field codes */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/problem+json': components['schemas']['Problem']
+        }
+      }
+    }
+  }
+  get_2: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description The workspace settings */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['SettingsResponse']
+        }
+      }
+    }
+  }
+  update_1: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['SettingsRequest']
+      }
+    }
+    responses: {
+      /** @description The workspace settings after the change */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['SettingsResponse']
+        }
+      }
+      /** @description STALE_VERSION */
+      409: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/problem+json': components['schemas']['Problem']
+        }
+      }
+      /** @description VALIDATION_FAILED with field codes (REQUIRED, INVALID_VALUE, TOO_LONG, INVALID_FORMAT); a body without displayName, defaultLocale and defaultTimeZone is REQUIRED on displayName */
       422: {
         headers: {
           [name: string]: unknown

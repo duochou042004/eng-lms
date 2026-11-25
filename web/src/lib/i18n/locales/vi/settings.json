@@ -2,7 +2,50 @@
   "title": "Cài đặt",
   "tabsLabel": "Các mục cài đặt",
   "tabs": {
+    "workspace": "Không gian làm việc",
     "account": "Tài khoản"
+  },
+  "workspace": {
+    "pageTitle": "Cài đặt không gian làm việc",
+    "heading": "Không gian làm việc",
+    "formLabel": "Thông tin không gian làm việc",
+    "loading": "Đang tải cài đặt không gian làm việc",
+    "loadError": "Chưa tải được cài đặt không gian làm việc.",
+    "displayName": "Tên không gian làm việc",
+    "required": "(bắt buộc)",
+    "displayNameHint": "Hiện ở trang đăng nhập và trên thanh menu.",
+    "defaultLocale": "Ngôn ngữ mặc định",
+    "defaultTimeZone": "Múi giờ mặc định",
+    "defaultsHint": "Áp dụng cho học viên thêm từ nay về sau.",
+    "save": "Lưu",
+    "saving": "Đang lưu…",
+    "saved": "Đã lưu",
+    "summaryTitle": "Chưa lưu được cài đặt",
+    "networkError": "Chưa lưu được: có vẻ bạn đang ngoại tuyến. Hãy thử lại khi có mạng.",
+    "serverError": "Chưa lưu được cài đặt. Hãy thử lại.",
+    "retry": "Thử lại",
+    "discardTitle": "Bỏ các thay đổi?",
+    "discardDescription": "Các thay đổi trong cài đặt không gian làm việc chưa được lưu.",
+    "discard": "Bỏ thay đổi",
+    "keepEditing": "Tiếp tục sửa",
+    "conflict": {
+      "title": "Đã có thay đổi ở nơi khác",
+      "description": "Cài đặt không gian làm việc vừa được thay đổi ở một tab hoặc cửa sổ khác. Tải lại để xem bản mới nhất; những thay đổi chưa lưu của bạn sẽ mất.",
+      "reload": "Tải lại",
+      "keepEditing": "Tiếp tục sửa"
+    },
+    "errors": {
+      "displayName": {
+        "REQUIRED": "Hãy nhập tên không gian làm việc.",
+        "TOO_LONG": "Tên không gian làm việc tối đa 120 ký tự.",
+        "INVALID_FORMAT": "Hãy xoá các ký tự điều khiển, ký tự đổi chiều chữ và ký tự không độ rộng khỏi tên."
+      },
+      "defaultTimeZone": {
+        "REQUIRED": "Hãy chọn múi giờ mặc định.",
+        "INVALID_VALUE": "Hãy chọn một múi giờ trong danh sách."
+      },
+      "server": "Có giá trị không được chấp nhận. Hãy kiểm tra biểu mẫu rồi thử lại."
+    }
   },
   "account": {
     "pageTitle": "Cài đặt tài khoản",
