@@ -26,6 +26,8 @@ import com.englms.identity.internal.domain.PasswordPolicy;
 import com.englms.identity.internal.domain.TemporaryPasswordGenerator;
 import com.englms.identity.internal.domain.UserAccount;
 import com.englms.identity.internal.persistence.UserAccountRepository;
+import com.englms.settings.SettingsApi;
+import com.englms.settings.SettingsApi.AccountDefaults;
 import com.englms.shared.Ids;
 import com.englms.shared.Like;
 import com.englms.shared.ProblemCodes;
@@ -72,9 +74,11 @@ public class AccountService implements AccountApi {
 
 	private final List<String> locales;
 
+	private final SettingsApi settings;
+
 	AccountService(UserAccountRepository accounts, SessionTerminator sessions, PasswordEncoder encoder,
 			TemporaryPasswordGenerator generator, PasswordPolicy policy, ApplicationEventPublisher events, Ids ids,
-			Clock clock, @Value("${englms.meta.locales}") List<String> locales) {
+			Clock clock, @Value("${englms.meta.locales}") List<String> locales, SettingsApi settings) {
 		this.accounts = accounts;
 		this.sessions = sessions;
 		this.encoder = encoder;
@@ -84,6 +88,7 @@ public class AccountService implements AccountApi {
 		this.ids = ids;
 		this.clock = clock;
 		this.locales = List.copyOf(locales);
+		this.settings = settings;
 	}
 
 	@Override
@@ -107,7 +112,9 @@ public class AccountService implements AccountApi {
 		}
 		Instant now = clock.instant();
 		Instant expiresAt = now.plus(TEMPORARY_PASSWORD_VALIDITY);
-		UserAccount account = UserAccount.newStudent(ids.newId(), username, encoder.encode(raw), expiresAt, now);
+		AccountDefaults defaults = settings.accountDefaults();
+		UserAccount account = UserAccount.newStudent(ids.newId(), username, encoder.encode(raw), expiresAt,
+				defaults.locale(), defaults.timeZone(), now);
 		saveCheckingUsername(account);
 		return new TemporaryCredentials(account.id(), account.username(), raw, expiresAt);
 	}

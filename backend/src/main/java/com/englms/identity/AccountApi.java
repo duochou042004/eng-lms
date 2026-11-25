@@ -21,7 +21,8 @@ public interface AccountApi {
 
 	/**
 	 * Creates an {@code ACTIVE} {@code STUDENT} account that must change its password at first sign-in; the temporary
-	 * password expires after 7 days if unused (A-021, DEC-097). {@code password} null or empty → a generated one.
+	 * password expires after 7 days if unused (A-021, DEC-097). {@code password} null or empty → a generated one. The
+	 * account starts with the workspace default language and time zone (FR-SET-01, T-M2.35).
 	 * @throws com.englms.shared.ProblemException 422 for an invalid username ({@code username}) or a password against
 	 * the policy ({@code password}); 409 {@code USERNAME_TAKEN} (also when a concurrent create wins the unique index)
 	 */
