@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Milestone | M2 |
-| Status | ready (G0: round 1 CHANGES REQUESTED (S2-1, S3-1..S3-4, S4-1..S4-4), all fixed; delta PASS WITH MINOR, S4-5 fixed, S4-6 already in place; DEC-196) |
+| Status | in_progress (PO start 2026-11-25; G0: round 1 CHANGES REQUESTED (S2-1, S3-1..S3-4, S4-1..S4-4), all fixed; delta PASS WITH MINOR, S4-5 fixed, S4-6 already in place; DEC-196) |
 | Owner role | FE (one implementer) |
 | Branch | `feature/T-M2.32-guard-and-polish` (from `develop`) |
 | Depends on | T-M2.31 (`000640e`), T-M2.6 (`160df23`), T-M2.35 (`9ad116b`): all merged |

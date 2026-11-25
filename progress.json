@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-11-25T14:26:30Z",
-  "updatedBy": "lead-coordinator (T-M2.32 packet ready)",
+  "updatedAt": "2026-11-25T14:47:58Z",
+  "updatedBy": "lead-coordinator (T-M2.32 started)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -32,16 +32,16 @@
   "currentTask": {
     "id": "T-M2.32",
     "title": "E2E console guard for fresh contexts and the T-M2.31 / T-M2.6 / T-M2.35 polish",
-    "status": "ready",
+    "status": "in_progress",
     "ownerRole": "FE",
     "branch": "feature/T-M2.32-guard-and-polish",
     "packet": "docs/tasks/T-M2.32-guard-and-polish.md",
     "pr": null,
     "lastCommit": null,
-    "startedAt": null,
+    "startedAt": "2026-11-25T14:47:58Z",
     "nextSteps": [
-      "PO start signal (the 2026-11-25 /goal lists T-M2.32 next)",
-      "FE implementer; gate (all specs x3); PR; G3 tier M (one combined QA+UX reviewer)"
+      "FE implementer (a)-(f)",
+      "gate (all specs x3); PR; G3 tier M (one combined QA+UX reviewer)"
     ],
     "trace": [
       "DEC-183",
@@ -53,7 +53,7 @@
     "entryGate": [
       "T-M2.31, T-M2.6, T-M2.35 merged — met",
       "Packet + G0 — met (PR #230, DEC-196)",
-      "PO start signal — pending"
+      "PO start signal — met (/goal, 2026-11-25)"
     ]
   },
   "nextTask": {
@@ -1934,6 +1934,11 @@
       "at": "2026-11-25T14:26:30Z",
       "actor": "lead-coordinator",
       "event": "T-M2.32 packet G0: round 1 CHANGES REQUESTED, all fixed; delta PASS WITH MINOR; ready."
+    },
+    {
+      "at": "2026-11-25T14:47:58Z",
+      "actor": "lead-coordinator",
+      "event": "T-M2.32 started on the PO start signal (the /goal of 2026-11-25)."
     }
   ]
 }
