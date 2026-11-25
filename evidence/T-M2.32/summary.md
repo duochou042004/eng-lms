@@ -1,7 +1,7 @@
 # T-M2.32 summary: E2E console guard for fresh contexts and the T-M2.31 / T-M2.6 / T-M2.35 polish
 
 Branch `feature/T-M2.32-guard-and-polish` (from `develop` @ `a84c753`). Packet: [T-M2.32](../../docs/tasks/T-M2.32-guard-and-polish.md),
-DEC-196. PO start signal 2026-11-25 (the `/goal`). Risk tier **M**: one combined QA+UX reviewer (G3 pending). L-10 rulings: DEC-197.
+DEC-196. PO start signal 2026-11-25 (the `/goal`). Risk tier **M**: one combined QA+UX reviewer (G3 done: QA PASS WITH MINOR, UX APPROVED; DEC-198). L-10 rulings: DEC-197.
 
 ## Commits
 - `7d626fe` chore(progress): T-M2.32 in progress (LC)
@@ -35,13 +35,14 @@ DEC-196. PO start signal 2026-11-25 (the `/goal`). Risk tier **M**: one combined
 - The (f) mechanism also sets `window[Symbol.for('react-aria.i18n.locale')]` to `en-US` (an unset key makes every lookup miss); renders run inside `UiProvider`, so it is only the dictionary key.
 - The `DevUiPage.test.tsx:12` flake → noted on the T-M2.7 row.
 
-## G3 (tier M)
-Pending: one combined QA+UX reviewer.
+## G3 (tier M, DEC-198)
+- Combined QA+UX (fresh agent, head `d589168`): `QA-VERDICT T-M2.32: PASS WITH MINOR`, `UX-REVIEW T-M2.32: APPROVED`; AC1–AC7 pass (guard red on page, late and helper-context errors; lint red on 4 forms; drawer fits at 740×360; ordered PATCHes on a throttled network and across two switchers; vi names and announcements, switch without reload; full E2E 610 passed / 68 skipped). The duplicate "Đóng" judged acceptable. QA-1 (laptop focus after Esc with axe, 2 of 12 runs) and QA-2 ("Có 0 lựa chọn.") → the T-M2.7 row. Report: `qa/report.md` (`qa/` PR). No fix round.
 
 ## Not verified
-- CI (pending); WebKit (G5); a real screen reader (QA checks accessible names).
+- WebKit (G5); a real screen reader (QA checks accessible names).
 
 ## G3 cost
 | Agent | Tokens | Duration |
 |---|---|---|
 | FE implementer | 247,090 | 3,340 s |
+| QA + UX | 127,456 | 1,009 s |

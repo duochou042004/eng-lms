@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-11-25T15:44:52Z",
-  "updatedBy": "lead-coordinator (T-M2.32 in review)",
+  "updatedAt": "2026-11-25T16:04:22Z",
+  "updatedBy": "lead-coordinator (T-M2.32 G3 done, DEC-198)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -32,17 +32,16 @@
   "currentTask": {
     "id": "T-M2.32",
     "title": "E2E console guard for fresh contexts and the T-M2.31 / T-M2.6 / T-M2.35 polish",
-    "status": "in_review",
+    "status": "awaiting_approval",
     "ownerRole": "FE",
     "branch": "feature/T-M2.32-guard-and-polish",
     "packet": "docs/tasks/T-M2.32-guard-and-polish.md",
-    "pr": null,
-    "lastCommit": "1a2fce7",
+    "pr": "231",
+    "lastCommit": "d589168",
     "startedAt": "2026-11-25T14:47:58Z",
     "nextSteps": [
-      "PR and CI green",
-      "G3 tier M: one combined QA+UX reviewer",
-      "merge-gate; gitlab-sync; qa/ PR; records PR"
+      "CI green on the final head; post QA-VERDICT, UX-REVIEW, LC-APPROVED",
+      "merge-gate; gitlab-sync; qa/ PR; records PR (merge DEC)"
     ],
     "trace": [
       "DEC-183",
@@ -50,7 +49,8 @@
       "DEC-191",
       "DEC-194",
       "DEC-196",
-      "DEC-197"
+      "DEC-197",
+      "DEC-198"
     ],
     "entryGate": [
       "T-M2.31, T-M2.6, T-M2.35 merged — met",
@@ -1946,6 +1946,11 @@
       "at": "2026-11-25T15:44:52Z",
       "actor": "lead-coordinator",
       "event": "T-M2.32 in review; gate PASS on ad3acc8 (run 2 from web-test); L-10 rulings DEC-197."
+    },
+    {
+      "at": "2026-11-25T16:04:22Z",
+      "actor": "lead-coordinator",
+      "event": "T-M2.32 G3 done (QA PASS WITH MINOR, UX APPROVED); rulings DEC-198."
     }
   ]
 }
