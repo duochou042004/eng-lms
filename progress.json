@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-11-25T14:47:58Z",
-  "updatedBy": "lead-coordinator (T-M2.32 started)",
+  "updatedAt": "2026-11-25T15:44:52Z",
+  "updatedBy": "lead-coordinator (T-M2.32 in review)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -32,23 +32,25 @@
   "currentTask": {
     "id": "T-M2.32",
     "title": "E2E console guard for fresh contexts and the T-M2.31 / T-M2.6 / T-M2.35 polish",
-    "status": "in_progress",
+    "status": "in_review",
     "ownerRole": "FE",
     "branch": "feature/T-M2.32-guard-and-polish",
     "packet": "docs/tasks/T-M2.32-guard-and-polish.md",
     "pr": null,
-    "lastCommit": null,
+    "lastCommit": "1a2fce7",
     "startedAt": "2026-11-25T14:47:58Z",
     "nextSteps": [
-      "FE implementer (a)-(f)",
-      "gate (all specs x3); PR; G3 tier M (one combined QA+UX reviewer)"
+      "PR and CI green",
+      "G3 tier M: one combined QA+UX reviewer",
+      "merge-gate; gitlab-sync; qa/ PR; records PR"
     ],
     "trace": [
       "DEC-183",
       "DEC-184",
       "DEC-191",
       "DEC-194",
-      "DEC-196"
+      "DEC-196",
+      "DEC-197"
     ],
     "entryGate": [
       "T-M2.31, T-M2.6, T-M2.35 merged — met",
@@ -1939,6 +1941,11 @@
       "at": "2026-11-25T14:47:58Z",
       "actor": "lead-coordinator",
       "event": "T-M2.32 started on the PO start signal (the /goal of 2026-11-25)."
+    },
+    {
+      "at": "2026-11-25T15:44:52Z",
+      "actor": "lead-coordinator",
+      "event": "T-M2.32 in review; gate PASS on ad3acc8 (run 2 from web-test); L-10 rulings DEC-197."
     }
   ]
 }
