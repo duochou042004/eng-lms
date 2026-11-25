@@ -1,0 +1,112 @@
+# T-M2.32 gate on ad3acc8 (trimmed). Run 1: ./scripts/gate.sh (web-test flake, DevUiPage.test findBy timeout); run 2: ./scripts/gate.sh --from web-test (PASS).
+## run 1
+gate: ad3acc8 2026-11-25T15:16:43Z, steps: docs scripts backend web-install web-lint web-typecheck web-test web-build web-budget web-contrast contract-drift qa-typecheck e2e
+gate: ==> docs
+gate: <== docs OK (1s)
+gate: ==> scripts
+gate: <== scripts OK (190s)
+gate: ==> backend
+gate: backend skipped: no backend/ or api/ change (CI runs it; ENGLMS_GATE_FULL=1 forces it)
+gate: <== backend OK (0s)
+gate: ==> web-install
+gate: <== web-install OK (0s)
+gate: ==> web-lint
+gate: <== web-lint OK (5s)
+gate: ==> web-typecheck
+gate: <== web-typecheck OK (6s)
+gate: ==> web-test
+     × registers the dev namespace when its module loads and shows the translated gallery with the SegmentedControl 1109ms
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+      Tests  1 failed | 960 passed (961)
+gate: FAIL at step 'web-test' (exit 1) after 50s; later steps were not run. Resume with: ./scripts/gate.sh --from web-test
+## run 2
+gate: ad3acc8 2026-11-25T15:22:12Z, steps: web-test web-build web-budget web-contrast contract-drift qa-typecheck e2e
+gate: ==> web-test
+ Test Files  78 passed (78)
+      Tests  961 passed (961)
+gate: <== web-test OK (50s)
+gate: ==> web-build
+gate: <== web-build OK (7s)
+gate: ==> web-budget
+ok    student   195.3 KB gz ≤ 200 KB  (13 chunks)
+ok    tutor     195.6 KB gz ≤ 300 KB  (13 chunks)
+budget: PASS
+gate: <== web-budget OK (0s)
+gate: ==> web-contrast
+ok    15.98:1 ≥ 4.5  --color-text (#1f1d1a) on --color-bg (#faf9f7)  body text
+ok    16.81:1 ≥ 4.5  --color-text (#1f1d1a) on --color-surface (#fff)  body text
+ok    14.91:1 ≥ 4.5  --color-text (#1f1d1a) on --color-surface-sunken (#f3f1ed)  body text
+ok     7.36:1 ≥ 4.5  --color-text-muted (#57524a) on --color-bg (#faf9f7)  body text
+ok     7.75:1 ≥ 4.5  --color-text-muted (#57524a) on --color-surface (#fff)  body text
+ok     6.87:1 ≥ 4.5  --color-text-muted (#57524a) on --color-surface-sunken (#f3f1ed)  body text
+ok     5.49:1 ≥ 4.5  --color-text-subtle (#6b655b) on --color-bg (#faf9f7)  body text
+ok     5.77:1 ≥ 4.5  --color-text-subtle (#6b655b) on --color-surface (#fff)  body text
+ok     5.12:1 ≥ 4.5  --color-text-subtle (#6b655b) on --color-surface-sunken (#f3f1ed)  body text
+ok     6.51:1 ≥ 4.5  --color-accent (#2f5d8c) on --color-bg (#faf9f7)  links
+ok     6.85:1 ≥ 4.5  --color-accent (#2f5d8c) on --color-surface (#fff)  links, secondary button label
+ok     7.84:1 ≥ 4.5  --color-accent-strong (#234a70) on --color-accent-subtle (#e6eef6)  quiet button hover label
+ok     6.85:1 ≥ 4.5  --color-on-accent (#fff) on --color-accent (#2f5d8c)  primary button label
+ok     9.19:1 ≥ 4.5  --color-on-accent (#fff) on --color-accent-strong (#234a70)  primary button hover label
+ok     6.54:1 ≥ 4.5  --color-on-accent (#fff) on --color-danger (#b3261e)  danger button label
+ok     9.11:1 ≥ 4.5  --color-on-accent (#fff) on --color-danger-strong (#8c1d18)  danger button hover label
+ok     6.96:1 ≥ 4.5  --color-success-text (#1f5c39) on --color-success-subtle (#e7f3ec)  success alert
+ok     7.33:1 ≥ 4.5  --color-warning-text (#6b4800) on --color-warning-subtle (#fbf1dc)  warning alert
+ok     7.77:1 ≥ 4.5  --color-danger-text (#8c1d18) on --color-danger-subtle (#fbe9e7)  danger alert
+ok     7.84:1 ≥ 4.5  --color-info-text (#234a70) on --color-info-subtle (#e6eef6)  info alert
+ok     6.54:1 ≥ 4.5  --color-danger (#b3261e) on --color-surface (#fff)  field error text
+ok     6.21:1 ≥ 4.5  --color-danger (#b3261e) on --color-bg (#faf9f7)  field error text on the page background
+ok     6.54:1 ≥ 3  --color-danger (#b3261e) on --color-surface (#fff)  field error icon (T-M1.9 AC5)
+ok     6.21:1 ≥ 3  --color-danger (#b3261e) on --color-bg (#faf9f7)  field error icon on the page background (T-M1.9 AC5)
+ok     7.84:1 ≥ 4.5  --color-accent-strong (#234a70) on --color-accent-subtle (#e6eef6)  segmented control: selected label
+ok     7.84:1 ≥ 3  --color-accent-strong (#234a70) on --color-accent-subtle (#e6eef6)  segmented control: selected check icon
+ok    14.91:1 ≥ 4.5  --color-text (#1f1d1a) on --color-surface-sunken (#f3f1ed)  segmented control: hovered label
+ok     5.85:1 ≥ 3  --color-focus (#2f5d8c) on --color-accent-subtle (#e6eef6)  segmented control: focus ring inside a selected segment
+ok     3.51:1 ≥ 3  --color-border-strong (#8f887c) on --color-surface (#fff)  input boundary
+ok     3.34:1 ≥ 3  --color-border-strong (#8f887c) on --color-bg (#faf9f7)  input boundary
+ok     6.51:1 ≥ 3  --color-focus (#2f5d8c) on --color-bg (#faf9f7)  focus ring
+ok     6.85:1 ≥ 3  --color-focus (#2f5d8c) on --color-surface (#fff)  focus ring
+gate: <== web-contrast OK (0s)
+gate: ==> contract-drift
+gate: contract-drift skipped: no backend/ or api/ change (CI runs it)
+gate: <== contract-drift OK (0s)
+gate: ==> qa-typecheck
+gate: <== qa-typecheck OK (1s)
+gate: ==> e2e
+  68 skipped
+  610 passed (4.8m)
+e2e-run: playwright exit 0
+gate: e2e repeat: tests/auth.spec.ts imports e2e/support/fixtures.ts
+gate: e2e repeat: tests/checks.spec.ts imports e2e/support/fixtures.ts
+gate: e2e repeat: tests/guards.spec.ts imports e2e/support/fixtures.ts
+gate: e2e repeat: tests/loading.spec.ts imports e2e/support/fixtures.ts
+gate: e2e repeat: tests/navigation.spec.ts imports e2e/support/fixtures.ts
+gate: e2e repeat: tests/polish.spec.ts imports e2e/support/fixtures.ts
+gate: e2e repeat: tests/route-focus.spec.ts imports e2e/support/fixtures.ts
+gate: e2e repeat: tests/settings-account.spec.ts imports e2e/support/fixtures.ts
+gate: e2e repeat: tests/settings-workspace.spec.ts imports e2e/support/fixtures.ts
+gate: e2e repeat: tests/shells.spec.ts imports e2e/support/fixtures.ts
+gate: e2e repeat: tests/smoke.spec.ts imports e2e/support/fixtures.ts
+gate: e2e repeat: tests/students-account.spec.ts imports e2e/support/fixtures.ts
+gate: e2e repeat: tests/students-focus.spec.ts imports e2e/support/fixtures.ts
+gate: e2e repeat: tests/students-guardians.spec.ts imports e2e/support/fixtures.ts
+gate: e2e repeat: tests/students-learning-profile.spec.ts imports e2e/support/fixtures.ts
+gate: e2e repeat: tests/students-list.spec.ts imports e2e/support/fixtures.ts
+gate: e2e repeat: tests/students-polish.spec.ts imports e2e/support/fixtures.ts
+gate: e2e repeat: tests/students-profile.spec.ts imports e2e/support/fixtures.ts
+gate: e2e repeat: tests/students-ui-checks.spec.ts imports e2e/support/fixtures.ts
+gate: e2e repeat: tests/settings-account.spec.ts imports e2e/support/students.ts
+gate: e2e repeat: tests/settings-workspace.spec.ts imports e2e/support/students.ts
+gate: e2e repeat: tests/students-account.spec.ts imports e2e/support/students.ts
+gate: e2e repeat: tests/students-focus.spec.ts imports e2e/support/students.ts
+gate: e2e repeat: tests/students-guardians.spec.ts imports e2e/support/students.ts
+gate: e2e repeat: tests/students-learning-profile.spec.ts imports e2e/support/students.ts
+gate: e2e repeat: tests/students-list.spec.ts imports e2e/support/students.ts
+gate: e2e repeat: tests/students-polish.spec.ts imports e2e/support/students.ts
+gate: e2e repeat: tests/students-profile.spec.ts imports e2e/support/students.ts
+gate: e2e repeat: tests/students-ui-checks.spec.ts imports e2e/support/students.ts
+gate: e2e repeat x3: tests/auth.spec.ts tests/checks.spec.ts tests/guards.spec.ts tests/loading.spec.ts tests/navigation.spec.ts tests/polish.spec.ts tests/route-focus.spec.ts tests/settings-account.spec.ts tests/settings-workspace.spec.ts tests/shells.spec.ts tests/smoke.spec.ts tests/students-account.spec.ts tests/students-focus.spec.ts tests/students-guardians.spec.ts tests/students-learning-profile.spec.ts tests/students-list.spec.ts tests/students-polish.spec.ts tests/students-profile.spec.ts tests/students-ui-checks.spec.ts
+  204 skipped
+  1830 passed (14.1m)
+e2e-run: playwright exit 0
+gate: <== e2e OK (1181s)
+gate: PASS (7 steps, 1239s)
