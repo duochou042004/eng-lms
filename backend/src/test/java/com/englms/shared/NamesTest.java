@@ -25,8 +25,8 @@ class NamesTest {
 
 	@Test
 	void theFirstForbiddenCodePointIsReturnedWholeNotItsSurrogates() {
-		assertThat(Names.firstForbidden("A​B‮")).hasValue(0x200B);
-		assertThat(Names.firstForbidden("Lan󠁁​")).hasValue(0xE0041);
+		assertThat(Names.firstForbidden("A\u200BB\u202E")).hasValue(0x200B);
+		assertThat(Names.firstForbidden("Lan\uDB40\uDC41\u200B")).hasValue(0xE0041);
 		assertThat(Names.firstForbidden("\uDBFF")).hasValue(0xDBFF);
 	}
 

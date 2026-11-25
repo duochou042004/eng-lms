@@ -97,9 +97,9 @@ class NameRuleApiTest {
 				rows.add(Arguments.of(endpoint, "Lan Anh" + c, hex(cp)));
 			}
 			// several: the first one is named (a tag character as one code point, not its surrogates)
-			rows.add(Arguments.of(endpoint, "A​B‮C", "U+200B"));
-			rows.add(Arguments.of(endpoint, "‮​", "U+202E"));
-			rows.add(Arguments.of(endpoint, "Lan󠁁​", "U+E0041"));
+			rows.add(Arguments.of(endpoint, "A\u200BB\u202EC", "U+200B"));
+			rows.add(Arguments.of(endpoint, "\u202E\u200B", "U+202E"));
+			rows.add(Arguments.of(endpoint, "Lan\uDB40\uDC41\u200B", "U+E0041"));
 		}
 		return rows.stream();
 	}
