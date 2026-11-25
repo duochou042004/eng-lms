@@ -36,7 +36,8 @@ DEC-196. PO start signal 2026-11-25 (the `/goal`). Risk tier **M**: one combined
 - The `DevUiPage.test.tsx:12` flake → noted on the T-M2.7 row.
 
 ## G3 (tier M, DEC-198)
-- Combined QA+UX (fresh agent, head `d589168`): `QA-VERDICT T-M2.32: PASS WITH MINOR`, `UX-REVIEW T-M2.32: APPROVED`; AC1–AC7 pass (guard red on page, late and helper-context errors; lint red on 4 forms; drawer fits at 740×360; ordered PATCHes on a throttled network and across two switchers; vi names and announcements, switch without reload; full E2E 610 passed / 68 skipped). The duplicate "Đóng" judged acceptable. QA-1 (laptop focus after Esc with axe, 2 of 12 runs) and QA-2 ("Có 0 lựa chọn.") → the T-M2.7 row. Report: `qa/report.md` (`qa/` PR). No fix round.
+- Combined QA+UX (fresh agent, head `d589168`): `QA-VERDICT T-M2.32: PASS WITH MINOR`, `UX-REVIEW T-M2.32: APPROVED`; AC1–AC7 pass (guard red on page, late and helper-context errors; lint red on 4 forms; drawer fits at 740×360; ordered PATCHes on a throttled network and across two switchers; vi names and announcements, switch without reload; full E2E 610 passed / 68 skipped). The duplicate "Đóng" judged acceptable. QA-1 (laptop focus after Esc with axe, 2 of 12 runs) and QA-2 ("Có 0 lựa chọn.") → the T-M2.7 row. Report: `qa/report.md` (`qa/` PR #232, `7273fd7`). No fix round.
+- **Merged** `a43b17b` (PR #231 via merge-gate at head `24164f6`, CI 7/7; DEC-199).
 
 ## Not verified
 - WebKit (G5); a real screen reader (QA checks accessible names).
