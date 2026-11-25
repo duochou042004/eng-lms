@@ -85,14 +85,20 @@ export function createRoutes(queryClient: QueryClient): RouteObject[] {
                     Component: (await import('../features/students/routes/StudentWorkspacePage')).StudentWorkspacePage,
                   }),
                 },
-                // T-M2.6: Settings, a layout with one tab (Account) for now; the index redirects to it.
+                // T-M2.6: Settings, a layout with tabs (Workspace, Account, T-M2.35); the index redirects to Workspace.
                 {
                   path: 'settings',
                   lazy: async () => ({
                     Component: (await import('./routes/settings/SettingsLayout')).SettingsLayout,
                   }),
                   children: [
-                    { index: true, loader: indexOf('TUTOR', '/tutor/settings/account') },
+                    { index: true, loader: indexOf('TUTOR', '/tutor/settings/workspace') },
+                    {
+                      path: 'workspace',
+                      lazy: async () => ({
+                        Component: (await import('./routes/settings/WorkspaceSettingsPage')).WorkspaceSettingsPage,
+                      }),
+                    },
                     {
                       path: 'account',
                       lazy: async () => ({

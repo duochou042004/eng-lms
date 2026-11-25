@@ -88,6 +88,13 @@ function SegmentedSamples() {
         onChange={() => {}}
         isDisabled
       />
+      <SegmentedControl
+        label={t('sample.segmentedVisibleLabel')}
+        labelVisible
+        options={options}
+        selected={view}
+        onChange={setView}
+      />
       {/* Not stretched to the column (whose width follows the UI language), so its segments keep their size. */}
       <div className={styles.fit}>
         <LanguageSwitcher />

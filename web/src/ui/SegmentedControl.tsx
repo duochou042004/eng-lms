@@ -1,5 +1,7 @@
 import { Check } from 'lucide-react'
+import { useId } from 'react'
 import { type Key, ToggleButton, ToggleButtonGroup } from 'react-aria-components'
+import fieldStyles from './Field.module.css'
 import styles from './SegmentedControl.module.css'
 
 export interface SegmentedOption<K extends string> {
@@ -11,8 +13,10 @@ export interface SegmentedOption<K extends string> {
 }
 
 export interface SegmentedControlProps<K extends string> {
-  /** Required accessible name of the group (not shown; the segments' labels make the purpose visible). */
+  /** Required accessible name of the group; not shown unless `labelVisible`. */
   label: string
+  /** Shows `label` above the group as a field label (in a form), naming the group through `aria-labelledby`. */
+  labelVisible?: boolean
   options: ReadonlyArray<SegmentedOption<K>>
   selected: K
   onChange: (id: K) => void
@@ -36,10 +40,13 @@ export function SegmentedControl<K extends string>({
   selected,
   onChange,
   isDisabled,
+  labelVisible = false,
 }: SegmentedControlProps<K>) {
-  return (
+  const labelId = useId()
+  const group = (
     <ToggleButtonGroup
-      aria-label={label}
+      aria-label={labelVisible ? undefined : label}
+      aria-labelledby={labelVisible ? labelId : undefined}
       selectionMode="single"
       disallowEmptySelection
       selectedKeys={[selected]}
@@ -79,5 +86,14 @@ export function SegmentedControl<K extends string>({
         </ToggleButton>
       ))}
     </ToggleButtonGroup>
+  )
+  if (!labelVisible) return group
+  return (
+    <div className={styles.labelled}>
+      <span id={labelId} className={fieldStyles.label}>
+        {label}
+      </span>
+      {group}
+    </div>
   )
 }

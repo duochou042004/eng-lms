@@ -50,12 +50,13 @@ afterEach(() => {
 })
 
 describe('T-M2.6 AC5: Settings in the tutor shell', () => {
-  it('the sidebar has Settings; /tutor/settings redirects to the Account tab, both current; the title follows', async () => {
+  // T-M2.35: /tutor/settings now redirects to the Workspace tab (WorkspaceSettingsPage.test); the Account tab is opened directly.
+  it('the sidebar has Settings; the Account tab and Settings are current; the title follows', async () => {
     setViewportWidth(1280)
     tutorAccount()
-    const { router, container } = renderRoute('/tutor/settings')
+    const { router, container } = renderRoute('/tutor/settings/account')
     await h1('Cài đặt')
-    await waitFor(() => expect(router.state.location.pathname).toBe('/tutor/settings/account'))
+    expect(router.state.location.pathname).toBe('/tutor/settings/account')
     const nav = screen.getByRole('navigation', { name: 'Điều hướng gia sư' })
     expect(
       within(nav)
@@ -93,6 +94,17 @@ describe('T-M2.6 AC6: the Account page', () => {
     expect(save()).not.toBeDisabled()
     expect(screen.getByRole('link', { name: 'Đổi mật khẩu' })).toHaveAttribute('href', '/change-password')
     await expectNoAxeViolations(container)
+  })
+
+  // T-M2.35 AC8 (T-M2.6 UX-3): a visible "Ngôn ngữ" label names the switcher group.
+  it('the Language row has a visible label that names the switcher group', async () => {
+    tutorAccount()
+    await openPage()
+    const group = screen.getByRole('radiogroup', { name: 'Ngôn ngữ' })
+    const label = screen.getByText('Ngôn ngữ', { selector: 'span' })
+    expect(label).toBeVisible()
+    expect(group).toHaveAttribute('aria-labelledby', label.id)
+    expect(group).toHaveAccessibleName('Ngôn ngữ')
   })
 
   it('a zone the engine does not list (an alias saved elsewhere) shows and is kept', async () => {

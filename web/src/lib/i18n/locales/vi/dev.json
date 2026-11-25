@@ -49,6 +49,7 @@
     "segmentedMonth": "Tháng",
     "segmentedDisabledLabel": "Chế độ xem (không khả dụng)",
     "segmentedPartialLabel": "Chế độ xem (một lựa chọn không khả dụng)",
+    "segmentedVisibleLabel": "Chế độ xem (nhãn hiện)",
     "passwordLabel": "Mật khẩu",
     "passwordReveal": "Hiện mật khẩu",
     "passwordHint": "Từ 10 đến 128 ký tự.",

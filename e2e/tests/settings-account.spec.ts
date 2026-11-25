@@ -10,7 +10,6 @@ import { evidenceRecord } from '../support/evidence'
 import { answerPreferencesInPlace, expect, test } from '../support/fixtures'
 import { longData } from '../support/longData'
 import { openAccountSection } from '../support/shell'
-import { StepCounter } from '../support/steps'
 import { acceptStatus, apiStudent, h1, navItem, profileStudent, shot, studentSession, token } from '../support/students'
 
 // T-M2.6 (Settings › Account, the account's language and time zone) at the mandatory viewports: AC5–AC10.
@@ -69,35 +68,24 @@ async function isolate(page: Page) {
 test.beforeEach(({ page }) => isolate(page))
 
 test.describe('AC5: Settings in the tutor shell', () => {
-  test('the Settings item opens /tutor/settings → the Account tab; focus on the h1; both current; the title', async ({
+  // T-M2.35: the Settings item now lands on the Workspace tab (its step budget and the redirect: settings-workspace.spec);
+  // the Account tab is one more click on "Tài khoản".
+  test('Settings, then the Account tab: /tutor/settings/account; focus on the h1; both current; the title', async ({
     page,
-  }, testInfo) => {
+  }) => {
     await page.goto('/tutor/today')
     await expect(h1(page, 'Hôm nay')).toBeVisible()
-    const steps = new StepCounter()
-    // Below 1024 px the item sits in the drawer (one step to open it, counted).
-    const item = await (page.viewportSize()!.width < 1024
-      ? steps.step('open the navigation drawer', () => navItem(page, 'Cài đặt'))
-      : navItem(page, 'Cài đặt'))
-    await expect(item).toHaveAttribute('href', '/tutor/settings')
-    await steps.step('choose Settings', () => item.click())
+    await (await navItem(page, 'Cài đặt')).click()
+    await expect(page).toHaveURL(/\/tutor\/settings\/workspace$/)
+    const tabs = page.getByRole('navigation', { name: 'Các mục cài đặt' })
+    await tabs.getByRole('link', { name: 'Tài khoản' }).click()
     await expect(page).toHaveURL(/\/tutor\/settings\/account$/)
     await expect(h1(page, 'Cài đặt')).toBeFocused()
-    steps.expectAtMost(2)
     await expect(page).toHaveTitle('Cài đặt tài khoản · Eng-LMS')
-    const tabs = page.getByRole('navigation', { name: 'Các mục cài đặt' })
     await expect(tabs.getByRole('link', { name: 'Tài khoản' })).toHaveAttribute('aria-current', 'page')
     await expect(await navItem(page, 'Cài đặt')).toHaveAttribute('aria-current', 'page')
     if (page.viewportSize()!.width < 1024) await page.keyboard.press('Escape')
     await expectSettledAccessible(page)
-    await evidenceRecord(testInfo, 'ac5-settings-steps', {
-      steps: steps.steps,
-    })
-
-    // The address itself redirects too.
-    await page.goto('/tutor/settings')
-    await expect(page).toHaveURL(/\/tutor\/settings\/account$/)
-    await expect(h1(page, 'Cài đặt')).toBeVisible()
   })
 
   test('keyboard: the Settings item (sidebar) and the tab are in the Tab order', async ({ page }) => {
@@ -113,9 +101,12 @@ test.describe('AC5: Settings in the tutor shell', () => {
     await expect(item).toBeFocused()
     await page.keyboard.press('Enter')
     await expect(h1(page, 'Cài đặt')).toBeFocused()
-    const tab = page.getByRole('navigation', { name: 'Các mục cài đặt' }).getByRole('link', { name: 'Tài khoản' })
+    // T-M2.35: the tabs are Workspace, Account.
+    const tabs = page.getByRole('navigation', { name: 'Các mục cài đặt' })
     await page.keyboard.press('Tab')
-    await expect(tab).toBeFocused()
+    await expect(tabs.getByRole('link', { name: 'Không gian làm việc' })).toBeFocused()
+    await page.keyboard.press('Tab')
+    await expect(tabs.getByRole('link', { name: 'Tài khoản' })).toBeFocused()
   })
 })
 
@@ -125,7 +116,14 @@ test.describe('AC6, AC10: the Account page', () => {
   }, testInfo) => {
     const sent = recordPreferences(page)
     await openAccount(page)
-    await expect(page.getByRole('main').getByRole('radiogroup', { name: 'Ngôn ngữ' })).toBeVisible()
+    // T-M2.35 AC8: a visible "Ngôn ngữ" label names the switcher group.
+    const language = page.getByRole('main').getByRole('radiogroup', { name: 'Ngôn ngữ' })
+    await expect(language).toBeVisible()
+    const label = page.getByRole('main').getByText('Ngôn ngữ', { exact: true })
+    await expect(label).toBeVisible()
+    await expect(language).toHaveAttribute('aria-labelledby', (await label.getAttribute('id'))!)
+    expect((await label.boundingBox())!.y, 'the label above the group').toBeLessThan((await language.boundingBox())!.y)
+    await shot(page, testInfo, 'settings-account-label')
     await expect(displayName(page)).toHaveValue('')
     await expect(timeZone(page)).toHaveValue('Asia/Ho_Chi_Minh')
     await expect(save(page)).toHaveAttribute('aria-disabled', 'true')

@@ -2,7 +2,50 @@
   "title": "Settings",
   "tabsLabel": "Settings sections",
   "tabs": {
+    "workspace": "Workspace",
     "account": "Account"
+  },
+  "workspace": {
+    "pageTitle": "Workspace settings",
+    "heading": "Workspace",
+    "formLabel": "Workspace details",
+    "loading": "Loading the workspace settings",
+    "loadError": "Couldn't load the workspace settings.",
+    "displayName": "Workspace name",
+    "required": "(required)",
+    "displayNameHint": "Shown on the sign-in page and in the menus.",
+    "defaultLocale": "Default language",
+    "defaultTimeZone": "Default time zone",
+    "defaultsHint": "Applies to students you add from now on.",
+    "save": "Save",
+    "saving": "Saving…",
+    "saved": "Saved",
+    "summaryTitle": "Your settings were not saved",
+    "networkError": "Couldn't save: you seem to be offline. Try again when you're back online.",
+    "serverError": "Couldn't save your settings. Try again.",
+    "retry": "Try again",
+    "discardTitle": "Discard your changes?",
+    "discardDescription": "Your changes to the workspace settings haven't been saved.",
+    "discard": "Discard changes",
+    "keepEditing": "Keep editing",
+    "conflict": {
+      "title": "This was changed elsewhere",
+      "description": "The workspace settings were just changed in another tab or window. Reload to see the latest version; your unsaved changes will be lost.",
+      "reload": "Reload",
+      "keepEditing": "Keep editing"
+    },
+    "errors": {
+      "displayName": {
+        "REQUIRED": "Enter a workspace name.",
+        "TOO_LONG": "Use at most 120 characters for the workspace name.",
+        "INVALID_FORMAT": "Remove the control, text-direction and zero-width characters from the name."
+      },
+      "defaultTimeZone": {
+        "REQUIRED": "Choose a default time zone.",
+        "INVALID_VALUE": "Choose a time zone from the list."
+      },
+      "server": "A value was not accepted. Check the form and try again."
+    }
   },
   "account": {
     "pageTitle": "Account settings",
