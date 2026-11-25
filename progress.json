@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-11-25T11:43:20Z",
-  "updatedBy": "lead-coordinator (T-M2.35 started)",
+  "updatedAt": "2026-11-25T13:40:00Z",
+  "updatedBy": "lead-coordinator (T-M2.35 in review)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -32,17 +32,17 @@
   "currentTask": {
     "id": "T-M2.35",
     "title": "Workspace settings v1 (FR-SET-01 first section; split from T-M2.6)",
-    "status": "in_progress",
+    "status": "in_review",
     "ownerRole": "BE+FE",
     "branch": "feature/T-M2.35-workspace-settings",
     "packet": "docs/tasks/T-M2.35-workspace-settings.md",
     "pr": null,
-    "lastCommit": null,
+    "lastCommit": "0d4eed9",
     "startedAt": "2026-11-25T11:43:20Z",
     "nextSteps": [
-      "BE implementer (store, endpoints, /meta, student defaults)",
-      "FE implementer (Workspace tab, redirect, Account Language label)",
-      "gate; PR; G3 tier H (SEC, then QA with the UX checklist)"
+      "PR and CI green",
+      "G3 tier H: SEC agent, then QA with the UX checklist",
+      "merge-gate; gitlab-sync; qa/ PR; records PR"
     ],
     "trace": [
       "DEC-187",
