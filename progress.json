@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-11-25T13:58:10Z",
-  "updatedBy": "lead-coordinator (T-M2.35 merged; records)",
+  "updatedAt": "2026-11-25T14:19:36Z",
+  "updatedBy": "lead-coordinator (T-M2.32 packet draft)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -31,24 +31,25 @@
   },
   "currentTask": {
     "id": "T-M2.32",
-    "title": "E2E console-guard gap and T-M2.31 polish (a)-(g)",
+    "title": "E2E console guard for fresh contexts and the T-M2.31 / T-M2.6 / T-M2.35 polish",
     "status": "draft",
     "ownerRole": "FE",
-    "branch": null,
-    "packet": null,
+    "branch": "feature/T-M2.32-guard-and-polish",
+    "packet": "docs/tasks/T-M2.32-guard-and-polish.md",
     "pr": null,
     "lastCommit": null,
     "startedAt": null,
     "nextSteps": [
-      "LC writes the packet (task-packet skill) on docs/T-M2.32-packet; G0 docs-reviewer",
+      "G0: fresh docs-reviewer on the packet PR (docs/T-M2.32-packet)",
       "PO start signal",
-      "FE implementer; gate; PR; G3 tier M (one fresh QA agent)"
+      "FE implementer; gate; PR; G3 tier M (one combined QA+UX reviewer)"
     ],
     "trace": [
       "DEC-183",
       "DEC-184",
       "DEC-191",
-      "DEC-194"
+      "DEC-194",
+      "DEC-196"
     ]
   },
   "nextTask": {
@@ -1919,6 +1920,11 @@
       "at": "2026-11-25T13:32:49Z",
       "actor": "lead-coordinator",
       "event": "T-M2.35 merged (PR #227, 9ad116b; QA PR #228, 100e114; DEC-195). Next: T-M2.32 packet."
+    },
+    {
+      "at": "2026-11-25T14:19:36Z",
+      "actor": "lead-coordinator",
+      "event": "T-M2.32 packet written (DEC-196); G0 review next."
     }
   ]
 }
