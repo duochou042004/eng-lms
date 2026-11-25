@@ -89,6 +89,8 @@ export function ConfirmDialog({
  * the dialog's own, which then leaves focus where it is (inside).
  */
 function FocusOnMount({ id }: { id: string }) {
-  useEffect(() => document.getElementById(id)?.focus(), [id])
+  useEffect(() => {
+    document.getElementById(id)?.focus()
+  }, [id])
   return null
 }

@@ -117,7 +117,9 @@ export function LearningProfileForm({ studentId, profile, onClose, onReload, onN
   })
   const rows = useFieldArray({ control, name: 'customFields' })
 
-  useEffect(() => document.getElementById(learningProfileFieldId.currentLevel)?.focus(), [])
+  useEffect(() => {
+    document.getElementById(learningProfileFieldId.currentLevel)?.focus()
+  }, [])
 
   const message = (path: string, key: string | undefined) => (key ? t(key, { max: maxOf(path, key) }) : undefined)
   const tagMessage = (name: TagsName) => {

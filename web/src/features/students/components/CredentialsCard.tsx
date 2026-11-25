@@ -36,7 +36,9 @@ export function CredentialsCard({ credentials, title, intro, actions }: Credenti
   const workspace = useWorkspaceName()
   const titleId = useId()
   const titleRef = useRef<HTMLHeadingElement>(null)
-  useEffect(() => titleRef.current?.focus(), [])
+  useEffect(() => {
+    titleRef.current?.focus()
+  }, [])
   const loginUrl = `${window.location.origin}/login`
   const message = credentialsMessage(t, i18n.language, timeZone, {
     workspace,

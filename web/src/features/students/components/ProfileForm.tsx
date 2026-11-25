@@ -68,7 +68,9 @@ export function ProfileForm({ student, onClose, onReload, onNotFound }: ProfileF
   })
   const availability = useUsernameCheck(control, errors.username?.type === 'server', initial.username.trim())
 
-  useEffect(() => document.getElementById(fieldId.fullName)?.focus(), [])
+  useEffect(() => {
+    document.getElementById(fieldId.fullName)?.focus()
+  }, [])
 
   const summaryItems: ErrorSummaryItem[] = summaryShown
     ? [...summaryOf(errors, t), ...unknownErrors.map((m) => ({ message: t(m) }))]

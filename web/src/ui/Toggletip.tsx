@@ -52,7 +52,9 @@ export function Toggletip({
   }, [isOpen, onOpenChange])
 
   // React Aria's Button drops a `title` prop; the mouse hover text (responsive-standards §3 item 8) is set on the element.
-  useEffect(() => triggerRef.current?.setAttribute('title', message), [message])
+  useEffect(() => {
+    triggerRef.current?.setAttribute('title', message)
+  }, [message])
 
   // After the popover has unmounted (its focus scope no longer holds focus), so React Aria's own return finds focus moved.
   useEffect(() => {
