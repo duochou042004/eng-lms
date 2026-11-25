@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-11-25T17:19:52Z",
-  "updatedBy": "lead-coordinator (T-M2.33 packet)",
+  "updatedAt": "2026-11-25T17:40:31Z",
+  "updatedBy": "lead-coordinator (T-M2.33 in progress)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -32,16 +32,15 @@
   "currentTask": {
     "id": "T-M2.33",
     "title": "Strict scalar binding beyond integers + one name character rule for workspace and account names",
-    "status": "ready",
+    "status": "in_progress",
     "ownerRole": "BE",
     "branch": "feature/T-M2.33-strict-scalars-names",
     "packet": "docs/tasks/T-M2.33-strict-scalars-names.md",
     "pr": null,
     "lastCommit": null,
-    "startedAt": null,
+    "startedAt": "2026-11-25T17:40:31Z",
     "nextSteps": [
-      "PO start signal",
-      "git switch -c feature/T-M2.33-strict-scalars-names; progress in_progress; BE implementer then FE; gate; PR; G3 tier H (SEC, then QA+UX); merge; qa/ PR; records PR"
+      "BE implementer (scope 1-5), then FE implementer (scope 6-8); gate; PR; G3 tier H (SEC, then QA+UX); merge; qa/ PR; records PR"
     ],
     "trace": [
       "DEC-186",
@@ -53,7 +52,7 @@
     "entryGate": [
       "T-M2.32 merged — met (a43b17b, DEC-199)",
       "Packet + G0 — met (PR #234, DEC-200)",
-      "PO start signal — pending"
+      "PO start signal — met (chat, 2026-11-25)"
     ]
   },
   "nextTask": {
@@ -1977,6 +1976,11 @@
       "at": "2026-11-25T17:19:52Z",
       "actor": "lead-coordinator",
       "event": "T-M2.33 packet ready (G0 PR #234, DEC-200); waiting for the PO start signal."
+    },
+    {
+      "at": "2026-11-25T17:40:31Z",
+      "actor": "lead-coordinator",
+      "event": "PO start signal for T-M2.33 (chat); branch feature/T-M2.33-strict-scalars-names."
     }
   ]
 }
