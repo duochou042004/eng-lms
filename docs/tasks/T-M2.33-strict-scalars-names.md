@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Milestone | M2 |
-| Status | draft |
+| Status | ready (G0: round 1 CHANGES REQUESTED (S2-1, S3-1, S3-2, S4-1..S4-6), all fixed; delta PASS WITH MINOR, S4 fixed; DEC-200; waiting for the PO start signal) |
 | Owner role | BE (binding, the shared name rule, both services, docs) then FE (the two forms' client rule and messages); one implementer at a time |
 | Branch | `feature/T-M2.33-strict-scalars-names` (from `develop`) |
 | Depends on | T-M2.10 (merged, `6cca511`, DEC-186), T-M2.6 (merged, `160df23`, DEC-192), T-M2.35 (merged, `9ad116b`, DEC-195), T-M2.32 (merged, `a43b17b`, DEC-199) |
@@ -100,7 +100,7 @@ tells the tutor which one it found.
   a guard row, green before and after) → 400 `MALFORMED_REQUEST` and no session;
   `true`, `false`, `null` and absent keep today's behaviour (tests kept).
 - AC3 (kept): all T-M2.10 integer tests and every valid-body test pass unchanged; the 400 body is the existing problem shape; a binding 400 on
-  the sign-in body is not counted by `LoginThrottle` (a test: N numeric-password attempts, then a correct sign-in succeeds).
+  the sign-in body is not counted by `LoginThrottle` (a test: the test profile's configured throttle limit + 1 numeric-password attempts from one client, then a correct sign-in succeeds).
 - AC4 (name rule, server): a table test over both names with at least U+0009, U+000A, U+000D, U+007F, U+0085, U+00AD, U+061C, U+180E,
   U+200B, U+200D, U+200E, U+2028, U+2029, U+202E, U+2060, U+2064, U+2066, U+FEFF, U+E0041 and a lone U+D800, each at the start, middle and end:
   422 `INVALID_FORMAT` on `displayName` with `message` naming that code point (first one when several), nothing saved; accepted: Vietnamese with

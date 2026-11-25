@@ -16,7 +16,7 @@
       }
     ]
   },
-  "updatedAt": "2026-11-25T17:13:20Z",
+  "updatedAt": "2026-11-25T17:19:52Z",
   "updatedBy": "lead-coordinator (T-M2.33 packet)",
   "phase": {
     "id": "P1",
@@ -32,15 +32,16 @@
   "currentTask": {
     "id": "T-M2.33",
     "title": "Strict scalar binding beyond integers + one name character rule for workspace and account names",
-    "status": "draft",
+    "status": "ready",
     "ownerRole": "BE",
-    "branch": null,
+    "branch": "feature/T-M2.33-strict-scalars-names",
     "packet": "docs/tasks/T-M2.33-strict-scalars-names.md",
     "pr": null,
     "lastCommit": null,
     "startedAt": null,
     "nextSteps": [
-      "G0 by a fresh docs-reviewer on PR (docs/T-M2.33-packet); merge; then the PO start signal"
+      "PO start signal",
+      "git switch -c feature/T-M2.33-strict-scalars-names; progress in_progress; BE implementer then FE; gate; PR; G3 tier H (SEC, then QA+UX); merge; qa/ PR; records PR"
     ],
     "trace": [
       "DEC-186",
@@ -51,7 +52,7 @@
     ],
     "entryGate": [
       "T-M2.32 merged — met (a43b17b, DEC-199)",
-      "Packet + G0 — pending",
+      "Packet + G0 — met (PR #234, DEC-200)",
       "PO start signal — pending"
     ]
   },
@@ -520,7 +521,7 @@
   "gates": {
     "G0": {
       "status": "pass",
-      "note": "T-M2.32 packet: PR #230, DOCS-REVIEW round 1 CHANGES REQUESTED, delta PASS WITH MINOR, S4 fixed (DEC-196)"
+      "note": "T-M2.33 packet: PR #234, DOCS-REVIEW round 1 CHANGES REQUESTED, delta PASS WITH MINOR, S4 fixed (DEC-200)"
     },
     "G1": {
       "status": "pass",
@@ -1971,6 +1972,11 @@
       "at": "2026-11-25T17:13:20Z",
       "actor": "lead-coordinator",
       "event": "T-M2.32 records PR #233 merged (0a00361, DOCS-REVIEW PASS). T-M2.33 packet drafted (DEC-200), G0 next."
+    },
+    {
+      "at": "2026-11-25T17:19:52Z",
+      "actor": "lead-coordinator",
+      "event": "T-M2.33 packet ready (G0 PR #234, DEC-200); waiting for the PO start signal."
     }
   ]
 }
