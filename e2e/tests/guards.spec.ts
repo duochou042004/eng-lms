@@ -1,7 +1,7 @@
 import type { Page } from '@playwright/test'
 import { ANONYMOUS, TUTOR_STATE } from '../support/auth'
 import { expectNoAxeViolations, expectNoHorizontalScroll } from '../support/checks'
-import { expect, LATE_ERROR_SETTLE_MS, test } from '../support/fixtures'
+import { expect, guardContext, LATE_ERROR_SETTLE_MS, test } from '../support/fixtures'
 
 // Self-tests of the harness guards (T-M1.6 AC4): each one must FAIL on a page broken on purpose. The page is the real
 // served /tutor with the real CSP header; only this test's copy of the HTML is altered (nothing ships in the bundle).
@@ -106,6 +106,49 @@ test('the console guard fails on an error raised 300 ms after the test body ends
   await openTutorWith(page, '')
   await page.evaluate(() => {
     setTimeout(() => console.error('late'), 300)
+  })
+  expect(consoleGuard).toEqual([])
+})
+
+// T-M2.32 (a), DEC-184: a page in a `browser.newContext()` is guarded once `guardContext` feeds the test's list. Expected
+// failures, as above: the body never fails on its own, so Playwright reports them as passed only if the guard fails them
+// (without `guardContext`, or without its registration for the late settle, each one "unexpectedly passes").
+test('the console guard fails on a page error in a fresh guarded context (expected failure)', async ({
+  browser,
+  consoleGuard,
+}) => {
+  test.fail(true, 'expected: the console guard fails this test in teardown with "pageerror: fresh crash"')
+  const context = await browser.newContext({ storageState: TUTOR_STATE })
+  await guardContext(context, consoleGuard)
+  const page = await context.newPage()
+  await openTutorWith(page, '')
+  const crashed = page.waitForEvent('pageerror')
+  await page.evaluate(() => {
+    setTimeout(() => {
+      throw new Error('fresh crash')
+    })
+  })
+  await crashed
+  await context.close()
+})
+
+test('the console guard fails on an error raised 300 ms after the body in a fresh guarded context (expected failure)', async ({
+  browser,
+  page: own,
+  consoleGuard,
+}) => {
+  test.fail(
+    true,
+    'expected: the console guard fails this test in teardown with "console.error: late in a fresh context"',
+  )
+  // The beforeEach opened the test's own page: closed, so only the fresh context's open page can trigger the settle.
+  await own.close()
+  const context = await browser.newContext({ storageState: TUTOR_STATE })
+  await guardContext(context, consoleGuard)
+  const page = await context.newPage()
+  await openTutorWith(page, '')
+  await page.evaluate(() => {
+    setTimeout(() => console.error('late in a fresh context'), 300)
   })
   expect(consoleGuard).toEqual([])
 })

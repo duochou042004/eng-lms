@@ -20,7 +20,7 @@ import {
   expectSettledAccessible,
 } from '../support/checks'
 import { evidenceRecord, evidenceShot } from '../support/evidence'
-import { expect, test } from '../support/fixtures'
+import { expect, guardContext, test } from '../support/fixtures'
 import { openAccountSection } from '../support/shell'
 
 // T-M2.12 (DEC-116): navigation feedback (AC1), the chunk-load error page and its Retry (AC2, AC3), the cross-tab
@@ -285,8 +285,14 @@ test.describe('AC2, AC3: a page whose code cannot load (DEC-087 F-3)', () => {
 })
 
 /** A page on the app's origin signed in as the E2E tutor (its stored session), for API set-up calls. */
-async function newStudentCredentials(browser: Browser, testInfo: TestInfo, ready: boolean): Promise<Credentials> {
+async function newStudentCredentials(
+  browser: Browser,
+  testInfo: TestInfo,
+  ready: boolean,
+  guard: string[],
+): Promise<Credentials> {
   const context = await browser.newContext({ storageState: TUTOR_STATE })
+  await guardContext(context, guard)
   const page = await context.newPage()
   await page.goto('/tutor')
   await expect(h1(page, COPY.vi.tutorHome)).toBeVisible()
@@ -294,6 +300,7 @@ async function newStudentCredentials(browser: Browser, testInfo: TestInfo, ready
   await context.close()
   if (!ready) return temporary
   const studentContext = await browser.newContext({ storageState: ANONYMOUS })
+  await guardContext(studentContext, guard)
   const studentPage = await studentContext.newPage()
   await studentPage.goto('/login')
   expect((await apiSignIn(studentPage, temporary)).status).toBe(200)
@@ -303,8 +310,9 @@ async function newStudentCredentials(browser: Browser, testInfo: TestInfo, ready
 }
 
 /** Two tabs of one browser (one cookie jar), both on `/login`. */
-async function twoTabs(browser: Browser) {
+async function twoTabs(browser: Browser, guard: string[]) {
   const context = await browser.newContext({ storageState: ANONYMOUS })
+  await guardContext(context, guard)
   const a = await context.newPage()
   const b = await context.newPage()
   for (const page of [a, b]) {
@@ -353,8 +361,9 @@ async function expectSignedOutNotice(page: Page, testInfo: TestInfo, lang: 'vi' 
 test.describe('AC5, AC6: cross-tab sign-in and sign-out (S4-2)', () => {
   test('log out in tab B: tab A on /tutor/today goes to /login?next=%2Ftutor%2Ftoday without user action (AC5)', async ({
     browser,
+    consoleGuard,
   }, testInfo) => {
-    const { context, a, b } = await twoTabs(browser)
+    const { context, a, b } = await twoTabs(browser, consoleGuard)
     await signInWithForm(b, tutor())
     await expect(h1(b, COPY.vi.tutorHome)).toBeVisible()
     await a.goto('/tutor/today')
@@ -376,8 +385,9 @@ test.describe('AC5, AC6: cross-tab sign-in and sign-out (S4-2)', () => {
 
   test('[en] log out in tab B: tab A on /tutor/today shows the notice in English (T-M2.13 AC2)', async ({
     browser,
+    consoleGuard,
   }, testInfo) => {
-    const { context, a, b } = await twoTabs(browser)
+    const { context, a, b } = await twoTabs(browser, consoleGuard)
     // Tab A's language (stored for the browser; tab B keeps the vi it loaded with).
     await chooseLanguage(a, 'en')
     await signInWithForm(b, tutor())
@@ -397,7 +407,7 @@ test.describe('AC5, AC6: cross-tab sign-in and sign-out (S4-2)', () => {
     consoleGuard,
   }, testInfo) => {
     test.skip(testInfo.project.name !== 'laptop', 'checked at laptop')
-    const { context, a, b } = await twoTabs(browser)
+    const { context, a, b } = await twoTabs(browser, consoleGuard)
     await signInWithForm(b, tutor())
     await expect(h1(b, COPY.vi.tutorHome)).toBeVisible()
     await a.goto('/tutor/students')
@@ -450,8 +460,11 @@ test.describe('AC5, AC6: cross-tab sign-in and sign-out (S4-2)', () => {
     await context.close()
   })
 
-  test('tab A on /login, tab B signs in as the tutor: tab A goes to the tutor home (AC6)', async ({ browser }) => {
-    const { context, a, b } = await twoTabs(browser)
+  test('tab A on /login, tab B signs in as the tutor: tab A goes to the tutor home (AC6)', async ({
+    browser,
+    consoleGuard,
+  }) => {
+    const { context, a, b } = await twoTabs(browser, consoleGuard)
     await signInWithForm(b, tutor())
     await expect(h1(b, COPY.vi.tutorHome)).toBeVisible()
     await expect(h1(a, COPY.vi.tutorHome)).toBeVisible()
@@ -461,9 +474,10 @@ test.describe('AC5, AC6: cross-tab sign-in and sign-out (S4-2)', () => {
 
   test('tab A on /tutor/today; tab B logs out and signs in as a student: tab A never shows tutor content again (AC6)', async ({
     browser,
+    consoleGuard,
   }, testInfo) => {
-    const student = await newStudentCredentials(browser, testInfo, true)
-    const { context, a, b } = await twoTabs(browser)
+    const student = await newStudentCredentials(browser, testInfo, true, consoleGuard)
+    const { context, a, b } = await twoTabs(browser, consoleGuard)
     await signInWithForm(b, tutor())
     await expect(h1(b, COPY.vi.tutorHome)).toBeVisible()
     await a.goto('/tutor/today')
@@ -483,9 +497,10 @@ test.describe('AC5, AC6: cross-tab sign-in and sign-out (S4-2)', () => {
 
   test("tab A on /login, tab B signs in a user who must change the password: A goes to /change-password and B's session stays valid (AC6, D-2)", async ({
     browser,
+    consoleGuard,
   }, testInfo) => {
-    const student = await newStudentCredentials(browser, testInfo, false)
-    const { context, a, b } = await twoTabs(browser)
+    const student = await newStudentCredentials(browser, testInfo, false, consoleGuard)
+    const { context, a, b } = await twoTabs(browser, consoleGuard)
     await signInWithForm(b, student)
     await expect(h1(b, COPY.vi.change)).toBeVisible()
     await expect(a).toHaveURL(/\/change-password$/)

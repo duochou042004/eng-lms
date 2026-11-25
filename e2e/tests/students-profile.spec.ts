@@ -159,11 +159,12 @@ test.describe('Edit profile (T-M2.14)', () => {
   })
 
   test('AC3: a username change; the student signs in with it and a session open before still works', async ({
+    consoleGuard,
     page,
     browser,
   }, testInfo) => {
     const created = await profileStudent(page, 'Đổi Tên Đăng Nhập')
-    const student = await studentSession(browser, created)
+    const student = await studentSession(browser, created, consoleGuard)
     await page.goto(`/tutor/students/${created.student.id}`)
     await expect(h1(page, created.student.fullName)).toBeVisible()
     await page.getByRole('button', { name: 'Sửa hồ sơ', exact: true }).click()
@@ -185,7 +186,7 @@ test.describe('Edit profile (T-M2.14)', () => {
     const session = await apiCall<{ username: string }>(student.page, 'GET', '/api/v1/auth/session')
     expect(session.status).toBe(200)
     expect(session.body.username).toBe(next)
-    expect(await trySignIn(browser, { username: next, password: student.credentials.password })).toBe(200)
+    expect(await trySignIn(browser, { username: next, password: student.credentials.password }, consoleGuard)).toBe(200)
     await student.context.close()
   })
 

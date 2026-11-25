@@ -11,14 +11,6 @@ import { test as base, expect, type BrowserContext } from '@playwright/test'
 export const LATE_ERROR_SETTLE_MS = 500
 
 /**
- * `test` with an automatic console guard: any console error, uncaught page error or CSP violation fails the test
- * (the CSP is strict, security.md §5; DEC-052 keeps React Aria from injecting a <style>). Chromium logs a blocked
- * resource as a console error; the `securitypolicyviolation` listener makes the directive explicit. The listeners sit
- * on the browser context, so pages and popups opened during the test are guarded too (T-M1.6 QA F2). After the test
- * body the guard waits `LATE_ERROR_SETTLE_MS` before it asserts (the pages stay open until the context closes, which
- * happens after this fixture's teardown), so late errors are seen too.
- */
-/**
  * The one expected network "error" (T-M2.4): the session bootstrap `GET /api/v1/auth/session` answers 401 to an
  * anonymous visitor (api-catalog "auth"), and Chromium logs every 4xx resource as a console error. Only that exact
  * message from that exact URL is ignored; a 401 from any other request still fails the test (self-test in
@@ -54,6 +46,60 @@ export async function answerPreferencesInPlace(context: BrowserContext) {
   })
 }
 
+/** The contexts feeding each test's guard list (its own and the fresh ones `guardContext` adds), for the late settle. */
+const guardedContexts = new WeakMap<string[], BrowserContext[]>()
+
+/**
+ * The console guard's rules on `context`, feeding `problems` (the test's `consoleGuard`): any console error (except the
+ * anonymous session probe), uncaught page error or CSP violation fails the test (the CSP is strict, security.md §5;
+ * DEC-052 keeps React Aria from injecting a <style>). Chromium logs a blocked resource as a console error; the
+ * `securitypolicyviolation` listener makes the directive explicit. The listeners sit on the browser context, so pages and
+ * popups opened in it are guarded too (T-M1.6 QA F2). The `test` fixture applies it to its own context; every
+ * `browser.newContext()` in a spec applies it too (T-M2.32 (a), DEC-184: an unguarded fresh context let a page crash
+ * pass), and is then also covered by the fixture's late settle while one of its pages is open.
+ */
+export async function guardContext(context: BrowserContext, problems: string[]) {
+  context.on('console', (message) => {
+    if (message.type() !== 'error' || isAnonymousSessionProbe(message.text(), message.location().url)) return
+    // A failed resource names its URL (G3 QA F2), so a test can accept exactly the request it provoked.
+    const text = message.text()
+    const url = message.location().url
+    problems.push(`console.error: ${text}${text.startsWith('Failed to load resource') && url ? ` [${url}]` : ''}`)
+  })
+  context.on('weberror', (webError) => problems.push(`pageerror: ${webError.error().message}`))
+  await context.addInitScript(() => {
+    document.addEventListener('securitypolicyviolation', (event) => {
+      console.error(`CSP violation: ${event.violatedDirective} blocked ${event.blockedURI || 'inline'}`)
+    })
+  })
+  guardedContexts.set(problems, [...(guardedContexts.get(problems) ?? []), context])
+}
+
+/**
+ * Removes the console entries of a response a test provokes on purpose (only that status from that API path). Never the
+ * whole guard: everything else still fails the test.
+ */
+export function acceptStatus(consoleGuard: string[], status: number, path: string | RegExp) {
+  const prefix = `console.error: Failed to load resource: the server responded with a status of ${status} `
+  for (let i = consoleGuard.length - 1; i >= 0; i--) {
+    const entry = consoleGuard[i]!
+    const url = /\[([^\]]+)\]$/.exec(entry)?.[1]
+    const pathname = url ? new URL(url).pathname : ''
+    if (entry.startsWith(prefix) && (typeof path === 'string' ? pathname === path : path.test(pathname)))
+      consoleGuard.splice(i, 1)
+  }
+}
+
+/** Removes the console entries a test provokes on purpose (e.g. a request sent offline). */
+export function accept(consoleGuard: string[], matches: (entry: string) => boolean) {
+  for (let i = consoleGuard.length - 1; i >= 0; i--) if (matches(consoleGuard[i]!)) consoleGuard.splice(i, 1)
+}
+
+/**
+ * `test` with an automatic console guard (`guardContext` on the test's own context). After the test body the guard waits
+ * `LATE_ERROR_SETTLE_MS` before it asserts while any guarded context (its own or a fresh one) still has an open page
+ * (the pages stay open until the context closes, which happens after this fixture's teardown), so late errors are seen too.
+ */
 export const test = base.extend<{ consoleGuard: string[]; realPreferences: boolean; preferencesInPlace: void }>({
   /** `test.use({ realPreferences: true })`: the preferences PATCH reaches the server (settings-account.spec.ts only). */
   realPreferences: [false, { option: true }],
@@ -67,22 +113,10 @@ export const test = base.extend<{ consoleGuard: string[]; realPreferences: boole
   consoleGuard: [
     async ({ context }, use) => {
       const problems: string[] = []
-      context.on('console', (message) => {
-        if (message.type() !== 'error' || isAnonymousSessionProbe(message.text(), message.location().url)) return
-        // A failed resource names its URL (G3 QA F2), so a test can accept exactly the request it provoked.
-        const text = message.text()
-        const url = message.location().url
-        problems.push(`console.error: ${text}${text.startsWith('Failed to load resource') && url ? ` [${url}]` : ''}`)
-      })
-      context.on('weberror', (webError) => problems.push(`pageerror: ${webError.error().message}`))
-      await context.addInitScript(() => {
-        document.addEventListener('securitypolicyviolation', (event) => {
-          console.error(`CSP violation: ${event.violatedDirective} blocked ${event.blockedURI || 'inline'}`)
-        })
-      })
+      await guardContext(context, problems)
       await use(problems)
-      // No open page, nothing can log: skip the settle.
-      if (context.pages().some((p) => !p.isClosed())) {
+      // No open page in a guarded context, nothing can log: skip the settle.
+      if ((guardedContexts.get(problems) ?? []).some((c) => c.pages().some((p) => !p.isClosed()))) {
         await new Promise((resolve) => setTimeout(resolve, LATE_ERROR_SETTLE_MS))
       }
       expect(problems, 'console errors, page errors or CSP violations').toEqual([])
