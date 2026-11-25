@@ -10,10 +10,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.OptionalInt;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.Predicate;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import com.englms.identity.AccountApi;
@@ -30,6 +30,7 @@ import com.englms.settings.SettingsApi;
 import com.englms.settings.SettingsApi.AccountDefaults;
 import com.englms.shared.Ids;
 import com.englms.shared.Like;
+import com.englms.shared.Names;
 import com.englms.shared.ProblemCodes;
 import com.englms.shared.ProblemException;
 import com.englms.shared.ProblemException.FieldProblem;
@@ -54,7 +55,6 @@ public class AccountService implements AccountApi {
 	static final int DISPLAY_NAME_MAX = 120;
 
 	/** C0 control characters other than tab, line feed and carriage return (validation-rules, the students rule). */
-	private static final Pattern CONTROL = Pattern.compile("[\\x00-\\x08\\x0B\\x0C\\x0E-\\x1F]");
 
 	private final UserAccountRepository accounts;
 
@@ -235,7 +235,7 @@ public class AccountService implements AccountApi {
 		return current;
 	}
 
-	/** The fullName rule (trimmed, 1–120 code points, no C0 control other than tab/LF/CR); empty or {@code null} clears it; tutors only. */
+	/** The shared name rule ({@link Names}): stripped, 1–120 code points; blank or {@code null} clears it; tutors only. */
 	private static String displayName(String raw, Role role, List<FieldProblem> problems) {
 		if (role != Role.TUTOR) {
 			// A student's name is the tutor's fullName (FR-STU-03).
@@ -245,11 +245,13 @@ public class AccountService implements AccountApi {
 		if (raw == null) {
 			return null;
 		}
-		if (CONTROL.matcher(raw).find()) {
-			problems.add(new FieldProblem("displayName", ProblemCodes.INVALID_FORMAT, "Control characters are not allowed"));
+		OptionalInt forbidden = Names.firstForbidden(raw);
+		if (forbidden.isPresent()) {
+			problems.add(new FieldProblem("displayName", ProblemCodes.INVALID_FORMAT,
+					"Invisible or control character " + Names.codePoint(forbidden.getAsInt()) + " is not allowed"));
 			return null;
 		}
-		String value = raw.strip();
+		String value = Names.strip(raw);
 		if (value.codePointCount(0, value.length()) > DISPLAY_NAME_MAX) {
 			problems.add(new FieldProblem("displayName", ProblemCodes.TOO_LONG, "At most " + DISPLAY_NAME_MAX + " characters"));
 		}

@@ -1,0 +1,14 @@
+T-M2.33 BE: (cd backend && ./mvnw -B verify) on the BE working tree (before commit)
+Tests run: 59, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 49.06 s -- in com.englms.identity.AuthApiIntegrationTest
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 3.647 s -- in com.englms.identity.LoginThrottleApiTest
+Tests run: 29, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 10.56 s -- in com.englms.identity.PreferencesApiIntegrationTest
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 3.076 s -- in com.englms.identity.LoginBindingThrottleApiTest
+Tests run: 48, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 30.34 s -- in com.englms.students.StrictJsonIntegersApiTest
+Tests run: 41, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.019 s -- in com.englms.shared.NamesTest
+Tests run: 26, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.189 s -- in com.englms.shared.web.StrictJsonIntegersConfigurationTest
+Tests run: 19, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 15.61 s -- in com.englms.shared.web.StrictJsonScalarsApiTest
+Tests run: 44, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 16.07 s -- in com.englms.settings.WorkspaceSettingsApiIntegrationTest
+Tests run: 146, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.750 s -- in com.englms.settings.NameRuleApiTest
+[INFO] Tests run: 844, Failures: 0, Errors: 0, Skipped: 0
+[INFO] BUILD SUCCESS
+[INFO] Total time:  05:20 min

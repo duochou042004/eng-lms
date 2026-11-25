@@ -44,7 +44,7 @@ Absent = unchanged. An empty body (none of the three) → 422 `REQUIRED` on `loc
 |---|---|
 | locale | one of `englms.meta.locales` (`vi`, `en`), exact and not trimmed (`EN`, `""` → `INVALID_VALUE`); `null` → `REQUIRED` |
 | timeZone | an ID in `java.time.ZoneId.getAvailableZoneIds()` of the running JDK, exact and case-sensitive, not trimmed; aliases (`Asia/Saigon`) are kept as given → else `INVALID_VALUE`; `null` → `REQUIRED` |
-| displayName (account) | tutor only; the fullName rule: trimmed, 1–120 code points, a C0 control character other than tab/LF/CR → `INVALID_FORMAT`, longer → `TOO_LONG`; empty after trim or `null` clears it. From a student account, any present `displayName` (also `null`) → `INVALID_VALUE` (FR-STU-03: the name is the tutor's `fullName`) |
+| displayName (account) | tutor only; the shared name rule (below, `shared.Names`, T-M2.33): a forbidden code point anywhere in the sent value → `INVALID_FORMAT`, stripped, 1–120 code points, longer → `TOO_LONG`; blank (empty after the strip, or only `\p{Z}`) or `null` clears it. From a student account, any present `displayName` (also `null`) → `INVALID_VALUE` (FR-STU-03: the name is the tutor's `fullName`) |
 
 ## workspace (settings, `PATCH /tutor/settings`, T-M2.35)
 
@@ -53,7 +53,8 @@ three properties → 422 `REQUIRED` on `displayName`. Every problem is reported 
 
 | Field | Rule |
 |---|---|
-| displayName (workspace) | the public one-line brand: `strip()`ped, 1–120 code points (the header note); **no control character of any kind** (C0 with tab/LF/CR, DEL, C1) and no bidi override/isolate or zero-width character (U+200B–U+200F, U+202A–U+202E, U+2066–U+2069, U+FEFF), anywhere in the sent value → `INVALID_FORMAT` (DEC-191 SEC S4-1); longer → `TOO_LONG`; empty after the strip or `null` → `REQUIRED` (the configured name returns only by typing it) |
+| displayName (workspace) | the public one-line brand; the shared name rule (`shared.Names`, T-M2.33; DEC-191 SEC S4-1, DEC-194): a forbidden code point anywhere in the sent value → `INVALID_FORMAT`; stripped, 1–120 code points (the header note), longer → `TOO_LONG`; blank or `null` → `REQUIRED` (the configured name returns only by typing it) |
+| name rule (both `displayName` rows) | **forbidden**: every `[\p{Cc}\p{Cf}\p{Cs}\p{Zl}\p{Zp}]` code point: controls (C0 with tab/LF/CR, DEL, C1), every format character (bidi marks, overrides and isolates, zero-width characters and joiners U+200B–U+200D, word joiner and invisible operators U+2060–U+2064, U+061C, U+00AD, U+180E, U+FEFF, tags U+E0001 and U+E0020–U+E007F), lone surrogates, U+2028, U+2029. The `INVALID_FORMAT` problem's developer `message` names the first one as `U+XXXX` (4–6 upper-case hex digits) and never the value. **Strip**: leading and trailing whitespace and `\p{Z}` (U+00A0, U+2007, U+202F, U+3000 …, which Java's `strip()` keeps and JS `trim()` removes). **Blank**: empty after the strip. Allowed: combining marks (U+0301), variation selectors (U+FE0F), interior spaces. Known gap: Hangul fillers (U+115F, U+1160, U+3164, U+FFA0) and U+2800 are letters/symbols and stay accepted. A stored name that breaks the rule (saved before T-M2.33) still reads; the rule applies when the name is next sent. The web forms apply the same rule (`web/src/lib/names`) |
 | defaultLocale | the account `locale` rule: one of `englms.meta.locales`, exact → else `INVALID_VALUE`; `null` → `REQUIRED` |
 | defaultTimeZone | the account `timeZone` rule: an ID in `ZoneId.getAvailableZoneIds()`, exact, aliases kept as given → else `INVALID_VALUE`; `null` → `REQUIRED` |
 

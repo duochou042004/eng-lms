@@ -3,6 +3,8 @@ package com.englms.shared.web;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import java.util.Optional;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -59,6 +61,37 @@ class StrictJsonIntegersConfigurationTest {
 	@Test
 	void nullIsAcceptedForTheBoxedLong() {
 		assertThat(json.readValue(body("boxedLong", "null"), Numbers.class)).isEqualTo(new Numbers(1, 1L, null));
+	}
+
+	// ---- T-M2.33 AC1–AC2: textual and boolean -----------------------------------------------------------------
+
+	record Scalars(String text, Optional<String> optionalText, Boolean boxedFlag, boolean primitiveFlag) {
+	}
+
+	static String scalars(String component, String value) {
+		return "{\"text\":" + (component.equals("text") ? value : "\"a\"") + ",\"optionalText\":"
+				+ (component.equals("optionalText") ? value : "\"b\"") + ",\"boxedFlag\":"
+				+ (component.equals("boxedFlag") ? value : "true") + ",\"primitiveFlag\":"
+				+ (component.equals("primitiveFlag") ? value : "true") + "}";
+	}
+
+	@ParameterizedTest
+	@ValueSource(strings = { "text:1", "text:1.5", "text:true", "optionalText:123", "optionalText:0.5",
+			"optionalText:false", "boxedFlag:1", "boxedFlag:0", "boxedFlag:1.0", "boxedFlag:\"true\"", "boxedFlag:\"\"",
+			"boxedFlag:\" \"", "primitiveFlag:1", "primitiveFlag:\"false\"", "primitiveFlag:\"\"" })
+	void aWrongScalarTypeIsRefused(String row) {
+		String[] parts = row.split(":", 2);
+		assertThatThrownBy(() -> json.readValue(scalars(parts[0], parts[1]), Scalars.class)).as(row)
+			.isInstanceOf(MismatchedInputException.class);
+	}
+
+	@Test
+	void stringsBooleansAndNullsAreAccepted() {
+		assertThat(json.readValue(scalars("text", "\"a\""), Scalars.class))
+			.isEqualTo(new Scalars("a", Optional.of("b"), true, true));
+		assertThat(json.readValue("{\"text\":null,\"optionalText\":null,\"boxedFlag\":null,\"primitiveFlag\":false}",
+				Scalars.class))
+			.isEqualTo(new Scalars(null, Optional.empty(), null, false));
 	}
 
 }
