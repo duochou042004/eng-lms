@@ -10,6 +10,9 @@ DEC-200. PO start signal 2026-11-25 (chat). Risk tier **H**: SEC agent, then QA 
 - `c02ade1` feat(web): one name character rule in both settings forms (FE, scope 6–8; gate head)
 - `9516395` chore(evidence): the trimmed gate log
 - `7b28649` test(shared): invisible characters in the name-rule tests written as escapes (LC, DEC-201 (4))
+- `99856e0` docs(tasks): AC10 from G3 SEC S3-1 (LC, DEC-202)
+- `b18ea19` fix(shared): linear `Names.strip` (no regex); orphaned Javadocs dropped (BE fix round; final gate head)
+- `18bac64` chore(evidence): the gate log on `b18ea19`
 
 ## AC → proof (from the implementers' reports)
 | AC | Proof |
@@ -22,7 +25,8 @@ DEC-200. PO start signal 2026-11-25 (chat). Risk tier **H**: SEC agent, then QA 
 | AC6 | `settings-workspace.spec.ts`, `settings-account.spec.ts`: "a name with U+200B: the field and the summary name U+200B; nothing is sent", all six projects, `expectSettledAccessible` |
 | AC7 | api-conventions §5, validation-rules (both `displayName` rows + a "name rule" row), the customizer's Javadoc; api-catalog login row (DEC-201 (1)) |
 | AC8 | no defect outside scope found; OQs ruled in DEC-201 |
-| AC9 | gate PASS on `c02ade1` (below); CI on the final head (merge-gate) |
+| AC9 | gate PASS on `c02ade1` and again on `b18ea19` (below); CI on the final head (merge-gate) |
+| AC10 | `NamesTest.stripIsLinearOnLongRunsOfSpaces` (1,000,000 interior spaces unchanged; 1,000,000 + "Lan" + 1,000,000 → "Lan"; no wall-clock assertion): against the old regex killed by `timeout 60` (exit 124, `be-red-first.log`); 0.048 s after; `NamesTest` 42 |
 
 ## Red first (L-01)
 - BE: on `971c79a` plus the new API tests, 152 of 166 red (all AC1 rows, 7 of 8 AC2 rows with `1.0` the guard, AC3, all 126 refused AC4 rows,
@@ -31,8 +35,10 @@ DEC-200. PO start signal 2026-11-25 (chat). Risk tier **H**: SEC agent, then QA 
   tests red; E2E stashed: 12 of 12 red (local records under `impl/`).
 
 ## Results
-- Gate on `c02ade1`: `gate: PASS (13 steps, 1008s)` on its only run; backend 844 tests, 0 failures; web 1043 (79 files); E2E 616 passed /
-  68 skipped; ×3 repeat of the changed specs 174 passed / 6 skipped. Log: [gate-2026-11-25.log](gate-2026-11-25.log) (254 lines).
+- Final gate on `b18ea19` (after the AC10 fix): `gate: PASS (13 steps, 1010s)`; backend 845 tests, 0 failures; web 1043; E2E 616 passed / 68 skipped;
+  ×3 repeat 174 passed / 6 skipped. Log: [gate-2026-11-25.log](gate-2026-11-25.log) (260 lines, replaces the `c02ade1` log).
+- First gate on `c02ade1`: `gate: PASS (13 steps, 1008s)` on its only run; backend 844 tests, 0 failures; web 1043 (79 files); E2E 616 passed /
+  68 skipped; ×3 repeat of the changed specs 174 passed / 6 skipped.
 - `7b28649` (test sources only, same strings): `NameRuleApiTest` 146 and `NamesTest` 41 pass.
 - `api/openapi.json` unchanged.
 
@@ -45,6 +51,9 @@ DEC-200. PO start signal 2026-11-25 (chat). Risk tier **H**: SEC agent, then QA 
 - BE OQ-1 fixed (api-catalog); BE OQ-2 resolved by the FE commit; OQ-FE-1 (`@Schema` description) → the T-M2.7 row (S4).
 - Raw invisible characters in five test literals → escapes (`7b28649`).
 
+## G3
+- SEC (fresh agent, head `9c46f7d`): `SEC-REVIEW T-M2.33: APPROVED`; S3-1 (quadratic strip) fixed as AC10; S4-2 fixed; S4-1, S4-3 → the T-M2.7 row (DEC-202).
+
 ## Not verified
 - A real screen reader; WebKit (G5).
 
@@ -53,3 +62,5 @@ DEC-200. PO start signal 2026-11-25 (chat). Risk tier **H**: SEC agent, then QA 
 |---|---|---|
 | BE implementer | 131,768 | 956 s |
 | FE implementer | 129,021 | 1,942 s |
+| SEC | 77,420 | 371 s |
+| BE fix round (AC10) | resumed agent; cumulative tokens 142,131+ | (incl. gate 1,010 s) |

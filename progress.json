@@ -37,7 +37,7 @@
     "branch": "feature/T-M2.33-strict-scalars-names",
     "packet": "docs/tasks/T-M2.33-strict-scalars-names.md",
     "pr": "235",
-    "lastCommit": "7b28649",
+    "lastCommit": "18bac64",
     "startedAt": "2026-11-25T17:40:31Z",
     "nextSteps": [
       "CI 7/7 on the final head; G3 tier H: fresh SEC agent, then fresh QA agent with the UX checklist; verdicts as separate comments; merge-gate; qa/ PR; records PR"
@@ -48,7 +48,8 @@
       "DEC-191",
       "DEC-194",
       "DEC-200",
-      "DEC-201"
+      "DEC-201",
+      "DEC-202"
     ],
     "entryGate": [
       "T-M2.32 merged — met (a43b17b, DEC-199)",
