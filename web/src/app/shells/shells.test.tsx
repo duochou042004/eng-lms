@@ -671,9 +671,12 @@ describe('T-M2.31 (b): the alert scroll keeps Log out and its focus ring in view
       const css = readFileSync('src/app/shells/Shell.module.css', 'utf8')
       const rule = (selector: string) => new RegExp(`\\${selector}\\s*\\{([^}]*)\\}`).exec(css)?.[1] ?? ''
       // The gap between the actions and the alert, Log out's height (ui/Button: --size-control-md) and its outward ring.
-      expect(rule('.account')).toMatch(/gap:\s*var\(--space-4\);/)
+      // One custom property for the gap and the margin; the drawer's footer lowers it (T-M2.32 (c)).
+      expect(rule('.account')).toMatch(/--account-gap:\s*var\(--space-4\);[^}]*gap:\s*var\(--account-gap\);/)
+      expect(rule('.drawerAccount .account')).toMatch(/--account-gap:\s*var\(--space-3\);/)
+      expect(target!.closest('.drawerAccount')).not.toBeNull()
       expect(rule('.logoutAlert')).toMatch(
-        /scroll-margin-block-start:\s*calc\(\s*var\(--space-4\) \+ var\(--size-control-md\) \+ var\(--focus-ring-width\) \+\s*var\(--focus-ring-offset\)\s*\);/,
+        /scroll-margin-block-start:\s*calc\(\s*var\(--account-gap\) \+ var\(--size-control-md\) \+ var\(--focus-ring-width\) \+\s*var\(--focus-ring-offset\)\s*\);/,
       )
     } finally {
       delete (Element.prototype as Partial<Element>).scrollIntoView

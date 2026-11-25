@@ -117,9 +117,17 @@
 }
 
 .account {
+  --account-gap: var(--space-4);
+
   display: flex;
   flex-direction: column;
-  gap: var(--space-4);
+  gap: var(--account-gap);
+}
+
+/* The tutor drawer's footer is capped at half the sheet: at 740×360 offline, Log out with its focus ring and the whole
+   alert text need 180.2 px of its 179 px with the 16 px gap; a 12 px gap there fits both (T-M2.32 (c), DEC-183 OQ-1). */
+.drawerAccount .account {
+  --account-gap: var(--space-3);
 }
 
 .signedIn {
@@ -128,12 +136,12 @@
 }
 
 /* The logout failure alert scrolls itself into view, `nearest` (LogoutFailedAlert). Its start margin reaches over the gap
-   above it, Log out (ui/Button: --size-control-md) and Log out's outward focus ring, so the focused button stays in view
+   above it (`--account-gap`), Log out (ui/Button: --size-control-md) and Log out's outward focus ring, so the focused button stays in view
    with the alert: a margin box taller than the scrollport (the drawer's footer at 568×320) aligns its start edge, a
    shorter one its end edge (T-M2.31 (b), DEC-178 UX-1). */
 .logoutAlert {
   scroll-margin-block-start: calc(
-    var(--space-4) + var(--size-control-md) + var(--focus-ring-width) + var(--focus-ring-offset)
+    var(--account-gap) + var(--size-control-md) + var(--focus-ring-width) + var(--focus-ring-offset)
   );
 }
 

@@ -1,4 +1,4 @@
-import type { Browser, BrowserContext, Locator, Page, TestInfo } from '@playwright/test'
+import type { Browser, Locator, Page, TestInfo } from '@playwright/test'
 import {
   ANONYMOUS,
   apiChangePassword,
@@ -18,7 +18,7 @@ import {
   expectSettledAccessible,
 } from '../support/checks'
 import { evidenceRecord, evidenceShot } from '../support/evidence'
-import { answerPreferencesInPlace, expect, isAnonymousSessionProbe, test } from '../support/fixtures'
+import { accept, acceptStatus, answerPreferencesInPlace, expect, guardContext, test } from '../support/fixtures'
 import { accountOpener, accountPlace, openAccountSection, workspaceName, type ShellRole } from '../support/shell'
 import { StepCounter } from '../support/steps'
 
@@ -55,21 +55,6 @@ const shot = (page: Page, testInfo: TestInfo, name: string) => evidenceShot(page
 // Waits for any overlay's fade first (T-M2.20 AC7: axe right after a Sheet or Popover opens caught it mid-fade).
 async function expectAccessible(page: Page) {
   await expectSettledAccessible(page)
-}
-
-/** Removes the console entries of a response a test provokes on purpose (only that status from that API path). */
-function acceptStatus(consoleGuard: string[], status: number, path: string) {
-  const prefix = `console.error: Failed to load resource: the server responded with a status of ${status} `
-  for (let i = consoleGuard.length - 1; i >= 0; i--) {
-    const entry = consoleGuard[i]!
-    const url = /\[([^\]]+)\]$/.exec(entry)?.[1]
-    if (entry.startsWith(prefix) && url && new URL(url).pathname === path) consoleGuard.splice(i, 1)
-  }
-}
-
-/** Removes the console entries a test provokes on purpose (e.g. a request sent offline). */
-function accept(consoleGuard: string[], matches: (entry: string) => boolean) {
-  for (let i = consoleGuard.length - 1; i >= 0; i--) if (matches(consoleGuard[i]!)) consoleGuard.splice(i, 1)
 }
 
 /** Presses Tab until `target` has focus (at most `max` presses); returns the accessible names passed on the way. */
@@ -154,35 +139,14 @@ async function layoutShiftTotal(page: Page) {
 }
 
 /**
- * The console guard (support/fixtures.ts) listens on the test's own `context` only: a page in a context made here with
- * `browser.newContext()` was not guarded, so T-M2.13's "a 500 … Log out again" stayed green while the logout alert's effect
- * crashed the page (T-M2.31 (c), DEC-182). This feeds the same list from such a context, with the same rules: console
- * errors (except the anonymous session probe), uncaught page errors and CSP violations.
+ * A page signed in through the API in a fresh context: the stored sessions stay untouched. Guarded with `guard` (the
+ * test's `consoleGuard`; T-M2.31 (c), DEC-182: an unguarded one let the logout alert's crash pass).
  */
-async function guardContext(context: BrowserContext, problems: string[]) {
-  context.on('console', (message) => {
-    if (message.type() !== 'error' || isAnonymousSessionProbe(message.text(), message.location().url)) return
-    const text = message.text()
-    const url = message.location().url
-    problems.push(`console.error: ${text}${text.startsWith('Failed to load resource') && url ? ` [${url}]` : ''}`)
-  })
-  context.on('weberror', (webError) => problems.push(`pageerror: ${webError.error().message}`))
-  await context.addInitScript(() => {
-    document.addEventListener('securitypolicyviolation', (event) => {
-      console.error(`CSP violation: ${event.violatedDirective} blocked ${event.blockedURI || 'inline'}`)
-    })
-  })
-}
-
-/**
- * A page signed in through the API in a fresh context: the stored sessions stay untouched. With `guard` (the test's
- * `consoleGuard`) the fresh context is guarded too.
- */
-async function freshSession(browser: Browser, credentials: Credentials, guard?: string[]) {
+async function freshSession(browser: Browser, credentials: Credentials, guard: string[]) {
   const context = await browser.newContext({ storageState: ANONYMOUS })
+  await guardContext(context, guard)
   // Its tests switch the language: answered in place, as in the `test` fixture's own context (T-M2.6 scope 7a).
   await answerPreferencesInPlace(context)
-  if (guard) await guardContext(context, guard)
   const page = await context.newPage()
   await page.goto('/login')
   expect((await apiSignIn(page, credentials)).status).toBe(200)
@@ -190,13 +154,14 @@ async function freshSession(browser: Browser, credentials: Credentials, guard?: 
 }
 
 /** A new student past the forced change (created with the stored tutor session). */
-async function readyStudent(browser: Browser, testInfo: TestInfo): Promise<Credentials> {
+async function readyStudent(browser: Browser, testInfo: TestInfo, guard: string[]): Promise<Credentials> {
   const tutorContext = await browser.newContext({ storageState: TUTOR_STATE })
+  await guardContext(tutorContext, guard)
   const tutorPage = await tutorContext.newPage()
   await tutorPage.goto('/tutor/today')
   const temporary = await createStudent(tutorPage, testInfo.project.name)
   await tutorContext.close()
-  const { context, page } = await freshSession(browser, temporary)
+  const { context, page } = await freshSession(browser, temporary, guard)
   const ready = await apiChangePassword(page, temporary)
   await context.close()
   return ready
@@ -489,15 +454,16 @@ for (const role of ['tutor', 'student'] as const) {
 test.describe('Log out from any shell page in ≤ 2 steps (fresh sessions)', () => {
   for (const role of ['tutor', 'student'] as const) {
     test(`AC4/AC9: ${role}: pointer (open the account section, Log out) and keyboard`, async ({
+      consoleGuard,
       browser,
     }, testInfo) => {
       const credentials =
         role === 'tutor'
           ? { username: TUTOR_USERNAME, password: tutorPassword() }
-          : await readyStudent(browser, testInfo)
+          : await readyStudent(browser, testInfo, consoleGuard)
       const record: Record<string, unknown> = {}
       for (const at of [HOME[role], role === 'tutor' ? '/tutor/nope' : '/student/a/b']) {
-        const { context, page } = await freshSession(browser, credentials)
+        const { context, page } = await freshSession(browser, credentials, consoleGuard)
         await page.goto(at)
         await expect(page.getByRole('heading', { level: 1 })).toBeVisible()
         const steps = new StepCounter()
@@ -510,7 +476,7 @@ test.describe('Log out from any shell page in ≤ 2 steps (fresh sessions)', () 
         await context.close()
       }
       // Keyboard only: skip link → navigation → account menu → Log out.
-      const { context, page } = await freshSession(browser, credentials)
+      const { context, page } = await freshSession(browser, credentials, consoleGuard)
       await page.goto(HOME[role])
       await expect(h1(page, TITLE[role])).toBeVisible()
       await page.keyboard.press('Tab')
@@ -1091,7 +1057,7 @@ test.describe('T-M2.29: the logout failure alert is on screen', () => {
     consoleGuard,
   }, testInfo) => {
     test.skip(testInfo.project.name !== 'phone-small', 'a phone held sideways: phone-small emulation')
-    const credentials = await readyStudent(browser, testInfo)
+    const credentials = await readyStudent(browser, testInfo, consoleGuard)
     const { context, page } = await freshSession(browser, credentials, consoleGuard)
     await failLogout(page)
     await page.setViewportSize({ width: 568, height: 320 })
@@ -1167,6 +1133,7 @@ test.describe('T-M2.29: the logout failure alert is on screen', () => {
     const tutorContext = await browser.newContext({
       storageState: TUTOR_STATE,
     })
+    await guardContext(tutorContext, consoleGuard)
     const tutorPage = await tutorContext.newPage()
     await tutorPage.goto(HOME.tutor)
     const temporary = await createStudent(tutorPage, testInfo.project.name)
@@ -1293,7 +1260,7 @@ test.describe('T-M2.31: the account overlays scroll the logout alert into place'
       consoleGuard,
     }, testInfo) => {
       test.skip(testInfo.project.name !== 'phone-small', 'a phone held sideways: phone-small emulation')
-      const credentials = await readyStudent(browser, testInfo)
+      const credentials = await readyStudent(browser, testInfo, consoleGuard)
       const { context, page } = await freshSession(browser, credentials, consoleGuard)
       await failLogout(page)
       for (const locale of locales) {
@@ -1405,7 +1372,8 @@ test.describe('T-M2.31: the account overlays scroll the logout alert into place'
   })
 
   // AC2o (G3 QA-1, DEC-183): the offline copy is three lines. At 568×320 Log out with its ring and the alert text cannot
-  // both fit in the footer, so the text wins; at 740×360 both fit and AC2 holds.
+  // both fit in the footer, so the text wins. At 740×360 they needed 180.2 px of the footer's 179 px (DEC-183 OQ-1); the
+  // drawer footer's smaller gap (T-M2.32 (c)) fits both, asserted explicitly (the branch below adapts either way).
   test('AC2o: tutor drawer at 568×320 and 740×360, logout offline: the alert text wins where both cannot fit (vi, en)', async ({
     browser,
     consoleGuard,
@@ -1444,6 +1412,16 @@ test.describe('T-M2.31: the account overlays scroll the logout alert into place'
         await expect(logout).toBeFocused()
         await expect(text).toBeInViewport({ ratio: 0.99 })
         await expect.poll(inset(text), { message: 'the alert text inside the footer' }).toBeGreaterThanOrEqual(0)
+        if (width === 740)
+          await expect
+            .poll(
+              async () => {
+                const { needed, available } = await span(logout, text)
+                return available - needed
+              },
+              { message: `${width}×${height} ${locale}: Log out, its ring and the text fit the footer (T-M2.32 AC3)` },
+            )
+            .toBeGreaterThanOrEqual(0)
         const room = await span(logout, text)
         if (room.needed <= room.available) {
           // Both fit: AC2 holds (Log out with its ring, the title and the text inside the footer).
@@ -1489,7 +1467,7 @@ test.describe('T-M2.31: the account overlays scroll the logout alert into place'
       const credentials =
         role === 'tutor'
           ? { username: TUTOR_USERNAME, password: tutorPassword() }
-          : await readyStudent(browser, testInfo)
+          : await readyStudent(browser, testInfo, consoleGuard)
       const { context, page } = await freshSession(browser, credentials, consoleGuard)
       await failLogout(page)
       if (role === 'tutor') await page.setViewportSize({ width: 740, height: 360 })
