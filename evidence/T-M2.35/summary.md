@@ -1,7 +1,7 @@
 # T-M2.35 summary: workspace settings v1 and Settings › Workspace (FR-SET-01, first section)
 
 Branch `feature/T-M2.35-workspace-settings` (from `develop` @ `ed5dd62`). Packet: [T-M2.35](../../docs/tasks/T-M2.35-workspace-settings.md),
-DEC-193. PO start signal 2026-11-25 (the `/goal`). Risk tier **H**: SEC agent, then QA with the UX checklist (G3 pending).
+DEC-193. PO start signal 2026-11-25 (the `/goal`). Risk tier **H**: SEC agent, then QA with the UX checklist (G3 done: SEC APPROVED, QA PASS WITH MINOR, UX APPROVED; DEC-194).
 
 ## Commits
 - `02fca22` chore(progress): T-M2.35 in progress (LC)
@@ -22,7 +22,7 @@ DEC-193. PO start signal 2026-11-25 (the `/goal`). Risk tier **H**: SEC agent, t
 | AC6 | `WorkspaceSettingsPage.test.tsx` (redirect, tabs Workspace, Account, current tab, title, axe); `settings-workspace.spec.ts` (Settings item → Workspace in ≤ 2 steps, h1 focus, `ac6-settings-steps`) |
 | AC7 | `WorkspaceSettingsPage.test.tsx` and `workspaceForm.test.ts` (changed-only body with `version`, Save disabled while unchanged, toast and focus on Save, the meta cache's `displayName` only, client and server 422 with the summary focused, the 409 dialog after a direct load, Reload / Keep editing focus, 500 and offline `InlineAlert` without replay, edits during a pending save kept, the guard, en, loading and load error); E2E request bodies, 422 (click and Enter), 409, ComboBox keyboard. Seen red: the meta-cache update removed; the Keep-editing refocus removed |
 | AC8 | `AccountSettingsPage.test.tsx` (visible "Ngôn ngữ" names the group via `aria-labelledby`); `SegmentedControl.test.tsx` `labelVisible`; `settings-account.spec.ts` (label above the group) |
-| AC9 | all E2E at phone-small, tablet, laptop with `expectSettledAccessible` (default, 422, conflict, ComboBox open with only the DEC-191 rule off); a 120-character name with `expectNoMidWordBreak`; gate PASS; CI pending |
+| AC9 | all E2E at phone-small, tablet, laptop with `expectSettledAccessible` (default, 422, conflict, ComboBox open with only the DEC-191 rule off); a 120-character name with `expectNoMidWordBreak`; gate PASS; CI green on the final head (merge-gate) |
 
 ## Results
 - Gate on `e97ff85` (the last code commit): `gate: PASS (13 steps, 1732s)`; backend 621 tests; web 933 (76 files); E2E 608 passed;
@@ -52,15 +52,21 @@ All accepted (no OQ, no `test.fail`):
 - FE (4) the time-zone hint and ComboBox labels reuse the Account tab's `account.*` strings.
 - FE new `ui/SegmentedControl` prop `labelVisible` (design-system and `/dev/ui` updated) for AC8.
 
-## G3 (tier H)
-Pending: one fresh SEC agent, then one fresh QA agent with the UX checklist.
+## G3 (tier H, DEC-194)
+- SEC (fresh agent, head `010c16f`): `SEC-REVIEW T-M2.35: APPROVED`; S4-1 the name's character rule misses other format characters
+  (U+2028/U+2029, U+2060–U+2064, U+061C, …) → T-M2.33; S4-2 `/meta` one read per call (intended). Report: `review/security.md` (records PR).
+- QA with the UX checklist (fresh agent, same head): `QA-VERDICT T-M2.35: PASS WITH MINOR`, `UX-REVIEW T-M2.35: APPROVED`; QA-1 (= SEC S4-1) and
+  UX-1 → T-M2.33; QA-2 (`ui/SegmentedControl` arrow keys do not select, older behaviour) → T-M2.32 (g); UX-2 no change (`ui/ConfirmDialog`
+  focuses the safe action by design). Report: `qa/report.md` (`qa/` PR). No fix round.
 
 ## Not verified
 - The concurrent test does not force which 409 path fires (the explicit compare or the `@Version` flush); both map to `STALE_VERSION`.
-- CI on the final head (pending); a manual keyboard-only walk beyond the E2E keyboard steps (QA focus).
+- WebKit (G5); a manual keyboard-only walk beyond QA's keyboard pass at 360.
 
 ## G3 cost
 | Agent | Tokens | Duration |
 |---|---|---|
 | BE implementer | 152,460 | 1,418 s |
 | FE implementer | 186,314 | 2,846 s |
+| SEC | 53,436 | 211 s |
+| QA + UX | 127,264 | 832 s |

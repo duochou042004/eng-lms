@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-11-25T13:40:00Z",
-  "updatedBy": "lead-coordinator (T-M2.35 in review)",
+  "updatedAt": "2026-11-25T15:10:00Z",
+  "updatedBy": "lead-coordinator (T-M2.35 G3 done, DEC-194)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -32,23 +32,23 @@
   "currentTask": {
     "id": "T-M2.35",
     "title": "Workspace settings v1 (FR-SET-01 first section; split from T-M2.6)",
-    "status": "in_review",
+    "status": "awaiting_approval",
     "ownerRole": "BE+FE",
     "branch": "feature/T-M2.35-workspace-settings",
     "packet": "docs/tasks/T-M2.35-workspace-settings.md",
-    "pr": null,
-    "lastCommit": "0d4eed9",
+    "pr": "227",
+    "lastCommit": "010c16f",
     "startedAt": "2026-11-25T11:43:20Z",
     "nextSteps": [
-      "PR and CI green",
-      "G3 tier H: SEC agent, then QA with the UX checklist",
-      "merge-gate; gitlab-sync; qa/ PR; records PR"
+      "CI green on the final head; post SEC-REVIEW, QA-VERDICT, UX-REVIEW, LC-APPROVED",
+      "merge-gate; gitlab-sync; qa/ PR; records PR (merge DEC)"
     ],
     "trace": [
       "DEC-187",
       "DEC-190",
       "DEC-191",
       "DEC-193",
+      "DEC-194",
       "FR-SET-01"
     ],
     "entryGate": [

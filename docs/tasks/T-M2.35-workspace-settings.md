@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Milestone | M2 |
-| Status | in_review (PO start 2026-11-25; G0: round 1 CHANGES REQUESTED, all findings fixed; delta PASS WITH MINOR, S4 fixed; DEC-193) |
+| Status | awaiting_approval (G3: SEC APPROVED, QA PASS WITH MINOR, UX APPROVED, DEC-194; PO start 2026-11-25; G0: round 1 CHANGES REQUESTED, all findings fixed; delta PASS WITH MINOR, S4 fixed; DEC-193) |
 | Owner role | BE (store, endpoints, `/meta`, student defaults) then FE (Workspace tab, redirect, the Account tab's Language label); one implementer at a time |
 | Branch | `feature/T-M2.35-workspace-settings` (from `develop`) |
 | Depends on | T-M2.6 (merged, `160df23`, DEC-192) |
