@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-11-25T16:04:22Z",
-  "updatedBy": "lead-coordinator (T-M2.32 G3 done, DEC-198)",
+  "updatedAt": "2026-11-25T16:09:05Z",
+  "updatedBy": "lead-coordinator (handoff: T-M2.32 awaiting merge; context limit)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -40,8 +40,9 @@
     "lastCommit": "d589168",
     "startedAt": "2026-11-25T14:47:58Z",
     "nextSteps": [
-      "CI green on the final head; post QA-VERDICT, UX-REVIEW, LC-APPROVED",
-      "merge-gate; gitlab-sync; qa/ PR; records PR (merge DEC)"
+      "Confirm PR #231 head = 9841455 (GitHub incident) and CI 7/7 there; post QA-VERDICT, UX-REVIEW, LC-APPROVED",
+      "merge-gate; gitlab-sync; qa/ PR; records PR (merge DEC)",
+      "Then T-M2.33 packet, T-M2.7 (ask the PO)"
     ],
     "trace": [
       "DEC-183",
@@ -1951,6 +1952,11 @@
       "at": "2026-11-25T16:04:22Z",
       "actor": "lead-coordinator",
       "event": "T-M2.32 G3 done (QA PASS WITH MINOR, UX APPROVED); rulings DEC-198."
+    },
+    {
+      "at": "2026-11-25T16:09:05Z",
+      "actor": "lead-coordinator",
+      "event": "Handoff at the ~300k context rule: T-M2.32 reviewed (DEC-198), awaiting CI on 9841455 and merge."
     }
   ]
 }
