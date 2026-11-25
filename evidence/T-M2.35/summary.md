@@ -25,8 +25,8 @@ DEC-193. PO start signal 2026-11-25 (the `/goal`). Risk tier **H**: SEC agent, t
 | AC9 | all E2E at phone-small, tablet, laptop with `expectSettledAccessible` (default, 422, conflict, ComboBox open with only the DEC-191 rule off); a 120-character name with `expectNoMidWordBreak`; gate PASS; CI green on the final head (merge-gate) |
 
 ## Results
-- Gate on `e97ff85` (the last code commit): `gate: PASS (13 steps, 1732s)`; backend 621 tests; web 933 (76 files); E2E 608 passed;
-  the ×3 repeat (all 19 specs, `global-setup.ts` changed) 1824 passed, 0 flaky. Log: [gate-2026-11-25.log](gate-2026-11-25.log) (102 lines, every `gate:` line).
+- Gate on `e97ff85` (the last code commit): `gate: PASS (13 steps, 1732s)`; backend 621 tests; web 933 (76 files); E2E 608 passed, 64 skipped;
+  the ×3 repeat (all 19 specs, `global-setup.ts` changed) 1824 passed, 192 skipped, 0 failed. Log: [gate-2026-11-25.log](gate-2026-11-25.log) (102 lines, every `gate:` line).
 - Contract drift OK (`api/openapi.json`, `schema.d.ts` regenerated).
 
 ## Changed kept assertions (the redirect, DEC-193 (8); not weakened)

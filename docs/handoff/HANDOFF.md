@@ -1,4 +1,4 @@
-# Handoff — 2026-11-25T14:10Z (T-M2.35 merged; next: the T-M2.32 packet)
+# Handoff — 2026-11-25T13:58Z (T-M2.35 merged; next: the T-M2.32 packet)
 
 Phase/Milestone: P1 / M2 (in progress) · Current task: **T-M2.32** E2E console-guard gap and T-M2.31 polish (`draft`, no packet yet) ·
 Last merge on `develop`: `100e114` (QA PR #228; T-M2.35 PR #227 `9ad116b`) · Next: T-M2.32 packet → T-M2.33 → T-M2.7 (G5) ·
@@ -38,6 +38,9 @@ Remote: https://github.com/duochou042004/eng-lms (mirror gitlab, synced after ea
 - Lost with this device: `.claude/scratch/lc-records/` (LC copies of reviewer reports; everything needed is in `evidence/` and the DEC log)
   and the dev DB. First run there: `./scripts/check-docs.sh`, `./scripts/tests/run-all.sh`, then the gate once with the first task. Check the
   old-device gotchas (NoNewPrivs, `CONTAINER_HOST`, the `nvm use` pin) on the new host.
+- Also local to this device: the agent's auto-memory (`~/.claude/projects/<repo path>/memory/`; one PO preference: leave the
+  `docs/M2-retrospective` branch alone, the PO deletes it) and the PO-installed plugins and hooks (ponytail: `/ponytail-debt` feeds the G5
+  `shortcut:` ledger, fallback `grep -rnE '(shortcut|ponytail):'`; the `/goal` Stop hook): reinstall or note them there.
 
 ## Gotchas
 - **Reviewer reports can carry raw invisible characters** (T-M2.35: the agents quoted U+202E, U+200B, U+2028 inside the report): write them

@@ -16,7 +16,7 @@
       }
     ]
   },
-  "updatedAt": "2026-11-25T14:10:00Z",
+  "updatedAt": "2026-11-25T13:58:10Z",
   "updatedBy": "lead-coordinator (T-M2.35 merged; records)",
   "phase": {
     "id": "P1",
@@ -62,7 +62,7 @@
     "lastCommit": null,
     "startedAt": null,
     "nextSteps": [
-      "After T-M2.35, T-M2.32 and T-M2.33 (PO order, DEC-187, DEC-190); G5: one regression run, no Firefox (DEC-180), ask the PO first; T-M2.26 after at least 10 shadow PRs"
+      "After T-M2.32 and T-M2.33 (PO order, DEC-187, DEC-190); G5: one regression run, no Firefox (DEC-180), ask the PO first; T-M2.26 after at least 10 shadow PRs"
     ],
     "trace": [
       "DEC-158",
@@ -473,7 +473,7 @@
     {
       "id": "T-M2.35",
       "title": "Workspace settings v1 (FR-SET-01 first section; split from T-M2.6)",
-      "completedAt": "2026-11-25T14:10:00Z",
+      "completedAt": "2026-11-25T13:32:49Z",
       "mergeCommit": "9ad116b",
       "evidence": "evidence/T-M2.35/summary.md",
       "note": "PR #227 via merge-gate (head 3fac8a1, CI 7/7 (5 full)); QA PR #228 (100e114); packet PR #225 (2960919); gate PASS on e97ff85 (1732 s); G3 tier H: SEC APPROVED, QA PASS WITH MINOR, UX APPROVED, no fix round; DEC-193, DEC-194, DEC-195"
@@ -481,7 +481,7 @@
   ],
   "tests": {
     "lastRun": "2026-11-25T12:25:40Z",
-    "summary": "T-M2.35 head e97ff85: gate PASS (13 steps, 1732 s); backend 621; web 933 (76 files); e2e 608 passed; x3 repeat 1824 passed, 0 flaky.",
+    "summary": "T-M2.35 head e97ff85: gate PASS (13 steps, 1732 s); backend 621; web 933 (76 files); e2e 608 passed, 64 skipped; x3 repeat 1824 passed, 192 skipped, 0 failed.",
     "suites": [
       {
         "name": "backend (./mvnw -B verify)",
@@ -1901,9 +1901,24 @@
       "event": "T-M2.35 packet merged (PR #225, 2960919); handoff written; PO start signal asked."
     },
     {
-      "at": "2026-11-25T14:10:00Z",
+      "at": "2026-11-25T11:43:34Z",
       "actor": "lead-coordinator",
-      "event": "T-M2.35 merged (PR #227, 9ad116b; QA PR #228, 100e114; DEC-194 G3 rulings, DEC-195 merge). Next: T-M2.32 packet."
+      "event": "T-M2.35 started on the PO start signal (the /goal of 2026-11-25; 02fca22)."
+    },
+    {
+      "at": "2026-11-25T12:56:18Z",
+      "actor": "lead-coordinator",
+      "event": "T-M2.35 in review: PR #227 (010c16f); gate PASS on e97ff85."
+    },
+    {
+      "at": "2026-11-25T13:15:57Z",
+      "actor": "lead-coordinator",
+      "event": "T-M2.35 G3 done (SEC APPROVED, QA PASS WITH MINOR, UX APPROVED); rulings DEC-194 (3fac8a1)."
+    },
+    {
+      "at": "2026-11-25T13:32:49Z",
+      "actor": "lead-coordinator",
+      "event": "T-M2.35 merged (PR #227, 9ad116b; QA PR #228, 100e114; DEC-195). Next: T-M2.32 packet."
     }
   ]
 }
