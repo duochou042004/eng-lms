@@ -14,7 +14,8 @@
 ## Goal
 A JSON request body binds a `String` field only from a JSON string and a `Boolean`/`boolean` field only from a JSON boolean: anything else is
 400 `MALFORMED_REQUEST`, as for integers since T-M2.10. The workspace name and the tutor's account display name follow **one** character rule,
-on the server and in both forms, that refuses every invisible, control or line-breaking character and tells the tutor which one it found.
+on the server and in both forms, that refuses every control, format, surrogate and line/paragraph separator code point and, in the form,
+tells the tutor which one it found.
 
 ## Scope
 - In (BE):
@@ -24,26 +25,36 @@ on the server and in both forms, that refuses every invisible, control or line-b
      keep their current meaning. Its Javadoc names the three rules; the class name stays (no rename churn).
   2. **One name rule** in `shared` (e.g. `com.englms.shared.Names`; public, no Spring): `firstForbidden(String)` returns the first code point in
      `[\p{Cc}\p{Cf}\p{Cs}\p{Zl}\p{Zp}]` (C0, DEL, C1; every format character: bidi marks, overrides and isolates, zero-width, word joiner and
-     invisible operators U+2060–U+2064, U+061C, U+00AD, U+180E, U+FEFF, tags U+E0000–U+E007F; lone surrogates; U+2028, U+2029) or none;
-     and `isBlank(String)`: empty after `strip()` or made only of `\p{Z}` (U+00A0, U+3000 and the other space separators).
+     invisible operators U+2060–U+2064, U+061C, U+00AD, U+180E, U+FEFF, tags U+E0001 and U+E0020–U+E007F; lone surrogates; U+2028, U+2029) or none;
+     `isBlank(String)`: empty after `strip()` or made only of `\p{Z}` (U+00A0, U+3000 and the other space separators); and `strip(String)`:
+     removes leading and trailing `\p{Z}` and whitespace (Java `strip()` keeps U+00A0, U+2007, U+202F at the ends; JS `trim()` removes them),
+     so the server and the client trim alike and count the same 120 code points.
   3. **Workspace `displayName`** (`WorkspaceSettingsService`): its own `FORBIDDEN` pattern is replaced by the shared rule; blank (rule above)
-     → `REQUIRED`; the rest unchanged (strip, 1–120 code points, `TOO_LONG`).
+     → `REQUIRED`; the shared `strip`, the rest unchanged (1–120 code points, `TOO_LONG`).
   4. **Account `displayName`** (`AccountService`, tutor only): the shared rule replaces the C0-only `CONTROL` check, so tab, LF and CR are now
-     refused too; blank → clears it (as empty today); the rest unchanged (strip, 1–120, `TOO_LONG`, students → `INVALID_VALUE`).
-  5. A refused name's `FieldProblem` keeps code `INVALID_FORMAT`; its `detail` names the first offending code point as `U+XXXX` (4–6 upper-case
-     hex digits) and never echoes the value.
+     refused too; blank → clears it (as empty today); the shared `strip`; the rest unchanged (1–120, `TOO_LONG`, students → `INVALID_VALUE`).
+  5. A refused name's `FieldProblem` (`{field, code, message}`) keeps code `INVALID_FORMAT`; its developer `message` names the first offending
+     code point as `U+XXXX` (4–6 upper-case hex digits) and never echoes the value. No new problem property: the web client keeps reading
+     `{field, code}` only (api-conventions: `message` is for developers), so the code point in the UI comes from the client rule (scope 7).
 - In (FE):
   6. **One client rule** (e.g. `web/src/lib/names.ts`): `firstForbidden` with the same classes (`/[\p{Cc}\p{Cf}\p{Cs}\p{Zl}\p{Zp}]/u`) and
      `isBlank` (`/^\p{Z}*$/u` after `trim()`); `workspaceForm.ts` (drops its range table) and `accountForm.ts` (drops `hasControl`) use it.
-  7. **Messages:** `workspace.errors.displayName.INVALID_FORMAT` and `account.errors.displayName.INVALID_FORMAT` (vi + en) name the found
-     character: "contains an invisible or control character ({{codePoint}}); delete it and type the name again" (vi: "chứa ký tự ẩn hoặc ký tự
-     điều khiển ({{codePoint}}); hãy xoá và gõ lại tên"). A server-only 422 (the client rule passed) shows the same message with the
-     code point read from the problem `detail` when it matches `U+[0-9A-F]{4,6}`, else without the parenthesis.
+  7. **Messages** (`settings` namespace, vi + en), for `workspace.errors.displayName.*` and `account.errors.displayName.*`:
+     - `INVALID_CHARACTER` (the client rule, with the found code point): en "This name contains an invisible or control character
+       ({{codePoint}}). Delete it and type the name again." · vi "Tên này chứa ký tự ẩn hoặc ký tự điều khiển ({{codePoint}}). Hãy xoá ký tự
+       đó và gõ lại tên."
+     - `INVALID_FORMAT` (a server-only 422, no code point): en "This name contains an invisible or control character. Delete it and type the
+       name again." · vi "Tên này chứa ký tự ẩn hoặc ký tự điều khiển. Hãy xoá ký tự đó và gõ lại tên." (replaces today's strings).
+  8. **Only a changed name is checked in the form** (as the server checks only a sent name): a stored name that breaks the new rule (saved
+     before it) does not block a time-zone- or locale-only save; editing the name applies the rule.
 
 ## Out of scope (explicit)
 - Student `fullName`, guardian names, notes, tags and other text fields: they keep their rules (validation-rules); the account `displayName`
   stops being "the fullName rule" (the row is reworded). A wider rule is a new backlog row if the PO wants one.
-- Rewriting stored names: no migration; a stored name that breaks the new rule still reads and shows; the rule applies on the next write.
+- Rewriting stored names: no migration; a stored name that breaks the new rule still reads and shows; the rule applies when the name itself
+  is next sent (scope 8).
+- Invisible letters and symbols outside `C*`/`Zl`/`Zp` stay accepted (known gap): Hangul fillers U+115F, U+1160, U+3164, U+FFA0 and the
+  braille blank U+2800 (a name of only U+3164 still shows blank). A later row if the PO wants them.
 - Other logical types (enums are bound from strings by hand today; UUID, dates, lists) and query parameters (not JSON).
 - Jackson's mismatch message quoting the value at DEBUG (DEC-186 SEC S4-1, pre-existing).
 - No new endpoint, no migration, no UI layout change, no regression run (cap **0**).
@@ -62,16 +73,19 @@ on the server and in both forms, that refuses every invisible, control or line-b
   - Kept tests that assert the old behaviour change only by this packet's DEC, each named in the summary: an account `displayName` with an
     interior tab/LF/CR accepted (if a test asserts it), the workspace form's range table cases, any backend or web test that sends a number or
     `"true"` where a string or boolean is expected. The implementer lists every changed assertion with its old and new expectation.
-  - The sign-in body: a malformed body is answered 400 today (T-M2.10, `AuthApiIntegrationTest:391` area); the implementer reports, before
-    changing anything, whether a 400 there counts toward `LoginThrottle`, and keeps that behaviour (a change is an OQ, L-10).
+  - The sign-in body: `LoginThrottle.tryAcquire` runs in `AuthenticationService` after binding, so a binding 400 never counts. The behaviour
+    change: a numeric `username` or `password` is today coerced, throttled, checked and answered 401; after this packet it is 400, not
+    counted, and no credential check runs (no guess is evaluated). The malformed-body test (`AuthApiIntegrationTest:391` area) is the reference.
   - `\p{Cf}` includes U+200C/U+200D (ZWNJ/ZWJ): emoji ZWJ sequences and some scripts' joiners are refused in these two names. Accepted (two
     one-line labels; the tutor writes Vietnamese/English); combining marks (`\p{Mn}`, e.g. U+0301) and variation selectors (U+FE0F) stay allowed.
 - Java `Pattern` matches by code point, so tags and other supplementary characters are found; the client uses the `u` flag for the same reason.
+- Unicode versions differ (Java 25: Unicode 16; Node 24 and browsers newer or older): the server is the authority; the AC5 client table uses
+  only the AC4 code points, which are stable across these versions.
 
 ## UI rules (fixed at G0, DEC-131 (2))
 - No layout change; the existing field error and `ErrorSummary` show the message; focus behaviour unchanged (T-M2.6 AC11).
 - The code point is written as `U+200B` (ASCII, no break opportunity inside it); the message may wrap at its spaces.
-- Copy: the vi and en strings in scope 7; the existing `REQUIRED`/`TOO_LONG` strings unchanged.
+- Copy: the vi and en strings in scope 7 (two keys per name); the existing `REQUIRED`/`TOO_LONG` strings unchanged.
 
 ## Domain rules (fixed at G0, L-04)
 - No new data, state or transition. The checks keep their order (422 with every problem at once, then 409 `STALE_VERSION`); a 400 binding
@@ -82,17 +96,19 @@ on the server and in both forms, that refuses every invisible, control or line-b
   over at least: `POST /auth/login` (`username: 123`, `password: 123456`), `POST /tutor/students` (`fullName: 123`, `username: true`), a
   `PATCH /tutor/students/{id}` (`fullName: 1.5`), `PATCH /auth/preferences` (`locale: 123`, `displayName: 123`, `timeZone: false`),
   `PATCH /tutor/settings` (`displayName: 123`, `defaultLocale: true`); each row seen red before the change (L-01).
-- AC2 (strict boolean): `rememberMe` as `1`, `0`, `2`, `1.0`, `"true"`, `"false"`, `""`, `" "` → 400 `MALFORMED_REQUEST` and no session;
+- AC2 (strict boolean): `rememberMe` as `1`, `0`, `2`, `"true"`, `"false"`, `""`, `" "` (each seen red first) and `1.0` (already 400:
+  a guard row, green before and after) → 400 `MALFORMED_REQUEST` and no session;
   `true`, `false`, `null` and absent keep today's behaviour (tests kept).
-- AC3 (kept): all T-M2.10 integer tests and every valid-body test pass unchanged; the 400 body is the existing problem shape; the sign-in
-  throttle behaviour for a malformed body is the one reported before the change.
+- AC3 (kept): all T-M2.10 integer tests and every valid-body test pass unchanged; the 400 body is the existing problem shape; a binding 400 on
+  the sign-in body is not counted by `LoginThrottle` (a test: N numeric-password attempts, then a correct sign-in succeeds).
 - AC4 (name rule, server): a table test over both names with at least U+0009, U+000A, U+000D, U+007F, U+0085, U+00AD, U+061C, U+180E,
   U+200B, U+200D, U+200E, U+2028, U+2029, U+202E, U+2060, U+2064, U+2066, U+FEFF, U+E0041 and a lone U+D800, each at the start, middle and end:
-  422 `INVALID_FORMAT` on `displayName` with `detail` naming that code point (first one when several), nothing saved; accepted: Vietnamese with
+  422 `INVALID_FORMAT` on `displayName` with `message` naming that code point (first one when several), nothing saved; accepted: Vietnamese with
   precomposed and combining marks (U+0301), an emoji with U+FE0F, an interior ASCII space. Blank: U+00A0-only, U+3000-only and space-only →
-  workspace `REQUIRED`, account cleared.
-- AC5 (name rule, client): `lib/names` unit table with the AC4 cases (same results); both forms block the submit and show the scope-7 message
-  with the code point in vi and en; a server-only 422 (client rule bypassed in a component test) shows the code point from `detail`.
+  workspace `REQUIRED`, account cleared. Ends: a name sent as U+00A0 + "Lan" + U+202F is stored as "Lan".
+- AC5 (name rule, client): `lib/names` unit table with the AC4 cases (same results); both forms block the submit and show `INVALID_CHARACTER`
+  with the code point in vi and en; a server-only 422 (client rule bypassed in a component test) shows `INVALID_FORMAT`; with a stored name
+  containing U+2028, a time-zone-only (account) and a locale-only (workspace) save succeeds without a name error (scope 8).
 - AC6 (E2E): the Workspace and Account forms at phone-small, tablet and laptop: typing a name with U+200B shows the message naming U+200B in
   the field and the summary; `expectSettledAccessible` passes.
 - AC7 (docs): api-conventions §5, validation-rules (both rows) and the customizer's Javadoc state the new rules.
