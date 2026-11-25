@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-11-21T17:12:01Z",
-  "updatedBy": "lead-coordinator (handoff: T-M2.35 ready, PO start pending)",
+  "updatedAt": "2026-11-25T11:43:20Z",
+  "updatedBy": "lead-coordinator (T-M2.35 started)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -32,16 +32,17 @@
   "currentTask": {
     "id": "T-M2.35",
     "title": "Workspace settings v1 (FR-SET-01 first section; split from T-M2.6)",
-    "status": "ready",
+    "status": "in_progress",
     "ownerRole": "BE+FE",
     "branch": "feature/T-M2.35-workspace-settings",
     "packet": "docs/tasks/T-M2.35-workspace-settings.md",
     "pr": null,
     "lastCommit": null,
-    "startedAt": null,
+    "startedAt": "2026-11-25T11:43:20Z",
     "nextSteps": [
-      "Ask the PO for the start signal",
-      "Then BE implementer, then FE implementer (one at a time); gate; PR; G3 tier H (SEC, then QA with the UX checklist)"
+      "BE implementer (store, endpoints, /meta, student defaults)",
+      "FE implementer (Workspace tab, redirect, Account Language label)",
+      "gate; PR; G3 tier H (SEC, then QA with the UX checklist)"
     ],
     "trace": [
       "DEC-187",
@@ -53,7 +54,7 @@
     "entryGate": [
       "T-M2.6 merged — met (160df23)",
       "Packet + G0 — met (PR #225, DEC-193)",
-      "PO start signal — pending"
+      "PO start signal — met (/goal, 2026-11-25)"
     ]
   },
   "nextTask": {
