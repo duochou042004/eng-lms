@@ -40,7 +40,7 @@
     "lastCommit": "d589168",
     "startedAt": "2026-11-25T14:47:58Z",
     "nextSteps": [
-      "Confirm PR #231 head = 9841455 (GitHub incident) and CI 7/7 there; post QA-VERDICT, UX-REVIEW, LC-APPROVED",
+      "Confirm PR #231 head = the branch tip (GitHub incident) and CI 7/7 there; post QA-VERDICT, UX-REVIEW, LC-APPROVED",
       "merge-gate; gitlab-sync; qa/ PR; records PR (merge DEC)",
       "Then T-M2.33 packet, T-M2.7 (ask the PO)"
     ],

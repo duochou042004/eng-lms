@@ -1,7 +1,7 @@
 # Handoff — 2026-11-25T16:09Z (T-M2.32 reviewed, awaiting merge; context limit reached)
 
 Phase/Milestone: P1 / M2 (in progress) · Current task: **T-M2.32** (`awaiting_approval`, PR #231, branch `feature/T-M2.32-guard-and-polish`,
-final head `9841455`) · Last merge on `develop`: `a84c753` (T-M2.32 packet PR #230) · Next: merge T-M2.32 → T-M2.33 → T-M2.7 (G5)
+final head: the branch tip, the handoff commit) · Last merge on `develop`: `a84c753` (T-M2.32 packet PR #230) · Next: merge T-M2.32 → T-M2.33 → T-M2.7 (G5)
 
 ## Where we are
 - **T-M2.35 done** (`9ad116b`, DEC-195; G3 DEC-194; QA PR #228; records PR #229).
