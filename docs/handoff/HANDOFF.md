@@ -1,31 +1,49 @@
-# Handoff — 2026-11-21T17:12Z (T-M2.6 merged; T-M2.35 packet ready; waiting for the PO start signal)
+# Handoff — 2026-11-25T14:10Z (T-M2.35 merged; next: the T-M2.32 packet)
 
-Phase/Milestone: P1 / M2 (in progress) · Current task: **T-M2.35** workspace settings v1 (FR-SET-01, `ready`, packet
-`docs/tasks/T-M2.35-workspace-settings.md`, DEC-193) · Last merge on `develop`: `2960919` (packet PR #225) · Next: the PO start signal for T-M2.35 →
-T-M2.32 → T-M2.33 → T-M2.7 (G5) · Remote: https://github.com/duochou042004/eng-lms (mirror gitlab, synced after each merge)
+Phase/Milestone: P1 / M2 (in progress) · Current task: **T-M2.32** E2E console-guard gap and T-M2.31 polish (`draft`, no packet yet) ·
+Last merge on `develop`: `100e114` (QA PR #228; T-M2.35 PR #227 `9ad116b`) · Next: T-M2.32 packet → T-M2.33 → T-M2.7 (G5) ·
+Remote: https://github.com/duochou042004/eng-lms (mirror gitlab, synced after each merge)
 
 ## Where we are
-- **T-M2.6 done** (`160df23`, DEC-192; G3 rulings DEC-191; QA PR #223, records PR #224). Reports: `evidence/T-M2.6/review/security.md`,
-  `evidence/T-M2.6/qa/report.md`.
-- **T-M2.35 packet merged** (PR #225, `2960919`): G0 round 1 CHANGES REQUESTED (6 S3, 7 S4: order of checks and no-op PATCH, global-setup must
-  never write the workspace name, the 409 dialog on `ui/ConfirmDialog`, "Workspace name" label, the kept redirect tests, the meta cache), all
-  fixed; delta PASS WITH MINOR, confirmed PASS. Decisions: DEC-193. Tier H; no regression run (cap 0).
+- **T-M2.35 done** (`9ad116b`, DEC-195; G3 rulings DEC-194; QA PR #228, records PR `docs/T-M2.35-records`). Workspace settings v1:
+  `workspace_setting` store, `GET`/`PATCH /tutor/settings`, `/meta` name from the store, new students take the defaults, Settings › Workspace.
+  Reports: `evidence/T-M2.35/review/security.md`, `evidence/T-M2.35/qa/report.md`. PO start signal was the `/goal` of 2026-11-25.
+- S4s batched: T-M2.32 (g) `ui/SegmentedControl` arrow keys do not select; T-M2.33 one character rule for both names (workspace and account
+  `displayName`: `\p{Cf}`, U+2028/U+2029, word joiner, …) and a findable invisible-character error.
 
 ## In flight / uncommitted
-- Nothing. Untracked `evidence/T-M2.6/records/` is gate noise and may be deleted.
+- Nothing besides this records PR. Untracked `evidence/T-M2.6/records/` and `evidence/T-M2.35/records/` are gate noise (the harness refused an
+  `rm -rf` of the first; leave them, never stage them).
 
 ## Next steps (in this order)
-1. **PO start signal for T-M2.35** (asked 2026-11-21). Then `git switch -c feature/T-M2.35-workspace-settings` from develop, a commit setting
-   `in_progress` in progress.json and the packet, the **BE implementer** (store, endpoints, `/meta`, student defaults), then the **FE implementer**
-   (Workspace tab, redirect, Account Language label), one at a time; gate; PR; G3 tier H: one fresh SEC agent, then one fresh QA agent with the
-   UX checklist; verdicts as separate comments after CI is green on the final head; merge-gate; `qa/` PR; records PR.
-2. T-M2.32 (now with (e) QA-4, (f) React Aria vi strings), T-M2.33 (tier H; also the display-name character rule), T-M2.7 (G5: one regression
-   run, no Firefox; ask first). T-M2.26 after at least 10 shadow PRs.
+1. **T-M2.32 packet** (`task-packet` skill, LC) on `docs/T-M2.32-packet`: the backlog row (a)–(g); tier M (one fresh QA agent); G0 by a fresh
+   docs-reviewer; then the PO start signal; FE implementer; gate (all specs ×3: `fixtures.ts` changes); PR; G3; merge; `qa/` PR; records PR.
+2. **T-M2.33 packet** (tier H: SEC + QA): strict scalar binding + the shared name character rule (DEC-191, DEC-194).
+3. **T-M2.7** (G5: one regression run, no Firefox; **ask the PO first**). T-M2.26 after at least 10 shadow PRs.
+4. **Device move:** the PO continues on a new device after these tasks; see "Moving to a new device" below and refresh the device facts.
 
 ## Pending PO decisions / actions
-- T-M2.35's start signal. Dependabot #207, #208: the PO's to merge.
+- Each start signal (T-M2.32, T-M2.33, T-M2.7) and the T-M2.7 regression run.
+
+## Moving to a new device (PO, 2026-11-25: after T-M2.32, T-M2.33 and T-M2.7 the work continues on a new device)
+- Follow development-setup §0 for its platform. Clone `https://github.com/duochou042004/eng-lms`, `git fetch` (check-docs fails closed without
+  `origin/develop`). Record the OS, engine and versions in `progress.json` `environment`, the clone path in `project.repoLocal` and the device in
+  a DEC (as DEC-185), in a small docs commit on the first task branch there, and say so in its history entry.
+- Not in git, so set up again: `.env` (`cp .env.example .env`; dev-only values, generate fresh, never copy through git or chat), `.data/**`
+  (E2E creates `.data/e2e/` on first run), the dev DB volume (a fresh one is fine: fictitious test students only, DEC-139),
+  `.claude/settings.local.json`, Playwright Chromium (`cd e2e && pnpm browsers`, a download: PO approval).
+- Accounts (PO): `gh auth login` (`gh --version` ≥ 2.101 for merge-gate), `glab auth login`, the git identity, credential helpers;
+  `./scripts/install-hooks.sh`; `git remote add gitlab https://gitlab.com/duochou042004/eng-lms.git` (for `scripts/gitlab-sync.sh`).
+  SDKMAN JDK 25, nvm Node 24, corepack pnpm, Podman or Docker (`source scripts/env.sh`).
+- Lost with this device: `.claude/scratch/lc-records/` (LC copies of reviewer reports; everything needed is in `evidence/` and the DEC log)
+  and the dev DB. First run there: `./scripts/check-docs.sh`, `./scripts/tests/run-all.sh`, then the gate once with the first task. Check the
+  old-device gotchas (NoNewPrivs, `CONTAINER_HOST`, the `nvm use` pin) on the new host.
 
 ## Gotchas
+- **Reviewer reports can carry raw invisible characters** (T-M2.35: the agents quoted U+202E, U+200B, U+2028 inside the report): write them
+  as `U+XXXX` before committing a record (Trojan-source scanners, docs tables). The LC did it with a `unicodedata` category filter.
+- **The workspace row is shared test state** (T-M2.35): `global-setup.ts` resets only the two defaults (never the name); matrix/isolation worlds
+  reset it through the test-only `SettingsWorldContributor`; a test that writes the workspace restores the seed.
 - **`ui/ComboBox` needs `buttonLabel` and `listLabel`** (T-M2.6 AC11, DEC-191): ui/ components take translated labels as props; React Aria's own
   strings ("Dismiss", "N options available.") stay English in vi until T-M2.32 (f). An open-list axe check disables only `aria-hidden-focus`
   (`expectSettledAccessible(page, { disableRules: [...] })`, DEC-191); never widen that list without a DEC.
@@ -177,5 +195,5 @@ T-M2.32 → T-M2.33 → T-M2.7 (G5) · Remote: https://github.com/duochou042004/
 
 
 ## Files to read first
-`CLAUDE.md` → `progress.json` → this file → `docs/tasks/T-M2.35-workspace-settings.md` → DEC-187, DEC-191, DEC-192, DEC-193 → the backlog rows T-M2.35, T-M2.32, T-M2.33, T-M2.7 →
+`CLAUDE.md` → `progress.json` → this file → DEC-187, DEC-191, DEC-194, DEC-195 → the backlog rows T-M2.32, T-M2.33, T-M2.7 →
 `docs/09-harness/coding-agent-rules.md` → `docs/09-harness/lessons-learned.md` (before the packet).

@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-11-25T15:10:00Z",
-  "updatedBy": "lead-coordinator (T-M2.35 G3 done, DEC-194)",
+  "updatedAt": "2026-11-25T14:10:00Z",
+  "updatedBy": "lead-coordinator (T-M2.35 merged; records)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -30,31 +30,25 @@
     "exitCriteria": "FR-AUTH-01..10 and FR-STU-01..07 accepted; authorization-matrix and student-isolation harnesses fail on any unregistered endpoint; add-student flow E2E at 360/768/1280 within its step budget; security review of authentication passed (docs/01-product/roadmap.md)."
   },
   "currentTask": {
-    "id": "T-M2.35",
-    "title": "Workspace settings v1 (FR-SET-01 first section; split from T-M2.6)",
-    "status": "awaiting_approval",
-    "ownerRole": "BE+FE",
-    "branch": "feature/T-M2.35-workspace-settings",
-    "packet": "docs/tasks/T-M2.35-workspace-settings.md",
-    "pr": "227",
-    "lastCommit": "010c16f",
-    "startedAt": "2026-11-25T11:43:20Z",
+    "id": "T-M2.32",
+    "title": "E2E console-guard gap and T-M2.31 polish (a)-(g)",
+    "status": "draft",
+    "ownerRole": "FE",
+    "branch": null,
+    "packet": null,
+    "pr": null,
+    "lastCommit": null,
+    "startedAt": null,
     "nextSteps": [
-      "CI green on the final head; post SEC-REVIEW, QA-VERDICT, UX-REVIEW, LC-APPROVED",
-      "merge-gate; gitlab-sync; qa/ PR; records PR (merge DEC)"
+      "LC writes the packet (task-packet skill) on docs/T-M2.32-packet; G0 docs-reviewer",
+      "PO start signal",
+      "FE implementer; gate; PR; G3 tier M (one fresh QA agent)"
     ],
     "trace": [
-      "DEC-187",
-      "DEC-190",
+      "DEC-183",
+      "DEC-184",
       "DEC-191",
-      "DEC-193",
-      "DEC-194",
-      "FR-SET-01"
-    ],
-    "entryGate": [
-      "T-M2.6 merged — met (160df23)",
-      "Packet + G0 — met (PR #225, DEC-193)",
-      "PO start signal — met (/goal, 2026-11-25)"
+      "DEC-194"
     ]
   },
   "nextTask": {
@@ -475,11 +469,19 @@
       "mergeCommit": "160df23",
       "evidence": "evidence/T-M2.6/summary.md",
       "note": "PR #222 via merge-gate (head 2896fb8, CI 7/7 (5 full)); QA PR #223 (f5974bb); packet PR #221 (c92928f); gate PASS on 5514abb (1712 s); G3 tier H: SEC APPROVED, QA PASS WITH MINOR, UX APPROVED, AC11 fix round + delta re-check; DEC-190, DEC-191, DEC-192"
+    },
+    {
+      "id": "T-M2.35",
+      "title": "Workspace settings v1 (FR-SET-01 first section; split from T-M2.6)",
+      "completedAt": "2026-11-25T14:10:00Z",
+      "mergeCommit": "9ad116b",
+      "evidence": "evidence/T-M2.35/summary.md",
+      "note": "PR #227 via merge-gate (head 3fac8a1, CI 7/7 (5 full)); QA PR #228 (100e114); packet PR #225 (2960919); gate PASS on e97ff85 (1732 s); G3 tier H: SEC APPROVED, QA PASS WITH MINOR, UX APPROVED, no fix round; DEC-193, DEC-194, DEC-195"
     }
   ],
   "tests": {
-    "lastRun": "2026-11-21T15:26:03Z",
-    "summary": "T-M2.6 head 5514abb: gate PASS (13 steps, 1712 s); backend 565; web 896; e2e 590 passed, 64 skipped; x3 repeat 1770 passed, 0 failed.",
+    "lastRun": "2026-11-25T12:25:40Z",
+    "summary": "T-M2.35 head e97ff85: gate PASS (13 steps, 1732 s); backend 621; web 933 (76 files); e2e 608 passed; x3 repeat 1824 passed, 0 flaky.",
     "suites": [
       {
         "name": "backend (./mvnw -B verify)",
@@ -510,19 +512,19 @@
     },
     "G1": {
       "status": "pass",
-      "note": "T-M2.6: gate PASS (13 steps, 1712 s) on 5514abb"
+      "note": "T-M2.35: gate PASS (13 steps, 1732 s) on e97ff85"
     },
     "G2": {
       "status": "pass",
-      "note": "T-M2.6: CI 7/7 on 2896fb8 (5 full)"
+      "note": "T-M2.35: CI 7/7 on 3fac8a1 (5 full)"
     },
     "G3": {
       "status": "pass",
-      "note": "T-M2.6 tier H: SEC APPROVED, QA PASS WITH MINOR, UX APPROVED (DEC-191; delta re-check on d6d70ba)"
+      "note": "T-M2.35 tier H: SEC APPROVED, QA PASS WITH MINOR, UX APPROVED (DEC-194)"
     },
     "G4": {
       "status": "pass",
-      "note": "T-M2.6 PR #222 merged via merge-gate (160df23); QA PR #223 (f5974bb)"
+      "note": "T-M2.35 PR #227 merged via merge-gate (9ad116b); QA PR #228 (100e114)"
     },
     "G5": {
       "status": "n/a",
@@ -1897,6 +1899,11 @@
       "at": "2026-11-21T17:12:01Z",
       "actor": "lead-coordinator",
       "event": "T-M2.35 packet merged (PR #225, 2960919); handoff written; PO start signal asked."
+    },
+    {
+      "at": "2026-11-25T14:10:00Z",
+      "actor": "lead-coordinator",
+      "event": "T-M2.35 merged (PR #227, 9ad116b; QA PR #228, 100e114; DEC-194 G3 rulings, DEC-195 merge). Next: T-M2.32 packet."
     }
   ]
 }
