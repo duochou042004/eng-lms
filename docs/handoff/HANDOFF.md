@@ -1,36 +1,28 @@
-# Handoff — 2026-11-25T16:09Z (T-M2.32 reviewed, awaiting merge; context limit reached)
+# Handoff — 2026-11-25T16:53Z (T-M2.32 merged; T-M2.33 packet next)
 
-Phase/Milestone: P1 / M2 (in progress) · Current task: **T-M2.32** (`awaiting_approval`, PR #231, branch `feature/T-M2.32-guard-and-polish`,
-final head: the branch tip, the handoff commit) · Last merge on `develop`: `a84c753` (T-M2.32 packet PR #230) · Next: merge T-M2.32 → T-M2.33 → T-M2.7 (G5)
+Phase/Milestone: P1 / M2 (in progress) · Current task: **T-M2.33** (`draft`: no packet yet) · Last merge on `develop`: `7273fd7`
+(T-M2.32 QA report PR #232) · Next: T-M2.33 packet → PO start → T-M2.33 → T-M2.7 (G5) → device move
 
 ## Where we are
-- **T-M2.35 done** (`9ad116b`, DEC-195; G3 DEC-194; QA PR #228; records PR #229).
-- **T-M2.32**: packet merged (PR #230, DEC-196); implemented (FE, gate PASS on `ad3acc8`: run 1 stopped at web-test on the pre-existing
-  `DevUiPage.test.tsx:12` flake, run 2 `--from web-test` PASS, 7 steps, 1239 s); L-10 rulings DEC-197; G3 tier M on `d589168`:
-  `QA-VERDICT T-M2.32: PASS WITH MINOR`, `UX-REVIEW T-M2.32: APPROVED` (DEC-198; S4s to the T-M2.7 row). Summary: `evidence/T-M2.32/summary.md`.
-- CI 7/7 was green on `d589168`. The last LC records commit `9841455` (G3 rulings, progress `awaiting_approval`) reached `origin` but GitHub
-  had not attached it to PR #231 at 2026-11-25T16:09Z (an API incident: 502s on GraphQL; the PR was created by a retry loop).
+- **T-M2.35 done** (`9ad116b`, DEC-195). **T-M2.32 done** (`a43b17b`, PR #231 at head `24164f6`, CI 7/7; QA PR #232 `7273fd7`; DEC-199;
+  G3 DEC-198, L-10 rulings DEC-197). Summary: `evidence/T-M2.32/summary.md`; report: `evidence/T-M2.32/qa/report.md`.
+- This records PR (`docs/T-M2.32-records`): DEC-199, backlog row and packet Status `done`, progress, this handoff.
 
 ## In flight / uncommitted
-- This handoff commit on the feature branch. The QA report text for the `qa/` PR is in the old device's `.claude/scratch/lc-records/T-M2.32/qa-report.md`
-  (lost on a device move): it is summarised in DEC-198 and the summary; on a new device ask the PO or record the summary as the report.
-- Untracked `evidence/*/records/` dirs are gate noise; never stage them.
+- Nothing besides this records PR. Untracked `evidence/*/records/` dirs are gate noise; never stage them.
 
 ## Next steps (in this order)
-1. Check PR #231's head is the branch tip (`gh api repos/duochou042004/eng-lms/pulls/231 -q .head.sha`); if it is stuck, push the next commit
-   (never force). Wait for CI 7/7 on the final head; then post `QA-VERDICT T-M2.32: PASS WITH MINOR`, `UX-REVIEW T-M2.32: APPROVED` and
-   `LC-APPROVED T-M2.32` as three comments (DEC-198 has the details); `git switch develop && git pull --ff-only`; `./scripts/merge-gate.sh 231`;
-   `./scripts/gitlab-sync.sh`.
-2. `qa/T-M2.32` PR with `evidence/T-M2.32/qa/report.md` (write invisible characters as U+XXXX); then the records PR `docs/T-M2.32-records`
-   (merge DEC, backlog/packet `done`, progress, handoff archive) with a fresh docs-reviewer (exact `DOCS-REVIEW T-M2.32: PASS`).
-3. **T-M2.33 packet** (tier H: SEC + QA): strict scalar binding (DEC-186) + one name character rule for workspace and account names (DEC-194).
-4. **T-M2.7** (G5: one regression run, no Firefox; **ask the PO first**); its row now also holds the `DevUiPage` flake (DEC-197) and the
-   T-M2.32 S4s (DEC-198). T-M2.26 after at least 10 shadow PRs.
-5. **Device move** after these tasks (PO, DEC-195): "Moving to a new device" below.
+1. **T-M2.33 packet** (`task-packet` skill, LC) on `docs/T-M2.33-packet`: strict scalar binding (DEC-186: `String`/`Boolean` coercion → 400
+   `MALFORMED_REQUEST`, table tests on a create, an update, the sign-in body and `PATCH /auth/preferences`) and one name character rule for
+   the workspace and account names, server and client (DEC-191, DEC-194; the backlog row lists the characters). Tier H (SEC + QA); regression
+   cap 0. G0 by a fresh docs-reviewer; then the **PO start signal**; BE implementer (FE for `workspaceForm.ts` and the account form); gate; PR;
+   G3; merge; `qa/` PR; records PR.
+2. **T-M2.7** (G5: one regression run, no Firefox; **ask the PO first**); its row holds the `DevUiPage` flake (DEC-197) and the T-M2.32 S4s
+   (DEC-198). T-M2.26 after at least 10 shadow PRs.
+3. **Device move** after these tasks (PO, DEC-195): "Moving to a new device" below.
 
 ## Pending PO decisions / actions
-- Start signals for T-M2.33 and T-M2.7; the T-M2.7 regression run. This session stopped at the ~300k context rule while the `/goal` hook still
-  had T-M2.32's merge, T-M2.33 and T-M2.7 open.
+- Start signals for T-M2.33 and T-M2.7; the T-M2.7 regression run.
 
 ## Moving to a new device (PO, 2026-11-25: after T-M2.32, T-M2.33 and T-M2.7 the work continues on a new device)
 - Follow development-setup §0 for its platform. Clone `https://github.com/duochou042004/eng-lms`, `git fetch` (check-docs fails closed without
@@ -207,5 +199,5 @@ final head: the branch tip, the handoff commit) · Last merge on `develop`: `a84
 
 
 ## Files to read first
-`CLAUDE.md` → `progress.json` → this file → DEC-187, DEC-194, DEC-196, DEC-197, DEC-198 → the T-M2.32 packet → the backlog rows T-M2.33, T-M2.7 →
+`CLAUDE.md` → `progress.json` → this file → DEC-186, DEC-187, DEC-191, DEC-194, DEC-199 → the backlog rows T-M2.33, T-M2.7 →
 `docs/09-harness/coding-agent-rules.md` → `docs/09-harness/lessons-learned.md` (before the packet).
