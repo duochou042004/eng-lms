@@ -57,7 +57,8 @@ strategy, an RTL-agnostic layout (logical properties), a unit test, an axe test 
 
 **`SegmentedControl`** (T-M1.9): React Aria `ToggleButtonGroup` in single selection with empty selection disallowed, so the group is a `radiogroup` and
 each segment a `radio` with `aria-checked`. Props: a required `label` (the group's accessible name), `options` (`id`, `label`, optional `lang` for an
-endonym, optional `isDisabled`), `selected`, `onChange`, `isDisabled`. Segments are ≥ 44 px (`--size-control-md`). States: hover (`--color-surface-sunken`),
+endonym, optional `isDisabled`), `selected`, `onChange`, `isDisabled`, `labelVisible` (T-M2.35: the label shown above the group as a field label, naming it through `aria-labelledby`;
+the group keeps its own width). Segments are ≥ 44 px (`--size-control-md`). States: hover (`--color-surface-sunken`),
 pressed and selected (`--color-accent-subtle`; the selected label is `--color-accent-strong`, semibold, with a lucide `Check` icon, so selection is never
 colour alone), focus-visible (the 2 px ring drawn inside the segment), disabled. **Stable widths** (T-M1.13): selecting a segment never moves the boundaries
 between segments. The icon slot is always laid out and hidden (`visibility: hidden`) on unselected segments, and each label shares its grid cell with an

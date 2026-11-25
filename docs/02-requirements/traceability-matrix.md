@@ -53,7 +53,7 @@
 | 38 | File and material management, not Drive | Files module, limits, access checks | FR-FILE-01..04 | files, library | M4 | MVP |
 | 39 | Notifications (useful events; in-app first) | Derived dashboard items in the MVP | DEC-006 | notifications (future) | — | P2 |
 | 40 | UX principles | Design system, step budgets, progressive disclosure | NFR-UX-01..04 | web | all | MVP |
-| 41 | Information architecture (adjustable) | Task-based nav with a Library group; student list (live T-M2.3: `GET /tutor/students` search/filter/sort; row signals T-M3.1, T-M5.1, T-M7.7) | DEC-010, information-architecture.md, FR-STU-02 | web | M2+ | MVP |
+| 41 | Information architecture (adjustable) | Task-based nav with a Library group; student list (live T-M2.3: `GET /tutor/students` search/filter/sort; row signals T-M3.1, T-M5.1, T-M7.7); Settings node live: tabs Workspace (T-M2.35, FR-SET-01: name and new-student defaults; `/tutor/settings` redirects to it) and Account (T-M2.6, FR-SET-02) | DEC-010, information-architecture.md, FR-STU-02 | web | M2+ | MVP |
 | 42 | MVP scope | This matrix | scope.md §1 | — | — | MVP |
 | 43 | Phase 2 list | scope.md §2 | — | — | — | P2 |
 | 44 | Phase 3 / Future | scope.md §3 | — | — | — | FUTURE |
