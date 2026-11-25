@@ -38,7 +38,8 @@
       "displayName": {
         "REQUIRED": "Hãy nhập tên không gian làm việc.",
         "TOO_LONG": "Tên không gian làm việc tối đa 120 ký tự.",
-        "INVALID_FORMAT": "Hãy xoá các ký tự điều khiển, ký tự đổi chiều chữ và ký tự không độ rộng khỏi tên."
+        "INVALID_CHARACTER": "Tên này chứa ký tự ẩn hoặc ký tự điều khiển ({{codePoint}}). Hãy xoá ký tự đó và gõ lại tên.",
+        "INVALID_FORMAT": "Tên này chứa ký tự ẩn hoặc ký tự điều khiển. Hãy xoá ký tự đó và gõ lại tên."
       },
       "defaultTimeZone": {
         "REQUIRED": "Hãy chọn múi giờ mặc định.",
@@ -75,7 +76,8 @@
     "errors": {
       "displayName": {
         "TOO_LONG": "Tên hiển thị tối đa 120 ký tự.",
-        "INVALID_FORMAT": "Hãy xoá các ký tự điều khiển khỏi tên hiển thị.",
+        "INVALID_CHARACTER": "Tên này chứa ký tự ẩn hoặc ký tự điều khiển ({{codePoint}}). Hãy xoá ký tự đó và gõ lại tên.",
+        "INVALID_FORMAT": "Tên này chứa ký tự ẩn hoặc ký tự điều khiển. Hãy xoá ký tự đó và gõ lại tên.",
         "INVALID_VALUE": "Tên hiển thị này không được chấp nhận."
       },
       "timeZone": {

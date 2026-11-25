@@ -183,6 +183,48 @@ describe('T-M2.6 AC6: the Account page', () => {
     expect(sent).toEqual([])
   })
 
+  it.each([
+    ['Cô\u200BLan', 'U+200B'],
+    ['Cô\tLan', 'U+0009'],
+    ['\u202ECô Lan', 'U+202E'],
+  ])(
+    'a client error (%j) names %s in the summary (focused) and the field; nothing is sent',
+    async (value, codePoint) => {
+      const sent = tutorAccount()
+      await openPage()
+      await userEvent.click(displayName())
+      await userEvent.paste(value)
+      await userEvent.click(save())
+      const summary = await screen.findByRole('alert', { name: 'Chưa lưu được cài đặt' })
+      await waitFor(() => expect(summary).toHaveFocus())
+      const text = `Tên này chứa ký tự ẩn hoặc ký tự điều khiển (${codePoint}). Hãy xoá ký tự đó và gõ lại tên.`
+      expect(within(summary).getByRole('link', { name: text })).toHaveAttribute('href', '#account-display-name')
+      expect(displayName()).toHaveAttribute('aria-invalid', 'true')
+      expect(displayName()).toHaveAccessibleDescription(expect.stringContaining(text))
+      expect(sent).toEqual([])
+    },
+  )
+
+  // T-M2.33 scope 8: a stored name saved before the rule does not block a time-zone-only save; editing it applies the rule.
+  it('a stored display name with U+2028: a time-zone-only save succeeds; an edit of the name is refused', async () => {
+    const sent = tutorAccount({ displayName: 'Cô\u2028Lan' })
+    await openPage()
+    await userEvent.click(timeZone())
+    await userEvent.keyboard('{Control>}a{/Control}bangkok{ArrowDown}{Enter}')
+    await userEvent.click(save())
+    await waitFor(() => expect(sent).toEqual([{ timeZone: 'Asia/Bangkok' }]))
+    expect(displayName()).not.toHaveAttribute('aria-invalid')
+    await userEvent.type(displayName(), '!')
+    await userEvent.click(save())
+    const summary = await screen.findByRole('alert', { name: 'Chưa lưu được cài đặt' })
+    expect(
+      within(summary).getByRole('link', {
+        name: 'Tên này chứa ký tự ẩn hoặc ký tự điều khiển (U+2028). Hãy xoá ký tự đó và gõ lại tên.',
+      }),
+    ).toBeInTheDocument()
+    expect(sent).toHaveLength(1)
+  })
+
   it('a 422 shows every field problem in the summary (focused) and on the fields', async () => {
     tutorAccount()
     server.use(
@@ -204,7 +246,10 @@ describe('T-M2.6 AC6: the Account page', () => {
       within(summary)
         .getAllByRole('link')
         .map((l) => l.textContent),
-    ).toEqual(['Hãy xoá các ký tự điều khiển khỏi tên hiển thị.', 'Hãy chọn một múi giờ trong danh sách.'])
+    ).toEqual([
+      'Tên này chứa ký tự ẩn hoặc ký tự điều khiển. Hãy xoá ký tự đó và gõ lại tên.',
+      'Hãy chọn một múi giờ trong danh sách.',
+    ])
     expect(timeZone()).toHaveAttribute('aria-invalid', 'true')
     await expectNoAxeViolations(container)
   })
@@ -356,6 +401,17 @@ describe('T-M2.6 AC6: the Account page', () => {
     expect(screen.getByRole('combobox', { name: 'Time zone' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Save' })).toHaveAttribute('aria-disabled', 'true')
     expect(screen.getByRole('navigation', { name: 'Settings sections' })).toHaveTextContent('Account')
+
+    // T-M2.33 AC5: the client rule names the code point in English too.
+    await userEvent.click(screen.getByRole('textbox', { name: 'Display name' }))
+    await userEvent.paste('Lan\u200B')
+    await userEvent.click(screen.getByRole('button', { name: 'Save' }))
+    const summary = await screen.findByRole('alert', { name: 'Your settings were not saved' })
+    expect(
+      within(summary).getByRole('link', {
+        name: 'This name contains an invisible or control character (U+200B). Delete it and type the name again.',
+      }),
+    ).toBeInTheDocument()
   })
 })
 

@@ -3,12 +3,14 @@ import { accountSchema, mapPreferencesErrors, timeZoneOptions, toPreferencesRequ
 
 const saved = { displayName: 'Cô Lan', timeZone: 'Asia/Ho_Chi_Minh' }
 
-// T-M2.6 scope 5, AC6: only the changed properties; the fullName rule; the current zone always an option.
+// T-M2.6 scope 5, AC6: only the changed properties; the name rule (T-M2.33); the current zone always an option.
 describe('account form', () => {
   it('sends only the changed properties, trimmed; an emptied display name clears it; nothing changed → null', () => {
     expect(toPreferencesRequest(saved, { ...saved, displayName: '  Cô Lan ' })).toBeNull()
     expect(toPreferencesRequest(saved, { ...saved, displayName: ' Lan ' })).toEqual({ displayName: 'Lan' })
     expect(toPreferencesRequest(saved, { ...saved, displayName: '  ' })).toEqual({ displayName: null })
+    expect(toPreferencesRequest(saved, { ...saved, displayName: '\u00A0\u3000' })).toEqual({ displayName: null })
+    expect(toPreferencesRequest(saved, { ...saved, displayName: '\u00A0Lan\u202F' })).toEqual({ displayName: 'Lan' })
     expect(toPreferencesRequest(saved, { ...saved, timeZone: 'Asia/Bangkok' })).toEqual({ timeZone: 'Asia/Bangkok' })
     expect(toPreferencesRequest({ ...saved, displayName: '' }, { displayName: 'Lan', timeZone: 'UTC' })).toEqual({
       displayName: 'Lan',
@@ -16,15 +18,36 @@ describe('account form', () => {
     })
   })
 
-  it('applies the fullName rule: 120 code points after trim, no control character but tab, LF, CR', () => {
+  it('applies the name rule: 120 code points after the strip, no invisible or control character (tab, LF, CR too)', () => {
     const issues = (displayName: string) =>
-      accountSchema.safeParse({ displayName, timeZone: 'UTC' }).error?.issues.map((i) => i.message) ?? []
+      accountSchema(saved.displayName)
+        .safeParse({ displayName, timeZone: 'UTC' })
+        .error?.issues.map((i) => i.message) ?? []
     expect(issues(` ${'ạ'.repeat(120)} `)).toEqual([])
     expect(issues('😀'.repeat(120))).toEqual([])
     expect(issues('a'.repeat(121))).toEqual(['account.errors.displayName.TOO_LONG'])
-    expect(issues('Lan\u0007')).toEqual(['account.errors.displayName.INVALID_FORMAT'])
-    expect(issues('Lan\tCô')).toEqual([])
+    expect(issues('Lan\u0007')).toEqual(['account.errors.displayName.INVALID_CHARACTER'])
+    expect(issues('Lan\tCô')).toEqual(['account.errors.displayName.INVALID_CHARACTER'])
+    expect(issues('Lan\nCô')).toEqual(['account.errors.displayName.INVALID_CHARACTER'])
+    expect(issues('Lan\u200BCô')).toEqual(['account.errors.displayName.INVALID_CHARACTER'])
+    expect(issues('Le\u0301 Lan \u2764\uFE0F')).toEqual([])
     expect(issues('')).toEqual([])
+  })
+
+  // T-M2.33 scope 8: a stored name that breaks the rule does not block a time-zone-only save.
+  it('checks the character rule only on a changed name', () => {
+    const stored = 'Cô\u2028Lan'
+    const issues = (displayName: string) =>
+      accountSchema(stored)
+        .safeParse({ displayName, timeZone: 'UTC' })
+        .error?.issues.map((i) => i.message) ?? []
+    expect(issues(stored)).toEqual([])
+    expect(
+      toPreferencesRequest({ displayName: stored, timeZone: 'UTC' }, { displayName: stored, timeZone: 'Asia/Bangkok' }),
+    ).toEqual({
+      timeZone: 'Asia/Bangkok',
+    })
+    expect(issues(`${stored}!`)).toEqual(['account.errors.displayName.INVALID_CHARACTER'])
   })
 
   it('maps a 422 to the fields, the rest to the summary', () => {

@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next'
 import { useRevalidator } from 'react-router'
 import { sessionQuery, useUpdatePreferences, type Session } from '../../../features/auth/api/session'
 import { ApiError } from '../../../lib/api'
+import { codePointLabel, firstForbidden } from '../../../lib/names'
 import { usePageTitle } from '../../../lib/i18n/pageTitle'
 import {
   Button,
@@ -76,8 +77,9 @@ function AccountForm({
   const [formError, setFormError] = useState<string | null>(null)
   const saved = useMemo(() => accountValues(session), [session])
   const options = useMemo(() => timeZoneOptions(saved.timeZone), [saved.timeZone])
+  const resolver = useMemo(() => zodResolver(accountSchema(saved.displayName)), [saved.displayName])
   const { control, handleSubmit, setError, reset, getValues, setValue, formState } = useForm<AccountValues>({
-    resolver: zodResolver(accountSchema),
+    resolver,
     defaultValues: saved,
     mode: 'onSubmit',
     reValidateMode: 'onChange',
@@ -87,6 +89,9 @@ function AccountForm({
     reset(saved, { keepDirtyValues: true })
   }, [saved, reset])
   const values = useWatch({ control }) as AccountValues
+  // INVALID_CHARACTER names the client rule's code point (the server's problem `message` is for developers, T-M2.33).
+  const forbidden = firstForbidden(values.displayName ?? '')
+  const errorText = (key: string) => t(key, { codePoint: forbidden === null ? '' : codePointLabel(forbidden) })
   const changed = toPreferencesRequest(saved, values) !== null
 
   const errors = formState.errors
@@ -94,7 +99,7 @@ function AccountForm({
     summaryShown > 0
       ? [
           ...(['displayName', 'timeZone'] as const).flatMap((field) =>
-            errors[field]?.message ? [{ message: t(errors[field].message), fieldId: FIELD_IDS[field] }] : [],
+            errors[field]?.message ? [{ message: errorText(errors[field].message), fieldId: FIELD_IDS[field] }] : [],
           ),
           ...(unknownError ? [{ message: t('account.errors.server') }] : []),
         ]
@@ -190,7 +195,7 @@ function AccountForm({
               onChange={field.onChange}
               onBlur={field.onBlur}
               isInvalid={fieldState.invalid}
-              errorMessage={fieldState.error?.message ? t(fieldState.error.message) : undefined}
+              errorMessage={fieldState.error?.message ? errorText(fieldState.error.message) : undefined}
             />
           )}
         />
@@ -209,7 +214,7 @@ function AccountForm({
               buttonLabel={t('account.timeZoneShow')}
               listLabel={t('account.timeZoneList')}
               isInvalid={fieldState.invalid}
-              errorMessage={fieldState.error?.message ? t(fieldState.error.message) : undefined}
+              errorMessage={fieldState.error?.message ? errorText(fieldState.error.message) : undefined}
             />
           )}
         />
