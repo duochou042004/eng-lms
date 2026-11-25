@@ -14,9 +14,6 @@ public final class Names {
 	/** Controls (C0, DEL, C1), format characters (bidi, zero-width, joiners, tags, U+00AD …), surrogates, U+2028, U+2029. */
 	private static final Pattern FORBIDDEN = Pattern.compile("[\\p{Cc}\\p{Cf}\\p{Cs}\\p{Zl}\\p{Zp}]");
 
-	/** Java whitespace plus every space separator (Java's {@code strip()} keeps U+00A0, U+2007, U+202F; JS {@code trim()} does not). */
-	private static final Pattern ENDS = Pattern.compile("^[\\p{javaWhitespace}\\p{Z}]+|[\\p{javaWhitespace}\\p{Z}]+$");
-
 	private Names() {
 	}
 
@@ -26,9 +23,25 @@ public final class Names {
 		return matcher.find() ? OptionalInt.of(value.codePointAt(matcher.start())) : OptionalInt.empty();
 	}
 
-	/** {@code value} without leading and trailing whitespace and space separators. */
+	/**
+	 * {@code value} without leading and trailing whitespace and space separators (Java's {@code strip()} keeps U+00A0,
+	 * U+2007, U+202F; JS {@code trim()} does not). Linear: a code-point walk from both ends, as {@code stripName} in
+	 * {@code web/src/lib/names.ts} (G3 SEC S3-1: the regex form was quadratic on an interior run of spaces).
+	 */
 	public static String strip(String value) {
-		return ENDS.matcher(value).replaceAll("");
+		int start = 0;
+		while (start < value.length() && isEnd(value.codePointAt(start))) {
+			start += Character.charCount(value.codePointAt(start));
+		}
+		int end = value.length();
+		while (end > start && isEnd(value.codePointBefore(end))) {
+			end -= Character.charCount(value.codePointBefore(end));
+		}
+		return value.substring(start, end);
+	}
+
+	private static boolean isEnd(int codePoint) {
+		return Character.isWhitespace(codePoint) || Character.isSpaceChar(codePoint);
 	}
 
 	/** Empty, or only whitespace and space separators (U+00A0, U+3000 …). */

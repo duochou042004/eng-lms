@@ -29,8 +29,6 @@ public class WorkspaceSettingsService implements SettingsApi {
 
 	static final int DISPLAY_NAME_MAX = 120;
 
-	/** Any control character (C0, DEL, C1), bidi overrides and isolates, zero-width characters and the BOM (DEC-191 SEC S4-1). */
-
 	private final WorkspaceSettingRepository settings;
 
 	private final MetaProperties meta;

@@ -43,6 +43,16 @@ class NamesTest {
 		assertThat(Names.strip("Lan")).isEqualTo("Lan");
 	}
 
+	/** AC10 (G3 SEC S3-1): linear in the length, so a long interior run is kept and long ends are removed. */
+	@Test
+	void stripIsLinearOnLongRunsOfSpaces() {
+		String spaces = " ".repeat(1_000_000);
+
+		assertThat(Names.strip("a" + spaces + "b")).isEqualTo("a" + spaces + "b");
+		assertThat(Names.strip(spaces + "Lan" + spaces)).isEqualTo("Lan");
+		assertThat(Names.isBlank(spaces + "\u00A0" + spaces)).isTrue();
+	}
+
 	@Test
 	void onlySpaceSeparatorsOrWhitespaceIsBlank() {
 		assertThat(Names.isBlank("")).isTrue();

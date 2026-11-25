@@ -191,3 +191,10 @@ Row legend for the parameterized API rows above (source order):
     emoji + U+FE0F, interior space (positive controls, green), U+00A0 + "Lan" + U+202F -> "Lan" (RED), U+2007 U+3000 ... U+00A0 ends (RED)
   NameRuleApiTest.aBlankNameIsRequiredOnTheWorkspaceAndClearsTheAccountName [1..8]: per endpoint U+00A0-only (RED),
     U+3000-only (guard, green: Java strip() already removed it), space-only (guard, green), U+202F U+2007 space U+00A0 (RED)
+
+AC10 (G3 SEC S3-1, DEC-202): NamesTest.stripIsLinearOnLongRunsOfSpaces ("a" + 1,000,000 interior spaces + "b" unchanged;
+1,000,000 spaces + "Lan" + 1,000,000 spaces -> "Lan"; blank check), the test has no wall-clock assertion (DEC-093).
+RED (bounded manual run against the old regex strip `^[\p{javaWhitespace}\p{Z}]+|[\p{javaWhitespace}\p{Z}]+$`, HEAD 99856e0 + the new row):
+  cmd: timeout 60 ./mvnw -B test -Dtest='NamesTest#stripIsLinearOnLongRunsOfSpaces'
+  2026-11-25T18:40:15Z start, 2026-11-25T18:41:15Z killed by timeout (exit 124) while "Running com.englms.shared.NamesTest": did not finish in 60 s
+GREEN after the linear code-point loop: ./mvnw -B test -Dtest=NamesTest -> tests=42 failures=0; the row took 0.048 s

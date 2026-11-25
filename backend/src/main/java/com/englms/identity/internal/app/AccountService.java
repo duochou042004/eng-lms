@@ -54,8 +54,6 @@ public class AccountService implements AccountApi {
 
 	static final int DISPLAY_NAME_MAX = 120;
 
-	/** C0 control characters other than tab, line feed and carriage return (validation-rules, the students rule). */
-
 	private final UserAccountRepository accounts;
 
 	private final SessionTerminator sessions;
