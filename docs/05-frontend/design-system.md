@@ -67,7 +67,7 @@ invisible, `aria-hidden` semibold copy, so the cell is always as wide as the sem
 Tab stop; the arrow keys only move focus between segments; Space or Enter selects the focused segment. A forward Tab into the group lands on the segment that
 last had focus, otherwise the first; Shift+Tab lands on the last segment. Focus does not necessarily land on the checked segment. Why: selection waits for an
 explicit Space/Enter, which suits a switch whose change redraws the UI (the language switcher re-renders every string), so arrowing through the options does
-not redraw the page on each key press. A view switcher where the arrow keys should select at once (the usual radio-group behaviour) uses React Aria
+not redraw the page on each key press, nor, signed in, save the account's locale on each key press (the switcher's save, FR-SET-02; T-M2.35 QA-2 kept, DEC-196 (3)). A view switcher where the arrow keys should select at once (the usual radio-group behaviour) uses React Aria
 `RadioGroup` instead, not a `SegmentedControl`.
 
 **Skeleton delay** (interaction-states §1, T-M1.9): wrap a loading region's `Skeleton`s in `DelayedSkeleton` (default `SKELETON_DELAY_MS` = 150 ms). The
@@ -116,6 +116,12 @@ Decorative: `aria-hidden="true"`, never focusable; its owner announces the state
   (`scrollbar-gutter: stable`): with classic scrollbars the content box is ~15 px narrower at every size, so content never moves when the
   scrollbar appears; `scroll-padding-block` (the focus ring's width + offset) keeps an inner control's ring clear of the edge when focus
   scrolls it into view.
+- **React Aria's own strings** (T-M2.32 (f), DEC-196 (2)): `ui/ariaStrings.ts` installs one global dictionary for both locales before the first
+  render (`main.tsx`): React Aria's full `en-US` dictionary, where each key we translate chooses Vietnamese or the English value by the
+  formatter's locale (the `I18nProvider` of `UiProvider`), so the hidden dismiss buttons of `Popover`, `Sheet` and `Toggletip` read "Đóng" and
+  the `ComboBox` announcements are Vietnamese in the vi UI ("Có N lựa chọn."), English in en, switching without a reload. In vi a `Sheet`'s
+  visible Close and its hidden dismiss buttons share the name "Đóng". A react-aria-components bump needs a local check of these names (its
+  `shortcut:` comment).
 - `Toggletip` (T-M2.13, UX-3): a quiet icon button (`--size-control-md`, ≥ 44 px; required accessible name; `aria-haspopup="dialog"`,
   `aria-expanded`; the message as its `title` for mouse hover) that opens a small dialog-type popover holding the message, named by it, with
   the `Popover` surface, at most `--size-popover` wide and never wider than the viewport less the 16 px gutters. It behaves as `Popover` (focus
