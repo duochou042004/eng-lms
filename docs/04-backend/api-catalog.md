@@ -4,13 +4,13 @@
 > Prefix `/api/v1` omitted. **M** = milestone. Audience: T = tutor, S = student, P = public, A = any authenticated.
 > `/auth/**` is open at the URL gate and each handler decides (security.md §4); there is no registration route (`/auth/register` → 404, FR-AUTH-01).
 > Every handler carries `@Audience` (the column "Aud") and a policy-registry entry (security.md §4). Registered since T-M2.2: the four auth endpoints and `GET /meta`;
-> since T-M2.3 the eight live "tutor: students" endpoints below (all `@Audience(TUTOR)`); since T-M2.9 the six guardian and learning-profile endpoints (also `@Audience(TUTOR)`).
+> since T-M2.3 the eight live "tutor: students" endpoints below (all `@Audience(TUTOR)`); since T-M2.9 the six guardian and learning-profile endpoints (also `@Audience(TUTOR)`); since T-M2.35 `GET` / `PATCH /tutor/settings` (`@Audience(TUTOR)`).
 
 ## auth, meta (identity, settings)
 
 | Method | Path | Aud | Purpose | FR | M |
 |---|---|---|---|---|---|
-| GET | `/meta` | P | `{name, version, locales, displayName}` from `englms.meta.*` config; locales `["vi","en"]` (DEC-039). `HEAD` is public too. **Live** (T-M1.2, `api/openapi.json`) | — | M1 |
+| GET | `/meta` | P | `{name, version, locales, displayName}`: `name`, `version`, `locales` from `englms.meta.*` config, locales `["vi","en"]` (DEC-039); `displayName` is the workspace store's effective name (the stored one, else `englms.meta.display-name`; T-M2.35), one primary-key read per call, a database failure is a 500 without detail. `HEAD` is public too. **Live** (T-M1.2, `api/openapi.json`) | — | M1 |
 | GET | `/auth/session` | P | `{userId, username, role, displayName, locale, timeZone, mustChangePassword}` or 401 (`UNAUTHENTICATED` without a session cookie, `SESSION_EXPIRED` when the cookie names no live session). Also primes the `XSRF-TOKEN` cookie, for anonymous callers too. Passes the must-change gate. **Live** (T-M2.1) | FR-AUTH-03 | M2 |
 | POST | `/auth/login` | P | `{username, password, rememberMe}` → 200 with the session body; rotates the session ID; `rememberMe` sets the 30-day `ENGLMS_REMEMBER_ME` cookie. One generic 401 `UNAUTHENTICATED` for every failure (also while locked, DEC-089 (6)); 429 `RATE_LIMITED` + `Retry-After` past the per-IP throttle; no redirect target (T18). CSRF required. **Live** (T-M2.1) | FR-AUTH-03 | M2 |
 | POST | `/auth/logout` | P | 204; ends this session and this device's remember-me token, expires both cookies; idempotent for anonymous callers. CSRF required; passes the must-change gate. **Live** (T-M2.1) | FR-AUTH-04 | M2 |
@@ -95,7 +95,7 @@
 | GET | `/tutor/progress/students` | Overview table | FR-PROG-03 | M7 |
 | GET | `/tutor/students/{sid}/progress` | Per-student progress | FR-PROG-01 | M7 |
 | PUT | `/tutor/students/{sid}/progress/metrics` | Displayed metrics | FR-PROG-04 | M7 |
-| GET / PATCH | `/tutor/settings` | Workspace settings | FR-SET-01 | M2+ |
+| GET / PATCH | `/tutor/settings` | Workspace settings (`@Audience(TUTOR)`). `GET` → `{displayName, defaultLocale, defaultTimeZone, version, updatedAt}` (`displayName` the effective name: stored, else the configured one). `PATCH` `{version, displayName?, defaultLocale?, defaultTimeZone?}`: absent = unchanged, no property can be cleared; `version` required (absent/`null` → 422 `REQUIRED`, below 0 → `INVALID_VALUE`); none of the three → 422 `REQUIRED` on `displayName`; field rules: validation-rules "workspace"; object/array values → 400 `MALFORMED_REQUEST`. Order: 422 (every problem at once) → a `version` other than the stored one → 409 `STALE_VERSION` (also with unchanged values; a lost race at flush too) → apply. Values equal to the stored document write nothing (`version`, `updatedAt` stay). 200 with the `GET` body. New student accounts take the defaults; existing accounts never change. CSRF required; behind the must-change gate. No event, no audit entry. **Live** (T-M2.35) | FR-SET-01 | M2 |
 | GET · PATCH | `/tutor/extensions` · `/tutor/extensions/{id}` | Catalogue, enable or disable | FR-EXT-02 | M6 |
 | GET | `/tutor/audit-events?action=&page=` | Security log | FR-SET-03 | M8 |
 

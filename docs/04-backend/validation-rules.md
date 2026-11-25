@@ -46,6 +46,17 @@ Absent = unchanged. An empty body (none of the three) → 422 `REQUIRED` on `loc
 | timeZone | an ID in `java.time.ZoneId.getAvailableZoneIds()` of the running JDK, exact and case-sensitive, not trimmed; aliases (`Asia/Saigon`) are kept as given → else `INVALID_VALUE`; `null` → `REQUIRED` |
 | displayName (account) | tutor only; the fullName rule: trimmed, 1–120 code points, a C0 control character other than tab/LF/CR → `INVALID_FORMAT`, longer → `TOO_LONG`; empty after trim or `null` clears it. From a student account, any present `displayName` (also `null`) → `INVALID_VALUE` (FR-STU-03: the name is the tutor's `fullName`) |
 
+## workspace (settings, `PATCH /tutor/settings`, T-M2.35)
+
+Absent = unchanged; nothing can be cleared. `version` is required (absent or `null` → `REQUIRED`, below 0 → `INVALID_VALUE`). None of the
+three properties → 422 `REQUIRED` on `displayName`. Every problem is reported in one 422, before the version is compared (409 `STALE_VERSION`).
+
+| Field | Rule |
+|---|---|
+| displayName (workspace) | the public one-line brand: `strip()`ped, 1–120 code points (the header note); **no control character of any kind** (C0 with tab/LF/CR, DEL, C1) and no bidi override/isolate or zero-width character (U+200B–U+200F, U+202A–U+202E, U+2066–U+2069, U+FEFF), anywhere in the sent value → `INVALID_FORMAT` (DEC-191 SEC S4-1); longer → `TOO_LONG`; empty after the strip or `null` → `REQUIRED` (the configured name returns only by typing it) |
+| defaultLocale | the account `locale` rule: one of `englms.meta.locales`, exact → else `INVALID_VALUE`; `null` → `REQUIRED` |
+| defaultTimeZone | the account `timeZone` rule: an ID in `ZoneId.getAvailableZoneIds()`, exact, aliases kept as given → else `INVALID_VALUE`; `null` → `REQUIRED` |
+
 ## goals
 
 | Field | Rule |
