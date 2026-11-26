@@ -1,30 +1,30 @@
-# Handoff — 2026-11-26T06:05Z (T-M2.7 packet PR; ask the PO for the start signal)
+# Handoff — 2026-11-26 (T-M2.7 consolidated; agent policy hook; waiting for the PO)
 
-Phase/Milestone: P1 / M2 (in progress) · Current task: **T-M2.7** (`ready` once the packet PR merges) · Last merge on `develop`: `d626462`
-(T-M2.33 records PR #237) · Next: the PO's T-M2.7 start signal → T-M2.7 → T-M2.36 → T-M2.37 → T-M2.38 (G5, the regression run) → T-M2.26 → device move
+Phase/Milestone: P1 / M2 (in progress) · Current task: **T-M2.7** (`draft`: parts B–D need a G0 delta) · Last merge on `develop`: `58f3220`
+(T-M2.7 packet PR #238) · Next: PO approval of DEC-205 → G0 delta (resume the same docs-reviewer) → T-M2.7 → M2 closed → device move → T-M2.26
 
 ## Where we are
-- **T-M2.7 split** (DEC-204; the PO said "packet only first"): **T-M2.7** Student Home v0 + the student Account page (packet
-  `docs/tasks/T-M2.7-student-home-account.md`, tier H: the first `/api/v1/student/**` handler, `GET /student/account`); **T-M2.36** backend
-  S4s (Jackson's mismatch value at DEBUG, DEC-202 S4-1; the workspace `@Schema` description, DEC-201 (3); tier H, SEC); **T-M2.37** web S4s
-  (DEC-148 QA-2, DEC-197 (4), DEC-198 QA-2, DEC-202 S4-3; tier M); **T-M2.38** the M2 regression + G5 (the one `regression` run, PO approval
-  first; the `qa/` updates; the DEC-198 QA-1 watch item; G5 records).
-- This packet PR (`docs/T-M2.7-packet`): the packet, the four backlog rows, DEC-204, progress, this handoff.
+- **PO (DEC-205):** T-M2.36, T-M2.37, T-M2.38 are cancelled and are parts B (backend S4s), C (web S4s) and D (the M2 regression + G5) of
+  **T-M2.7** (packet `docs/tasks/T-M2.7-student-home-account.md`, tier H, 14 ACs, over the size rule by the PO). Three PRs remain for M2: the
+  feature PR, `qa/T-M2.7`, the records PR. **T-M2.26** runs on the new device.
+- **Agent policy** (coding-agent-rules §11): `scripts/hooks/agent-policy.sh` runs as project hooks (`.claude/settings.json`): R1 one
+  checkout-using subagent at a time, R2 ≤ 5 running, R3 ≤ 6 fresh per session, R4 no second fresh reviewer of a role for a task (resume it),
+  R5 a Workflow declares `// agents: N` ≤ 5; `BUDGET-OVERRIDE: <reason>` passes R2–R5 and is logged. Ledger `.claude/scratch/agent-policy/`.
+- This PR (`chore/T-M2.7-agent-policy`): the hook, its test, settings, §11, `CLAUDE.md`, the consolidated packet and rows, DEC-205, progress.
 
 ## In flight / uncommitted
-- Nothing besides this packet PR. Untracked `evidence/*/records/` and `evidence/T-M2.33/impl/` are gate/E2E noise; never stage them.
+- Nothing besides this PR. Untracked `evidence/*/records/` and `evidence/T-M2.33/impl/` are gate/E2E noise; never stage them.
 
 ## Next steps (in this order)
-1. **Ask the PO** for the T-M2.7 start signal (and tell them the split; they may reverse it, DEC-204 (1)). Then
-   `feature/T-M2.7-student-home-account`: BE (`GET /student/account`) then FE, one at a time; gate; G3 tier H (SEC, then QA with the UX
-   checklist); regression cap 0.
-2. T-M2.36, T-M2.37 packets (task-packet skill), one PR each.
-3. **T-M2.38** (G5): ask the PO to approve the one `gh workflow run regression.yml --ref develop` (~25–30 min, 30–40 min of PO time; no
-   Firefox, DEC-180) before running it.
-4. **T-M2.26** after at least 10 shadow PRs (count PRs to `develop` since T-M2.23). Then the **device move** (below).
+1. **PO approval** of DEC-205 (harness + plan). Then resume the round-1 docs-reviewer (it has the packet's context; R4 denies a fresh one)
+   for parts B–D and §11; fix; merge this PR via merge-gate; gitlab-sync.
+2. **PO start signal**, then `feature/T-M2.7-student-home-account`: BE (part A endpoint + part B), then FE (part A UI + part C); gate once;
+   CI; **ask the PO** for the one regression run (part D); SEC (A, B); QA with UX (A–C + `evidence/M2/qa/report.md`); merge; `qa/T-M2.7`;
+   the records PR closes M2 (retro, lessons, ledger, README roadmap); the PO demo.
+3. **Device move** (below), then T-M2.26 there.
 
 ## Pending PO decisions / actions
-- The T-M2.7 start signal; later the T-M2.38 regression run.
+- Approval of DEC-205 before execution resumes; the T-M2.7 start signal; the one regression run; the M2 demo.
 
 ## Moving to a new device (PO, 2026-11-25: after T-M2.32, T-M2.33 and T-M2.7 the work continues on a new device)
 - Follow development-setup §0 for its platform. Clone `https://github.com/duochou042004/eng-lms`, `git fetch` (check-docs fails closed without
@@ -119,7 +119,7 @@ Phase/Milestone: P1 / M2 (in progress) · Current task: **T-M2.7** (`ready` once
   `auth.ts` 16 (~15 min per project set); budget for it.
 - **Context rule over the goal hook (PO, 2026-11-13):** at ~300k tokens finish the safe step, commit, hand off and **stop**, even if a `/goal`
   Stop hook says the goal is not met: tell the PO the two conflict. This session ran to ~370k because the LC let the hook override the rule.
-- **A DOCS-REVIEW PASS token needs a reviewer's exact PASS line on the final head:** when the LC fixes S3/S4 after a CHANGES REQUESTED delta (PO-6), or adds a status-only commit after a PASS (draft → ready), get a short confirmation from the same reviewer before posting PASS (T-M2.24 G0, T-M2.28 G0).
+- **A DOCS-REVIEW PASS token needs a reviewer's exact PASS line on the final head:** put every status change into the branch before the review (coding-agent-rules §11.6), so no status-only commit follows a PASS; after S3/S4 fixes, resume the same reviewer for a short confirmation (T-M2.24 G0, T-M2.28 G0).
 - **docs-check reads `](x)` inside code spans as a link:** write regexes like `(PG)?` after `]` as `\(PG\)` or in words (T-M2.25 records).
 - **`scripts/tests/e2e-run.test.sh` can flake in CI** ("keeps the host and parameters": a stale `app2.env` race, T-M2.28 (e)): `gh run rerun <id> --failed`.
 - **Local E2E now runs on its own database** (T-M2.25): `e2e-run.sh` recreates `englms_e2e` per run with `.data/e2e/fresh/`; `E2E_KEEP_DB=1` runs against the PO's dev DB as before (G5). pgjdbc URL parameters and `.env` reassignments are guarded (DEC-168, DEC-169).
@@ -208,5 +208,5 @@ Phase/Milestone: P1 / M2 (in progress) · Current task: **T-M2.7** (`ready` once
 
 
 ## Files to read first
-`CLAUDE.md` → `progress.json` → this file → DEC-180, DEC-187, DEC-202, DEC-204 → the T-M2.7 packet, the backlog rows T-M2.36..38, T-M2.26 →
+`CLAUDE.md` → `progress.json` → this file → DEC-180, DEC-202, DEC-204, DEC-205 → the T-M2.7 packet, the backlog row T-M2.26 →
 `docs/09-harness/coding-agent-rules.md` → `docs/09-harness/lessons-learned.md` (before the packet).

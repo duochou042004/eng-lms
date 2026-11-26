@@ -25,8 +25,9 @@
 2. Conventional Commits (`feat(students): add credentials card`). Small commits that each build. Trailers: `Task:`, `Refs:`, plus the co-author trailer if required.
 3. Only the LC merges, through the merge gate (git-governance.md).
 4. **One checkout, no git worktrees** (PO, DEC-094): all work happens in the main checkout (the PO's clone on the current device; `progress.json` `project.repoLocal`), so the PO can follow it in VSCode.
-   Subagents run there **one at a time** on the task branch, QA and SEC included (they build and run the app in the shared `backend/target`, `web/dist`
-   and ports 8080/8081). The LC alone switches branches, never while a subagent runs.
+   Subagents that use the checkout (implementers, QA, SEC, UX, general-purpose) run there **one at a time** on the task branch (they build and run the
+   app in the shared `backend/target`, `web/dist` and ports 8080/8081); read-only agents (docs review, search) may run beside one (§11, DEC-205).
+   The LC alone switches branches, never while a subagent runs.
 5. **Development-phase secrets rule** (PO, DEC-094, until T-M8.7 restores it): agents may read, create and edit `.env`, `.env.*` and `.data/**` for local
    development. They hold **dev-only values**: never a real or production secret, API key or personal data. They stay git-ignored, are never committed or
    pasted into evidence, PR comments or logs, and anything that needs a real secret is a PO action.
@@ -94,3 +95,31 @@ When unsure, read the reference documentation (built-in browser or web fetch) an
 ## 10. Definition of done (task level)
 
 G1 + G2 passed, G3 verdicts collected, docs and progress updated, evidence summary complete, handoff updated. See quality-gates.md.
+
+## 11. Agent orchestration and execution efficiency (PO, DEC-205)
+
+Binding for the LC and every agent that can spawn agents or Workflows. **Enforced** rules are checked by `scripts/hooks/agent-policy.sh`
+(project hooks in `.claude/settings.json`: SessionStart, PreToolUse `Agent|Task|Workflow`, SubagentStart/Stop; ledger
+`.claude/scratch/agent-policy/ledger.tsv`; test `scripts/tests/agent-policy.test.sh`). **Behavioural** rules have no runtime check; the LC
+self-checks them at each task's G3 cost table and in the handoff.
+
+1. **Inline first (behavioural).** Work the LC can do with its own tools (reading, docs, packets, records, small edits, `gh`) stays inline. A subagent only
+   when it is required (an independent reviewer of the risk tier, an implementer role) or clearly cheaper (a wide search whose files the LC does not need).
+2. **Coarse tasks (behavioural).** One task = one outcome and one PR; batch S4s, follow-ups and verification into the task that touches the area
+   instead of new rows. Split only past ~2 agent-days or when two parts need different reviewers *and* different merges (task-packet step 7).
+3. **One checkout (enforced, R1, no override):** one checkout-using subagent at a time (DEC-094); read-only agents may run beside it.
+4. **Caps (enforced, R2/R3/R5):** at most 5 running subagents; 6 fresh subagents per session (Agent calls plus a Workflow's declared agents;
+   `SendMessage` resumes are free); a Workflow script declares `// agents: N` with N ≤ 5. Prefer 3–5 for parallel read-only work. Over a cap: a
+   line `BUDGET-OVERRIDE: <reason>` (≥ 20 characters) in the prompt or script, which the hook logs; the LC names each override in the handoff.
+5. **Resume, don't respawn (enforced, R4):** a second fresh reviewer of the same role for the same task (any session) is denied; a delta re-check
+   resumes the first reviewer with `SendMessage` (only the findings and the changed files). An override only when it cannot be resumed (a new session or device).
+6. **Verify once (behavioural).** One gate run on the final head, CI as the second (DEC-131 (6)); reuse valid evidence; re-verify only the areas a
+   change touches unless it is cross-cutting; stop when the ACs are met and no S1/S2 remains (S3/S4 per quality-gates G3). Put every status
+   change (`progress.json`, packet Status) into the branch **before** asking for a review, so the reviewed head is the final head and no
+   confirmation round is needed for a status-only commit.
+7. **Measure (behavioural):** every task's summary keeps the G3 cost table (tokens, duration per agent) and adds the agent count; the LC reads the
+   ledger at each merge (`cut -f3,5,6 .claude/scratch/agent-policy/ledger.tsv | sort | uniq -c`).
+8. **Limits of enforcement:** the hook cannot see an agent's purpose (rules 1, 2, 6 are behavioural); an override is a logged speed bump, not a
+   stop; Workflow agents are counted by the declared `// agents: N` (a script can still spawn more at run time; SubagentStart logs them); the
+   ledger is local (`.claude/scratch/`, git-ignored) and starts empty on a new device; the hook fails open on its own error. Hooks load at
+   session start: a session started before a change to them runs without it.
