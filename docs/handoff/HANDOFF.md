@@ -1,28 +1,30 @@
-# Handoff — 2026-11-26T05:31Z (T-M2.33 merged; T-M2.7 next: ask the PO first)
+# Handoff — 2026-11-26T06:05Z (T-M2.7 packet PR; ask the PO for the start signal)
 
-Phase/Milestone: P1 / M2 (in progress) · Current task: **T-M2.7** (`draft`: no packet yet) · Last merge on `develop`: `b50cf78`
-(T-M2.33 QA report PR #236) · Next: the PO's start signal and regression-run approval for T-M2.7 → T-M2.7 packet → T-M2.7 (G5) → T-M2.26 → device move
+Phase/Milestone: P1 / M2 (in progress) · Current task: **T-M2.7** (`ready` once the packet PR merges) · Last merge on `develop`: `d626462`
+(T-M2.33 records PR #237) · Next: the PO's T-M2.7 start signal → T-M2.7 → T-M2.36 → T-M2.37 → T-M2.38 (G5, the regression run) → T-M2.26 → device move
 
 ## Where we are
-- **T-M2.32 done** (`a43b17b`, DEC-199). **T-M2.33 done** (`1f8dd90`, PR #235 at head `bee7fce`, CI 7/7 (5 full); QA PR #236 `b50cf78`;
-  packet PR #234 `68d870f`; DEC-200 packet, DEC-201 L-10 rulings, DEC-202 G3, DEC-203 merge). Strict `String`/`Boolean` JSON binding and one
-  name rule (`shared.Names`, `web/src/lib/names`) for the workspace and account names. Summary: `evidence/T-M2.33/summary.md`.
-- This records PR (`docs/T-M2.33-records`): DEC-203, backlog row and packet Status `done`, the security record, progress, this handoff.
+- **T-M2.7 split** (DEC-204; the PO said "packet only first"): **T-M2.7** Student Home v0 + the student Account page (packet
+  `docs/tasks/T-M2.7-student-home-account.md`, tier H: the first `/api/v1/student/**` handler, `GET /student/account`); **T-M2.36** backend
+  S4s (Jackson's mismatch value at DEBUG, DEC-202 S4-1; the workspace `@Schema` description, DEC-201 (3); tier H, SEC); **T-M2.37** web S4s
+  (DEC-148 QA-2, DEC-197 (4), DEC-198 QA-2, DEC-202 S4-3; tier M); **T-M2.38** the M2 regression + G5 (the one `regression` run, PO approval
+  first; the `qa/` updates; the DEC-198 QA-1 watch item; G5 records).
+- This packet PR (`docs/T-M2.7-packet`): the packet, the four backlog rows, DEC-204, progress, this handoff.
 
 ## In flight / uncommitted
-- Nothing besides this records PR. Untracked `evidence/*/records/` and `evidence/T-M2.33/impl/` are gate/E2E noise; never stage them.
+- Nothing besides this packet PR. Untracked `evidence/*/records/` and `evidence/T-M2.33/impl/` are gate/E2E noise; never stage them.
 
 ## Next steps (in this order)
-1. **Ask the PO** for the T-M2.7 start signal and the one G5 regression run (`gh workflow run regression.yml`, ~25–30 min, 30–40 min of PO
-   time; no Firefox, DEC-180). Then the **T-M2.7 packet** (`task-packet` skill; G0 by a fresh docs-reviewer): Student Home v0 + Account page,
-   the M2 regression and milestone gate (G5: README roadmap row, lessons-learned, the `shortcut:` ledger), plus the row's batched items: the
-   `DevUiPage.test.tsx` flake (DEC-197), T-M2.32 S4s (DEC-198), T-M2.33 S4s (the workspace `@Schema` description DEC-201 (3); Jackson's
-   mismatch message reaching DEBUG and the workspace form's unstripped compare, DEC-202). Likely split: the row is large (size check ≤ 10 ACs).
-2. **T-M2.26** after at least 10 shadow PRs (count PRs to `develop` since T-M2.23).
-3. **Device move** after these tasks (PO, DEC-195): "Moving to a new device" below.
+1. **Ask the PO** for the T-M2.7 start signal (and tell them the split; they may reverse it, DEC-204 (1)). Then
+   `feature/T-M2.7-student-home-account`: BE (`GET /student/account`) then FE, one at a time; gate; G3 tier H (SEC, then QA with the UX
+   checklist); regression cap 0.
+2. T-M2.36, T-M2.37 packets (task-packet skill), one PR each.
+3. **T-M2.38** (G5): ask the PO to approve the one `gh workflow run regression.yml --ref develop` (~25–30 min, 30–40 min of PO time; no
+   Firefox, DEC-180) before running it.
+4. **T-M2.26** after at least 10 shadow PRs (count PRs to `develop` since T-M2.23). Then the **device move** (below).
 
 ## Pending PO decisions / actions
-- The T-M2.7 start signal and its regression run.
+- The T-M2.7 start signal; later the T-M2.38 regression run.
 
 ## Moving to a new device (PO, 2026-11-25: after T-M2.32, T-M2.33 and T-M2.7 the work continues on a new device)
 - Follow development-setup §0 for its platform. Clone `https://github.com/duochou042004/eng-lms`, `git fetch` (check-docs fails closed without
@@ -206,5 +208,5 @@ Phase/Milestone: P1 / M2 (in progress) · Current task: **T-M2.7** (`draft`: no 
 
 
 ## Files to read first
-`CLAUDE.md` → `progress.json` → this file → DEC-180, DEC-187, DEC-201, DEC-202, DEC-203 → the backlog rows T-M2.7, T-M2.26 →
+`CLAUDE.md` → `progress.json` → this file → DEC-180, DEC-187, DEC-202, DEC-204 → the T-M2.7 packet, the backlog rows T-M2.36..38, T-M2.26 →
 `docs/09-harness/coding-agent-rules.md` → `docs/09-harness/lessons-learned.md` (before the packet).
