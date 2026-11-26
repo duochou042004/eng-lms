@@ -46,5 +46,5 @@ tutor 195.9 of 300. Screenshots local (`impl/`, not committed).
 |---|---|---|
 | backend-implementer | 155,559 | 19.5 min |
 | frontend-implementer | 232,903 | 40.5 min |
-| security-reviewer | pending | |
+| security-reviewer | 51,707 | 4.8 min |
 | qa-evaluator (UX checklist) | pending | |
