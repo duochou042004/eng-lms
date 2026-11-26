@@ -16,7 +16,7 @@ export const workspaceSchema = (savedName: string) =>
     displayName: z
       .string()
       .refine(
-        (v) => stripName(v) === savedName || firstForbidden(v) === null,
+        (v) => stripName(v) === stripName(savedName) || firstForbidden(v) === null,
         'workspace.errors.displayName.INVALID_CHARACTER',
       )
       .refine((v) => !isBlank(v), 'workspace.errors.displayName.REQUIRED')
@@ -41,7 +41,8 @@ export function toWorkspaceRequest(
 ): WorkspaceSettingsRequest | null {
   const body: WorkspaceSettingsRequest = { version }
   const name = stripName(values.displayName)
-  if (name !== saved.displayName) body.displayName = name
+  // Compared with the stripped saved name (as accountForm): a name stored before the strip rule (" Lan ") is no change.
+  if (name !== stripName(saved.displayName)) body.displayName = name
   if (values.defaultLocale !== saved.defaultLocale) body.defaultLocale = values.defaultLocale
   if (values.defaultTimeZone !== saved.defaultTimeZone) body.defaultTimeZone = values.defaultTimeZone
   return Object.keys(body).length > 1 ? body : null

@@ -19,7 +19,12 @@ const MESSAGES = {
   tooMany: 'Tối đa 30 thẻ.',
 }
 
-function Tags({ initial = [] as string[], onSubmit = () => {}, errorMessage = undefined as string | undefined }) {
+function Tags({
+  initial = [] as string[],
+  onSubmit = () => {},
+  errorMessage = undefined as string | undefined,
+  submitCount = undefined as number | undefined,
+}) {
   const [value, setValue] = useState(initial)
   const [text, setText] = useState('')
   return (
@@ -41,6 +46,7 @@ function Tags({ initial = [] as string[], onSubmit = () => {}, errorMessage = un
           onInputChange={setText}
           {...LIMITS}
           errorMessage={errorMessage}
+          submitCount={submitCount}
           messages={MESSAGES}
         />
         <button type="submit">Lưu</button>
@@ -153,6 +159,16 @@ describe('TagInput', () => {
     expect(screen.queryByText(MESSAGES.duplicate)).not.toBeInTheDocument()
     await userEvent.type(input(), '{Enter}')
     expect(input()).toHaveAccessibleDescription(/Đã có\.$/)
+  })
+
+  // T-M2.7 C1 (DEC-148 QA-2): the identical form message on a second failed Save still clears the entry's error.
+  it('a second failed submit with the identical caller error clears the re-committed entry error', async () => {
+    const { rerender } = render(<Tags initial={['Nghe']} errorMessage="Lỗi của biểu mẫu." submitCount={1} />)
+    await userEvent.type(input(), 'NGHE{Enter}')
+    expect(input()).toHaveAccessibleDescription(/Đã có\.$/)
+    rerender(<Tags initial={['Nghe']} errorMessage="Lỗi của biểu mẫu." submitCount={2} />)
+    expect(input()).toHaveAccessibleDescription(/Lỗi của biểu mẫu\.$/)
+    expect(screen.queryByText(MESSAGES.duplicate)).not.toBeInTheDocument()
   })
 
   it.each([

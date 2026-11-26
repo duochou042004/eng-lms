@@ -107,7 +107,7 @@ export function LearningProfileForm({ studentId, profile, onClose, onReload, onN
     getValues,
     setError,
     setValue,
-    formState: { errors, isDirty },
+    formState: { errors, isDirty, submitCount },
   } = useForm<LearningProfileValues>({
     resolver: zodResolver(learningProfileSchema),
     defaultValues: toLearningProfileValues(opened),
@@ -237,6 +237,7 @@ export function LearningProfileForm({ studentId, profile, onClose, onReload, onN
           onBlur={field.onBlur}
           {...TAG_LIMITS}
           errorMessage={fieldState.error ? tagMessage(name) : undefined}
+          submitCount={submitCount}
           messages={tagMessages}
         />
       )}
