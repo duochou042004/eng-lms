@@ -54,6 +54,9 @@ DEC-200. PO start signal 2026-11-25 (chat). Risk tier **H**: SEC agent, then QA 
 ## G3
 - SEC (fresh agent, head `9c46f7d`): `SEC-REVIEW T-M2.33: APPROVED`; S3-1 (quadratic strip) fixed as AC10; S4-2 fixed; S4-1, S4-3 → the T-M2.7 row (DEC-202).
 
+- QA with the UX checklist (fresh agent, head `bee7fce`): `QA-VERDICT T-M2.33: PASS`, `UX-REVIEW T-M2.33: APPROVED`; no findings (notes O-1 paste turns a lone surrogate into U+FFFD; O-2 a pasted tab-only account name with an empty stored name is treated as unchanged). Report: `qa/report.md` (PR #236, `b50cf78`). Security: `review/security.md`.
+- **Merged** `1f8dd90` (PR #235 via merge-gate at head `bee7fce`, CI 7/7; DEC-203).
+
 ## Not verified
 - A real screen reader; WebKit (G5).
 
@@ -63,4 +66,6 @@ DEC-200. PO start signal 2026-11-25 (chat). Risk tier **H**: SEC agent, then QA 
 | BE implementer | 131,768 | 956 s |
 | FE implementer | 129,021 | 1,942 s |
 | SEC | 77,420 | 371 s |
-| BE fix round (AC10) | resumed agent; cumulative tokens 142,131+ | (incl. gate 1,010 s) |
+| BE fix round (AC10) | 146,981 cumulative (+15,213) | 1,541 s cumulative (incl. gate 1,010 s) |
+| SEC confirmation | 81,603 cumulative (+4,183) | 51 s |
+| QA + UX | 136,147 | 381 s API time (~55 min wall clock) |

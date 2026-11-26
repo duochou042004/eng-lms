@@ -1,28 +1,28 @@
-# Handoff — 2026-11-25T16:53Z (T-M2.32 merged; T-M2.33 packet next)
+# Handoff — 2026-11-26T05:31Z (T-M2.33 merged; T-M2.7 next: ask the PO first)
 
-Phase/Milestone: P1 / M2 (in progress) · Current task: **T-M2.33** (`draft`: no packet yet) · Last merge on `develop`: `7273fd7`
-(T-M2.32 QA report PR #232) · Next: T-M2.33 packet → PO start → T-M2.33 → T-M2.7 (G5) → device move
+Phase/Milestone: P1 / M2 (in progress) · Current task: **T-M2.7** (`draft`: no packet yet) · Last merge on `develop`: `b50cf78`
+(T-M2.33 QA report PR #236) · Next: the PO's start signal and regression-run approval for T-M2.7 → T-M2.7 packet → T-M2.7 (G5) → T-M2.26 → device move
 
 ## Where we are
-- **T-M2.35 done** (`9ad116b`, DEC-195). **T-M2.32 done** (`a43b17b`, PR #231 at head `24164f6`, CI 7/7; QA PR #232 `7273fd7`; DEC-199;
-  G3 DEC-198, L-10 rulings DEC-197). Summary: `evidence/T-M2.32/summary.md`; report: `evidence/T-M2.32/qa/report.md`.
-- This records PR (`docs/T-M2.32-records`): DEC-199, backlog row and packet Status `done`, progress, this handoff.
+- **T-M2.32 done** (`a43b17b`, DEC-199). **T-M2.33 done** (`1f8dd90`, PR #235 at head `bee7fce`, CI 7/7 (5 full); QA PR #236 `b50cf78`;
+  packet PR #234 `68d870f`; DEC-200 packet, DEC-201 L-10 rulings, DEC-202 G3, DEC-203 merge). Strict `String`/`Boolean` JSON binding and one
+  name rule (`shared.Names`, `web/src/lib/names`) for the workspace and account names. Summary: `evidence/T-M2.33/summary.md`.
+- This records PR (`docs/T-M2.33-records`): DEC-203, backlog row and packet Status `done`, the security record, progress, this handoff.
 
 ## In flight / uncommitted
-- Nothing besides this records PR. Untracked `evidence/*/records/` dirs are gate noise; never stage them.
+- Nothing besides this records PR. Untracked `evidence/*/records/` and `evidence/T-M2.33/impl/` are gate/E2E noise; never stage them.
 
 ## Next steps (in this order)
-1. **T-M2.33 packet** (`task-packet` skill, LC) on `docs/T-M2.33-packet`: strict scalar binding (DEC-186: `String`/`Boolean` coercion → 400
-   `MALFORMED_REQUEST`, table tests on a create, an update, the sign-in body and `PATCH /auth/preferences`) and one name character rule for
-   the workspace and account names, server and client (DEC-191, DEC-194; the backlog row lists the characters). Tier H (SEC + QA); regression
-   cap 0. G0 by a fresh docs-reviewer; then the **PO start signal**; BE implementer (FE for `workspaceForm.ts` and the account form); gate; PR;
-   G3; merge; `qa/` PR; records PR.
-2. **T-M2.7** (G5: one regression run, no Firefox; **ask the PO first**); its row holds the `DevUiPage` flake (DEC-197) and the T-M2.32 S4s
-   (DEC-198). T-M2.26 after at least 10 shadow PRs.
+1. **Ask the PO** for the T-M2.7 start signal and the one G5 regression run (`gh workflow run regression.yml`, ~25–30 min, 30–40 min of PO
+   time; no Firefox, DEC-180). Then the **T-M2.7 packet** (`task-packet` skill; G0 by a fresh docs-reviewer): Student Home v0 + Account page,
+   the M2 regression and milestone gate (G5: README roadmap row, lessons-learned, the `shortcut:` ledger), plus the row's batched items: the
+   `DevUiPage.test.tsx` flake (DEC-197), T-M2.32 S4s (DEC-198), T-M2.33 S4s (the workspace `@Schema` description DEC-201 (3); Jackson's
+   mismatch message reaching DEBUG and the workspace form's unstripped compare, DEC-202). Likely split: the row is large (size check ≤ 10 ACs).
+2. **T-M2.26** after at least 10 shadow PRs (count PRs to `develop` since T-M2.23).
 3. **Device move** after these tasks (PO, DEC-195): "Moving to a new device" below.
 
 ## Pending PO decisions / actions
-- Start signals for T-M2.33 and T-M2.7; the T-M2.7 regression run.
+- The T-M2.7 start signal and its regression run.
 
 ## Moving to a new device (PO, 2026-11-25: after T-M2.32, T-M2.33 and T-M2.7 the work continues on a new device)
 - Follow development-setup §0 for its platform. Clone `https://github.com/duochou042004/eng-lms`, `git fetch` (check-docs fails closed without
@@ -42,6 +42,13 @@ Phase/Milestone: P1 / M2 (in progress) · Current task: **T-M2.33** (`draft`: no
   `shortcut:` ledger, fallback `grep -rnE '(shortcut|ponytail):'`; the `/goal` Stop hook): reinstall or note them there.
 
 ## Gotchas
+- **Agent tool input decodes `\uXXXX` escapes into raw characters** (T-M2.33 FE): a subagent writing a test literal from its brief or its
+  own tool call can commit raw U+200B/U+202E; T-M2.33 BE did in five test strings (fixed by the LC, `7b28649`). Scan every diff for `Cf`, `Cs`,
+  `Zl`, `Zp`, `Co` and non-tab `Cc` (a `unicodedata` category filter) before opening a PR.
+- **Regex strips are quadratic on long runs** (T-M2.33 SEC S3-1): `^[…]+\|[…]+$` with `replaceAll` is O(n²) on an interior run of the
+  class; a ~1 MB body passes `JsonLimitsConfiguration`. Use a code-point walk from both ends (`Names.strip`).
+- **An API usage limit can stop a reviewer mid-run** (T-M2.33 QA): resume it with SendMessage after checking `git status`, `podman ps` and
+  leftover scratch specs under `e2e/tests/`; its scratchpad may be cleared.
 - **GitHub API incident (2026-11-25):** `gh pr create` failed with GraphQL errors and 502; a background retry loop created PR #231; a push
   reached `origin` but not the PR's head. Check `gh api …/pulls/<n> -q .head.sha` against `git ls-remote` before posting verdicts.
 - **Reviewer reports can carry raw invisible characters** (T-M2.35: the agents quoted U+202E, U+200B, U+2028 inside the report): write them
@@ -199,5 +206,5 @@ Phase/Milestone: P1 / M2 (in progress) · Current task: **T-M2.33** (`draft`: no
 
 
 ## Files to read first
-`CLAUDE.md` → `progress.json` → this file → DEC-186, DEC-187, DEC-191, DEC-194, DEC-199 → the backlog rows T-M2.33, T-M2.7 →
+`CLAUDE.md` → `progress.json` → this file → DEC-180, DEC-187, DEC-201, DEC-202, DEC-203 → the backlog rows T-M2.7, T-M2.26 →
 `docs/09-harness/coding-agent-rules.md` → `docs/09-harness/lessons-learned.md` (before the packet).

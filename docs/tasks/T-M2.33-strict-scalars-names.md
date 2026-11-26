@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Milestone | M2 |
-| Status | in_review (L-10 rulings DEC-201; PO start 2026-11-25; G0: round 1 CHANGES REQUESTED (S2-1, S3-1, S3-2, S4-1..S4-6), all fixed; delta PASS WITH MINOR, S4 fixed; DEC-200; waiting for the PO start signal) |
+| Status | done (`1f8dd90`, DEC-203; G3: SEC APPROVED (S3-1 fixed as AC10), QA PASS, UX APPROVED, DEC-202; L-10 rulings DEC-201; PO start 2026-11-25; G0: round 1 CHANGES REQUESTED (S2-1, S3-1, S3-2, S4-1..S4-6), all fixed; delta PASS WITH MINOR, S4 fixed; DEC-200) |
 | Owner role | BE (binding, the shared name rule, both services, docs) then FE (the two forms' client rule and messages); one implementer at a time |
 | Branch | `feature/T-M2.33-strict-scalars-names` (from `develop`) |
 | Depends on | T-M2.10 (merged, `6cca511`, DEC-186), T-M2.6 (merged, `160df23`, DEC-192), T-M2.35 (merged, `9ad116b`, DEC-195), T-M2.32 (merged, `a43b17b`, DEC-199) |
