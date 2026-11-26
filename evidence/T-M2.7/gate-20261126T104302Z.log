@@ -1,0 +1,57 @@
+# trimmed by the LC: every gate: line kept, plus test totals
+gate: logging to evidence/T-M2.7/gate-20261126T104302Z.log
+gate: 023da0d 2026-11-26T10:43:02Z, steps: docs scripts backend web-install web-lint web-typecheck web-test web-build web-budget web-contrast contract-drift qa-typecheck e2e
+gate: ==> docs
+gate: <== docs OK (2s)
+gate: ==> scripts
+  -> 21 passed, 0 failed
+  -> 86 passed, 0 failed
+  -> 243 passed, 0 failed
+  -> 97 passed, 0 failed
+  -> 9 passed, 0 failed
+  -> 164 passed, 0 failed
+  -> 193 passed, 0 failed
+  -> 98 passed, 0 failed
+  -> 11 passed, 0 failed
+  ok   - AC2: QA-VERDICT FAIL blocks a chore PR even though DOCS-REVIEW passed
+  ok   - AC2: DOCS-REVIEW CHANGES REQUESTED blocks a feature PR even though QA passed
+  ok   - AC2: UX-REVIEW CHANGES REQUESTED blocks although QA and SEC passed
+  -> 418 passed, 0 failed
+  -> 15 passed, 0 failed
+  -> 15 passed, 0 failed
+  -> 11 passed, 0 failed
+  -> 10 passed, 0 failed
+gate: <== scripts OK (192s)
+gate: ==> backend
+[INFO] Tests run: 855, Failures: 0, Errors: 0, Skipped: 0
+[INFO] BUILD SUCCESS
+gate: <== backend OK (318s)
+gate: ==> web-install
+gate: <== web-install OK (0s)
+gate: ==> web-lint
+gate: <== web-lint OK (5s)
+gate: ==> web-typecheck
+gate: <== web-typecheck OK (6s)
+gate: ==> web-test
+ Test Files  81 passed (81)
+      Tests  1068 passed (1068)
+gate: <== web-test OK (50s)
+gate: ==> web-build
+gate: <== web-build OK (7s)
+gate: ==> web-budget
+gate: <== web-budget OK (0s)
+gate: ==> web-contrast
+gate: <== web-contrast OK (0s)
+gate: ==> contract-drift
+gate: <== contract-drift OK (24s)
+gate: ==> qa-typecheck
+gate: <== qa-typecheck OK (1s)
+gate: ==> e2e
+  ✓  184 [phone-small] › tests/students-focus.spec.ts:130:3 › Focus after an action removes or disables its own control (T-M2.19 AC4) › D-4: the guardians error: Try again (503 until the alert, then passed through) focuses the section heading (4.8s)
+  ✓  419 [tablet] › tests/students-focus.spec.ts:130:3 › Focus after an action removes or disables its own control (T-M2.19 AC4) › D-4: the guardians error: Try again (503 until the alert, then passed through) focuses the section heading (5.0s)
+  ✓  656 [laptop] › tests/students-focus.spec.ts:130:3 › Focus after an action removes or disables its own control (T-M2.19 AC4) › D-4: the guardians error: Try again (503 until the alert, then passed through) focuses the section heading (4.9s)
+  640 passed (5.1m)
+gate: e2e repeat x3: tests/shells.spec.ts tests/student-home-account.spec.ts
+  372 passed (3.4m)
+gate: <== e2e OK (552s)
+gate: PASS (13 steps, 1157s)
