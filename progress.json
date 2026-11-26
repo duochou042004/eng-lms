@@ -529,8 +529,8 @@
   },
   "gates": {
     "G0": {
-      "status": "pending",
-      "note": "T-M2.7 packet: DOCS-REVIEW round 1 PASS WITH MINOR (S3-1, S4-1..S4-7 fixed by the LC); same-reviewer confirmation pending (DEC-204)"
+      "status": "pass",
+      "note": "T-M2.7 packet: DOCS-REVIEW round 1 PASS WITH MINOR (S3-1, S4-1..S4-7 fixed), same-reviewer delta PASS (DEC-204)"
     },
     "G1": {
       "status": "pass",
@@ -1035,6 +1035,13 @@
       "status": "approved",
       "at": "2026-11-21T11:53:04Z",
       "ref": "DEC-190"
+    },
+    {
+      "what": "T-M2.7 packet G0 (DOCS-REVIEW T-M2.7: PASS) and LC approval of the packet PR",
+      "by": "LC",
+      "status": "approved",
+      "at": "2026-11-26T06:40:00Z",
+      "ref": "DEC-204"
     }
   ],
   "environment": {
