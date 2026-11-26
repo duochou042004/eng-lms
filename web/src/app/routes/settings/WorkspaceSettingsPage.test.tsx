@@ -185,9 +185,10 @@ describe('T-M2.35 AC7: the Workspace form', () => {
   it.each([
     ['', 'Hãy nhập tên không gian làm việc.'],
     ['a'.repeat(121), 'Tên không gian làm việc tối đa 120 ký tự.'],
-    ['Lớp‮cô Lan', 'Hãy xoá các ký tự điều khiển, ký tự đổi chiều chữ và ký tự không độ rộng khỏi tên.'],
-    ['Lớp​cô Lan', 'Hãy xoá các ký tự điều khiển, ký tự đổi chiều chữ và ký tự không độ rộng khỏi tên.'],
-    ['Lớp\tcô Lan', 'Hãy xoá các ký tự điều khiển, ký tự đổi chiều chữ và ký tự không độ rộng khỏi tên.'],
+    ['Lớp\u202Ecô Lan', 'Tên này chứa ký tự ẩn hoặc ký tự điều khiển (U+202E). Hãy xoá ký tự đó và gõ lại tên.'],
+    ['Lớp\u200Bcô Lan', 'Tên này chứa ký tự ẩn hoặc ký tự điều khiển (U+200B). Hãy xoá ký tự đó và gõ lại tên.'],
+    ['Lớp\tcô Lan', 'Tên này chứa ký tự ẩn hoặc ký tự điều khiển (U+0009). Hãy xoá ký tự đó và gõ lại tên.'],
+    ['Lớp\u2028cô Lan', 'Tên này chứa ký tự ẩn hoặc ký tự điều khiển (U+2028). Hãy xoá ký tự đó và gõ lại tên.'],
   ])('a client error (%j) shows the summary with focus and the field error; nothing is sent', async (value, text) => {
     const { sent } = workspace()
     await openPage()
@@ -201,7 +202,27 @@ describe('T-M2.35 AC7: the Workspace form', () => {
     await waitFor(() => expect(summary).toHaveFocus())
     expect(within(summary).getByRole('link', { name: text })).toHaveAttribute('href', '#workspace-display-name')
     expect(name()).toHaveAttribute('aria-invalid', 'true')
+    expect(name()).toHaveAccessibleDescription(expect.stringContaining(text))
     expect(sent).toEqual([])
+  })
+
+  // T-M2.33 scope 8: a stored name saved before the rule does not block a defaults-only save; editing it applies the rule.
+  it('a stored name with U+2028: a locale-only save succeeds; an edit of the name is refused', async () => {
+    const { sent } = workspace({ displayName: 'Lớp\u2028Lan' })
+    await openPage()
+    await userEvent.click(within(languages()).getByRole('radio', { name: 'English' }))
+    await userEvent.click(save())
+    await waitFor(() => expect(sent).toEqual([{ version: 0, defaultLocale: 'en' }]))
+    expect(name()).not.toHaveAttribute('aria-invalid')
+    await userEvent.type(name(), '!')
+    await userEvent.click(save())
+    const summary = await screen.findByRole('alert', { name: 'Chưa lưu được cài đặt' })
+    expect(
+      within(summary).getByRole('link', {
+        name: 'Tên này chứa ký tự ẩn hoặc ký tự điều khiển (U+2028). Hãy xoá ký tự đó và gõ lại tên.',
+      }),
+    ).toBeInTheDocument()
+    expect(sent).toHaveLength(1)
   })
 
   it('120 characters with Vietnamese diacritics are accepted', async () => {
@@ -238,7 +259,8 @@ describe('T-M2.35 AC7: the Workspace form', () => {
         .getAllByRole('listitem')
         .map((l) => l.textContent),
     ).toEqual([
-      'Hãy xoá các ký tự điều khiển, ký tự đổi chiều chữ và ký tự không độ rộng khỏi tên.',
+      // A server-only refusal (the name passes the client rule): the generic message, no code point.
+      'Tên này chứa ký tự ẩn hoặc ký tự điều khiển. Hãy xoá ký tự đó và gõ lại tên.',
       'Hãy chọn một múi giờ trong danh sách.',
       'Có giá trị không được chấp nhận. Hãy kiểm tra biểu mẫu rồi thử lại.',
     ])
@@ -384,5 +406,22 @@ describe('T-M2.35 AC7: the Workspace form', () => {
         .map((l) => l.textContent),
     ).toEqual(['Workspace', 'Account'])
     await waitFor(() => expect(document.title).toBe('Workspace settings · Eng-LMS'))
+
+    // T-M2.33 AC5: the client rule names the code point in English too.
+    const field = screen.getByRole('textbox', { name: 'Workspace name (required)' })
+    await userEvent.click(field)
+    await userEvent.paste('\u200B')
+    await userEvent.click(screen.getByRole('button', { name: 'Save' }))
+    const summary = await screen.findByRole('alert', { name: 'Your settings were not saved' })
+    expect(
+      within(summary).getByRole('link', {
+        name: 'This name contains an invisible or control character (U+200B). Delete it and type the name again.',
+      }),
+    ).toBeInTheDocument()
+    expect(field).toHaveAccessibleDescription(
+      expect.stringContaining(
+        'This name contains an invisible or control character (U+200B). Delete it and type the name again.',
+      ),
+    )
   })
 })

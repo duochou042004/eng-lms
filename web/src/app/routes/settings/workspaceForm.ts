@@ -1,38 +1,30 @@
 import { z } from 'zod'
 import type { WorkspaceSettings, WorkspaceSettingsRequest } from '../../../features/settings/api/workspace'
 import type { FieldError } from '../../../lib/api'
+import { firstForbidden, isBlank, stripName } from '../../../lib/names'
 
 // CSP script-src 'self': no compiled fast path (see features/auth/model/schemas.ts).
 z.config({ jitless: true })
 
 export const WORKSPACE_NAME_MAX = 120
-// The server's rule (validation-rules "workspace"): any control character (C0, DEL, C1), a bidi override or isolate, or
-// a zero-width character, anywhere in the value (DEC-191 SEC S4-1).
-const FORBIDDEN: ReadonlyArray<readonly [number, number]> = [
-  [0x00, 0x1f],
-  [0x7f, 0x9f],
-  [0x200b, 0x200f],
-  [0x202a, 0x202e],
-  [0x2066, 0x2069],
-  [0xfeff, 0xfeff],
-]
-const hasForbidden = (value: string) =>
-  [...value].some((c) => {
-    const cp = c.codePointAt(0)!
-    return FORBIDDEN.some(([from, to]) => cp >= from && cp <= to)
+/**
+ * The Workspace form (FR-SET-01). Messages are `settings` keys. The name rule (`lib/names`) applies only to a changed
+ * name, as the server checks only a sent one (T-M2.33 scope 8): a stored name saved before the rule never blocks a save.
+ */
+export const workspaceSchema = (savedName: string) =>
+  z.object({
+    displayName: z
+      .string()
+      .refine(
+        (v) => stripName(v) === savedName || firstForbidden(v) === null,
+        'workspace.errors.displayName.INVALID_CHARACTER',
+      )
+      .refine((v) => !isBlank(v), 'workspace.errors.displayName.REQUIRED')
+      .refine((v) => [...stripName(v)].length <= WORKSPACE_NAME_MAX, 'workspace.errors.displayName.TOO_LONG'),
+    defaultLocale: z.string(),
+    defaultTimeZone: z.string().min(1, 'workspace.errors.defaultTimeZone.REQUIRED'),
   })
-
-/** The Workspace form (FR-SET-01). Messages are `settings` keys. */
-export const workspaceSchema = z.object({
-  displayName: z
-    .string()
-    .refine((v) => v.trim() !== '', 'workspace.errors.displayName.REQUIRED')
-    .refine((v) => !hasForbidden(v), 'workspace.errors.displayName.INVALID_FORMAT')
-    .refine((v) => [...v.trim()].length <= WORKSPACE_NAME_MAX, 'workspace.errors.displayName.TOO_LONG'),
-  defaultLocale: z.string(),
-  defaultTimeZone: z.string().min(1, 'workspace.errors.defaultTimeZone.REQUIRED'),
-})
-export type WorkspaceValues = z.infer<typeof workspaceSchema>
+export type WorkspaceValues = z.infer<ReturnType<typeof workspaceSchema>>
 export const WORKSPACE_FIELDS = ['displayName', 'defaultLocale', 'defaultTimeZone'] as const
 
 export const workspaceValues = (settings: WorkspaceSettings): WorkspaceValues => ({
@@ -41,14 +33,14 @@ export const workspaceValues = (settings: WorkspaceSettings): WorkspaceValues =>
   defaultTimeZone: settings.defaultTimeZone,
 })
 
-/** `version` and only the changed properties (the name trimmed); `null` when nothing changed. */
+/** `version` and only the changed properties (the name stripped); `null` when nothing changed. */
 export function toWorkspaceRequest(
   saved: WorkspaceValues,
   values: WorkspaceValues,
   version: number,
 ): WorkspaceSettingsRequest | null {
   const body: WorkspaceSettingsRequest = { version }
-  const name = values.displayName.trim()
+  const name = stripName(values.displayName)
   if (name !== saved.displayName) body.displayName = name
   if (values.defaultLocale !== saved.defaultLocale) body.defaultLocale = values.defaultLocale
   if (values.defaultTimeZone !== saved.defaultTimeZone) body.defaultTimeZone = values.defaultTimeZone

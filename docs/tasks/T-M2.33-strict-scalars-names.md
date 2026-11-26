@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Milestone | M2 |
-| Status | ready (G0: round 1 CHANGES REQUESTED (S2-1, S3-1, S3-2, S4-1..S4-6), all fixed; delta PASS WITH MINOR, S4 fixed; DEC-200; waiting for the PO start signal) |
+| Status | in_review (L-10 rulings DEC-201; PO start 2026-11-25; G0: round 1 CHANGES REQUESTED (S2-1, S3-1, S3-2, S4-1..S4-6), all fixed; delta PASS WITH MINOR, S4 fixed; DEC-200; waiting for the PO start signal) |
 | Owner role | BE (binding, the shared name rule, both services, docs) then FE (the two forms' client rule and messages); one implementer at a time |
 | Branch | `feature/T-M2.33-strict-scalars-names` (from `develop`) |
 | Depends on | T-M2.10 (merged, `6cca511`, DEC-186), T-M2.6 (merged, `160df23`, DEC-192), T-M2.35 (merged, `9ad116b`, DEC-195), T-M2.32 (merged, `a43b17b`, DEC-199) |
@@ -113,6 +113,11 @@ tells the tutor which one it found.
   the field and the summary; `expectSettledAccessible` passes.
 - AC7 (docs): api-conventions §5, validation-rules (both rows) and the customizer's Javadoc state the new rules.
 - AC8 (L-10): a real defect a new test finds outside this scope is reported as an OQ at once (`test.fail` only until the LC rules, before G3).
+- AC10 (G3 SEC S3-1, DEC-202): `Names.strip` is linear: a code-point loop from both ends (`Character.isWhitespace(cp) || Character.isSpaceChar(cp)`, as
+  `stripName` in `web/src/lib/names.ts`), no regex; a `NamesTest` row strips "a" + 1,000,000 interior spaces + "b" unchanged and " Lan "
+  padded with 1,000,000 spaces to "Lan" (the regex form does not finish that row: seen red by a bounded manual run, no wall-clock assertion in
+  the test, DEC-093); the existing strip rows stay green; the two orphaned pattern Javadocs (`AccountService.java:57`,
+  `WorkspaceSettingsService.java:32`) removed (S4-2).
 - AC9: `./scripts/gate.sh` green once on the final head and CI green; existing assertions kept except those listed under the contradiction scan.
 
 ## Test plan

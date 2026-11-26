@@ -38,7 +38,8 @@
       "displayName": {
         "REQUIRED": "Enter a workspace name.",
         "TOO_LONG": "Use at most 120 characters for the workspace name.",
-        "INVALID_FORMAT": "Remove the control, text-direction and zero-width characters from the name."
+        "INVALID_CHARACTER": "This name contains an invisible or control character ({{codePoint}}). Delete it and type the name again.",
+        "INVALID_FORMAT": "This name contains an invisible or control character. Delete it and type the name again."
       },
       "defaultTimeZone": {
         "REQUIRED": "Choose a default time zone.",
@@ -75,7 +76,8 @@
     "errors": {
       "displayName": {
         "TOO_LONG": "Use at most 120 characters for the display name.",
-        "INVALID_FORMAT": "Remove the control characters from the display name.",
+        "INVALID_CHARACTER": "This name contains an invisible or control character ({{codePoint}}). Delete it and type the name again.",
+        "INVALID_FORMAT": "This name contains an invisible or control character. Delete it and type the name again.",
         "INVALID_VALUE": "This display name was not accepted."
       },
       "timeZone": {

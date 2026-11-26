@@ -1,35 +1,39 @@
 import { z } from 'zod'
 import type { PreferencesRequest, Session } from '../../../features/auth/api/session'
 import type { FieldError } from '../../../lib/api'
+import { firstForbidden, stripName } from '../../../lib/names'
 
 // CSP script-src 'self': no compiled fast path (see features/auth/model/schemas.ts).
 z.config({ jitless: true })
 
 export const DISPLAY_NAME_MAX = 120
-// The server's rule (validation-rules "account"): a C0 control character other than tab, line feed and carriage return.
-const hasControl = (value: string) =>
-  [...value].some((c) => c.codePointAt(0)! <= 0x1f && c !== '\t' && c !== '\n' && c !== '\r')
-
-/** The Account form (FR-SET-02): display name (the fullName rule; empty clears it) and time zone. Messages are `settings` keys. */
-export const accountSchema = z.object({
-  displayName: z
-    .string()
-    .refine((v) => !hasControl(v), 'account.errors.displayName.INVALID_FORMAT')
-    .refine((v) => [...v.trim()].length <= DISPLAY_NAME_MAX, 'account.errors.displayName.TOO_LONG'),
-  timeZone: z.string().min(1, 'account.errors.timeZone.REQUIRED'),
-})
-export type AccountValues = z.infer<typeof accountSchema>
+/**
+ * The Account form (FR-SET-02): display name (the name rule, `lib/names`; blank clears it) and time zone. Messages are
+ * `settings` keys. The rule applies only to a changed name, as the server checks only a sent one (T-M2.33 scope 8).
+ */
+export const accountSchema = (savedName: string) =>
+  z.object({
+    displayName: z
+      .string()
+      .refine(
+        (v) => stripName(v) === stripName(savedName) || firstForbidden(v) === null,
+        'account.errors.displayName.INVALID_CHARACTER',
+      )
+      .refine((v) => [...stripName(v)].length <= DISPLAY_NAME_MAX, 'account.errors.displayName.TOO_LONG'),
+    timeZone: z.string().min(1, 'account.errors.timeZone.REQUIRED'),
+  })
+export type AccountValues = z.infer<ReturnType<typeof accountSchema>>
 
 export const accountValues = (session: Pick<Session, 'displayName' | 'timeZone'>): AccountValues => ({
   displayName: session.displayName ?? '',
   timeZone: session.timeZone,
 })
 
-/** Only the changed properties (trimmed; an emptied display name is `null`, which clears it); `null` when nothing changed. */
+/** Only the changed properties (stripped; a blank display name is `null`, which clears it); `null` when nothing changed. */
 export function toPreferencesRequest(saved: AccountValues, values: AccountValues): PreferencesRequest | null {
   const body: PreferencesRequest = {}
-  const name = values.displayName.trim()
-  if (name !== saved.displayName.trim()) body.displayName = name === '' ? null : name
+  const name = stripName(values.displayName)
+  if (name !== stripName(saved.displayName)) body.displayName = name === '' ? null : name
   if (values.timeZone !== saved.timeZone) body.timeZone = values.timeZone
   return Object.keys(body).length > 0 ? body : null
 }

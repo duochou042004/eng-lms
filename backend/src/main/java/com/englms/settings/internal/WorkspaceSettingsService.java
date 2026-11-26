@@ -6,11 +6,12 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.OptionalInt;
 import java.util.UUID;
 import java.util.function.Predicate;
-import java.util.regex.Pattern;
 
 import com.englms.settings.SettingsApi;
+import com.englms.shared.Names;
 import com.englms.shared.ProblemCodes;
 import com.englms.shared.ProblemException;
 import com.englms.shared.ProblemException.FieldProblem;
@@ -27,9 +28,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class WorkspaceSettingsService implements SettingsApi {
 
 	static final int DISPLAY_NAME_MAX = 120;
-
-	/** Any control character (C0, DEL, C1), bidi overrides and isolates, zero-width characters and the BOM (DEC-191 SEC S4-1). */
-	private static final Pattern FORBIDDEN = Pattern.compile("[\\p{Cc}\\u200B-\\u200F\\u202A-\\u202E\\u2066-\\u2069\\uFEFF]");
 
 	private final WorkspaceSettingRepository settings;
 
@@ -128,14 +126,15 @@ public class WorkspaceSettingsService implements SettingsApi {
 		return null;
 	}
 
-	/** Stripped, 1–120 code points, no control, bidi or zero-width character; it cannot be cleared. */
+	/** The shared name rule ({@link Names}): stripped, 1–120 code points; blank or {@code null} is REQUIRED (it cannot be cleared). */
 	private static String displayName(String raw, List<FieldProblem> problems) {
-		if (raw != null && FORBIDDEN.matcher(raw).find()) {
+		OptionalInt forbidden = (raw != null) ? Names.firstForbidden(raw) : OptionalInt.empty();
+		if (forbidden.isPresent()) {
 			problems.add(new FieldProblem("displayName", ProblemCodes.INVALID_FORMAT,
-					"Control, bidirectional and zero-width characters are not allowed"));
+					"Invisible or control character " + Names.codePoint(forbidden.getAsInt()) + " is not allowed"));
 			return null;
 		}
-		String value = (raw != null) ? raw.strip() : "";
+		String value = (raw != null) ? Names.strip(raw) : "";
 		if (value.isEmpty()) {
 			problems.add(new FieldProblem("displayName", ProblemCodes.REQUIRED, "Required"));
 			return null;

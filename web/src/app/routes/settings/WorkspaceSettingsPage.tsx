@@ -9,6 +9,7 @@ import {
 } from '../../../features/settings/api/workspace'
 import { useMeta } from '../../../features/settings/api/useMeta'
 import { ApiError } from '../../../lib/api'
+import { codePointLabel, firstForbidden } from '../../../lib/names'
 import { LOCALES } from '../../../lib/i18n'
 import { usePageTitle } from '../../../lib/i18n/pageTitle'
 import {
@@ -124,8 +125,9 @@ function WorkspaceForm({
       })),
     [locales, saved.defaultLocale, tc],
   )
+  const resolver = useMemo(() => zodResolver(workspaceSchema(saved.displayName)), [saved.displayName])
   const { control, handleSubmit, setError, reset, getValues, setValue, formState } = useForm<WorkspaceValues>({
-    resolver: zodResolver(workspaceSchema),
+    resolver,
     defaultValues: saved,
     mode: 'onSubmit',
     reValidateMode: 'onChange',
@@ -134,6 +136,9 @@ function WorkspaceForm({
     reset(saved, { keepDirtyValues: true })
   }, [saved, reset])
   const values = useWatch({ control }) as WorkspaceValues
+  // INVALID_CHARACTER names the client rule's code point (the server's problem `message` is for developers, T-M2.33).
+  const forbidden = firstForbidden(values.displayName ?? '')
+  const errorText = (key: string) => t(key, { codePoint: forbidden === null ? '' : codePointLabel(forbidden) })
   const changed = toWorkspaceRequest(saved, values, settings.version) !== null
 
   useEffect(() => {
@@ -149,7 +154,7 @@ function WorkspaceForm({
     summaryShown > 0
       ? [
           ...(['displayName', 'defaultTimeZone'] as const).flatMap((field) =>
-            errors[field]?.message ? [{ message: t(errors[field].message), fieldId: FIELD_IDS[field] }] : [],
+            errors[field]?.message ? [{ message: errorText(errors[field].message), fieldId: FIELD_IDS[field] }] : [],
           ),
           ...(unknownError ? [{ message: t('workspace.errors.server') }] : []),
         ]
@@ -245,7 +250,7 @@ function WorkspaceForm({
               onChange={edited('displayName', field.onChange)}
               onBlur={field.onBlur}
               isInvalid={fieldState.invalid}
-              errorMessage={fieldState.error?.message ? t(fieldState.error.message) : undefined}
+              errorMessage={fieldState.error?.message ? errorText(fieldState.error.message) : undefined}
             />
           )}
         />
@@ -280,7 +285,7 @@ function WorkspaceForm({
                 buttonLabel={t('account.timeZoneShow')}
                 listLabel={t('account.timeZoneList')}
                 isInvalid={fieldState.invalid}
-                errorMessage={fieldState.error?.message ? t(fieldState.error.message) : undefined}
+                errorMessage={fieldState.error?.message ? errorText(fieldState.error.message) : undefined}
               />
             )}
           />
