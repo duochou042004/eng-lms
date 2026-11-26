@@ -27,6 +27,7 @@ import {
 } from '../../../ui'
 import { ComboBox } from '../../../ui/ComboBox'
 import { timeZoneOptions } from '../account/accountForm'
+import '../account/i18n'
 import './i18n'
 import styles from './Settings.module.css'
 import {
@@ -277,13 +278,13 @@ function WorkspaceForm({
               <ComboBox
                 id={FIELD_IDS.defaultTimeZone}
                 label={t('workspace.defaultTimeZone')}
-                description={t('account.timeZoneHint')}
+                description={t('account:account.timeZoneHint')}
                 options={zones}
                 value={field.value}
                 onChange={edited('defaultTimeZone', field.onChange)}
-                emptyMessage={t('account.timeZoneEmpty')}
-                buttonLabel={t('account.timeZoneShow')}
-                listLabel={t('account.timeZoneList')}
+                emptyMessage={t('account:account.timeZoneEmpty')}
+                buttonLabel={t('account:account.timeZoneShow')}
+                listLabel={t('account:account.timeZoneList')}
                 isInvalid={fieldState.invalid}
                 errorMessage={fieldState.error?.message ? errorText(fieldState.error.message) : undefined}
               />
