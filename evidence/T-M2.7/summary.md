@@ -19,7 +19,7 @@ Branch `feature/T-M2.7-student-home-account` · packet `docs/tasks/T-M2.7-studen
 | AC10 | gate PASS once on `023da0d` (above); CI on the PR head |
 | AC11 | `MismatchedScalarLoggingTest` (DEBUG on `org.springframework.web`, `com.englms`; numeric password `987654321`, numeric username, boolean workspace `displayName`; 400 body unchanged; DEBUG lines written; no value). **Red before the fix:** the DEBUG lines held `Cannot coerce Integer value (987654321)…` and `Cannot coerce Boolean value (true)…`. Fix `shared.web.RedactedJsonReadErrorsConfiguration`. B2 `deployment.md` `LOGGING_LEVEL_*` row; B3 the `displayName` `@Schema` names `shared.Names`; contract regenerated, contract-drift green |
 | AC12 | C1 TagInput two failed submits with the identical message (fails on the old code); C2 `findByRole(..., { timeout: 5000 })`; C3 vi "Không có lựa chọn nào." from the live announcer, en unchanged; C4 `workspaceForm.test` " Lan " vs "Lan" → no change |
-| AC13 | part D: after the PO-approved regression run and QA (`evidence/M2/qa/report.md`, records PR) |
+| AC13 | the one PO-approved `regression` run [45817298721](https://github.com/duochou042004/eng-lms/actions/runs/45817298721) on `e2bfd78`: success, 1,422 tests, 1,253 passed, 169 skipped, 0 failed (six Chromium viewports + WebKit smoke 6/6); local `E2E_KEEP_DB=1` 1,416 tests, 1,247 passed, 169 skipped, 0 failed; DEC-198 QA-1 0/40; D3 `qa/` 438 passed, 6 skipped, 0 failed (`evidence/M2/qa/report.md`, PR #241); D4 in the records PR |
 
 ## The extended kept assertion
 `shells.spec.ts` AC4 "the same visual kind": the student's Account link is compared with Log out, and the tutor asserts no Account link (a
@@ -47,4 +47,13 @@ tutor 195.9 of 300. Screenshots local (`impl/`, not committed).
 | backend-implementer | 155,559 | 19.5 min |
 | frontend-implementer | 232,903 | 40.5 min |
 | security-reviewer | 51,707 | 4.8 min |
-| qa-evaluator (UX checklist) | pending | |
+| qa-evaluator (UX checklist; parts A–D) | 212,923 | 30.1 min |
+| security-reviewer, resumed (verdict token confirmation) | 52,630 | 0.2 min |
+
+Agents: 4 fresh (BE, FE, SEC, QA) + 1 resume; no override (ledger, `cut -f3,5,6 … \| uniq -c`). Gate runs: 1 (1157 s). CI: 3 runs on
+the PR (the second failed path ownership: the LC had put `review/security.md` on the feature branch, removed in `e2bfd78`); merge-gate
+`checks: 5 full, 0 fast-path`. Regression runs: 1 (cap 1).
+
+## Reviews
+SEC-REVIEW T-M2.7: APPROVED (S4-1, S4-2; `review/security.md`) · QA-VERDICT T-M2.7: PASS WITH MINOR (QA-1, UX-1, QA-2, QA-3, all S4) ·
+UX-REVIEW T-M2.7: APPROVED · merged PR #240 (`63a2d54`) via merge-gate; QA PR #241.

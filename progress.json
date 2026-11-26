@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-11-26T10:42:51Z",
-  "updatedBy": "lead-coordinator (T-M2.7 BE+FE done, in review)",
+  "updatedAt": "2026-11-26T12:54:27Z",
+  "updatedBy": "lead-coordinator (T-M2.7 records, M2 G5)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -26,37 +26,10 @@
   "milestone": {
     "id": "M2",
     "name": "Identity and student management",
-    "status": "in_progress",
+    "status": "done",
     "exitCriteria": "FR-AUTH-01..10 and FR-STU-01..07 accepted; authorization-matrix and student-isolation harnesses fail on any unregistered endpoint; add-student flow E2E at 360/768/1280 within its step budget; security review of authentication passed (docs/01-product/roadmap.md)."
   },
   "currentTask": {
-    "id": "T-M2.7",
-    "title": "Student Home v0 + Account page, M2 S4s, M2 milestone gate (G5) (DEC-205)",
-    "status": "in_review",
-    "ownerRole": "BE+FE",
-    "branch": "feature/T-M2.7-student-home-account",
-    "packet": "docs/tasks/T-M2.7-student-home-account.md",
-    "pr": null,
-    "lastCommit": null,
-    "startedAt": "2026-11-26T09:41:29Z",
-    "nextSteps": [
-      "gate once on the final head; CI; ask the PO for the one regression run (part D); SEC (A, B); QA with UX (A-C, evidence/M2/qa/report.md); merge-gate; qa/T-M2.7; records PR (G5)"
-    ],
-    "trace": [
-      "FR-DASH-03",
-      "FR-SET-02",
-      "ADR-0016",
-      "DEC-204",
-      "DEC-205"
-    ],
-    "entryGate": [
-      "T-M2.33 merged — met (1f8dd90, DEC-203)",
-      "G0 — part A PASS (PR #238, DEC-204); parts B-D delta PASS WITH MINOR, fixed, confirmed PASS (PR #239, DEC-205)",
-      "PO start signal — met (chat 2026-11-26, \"Approve, resume\")",
-      "The one regression run — ask the PO before it"
-    ]
-  },
-  "nextTask": {
     "id": "T-M2.26",
     "title": "Switch the CI scope on (after at least 10 shadow PRs; DEC-158 PO-1, PO-2)",
     "status": "draft",
@@ -67,12 +40,29 @@
     "lastCommit": null,
     "startedAt": null,
     "nextSteps": [
-      "On the new device, after M2 closes (PO, DEC-205)"
+      "Device move first (HANDOFF 'Moving to a new device'); then the T-M2.26 packet on the new device (PO, DEC-205)"
     ],
     "trace": [
       "DEC-158",
       "DEC-160",
       "DEC-205"
+    ]
+  },
+  "nextTask": {
+    "id": "T-M2.39",
+    "title": "M2 S4 follow-ups from T-M2.7 G3 (DEC-206)",
+    "status": "draft",
+    "ownerRole": "BE+FE",
+    "branch": null,
+    "packet": null,
+    "pr": null,
+    "lastCommit": null,
+    "startedAt": null,
+    "nextSteps": [
+      "Unscheduled; batch into the first M3 task that touches the area or its own packet (backlog 'Carried past M2')"
+    ],
+    "trace": [
+      "DEC-206"
     ]
   },
   "completed": [
@@ -499,11 +489,19 @@
       "mergeCommit": "1f8dd90",
       "evidence": "evidence/T-M2.33/summary.md",
       "note": "PR #235 via merge-gate (head bee7fce, CI 7/7 (5 full)); QA PR #236 (b50cf78); packet PR #234 (68d870f); gate PASS on b18ea19 (1010 s); G3 tier H: SEC APPROVED (S3-1 fixed as AC10), QA PASS, UX APPROVED; DEC-200, DEC-201, DEC-202, DEC-203"
+    },
+    {
+      "id": "T-M2.7",
+      "title": "Student Home v0 + Account page, M2 S4s, M2 milestone gate (G5) (DEC-205)",
+      "completedAt": "2026-11-26T12:54:27Z",
+      "mergeCommit": "63a2d54",
+      "evidence": "evidence/T-M2.7/summary.md",
+      "note": "PR #240 via merge-gate (head e2bfd78, CI 7/7 (checks: 5 full, 0 fast-path)); QA PR #241; gate PASS on 023da0d (13 steps, 1157 s); G3 tier H: SEC APPROVED, QA PASS WITH MINOR, UX APPROVED; regression run 45817298721 green; S4s -> T-M2.39; DEC-206"
     }
   ],
   "tests": {
-    "lastRun": "2026-11-25T18:47:53Z",
-    "summary": "T-M2.33 head b18ea19: gate PASS (13 steps, 1010 s); backend 845; web 1043 (79 files); e2e 616 passed, 68 skipped; x3 repeat 174 passed, 6 skipped, 0 failed.",
+    "lastRun": "2026-11-26T10:43:02Z",
+    "summary": "T-M2.7 head 023da0d: gate PASS (13 steps, 1157 s); e2e repeat x3 on shells.spec.ts and student-home-account.spec.ts; regression run 45817298721: 1,253 passed, 169 skipped, 0 failed.",
     "suites": [
       {
         "name": "backend (./mvnw -B verify)",
@@ -534,23 +532,23 @@
     },
     "G1": {
       "status": "pass",
-      "note": "T-M2.33: gate PASS (13 steps, 1010 s) on b18ea19"
+      "note": "T-M2.7: gate PASS (13 steps, 1157 s) on 023da0d"
     },
     "G2": {
       "status": "pass",
-      "note": "T-M2.33: CI 7/7 on bee7fce (5 full)"
+      "note": "T-M2.7: CI 7/7 on e2bfd78 (checks: 5 full, 0 fast-path)"
     },
     "G3": {
       "status": "pass",
-      "note": "T-M2.33 tier H: SEC APPROVED (S3-1 fixed as AC10), QA PASS, UX APPROVED (DEC-202)"
+      "note": "T-M2.7 tier H: SEC APPROVED (S4-1, S4-2), QA PASS WITH MINOR (4 S4 -> T-M2.39), UX APPROVED (DEC-206)"
     },
     "G4": {
       "status": "pass",
-      "note": "T-M2.33 PR #235 merged via merge-gate (1f8dd90); QA PR #236 (b50cf78)"
+      "note": "T-M2.7 PR #240 merged via merge-gate (63a2d54); QA PR #241"
     },
     "G5": {
-      "status": "n/a",
-      "note": "M2 in progress; matrix now 6 Chromium viewports + WebKit smoke (DEC-180); held by T-M2.7"
+      "status": "pass",
+      "note": "M2: regression run 45817298721 on e2bfd78, 1,253 passed, 169 skipped, 0 failed (6 Chromium viewports + WebKit smoke); local E2E_KEEP_DB=1 1,247 passed, 0 failed (dev DB empty, QA-3); records evidence/M2/; PO demo pending"
     }
   },
   "blockers": [],
@@ -2039,6 +2037,11 @@
       "at": "2026-11-26T08:55:15Z",
       "actor": "lead-coordinator",
       "event": "PO approved DEC-205 and gave the T-M2.7 start signal (\"Approve, resume\"); G0 delta for parts B-D by the resumed docs-reviewer on PR #239."
+    },
+    {
+      "at": "2026-11-26T12:54:27Z",
+      "actor": "lead-coordinator",
+      "event": "T-M2.7 merged (PR #240, 63a2d54) after the one PO-approved regression run (45817298721, green); qa/T-M2.7 PR #241; M2 closed at G5 (DEC-206); PO demo pending; next: device move, then T-M2.26."
     }
   ]
 }
