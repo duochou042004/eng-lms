@@ -118,6 +118,13 @@ Implemented in T-M2.11 (DEC-112): the student shell lists only routes that exist
 section (language, Change password, Log out; Account `/student/account` joins with T-M2.7). At ≥ 768 px "More expanded inline" means: the items
 in the top bar, and More's account items in the **account menu** (the button with the user's name, top right), as for the tutor at ≥ 1024 px.
 Unknown paths under `/student/…` show the 404 inside the shell.
+**Built in T-M2.7 (DEC-204, DEC-205):** **Home v0** (`/student/home`): the `h1` Home, under it one paragraph greeting by the time of day in the
+account's time zone (04:00–11:59 morning, 12:00–17:59 afternoon, else evening) with the student's full name from `GET /student/account` (no name
+while it loads or when it fails, no alert), then the empty state (Goals, To do, Next lesson, Recent results arrive with M3, M5, M7). **Account**
+(`/student/account`, a lazy chunk): the `h1` Account, Name and Username (a description list; a skeleton while loading; a failed read shows its
+alert with Retry in that block only), the Language switcher, Time zone with Save (the tutor's Account form without Display name), and Change
+password. The account section (More sheet below 768 px, account menu at ≥ 768 px) shows an **Account** link above Change password for a student
+only; the nav items stay Home (and More). The student shell now holds the toast region, above the bottom tabs below 768 px.
 **During an attempt** the navigation is hidden: a focused header shows the title, timer, save status and Exit (autosaved).
 
 ## 4. Public routes

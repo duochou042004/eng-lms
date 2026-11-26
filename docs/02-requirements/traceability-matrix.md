@@ -38,7 +38,7 @@
 | 23 | Attendance statuses | Status state machine | FR-LES-03, DEC-017 | lessons | M3 | MVP |
 | 24 | Private teacher notes with links | TeacherNote | FR-NOTE-01..03 | notes | M3 | MVP |
 | 25 | Progress: multiple data types, configurable metrics | Progress read model | FR-PROG-01..04, FR-GOAL-04 | progress, goals | M7 | MVP |
-| 26 | Student dashboard, own data only | Student Home | FR-DASH-03, NFR-SEC-01 | dashboard | M2, M5, M7 | MVP |
+| 26 | Student dashboard, own data only | Student Home (M2 part built T-M2.7: Home v0, the greeting with the student's own name from `GET /student/account`, ADR-0016; the student Account page, FR-SET-02; sections with M3, M5, M7) | FR-DASH-03, NFR-SEC-01 | dashboard | M2, M5, M7 | MVP |
 | 27 | Tutor dashboard, action-first | Today | FR-DASH-01, 02 | dashboard | M3, M5, M7 | MVP |
 | 28 | Daily tutor workflow, short | Today → wrap-up | FR-LES-06, NFR-UX-01 | lessons, web | M5 | MVP |
 | 29 | Student daily workflow | Home → work → submit → results | FR-DASH-03, FR-ATT-01..07 | activities, dashboard | M5–M7 | MVP |
