@@ -38,7 +38,7 @@ One calm workspace, **without a forced curriculum**.
 
 > [!IMPORTANT]
 > **Status:** M0 (planning baseline, approved 2026-09-25) and M1 (walking skeleton and delivery pipeline, signed off 2026-10-04) are done.
-> The project is in **M2: identity and student management**. Every increment goes through gated plan → build → independent review loops.
+> M2 (identity and student management) is built and its G5 records are complete, awaiting the PO demo; **M3: schedule, lessons and notes** is next. Every increment goes through gated plan → build → independent review loops.
 > The live state is in [`progress.json`](progress.json); the narrative handoff is in [`docs/handoff/HANDOFF.md`](docs/handoff/HANDOFF.md).
 
 ## Contents

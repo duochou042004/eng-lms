@@ -36,6 +36,7 @@ Testcontainers runs on rootless Podman (or the documented fallback). The docs de
 **M2 (identity & students):** FR-AUTH-01..10 and FR-STU-01..07 are accepted. The authorization-matrix and student-isolation test
 harnesses exist and fail on any unregistered endpoint. The add-student flow runs as E2E at 360/768/1280 px within its step budget.
 The security review of authentication has passed.
+**Status: awaiting the PO demo** (G5 records complete 2026-11-26, T-M2.7, DEC-206; `evidence/M2/retro.md`); done once the PO accepts the demo.
 
 **M3 (schedule):** FR-LES-02..05, 07, 08 and FR-NOTE-01..03 are accepted. Today v1 shows the schedule. A student sees only their own lessons.
 The isolation tests cover lessons and notes. Notes never appear in any student response (automated scan).

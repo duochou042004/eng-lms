@@ -124,6 +124,6 @@ self-checks them at each task's G3 cost table and in the handoff.
 8. **Limits of enforcement:** the hook cannot see an agent's purpose (rules 1, 2, 6 are behavioural); an override is a logged speed bump, not a
    stop; Workflow agents are counted by the declared `// agents: N` (a script can still spawn more at run time; SubagentStart logs them); the
    ledger is local (`.claude/scratch/`, git-ignored) and starts empty on a new device; the hook fails open on its own error. Hooks load at
-   session start: a session started before a change to them runs without it. Parallel calls in one message are serialised by a lock and an
+   session start: a session started before a change to them runs without it. Parallel calls in one message are serialised by a lock where `flock` exists (stock macOS lacks it) and an
    allowed spawn reserves its slot until SubagentStart (a reservation lapses after 10 min); a running entry lapses after 12 h (a longer
    agent no longer counts); a saved Workflow started by `name` is logged only (its script is not visible to the hook).

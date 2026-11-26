@@ -1,30 +1,29 @@
-# Handoff — 2026-11-26 (T-M2.7 consolidated; agent policy hook; PO approved, T-M2.7 started)
+# Handoff — 2026-11-26 (T-M2.7 merged; M2 G5 records complete, awaiting the PO demo)
 
-Phase/Milestone: P1 / M2 (in progress) · Current task: **T-M2.7** (`ready`; PO start signal given) · Last merge on `develop`: `58f3220`
-(T-M2.7 packet PR #238) · Next: merge PR #239 → T-M2.7 (BE, FE, gate, regression run, SEC, QA) → M2 closed → device move → T-M2.26
+Phase/Milestone: P1 / M2 **awaiting_approval** (G5 records complete, PO demo pending, DEC-206) · Current task: **T-M2.26** (draft, on the new device) · Last merge on `develop`: `63a2d54`
+(T-M2.7 PR #240) · Next: the PO's M2 demo → device move → T-M2.26 packet on the new device
 
 ## Where we are
-- **PO (DEC-205):** T-M2.36, T-M2.37, T-M2.38 are cancelled and are parts B (backend S4s), C (web S4s) and D (the M2 regression + G5) of
-  **T-M2.7** (packet `docs/tasks/T-M2.7-student-home-account.md`, tier H, 14 ACs, over the size rule by the PO). Three PRs remain for M2: the
-  feature PR, `qa/T-M2.7`, the records PR. **T-M2.26** runs on the new device.
-- **Agent policy** (coding-agent-rules §11): `scripts/hooks/agent-policy.sh` runs as project hooks (`.claude/settings.json`): R1 one
-  checkout-using subagent at a time, R2 ≤ 5 running, R3 ≤ 6 fresh per session, R4 no second fresh reviewer of a role for a task (resume it),
-  R5 a Workflow declares `// agents: N` ≤ 5; `BUDGET-OVERRIDE: <reason>` passes R2–R5 and is logged. Ledger `.claude/scratch/agent-policy/`.
-- This PR (`chore/T-M2.7-agent-policy`): the hook, its test, settings, §11, `CLAUDE.md`, the consolidated packet and rows, DEC-205, progress.
+- **T-M2.7** merged (PR #240, `63a2d54`): student Home v0 (greeting by name in the session's zone), `/student/account`, `GET
+  /api/v1/student/account` (the first `..web.student..` handler), parts B and C S4s. One PO-approved regression run 45817298721: green.
+  QA PR #241 (`qa/T-M2.7`: QA report, `evidence/M2/qa/report.md`, the D3 `qa/` specs). Records PR `docs/T-M2.7-records`: DEC-206,
+  `evidence/M2/retro.md`, L-14, README/roadmap M2 awaiting the PO demo, T-M2.39 (four S4s carried past M2), §11.8 `flock` wording.
+- **Agent policy** ledger for T-M2.7: 4 fresh agents (BE, FE, SEC, QA) + 1 SEC resume, plus one docs-reviewer for the records with a
+  `BUDGET-OVERRIDE:` (R4: the G0 docs-reviewer could not be resumed from this session).
+- **Dev DB on this device** was empty before the G5 local run (QA-3): it now holds the `e2e-tutor` and E2E students; `scripts/dev-down.sh
+  --purge` resets it (PO decision; not needed for the move).
 
 ## In flight / uncommitted
-- Nothing besides this PR. Untracked `evidence/*/records/` and `evidence/T-M2.33/impl/` are gate/E2E noise; never stage them.
+- Nothing besides the records PR (and PR #241 until merged). Untracked `evidence/*/records/`, `evidence/*/impl/`, `evidence/T-M2.7/screenshots/`
+  are E2E noise; never stage them.
 
 ## Next steps (in this order)
-1. **PO approved DEC-205 and started T-M2.7** ("Approve, resume"). Resume the round-1 docs-reviewer (it has the packet's context; R4 denies a fresh one)
-   for parts B–D and §11; fix; merge this PR via merge-gate; gitlab-sync.
-2. `feature/T-M2.7-student-home-account`: BE (part A endpoint + part B), then FE (part A UI + part C); gate once;
-   CI; **ask the PO** for the one regression run (part D); SEC (A, B); QA with UX (A–C + `evidence/M2/qa/report.md`); merge; `qa/T-M2.7`;
-   the records PR closes M2 (retro, lessons, ledger, README roadmap); the PO demo.
-3. **Device move** (below), then T-M2.26 there.
+1. Merge PR #241 (`qa/T-M2.7`, LC-APPROVED) and the records PR (DOCS-REVIEW PASS + LC-APPROVED) via merge-gate; `./scripts/gitlab-sync.sh`.
+2. **PO: the M2 demo** (a recorded walkthrough or a live session), the G5 acceptance step; record it in a DEC that sets M2 `done`, G5 `pass`, the README row ✅ and the roadmap status done.
+3. **Device move** (below), then the T-M2.26 packet there. T-M2.39 (M2 S4s) is unscheduled: batch it into the first M3 task touching the area.
 
 ## Pending PO decisions / actions
-- The one regression run (ask before it); the M2 demo.
+- The M2 demo. UX-1's copy (the account popover's first link, T-M2.39 (c)).
 
 ## Moving to a new device (PO, 2026-11-25: after T-M2.32, T-M2.33 and T-M2.7 the work continues on a new device)
 - Follow development-setup §0 for its platform. Clone `https://github.com/duochou042004/eng-lms`, `git fetch` (check-docs fails closed without
@@ -44,6 +43,10 @@ Phase/Milestone: P1 / M2 (in progress) · Current task: **T-M2.7** (`ready`; PO 
   `shortcut:` ledger, fallback `grep -rnE '(shortcut|ponytail):'`; the `/goal` Stop hook): reinstall or note them there.
 
 ## Gotchas
+- **SEC verdict tokens are `APPROVED` / `CHANGES REQUESTED`**, not PASS (merge-gate `positive()`; L-14): copy tokens from `.claude/agents/<role>.md`.
+- **Reviewer records go on the records `docs/` branch** (`evidence/<task>/review/*`); `feature/` may not hold them and `qa/` takes only `qa/**`
+  and `evidence/*/qa/**` (path ownership; T-M2.7 CI failed once on this).
+- **Maven Central 429 on CI `backend`** (PR #241): `gh run rerun <id> --failed`.
 - **Agent tool input decodes `\uXXXX` escapes into raw characters** (T-M2.33 FE): a subagent writing a test literal from its brief or its
   own tool call can commit raw U+200B/U+202E; T-M2.33 BE did in five test strings (fixed by the LC, `7b28649`). Scan every diff for `Cf`, `Cs`,
   `Zl`, `Zp`, `Co` and non-tab `Cc` (a `unicodedata` category filter) before opening a PR.
@@ -124,7 +127,7 @@ Phase/Milestone: P1 / M2 (in progress) · Current task: **T-M2.7** (`ready`; PO 
 - **`scripts/tests/e2e-run.test.sh` can flake in CI** ("keeps the host and parameters": a stale `app2.env` race, T-M2.28 (e)): `gh run rerun <id> --failed`.
 - **Local E2E now runs on its own database** (T-M2.25): `e2e-run.sh` recreates `englms_e2e` per run with `.data/e2e/fresh/`; `E2E_KEEP_DB=1` runs against the PO's dev DB as before (G5). pgjdbc URL parameters and `.env` reassignments are guarded (DEC-168, DEC-169).
 - **The `regression` workflow** is manual (`gh workflow run regression.yml --ref develop`, ~25–30 min, all 6 Chromium viewports + WebKit smoke; Firefox dropped, DEC-180); its first run failed 7 tests (T-M2.28).
-- **T-M2.27 (DEC-166):** the dev DB now holds 1,065 active, 30 paused and 133 archived students (read-only count by QA, 2026-11-13); local E2E added rows until T-M2.25 (now only `E2E_KEEP_DB=1` runs do). `loading.spec.ts` "the loading region in English" can still fail on a very slow runner (CPU throttle ≥ 30 in the reproduction): a CI recurrence needs a new ruling (the packet forbade raising a timeout). Reproduction generators must read the old form from the pre-task commit, not `HEAD`.
+- **T-M2.27 (DEC-166):** the old device's dev DB held 1,065 active, 30 paused and 133 archived students (read-only count by QA, 2026-11-13; this device's was empty, T-M2.7 QA-3); local E2E added rows until T-M2.25 (now only `E2E_KEEP_DB=1` runs do). `loading.spec.ts` "the loading region in English" can still fail on a very slow runner (CPU throttle ≥ 30 in the reproduction): a CI recurrence needs a new ruling (the packet forbade raising a timeout). Reproduction generators must read the old form from the pre-task commit, not `HEAD`.
 - **A QA agent can end on an API error after its verdict** (T-M2.27: Cloudflare 403 after the full report): the report already returned counts; check `git status` and `e2e/tests` for scratch files.
 - **Old device only (Ubuntu 26.10, `/home/linux/Projects/eng-lms`; check on a new one, see "Moving to a new device"): agent shells ran with `NoNewPrivs=1`** (inherited from the desktop app), so rootless `podman` fails with
   "newuidmap: write to uid_map failed". `export CONTAINER_HOST=unix:///run/user/1000/podman/podman.sock` in every agent shell (podman remote
@@ -208,5 +211,5 @@ Phase/Milestone: P1 / M2 (in progress) · Current task: **T-M2.7** (`ready`; PO 
 
 
 ## Files to read first
-`CLAUDE.md` → `progress.json` → this file → DEC-180, DEC-202, DEC-204, DEC-205 → the T-M2.7 packet, the backlog row T-M2.26 →
+`CLAUDE.md` → `progress.json` → this file → DEC-180, DEC-205, DEC-206 → the backlog rows T-M2.26 and T-M2.39 →
 `docs/09-harness/coding-agent-rules.md` → `docs/09-harness/lessons-learned.md` (before the packet).
