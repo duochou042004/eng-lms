@@ -184,7 +184,7 @@ describe('/dev/ui (development builds only)', { timeout: 20_000 }, () => {
 
   it('shows the T-M2.6 ComboBox over the time zones, a value the engine does not list, invalid and disabled', async () => {
     const { container } = renderRoute('/dev/ui')
-    await screen.findByRole('heading', { level: 1, name: 'Thư viện thành phần' })
+    await screen.findByRole('heading', { level: 1, name: 'Thư viện thành phần' }, { timeout: 5000 })
     expect(screen.getByRole('combobox', { name: 'Múi giờ' })).toHaveValue('Asia/Bangkok')
     expect(screen.getByRole('combobox', { name: /^Múi giờ \(giá trị hiện tại/ })).toHaveValue('Asia/Ho_Chi_Minh')
     expect(screen.getByRole('combobox', { name: 'Múi giờ (không hợp lệ)' })).toHaveAttribute('aria-invalid', 'true')

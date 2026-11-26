@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Milestone | M2 |
-| Status | in_progress (G0: part A PASS, DEC-204; parts B–D delta PASS WITH MINOR, S3/S4 fixed, confirmed PASS, DEC-205; PO start signal 2026-11-26) |
+| Status | in_review (G0: part A PASS, DEC-204; parts B–D delta PASS WITH MINOR, S3/S4 fixed, confirmed PASS, DEC-205; PO start signal 2026-11-26) |
 | Owner role | BE (part A endpoint + part B) then FE (part A UI + part C); then QA (part D regression report); one checkout-using agent at a time (coding-agent-rules §11) |
 | Branch | `feature/T-M2.7-student-home-account` (from `develop`) |
 | Depends on | T-M2.3, T-M2.6, T-M2.11, T-M2.32, T-M2.33 (all merged) |
