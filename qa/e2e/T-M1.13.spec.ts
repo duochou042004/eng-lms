@@ -1,5 +1,6 @@
 import { test, expect, type Page, type Locator } from '@playwright/test'
 import AxeBuilder from '@axe-core/playwright'
+import { STATE } from '../support/global-setup'
 const SHOTS = process.env.QA_SHOTS
 const log = (...a: unknown[]) => console.log('QA', test.info().project.name, ...a)
 async function boxes(radios: Locator) {
@@ -95,53 +96,38 @@ test.describe('packaged', () => {
     }
   })
 
-  test('error page via failed lazy load: link, focus, vi/en, absent on /', async ({ page }) => {
-    for (const lang of ['vi', 'en']) {
-      await page.goto('/'); await page.getByRole('radio', { name: lang === 'vi' ? 'Tiếng Việt' : 'English', exact: true }).click()
-      await page.route(/TutorShell-.*\.js$/, (r) => r.abort())
-      await page.getByRole('link', { name: lang === 'vi' ? 'Khu vực gia sư' : /tutor/i }).click()
-      const h1 = page.getByRole('heading', { level: 1 }); await expect(h1).toBeVisible()
-      const home = page.getByRole('link', { name: lang === 'vi' ? 'Về trang đầu' : 'Go to the start page' })
-      await expect(home).toBeVisible()
-      const reload = page.getByRole('button')
-      const info = { url: page.url(), h1: await h1.textContent(), focus: await page.evaluate(() => document.activeElement?.tagName + ':' + document.activeElement?.textContent), buttons: await reload.allTextContents(), homeBox: await home.boundingBox(), href: await home.getAttribute('href'), body: (await page.locator('main, body').first().innerText()).slice(0, 400) }
-      log('AC4', lang, JSON.stringify(info))
-      expect(info.homeBox!.height).toBeGreaterThanOrEqual(44); expect(info.href).toBe('/')
-      // link after reload button in DOM order
-      const order = await page.evaluate(() => { const els = [...document.querySelectorAll('button, a[href]')]; return els.map((e) => e.tagName + ':' + e.textContent) })
-      log('AC4 order', JSON.stringify(order))
-      await noHScroll(page); await axe(page)
-      if (SHOTS) await page.screenshot({ path: `${SHOTS}/${test.info().project.name}-error-${lang}.png`, fullPage: true })
-      // keyboard: Tab to the link and Enter
-      let g = 0; while (!(await home.evaluate((e) => e === document.activeElement)) && g++ < 20) await page.keyboard.press('Tab')
-      await page.keyboard.press('Enter')
-      await expect(page).toHaveURL(/\/$/)
-      await expect(page.getByRole('heading', { level: 1 })).toBeFocused()
-      log('AC4 landed', lang, await page.evaluate(() => document.activeElement?.tagName + ':' + document.activeElement?.textContent))
-      await page.unroute(/TutorShell-.*\.js$/)
-    }
-    // absent when / fails (client navigation to / from a shell, Landing chunk aborted; fresh load)
-    for (const lang of ['vi', 'en']) {
-      await page.goto('/tutor')
-      await page.getByRole('radio', { name: lang === 'vi' ? 'Tiếng Việt' : 'English', exact: true }).click()
-      await page.route(/Landing-.*\.js$/, (r) => r.abort())
-      const toStart = page.getByRole('link').filter({ hasText: /Eng-LMS|trang đầu|start|Không gian|Teaching/i }).first()
-      const links = await page.getByRole('link').allTextContents()
-      log('shell links', JSON.stringify(links))
-      if (await toStart.count()) { await toStart.click() } else { await page.evaluate(() => { history.pushState({}, '', '/'); dispatchEvent(new PopStateEvent('popstate')) }) }
-      await expect(page.getByRole('heading', { level: 1 })).toBeVisible()
-      await expect(page).toHaveURL(/\/$/)
-      const has = await page.getByRole('link', { name: lang === 'vi' ? 'Về trang đầu' : 'Go to the start page' }).count()
-      log('AC4 on / fail', lang, has, await page.getByRole('heading', { level: 1 }).textContent(), JSON.stringify(await page.getByRole('button').allTextContents()))
-      expect(has).toBe(0)
-      await page.unroute(/Landing-.*\.js$/)
-      // fresh load of / with Landing aborted
-      await page.route(/Landing-.*\.js$/, (r) => r.abort())
-      await page.goto('/')
-      await page.waitForTimeout(1500)
-      log('fresh / fail', lang, JSON.stringify((await page.locator('body').innerText()).slice(0, 300)), await page.getByRole('link', { name: lang === 'vi' ? 'Về trang đầu' : 'Go to the start page' }).count())
-      await page.unroute(/Landing-.*\.js$/)
-    }
+  test.describe('signed in (student)', () => {
+    // Since T-M2.4 the shells need a session and `/` redirects by role (D3 of T-M2.7): the student's shell chunk fails
+    // on a client navigation from the top-level 404 page's start-page link.
+    test.use({ storageState: STATE.student })
+    test('error page via failed lazy load: link, focus, vi/en; a fresh load of / logged', async ({ page }) => {
+      for (const lang of ['vi', 'en']) {
+        await page.goto('/forbidden'); await page.getByRole('radio', { name: lang === 'vi' ? 'Tiếng Việt' : 'English', exact: true }).click()
+        await page.goto('/qa-no-such-page')
+        await page.route(/StudentShell-.*\.js$/, (r) => r.abort())
+        await page.locator('main a[href="/"]').click()
+        const h1 = page.getByRole('heading', { level: 1 }); await expect(h1).toBeVisible()
+        const home = page.getByRole('link', { name: lang === 'vi' ? 'Về trang đầu' : 'Go to the start page' })
+        await expect(home).toBeVisible()
+        const info = { url: page.url(), h1: await h1.textContent(), focus: await page.evaluate(() => document.activeElement?.tagName + ':' + document.activeElement?.textContent), buttons: await page.getByRole('button').allTextContents(), homeBox: await home.boundingBox(), href: await home.getAttribute('href') }
+        log('AC4', lang, JSON.stringify(info))
+        expect(info.homeBox!.height).toBeGreaterThanOrEqual(44); expect(info.href).toBe('/')
+        await noHScroll(page); await axe(page)
+        if (SHOTS) await page.screenshot({ path: `${SHOTS}/${test.info().project.name}-error-${lang}.png`, fullPage: true })
+        // keyboard: Tab to the link and Enter (`/` → the same failed shell: the error page again, its h1 focused)
+        let g = 0; while (!(await home.evaluate((e) => e === document.activeElement)) && g++ < 20) await page.keyboard.press('Tab')
+        await page.keyboard.press('Enter')
+        await expect(page).toHaveURL(/\/student\/home$/)
+        await expect(page.getByRole('heading', { level: 1 })).toBeFocused()
+        await page.unroute(/StudentShell-.*\.js$/)
+        // fresh load of / with the shell chunk aborted (logged only; e2e polish.spec.ts covers "absent when / fails")
+        await page.route(/StudentShell-.*\.js$/, (r) => r.abort())
+        await page.goto('/')
+        await expect(page.getByRole('heading', { level: 1 })).toBeVisible()
+        log('fresh / fail', lang, page.url(), await page.getByRole('link', { name: lang === 'vi' ? 'Về trang đầu' : 'Go to the start page' }).count())
+        await page.unroute(/StudentShell-.*\.js$/)
+      }
+    })
   })
 })
 
