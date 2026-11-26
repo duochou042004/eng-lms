@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-11-25T18:31:43Z",
-  "updatedBy": "lead-coordinator (T-M2.33 in review)",
+  "updatedAt": "2026-11-26T05:31:49Z",
+  "updatedBy": "lead-coordinator (T-M2.33 records)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -30,34 +30,6 @@
     "exitCriteria": "FR-AUTH-01..10 and FR-STU-01..07 accepted; authorization-matrix and student-isolation harnesses fail on any unregistered endpoint; add-student flow E2E at 360/768/1280 within its step budget; security review of authentication passed (docs/01-product/roadmap.md)."
   },
   "currentTask": {
-    "id": "T-M2.33",
-    "title": "Strict scalar binding beyond integers + one name character rule for workspace and account names",
-    "status": "in_review",
-    "ownerRole": "BE",
-    "branch": "feature/T-M2.33-strict-scalars-names",
-    "packet": "docs/tasks/T-M2.33-strict-scalars-names.md",
-    "pr": "235",
-    "lastCommit": "18bac64",
-    "startedAt": "2026-11-25T17:40:31Z",
-    "nextSteps": [
-      "CI 7/7 on the final head; G3 tier H: fresh SEC agent, then fresh QA agent with the UX checklist; verdicts as separate comments; merge-gate; qa/ PR; records PR"
-    ],
-    "trace": [
-      "DEC-186",
-      "DEC-187",
-      "DEC-191",
-      "DEC-194",
-      "DEC-200",
-      "DEC-201",
-      "DEC-202"
-    ],
-    "entryGate": [
-      "T-M2.32 merged — met (a43b17b, DEC-199)",
-      "Packet + G0 — met (PR #234, DEC-200)",
-      "PO start signal — met (chat, 2026-11-25)"
-    ]
-  },
-  "nextTask": {
     "id": "T-M2.7",
     "title": "Student Home v0 + Account page; M2 regression + milestone gate (G5 matrix: 6 Chromium viewports + WebKit smoke, DEC-180)",
     "status": "draft",
@@ -68,11 +40,38 @@
     "lastCommit": null,
     "startedAt": null,
     "nextSteps": [
-      "After T-M2.33 (PO order, DEC-187); G5: one regression run, no Firefox (DEC-180), ask the PO first; T-M2.26 after at least 10 shadow PRs"
+      "Ask the PO: T-M2.7 start signal and the one G5 regression run (no Firefox, DEC-180); then the packet (task-packet skill) with the row's batched S4s (DEC-197, DEC-198, DEC-201, DEC-202)"
     ],
     "trace": [
       "DEC-158",
-      "DEC-180"
+      "DEC-180",
+      "DEC-197",
+      "DEC-198",
+      "DEC-201",
+      "DEC-202"
+    ],
+    "entryGate": [
+      "T-M2.33 merged — met (1f8dd90, DEC-203)",
+      "Packet + G0 — pending",
+      "PO start signal and the regression run — pending"
+    ]
+  },
+  "nextTask": {
+    "id": "T-M2.26",
+    "title": "Switch the CI scope on (after at least 10 shadow PRs; DEC-158 PO-1, PO-2)",
+    "status": "draft",
+    "ownerRole": "LC",
+    "branch": null,
+    "packet": null,
+    "pr": null,
+    "lastCommit": null,
+    "startedAt": null,
+    "nextSteps": [
+      "After at least 10 PRs to develop in shadow mode (T-M2.23); then the device move (HANDOFF)"
+    ],
+    "trace": [
+      "DEC-158",
+      "DEC-160"
     ]
   },
   "completed": [
@@ -491,11 +490,19 @@
       "mergeCommit": "a43b17b",
       "evidence": "evidence/T-M2.32/summary.md",
       "note": "PR #231 via merge-gate (head 24164f6, CI 7/7); QA PR #232 (7273fd7); packet PR #230 (a84c753); gate PASS on ad3acc8 (run 2 --from web-test, 1239 s); G3 tier M: QA PASS WITH MINOR, UX APPROVED, no fix round; DEC-196, DEC-197, DEC-198, DEC-199"
+    },
+    {
+      "id": "T-M2.33",
+      "title": "Strict scalar binding beyond integers + one name character rule for workspace and account names",
+      "completedAt": "2026-11-26T05:09:55Z",
+      "mergeCommit": "1f8dd90",
+      "evidence": "evidence/T-M2.33/summary.md",
+      "note": "PR #235 via merge-gate (head bee7fce, CI 7/7 (5 full)); QA PR #236 (b50cf78); packet PR #234 (68d870f); gate PASS on b18ea19 (1010 s); G3 tier H: SEC APPROVED (S3-1 fixed as AC10), QA PASS, UX APPROVED; DEC-200, DEC-201, DEC-202, DEC-203"
     }
   ],
   "tests": {
-    "lastRun": "2026-11-25T15:22:12Z",
-    "summary": "T-M2.32 head ad3acc8: gate PASS (run 2 --from web-test, 7 steps, 1239 s; run 1 stopped on the DevUiPage.test.tsx flake, DEC-197); web 961; e2e 610 passed, 68 skipped; x3 repeat 1830 passed, 204 skipped, 0 failed; backend skipped (no backend change; 621 at T-M2.35).",
+    "lastRun": "2026-11-25T18:47:53Z",
+    "summary": "T-M2.33 head b18ea19: gate PASS (13 steps, 1010 s); backend 845; web 1043 (79 files); e2e 616 passed, 68 skipped; x3 repeat 174 passed, 6 skipped, 0 failed.",
     "suites": [
       {
         "name": "backend (./mvnw -B verify)",
@@ -522,23 +529,23 @@
   "gates": {
     "G0": {
       "status": "pass",
-      "note": "T-M2.33 packet: PR #234, DOCS-REVIEW round 1 CHANGES REQUESTED, delta PASS WITH MINOR, S4 fixed (DEC-200)"
+      "note": "T-M2.33 packet: PR #234, DOCS-REVIEW round 1 CHANGES REQUESTED, delta PASS WITH MINOR, S4 fixed, PASS (DEC-200)"
     },
     "G1": {
       "status": "pass",
-      "note": "T-M2.32: gate PASS (run 2 --from web-test, 7 steps, 1239 s) on ad3acc8"
+      "note": "T-M2.33: gate PASS (13 steps, 1010 s) on b18ea19"
     },
     "G2": {
       "status": "pass",
-      "note": "T-M2.32: CI 7/7 on 24164f6"
+      "note": "T-M2.33: CI 7/7 on bee7fce (5 full)"
     },
     "G3": {
       "status": "pass",
-      "note": "T-M2.32 tier M: QA PASS WITH MINOR, UX APPROVED (DEC-198)"
+      "note": "T-M2.33 tier H: SEC APPROVED (S3-1 fixed as AC10), QA PASS, UX APPROVED (DEC-202)"
     },
     "G4": {
       "status": "pass",
-      "note": "T-M2.32 PR #231 merged via merge-gate (a43b17b); QA PR #232 (7273fd7)"
+      "note": "T-M2.33 PR #235 merged via merge-gate (1f8dd90); QA PR #236 (b50cf78)"
     },
     "G5": {
       "status": "n/a",
@@ -1988,6 +1995,11 @@
       "at": "2026-11-25T18:31:43Z",
       "actor": "lead-coordinator",
       "event": "T-M2.33 implemented (BE c422140, FE c02ade1); gate PASS on c02ade1 (13 steps, 1008 s); L-10 rulings DEC-201; PR opened."
+    },
+    {
+      "at": "2026-11-26T05:31:49Z",
+      "actor": "lead-coordinator",
+      "event": "T-M2.33 merged (1f8dd90, PR #235; QA PR #236 b50cf78; DEC-203); gitlab-sync; records PR; current task T-M2.7 (ask the PO)."
     }
   ]
 }
