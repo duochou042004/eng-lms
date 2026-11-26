@@ -1,7 +1,7 @@
 # Handoff — 2026-11-26 (T-M2.7 consolidated; agent policy hook; PO approved, T-M2.7 started)
 
 Phase/Milestone: P1 / M2 (in progress) · Current task: **T-M2.7** (`ready`; PO start signal given) · Last merge on `develop`: `58f3220`
-(T-M2.7 packet PR #238) · Next: PO approval of DEC-205 → G0 delta (resume the same docs-reviewer) → T-M2.7 → M2 closed → device move → T-M2.26
+(T-M2.7 packet PR #238) · Next: merge PR #239 → T-M2.7 (BE, FE, gate, regression run, SEC, QA) → M2 closed → device move → T-M2.26
 
 ## Where we are
 - **PO (DEC-205):** T-M2.36, T-M2.37, T-M2.38 are cancelled and are parts B (backend S4s), C (web S4s) and D (the M2 regression + G5) of
@@ -119,7 +119,7 @@ Phase/Milestone: P1 / M2 (in progress) · Current task: **T-M2.7** (`ready`; PO 
   `auth.ts` 16 (~15 min per project set); budget for it.
 - **Context rule over the goal hook (PO, 2026-11-13):** at ~300k tokens finish the safe step, commit, hand off and **stop**, even if a `/goal`
   Stop hook says the goal is not met: tell the PO the two conflict. This session ran to ~370k because the LC let the hook override the rule.
-- **A DOCS-REVIEW PASS token needs a reviewer's exact PASS line on the final head:** put every status change into the branch before the review (coding-agent-rules §11.6), so no status-only commit follows a PASS; after S3/S4 fixes, resume the same reviewer for a short confirmation (T-M2.24 G0, T-M2.28 G0).
+- **A DOCS-REVIEW PASS token needs a reviewer's exact PASS line on the final head:** write every status change into the branch before the review, except the verdict (coding-agent-rules §11.6); S3/S4 fixes after a PASS WITH MINOR need no new round, except for merge-gate's exact `DOCS-REVIEW <task>: PASS` token on a docs/chore branch: a resumed confirmation of the fix diff (T-M2.24 G0, T-M2.28 G0).
 - **docs-check reads `](x)` inside code spans as a link:** write regexes like `(PG)?` after `]` as `\(PG\)` or in words (T-M2.25 records).
 - **`scripts/tests/e2e-run.test.sh` can flake in CI** ("keeps the host and parameters": a stale `app2.env` race, T-M2.28 (e)): `gh run rerun <id> --failed`.
 - **Local E2E now runs on its own database** (T-M2.25): `e2e-run.sh` recreates `englms_e2e` per run with `.data/e2e/fresh/`; `E2E_KEEP_DB=1` runs against the PO's dev DB as before (G5). pgjdbc URL parameters and `.env` reassignments are guarded (DEC-168, DEC-169).

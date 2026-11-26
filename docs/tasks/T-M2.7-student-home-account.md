@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Milestone | M2 |
-| Status | ready (G0: part A PASS, DEC-204; parts B–D delta PASS by the same docs-reviewer, DEC-205; PO start signal 2026-11-26) |
+| Status | ready (G0: part A PASS, DEC-204; parts B–D delta PASS WITH MINOR, S3/S4 fixed, confirmed PASS, DEC-205; PO start signal 2026-11-26) |
 | Owner role | BE (part A endpoint + part B) then FE (part A UI + part C); then QA (part D regression report); one checkout-using agent at a time (coding-agent-rules §11) |
 | Branch | `feature/T-M2.7-student-home-account` (from `develop`) |
 | Depends on | T-M2.3, T-M2.6, T-M2.11, T-M2.32, T-M2.33 (all merged) |
@@ -70,7 +70,7 @@ web S4s, **part D** the M2 regression and milestone gate (G5), which closes M2. 
   11. **C1 (DEC-148 QA-2):** `ui/TagInput` clears its entry error on every submit of the form, not only when the caller's `errorMessage`
      changes (a submit signal from the form, e.g. a `submitCount` prop or key), so a second failed Save with the identical message shows the
      current state.
-  12. **C2 (DEC-197 (4)):** `DevUiPage.test.tsx:12`'s first read of the lazy chunk polls with a longer bound (e.g. `findByRole(..., { timeout: 5000 })`;
+  12. **C2 (DEC-197 (4)):** `DevUiPage.test.tsx:14`'s first read (the `findByRole` of the gallery heading) of the lazy chunk polls with a longer bound (e.g. `findByRole(..., { timeout: 5000 })`;
      no wall-clock assertion, L-05).
   13. **C3 (DEC-198 QA-2):** the vi ComboBox no-match count reads "Không có lựa chọn nào." (`ui/ariaStrings.ts`), en unchanged.
   14. **C4 (DEC-202 S4-3):** `workspaceForm.ts` compares the stripped value with the stripped saved name (as `accountForm.ts`).
@@ -211,7 +211,7 @@ name parsing, no goal or exam wording).
   contract; contract-drift green).
 - AC12 (part C): C1 a component test: two failed Saves with the identical form message after a re-committed refused entry → the entry error
   is cleared on the second submit; C2 the bound is polling (no other change to the test); C3 a unit test reads the vi no-match string; C4 a
-  unit test: saved name " Lan " (stored stripped as "Lan") with the field "Lan" is unchanged (Save disabled).
+  unit test: the server's saved name " Lan " (stored before the strip rule) with the field "Lan": no change, Save disabled.
 - AC13 (part D): the one regression run is green, or each failure is ruled before G3 ends (DEC); `evidence/M2/qa/report.md` holds the run ID,
   the counts per project, the local `E2E_KEEP_DB=1` result and the DEC-198 QA-1 count; the D3 `qa/` changes run (`QA_ENGINES` default);
   D4's records are in the records PR (check-docs green, the README roadmap row says M2 done).

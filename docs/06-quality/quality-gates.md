@@ -48,8 +48,8 @@ Review effort follows the packet's **risk tier** (set by the LC at G0, DEC-131 (
 - [ ] **SEC sign-off** for tier H.
 - [ ] **UX sign-off** when the PR changes UI: design-system compliance, states, responsive rules, the accessibility checklist, step budgets for affected flows.
 - [ ] Findings are handled by severity (DEC-131 (5)); a deferral is a DEC entry with a follow-up task ID. **Severity S1/S2 findings cannot be deferred.**
-  - **S1/S2:** fixed in the task (the LC adds an AC citing the finding ID, DEC-088), then a **delta re-check** by the same reviewer role in a fresh
-    context: only the findings and the files changed since the verdict, with targeted specs; no full regression and no reviewer gate run unless the LC asks.
+  - **S1/S2:** fixed in the task (the LC adds an AC citing the finding ID, DEC-088), then a **delta re-check** by the same reviewer, resumed (a fresh
+    context of the same role only when it cannot be resumed, with a logged `BUDGET-OVERRIDE`, coding-agent-rules §11.5, DEC-205): only the findings and the files changed since the verdict, with targeted specs; no full regression and no reviewer gate run unless the LC asks.
   - **S3:** fixed in the task when cheap (no new behaviour beyond the finding, about an hour or less); the LC verifies the fix from its test and the diff.
     A reviewer re-check runs only when the fix changes behaviour. Otherwise a follow-up row in the backlog.
   - **S4:** batched into one polish packet per milestone, unless it is a one-line fix the LC verifies (supersedes DEC-088 for S4).

@@ -51,7 +51,7 @@
     ],
     "entryGate": [
       "T-M2.33 merged — met (1f8dd90, DEC-203)",
-      "G0 — part A PASS (PR #238, DEC-204); parts B-D delta PASS by the same docs-reviewer (PR #239, DEC-205)",
+      "G0 — part A PASS (PR #238, DEC-204); parts B-D delta PASS WITH MINOR, fixed, confirmed PASS (PR #239, DEC-205)",
       "PO start signal — met (chat 2026-11-26, \"Approve, resume\")",
       "The one regression run — ask the PO before it"
     ]
@@ -530,7 +530,7 @@
   "gates": {
     "G0": {
       "status": "pass",
-      "note": "T-M2.7: part A PASS (PR #238, DEC-204); parts B-D and the agent policy: the same docs-reviewer's delta re-check on PR #239 (DEC-205)"
+      "note": "T-M2.7: part A PASS (PR #238, DEC-204); parts B-D and the agent policy: the same docs-reviewer's delta PASS WITH MINOR on 5bd0a20, S3/S4 fixed, confirmed PASS (PR #239, DEC-205)"
     },
     "G1": {
       "status": "pass",

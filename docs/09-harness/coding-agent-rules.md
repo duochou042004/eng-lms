@@ -114,12 +114,16 @@ self-checks them at each task's G3 cost table and in the handoff.
 5. **Resume, don't respawn (enforced, R4):** a second fresh reviewer of the same role for the same task (any session) is denied; a delta re-check
    resumes the first reviewer with `SendMessage` (only the findings and the changed files). An override only when it cannot be resumed (a new session or device).
 6. **Verify once (behavioural).** One gate run on the final head, CI as the second (DEC-131 (6)); reuse valid evidence; re-verify only the areas a
-   change touches unless it is cross-cutting; stop when the ACs are met and no S1/S2 remains (S3/S4 per quality-gates G3). Put every status
-   change (`progress.json`, packet Status) into the branch **before** asking for a review, so the reviewed head is the final head and no
-   confirmation round is needed for a status-only commit.
+   change touches unless it is cross-cutting; stop when the ACs are met and no S1/S2 remains (S3/S4 per quality-gates G3). Write every
+   status change (`progress.json`, packet Status, handoff) into the branch **before** asking for a review, except the verdict itself, so the
+   reviewed head is the final head. S3/S4 fixes the LC makes after a PASS WITH MINOR need no new round (quality-gates G0); the one exception is
+   merge-gate's exact token on a `docs/`/`chore/` branch (`DOCS-REVIEW <task>: PASS`): a resumed confirmation of the fix diff, which also
+   records the verdict in the statuses.
 7. **Measure (behavioural):** every task's summary keeps the G3 cost table (tokens, duration per agent) and adds the agent count; the LC reads the
    ledger at each merge (`cut -f3,5,6 .claude/scratch/agent-policy/ledger.tsv | sort | uniq -c`).
 8. **Limits of enforcement:** the hook cannot see an agent's purpose (rules 1, 2, 6 are behavioural); an override is a logged speed bump, not a
    stop; Workflow agents are counted by the declared `// agents: N` (a script can still spawn more at run time; SubagentStart logs them); the
    ledger is local (`.claude/scratch/`, git-ignored) and starts empty on a new device; the hook fails open on its own error. Hooks load at
-   session start: a session started before a change to them runs without it.
+   session start: a session started before a change to them runs without it. Parallel calls in one message are serialised by a lock and an
+   allowed spawn reserves its slot until SubagentStart (a reservation lapses after 10 min); a running entry lapses after 12 h (a longer
+   agent no longer counts); a saved Workflow started by `name` is logged only (its script is not visible to the hook).

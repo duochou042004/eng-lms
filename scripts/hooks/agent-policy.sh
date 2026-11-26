@@ -12,13 +12,16 @@ DIR="${ENGLMS_AGENT_POLICY_DIR:-${CLAUDE_PROJECT_DIR:-.}/.claude/scratch/agent-p
 MAX_CONCURRENT=5    # all running subagents
 MAX_SESSION=6       # distinct subagents per session (a full task: BE, FE, SEC, QA, docs + 1 spare)
 MAX_WORKFLOW=5      # declared agents per Workflow script
-STALE_MIN=180       # a running entry older than this is treated as ended (a crash without SubagentStop)
+STALE_MIN=720       # a running entry older than this (12 h) is treated as ended (a crash without SubagentStop)
+PENDING_MIN=10      # an allowed spawn that never started (refused prompt, error) frees its reservation after this
 # Subagent types that build, run the app or write the tree: one at a time in the single checkout (DEC-094).
 CHECKOUT_TYPES=' backend-implementer frontend-implementer qa-evaluator ux-reviewer security-reviewer general-purpose claude fork  '
 REVIEWER_TYPES=' docs-reviewer qa-evaluator security-reviewer ux-reviewer '
 
 input=$(cat) || exit 0
 mkdir -p "$DIR/running" 2>/dev/null || { echo "agent-policy: cannot create $DIR (hook skipped)" >&2; exit 0; }
+# One hook at a time: parallel Agent calls in one message run their PreToolUse hooks concurrently.
+exec 9>"$DIR/lock" && flock -w 5 9 || echo "agent-policy: no lock (continuing)" >&2
 LEDGER="$DIR/ledger.tsv"   # time  session  event  agent_id  type  task  note
 j() { jq -r "$1 // empty" <<<"$input" 2>/dev/null; }
 event=$(j .hook_event_name); session=$(j .session_id); now=$(date -u +%Y-%m-%dT%H:%M:%SZ)
@@ -29,6 +32,7 @@ deny() {
     '{hookSpecificOutput:{hookEventName:"PreToolUse",permissionDecision:"deny",permissionDecisionReason:$r}}'
   exit 0
 }
+find "$DIR/running" -type f -name 'pending-*' -mmin +"$PENDING_MIN" -delete 2>/dev/null
 find "$DIR/running" -type f -mmin +"$STALE_MIN" -delete 2>/dev/null
 running_count() { find "$DIR/running" -type f | wc -l; }
 running_checkout() { cat "$DIR/running"/* 2>/dev/null | awk -v t="$CHECKOUT_TYPES" '{ if (index(t, " " $2 " ")) n++ } END { print n + 0 }'; }
@@ -47,6 +51,9 @@ case "$event" in
     ;;
   SubagentStart)
     id=$(j .agent_id); type=$(j .agent_type)
+    # The reservation its PreToolUse made becomes the running entry (the oldest of that type; Workflow agents have none).
+    pending=$(grep -l " ${type:-unknown}\$" "$DIR/running"/pending-* 2>/dev/null | head -1)
+    [[ -n "$pending" ]] && rm -f "$pending"
     [[ -n "$id" ]] && printf '%s %s\n' "$id" "${type:-unknown}" >"$DIR/running/$id"
     log start "$id" "${type:-unknown}" - -
     ;;
@@ -77,9 +84,13 @@ case "$event" in
         log override - "$type" "$task" "$(grep -oE 'BUDGET-OVERRIDE: .*' <<<"$text" | head -1 | cut -c1-200)"
       fi
       log spawn - "$type" "$task" "$(j .tool_input.description | cut -c1-80)"
+      # Reserve the slot now, so a parallel call in the same message sees it before SubagentStart (R1, R2).
+      printf 'pending %s\n' "$type" >"$DIR/running/pending-$(j .tool_use_id | tr -c 'A-Za-z0-9_-' _)$$"
     elif [[ "$tool" == Workflow ]]; then
-      script=$(j .tool_input.script)
-      [[ -z "$script" ]] && { log workflow - named - "$(j .tool_input.name)$(j .tool_input.scriptPath)"; exit 0; }
+      script=$(j .tool_input.script); path=$(j .tool_input.scriptPath)
+      [[ -z "$script" && -n "$path" && -r "$path" ]] && script=$(cat "$path")
+      # A saved Workflow by name: its script is not visible here (coding-agent-rules §11.8); logged only.
+      [[ -z "$script" ]] && { log workflow - named - "$(j .tool_input.name)"; exit 0; }
       n=$(grep -oE '//[[:space:]]*agents:[[:space:]]*[0-9]+' <<<"$script" | grep -oE '[0-9]+$' | head -1)
       [[ -z "$n" ]] && deny workflow - "R5: declare the planned agent count in the script ('// agents: N', N ≤ $MAX_WORKFLOW)."
       if (( n > MAX_WORKFLOW )) && ! override "$script"; then

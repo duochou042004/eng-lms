@@ -1,6 +1,6 @@
 You are resuming the Eng-LMS project (private 1:1 teaching workspace for ONE English tutor; no hard-coded curricula) as Lead Coordinator. Clone: see progress.json project.repoLocal (a new device: follow HANDOFF "Moving to a new device" first and record it in a DEC).
 Read in order: CLAUDE.md, progress.json, docs/handoff/HANDOFF.md, DEC-180, DEC-202, DEC-204 and DEC-205 in docs/10-governance/decision-log.md, the packet docs/tasks/T-M2.7-student-home-account.md, the backlog row T-M2.26, docs/09-harness/coding-agent-rules.md (§11 agent policy, enforced by scripts/hooks/agent-policy.sh), docs/09-harness/lessons-learned.md.
-State: P1/M2. T-M2.7 consolidated by the PO (DEC-205): parts A (Student Home + Account), B (BE S4s), C (web S4s), D (M2 regression + G5); draft until the G0 delta. T-M2.26 on the new device. Firefox out of G5 (DEC-180).
+State: P1/M2. T-M2.7 consolidated by the PO (DEC-205): parts A (Student Home + Account), B (BE S4s), C (web S4s), D (M2 regression + G5); ready, G0 PASS, PO start signal given. T-M2.26 on the new device. Firefox out of G5 (DEC-180).
 Do next:
 1. PO approved DEC-205 and started T-M2.7. If PR #239 is open: G0 delta for parts B-D (resume the round-1 docs-reviewer if possible, else one fresh with BUDGET-OVERRIDE), merge the chore/T-M2.7-agent-policy PR.
 2. T-M2.7: BE then FE, gate, CI, the one regression run (ask the PO), SEC, QA (+UX, M2 report), merge-gate, qa/T-M2.7, records PR (G5). Then the device move (HANDOFF), then T-M2.26.
