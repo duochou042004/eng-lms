@@ -92,7 +92,7 @@ class TutorSettingsController {
 			this.version = version;
 		}
 
-		@Schema(description = "The workspace name: 1-120 characters, no control, bidirectional or zero-width character; cannot be cleared")
+		@Schema(description = "The workspace name, by the shared name rule (shared.Names): no Cc, Cf, Cs, Zl or Zp code point (422 INVALID_FORMAT), both ends stripped, then 1-120 code points; cannot be cleared")
 		public String getDisplayName() {
 			return value(displayName);
 		}
