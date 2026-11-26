@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Milestone | M2 |
-| Status | ready (G0: DEC-204) |
+| Status | ready (G0: DOCS-REVIEW round 1 PASS WITH MINOR, S3-1 and S4-1..S4-7 fixed; packet decisions DEC-204; waiting for the PO start signal) |
 | Owner role | BE (`GET /student/account`) then FE (Home, Account page, shell entry); one implementer at a time |
 | Branch | `feature/T-M2.7-student-home-account` (from `develop`) |
 | Depends on | T-M2.3, T-M2.6, T-M2.11, T-M2.32, T-M2.33 (all merged) |
@@ -48,8 +48,10 @@ This packet is the feature only. The backend S4s are **T-M2.36** (tier H), the w
      tab) and a form with **Time zone** (`ui/ComboBox`, `timeZoneOptions`) and **Save**, which behaves exactly as the tutor's Account tab
      without Display name (changed-only body, Save disabled while unchanged, 422 → `ErrorSummary` + field, other errors → `InlineAlert`,
      `UnsavedChangesGuard`, `networkMode: 'always'`, `keepDirtyValues`; DEC-191); then a **Change password** link to `/change-password`.
-     Reuse: the tutor's `AccountForm` and `accountForm.ts` with Display name left out for a student session (one form, a role-driven field
-     list), not a copy. No new `ui/` component.
+     Reuse: the tutor's `AccountForm` (today private in `app/routes/settings/AccountSettingsPage.tsx:61`) and `accountForm.ts` **move to a
+     shared module** (e.g. `app/routes/account/AccountForm.tsx` + `accountForm.ts`) that both pages import, with Display name left out for a
+     student session (one form, a role-driven field list), not a copy: a student route must never import the tutor settings module
+     (`router.tsx:15`, "a student never downloads tutor code", NFR-PERF-03; G0 S4-1). No new `ui/` component.
   6. **Shell entry:** `AccountSection` (`ShellParts.tsx:57`) gets an **Account** link (`/student/account`, icon `CircleUser`) above Change
      password, for a **student session only** (the tutor reaches Settings › Account from the tutor nav, unchanged); it closes the sheet or
      popover on navigate (`onNavigate`). The bottom tabs and the top-bar items stay Home only (IA §3: Account lives in More).
@@ -89,11 +91,21 @@ name parsing, no goal or exam wording).
     `/tutor/settings`) stays.
   - ADR-0016 / security.md §2 and §4: owner-scoped by `CurrentStudent`, no `studentId` anywhere; the DTO exposes no tutor-private field.
   - interaction-states §1 (loading, error with retry for the Account page's name block), §3 (form errors), §4 (no error toasts): kept.
+  - **Unit-test infrastructure (G0 S3-1):** `web/src/test/setup.ts:17` runs MSW with `onUnhandledRequest: 'error'` and the default `handlers`
+    (`web/src/test/server.ts:57-61`) hold only session, meta and preferences, so every kept unit test that renders `/student/home`
+    (`app.test.tsx:23,33`, `ChangePasswordPage.test.tsx:125,260-263`, the student cases of `shells.test.tsx`, `guards.test.tsx`,
+    `routeAnnouncement.test.tsx`) would now make an unhandled request. The implementer adds a default `GET */api/v1/student/account`
+    handler to `server.ts` `handlers` (a `studentAccountAs(...)` helper; test infrastructure only, no kept assertion changes).
+  - **Kept E2E that fail or cut the network on student Home** (`navigation.spec.ts:211-260` offline and chunk-failure cases, the
+    `shells.spec.ts` logout-failure cases): the new read must add no console entry they do not accept. Offline, TanStack queries pause (no
+    request, no error); a failed read shows the name-less greeting without `console.error` (AC4). The implementer greps `e2e/tests` for
+    `route(`/`setOffline` on student pages and lists the specs run.
 - **E2E data hygiene:** the shared student's preferences are answered in place by the shared fixture (T-M2.6, DEC-190 (4)); a real time-zone
   save runs on a fresh student (`e2e/support/students.ts`). The greeting's time of day is tested with a fixed clock (Playwright
   `page.clock.setFixedTime`, Vitest fake timers), never the wall clock.
-- **Shortcut ledger** (task-packet step 0): no marker in the touched areas fires (`ShellParts.tsx`, `StudentShell.tsx`, `settings/*`,
-  `students/internal/*` hold none; `ui/ariaStrings.ts`'s marker is about React Aria strings, untouched). Any new one uses the `shortcut:` form.
+- **Shortcut ledger** (task-packet step 0): no marker in the touched areas fires (`ShellParts.tsx`, `StudentShell.tsx`, `settings/*` hold
+  none; `students/internal/domain/UsernameSuggestions.java:29` has one `ponytail:` marker (username candidates), trigger not fired here;
+  `ui/ariaStrings.ts`'s marker is about React Aria strings, untouched). Any new one uses the `shortcut:` form.
 - **A new check that finds a real defect outside this scope** (L-10): the implementer reports it at once as an OQ, uses `test.fail` only until
   the LC rules, and the LC rules before G3.
 
@@ -112,7 +124,7 @@ name parsing, no goal or exam wording).
   heading-less container with `tabIndex={-1}`, never to `<body>`); the Account link closes the sheet/popover and the route focus takes over.
 - Layering: the ComboBox popover as on the tutor tab (`ui/modalStack.ts`); toasts under it.
 - Validation: time zone as validation-rules "account" (an option of the list or the current value); no other field.
-- Copy (vi): page "Tài khoản"; labels "Họ và tên", "Tên đăng nhập", "Múi giờ"; button **Lưu**, toast "Đã lưu"; link "Đổi mật khẩu" (the
+- Copy (vi): page "Tài khoản"; labels "Họ tên", "Tên đăng nhập" (the app's existing terms, `students.json`), "Múi giờ"; button **Lưu**, toast "Đã lưu"; link "Đổi mật khẩu" (the
   existing key); the account section link "Tài khoản"; the name block's failure "Không tải được thông tin tài khoản." with **Thử lại**.
   Non-breaking space rules as today.
 - Viewports 360 / 768 / 1280 (and the gate's six projects); WCAG 2.2 AA (target size ≥ 24 px, focus visible, the description list's
@@ -159,6 +171,9 @@ name parsing, no goal or exam wording).
 - AC9: viewports 360/768/1280 for Home and Account (default, name-block error, ComboBox open, a 120-character name and a 50-character
   username: no horizontal scroll, no mid-word break of the name); axe clean (the recorded open-list exception only, DEC-191); vi + en
   complete.
+- AC9a (ux-flows step budgets): Account is reached in ≤ 2 steps from any student page (More or the account menu → Account) at 360, 768
+  and 1280 (a step log in the E2E); F0 Log out (≤ 2) and the language switch (≤ 2) are unchanged by the extra link (`shells.spec.ts`
+  step records stay green).
 - AC10: `./scripts/gate.sh` green once on the final head and CI green; existing assertions kept (the one extension in Design notes is
   listed in the summary).
 
@@ -168,7 +183,7 @@ name parsing, no goal or exam wording).
 - FE unit/component: the greeting band helper (edges, two zones, injected `now`); `StudentHome` (pending, failure, name); the Account page
   (load, skeleton, block error and Retry focus, Save changed-only, 422, failed save, guard, no Display name for a student); `AccountSection`
   link for student only; the tutor tab's tests unchanged; i18n completeness.
-- E2E: a new `student-account.spec.ts` (fresh students; serial where it saves): AC3 with `page.clock`, AC4 (route-answered 500 and offline),
+- E2E: a new `student-home-account.spec.ts` (fresh students; serial where it saves): AC3 with `page.clock`, AC4 (route-answered 500 and offline),
   AC5 in the sheet and the popover, AC6, AC8, AC9 helpers; the extended `shells.spec.ts` AC4 set.
 - **Independent QA focus:** a second student's session never shows the first one's name (two contexts); a tutor rename while the student's
   Account page is open (refetch on focus); a must-change student and an archived student's stale session against the endpoint over HTTP; the
@@ -204,7 +219,7 @@ source ~/.sdkman/bin/sdkman-init.sh; source ~/.nvm/nvm.sh; source scripts/env.sh
 (cd backend && ./mvnw -B -ntp verify -Dtest='StudentAccountApiTest,AuthzMatrixTest,IsolationTest,HarnessDetectionTest,StudentIsolationRulesTest')
 cd web && pnpm test --run && cd ..
 ./scripts/contract-drift.sh
-./scripts/e2e-run.sh --project=phone-small --project=tablet --project=laptop tests/student-account.spec.ts
+./scripts/e2e-run.sh --project=phone-small --project=tablet --project=laptop tests/student-home-account.spec.ts
 ./scripts/gate.sh
 ```
 

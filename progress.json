@@ -530,7 +530,7 @@
   "gates": {
     "G0": {
       "status": "pending",
-      "note": "T-M2.7 packet: PR docs/T-M2.7-packet, fresh docs-reviewer (DEC-204)"
+      "note": "T-M2.7 packet: DOCS-REVIEW round 1 PASS WITH MINOR (S3-1, S4-1..S4-7 fixed by the LC); same-reviewer confirmation pending (DEC-204)"
     },
     "G1": {
       "status": "pass",
