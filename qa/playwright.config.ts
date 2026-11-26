@@ -18,6 +18,8 @@ const BASE = { chromium: devices['Desktop Chrome'], firefox: devices['Desktop Fi
 export default defineConfig({
   testDir: '.',
   testMatch: ['e2e/**/*.spec.ts', 'regression/**/*.spec.ts'],
+  // Signed-in sessions for the shells (support/global-setup.ts, D3 of T-M2.7).
+  globalSetup: './support/global-setup.ts',
   retries: 0,
   reporter: [['list'], ['html', { open: 'never', outputFolder: 'playwright-report' }]],
   use: {

@@ -2,6 +2,7 @@ import AxeBuilder from '@axe-core/playwright'
 import { expect, test, type Page } from '@playwright/test'
 import fs from 'node:fs'
 import path from 'node:path'
+import { STATE } from '../support/global-setup'
 
 // Independent black-box QA for T-M1.9 (web a11y/UX follow-ups). Written from the packet ACs only.
 // Run: QA_BASE_URL=http://localhost:8080 pnpm test e2e/T-M1.9.spec.ts --project=phone-small --project=tablet --project=laptop
@@ -9,8 +10,15 @@ const SHOTS = process.env.QA_SHOTS_DIR ?? 'qa-shots'
 const SUFFIX = ' · Eng-LMS'
 const LOCALES = ['vi', 'en'] as const
 type Locale = (typeof LOCALES)[number]
-const ROUTES = ['/', '/tutor', '/student', '/qa-no-such-page'] as const
+// Since T-M2.4: no anonymous landing page (`/` redirects; anonymous → /login), the shells need a session of their role and
+// the shell's language switcher sits in the account section (D3 of T-M2.7). Sessions: support/global-setup.ts.
+type Who = 'anonymous' | 'tutor' | 'student'
+const WHO = ['anonymous', 'tutor', 'student'] as const
+const AS: Record<Who, string | { cookies: []; origins: [] }> = { anonymous: { cookies: [], origins: [] }, ...STATE }
+const ROUTES: Record<Who, readonly string[]> = { anonymous: ['/login', '/qa-no-such-page'], tutor: ['/tutor'], student: ['/student'] }
 const SHELL = (r: string) => r.startsWith('/tutor') || r.startsWith('/student')
+// A public page with the switcher in its toolbar, for every caller (a signed-in /login would log out first).
+const SWITCHER_PAGE: Record<Who, string> = { anonymous: '/login', tutor: '/forbidden', student: '/forbidden' }
 
 const secretHits: string[] = []
 const consoleErrors: string[] = []
@@ -24,7 +32,9 @@ test.beforeEach(async ({ page }) => {
     }
   })
   page.on('console', (m) => {
-    if (m.type() === 'error') consoleErrors.push(`${page.url()} ${m.text()}`)
+    // An anonymous visit answers GET /auth/session with 401 by design (T-M2.4): the only status error accepted.
+    if (m.type() === 'error' && !(/status of 401/.test(m.text()) && m.location().url.endsWith('/api/v1/auth/session')))
+      consoleErrors.push(`${page.url()} ${m.text()}`)
   })
   page.on('pageerror', (e) => consoleErrors.push(`${page.url()} pageerror ${e.message}`))
 })
@@ -35,8 +45,8 @@ test.afterEach(async ({ page }) => {
   consoleErrors.length = 0
 })
 
-async function setLocale(page: Page, locale: Locale) {
-  await page.goto('/')
+async function setLocale(page: Page, locale: Locale, who: Who = 'anonymous') {
+  await page.goto(SWITCHER_PAGE[who])
   const target = locale === 'vi' ? 'Tiếng Việt' : 'English'
   const radio = page.getByRole('radio', { name: target })
   if ((await radio.getAttribute('aria-checked')) !== 'true') await radio.click()
@@ -60,149 +70,186 @@ const shot = async (page: Page, name: string) => {
   await page.screenshot({ path: path.join(dir, `${name}.png`), fullPage: true })
 }
 
-for (const locale of LOCALES) {
-  test.describe(`[${locale}]`, () => {
-    test('AC1 first load: focus stays on body, title set, first Tab stop', async ({ page }) => {
-      await setLocale(page, locale)
-      const titles = new Set<string>()
-      for (const r of ROUTES) {
-        await page.goto(r)
-        await page.waitForLoadState('networkidle')
-        const h1 = (await page.locator('main h1').textContent())!.trim()
-        await expect(page).toHaveTitle(h1 + SUFFIX)
-        titles.add(await page.title())
-        expect((await active(page)).tag, `${r} active on first load`).toBe('BODY')
-        await page.keyboard.press('Tab')
-        const a = await active(page)
-        if (SHELL(r)) {
-          expect(a.href, `${r} first Tab = skip link`).toBe('#main')
-          const box = (await page.locator(':focus').boundingBox())!
-          expect(box.height, 'skip link block size').toBeGreaterThanOrEqual(44)
-        } else {
-          const inMain = await page.evaluate(() => !!document.activeElement?.closest('main'))
-          expect(inMain, `${r} first Tab inside main`).toBe(true)
+// The shell's switcher is in the account section (menu popover, More sheet or drawer, by viewport).
+async function openAccountSection(page: Page) {
+  await page.locator('button[aria-haspopup="dialog"]').first().click()
+  const section = page.getByRole('dialog').last()
+  await expect(section.getByRole('radiogroup')).toBeVisible()
+  return section
+}
+
+for (const who of WHO) {
+  test.describe(who, () => {
+    test.use({ storageState: AS[who] })
+    for (const locale of LOCALES) {
+      test(`[${locale}] AC1 first load: focus stays on body, title set, first Tab stop`, async ({ page }) => {
+        await setLocale(page, locale, who)
+        const titles = new Set<string>()
+        for (const r of ROUTES[who]) {
+          await page.goto(r)
+          await page.waitForLoadState('networkidle')
+          const h1 = (await page.locator('main h1').textContent())!.trim()
+          await expect(page).toHaveTitle(h1 + SUFFIX)
+          titles.add(await page.title())
+          expect((await active(page)).tag, `${r} active on first load`).toBe('BODY')
+          await page.keyboard.press('Tab')
+          const a = await active(page)
+          if (SHELL(r)) {
+            expect(a.href, `${r} first Tab = skip link`).toBe('#main')
+            const box = (await page.locator(':focus').boundingBox())!
+            expect(box.height, 'skip link block size').toBeGreaterThanOrEqual(44)
+          } else {
+            expect(a.tag, `${r} first Tab reaches a control`).not.toBe('BODY')
+          }
+          // no horizontal scroll
+          const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)
+          expect(overflow, `${r} horizontal overflow`).toBeLessThanOrEqual(0)
+          await shot(page, `${locale}-first-load-${r.replace(/\//g, '_') || 'root'}`)
         }
-        // no horizontal scroll
-        const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)
-        expect(overflow, `${r} horizontal overflow`).toBeLessThanOrEqual(0)
-        await shot(page, `${locale}-first-load-${r.replace(/\//g, '_') || 'root'}`)
-      }
-      expect(titles.size).toBe(ROUTES.length)
-    })
-
-    test('AC1 client navigation (links, keyboard, back, forward, 404) focuses the h1 and sets the title', async ({ page }) => {
-      await setLocale(page, locale)
-      const tutorLink = page.locator('main a[href="/tutor"]')
-      await tutorLink.focus()
-      await page.keyboard.press('Enter')
-      await expect(page).toHaveURL(/\/tutor$/)
-      await expectH1Focused(page)
-      // keyboard-driven focus shows a visible ring on the h1
-      const ring = await page.locator('main h1').evaluate((e) => {
-        const s = getComputedStyle(e)
-        return { style: s.outlineStyle, width: parseFloat(s.outlineWidth), fv: e.matches(':focus-visible') }
+        expect(titles.size).toBe(ROUTES[who].length)
       })
-      test.info().annotations.push({ type: 'h1-ring-after-keyboard-nav', description: JSON.stringify(ring) })
-      await shot(page, `${locale}-tutor-after-keyboard-nav`)
-      expect(ring.style).not.toBe('none')
-      expect(ring.width).toBeGreaterThanOrEqual(2)
 
-      await page.goBack()
-      await expect(page).toHaveURL(/\/$/)
-      await expectH1Focused(page)
-      await page.goForward()
-      await expect(page).toHaveURL(/\/tutor$/)
-      await expectH1Focused(page)
-      // shell home link (pointer) -> landing
-      const home = page.getByRole('banner').getByRole('link').first()
-      expect((await home.boundingBox())!.height, 'shell home link block size').toBeGreaterThanOrEqual(44)
-      await home.click()
-      await expect(page).toHaveURL(/\/$/)
-      await expectH1Focused(page)
-      await page.locator('main a[href="/student"]').click()
-      await expect(page).toHaveURL(/\/student$/)
-      await expectH1Focused(page)
-      // any -> 404 as a client navigation (history API + popstate, the router's own listener)
-      await page.evaluate(() => {
-        history.pushState({}, '', '/qa-missing')
-        window.dispatchEvent(new PopStateEvent('popstate'))
+      test(`[${locale}] axe clean on every route`, async ({ page }) => {
+        await setLocale(page, locale, who)
+        for (const r of ROUTES[who]) {
+          await page.goto(r)
+          await page.waitForLoadState('networkidle')
+          const axe = await new AxeBuilder({ page }).analyze()
+          const bad = axe.violations.filter((v) => ['serious', 'critical'].includes(v.impact ?? ''))
+          expect(bad.map((v) => `${r}: ${v.id}`)).toEqual([])
+        }
       })
-      await expect(page).toHaveURL(/qa-missing$/)
-      await expectH1Focused(page)
-      const back404 = page.locator('main a[href="/"]')
-      expect((await back404.boundingBox())!.height, '404 link block size').toBeGreaterThanOrEqual(44)
-      await back404.click()
-      await expectH1Focused(page)
-      await page.goBack() // back to the 404
-      await expect(page).toHaveURL(/qa-missing$/)
-      await expectH1Focused(page)
-    })
 
-    test('AC1 reload after a client navigation keeps focus on body; skip link first and reaches main', async ({ page }) => {
-      await setLocale(page, locale)
-      await page.locator('main a[href="/tutor"]').click()
-      await expectH1Focused(page)
-      await page.reload()
-      await page.waitForLoadState('networkidle')
-      expect((await active(page)).tag).toBe('BODY')
-      await page.keyboard.press('Tab')
-      expect((await active(page)).href).toBe('#main')
-      await page.keyboard.press('Enter')
-      const inMain = await page.evaluate(() => {
-        const a = document.activeElement!
-        return a.id === 'main' || !!a.closest('main')
+      if (who === 'anonymous') continue
+      const shell = `/${who}`
+
+      test(`[${locale}] AC1 client navigation (keyboard, back, forward, 404) focuses the h1 and sets the title`, async ({ page }) => {
+        await setLocale(page, locale, who)
+        await page.goto(shell)
+        await expect(page.locator('main h1')).toBeVisible()
+        const home = new URL(page.url()).pathname
+        await page.evaluate((p) => {
+          history.pushState({}, '', `${p}/qa-missing`)
+          window.dispatchEvent(new PopStateEvent('popstate'))
+        }, shell)
+        await expect(page).toHaveURL(/qa-missing$/)
+        await expectH1Focused(page)
+        // the shell's home link by keyboard
+        await page.locator(`a[href="${home}"]`).first().focus()
+        await page.keyboard.press('Enter')
+        await expect(page).toHaveURL(new RegExp(`${home}$`))
+        await expectH1Focused(page)
+        // keyboard-driven focus shows a visible ring on the h1
+        const ring = await page.locator('main h1').evaluate((e) => {
+          const s = getComputedStyle(e)
+          return { style: s.outlineStyle, width: parseFloat(s.outlineWidth), fv: e.matches(':focus-visible') }
+        })
+        test.info().annotations.push({ type: 'h1-ring-after-keyboard-nav', description: JSON.stringify(ring) })
+        await shot(page, `${locale}-${who}-after-keyboard-nav`)
+        expect(ring.style).not.toBe('none')
+        expect(ring.width).toBeGreaterThanOrEqual(2)
+        await page.goBack()
+        await expect(page).toHaveURL(/qa-missing$/)
+        await expectH1Focused(page)
+        await page.goForward()
+        await expect(page).toHaveURL(new RegExp(`${home}$`))
+        await expectH1Focused(page)
+        // the top-level 404, then its start-page link (pointer): `/` redirects to the role's home
+        await page.goto('/qa-missing')
+        const back404 = page.locator('main a[href="/"]')
+        expect((await back404.boundingBox())!.height, '404 link block size').toBeGreaterThanOrEqual(44)
+        await back404.click()
+        await expect(page).toHaveURL(new RegExp(`${home}$`))
+        await expectH1Focused(page)
       })
-      expect(inMain, 'skip link moves focus to main').toBe(true)
-      // the hash change must not be treated as a route change (focus is not pulled to the h1 via the announcer title reset)
-      await expect(page).toHaveTitle(/ · Eng-LMS$/)
-    })
 
-    test('AC1/AC3 language change: title follows without navigation, focus stays on the switcher, persists on reload', async ({ page }) => {
-      await setLocale(page, locale)
-      const other: Locale = locale === 'vi' ? 'en' : 'vi'
-      // the switcher lives on the landing page and both shells (AC3); the 404 has none
-      for (const r of ['/', '/tutor', '/student']) {
-        await page.goto(r)
+      test(`[${locale}] AC1 reload after a client navigation keeps focus on body; skip link first and reaches main`, async ({ page }) => {
+        await setLocale(page, locale, who)
+        await page.goto('/qa-missing')
+        await page.locator('main a[href="/"]').click()
+        await expectH1Focused(page)
+        await page.reload()
+        await page.waitForLoadState('networkidle')
+        expect((await active(page)).tag).toBe('BODY')
+        await page.keyboard.press('Tab')
+        expect((await active(page)).href).toBe('#main')
+        await page.keyboard.press('Enter')
+        const inMain = await page.evaluate(() => {
+          const a = document.activeElement!
+          return a.id === 'main' || !!a.closest('main')
+        })
+        expect(inMain, 'skip link moves focus to main').toBe(true)
+        await expect(page).toHaveTitle(/ · Eng-LMS$/)
+      })
+
+      test(`[${locale}] AC1/AC3 language change in the account section: title follows without navigation, focus stays on the switcher, persists on reload`, async ({ page }) => {
+        await setLocale(page, locale, who)
+        const other: Locale = locale === 'vi' ? 'en' : 'vi'
+        await page.goto(shell)
         await page.waitForLoadState('networkidle')
         const before = await page.title()
         const url = page.url()
-        const group = page.getByRole('radiogroup')
-        await expect(group).toHaveAccessibleName(/.+/)
-        // endonyms keep their lang attribute
-        await expect(page.getByRole('radio', { name: 'Tiếng Việt' })).toHaveAttribute('lang', 'vi')
-        await expect(page.getByRole('radio', { name: 'English' })).toHaveAttribute('lang', 'en')
-        for (const seg of await page.getByRole('radio').all()) expect((await seg.boundingBox())!.height).toBeGreaterThanOrEqual(44)
+        const section = await openAccountSection(page)
+        await expect(section.getByRole('radiogroup')).toHaveAccessibleName(/.+/)
+        await expect(section.getByRole('radio', { name: 'Tiếng Việt' })).toHaveAttribute('lang', 'vi')
+        await expect(section.getByRole('radio', { name: 'English' })).toHaveAttribute('lang', 'en')
+        for (const seg of await section.getByRole('radio').all()) expect((await seg.boundingBox())!.height).toBeGreaterThanOrEqual(44)
         // keyboard: Tab until a radio has focus, arrow to the other, Space
-        await page.locator('body').focus()
         for (let i = 0; i < 6 && (await active(page)).role !== 'radio'; i++) await page.keyboard.press('Tab')
         expect((await active(page)).role).toBe('radio')
         const targetName = other === 'vi' ? 'Tiếng Việt' : 'English'
-        for (let i = 0; i < 2 && (await active(page)).text !== targetName; i++) await page.keyboard.press('ArrowRight')
-        expect((await active(page)).text).toBe(targetName)
+        // the segment's text holds its label twice (a hidden copy keeps the width); its accessible name is the label
+        for (let i = 0; i < 2 && !(await active(page)).text.startsWith(targetName); i++) await page.keyboard.press('ArrowRight')
+        await expect(page.locator(':focus')).toHaveAccessibleName(targetName)
         await page.keyboard.press('Space')
         await expect(page.locator('html')).toHaveAttribute('lang', other)
-        await expect(page.getByRole('radio', { name: targetName })).toHaveAttribute('aria-checked', 'true')
+        await expect(section.getByRole('radio', { name: targetName })).toHaveAttribute('aria-checked', 'true')
         expect(page.url()).toBe(url)
         const after = await page.title()
         expect(after).not.toBe(before)
         const h1 = (await page.locator('main h1').textContent())!.trim()
         expect(after).toBe(h1 + SUFFIX)
         expect((await active(page)).role, 'focus stays on the switcher').toBe('radio')
-        await shot(page, `${locale}-switched-to-${other}-${r.replace(/\//g, '_')}`)
+        await shot(page, `${locale}-switched-to-${other}-${who}`)
         await page.reload()
         await expect(page.locator('html')).toHaveAttribute('lang', other)
         await expect(page).toHaveTitle(after)
         // switch back with the pointer
-        await page.getByRole('radio', { name: locale === 'vi' ? 'Tiếng Việt' : 'English' }).click()
+        await (await openAccountSection(page)).getByRole('radio', { name: locale === 'vi' ? 'Tiếng Việt' : 'English' }).click()
         await expect(page).toHaveTitle(before)
-      }
-    })
+      })
+    }
+  })
+}
 
-    test('AC1 failed lazy load on client navigation: error page h1 focused, titled, request-ID sentence absent', async ({ page }) => {
+test.describe('anonymous: language change on /login', () => {
+  for (const locale of LOCALES) {
+    test(`[${locale}] AC3 the switcher on /login: title follows, focus stays, persists on reload`, async ({ page }) => {
       await setLocale(page, locale)
+      const other: Locale = locale === 'vi' ? 'en' : 'vi'
+      const before = await page.title()
+      await page.getByRole('radio', { name: other === 'vi' ? 'Tiếng Việt' : 'English' }).focus()
+      await page.keyboard.press('Space')
+      await expect(page.locator('html')).toHaveAttribute('lang', other)
+      expect((await active(page)).role, 'focus stays on the switcher').toBe('radio')
+      expect(await page.title()).not.toBe(before)
+      await page.reload()
+      await expect(page.locator('html')).toHaveAttribute('lang', other)
+      await page.getByRole('radio', { name: locale === 'vi' ? 'Tiếng Việt' : 'English' }).click()
+      await expect(page).toHaveTitle(before)
+    })
+  }
+})
+
+test.describe('student: failed lazy load', () => {
+  test.use({ storageState: STATE.student })
+  for (const locale of LOCALES) {
+    test(`[${locale}] AC1 failed lazy load on client navigation: error page h1 focused, titled, request-ID sentence absent`, async ({ page }) => {
+      await setLocale(page, locale, 'student')
+      await page.goto('/qa-no-such-page')
       await page.route(/\/assets\/StudentShell[^/]*\.js$/, (r) => r.abort())
       consoleErrors.length = 0
-      await page.locator('main a[href="/student"]').click()
+      await page.locator('main a[href="/"]').click() // `/` → /student/home: its chunk fails
       const text = await expectH1Focused(page)
       expect(text.length).toBeGreaterThan(0)
       await expect(page.getByText(/request ID|mã yêu cầu/i)).toHaveCount(0)
@@ -212,23 +259,16 @@ for (const locale of LOCALES) {
       expect(axe.violations.filter((v) => ['serious', 'critical'].includes(v.impact ?? ''))).toEqual([])
       consoleErrors.length = 0 // the aborted chunk logs a resource error by design
     })
+  }
+})
 
-    test('axe clean on every route', async ({ page }) => {
-      await setLocale(page, locale)
-      for (const r of ROUTES) {
-        await page.goto(r)
-        await page.waitForLoadState('networkidle')
-        const axe = await new AxeBuilder({ page }).analyze()
-        const bad = axe.violations.filter((v) => ['serious', 'critical'].includes(v.impact ?? ''))
-        expect(bad.map((v) => `${r}: ${v.id}`)).toEqual([])
-      }
-    })
-  })
-}
-
+const FIRST_LOAD = [['anonymous', '/login'], ['tutor', '/tutor'], ['student', '/student'], ['anonymous', '/qa-no-such-page']] as const
+const CHUNKS = /\/assets\/(TutorShell|StudentShell|Login[A-Za-z]*|NotFound|ShellLayout)[^/]*\.js$/
 test.describe('AC4 throttled first load: 150 ms skeleton delay and CLS', () => {
-  for (const r of ['/', '/tutor', '/student', '/qa-no-such-page']) {
-    test(`delayed chunk + meta: ${r}`, async ({ page }) => {
+  for (const [who, r] of FIRST_LOAD) {
+    test.describe(who, () => {
+      test.use({ storageState: AS[who] })
+      test(`delayed chunk + meta: ${r}`, async ({ page }) => {
       await page.addInitScript(() => {
         const w = window as unknown as Record<string, unknown>
         w.__cls = 0
@@ -248,7 +288,7 @@ test.describe('AC4 throttled first load: 150 ms skeleton delay and CLS', () => {
         }
         requestAnimationFrame(tick)
       })
-      await page.route(/\/assets\/(TutorShell|StudentShell|Landing|NotFound|ShellLayout)[^/]*\.js$/, async (x) => {
+      await page.route(CHUNKS, async (x) => {
         await new Promise((s) => setTimeout(s, 900))
         await x.continue()
       })
@@ -276,15 +316,18 @@ test.describe('AC4 throttled first load: 150 ms skeleton delay and CLS', () => {
       expect(m.delay, 'skeleton shows soon after 150 ms').toBeLessThan(400)
       expect(m.cls).toBeLessThanOrEqual(0.05)
       // header-shaped skeleton on shell paths only (N3)
+      })
     })
   }
-  test('N3: shell paths reserve a header-shaped loading region, other paths page-only', async ({ page }) => {
-    await page.route(/\/assets\/(TutorShell|StudentShell|Landing|NotFound|ShellLayout)[^/]*\.js$/, async (x) => {
-      await new Promise((s) => setTimeout(s, 1500))
-      await x.continue()
-    })
+  test('N3: shell paths reserve a header-shaped loading region, other paths page-only', async ({ browser, baseURL }) => {
     const res: Record<string, unknown> = {}
-    for (const r of ['/tutor', '/student', '/', '/qa-no-such-page']) {
+    for (const [who, r] of FIRST_LOAD) {
+      const context = await browser.newContext({ baseURL, storageState: AS[who] })
+      const page = await context.newPage()
+      await page.route(CHUNKS, async (x) => {
+        await new Promise((s) => setTimeout(s, 1500))
+        await x.continue()
+      })
       await page.goto(r, { waitUntil: 'commit' })
       const busy = page.locator('[aria-busy="true"]').first()
       await expect(busy).toBeAttached()
@@ -296,6 +339,7 @@ test.describe('AC4 throttled first load: 150 ms skeleton delay and CLS', () => {
         vw: document.documentElement.clientWidth,
       }))
       await expect(page.locator('main h1')).toBeVisible({ timeout: 10000 })
+      await context.close()
     }
     test.info().annotations.push({ type: 'n3', description: JSON.stringify(res) })
     for (const [r, v] of Object.entries(res) as [string, { display: string; topbar: boolean }][]) {

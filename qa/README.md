@@ -9,20 +9,23 @@ Owned by the **QA Evaluator** (qa-protocol §1, agent-roles §3). Implementers n
 |---|---|
 | `plans/<task-id>.md` | The QA plan: each AC → scenarios (happy, edge, negative, isolation), viewports, a11y checks, exploratory charter |
 | `e2e/<task-id>.spec.ts` | Automated black-box scenarios for one task (Playwright) |
-| `regression/*.spec.ts` | Accumulated scenarios for the milestone regression (all six viewports × three engines) |
+| `regression/*.spec.ts` | Accumulated scenarios for the milestone regression (all six viewports, Chromium; DEC-180) |
 
 Evidence goes to `evidence/<task-id>/qa/` (`report.md`, screenshots, a11y results), never here.
 
 ## Running
 
-QA has its own pinned toolchain (separate from `e2e/`, DEC-057). Start the packaged app first, for example with the image
+QA has its own pinned toolchain (separate from `e2e/`, DEC-057). The global setup (`support/global-setup.ts`) needs a live tutor
+session in `QA_TUTOR_STATE` (default `.data/e2e/state/tutor.json`, written by the e2e suite's global setup on the same database) and
+creates a fresh student through the API. Start the packaged app first, for example with the image
 (`podman run --read-only --tmpfs /tmp --network host --env-file .env englms:dev`) or the jar built by `scripts/e2e-run.sh`.
 
 ```bash
 cd qa && pnpm install --frozen-lockfile && pnpm browsers   # once
 pnpm test                                                 # all six viewports, Chromium (QA_BASE_URL, default http://localhost:8080)
 pnpm test --project=phone-small --project=tablet --project=laptop
-QA_ENGINES=all pnpm test regression/                      # milestone regression: Chromium, Firefox, WebKit
+pnpm test regression/                                     # milestone regression (G5): the six viewports, Chromium
+QA_ENGINES=all pnpm test regression/                      # optional: also Firefox and WebKit (not part of the G5 matrix since DEC-180)
 ```
 
 Tests run with no retries. A flaky scenario is a finding, not something to retry.
