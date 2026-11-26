@@ -6,6 +6,7 @@
 #   PreToolUse Workflow → denies a script without a declared agent count, or one over the cap (R5)
 # Override for R2..R5: a line `BUDGET-OVERRIDE: <reason, ≥ 20 characters>` in the prompt or script; it is logged. R1 has no override
 # (DEC-094: one checkout). Fails open on a hook error (a broken hook must never stop the LC), but says so on stderr.
+source "$(dirname "${BASH_SOURCE[0]}")/../lib/require-bash.sh"
 set -uo pipefail
 
 DIR="${ENGLMS_AGENT_POLICY_DIR:-${CLAUDE_PROJECT_DIR:-.}/.claude/scratch/agent-policy}"
