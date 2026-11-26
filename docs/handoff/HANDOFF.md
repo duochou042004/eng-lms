@@ -1,7 +1,7 @@
-# Handoff — 2026-11-26 (T-M2.7 merged; M2 G5 records complete, awaiting the PO demo)
+# Handoff — 2026-11-26 (M2 G5 records complete; the PO deferred the demo until after M3; ready for the device move)
 
 Phase/Milestone: P1 / M2 **awaiting_approval** (G5 records complete, PO demo pending, DEC-206) · Current task: **T-M2.26** (draft, on the new device) · Last merge on `develop`: `63a2d54`
-(T-M2.7 PR #240) · Next: the PO's M2 demo → device move → T-M2.26 packet on the new device
+(records PR #242, `26b8c5d`) · Next: device move → T-M2.26 packet on the new device; the M2 demo after M3
 
 ## Where we are
 - **T-M2.7** merged (PR #240, `63a2d54`): student Home v0 (greeting by name in the session's zone), `/student/account`, `GET
@@ -14,16 +14,18 @@ Phase/Milestone: P1 / M2 **awaiting_approval** (G5 records complete, PO demo pen
   --purge` resets it (PO decision; not needed for the move).
 
 ## In flight / uncommitted
-- Nothing besides the records PR (and PR #241 until merged). Untracked `evidence/*/records/`, `evidence/*/impl/`, `evidence/T-M2.7/screenshots/`
+- Nothing: PRs #240, #241, #242 merged; `develop` = `origin` = `gitlab` (`26b8c5d` before this PR). Untracked `evidence/*/records/`, `evidence/*/impl/`, `evidence/T-M2.7/screenshots/`
   are E2E noise; never stage them.
 
 ## Next steps (in this order)
-1. Merge PR #241 (`qa/T-M2.7`, LC-APPROVED) and the records PR (DOCS-REVIEW PASS + LC-APPROVED) via merge-gate; `./scripts/gitlab-sync.sh`.
-2. **PO: the M2 demo** (a recorded walkthrough or a live session), the G5 acceptance step; record it in a DEC that sets M2 `done`, G5 `pass`, the README row ✅ and the roadmap status done.
-3. **Device move** (below), then the T-M2.26 packet there. T-M2.39 (M2 S4s) is unscheduled: batch it into the first M3 task touching the area.
+1. **Device move** (below), then the T-M2.26 packet there. T-M2.39 (M2 S4s and two flaky tests) is unscheduled: batch it into the first
+   M3 task touching the area.
+2. **M2 demo deferred (PO, chat 2026-11-26):** "defer it and review everything together after M3 is completed". Do **not** ask for the M2
+   demo or write a DEC marking M2 done before then; M2 stays `awaiting_approval` and G5 `pending` (DEC-206). After M3's G5, one demo covers
+   M2 and M3; its DEC sets M2 `done`, G5 `pass`, the README row ✅ and the roadmap status done.
 
 ## Pending PO decisions / actions
-- The M2 demo. UX-1's copy (the account popover's first link, T-M2.39 (c)).
+- The M2 demo: deferred by the PO to a joint M2 + M3 review after M3. UX-1's copy (the account popover's first link, T-M2.39 (c)).
 
 ## Moving to a new device (PO, 2026-11-25: after T-M2.32, T-M2.33 and T-M2.7 the work continues on a new device)
 - Follow development-setup §0 for its platform. Clone `https://github.com/duochou042004/eng-lms`, `git fetch` (check-docs fails closed without

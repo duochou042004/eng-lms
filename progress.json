@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-11-26T12:54:27Z",
-  "updatedBy": "lead-coordinator (T-M2.7 records, M2 G5)",
+  "updatedAt": "2026-11-26T14:31:33Z",
+  "updatedBy": "lead-coordinator (M2 demo deferral, device-move prep)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -548,7 +548,7 @@
     },
     "G5": {
       "status": "pending",
-      "note": "M2: regression run 45817298721 on e2bfd78, 1,253 passed, 169 skipped, 0 failed (6 Chromium viewports + WebKit smoke); local E2E_KEEP_DB=1 1,247 passed, 0 failed (dev DB empty, QA-3); records evidence/M2/; G5 records complete; awaiting the PO demo (done/pass in the DEC that records it)"
+      "note": "M2: regression run 45817298721 on e2bfd78, 1,253 passed, 169 skipped, 0 failed (6 Chromium viewports + WebKit smoke); local E2E_KEEP_DB=1 1,247 passed, 0 failed (dev DB empty, QA-3); records evidence/M2/; G5 records complete; awaiting the PO demo, deferred by the PO until after M3 (joint M2 + M3 review; done/pass in the DEC that records it)"
     }
   },
   "blockers": [],
@@ -2042,6 +2042,11 @@
       "at": "2026-11-26T12:54:27Z",
       "actor": "lead-coordinator",
       "event": "T-M2.7 merged (PR #240, 63a2d54) after the one PO-approved regression run (45817298721, green); qa/T-M2.7 PR #241; M2 G5 records complete (DEC-206), awaiting the PO demo; next: device move, then T-M2.26."
+    },
+    {
+      "at": "2026-11-26T14:31:33Z",
+      "actor": "lead-coordinator",
+      "event": "PO deferred the M2 demo until after M3 (joint review; chat 2026-11-26): no DEC marking M2 done; M2 stays awaiting_approval, G5 pending. Next: device move, then T-M2.26."
     }
   ]
 }
