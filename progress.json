@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-11-26T05:31:49Z",
-  "updatedBy": "lead-coordinator (T-M2.33 records)",
+  "updatedAt": "2026-11-26T06:05:16Z",
+  "updatedBy": "lead-coordinator (T-M2.7 packet)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -31,47 +31,48 @@
   },
   "currentTask": {
     "id": "T-M2.7",
-    "title": "Student Home v0 + Account page; M2 regression + milestone gate (G5 matrix: 6 Chromium viewports + WebKit smoke, DEC-180)",
-    "status": "draft",
-    "ownerRole": "FE",
+    "title": "Student Home v0 + the student Account page (GET /student/account; FR-DASH-03 shell, FR-SET-02)",
+    "status": "ready",
+    "ownerRole": "BE+FE",
     "branch": null,
-    "packet": null,
+    "packet": "docs/tasks/T-M2.7-student-home-account.md",
     "pr": null,
     "lastCommit": null,
     "startedAt": null,
     "nextSteps": [
-      "Ask the PO: T-M2.7 start signal and the one G5 regression run (no Firefox, DEC-180); then the packet (task-packet skill) with the row's batched S4s (DEC-197, DEC-198, DEC-201, DEC-202)"
+      "Ask the PO for the T-M2.7 start signal; then feature/T-M2.7-student-home-account: BE (GET /student/account) then FE (Home, Account page), one at a time; G3 tier H (SEC, then QA with the UX checklist); regression cap 0",
+      "After T-M2.7: T-M2.36 (BE S4s, tier H), T-M2.37 (web S4s, tier M), T-M2.38 (M2 regression + G5: the one regression run needs the PO's approval) (DEC-204)"
     ],
     "trace": [
-      "DEC-158",
-      "DEC-180",
-      "DEC-197",
-      "DEC-198",
-      "DEC-201",
-      "DEC-202"
+      "FR-DASH-03",
+      "FR-SET-02",
+      "ADR-0016",
+      "DEC-190",
+      "DEC-204"
     ],
     "entryGate": [
       "T-M2.33 merged — met (1f8dd90, DEC-203)",
-      "Packet + G0 — pending",
-      "PO start signal and the regression run — pending"
+      "Packet + G0 — T-M2.7 packet PR (docs/T-M2.7-packet)",
+      "PO start signal — pending"
     ]
   },
   "nextTask": {
-    "id": "T-M2.26",
-    "title": "Switch the CI scope on (after at least 10 shadow PRs; DEC-158 PO-1, PO-2)",
+    "id": "T-M2.36",
+    "title": "Backend S4s from T-M2.33: Jackson mismatch value in the DEBUG log, workspace @Schema description (DEC-204)",
     "status": "draft",
-    "ownerRole": "LC",
+    "ownerRole": "BE",
     "branch": null,
     "packet": null,
     "pr": null,
     "lastCommit": null,
     "startedAt": null,
     "nextSteps": [
-      "After at least 10 PRs to develop in shadow mode (T-M2.23); then the device move (HANDOFF)"
+      "Packet after T-M2.7 merges; then T-M2.37, T-M2.38 (G5, the regression run), T-M2.26 after at least 10 shadow PRs, the device move (DEC-204)"
     ],
     "trace": [
-      "DEC-158",
-      "DEC-160"
+      "DEC-201",
+      "DEC-202",
+      "DEC-204"
     ]
   },
   "completed": [
@@ -528,8 +529,8 @@
   },
   "gates": {
     "G0": {
-      "status": "pass",
-      "note": "T-M2.33 packet: PR #234, DOCS-REVIEW round 1 CHANGES REQUESTED, delta PASS WITH MINOR, S4 fixed, PASS (DEC-200)"
+      "status": "pending",
+      "note": "T-M2.7 packet: PR docs/T-M2.7-packet, fresh docs-reviewer (DEC-204)"
     },
     "G1": {
       "status": "pass",
@@ -618,7 +619,8 @@
       "DEC-187",
       "DEC-188",
       "DEC-189",
-      "DEC-190"
+      "DEC-190",
+      "DEC-204"
     ],
     "pendingPO": [
       "OQ-03",
@@ -2000,6 +2002,11 @@
       "at": "2026-11-26T05:31:49Z",
       "actor": "lead-coordinator",
       "event": "T-M2.33 merged (1f8dd90, PR #235; QA PR #236 b50cf78; DEC-203); gitlab-sync; records PR; current task T-M2.7 (ask the PO)."
+    },
+    {
+      "at": "2026-11-26T06:05:16Z",
+      "actor": "lead-coordinator",
+      "event": "T-M2.7 split (DEC-204): T-M2.7 Student Home v0 + Account page (packet ready, tier H), T-M2.36 BE S4s (tier H), T-M2.37 web S4s (tier M), T-M2.38 M2 regression + G5; packet PR docs/T-M2.7-packet (PO: packet only first)."
     }
   ]
 }
