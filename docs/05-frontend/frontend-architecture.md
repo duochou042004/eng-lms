@@ -30,6 +30,14 @@ web/
   e2e/ → lives at repo root /e2e (implementation-owned) ; /qa (QA-owned)
 ```
 
+**Shared account form (T-M2.7):** `app/routes/account/` holds the account form both roles use (`AccountForm.tsx`: `AccountPanel`, the
+session re-read and the form; `accountForm.ts`, its schema and request; `Account.module.css`; the `account` namespace). The field list follows
+the session's role (the tutor: Display name and Time zone; a student: Time zone). The tutor's `routes/settings/AccountSettingsPage` and the
+student's lazy `routes/account/StudentAccountPage` (`/student/account`) both import it; no student route imports `routes/settings` (NFR-PERF-03).
+The student's own name and username come from `features/students/api/studentAccount.ts` (`useStudentAccount`, key `['students','account']`,
+`GET /student/account`; its own module, so the student chunks load none of the tutor's Students code); the Home greeting's band is
+`lib/time` `dayPeriod(now, timeZone)`.
+
 **Implemented feature (T-M2.5): `features/students/`**: `routes/` (the three lazy pages `StudentsListPage`, `AddStudentPage`,
 `StudentWorkspacePage`, each imported by the router directly, so each is its own chunk and none is in a first-visit closure; the bundle budget
 fails otherwise), `components/` (the form, the credentials card, contact values, the not-found view), `api/students.ts` (query keys
@@ -169,6 +177,8 @@ The `students` namespace (T-M2.5) follows the same pattern for production: `feat
 module is evaluated, so its strings travel with the lazy tutor pages and never reach a student's first visit; the completeness test imports
 `studentsResources` too. Student status labels are in `common` (`status.student.*`) and `nav.students` in `shell`.
 The `settings` namespace (T-M2.6) does the same from `app/routes/settings/i18n.ts` (the Settings pages' chunk); `nav.settings` is in `shell`.
+The `account` namespace (T-M2.7) does the same from `app/routes/account/i18n.ts`: the account form's strings (moved out of `settings`, the same
+`account.*` keys) and the student Account page's (`student.*`); the student's greeting and the account-section link are in `shell`.
 
 ## 5. Extensions (frontend registry)
 

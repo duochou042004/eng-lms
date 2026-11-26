@@ -43,6 +43,7 @@ Secrets (podman secret): englms-db-password, englms-bootstrap-tutor-password (fi
 | `ENGLMS_SECURITY_LOCKOUT_MAXFAILURES` / `_DURATION`, `ENGLMS_SECURITY_LOGINTHROTTLE_MAXATTEMPTS` / `_WINDOW`, `ENGLMS_SECURITY_REMEMBERME_VALIDITY` (Boot relaxed binding: dots → `_`, dashes dropped) | Lockout 10 / `15m`, throttle 30 per `5m` per IP (instance-local), remember-me `30d` (security.md §3) | (defaults) |
 | `ENGLMS_EMBED_PROVIDERS` | Allow-list override | `youtube,vimeo,gdrive,soundcloud` |
 | `JAVA_TOOL_OPTIONS` | Memory | `-XX:MaxRAMPercentage=70` |
+| `LOGGING_LEVEL_*` (`logging.level.*`) | **Never DEBUG or TRACE in production for `org.springframework.web` or the app loggers (`com.englms`)**: at DEBUG Spring MVC logs every request body it read (`toString()`: usernames, names and other personal data; the password DTOs omit the password). A body that fails to parse is logged without its content at any level (security.md §10, T-M2.7); `application.properties` keeps the defaults (INFO) | (unset) |
 
 ## 4. First install (runbook summary; full steps in runbooks.md §1)
 

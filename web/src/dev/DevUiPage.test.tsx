@@ -11,7 +11,10 @@ describe('/dev/ui (development builds only)', { timeout: 20_000 }, () => {
   it('registers the dev namespace when its module loads and shows the translated gallery with the SegmentedControl', async () => {
     expect(i18n.hasResourceBundle('vi', 'dev')).toBe(false)
     const { container } = renderRoute('/dev/ui')
-    expect(await screen.findByRole('heading', { level: 1, name: 'Thư viện thành phần' })).toBeInTheDocument()
+    // The lazy chunk's first read polls longer on a busy runner (T-M2.7 C2; no wall-clock assertion, L-05).
+    expect(
+      await screen.findByRole('heading', { level: 1, name: 'Thư viện thành phần' }, { timeout: 5000 }),
+    ).toBeInTheDocument()
     expect(i18n.hasResourceBundle('en', 'dev')).toBe(true)
     await waitFor(() => expect(document.title).toBe('Thư viện thành phần · Eng-LMS'))
     const view = screen.getByRole('radiogroup', { name: 'Chế độ xem' })
@@ -181,7 +184,7 @@ describe('/dev/ui (development builds only)', { timeout: 20_000 }, () => {
 
   it('shows the T-M2.6 ComboBox over the time zones, a value the engine does not list, invalid and disabled', async () => {
     const { container } = renderRoute('/dev/ui')
-    await screen.findByRole('heading', { level: 1, name: 'Thư viện thành phần' })
+    await screen.findByRole('heading', { level: 1, name: 'Thư viện thành phần' }, { timeout: 5000 })
     expect(screen.getByRole('combobox', { name: 'Múi giờ' })).toHaveValue('Asia/Bangkok')
     expect(screen.getByRole('combobox', { name: /^Múi giờ \(giá trị hiện tại/ })).toHaveValue('Asia/Ho_Chi_Minh')
     expect(screen.getByRole('combobox', { name: 'Múi giờ (không hợp lệ)' })).toHaveAttribute('aria-invalid', 'true')

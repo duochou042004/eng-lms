@@ -14,6 +14,7 @@ import io.swagger.v3.oas.models.servers.Server;
 
 import com.englms.shared.ProblemCodes;
 import org.springdoc.core.customizers.OpenApiCustomizer;
+import org.springdoc.core.utils.SpringDocUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -23,6 +24,12 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration(proxyBeanMethods = false)
 class OpenApiConfiguration {
+
+	static {
+		// CurrentStudent comes from the session (CurrentStudentResolver), never from the request (ADR-0016): not a
+		// parameter of the contract (springdoc would list it as a query parameter "me").
+		SpringDocUtils.getConfig().addRequestWrapperToIgnore(CurrentStudent.class);
+	}
 
 	@Bean
 	OpenAPI englmsOpenApi() {

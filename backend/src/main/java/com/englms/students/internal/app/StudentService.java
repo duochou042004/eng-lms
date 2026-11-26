@@ -131,6 +131,20 @@ public class StudentService implements StudentDirectory, StudentPrincipals {
 		return view(load(studentId));
 	}
 
+	/** The signed-in student's own name and username ({@code GET /student/account}, FR-SET-02, T-M2.7). */
+	public record Account(String fullName, String username) {
+	}
+
+	/**
+	 * FR-SET-02: {@code studentId} is the caller's own ({@code CurrentStudent}); a missing row is 404 like {@link #get},
+	 * although {@code CurrentStudentResolver} already ends such a session with 401.
+	 */
+	@Transactional(readOnly = true)
+	public Account account(UUID studentId) {
+		Student student = load(studentId);
+		return new Account(student.fullName(), username(student));
+	}
+
 	/**
 	 * FR-STU-03: present fields only; a username change keeps the student's sessions and bumps {@code version} like any
 	 * other change (DEC-187), so a second tab renaming from the same version gets 409 {@code STALE_VERSION}.

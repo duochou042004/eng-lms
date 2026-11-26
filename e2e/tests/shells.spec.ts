@@ -314,6 +314,15 @@ for (const role of ['tutor', 'student'] as const) {
           message: 'Change password and Log out look alike',
         })
         .toBe(true)
+      // T-M2.7: a student's Account link is one more item of the same visual kind (the tutor has none).
+      const account = dialog.getByRole('link', { name: 'Tài khoản' })
+      if (role === 'student')
+        await expect
+          .poll(async () => JSON.stringify(await looks(account)) === JSON.stringify(await looks(logout)), {
+            message: 'Account and Log out look alike',
+          })
+          .toBe(true)
+      else await expect(account).toHaveCount(0)
       if (place === 'drawer') {
         // The account section is the drawer's footer, after the navigation.
         const navBox = await dialog.getByRole('navigation', { name: COPY.tutorNav }).boundingBox()

@@ -425,3 +425,16 @@ describe('T-M2.35 AC7: the Workspace form', () => {
     )
   })
 })
+
+// T-M2.7: the time-zone strings it shares with the account form come from the `account` namespace (moved out of `settings`).
+describe('T-M2.7: the default time zone keeps its shared strings', () => {
+  it('the hint, the button and the list are named in Vietnamese', async () => {
+    workspace()
+    await openPage()
+    expect(zone()).toHaveAccessibleDescription(expect.stringContaining('Gõ tên thành phố hoặc khu vực để tìm.'))
+    const button = screen.getByRole('button', { name: /^Hiện các múi giờ/ })
+    expect(button).toHaveAttribute('aria-label', 'Hiện các múi giờ')
+    await userEvent.click(button)
+    expect(await screen.findByRole('listbox', { name: /Các múi giờ/ })).toHaveAttribute('aria-label', 'Các múi giờ')
+  })
+})

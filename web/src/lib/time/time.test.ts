@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { formatDate, formatDateTime } from '.'
+import { dayPeriod, formatDate, formatDateTime } from '.'
 
 // T-M2.5 AC12 (f), design-system §7: day/month/year and a 24-hour clock in both languages (local time zone).
 describe('lib/time', () => {
@@ -19,5 +19,27 @@ describe('lib/time', () => {
     expect(formatDate(iso, locale, 'Pacific/Honolulu')).toBe('20/11/2026')
     expect(formatDate('2026-11-21T17:30:00Z', locale, 'Asia/Ho_Chi_Minh')).toBe('22/11/2026')
     expect(formatDate('2026-11-21T17:30:00Z', locale, 'UTC')).toBe('21/11/2026')
+  })
+
+  // T-M2.7 AC3: the band edges in the account's zone (UTC+7 and UTC−8 in November), not the browser's.
+  it.each([
+    ['03:59', 'evening'],
+    ['04:00', 'morning'],
+    ['11:59', 'morning'],
+    ['12:00', 'afternoon'],
+    ['17:59', 'afternoon'],
+    ['18:00', 'evening'],
+  ] as const)('%s local is %s in two zones', (local, period) => {
+    const [h, m] = local.split(':').map(Number) as [number, number]
+    // The UTC instant whose wall clock in the zone is `local` on 26/11/2026.
+    const at = (offsetHours: number) => new Date(Date.UTC(2026, 10, 26, h - offsetHours, m))
+    expect(dayPeriod(at(7), 'Asia/Ho_Chi_Minh')).toBe(period)
+    expect(dayPeriod(at(-8), 'America/Los_Angeles')).toBe(period)
+  })
+
+  it('one instant has a different band in each zone', () => {
+    const instant = new Date('2026-11-26T02:00:00Z') // 09:00 in Ho Chi Minh City, 18:00 the day before in Los Angeles
+    expect(dayPeriod(instant, 'Asia/Ho_Chi_Minh')).toBe('morning')
+    expect(dayPeriod(instant, 'America/Los_Angeles')).toBe('evening')
   })
 })

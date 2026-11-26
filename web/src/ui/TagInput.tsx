@@ -37,6 +37,8 @@ export interface TagInputProps extends TagLimits {
   onBlur?: () => void
   /** The caller's error (a form or server error); an entry refused here shows its own messages until this changes. */
   errorMessage?: string
+  /** The form's submit count: every submit clears the entry's own error, also when `errorMessage` stays identical (T-M2.7 C1). */
+  submitCount?: number
   isDisabled?: boolean
   /** The strings (`ui/` holds no feature strings). */
   messages: {
@@ -64,6 +66,7 @@ export function TagInput({
   maxTags,
   maxLength,
   errorMessage,
+  submitCount,
   isDisabled,
   messages,
 }: TagInputProps) {
@@ -73,6 +76,11 @@ export function TagInput({
   const [callerError, setCallerError] = useState(errorMessage)
   if (errorMessage !== callerError) {
     setCallerError(errorMessage)
+    setEntryErrors([])
+  }
+  const [submitSeen, setSubmitSeen] = useState(submitCount)
+  if (submitCount !== submitSeen) {
+    setSubmitSeen(submitCount)
     setEntryErrors([])
   }
   const inputRef = useRef<HTMLInputElement>(null)

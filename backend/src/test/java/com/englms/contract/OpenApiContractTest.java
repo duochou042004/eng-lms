@@ -50,6 +50,8 @@ class OpenApiContractTest {
 			.returnResult()
 			.getResponseBody();
 		String normalized = generated.replace("\r\n", "\n").strip() + "\n";
+		// T-M2.7: CurrentStudent comes from the session (ADR-0016), so the contract never lists it as a parameter.
+		assertThat(normalized).as("CurrentStudent in the contract").doesNotContain("CurrentStudent");
 
 		if (Boolean.getBoolean("contract.write")) {
 			Files.writeString(CONTRACT, normalized, StandardCharsets.UTF_8);

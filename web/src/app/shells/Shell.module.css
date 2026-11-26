@@ -116,6 +116,17 @@
   padding-block-end: calc(var(--size-tabbar) + env(safe-area-inset-bottom) + var(--space-6));
 }
 
+/* A toast over the bottom tabs (ui/Toast sits above them, T-M2.7): room for both. */
+:root[data-toasts]:has([data-bottom-tabs]) {
+  scroll-padding-block-end: calc(
+    var(--toast-stack-size) + var(--size-tabbar) + var(--space-4) + env(safe-area-inset-bottom)
+  );
+}
+
+:root[data-toasts] .withTabs {
+  padding-block-end: calc(var(--toast-stack-size) + var(--size-tabbar) + var(--space-6) + env(safe-area-inset-bottom));
+}
+
 .account {
   --account-gap: var(--space-4);
 

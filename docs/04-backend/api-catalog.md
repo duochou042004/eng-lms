@@ -104,7 +104,7 @@
 | Method | Path | Purpose | FR | M |
 |---|---|---|---|---|
 | GET | `/student/home` | Home composition | FR-DASH-03 | M2+ |
-| GET | `/student/account` | Own name and username | FR-SET-02 | M2 |
+| GET | `/student/account` | Own name and username: 200 `{fullName, username}`, exactly these two properties (the student's `fullName` as the tutor stored it, the account's username), owner-scoped by `CurrentStudent` (no ID, query or body; `StudentAccountController` in `students.internal.web.student`, DTO `StudentAccountResponse`). Anonymous 401 `UNAUTHENTICATED`, tutor 403 `FORBIDDEN_ROLE`, behind the must-change gate (403 `PASSWORD_CHANGE_REQUIRED`); ACTIVE and PAUSED students 200; an archived student's old session 401 `SESSION_EXPIRED`. No event, no audit entry; `Cache-Control: no-store`. **Live** (T-M2.7) | FR-SET-02 | M2 |
 | GET | `/student/goals` · `/student/progress` | Visible goals, progress | FR-PROG-02 | M7 |
 | GET | `/student/plans` · `/student/plans/{pid}` | Visible plans | FR-PLAN-06 | M7 |
 | GET | `/student/lessons?from=&to=` · `/student/lessons/{id}` | Own lessons | FR-LES-07 | M3 |

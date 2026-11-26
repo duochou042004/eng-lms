@@ -51,18 +51,26 @@ function useAccountName() {
  * The account section (information-architecture §1, §3; FR-AUTH-04, FR-AUTH-05): who is signed in, the language
  * switcher, "Change password" and "Log out" in the same visual kind (a link and a button that look alike). The same
  * component fills the account popover, the tutor drawer's footer and the student's More sheet. `onNavigate` closes the
- * overlay that holds it before "Change password" navigates. A failed Log out shows its alert below the actions; Log out
+ * overlay that holds it before "Change password" (or a student's "Account", T-M2.7) navigates. A failed Log out shows its alert below the actions; Log out
  * stays the retry (T-M2.13 scope 3). The alert's mount scroll keeps Log out and its focus ring in view (T-M2.31 (b)).
  */
 export function AccountSection({ onNavigate }: { onNavigate?: () => void }) {
   const { t } = useTranslation('shell')
   const name = useAccountName()
+  // A student's Account page (T-M2.7, IA §3 More › Account); the tutor's is Settings › Account in the tutor nav.
+  const student = useSession().data?.role === 'STUDENT'
   const logout = useLogout()
   return (
     <div className={styles.account}>
       <p className={styles.signedIn}>{t('account.signedInAs', { name })}</p>
       <LanguageSwitcher />
       <div className={styles.accountActions}>
+        {student ? (
+          <ButtonLink variant="secondary" to="/student/account" onClick={onNavigate}>
+            <CircleUser aria-hidden="true" className={styles.actionIcon} />
+            {t('account.account')}
+          </ButtonLink>
+        ) : null}
         <ButtonLink variant="secondary" to="/change-password" onClick={onNavigate}>
           <KeyRound aria-hidden="true" className={styles.actionIcon} />
           {t('account.changePassword')}

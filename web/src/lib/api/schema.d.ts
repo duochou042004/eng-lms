@@ -105,6 +105,23 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  '/api/v1/student/account': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** The signed-in student's own full name (as the tutor stored it) and username */
+    get: operations['account']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
   '/api/v1/tutor/guardians/{gid}': {
     parameters: {
       query?: never
@@ -455,7 +472,7 @@ export interface components {
       defaultLocale?: string
       /** @description A time-zone ID the server's java.time knows, exact (aliases accepted as given) */
       defaultTimeZone?: string
-      /** @description The workspace name: 1-120 characters, no control, bidirectional or zero-width character; cannot be cleared */
+      /** @description The workspace name, by the shared name rule (shared.Names): no Cc, Cf, Cs, Zl or Zp code point (422 INVALID_FORMAT), both ends stripped, then 1-120 code points; cannot be cleared */
       displayName?: string
       /** Format: int64 */
       version: number
@@ -474,6 +491,10 @@ export interface components {
       status: 'ACTIVE' | 'PAUSED' | 'ARCHIVED'
       /** Format: int64 */
       version: number
+    }
+    StudentAccountResponse: {
+      fullName: string
+      username: string
     }
     StudentResponse: {
       contactHandles: components['schemas']['ContactHandle'][]
@@ -765,6 +786,35 @@ export interface operations {
         }
         content: {
           'application/json': components['schemas']['MetaResponse']
+        }
+      }
+    }
+  }
+  account: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description The student's name and username */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['StudentAccountResponse']
+        }
+      }
+      /** @description FORBIDDEN_ROLE (not a student) or PASSWORD_CHANGE_REQUIRED */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/problem+json': components['schemas']['Problem']
         }
       }
     }

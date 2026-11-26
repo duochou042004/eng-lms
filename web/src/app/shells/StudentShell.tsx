@@ -1,8 +1,22 @@
 import { BookOpen, Ellipsis, House } from 'lucide-react'
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Outlet } from 'react-router'
-import { BottomTabs, EmptyState, NavList, PageHeader, Sheet, Stack, cx, useMinWidth, type NavItem } from '../../ui'
+import { useSession } from '../../features/auth/api/session'
+import { useStudentAccount } from '../../features/students/api/studentAccount'
+import { dayPeriod } from '../../lib/time'
+import {
+  BottomTabs,
+  EmptyState,
+  NavList,
+  PageHeader,
+  Sheet,
+  Stack,
+  ToastRegion,
+  cx,
+  useMinWidth,
+  type NavItem,
+} from '../../ui'
 import { usePageTitle } from '../routeAnnouncement'
 import styles from './Shell.module.css'
 import { AccountMenu, AccountSection, ShellHomeLink, SkipLink } from './ShellParts'
@@ -59,17 +73,32 @@ export function StudentShell() {
           </Sheet>
         </>
       )}
+      {/* The Account page's "Saved" (T-M2.7); above the bottom tabs below md (ui/Toast). */}
+      <ToastRegion label={t('toast.region')} dismissLabel={t('toast.dismiss')} />
     </div>
   )
 }
 
-/** `/student/home`: placeholder content until the student Home page. */
+/**
+ * `/student/home`, Home v0 (FR-DASH-03, T-M2.7): the `h1`, a greeting with the time of day in the account's zone
+ * (`session.timeZone`) and the student's full name, then the empty state until Goals, To do, Next lesson and Recent
+ * results arrive (M3, M5, M7). The name is decorative: while it loads or when its read fails, the greeting has no name
+ * and nothing else changes (no alert).
+ */
 export function StudentHome() {
   const { t } = useTranslation('shell')
   usePageTitle(t('student.title'))
+  const timeZone = useSession().data?.timeZone
+  const name = useStudentAccount().data?.fullName
+  // The instant the page opened (no live timer, UI rules); tests fake the clock.
+  const [openedAt] = useState(() => new Date())
+  const period = dayPeriod(openedAt, timeZone)
   return (
     <Stack gap={6}>
-      <PageHeader title={t('student.title')} />
+      <PageHeader
+        title={t('student.title')}
+        description={name ? t(`student.greeting.${period}`, { name }) : t(`student.greetingNoName.${period}`)}
+      />
       <EmptyState icon={<BookOpen />} title={t('student.emptyTitle')} description={t('student.emptyDescription')} />
     </Stack>
   )

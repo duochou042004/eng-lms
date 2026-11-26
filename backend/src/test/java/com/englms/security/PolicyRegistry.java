@@ -73,6 +73,9 @@ public final class PolicyRegistry {
 			Policy.of("PATCH", "/api/v1/auth/preferences", account -> "{\"locale\":\"en\",\"timeZone\":\"Asia/Saigon\"}",
 					401, 200, 200, NA, 403),
 			Policy.of("GET", "/api/v1/meta", null, 200, 200, 200, NA, 200),
+			// T-M2.7, student: account. The caller's own name and username (CurrentStudent); the path names no
+			// resource, so B-on-A does not apply; behind the must-change gate.
+			Policy.of("GET", "/api/v1/student/account", null, 401, 403, 200, NA, 403),
 			// T-M2.3, tutor: students. Tutor-only; B-on-A does not apply ({sid} = student A's student ID).
 			Policy.of("POST", "/api/v1/tutor/students", PolicyRegistry::newStudent, 401, 201, 403, NA, 403),
 			Policy.of("GET", "/api/v1/tutor/students", null, 401, 200, 403, NA, 403),
