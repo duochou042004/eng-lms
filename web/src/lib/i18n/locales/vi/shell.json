@@ -9,7 +9,17 @@
     "title": "Trang chủ",
     "navLabel": "Điều hướng học viên",
     "emptyTitle": "Chưa có gì ở đây",
-    "emptyDescription": "Bài học và nhiệm vụ của bạn sẽ xuất hiện ở đây."
+    "emptyDescription": "Bài học và nhiệm vụ của bạn sẽ xuất hiện ở đây.",
+    "greeting": {
+      "morning": "Chào buổi sáng, {{name}}",
+      "afternoon": "Chào buổi chiều, {{name}}",
+      "evening": "Chào buổi tối, {{name}}"
+    },
+    "greetingNoName": {
+      "morning": "Chào buổi sáng!",
+      "afternoon": "Chào buổi chiều!",
+      "evening": "Chào buổi tối!"
+    }
   },
   "nav": {
     "today": "Hôm nay",
@@ -24,6 +34,7 @@
   "account": {
     "label": "Tài khoản",
     "signedInAs": "Đã đăng nhập: {{name}}",
+    "account": "Tài khoản",
     "changePassword": "Đổi mật khẩu",
     "logout": "Đăng xuất"
   },

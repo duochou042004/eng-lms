@@ -120,6 +120,14 @@ export function createRoutes(queryClient: QueryClient): RouteObject[] {
                   path: 'home',
                   lazy: async () => ({ Component: (await import('./shells/StudentShell')).StudentHome }),
                 },
+                // T-M2.7: its own chunk (the shared account form and the ComboBox stay out of the first visit); it
+                // imports `routes/account`, never the tutor's `routes/settings` (NFR-PERF-03).
+                {
+                  path: 'account',
+                  lazy: async () => ({
+                    Component: (await import('./routes/account/StudentAccountPage')).StudentAccountPage,
+                  }),
+                },
                 {
                   path: '*',
                   lazy: async () => ({ Component: (await import('./shells/StudentShell')).ShellNotFound }),

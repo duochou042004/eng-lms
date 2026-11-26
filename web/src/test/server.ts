@@ -54,11 +54,20 @@ export function preferencesAs(role: TestRole, seen: unknown[] = []) {
   })
 }
 
-// Default: anonymous visitor; public metadata; a preferences save answered as the tutor's (the language switcher's best-effort call).
+/** The signed-in student's `GET /student/account` body (StudentAccountResponse, T-M2.7). */
+export const STUDENT_ACCOUNT = { fullName: 'Nguyễn Văn An', username: 'an.nguyen' }
+
+/** `GET /student/account` answering `body` (T-M2.7; the student Home's greeting and the Account page read it). */
+export function studentAccountAs(body: { fullName: string; username: string } = STUDENT_ACCOUNT) {
+  return http.get('*/api/v1/student/account', () => HttpResponse.json(body))
+}
+
+// Default: anonymous visitor; public metadata; a preferences save answered as the tutor's (the language switcher's best-effort call); the student's account (T-M2.7).
 export const handlers = [
   sessionAs(null),
   http.get('*/api/v1/meta', () => HttpResponse.json(META)),
   preferencesAs('TUTOR'),
+  studentAccountAs(),
 ]
 
 /** Mock API for component tests (MSW). */

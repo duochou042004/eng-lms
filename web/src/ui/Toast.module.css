@@ -11,6 +11,11 @@
   outline: none;
 }
 
+/* Above a shell's fixed bottom tabs (the student shell below 768 px, T-M2.7), never over them. */
+html:has([data-bottom-tabs]) .region {
+  inset-block-end: calc(var(--size-tabbar) + var(--space-4) + env(safe-area-inset-bottom));
+}
+
 @media (width >= 768px) {
   .region {
     inset-inline: auto var(--space-4);
