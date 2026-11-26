@@ -22,7 +22,9 @@ Phase/Milestone: P1 / M2 **awaiting_approval** (G5 records complete, PO demo pen
    M3 task touching the area.
 2. **M2 demo deferred (PO, chat 2026-11-26):** "defer it and review everything together after M3 is completed". Do **not** ask for the M2
    demo or write a DEC marking M2 done before then; M2 stays `awaiting_approval` and G5 `pending` (DEC-206). After M3's G5, one demo covers
-   M2 and M3; its DEC sets M2 `done`, G5 `pass`, the README row ✅ and the roadmap status done.
+   M2 and M3; its DEC sets M2 `done`, G5 `pass`, the README row ✅ and the roadmap status done. Recorded here and in `progress.json` only
+   (no DEC, at the PO's request). **When M3 starts** and the `milestone`/`gates.G5` objects move to M3, M2's open G5 stays as the
+   `approvals[]` entry "M2 G5 PO demo" (`pending`, DEC-206): keep it, and name it in M3's G5 note.
 
 ## Pending PO decisions / actions
 - The M2 demo: deferred by the PO to a joint M2 + M3 review after M3. UX-1's copy (the account popover's first link, T-M2.39 (c)).

@@ -1055,6 +1055,13 @@
       "status": "approved",
       "at": "2026-11-26T08:55:15Z",
       "ref": "DEC-205"
+    },
+    {
+      "what": "M2 G5 PO demo, deferred by the PO to a joint M2 + M3 review after M3 (chat 2026-11-26: no DEC marking M2 done before then); stays pending when the milestone object moves to M3",
+      "by": "PO",
+      "status": "pending",
+      "at": null,
+      "ref": "DEC-206"
     }
   ],
   "environment": {
