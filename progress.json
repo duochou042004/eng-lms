@@ -16,7 +16,7 @@
       }
     ]
   },
-  "updatedAt": "2026-11-26T08:49:04Z",
+  "updatedAt": "2026-11-26T08:55:15Z",
   "updatedBy": "lead-coordinator (T-M2.7 consolidation, agent policy)",
   "phase": {
     "id": "P1",
@@ -32,7 +32,7 @@
   "currentTask": {
     "id": "T-M2.7",
     "title": "Student Home v0 + Account page, M2 S4s, M2 milestone gate (G5) (DEC-205)",
-    "status": "draft",
+    "status": "ready",
     "ownerRole": "BE+FE",
     "branch": null,
     "packet": "docs/tasks/T-M2.7-student-home-account.md",
@@ -40,8 +40,7 @@
     "lastCommit": null,
     "startedAt": null,
     "nextSteps": [
-      "PO approval of the DEC-205 harness change and plan; then the G0 delta re-check of parts B-D by the same docs-reviewer (resumed), merge-gate",
-      "PO start signal; feature/T-M2.7-student-home-account: BE (A endpoint + B) then FE (A UI + C); gate; CI; the one regression run after PO approval (part D); SEC; QA (+UX, M2 report); merge; qa/T-M2.7; records PR (G5)"
+      "feature/T-M2.7-student-home-account: BE (part A endpoint + part B) then FE (part A UI + part C); gate once; CI; ask the PO for the one regression run (part D); SEC (A, B); QA with UX (A-C, evidence/M2/qa/report.md); merge-gate; qa/T-M2.7; records PR (G5)"
     ],
     "trace": [
       "FR-DASH-03",
@@ -52,9 +51,9 @@
     ],
     "entryGate": [
       "T-M2.33 merged — met (1f8dd90, DEC-203)",
-      "Part A G0 — PASS (PR #238, DEC-204)",
-      "Parts B-D G0 delta — pending",
-      "PO start signal and the regression run — pending"
+      "G0 — part A PASS (PR #238, DEC-204); parts B-D delta PASS by the same docs-reviewer (PR #239, DEC-205)",
+      "PO start signal — met (chat 2026-11-26, \"Approve, resume\")",
+      "The one regression run — ask the PO before it"
     ]
   },
   "nextTask": {
@@ -530,8 +529,8 @@
   },
   "gates": {
     "G0": {
-      "status": "pending",
-      "note": "T-M2.7: part A PASS (DEC-204); parts B-D (DEC-205) need the same docs-reviewer's delta re-check"
+      "status": "pass",
+      "note": "T-M2.7: part A PASS (PR #238, DEC-204); parts B-D and the agent policy: the same docs-reviewer's delta re-check on PR #239 (DEC-205)"
     },
     "G1": {
       "status": "pass",
@@ -1050,6 +1049,13 @@
       "by": "PO",
       "status": "approved",
       "at": "2026-11-26T08:49:04Z",
+      "ref": "DEC-205"
+    },
+    {
+      "what": "DEC-205 harness and consolidated plan approved; T-M2.7 start signal (chat: \"Approve, resume\")",
+      "by": "PO",
+      "status": "approved",
+      "at": "2026-11-26T08:55:15Z",
       "ref": "DEC-205"
     }
   ],
@@ -2028,6 +2034,11 @@
       "at": "2026-11-26T08:49:04Z",
       "actor": "lead-coordinator",
       "event": "PO: T-M2.7 consolidated (T-M2.36..38 cancelled, parts B-D; DEC-205); agent policy in coding-agent-rules §11 enforced by scripts/hooks/agent-policy.sh (project hooks); branch chore/T-M2.7-agent-policy; execution paused for PO approval."
+    },
+    {
+      "at": "2026-11-26T08:55:15Z",
+      "actor": "lead-coordinator",
+      "event": "PO approved DEC-205 and gave the T-M2.7 start signal (\"Approve, resume\"); G0 delta for parts B-D by the resumed docs-reviewer on PR #239."
     }
   ]
 }

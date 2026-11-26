@@ -1,6 +1,6 @@
-# Handoff — 2026-11-26 (T-M2.7 consolidated; agent policy hook; waiting for the PO)
+# Handoff — 2026-11-26 (T-M2.7 consolidated; agent policy hook; PO approved, T-M2.7 started)
 
-Phase/Milestone: P1 / M2 (in progress) · Current task: **T-M2.7** (`draft`: parts B–D need a G0 delta) · Last merge on `develop`: `58f3220`
+Phase/Milestone: P1 / M2 (in progress) · Current task: **T-M2.7** (`ready`; PO start signal given) · Last merge on `develop`: `58f3220`
 (T-M2.7 packet PR #238) · Next: PO approval of DEC-205 → G0 delta (resume the same docs-reviewer) → T-M2.7 → M2 closed → device move → T-M2.26
 
 ## Where we are
@@ -16,15 +16,15 @@ Phase/Milestone: P1 / M2 (in progress) · Current task: **T-M2.7** (`draft`: par
 - Nothing besides this PR. Untracked `evidence/*/records/` and `evidence/T-M2.33/impl/` are gate/E2E noise; never stage them.
 
 ## Next steps (in this order)
-1. **PO approval** of DEC-205 (harness + plan). Then resume the round-1 docs-reviewer (it has the packet's context; R4 denies a fresh one)
+1. **PO approved DEC-205 and started T-M2.7** ("Approve, resume"). Resume the round-1 docs-reviewer (it has the packet's context; R4 denies a fresh one)
    for parts B–D and §11; fix; merge this PR via merge-gate; gitlab-sync.
-2. **PO start signal**, then `feature/T-M2.7-student-home-account`: BE (part A endpoint + part B), then FE (part A UI + part C); gate once;
+2. `feature/T-M2.7-student-home-account`: BE (part A endpoint + part B), then FE (part A UI + part C); gate once;
    CI; **ask the PO** for the one regression run (part D); SEC (A, B); QA with UX (A–C + `evidence/M2/qa/report.md`); merge; `qa/T-M2.7`;
    the records PR closes M2 (retro, lessons, ledger, README roadmap); the PO demo.
 3. **Device move** (below), then T-M2.26 there.
 
 ## Pending PO decisions / actions
-- Approval of DEC-205 before execution resumes; the T-M2.7 start signal; the one regression run; the M2 demo.
+- The one regression run (ask before it); the M2 demo.
 
 ## Moving to a new device (PO, 2026-11-25: after T-M2.32, T-M2.33 and T-M2.7 the work continues on a new device)
 - Follow development-setup §0 for its platform. Clone `https://github.com/duochou042004/eng-lms`, `git fetch` (check-docs fails closed without
