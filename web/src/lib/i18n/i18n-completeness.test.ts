@@ -1,16 +1,17 @@
 import { describe, expect, it } from 'vitest'
 import { devResources } from '../../dev/i18n'
+import { accountResources } from '../../app/routes/account/i18n'
 import { settingsResources } from '../../app/routes/settings/i18n'
 import { studentsResources } from '../../features/students/i18n'
 import { LOCALES, resources } from '.'
 
 /**
  * Every catalogue, including the lazily registered ones: `students` (with the Students pages, T-M2.5), `settings`
- * (T-M2.6) and the development-only `dev` namespace (not shipped in production).
+ * (T-M2.6), `account` (T-M2.7) and the development-only `dev` namespace (not shipped in production).
  */
 const catalogues = {
-  vi: { ...resources.vi, ...studentsResources.vi, ...settingsResources.vi, ...devResources.vi },
-  en: { ...resources.en, ...studentsResources.en, ...settingsResources.en, ...devResources.en },
+  vi: { ...resources.vi, ...studentsResources.vi, ...settingsResources.vi, ...accountResources.vi, ...devResources.vi },
+  en: { ...resources.en, ...studentsResources.en, ...settingsResources.en, ...accountResources.en, ...devResources.en },
 }
 
 /** Flattens a nested catalogue into dotted keys. */
@@ -45,7 +46,7 @@ describe('i18n completeness (NFR-I18N-01)', () => {
 
   it('covers the dev namespace', () => {
     expect(Object.keys(catalogues.vi)).toEqual(
-      expect.arrayContaining(['common', 'shell', 'auth', 'students', 'settings', 'dev']),
+      expect.arrayContaining(['common', 'shell', 'auth', 'students', 'settings', 'account', 'dev']),
     )
     expect(Object.keys(resources.vi)).not.toContain('dev')
   })

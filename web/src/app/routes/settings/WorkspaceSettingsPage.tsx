@@ -26,7 +26,7 @@ import {
   type ErrorSummaryItem,
 } from '../../../ui'
 import { ComboBox } from '../../../ui/ComboBox'
-import { timeZoneOptions } from './accountForm'
+import { timeZoneOptions } from '../account/accountForm'
 import './i18n'
 import styles from './Settings.module.css'
 import {
