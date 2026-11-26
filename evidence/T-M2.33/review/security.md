@@ -58,7 +58,7 @@ I reviewed PR #235 at head 9c46f7d (`git diff origin/develop...HEAD`, 34 files; 
   - The only request field with a string-or-number shape, CustomField(String label, String value), is sent as strings by the web client.
   - The full gate on c02ade1 is green; OpenAPI is unchanged.
 - **`com.englms.shared.Names`:** correct.
-  - It matches by code point. I verified: a lone U+D800 or U+DC00 gives U+D800/U+DC00; the pair U+DBFF U+DFFF (a private-use code point, category Co) is not matched; U+E0041 is found as one code point; a name sent as U+00A0 + "Lan" + U+202F strips to "Lan"; `codePoint()` prints 4–6 upper-case hex digits.
+  - It matches by code point. I verified: a lone U+D800 or U+DC00 gives U+D800/U+DC00; the pair U+DBFF U+DFFF (a private-use code point, category Co) is not matched; U+E0041 is found as one code point; a name sent as U+00A0 + "Lan" + U+202F strips to "Lan"; `codePoint()` prints 4–6 upper-case hex digits. [LC note: U+10FFFF is a noncharacter, category Cn, not Co; the conclusion holds.]
   - The only issue is the strip's cost (S3-1).
   - The client twin web/src/lib/names.ts uses the same classes with the `/u` flag, a linear strip, and the same whitespace set as Java (no U+0085, U+FEFF kept).
 - **Trojan source:** OK. I scanned every changed file for Cf, Cs, Zl, Zp, Co and Cc other than tab: 0 hits. The test literals use escapes (7b28649).
