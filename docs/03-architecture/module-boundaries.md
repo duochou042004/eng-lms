@@ -61,6 +61,7 @@
   `StudentRepository.findForUpdateById` (row lock for guardian appends); `internal.app` `GuardianService`, `LearningProfileService`;
   `internal.web.tutor` `TutorGuardianController`, `TutorLearningProfileController`. No new API, event or dependency. Usernames, passwords and account status go through
   `AccountApi` in the same transaction; queries never join `user_account`.
+  **T-M2.7:** `internal.web.student` (`StudentAccountController`, the first `..web.student..` package: `GET /api/v1/student/account`, DTO `StudentAccountResponse {fullName, username}`), served by `StudentService.account(studentId)` (`CurrentStudent`'s own row; the username through `AccountApi`). No new API, event or dependency.
 
 ## goals
 - **Owns:** `metric_definition`, `learning_goal`, `metric_observation`.

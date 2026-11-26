@@ -20,7 +20,7 @@ Actors: anonymous internet users, an authenticated student (curious or malicious
 
 | # | Threat | Control | Verified by |
 |---|---|---|---|
-| T1 | Student reads another student's data by changing IDs (IDOR) | ADR-0016: student namespace without studentId; `findByIdAndStudentId`; 404 | Isolation suite |
+| T1 | Student reads another student's data by changing IDs (IDOR) | ADR-0016: student namespace without studentId; `findByIdAndStudentId`; 404. **As built (T-M2.7):** the first student handler, `GET /student/account`, reads only `CurrentStudent`'s own row | Isolation suite; `StudentAccountApiTest` (two students) |
 | T2 | Student reads tutor-private fields through an over-broad DTO | Audience-specific DTOs; `@TutorPrivate`; ArchUnit; response secret scan. **Learning profile on screen (T-M2.17):** tutor pages only (no student route, DTO or cache key); its query lives under `['students','learningProfile',sid]` (cleared or reset to no data on every sign-out path); a save answered after the tutor session ended stores and shows nothing (DEC-127); values render as text only (no links, no markup), never in URLs, storage or logs | NFR-SEC-02 tests |
 | T3 | Student obtains answer keys before or without release | Handler `toStudentView` redaction; release gate I-07 | Handler tests + scan for key fields |
 | T4 | Student submits after the deadline or tampers with the timer | Server `deadlineAt` + grace; client timer is display only | Attempt tests |
@@ -130,7 +130,7 @@ The **authz matrix test** enumerates `RequestMappingHandlerMapping`. For each ha
   SPI (students implements it). It never reads a request parameter. A student principal without a student row: the session is invalidated and the
   request answers 401 `SESSION_EXPIRED`. Anonymous and tutor callers never reach a student handler (401/403 at L1; reaching the resolver anyway is an
   `IllegalStateException`). Owner-scoped reads: `findByIdAndStudentId(id, me.studentId())`, a mismatch is 404 (backend-module and authz-isolation
-  skills); `HarnessStudentHandlers` (test fixture) uses it and its B-on-A check answers 404. The first production student handler: T-M2.6/T-M2.7 or M3.
+  skills); `HarnessStudentHandlers` (test fixture) uses it and its B-on-A check answers 404. The first production student handler: T-M2.6/T-M2.7 or M3. **As built (T-M2.7):** `GET /api/v1/student/account` (`students.internal.web.student.StudentAccountController`, `@Audience(STUDENT)`) declares only `CurrentStudent me` and answers the `StudentAccountResponse {fullName, username}` audience DTO (not the tutor's `StudentView`); registry entry anonymous 401, tutor 403, student A 200, must-change 403, B-on-A n/a (the path names no resource); the isolation scan covers it over the fixture world; ArchUnit rules 3 and 4 and the L2 verifier pass on it. `CurrentStudent` is kept out of the OpenAPI contract (`OpenApiConfiguration`: springdoc would list it as a query parameter; `OpenApiContractTest` asserts its absence).
   **L2 rule (T-M2.3 G3 SEC-S3-2):** Spring runs its annotation-based argument resolvers before custom ones, so `AudienceVerifier` refuses startup for
   any handler parameter of type `CurrentStudent` carrying a binding annotation (`@ModelAttribute`, `@RequestBody`, `@RequestParam`, `@PathVariable`,
   `@RequestHeader`, `@CookieValue`, `@MatrixVariable`, `@RequestPart`, `@RequestAttribute`, `@SessionAttribute`, also as meta-annotations). A bare
@@ -253,6 +253,8 @@ leaves no row); no temporary password or hash appears in any row (tested).
 | Backup encryption key | Operator-held key file (offline copy) | n/a |
 
 Never commit a secret. gitleaks runs in pre-commit (optional locally) and in CI (required).
+
+**Request bodies in logs (T-M2.7 B1, DEC-202 S4-1):** Jackson's read errors quote the offending token (a numeric `password` included), and Spring MVC logs the `HttpMessageNotReadableException` message at DEBUG (`InvocableHandlerMethod`, `ExceptionHandlerExceptionResolver`). The server's JSON converter (`shared.web.RedactedJsonReadErrorsConfiguration`) replaces every read error by one naming only the Jackson exception type, without the cause, so no level logs the sent value; the 400 `MALFORMED_REQUEST` body is unchanged (`MismatchedScalarLoggingTest`, DEBUG on). Production never runs `org.springframework.web` or `com.englms` at DEBUG (deployment.md).
 
 ## 11. Security review checklist (per PR, used by the Security Reviewer)
 
