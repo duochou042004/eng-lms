@@ -16,8 +16,8 @@
       }
     ]
   },
-  "updatedAt": "2026-11-26T08:55:15Z",
-  "updatedBy": "lead-coordinator (T-M2.7 consolidation, agent policy)",
+  "updatedAt": "2026-11-26T09:41:29Z",
+  "updatedBy": "lead-coordinator (T-M2.7 start)",
   "phase": {
     "id": "P1",
     "name": "Foundation",
@@ -32,13 +32,13 @@
   "currentTask": {
     "id": "T-M2.7",
     "title": "Student Home v0 + Account page, M2 S4s, M2 milestone gate (G5) (DEC-205)",
-    "status": "ready",
+    "status": "in_progress",
     "ownerRole": "BE+FE",
-    "branch": null,
+    "branch": "feature/T-M2.7-student-home-account",
     "packet": "docs/tasks/T-M2.7-student-home-account.md",
     "pr": null,
     "lastCommit": null,
-    "startedAt": null,
+    "startedAt": "2026-11-26T09:41:29Z",
     "nextSteps": [
       "feature/T-M2.7-student-home-account: BE (part A endpoint + part B) then FE (part A UI + part C); gate once; CI; ask the PO for the one regression run (part D); SEC (A, B); QA with UX (A-C, evidence/M2/qa/report.md); merge-gate; qa/T-M2.7; records PR (G5)"
     ],
