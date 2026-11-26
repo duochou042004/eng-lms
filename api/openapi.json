@@ -248,6 +248,35 @@
         "tags" : [ "meta" ]
       }
     },
+    "/api/v1/student/account" : {
+      "get" : {
+        "operationId" : "account",
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/StudentAccountResponse"
+                }
+              }
+            },
+            "description" : "The student's name and username"
+          },
+          "403" : {
+            "content" : {
+              "application/problem+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problem"
+                }
+              }
+            },
+            "description" : "FORBIDDEN_ROLE (not a student) or PASSWORD_CHANGE_REQUIRED"
+          }
+        },
+        "summary" : "The signed-in student's own full name (as the tutor stored it) and username",
+        "tags" : [ "student: account" ]
+      }
+    },
     "/api/v1/tutor/guardians/{gid}" : {
       "delete" : {
         "operationId" : "delete",
@@ -1407,7 +1436,7 @@
           },
           "displayName" : {
             "type" : "string",
-            "description" : "The workspace name: 1-120 characters, no control, bidirectional or zero-width character; cannot be cleared"
+            "description" : "The workspace name, by the shared name rule (shared.Names): no Cc, Cf, Cs, Zl or Zp code point (422 INVALID_FORMAT), both ends stripped, then 1-120 code points; cannot be cleared"
           },
           "version" : {
             "type" : "integer",
@@ -1452,6 +1481,18 @@
           }
         },
         "required" : [ "status", "version" ]
+      },
+      "StudentAccountResponse" : {
+        "type" : "object",
+        "properties" : {
+          "fullName" : {
+            "type" : "string"
+          },
+          "username" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "fullName", "username" ]
       },
       "StudentResponse" : {
         "type" : "object",
