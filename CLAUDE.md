@@ -20,6 +20,7 @@ and the PO-approved planning baseline** (quality gate G0).
 - **Quality:** `./scripts/gate.sh` green; tests with every change; never weaken tests; evidence in `evidence/<task-id>/`; independent QA before merge.
 - **Frontend:** `web/src/ui/` components and tokens only; all states; vi + en strings; verify at 360 / 768 / 1280; WCAG 2.2 AA.
 - **Stack:** Java 25 + Spring Boot 4.1 (Modulith, JPA, Flyway, PostgreSQL 18), React + TS + Vite; development on Docker or Podman (Linux, macOS, Windows via WSL2), production Podman (ADR-0012, DEC-106). No new infrastructure without an ADR.
+- **Agents:** inline first; one checkout-using subagent at a time; caps 5 running / 6 per session / 5 per Workflow (`// agents: N`); resume reviewers, never respawn; verify once. Enforced by `scripts/hooks/agent-policy.sh` (coding-agent-rules §11, DEC-205).
 - **Memory:** the repo is the memory. The LC updates `progress.json` + the handoff before stopping (subagents report back to it). Near ~500k tokens of context, follow `docs/09-harness/session-handoff-protocol.md`.
 - **Outward-facing actions** (creating repos, pushing to new remotes, deploying, host settings, paid services) need explicit PO approval.
 
