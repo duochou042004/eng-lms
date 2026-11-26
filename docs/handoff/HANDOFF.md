@@ -1,13 +1,13 @@
-# Handoff — 2026-11-26 (T-M2.7 merged; M2 closed at G5; PO demo pending)
+# Handoff — 2026-11-26 (T-M2.7 merged; M2 G5 records complete, awaiting the PO demo)
 
-Phase/Milestone: P1 / M2 **done** (G5, DEC-206) · Current task: **T-M2.26** (draft, on the new device) · Last merge on `develop`: `63a2d54`
+Phase/Milestone: P1 / M2 **awaiting_approval** (G5 records complete, PO demo pending, DEC-206) · Current task: **T-M2.26** (draft, on the new device) · Last merge on `develop`: `63a2d54`
 (T-M2.7 PR #240) · Next: the PO's M2 demo → device move → T-M2.26 packet on the new device
 
 ## Where we are
 - **T-M2.7** merged (PR #240, `63a2d54`): student Home v0 (greeting by name in the session's zone), `/student/account`, `GET
   /api/v1/student/account` (the first `..web.student..` handler), parts B and C S4s. One PO-approved regression run 45817298721: green.
   QA PR #241 (`qa/T-M2.7`: QA report, `evidence/M2/qa/report.md`, the D3 `qa/` specs). Records PR `docs/T-M2.7-records`: DEC-206,
-  `evidence/M2/retro.md`, L-14, README/roadmap M2 done, T-M2.39 (four S4s carried past M2), §11.8 `flock` wording.
+  `evidence/M2/retro.md`, L-14, README/roadmap M2 awaiting the PO demo, T-M2.39 (four S4s carried past M2), §11.8 `flock` wording.
 - **Agent policy** ledger for T-M2.7: 4 fresh agents (BE, FE, SEC, QA) + 1 SEC resume, plus one docs-reviewer for the records with a
   `BUDGET-OVERRIDE:` (R4: the G0 docs-reviewer could not be resumed from this session).
 - **Dev DB on this device** was empty before the G5 local run (QA-3): it now holds the `e2e-tutor` and E2E students; `scripts/dev-down.sh
@@ -19,7 +19,7 @@ Phase/Milestone: P1 / M2 **done** (G5, DEC-206) · Current task: **T-M2.26** (dr
 
 ## Next steps (in this order)
 1. Merge PR #241 (`qa/T-M2.7`, LC-APPROVED) and the records PR (DOCS-REVIEW PASS + LC-APPROVED) via merge-gate; `./scripts/gitlab-sync.sh`.
-2. **PO: the M2 demo** (a recorded walkthrough or a live session), the G5 acceptance step; record it in a DEC.
+2. **PO: the M2 demo** (a recorded walkthrough or a live session), the G5 acceptance step; record it in a DEC that sets M2 `done`, G5 `pass`, the README row ✅ and the roadmap status done.
 3. **Device move** (below), then the T-M2.26 packet there. T-M2.39 (M2 S4s) is unscheduled: batch it into the first M3 task touching the area.
 
 ## Pending PO decisions / actions
@@ -127,7 +127,7 @@ Phase/Milestone: P1 / M2 **done** (G5, DEC-206) · Current task: **T-M2.26** (dr
 - **`scripts/tests/e2e-run.test.sh` can flake in CI** ("keeps the host and parameters": a stale `app2.env` race, T-M2.28 (e)): `gh run rerun <id> --failed`.
 - **Local E2E now runs on its own database** (T-M2.25): `e2e-run.sh` recreates `englms_e2e` per run with `.data/e2e/fresh/`; `E2E_KEEP_DB=1` runs against the PO's dev DB as before (G5). pgjdbc URL parameters and `.env` reassignments are guarded (DEC-168, DEC-169).
 - **The `regression` workflow** is manual (`gh workflow run regression.yml --ref develop`, ~25–30 min, all 6 Chromium viewports + WebKit smoke; Firefox dropped, DEC-180); its first run failed 7 tests (T-M2.28).
-- **T-M2.27 (DEC-166):** the dev DB now holds 1,065 active, 30 paused and 133 archived students (read-only count by QA, 2026-11-13); local E2E added rows until T-M2.25 (now only `E2E_KEEP_DB=1` runs do). `loading.spec.ts` "the loading region in English" can still fail on a very slow runner (CPU throttle ≥ 30 in the reproduction): a CI recurrence needs a new ruling (the packet forbade raising a timeout). Reproduction generators must read the old form from the pre-task commit, not `HEAD`.
+- **T-M2.27 (DEC-166):** the old device's dev DB held 1,065 active, 30 paused and 133 archived students (read-only count by QA, 2026-11-13; this device's was empty, T-M2.7 QA-3); local E2E added rows until T-M2.25 (now only `E2E_KEEP_DB=1` runs do). `loading.spec.ts` "the loading region in English" can still fail on a very slow runner (CPU throttle ≥ 30 in the reproduction): a CI recurrence needs a new ruling (the packet forbade raising a timeout). Reproduction generators must read the old form from the pre-task commit, not `HEAD`.
 - **A QA agent can end on an API error after its verdict** (T-M2.27: Cloudflare 403 after the full report): the report already returned counts; check `git status` and `e2e/tests` for scratch files.
 - **Old device only (Ubuntu 26.10, `/home/linux/Projects/eng-lms`; check on a new one, see "Moving to a new device"): agent shells ran with `NoNewPrivs=1`** (inherited from the desktop app), so rootless `podman` fails with
   "newuidmap: write to uid_map failed". `export CONTAINER_HOST=unix:///run/user/1000/podman/podman.sock` in every agent shell (podman remote
@@ -211,5 +211,5 @@ Phase/Milestone: P1 / M2 **done** (G5, DEC-206) · Current task: **T-M2.26** (dr
 
 
 ## Files to read first
-`CLAUDE.md` → `progress.json` → this file → DEC-180, DEC-202, DEC-204, DEC-205 → the T-M2.7 packet, the backlog row T-M2.26 →
+`CLAUDE.md` → `progress.json` → this file → DEC-180, DEC-205, DEC-206 → the backlog rows T-M2.26 and T-M2.39 →
 `docs/09-harness/coding-agent-rules.md` → `docs/09-harness/lessons-learned.md` (before the packet).

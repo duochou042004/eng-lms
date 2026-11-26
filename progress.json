@@ -26,7 +26,7 @@
   "milestone": {
     "id": "M2",
     "name": "Identity and student management",
-    "status": "done",
+    "status": "awaiting_approval",
     "exitCriteria": "FR-AUTH-01..10 and FR-STU-01..07 accepted; authorization-matrix and student-isolation harnesses fail on any unregistered endpoint; add-student flow E2E at 360/768/1280 within its step budget; security review of authentication passed (docs/01-product/roadmap.md)."
   },
   "currentTask": {
@@ -547,8 +547,8 @@
       "note": "T-M2.7 PR #240 merged via merge-gate (63a2d54); QA PR #241"
     },
     "G5": {
-      "status": "pass",
-      "note": "M2: regression run 45817298721 on e2bfd78, 1,253 passed, 169 skipped, 0 failed (6 Chromium viewports + WebKit smoke); local E2E_KEEP_DB=1 1,247 passed, 0 failed (dev DB empty, QA-3); records evidence/M2/; PO demo pending"
+      "status": "pending",
+      "note": "M2: regression run 45817298721 on e2bfd78, 1,253 passed, 169 skipped, 0 failed (6 Chromium viewports + WebKit smoke); local E2E_KEEP_DB=1 1,247 passed, 0 failed (dev DB empty, QA-3); records evidence/M2/; G5 records complete; awaiting the PO demo (done/pass in the DEC that records it)"
     }
   },
   "blockers": [],
@@ -2041,7 +2041,7 @@
     {
       "at": "2026-11-26T12:54:27Z",
       "actor": "lead-coordinator",
-      "event": "T-M2.7 merged (PR #240, 63a2d54) after the one PO-approved regression run (45817298721, green); qa/T-M2.7 PR #241; M2 closed at G5 (DEC-206); PO demo pending; next: device move, then T-M2.26."
+      "event": "T-M2.7 merged (PR #240, 63a2d54) after the one PO-approved regression run (45817298721, green); qa/T-M2.7 PR #241; M2 G5 records complete (DEC-206), awaiting the PO demo; next: device move, then T-M2.26."
     }
   ]
 }

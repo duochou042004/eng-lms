@@ -1,6 +1,6 @@
 You are resuming the Eng-LMS project (private 1:1 teaching workspace for ONE English tutor; no hard-coded curricula) as Lead Coordinator. Clone: see progress.json project.repoLocal (a new device: follow HANDOFF "Moving to a new device" first and record it in a DEC).
 Read in order: CLAUDE.md, progress.json, docs/handoff/HANDOFF.md, DEC-205 and DEC-206 in docs/10-governance/decision-log.md, the backlog rows T-M2.26 and T-M2.39, docs/09-harness/coding-agent-rules.md (§11 agent policy, enforced by scripts/hooks/agent-policy.sh), docs/09-harness/lessons-learned.md (L-14).
-State: P1; M2 done at G5 (T-M2.7 merged 63a2d54, DEC-206); the PO demo is pending. Next task T-M2.26 (draft) on the new device. T-M2.39 (four M2 S4s) unscheduled. Firefox out of G5 (DEC-180).
+State: P1; M2 G5 records complete (T-M2.7 merged 63a2d54, DEC-206), awaiting the PO demo (then M2 done, G5 pass, in a DEC). Next task T-M2.26 (draft) on the new device. T-M2.39 (four M2 S4s) unscheduled. Firefox out of G5 (DEC-180).
 Do next:
 1. If PR #241 (qa/T-M2.7) or the docs/T-M2.7-records PR is open: merge it via merge-gate (records need DOCS-REVIEW PASS), then gitlab-sync.
 2. Ask the PO for the M2 demo if not done; record it in a DEC.

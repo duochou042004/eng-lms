@@ -38,7 +38,7 @@ One calm workspace, **without a forced curriculum**.
 
 > [!IMPORTANT]
 > **Status:** M0 (planning baseline, approved 2026-09-25) and M1 (walking skeleton and delivery pipeline, signed off 2026-10-04) are done.
-> M2 (identity and student management) is done; **M3: schedule, lessons and notes** is next. Every increment goes through gated plan → build → independent review loops.
+> M2 (identity and student management) is built and its G5 records are complete, awaiting the PO demo; **M3: schedule, lessons and notes** is next. Every increment goes through gated plan → build → independent review loops.
 > The live state is in [`progress.json`](progress.json); the narrative handoff is in [`docs/handoff/HANDOFF.md`](docs/handoff/HANDOFF.md).
 
 ## Contents
@@ -134,7 +134,7 @@ All ADRs: [`docs/03-architecture/adr/`](docs/03-architecture/adr/README.md).
 |:---:|---|---|
 | ✅ | **M0** Planning baseline | Documentation system, ADRs, harness, `progress.json` |
 | ✅ | **M1** Walking skeleton | Repo governance, backend and web skeletons, Podman stack, CI, E2E harness |
-| ✅ | **M2** Identity and students | Login, add-student flow with a credentials card, student workspace shell |
+| 🔄 | **M2** Identity and students | Login, add-student flow with a credentials card, student workspace shell |
 | ⏳ | **M3** Schedule and lessons | Lessons, Today view, private notes |
 | ⏳ | **M4** Library and files | Folders, materials, lesson templates, sharing |
 | ⏳ | **M5** Assignments and **wrap-up** | One-screen after-lesson flow, homework, grading and feedback |
